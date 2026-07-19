@@ -21,6 +21,9 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 不可用时只交付完整构建说明，不声称游戏已经生成。不要发送与原型无关的完整受版权
 保护原文。
 
+可复用技法见 [production-techniques.md](references/production-techniques.md)：灰盒先行 +
+皮肤层（资产可替换）、可复现的种子随机、把实现模型当导演对象驱动、多视角试玩闭环。
+
 ## 完成循环
 
 1. 用灰盒实现最小但完整的核心循环，先验证规则和范围。
