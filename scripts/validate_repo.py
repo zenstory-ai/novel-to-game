@@ -317,7 +317,7 @@ def validate_agent_adapters(root: Path, version: str) -> list[str]:
 
 def validate_repository(root: Path) -> list[str]:
     issues: list[str] = []
-    for required in ("README.md", "README_ZH.md", "LICENSE", "AGENTS.md", "VERSION"):
+    for required in ("README.md", "README_EN.md", "LICENSE", "AGENTS.md", "VERSION"):
         if not (root / required).is_file():
             issues.append(f"repository: missing {required}")
 
