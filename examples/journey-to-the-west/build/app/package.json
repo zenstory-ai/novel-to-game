@@ -1,0 +1,11 @@
+{
+  "name": "xiyou-bajiaoshan-rpg",
+  "private": true,
+  "type": "module",
+  "description": "《西游记·三借芭蕉扇》回合制指令 RPG(梦幻西游/问道风格):指令回合制、五行相克、携宠、阵型、悟空变化、种子随机可复现",
+  "scripts": {
+    "start": "python3 -m http.server 5173",
+    "test": "node test/battle.mjs",
+    "test:browser": "python3 test/qa_browser.py"
+  }
+}

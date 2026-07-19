@@ -7,3 +7,8 @@ node_modules/
 dist/
 coverage/
 game-adaptations/*/build/app/node_modules/
+examples/*/build/app/node_modules/
+
+# Agent orchestration runtime state (operational artifacts, never shipped)
+.omc/
+.omx/
