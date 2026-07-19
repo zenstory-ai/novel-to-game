@@ -18,7 +18,7 @@ and reusable workflow knowledge, not a bundled game engine.
 - Keep provider comparisons out of runtime skills; model capabilities change.
 - Write runtime skills, references, and examples in Simplified Chinese. Keep
   English only for literal filenames, commands, code fields, status/mode values,
-  and proper names. Keep `README.md` English and `README_ZH.md` Chinese for SEO.
+  and proper names. Keep `README.md` Chinese (the default) and `README_EN.md` English for SEO.
 - Treat repository language and generated-project language separately. Accept
   novels in any language; generated artifacts follow the user's requested
   language, or the conversation language when unspecified. Do not duplicate
