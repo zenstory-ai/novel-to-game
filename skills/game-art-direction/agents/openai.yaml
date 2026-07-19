@@ -1,4 +1,4 @@
 interface:
   display_name: "游戏美术方向"
-  short_description: "定义游戏的视觉身份与画面可读性"
-  default_prompt: "使用 $game-art-direction 为这个游戏定义视觉身份、美术方向和签名画面。"
+  short_description: "定义游戏的视觉风格与画面可读性"
+  default_prompt: "使用 $game-art-direction 为这个游戏定义视觉风格、美术方向和招牌画面。"

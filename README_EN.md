@@ -13,7 +13,7 @@ checks that the result runs.
 ## Why It Exists
 
 Hand a novel to a model and ask for a game, and you usually get a generic reskin.
-NovelToGame solves the hard part: turning the book's own rules and drama into
+NovelToGame solves the hard part: turning the book's own world, map, factions, quests, items, and drama into
 player verbs and a core loop, deciding what game it should become, and driving
 that all the way to a playable prototype.
 
@@ -116,15 +116,12 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-The build is model-neutral: any capable model implements the same approved
-design — the brief, not the model, is what carries the game.
-
 ## Worked Example — Journey to the West
 
 [Journey to the West](examples/journey-to-the-west/) runs the whole pipeline end
 to end: from the full 100-chapter public-domain Chinese text to **三借芭蕉扇 (Three
 Borrowings of the Banana Fan)** — a playable turn-based command RPG in the tradition
-of 《梦幻西游》/《问道》. Built and verified, not just planned.
+of 《梦幻西游》/《问道》.
 
 ![Title screen](examples/journey-to-the-west/screenshots/title.jpg)
 
@@ -165,7 +162,3 @@ examples/journey-to-the-west/
 ## Acknowledgments
 
 [linux.do](https://linux.do)
-
-## License
-
-MIT
