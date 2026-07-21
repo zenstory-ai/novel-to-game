@@ -209,6 +209,43 @@ export function hitChance(state, attacker, skill) {
   return Math.min(1, Math.max(0.05, p));
 }
 
+// ---------- 伤害预览 ----------
+// 与 calcDamage 同一公式、同一确定修正顺序,但不消耗 state.rng(悬停预览用)。
+// 只取浮动区间两端:实际结算的非暴击伤害必落在 [min,max],暴击必落在 [critMin,critMax]。
+// test/battle.mjs 据此断言「预览与实际结算一致」。
+export function previewDamage(state, attacker, defender, skill) {
+  const atkStat = skill.kind === 'mag' ? effStat(state, attacker, 'mag') : effStat(state, attacker, 'atk');
+  const defStat = effStat(state, defender, 'def');
+  let base = atkStat * skill.mul - defStat * 0.5;
+  if (base < 1) base = 1;
+  const rel = elementRelation(attacker.element, defender.element);
+  const dmg = base * elementCoef(rel);
+  // 确定修正,与 calcDamage 逐项对应(防御/减伤/破绽/龟甲/抗性/阵型)
+  let m = 1;
+  if (defender.defending) m *= 0.5;
+  m *= 1 - buffVal(defender, 'dmg_reduce');
+  m *= 1 + buffVal(defender, 'vulnerable');
+  if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) m *= 0.5;
+  const res = defender.resist?.[attacker.element] ?? 0;
+  if (res) m *= 1 - res;
+  if (defender.side === 'party') {
+    const f = FORMATIONS[state.formation];
+    if (f?.mods?.dmgTaken) m *= f.mods.dmgTaken;
+  }
+  const lo = (x) => Math.max(1, Math.floor(x));
+  const hi = (x) => Math.max(1, Math.ceil(x));
+  return {
+    rel,
+    coef: elementCoef(rel),
+    hit: hitChance(state, attacker, skill),
+    min: lo(dmg * 0.9 * m),
+    max: hi(dmg * 1.1 * m),
+    critMin: lo(dmg * 1.5 * 0.9 * m),
+    critMax: hi(dmg * 2.0 * 1.1 * m),
+    expected: Math.max(1, Math.round(dmg * m)),
+  };
+}
+
 // ---------- 指令执行 ----------
 function applyBuff(unit, buff) {
   unit.buffs.push({ id: buff.id, val: buff.val ?? 0, turns: buff.turns });

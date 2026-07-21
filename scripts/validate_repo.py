@@ -18,7 +18,7 @@ EXPECTED_SKILLS = {
     "game-build",
     "game-qa",
 }
-EXPECTED_EXAMPLES = {"journey-to-the-west"}
+EXPECTED_EXAMPLES = {"journey-to-the-west", "jin-ping-mei"}
 PLUGIN_MANIFESTS = {
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",

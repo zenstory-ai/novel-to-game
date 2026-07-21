@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from validate_repo import (  # noqa: E402
     EXAMPLE_PLANNING_FILES,
+    EXPECTED_EXAMPLES,
     EXPECTED_SKILLS,
     PLUGIN_MANIFESTS,
     chapter_citation_coverage,
@@ -93,44 +94,54 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertEqual(link.resolve().parent, (ROOT / "skills").resolve())
 
     def test_examples_use_compact_planning_artifacts(self) -> None:
-        example = ROOT / "examples/journey-to-the-west"
-        actual = {
-            path.relative_to(example).as_posix()
-            for directory in ("analysis", "concepts", "design", "build")
-            for path in (example / directory).iterdir()
-            if path.is_file()
-        }
-        self.assertEqual(actual, EXAMPLE_PLANNING_FILES)
-
         example_directories = {
             path.name for path in (ROOT / "examples").iterdir() if path.is_dir()
         }
-        self.assertEqual(example_directories, {"journey-to-the-west"})
+        self.assertEqual(example_directories, EXPECTED_EXAMPLES)
+
+        for name in sorted(EXPECTED_EXAMPLES):
+            example = ROOT / "examples" / name
+            with self.subTest(example=name):
+                actual = {
+                    path.relative_to(example).as_posix()
+                    for directory in ("analysis", "concepts", "design", "build")
+                    for path in (example / directory).iterdir()
+                    if path.is_file()
+                }
+                self.assertEqual(actual, EXAMPLE_PLANNING_FILES)
 
     def test_example_source_and_citations_are_structurally_valid(self) -> None:
-        example = ROOT / "examples/journey-to-the-west"
-        source = next((example / "source").glob("*.txt"))
-        chapters = extract_chapters(source)
+        for name in sorted(EXPECTED_EXAMPLES):
+            example = ROOT / "examples" / name
+            with self.subTest(example=name):
+                source = next((example / "source").glob("*.txt"))
+                chapters = extract_chapters(source)
 
-        self.assertEqual([chapter[0] for chapter in chapters], list(range(1, 101)))
-        self.assertTrue(all(chapter[1].strip() for chapter in chapters))
-        self.assertEqual(
-            [chapter[2] for chapter in chapters],
-            sorted(chapter[2] for chapter in chapters),
-        )
-        self.assertEqual(validate_example(example), [])
+                self.assertEqual(
+                    [chapter[0] for chapter in chapters], list(range(1, 101))
+                )
+                self.assertTrue(all(chapter[1].strip() for chapter in chapters))
+                self.assertEqual(
+                    [chapter[2] for chapter in chapters],
+                    sorted(chapter[2] for chapter in chapters),
+                )
+                self.assertEqual(validate_example(example), [])
 
     def test_example_source_bible_accounts_for_every_source_chapter(self) -> None:
-        example = ROOT / "examples/journey-to-the-west"
-        source = next((example / "source").glob("*.txt"))
-        known_chapters = {number for number, _, _ in extract_chapters(source)}
-        source_bible = (example / "analysis/SOURCE_BIBLE.md").read_text(
-            encoding="utf-8"
-        )
+        for name in sorted(EXPECTED_EXAMPLES):
+            example = ROOT / "examples" / name
+            with self.subTest(example=name):
+                source = next((example / "source").glob("*.txt"))
+                known_chapters = {number for number, _, _ in extract_chapters(source)}
+                source_bible = (example / "analysis/SOURCE_BIBLE.md").read_text(
+                    encoding="utf-8"
+                )
 
-        coverage_section = markdown_section(source_bible, "全书覆盖")
-        self.assertIsNotNone(coverage_section)
-        self.assertEqual(chapter_citation_coverage(coverage_section or ""), known_chapters)
+                coverage_section = markdown_section(source_bible, "全书覆盖")
+                self.assertIsNotNone(coverage_section)
+                self.assertEqual(
+                    chapter_citation_coverage(coverage_section or ""), known_chapters
+                )
 
     def test_runtime_markdown_headings_use_chinese(self) -> None:
         cjk = re.compile(r"[\u3400-\u9fff]")

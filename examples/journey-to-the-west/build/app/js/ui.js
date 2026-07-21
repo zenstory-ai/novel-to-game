@@ -24,6 +24,7 @@ export function addCorners(panel) {
 
 // ---------- 剧情对话框 ----------
 // lines: [{who, text}]  who=null 为旁白。返回 Promise,播完 resolve。
+// 键盘:回车/空格/→ 推进(简报一.2 全流程键盘)。
 export function showDialog(root, lines) {
   return new Promise((resolve) => {
     let idx = 0;
@@ -52,22 +53,35 @@ export function showDialog(root, lines) {
       text.textContent = line.text;
       box.dataset.idx = String(idx);
     }
+    function cleanup() {
+      window.removeEventListener('keydown', onKey);
+    }
     function advance() {
       audio.sfx('click');
       idx += 1;
       if (idx >= lines.length) {
         box.remove();
+        cleanup();
         resolve();
       } else {
         render();
       }
     }
+    function onKey(ev) {
+      if (!box.isConnected) { cleanup(); return; }
+      if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowRight') {
+        advance();
+        ev.preventDefault();
+      }
+    }
     box.addEventListener('click', advance);
+    window.addEventListener('keydown', onKey);
     render();
   });
 }
 
 // ---------- 模态框 ----------
+// 键盘:回车/空格=当前聚焦钮(默认首钮),方向键循环,数字键直选(全流程键盘)。
 export function showModal(root, { id, title, bodyNodes, buttons }) {
   const mask = el('div', 'modal-mask');
   if (id) mask.id = id;
@@ -77,7 +91,10 @@ export function showModal(root, { id, title, bodyNodes, buttons }) {
   const body = el('div', 'modal-body');
   for (const n of bodyNodes) body.appendChild(n);
   const foot = el('div', 'modal-foot');
-  const close = () => mask.remove();
+  const close = () => {
+    mask.remove();
+    window.removeEventListener('keydown', onKey);
+  };
   for (const b of buttons) {
     const btn = el('button', 'btn modal-btn', b.label);
     if (b.id) btn.id = b.id;
@@ -88,6 +105,30 @@ export function showModal(root, { id, title, bodyNodes, buttons }) {
     });
     foot.appendChild(btn);
   }
+  const btns = [...foot.querySelectorAll('button')];
+  let fIdx = 0;
+  const applyF = (i) => {
+    if (btns.length === 0) return;
+    fIdx = ((i % btns.length) + btns.length) % btns.length;
+    btns.forEach((b) => b.classList.remove('kbd-focus'));
+    btns[fIdx].classList.add('kbd-focus');
+  };
+  function onKey(ev) {
+    if (!mask.isConnected) {
+      window.removeEventListener('keydown', onKey);
+      return;
+    }
+    const k = ev.key;
+    if (k === 'Enter' || k === ' ') { btns[fIdx]?.click(); ev.preventDefault(); }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp') { applyF(fIdx - 1); ev.preventDefault(); }
+    else if (k === 'ArrowRight' || k === 'ArrowDown') { applyF(fIdx + 1); ev.preventDefault(); }
+    else if (/^[1-9]$/.test(k)) {
+      const b = btns[Number(k) - 1];
+      if (b) { b.click(); ev.preventDefault(); }
+    }
+  }
+  window.addEventListener('keydown', onKey);
+  applyF(0);
   panel.append(head, body, foot);
   mask.appendChild(panel);
   root.appendChild(mask);
@@ -107,8 +148,17 @@ export function showPanel(root, { id, title, bodyNodes, onClose }) {
   for (const n of bodyNodes) body.appendChild(n);
   const close = () => {
     mask.remove();
+    window.removeEventListener('keydown', onKey);
     if (onClose) onClose();
   };
+  function onKey(ev) {
+    if (!mask.isConnected) {
+      window.removeEventListener('keydown', onKey);
+      return;
+    }
+    if (ev.key === 'Escape') { close(); ev.preventDefault(); }
+  }
+  window.addEventListener('keydown', onKey);
   closeBtn.addEventListener('click', () => audio.sfx('click'));
   closeBtn.addEventListener('click', close);
   mask.addEventListener('click', (ev) => {
@@ -131,12 +181,34 @@ export function toast(root, msg, ms = 2600) {
   }, ms);
 }
 
+// ---------- 章节卡(三借递进,简报三.1) ----------
+// 一借·被骗 / 二借·假扇 / 三借·真扇:各借开场亮一张全屏字卡,自动消隐。
+// pointer-events:none 不拦截输入;fast 模式缩短。
+export function chapterCard(root, { title, sub, seal }, fast = false) {
+  return new Promise((resolve) => {
+    const card = el('div', 'chapter-card');
+    const inner = el('div', 'chapter-inner');
+    inner.append(el('div', 'chapter-seal', seal), el('div', 'chapter-title', title), el('div', 'chapter-sub', sub));
+    card.appendChild(inner);
+    root.appendChild(card);
+    const hold = fast ? 900 : 1600;
+    setTimeout(() => card.classList.add('out'), hold);
+    setTimeout(() => {
+      card.remove();
+      resolve();
+    }, hold + 520);
+  });
+}
+
 // ---------- 飘字 ----------
 // cls: dmg / crit / heal / miss / ke / beike / info / combo / huge;slot 错层防叠字
+// 横向抖动走确定序列(全项目禁 Math.random,保证同种子可复现约束在代码层处处成立)
+let floatTick = 0;
 export function floatText(parent, text, cls = 'dmg', slot = 0) {
   const f = el('div', `float-text ${cls}`);
   f.textContent = text;
-  const x = (Math.random() - 0.5) * 30;
+  floatTick = (floatTick + 1) % 31;
+  const x = ((floatTick * 37) % 31) - 15;
   f.style.left = `calc(50% + ${x}px)`;
   f.style.top = `${slot * 30}px`;
   parent.appendChild(f);
@@ -154,6 +226,8 @@ export function stampText(parent, text, cls = 'ke-stamp') {
 }
 
 // ---------- 顶栏 ----------
+// 两组分工(简报一.3):左侧队伍相关(角色/背包/召唤兽/阵型),
+// 右侧系统相关(存档/读档/音效/帮助)默认收进一个「设」齿轮。
 export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute, onHero, onBag, onPet }) {
   const bar = el('div', 'topbar');
   bar.id = 'topbar';
@@ -173,6 +247,13 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
   const formB = mk('阵', TEXT.topbar.formation, 'btn-formation', onFormation);
   left.append(heroB, bagB, petB, formB);
   const right = el('div', 'topbar-group');
+  const sys = el('div', 'topbar-sys');
+  const gearB = el('button', 'btn topbar-btn');
+  gearB.id = 'btn-system';
+  gearB.title = TEXT.topbar.systemTip;
+  gearB.append(iconBadge('设'), el('span', '', TEXT.topbar.system));
+  const drop = el('div', 'topbar-dropdown');
+  drop.style.display = 'none';
   const saveB = mk('存', TEXT.topbar.save, 'btn-save', onSave);
   const loadB = mk('读', TEXT.topbar.load, 'btn-load', onLoad);
   const muteB = mk('声', onMute.label(), 'btn-mute', () => {
@@ -180,11 +261,30 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
     refreshMute();
   });
   const helpB = mk('助', TEXT.topbar.help, 'btn-help', onHelp);
-  right.append(saveB, loadB, muteB, helpB);
+  drop.append(saveB, loadB, muteB, helpB);
+  sys.append(gearB, drop);
+  right.append(sys);
   const spacer = el('div', 'topbar-spacer');
   const sep = el('div', 'topbar-sep');
   bar.append(title, left, spacer, sep, right);
   root.appendChild(bar);
+  const hideDrop = () => {
+    drop.style.display = 'none';
+    gearB.classList.remove('open');
+  };
+  gearB.addEventListener('click', () => audio.sfx('click'));
+  gearB.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const open = drop.style.display === 'none';
+    drop.style.display = open ? 'flex' : 'none';
+    gearB.classList.toggle('open', open);
+  });
+  drop.addEventListener('click', (ev) => {
+    if (ev.target.closest('button')) hideDrop();
+  });
+  document.addEventListener('click', (ev) => {
+    if (drop.isConnected && !sys.contains(ev.target)) hideDrop();
+  });
   const panelBtns = { hero: heroB, bag: bagB, pet: petB, formation: formB };
   function refreshMute() {
     muteB.textContent = '';

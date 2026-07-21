@@ -167,10 +167,18 @@ class AudioEngine {
     if (!this.ctx) return;
     try {
       if (!this._noiseBuf) {
+        // 噪声缓冲用固定种子的 mulberry32 生成(全项目禁 Math.random;听感无差异)
+        let a = 0xa3d9;
         const len = this.ctx.sampleRate * 0.5;
         this._noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
         const d = this._noiseBuf.getChannelData(0);
-        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        for (let i = 0; i < len; i++) {
+          a |= 0;
+          a = (a + 0x6d2b79f5) | 0;
+          let z = Math.imul(a ^ (a >>> 15), 1 | a);
+          z = (z + Math.imul(z ^ (z >>> 7), 61 | z)) ^ z;
+          d[i] = (((z ^ (z >>> 14)) >>> 0) / 4294967296) * 2 - 1;
+        }
       }
       const src = this.ctx.createBufferSource();
       src.buffer = this._noiseBuf;
@@ -275,6 +283,15 @@ class AudioEngine {
       case 'fan3': // 落雨:密集雨点+清铃
         for (let i = 0; i < 7; i++) this._noise(t + i * 0.06, 0.05, 0.08, out, 3000 + i * 300, 4);
         this._tone(freq(9, 0), t + 0.1, 0.4, 'sine', 0.12, out, 0.02, 0.25);
+        break;
+      case 'firefx': // 火系演出:轰燃+余焰
+        this._noise(t, 0.5, 0.2, out, 500, 1);
+        this._tone(90, t, 0.4, 'sawtooth', 0.12, out, 0.01, 0.25);
+        this._noise(t + 0.15, 0.35, 0.1, out, 1800, 2);
+        break;
+      case 'waterfx': // 水系演出:浪涌+清音
+        this._noise(t, 0.45, 0.16, out, 900, 1.5);
+        [4, 7].forEach((d, i) => this._tone(freq(d, 0), t + 0.08 + i * 0.09, 0.22, 'sine', 0.1, out, 0.02, 0.12));
         break;
       case 'levelup':
         [0, 2, 4, 7].forEach((d, i) => this._tone(freq(d, 1), t + i * 0.08, 0.16, 'triangle', 0.15, out, 0.01, 0.08));

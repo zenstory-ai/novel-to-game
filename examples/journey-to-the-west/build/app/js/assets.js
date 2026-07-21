@@ -10,9 +10,9 @@ const unitPaths = {
   nezha: 'assets/units/nezha.png', litianwang: 'assets/units/litianwang.png',
 };
 const bgPaths = {
-  cuiyun: 'assets/bg/cuiyun.png', huoyan: 'assets/bg/huoyan.png',
-  leiji: 'assets/bg/leiji.png', overworld: 'assets/bg/overworld.png',
-  moyundong: 'assets/bg/moyundong.png', bibotan: 'assets/bg/bibotan.png',
+  cuiyun: 'assets/bg/cuiyun.jpg', huoyan: 'assets/bg/huoyan.jpg',
+  leiji: 'assets/bg/leiji.jpg', overworld: 'assets/bg/overworld.jpg',
+  moyundong: 'assets/bg/moyundong.jpg', bibotan: 'assets/bg/bibotan.jpg',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
@@ -53,7 +53,7 @@ export async function loadAssets() {
   for (const [k, p] of Object.entries(unitPaths)) jobs.push(loadOne(p).then((i) => (images[`u:${k}`] = i)));
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
-  jobs.push(loadOne('assets/cover.png').then((i) => (images['cover'] = i)));
+  jobs.push(loadOne('assets/cover.jpg').then((i) => (images['cover'] = i)));
   await Promise.all(jobs);
   return images;
 }

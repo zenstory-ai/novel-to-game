@@ -63,18 +63,11 @@ export function runOverworld(ctx) {
     const npc = hitNpc(p);
     if (npc) audio.sfx('click');
     if (npc === 'tudi') {
-      busy = true;
-      ents.wukong.tx = ents.tudi.x + 90; ents.wukong.ty = ents.tudi.y + 40;
-      await waitArrive();
-      await ctx.onTalkTudi();
-      busy = false;
+      await talkTudi();
       return;
     }
     if (npc === 'luosha') {
-      busy = true;
-      ents.wukong.tx = ents.luosha.x - 110; ents.wukong.ty = ents.luosha.y + 60;
-      await waitArrive();
-      await triggerLuosha();
+      await gotoLuosha();
       return;
     }
     // 地面:限制在可走带
@@ -82,6 +75,43 @@ export function runOverworld(ctx) {
     ents.wukong.tx = Math.max(80, Math.min(1200, p.x));
     ents.wukong.ty = y;
   }
+
+  async function talkTudi() {
+    busy = true;
+    ents.wukong.tx = ents.tudi.x + 90; ents.wukong.ty = ents.tudi.y + 40;
+    await waitArrive();
+    await ctx.onTalkTudi();
+    busy = false;
+  }
+
+  async function gotoLuosha() {
+    busy = true;
+    ents.wukong.tx = ents.luosha.x - 110; ents.wukong.ty = ents.luosha.y + 60;
+    await waitArrive();
+    await triggerLuosha();
+  }
+
+  // 键盘移动(简报验收:键盘全流程可通关):方向键走位,回车/空格与附近 NPC 互动
+  function onKey(ev) {
+    if (disposed || busy) return;
+    if (document.querySelector('.modal-mask, .dlg-box')) return;
+    const w = ents.wukong;
+    const stepN = 70;
+    const clampX = (x) => Math.max(80, Math.min(1200, x));
+    const clampY = (y) => Math.max(180, Math.min(660, y));
+    if (ev.key === 'ArrowLeft') { w.tx = clampX(w.tx - stepN); w.ty = clampY(w.ty); }
+    else if (ev.key === 'ArrowRight') { w.tx = clampX(w.tx + stepN); w.ty = clampY(w.ty); }
+    else if (ev.key === 'ArrowUp') { w.ty = clampY(w.ty - stepN); w.tx = clampX(w.tx); }
+    else if (ev.key === 'ArrowDown') { w.ty = clampY(w.ty + stepN); w.tx = clampX(w.tx); }
+    else if (ev.key === 'Enter' || ev.key === ' ') {
+      const near = ['tudi', 'luosha'].find((k) => Math.hypot(ents[k].x - w.x, ents[k].y - w.y) < 170);
+      if (near === 'tudi') talkTudi();
+      else if (near === 'luosha') gotoLuosha();
+      else return;
+    } else return;
+    ev.preventDefault();
+  }
+  window.addEventListener('keydown', onKey);
 
   function waitArrive() {
     return new Promise((resolve) => {
@@ -268,6 +298,7 @@ export function runOverworld(ctx) {
     dispose() {
       disposed = true;
       cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', onKey);
       wrap.remove();
     },
     hide() { wrap.style.display = 'none'; },

@@ -224,14 +224,18 @@ def run():
         page.click('.formation-row[data-formation="tiangang"]')
         page.wait_for_timeout(200)
         ok(page.evaluate("__game.campaign().formation") == "tiangang", "切回天罡阵")
-        # 存档按钮
+        # 存档按钮(系统组默认收进齿轮·简报一.3)
+        page.click("#btn-system")
+        page.wait_for_selector("#btn-save", state="visible")
         page.click("#btn-save")
         page.wait_for_timeout(300)
-        ok(page.evaluate("!!localStorage.getItem('xiyou_save_v1')"), "顶栏存档写入 localStorage")
+        ok(page.evaluate("!!localStorage.getItem('xiyou_save_v1')"), "顶栏存档写入 localStorage(齿轮内)")
         # 静音开关
+        page.click("#btn-system")
         page.click("#btn-mute")
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_mute')") == "1" and page.evaluate("__game.audio.muted"), "静音开关:关(持久化)")
+        page.click("#btn-system")
         page.click("#btn-mute")
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_mute')") == "0" and not page.evaluate("__game.audio.muted"), "静音开关:开")
@@ -268,6 +272,15 @@ def run():
         ok(page.locator(".order-chip").count() == 6, "行动顺序条 6 单位")
         ok(page.locator('.unit-card.party .elem-badge').first.inner_text() == "金", "悟空五行=金")
         ok(page.locator('.unit-card.enemy .elem-badge').first.inner_text() == "木", "罗刹女五行=木")
+
+        # 伤害预览(简报一.2/验收:悬停显示预期效果)
+        page.hover('.cmd-btn[data-cmd="attack"]')
+        page.wait_for_selector("#cmd-preview", state="visible", timeout=3000)
+        pv_text = page.locator("#cmd-preview").inner_text()
+        ok("罗刹女" in pv_text and "~" in pv_text, "悬停「攻击」显示伤害预览(目标+区间)")
+        ok("克" in pv_text and "有利" in pv_text, "预览给出五行克制关系(金克木·有利)")
+        qa.shot("battle1_preview")
+        page.mouse.move(640, 420)  # 移开按钮,收起预览
 
         # 一战:首回合悟空 法术→如意金箍棒→罗刹女(必「克!」),其余自动;第3回合剧情吹飞
         page.click('.cmd-btn[data-cmd="skill"]')
@@ -341,6 +354,17 @@ def run():
         ok(page.locator(".unit-card.party").count() == 3, "我方 3 单位")
         ok(page.locator(".unit-card.enemy").count() == 3, "敌方 3 火妖")
         qa.shot("battle2_cmd")
+        # 节奏开关(简报二.5/验收:加速开关持久化)
+        page.click("#btn-speed")
+        page.wait_for_timeout(150)
+        ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "2", "加速开关写入 localStorage")
+        ok("×2" in page.locator("#btn-speed").inner_text(), "加速钮显示 ×2 状态")
+        page.click("#btn-skipfx")
+        page.wait_for_timeout(150)
+        ok(page.evaluate("localStorage.getItem('xiyou_skipfx')") == "1", "跳过演出开关写入 localStorage")
+        page.click("#btn-skipfx")  # 恢复演出,后续真扇截图要看
+        page.wait_for_timeout(150)
+        qa.shot("battle2_toggles")
         # 先集火火兵·甲至 ≤40% → 捕妖绳收服;再假扇演示;危急用金疮药;败北重试
         caught = False
         fan_used = False
@@ -530,6 +554,7 @@ def run():
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
         ok(page.locator(".unit-card.enemy").count() == 3, "决战敌方:牛魔王+玉面公主+妖将")
         ok(page.evaluate("__game.campaign().items.truefan") == 3, "持有真扇×3")
+        ok("×2" in page.locator("#btn-speed").inner_text(), "加速开关跨战斗持久化(战斗2设置→决战生效)")
         qa.shot("battle3_cmd")
         fan_used = 0
         formation_switched = False
@@ -659,6 +684,117 @@ def run():
         ok(lv >= 3, f"读档后悟空等级 Lv.{lv}")
         ok(page.evaluate("__game.campaign().alloc?.wukong?.['攻']") == 1, "读档后加点保留")
         ok(any(p["key"] == "huobao" for p in page.evaluate("__game.campaign().pets")) and any(p["key"] == "pixie" for p in page.evaluate("__game.campaign().pets")), "读档后双召唤兽保留")
+
+        # ---------- 键盘全流程(简报一.2/验收:键盘全流程可通关) ----------
+        section("键盘全流程:标题→小世界→对话→战斗→结算")
+        page.evaluate("localStorage.clear()")
+        page.goto(URL)
+        page.wait_for_selector("#btn-start", timeout=10000)
+        page.keyboard.press("Enter")  # 标题:回车=开始游戏(无存档时首钮)
+        page.wait_for_selector("#dialog", timeout=10000)
+        for _ in range(12):  # 序幕旁白(回车推进)
+            if page.locator("#dialog").count() == 0:
+                break
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(180)
+        page.wait_for_selector("#overworld-canvas", timeout=5000)
+        ok(page.evaluate("__game.phase()") == "overworld", "键盘:回车从标题进入小世界")
+        # 方向键走到土地旁,回车问话(土地在 300,400;悟空起 560,520)
+        for _ in range(4):
+            page.keyboard.press("ArrowLeft")
+            page.wait_for_timeout(90)
+        for _ in range(2):
+            page.keyboard.press("ArrowUp")
+            page.wait_for_timeout(90)
+        page.wait_for_timeout(500)
+        page.keyboard.press("Enter")  # 与土地对话
+        page.wait_for_selector("#dialog", timeout=8000)
+        ok("火焰山" in page.locator("#dialog").inner_text() or "芭蕉扇" in page.locator("#dialog").inner_text(), "键盘:方向键走位+回车问土地")
+        for _ in range(8):
+            if page.locator("#dialog").count() == 0:
+                break
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(180)
+        # 方向键走到罗刹女(走近自动触发):右 11 上 2
+        for _ in range(11):
+            page.keyboard.press("ArrowRight")
+            page.wait_for_timeout(90)
+        for _ in range(2):
+            page.keyboard.press("ArrowUp")
+            page.wait_for_timeout(90)
+        page.wait_for_selector("#dialog", timeout=10000)
+        # 战前对话+教学卡,全部回车过
+        for _ in range(30):
+            if page.locator('.cmd-btn[data-cmd="auto"]').count() > 0:
+                break
+            if page.locator("#dialog").count() > 0 or page.locator(".modal-mask").count() > 0:
+                page.keyboard.press("Enter")
+            page.wait_for_timeout(220)
+        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=8000)
+        ok(True, "键盘:回车连过战前对话与教学卡,进入指令阶段")
+        # 一战:数字键 6=自动;第3回合剧情吹飞
+        for _ in range(80):
+            if page.locator("#dialog").count() > 0:
+                break
+            if qa.cmd_visible():
+                page.keyboard.press("6")
+            else:
+                page.wait_for_timeout(150)
+        ok("吹" in page.locator("#dialog").inner_text() or "扇" in page.locator("#dialog").inner_text(), "键盘:数字键直选打完一战,触发吹飞")
+        # 吹飞→灵吉→再战前,全部回车
+        for _ in range(40):
+            if page.locator('.cmd-btn[data-cmd="auto"]').count() > 0:
+                break
+            if page.locator("#dialog").count() > 0 or page.locator(".modal-mask").count() > 0:
+                page.keyboard.press("Enter")
+            page.wait_for_timeout(220)
+        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=8000)
+        # 再战:悟空用 方向键+回车 打一次真攻击,其余数字键自动;直至胜利
+        kbd_attacked = False
+        for _ in range(400):
+            if page.locator("#modal-victory #btn-victory-ok").count() > 0:
+                break
+            if page.locator("#modal-defeat #btn-retry").count() > 0:
+                page.keyboard.press("Enter")  # 败北重试也走键盘
+                page.wait_for_timeout(600)
+                continue
+            if page.locator("#dialog").count() > 0:
+                page.keyboard.press("Enter")
+                page.wait_for_timeout(180)
+                continue
+            if qa.cmd_visible():
+                if not kbd_attacked and "孙悟空" in page.locator(".cmd-status").inner_text():
+                    page.keyboard.press("1")  # 数字键直选:攻击
+                    page.wait_for_timeout(250)
+                    page.keyboard.press("ArrowRight")  # 目标循环
+                    page.wait_for_timeout(150)
+                    page.keyboard.press("Enter")  # 确认目标
+                    kbd_attacked = True
+                    page.wait_for_timeout(400)
+                else:
+                    page.keyboard.press("6")
+                    page.wait_for_timeout(150)
+            else:
+                page.wait_for_timeout(150)
+        page.wait_for_selector("#modal-victory #btn-victory-ok", timeout=15000)
+        ok(kbd_attacked, "键盘:方向键选目标+回车确认完成真实攻击")
+        page.keyboard.press("Enter")  # 胜利结算·继续
+        page.wait_for_timeout(600)
+        ok(page.evaluate("__game.campaign().stage") == "pre_fire", "键盘:战斗1通关,战役推进到火焰山")
+        qa.shot("keyboard_clear")
+
+        # ---------- 视口适配(验收:1280×800 / 1920×1080 不破版) ----------
+        section("视口适配")
+        for w, h in ((1280, 800), (1920, 1080)):
+            page.set_viewport_size({"width": w, "height": h})
+            page.goto(URL)
+            page.wait_for_selector("#btn-start", timeout=10000)
+            overflow = page.evaluate(
+                "document.documentElement.scrollWidth > window.innerWidth || document.documentElement.scrollHeight > window.innerHeight"
+            )
+            ok(not overflow, f"{w}×{h} 无滚动溢出")
+            qa.shot(f"viewport_{w}x{h}")
+        page.set_viewport_size({"width": 1440, "height": 900})
 
         browser.close()
 

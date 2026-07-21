@@ -4,7 +4,7 @@ import { TEXT } from './text.js';
 import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES } from './data.js';
 import { audio } from './audio.js';
 import { loadAssets, coverURL, bgURL, unitURL } from './assets.js';
-import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge } from './ui.js';
+import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard } from './ui.js';
 import { unitLevelStats, skillsAtLevel } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend } from './growth.js';
 import { runBattleScreen } from './battle_ui.js';
@@ -37,9 +37,19 @@ function newCampaign() {
     items: { jinchuang: 2, falidan: 1, buyaosheng: 2 },
     seedBase: SEED,
     battlesWon: 0,
+    chaptersSeen: {}, // 三借章节卡各只亮一次(简报三.1)
   };
 }
 let campaign = newCampaign();
+
+// 三借章节卡:一借·被骗 / 二借·假扇 / 三借·真扇(递进差异的开场仪式)
+async function showChapter(key) {
+  campaign.chaptersSeen = campaign.chaptersSeen ?? {};
+  if (campaign.chaptersSeen[key]) return;
+  campaign.chaptersSeen[key] = true;
+  saveGame(true);
+  await chapterCard(app, TEXT.story.chapters[key], FAST);
+}
 
 function saveGame(silent = false) {
   campaign.version = SAVE_VERSION;
@@ -320,6 +330,26 @@ function showTitle() {
   menu.append(bStart, bHelp);
   s.append(cover, mask, logo, menu);
   app.appendChild(s);
+  // 键盘:↑/↓ 循环选钮,回车确认(简报验收:键盘全流程可通关)
+  const tBtns = [...menu.querySelectorAll('button')];
+  let tIdx = 0;
+  const applyT = (i) => {
+    tIdx = ((i % tBtns.length) + tBtns.length) % tBtns.length;
+    tBtns.forEach((b) => b.classList.remove('kbd-focus'));
+    tBtns[tIdx].classList.add('kbd-focus');
+  };
+  const onTitleKey = (ev) => {
+    if (phase !== 'title' || !s.isConnected) {
+      window.removeEventListener('keydown', onTitleKey);
+      return;
+    }
+    if (document.querySelector('.modal-mask, .dlg-box')) return;
+    if (ev.key === 'ArrowUp' || ev.key === 'ArrowLeft') { applyT(tIdx - 1); ev.preventDefault(); }
+    else if (ev.key === 'ArrowDown' || ev.key === 'ArrowRight') { applyT(tIdx + 1); ev.preventDefault(); }
+    else if (ev.key === 'Enter' || ev.key === ' ') { tBtns[tIdx]?.click(); ev.preventDefault(); }
+  };
+  window.addEventListener('keydown', onTitleKey);
+  applyT(0);
 }
 
 function clearScreens() {
@@ -418,6 +448,7 @@ async function startPrologue() {
     onReachLuosha: async () => {
       // 一战罗刹女(第3回合被吹飞,剧情)→ 灵吉授定风丹 → 再战取扇
       if (!campaign.luosha1Done) {
+        await showChapter('c1'); // 第一借 · 好言相借
         await showDialog(app, TEXT.story.luoshaPre1);
         overworldCtl?.hide();
         const r1 = await runBattle('luosha1', 100, { tutorial: true });
@@ -433,8 +464,10 @@ async function startPrologue() {
         campaign.luosha1Done = true;
         saveGame(true);
         toast(app, '获得法宝 · 定风丹');
+        await showChapter('c2'); // 第二借 · 化虫入腹
         await showDialog(app, TEXT.story.luoshaPre2);
       } else {
+        await showChapter('c2');
         await showDialog(app, TEXT.story.luoshaPre2);
         overworldCtl?.hide();
       }
@@ -521,6 +554,7 @@ async function startPreNiu1() {
   saveGame(true);
   toast(app, '辟水金睛兽加入召唤兽!');
   // 变牛魔王骗真扇
+  await showChapter('c3'); // 第三借 · 智取真扇
   await showDialog(app, TEXT.story.pianzhen);
   campaign.items.truefan = 3;
   campaign.stage = 'pre_boss';

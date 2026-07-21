@@ -350,10 +350,16 @@ button { font-family: inherit; cursor: pointer; }
   position: relative; flex: 1; overflow: hidden;
   border-bottom: 3px solid var(--wood-deep);
 }
-.battle-field.quake { animation: quake 0.45s; }
+.battle-field.quake { animation: quake 0.4s; }
+.battle-field.quake-hi { animation: quakeHi 0.5s; }
+/* 屏幕震动克制在 2px(普通)/ 4px(暴击·克制),且可关(简报二.1) */
 @keyframes quake {
-  20% { transform: translate(4px, -3px); } 40% { transform: translate(-5px, 2px); }
-  60% { transform: translate(3px, 3px); } 80% { transform: translate(-2px, -2px); }
+  25% { transform: translate(2px, -1px); } 50% { transform: translate(-2px, 1px); }
+  75% { transform: translate(1px, 1px); }
+}
+@keyframes quakeHi {
+  20% { transform: translate(3px, -2px); } 45% { transform: translate(-4px, 2px); }
+  70% { transform: translate(2px, 2px); } 88% { transform: translate(-1px, -1px); }
 }
 .round-tag {
   position: absolute; top: 52px; right: 14px; z-index: 5;
@@ -373,10 +379,17 @@ button { font-family: inherit; cursor: pointer; }
   border-bottom: 1px solid var(--gold);
 }
 .order-label { color: var(--gold-hi); font-size: 13px; letter-spacing: 2px; flex: none; text-shadow: 0 1px 1px #000; }
-.order-chips { display: flex; gap: 6px; overflow: hidden; }
+/* 时间轴:金色轨道线串起行动先后(简报一.4) */
+.order-chips { display: flex; gap: 6px; overflow: hidden; position: relative; align-items: center; }
+.order-chips::before {
+  content: ''; position: absolute; left: 2px; right: 2px; top: 50%; height: 2px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, rgba(230, 199, 102, 0.75), rgba(201, 162, 39, 0.2));
+}
 .order-chip {
+  position: relative; z-index: 1;
   display: flex; align-items: center; gap: 4px;
-  background: linear-gradient(180deg, rgba(84, 64, 44, 0.85), rgba(58, 42, 28, 0.85));
+  background: linear-gradient(180deg, rgba(84, 64, 44, 0.92), rgba(58, 42, 28, 0.92));
   border: 1px solid rgba(201, 162, 39, 0.55);
   border-radius: 3px; padding: 2px 7px 2px 2px;
   transition: opacity 0.3s, border-color 0.3s;
@@ -489,17 +502,30 @@ button { font-family: inherit; cursor: pointer; }
 .elem-badge[data-el="土"] { background: radial-gradient(circle at 35% 30%, #9d7a44, #5a3e20); }
 
 .unit-bars { width: 132px; margin-top: 4px; display: flex; flex-direction: column; gap: 3px; }
+/* 竹简/卷轴质地细长条,两端铜扣收头(简报一.1) */
 .bar {
   position: relative; height: 15px;
-  background: rgba(20, 12, 6, 0.8);
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.09) 0 11px, transparent 11px 22px),
+    linear-gradient(180deg, rgba(43, 30, 20, 0.92), rgba(20, 12, 6, 0.88));
   border: 1.5px solid var(--wood);
   box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.7), 0 1px 2px rgba(0, 0, 0, 0.4);
-  border-radius: 3px;
-  overflow: hidden;
+  border-radius: 7px;
+  overflow: visible;
 }
+.bar-cap {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 7px; height: 7px; border-radius: 50%; z-index: 4;
+  background: radial-gradient(circle at 35% 30%, var(--gold-hi), #7a5a16);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.8), inset 0 0 1px #fff2c0;
+}
+.bar-cap.l { left: -3px; }
+.bar-cap.r { right: -3px; }
 .bar-fill {
   position: absolute; inset: 0; width: 100%;
-  transition: width 0.35s ease;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: none; /* 宽度变化由 setBar 内联驱动(两段式) */
 }
 .bar-fill::after {
   /* 竹节分段刻度 */
@@ -507,16 +533,26 @@ button { font-family: inherit; cursor: pointer; }
   background: repeating-linear-gradient(90deg, transparent 0 11px, rgba(0, 0, 0, 0.28) 11px 12px);
 }
 .bar-ghost {
+  /* 暗红残层:掉血时留在原地缓慢追上,看得见「刚才挨了多少」 */
   position: absolute; inset: 0; width: 100%;
-  background: rgba(255, 210, 160, 0.55);
-  transition: width 0.9s ease 0.25s;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #96352a, #5e1710);
+  transition: none;
 }
 .bar.hp .bar-fill { background: linear-gradient(180deg, #d0523a, var(--zhu) 60%, #7e241e); }
 .bar.mp .bar-fill { background: linear-gradient(180deg, #4a8ab8, #2a5a80 60%, #1a3e5a); }
-.bar.low .bar-fill { animation: lowPulse 0.9s infinite; }
-@keyframes lowPulse { 50% { filter: brightness(1.6); } }
+.bar.mp .bar-ghost { background: linear-gradient(180deg, #2c4e68, #16303f); }
+/* 低血:转朱色并轻微搏动 */
+.bar.low .bar-fill {
+  background: linear-gradient(180deg, #ff7a54, var(--zhu-hi) 55%, var(--zhu));
+  animation: lowPulse 0.9s infinite;
+}
+@keyframes lowPulse { 50% { filter: brightness(1.55); } }
 .bar-text {
   position: absolute; inset: 0; text-align: center;
+  /* 等宽衬线数字,不用系统默认字 */
+  font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+  font-variant-numeric: tabular-nums;
   font-size: 10px; line-height: 14px; color: #fff; text-shadow: 0 1px 1px #000;
   z-index: 2; letter-spacing: 0.5px;
 }
@@ -546,9 +582,15 @@ button { font-family: inherit; cursor: pointer; }
 .unit-card.transformed .unit-portrait { filter: drop-shadow(0 0 8px rgba(90, 180, 120, 0.9)); }
 .unit-card.flash .unit-portrait { animation: flash 0.5s; }
 @keyframes flash { 0%,100% { filter: none; } 50% { filter: brightness(2.2) drop-shadow(0 0 16px #fff); } }
-.unit-card.shake { animation: ushake 0.35s; }
+/* 受击短促位移 3-4px(简报二.1);暴击/克制用 shake-hard 更重 */
+.unit-card.shake { animation: ushake 0.32s; }
 @keyframes ushake {
-  25% { transform: translate(-5px, 2px); } 50% { transform: translate(5px, -2px); } 75% { transform: translate(-3px, -1px); }
+  25% { transform: translate(-4px, 2px); } 50% { transform: translate(3px, -2px); } 75% { transform: translate(-2px, -1px); }
+}
+.unit-card.shake-hard { animation: ushakeHard 0.45s; }
+@keyframes ushakeHard {
+  20% { transform: translate(-6px, 3px); } 45% { transform: translate(6px, -3px); }
+  70% { transform: translate(-3px, -2px); } 88% { transform: translate(2px, 1px); }
 }
 .unit-card.charging .unit-portrait {
   outline: 3px solid var(--zhu-hi); outline-offset: 3px; border-radius: 6px;
@@ -584,15 +626,20 @@ button { font-family: inherit; cursor: pointer; }
   15% { opacity: 1; }
   100% { opacity: 0; margin-top: -58px; }
 }
-.float-text.dmg { color: #ffd9a0; }
+/* 飘字层次(简报二.2):普通小号白字 / 克制大号金字 / 暴击加粗拖影 / 治疗绿字上飘 */
+.float-text.dmg { color: #f4ead2; font-size: 20px; }
 .float-text.ke-big {
   color: #ffd75a; font-size: 34px;
   text-shadow: 0 0 12px rgba(255, 200, 60, 0.8), -1px -1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink), 1px 1px 0 var(--ink);
 }
 .float-text.crit {
-  color: #ff5a3a; font-size: 34px;
+  color: #ff5a3a; font-size: 34px; font-weight: 900;
   animation: critBounce 1.2s ease-out forwards;
-  text-shadow: 0 0 14px rgba(255, 80, 40, 0.7), -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 2px 2px 0 var(--ink);
+  /* 拖影:同色系残影向左拉出速度感 */
+  text-shadow:
+    -4px 0 0 rgba(255, 90, 58, 0.35), -9px 0 0 rgba(255, 90, 58, 0.16),
+    0 0 14px rgba(255, 80, 40, 0.7),
+    -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 2px 2px 0 var(--ink);
 }
 @keyframes critBounce {
   0% { opacity: 0; margin-top: 26px; transform: translateX(-50%) scale(1.7); }
@@ -809,3 +856,131 @@ button { font-family: inherit; cursor: pointer; }
   text-shadow: 0 0 18px rgba(201, 162, 39, 0.8), 0 3px 0 #5a1408, 0 5px 10px #000;
 }
 .fan-counter.done { color: #7ad76a; animation: bannerIn 0.4s ease; }
+
+/* ================= POLISH v1 新增 ================= */
+
+/* ---------- 顶栏系统组齿轮下拉(简报一.3) ---------- */
+.topbar-sys { position: relative; }
+.topbar-dropdown {
+  position: absolute; top: 38px; right: 0; z-index: 50;
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 136px; padding: 10px;
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.06) 0 3px, transparent 3px 7px),
+    linear-gradient(180deg, #4a3626, var(--wood-deep));
+  border: 1.5px solid var(--gold);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3), 0 8px 22px rgba(0, 0, 0, 0.6);
+}
+.topbar-dropdown .topbar-btn { justify-content: flex-start; width: 100%; }
+
+/* ---------- 指令面板:悬停/聚焦盖朱印(简报一.2) ---------- */
+.icon-badge { transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease; }
+.cmd-btn:hover, .cmd-btn.kbd-focus,
+.cmd-item:hover, .cmd-item.kbd-focus {
+  box-shadow:
+    inset 0 0 0 1px var(--gold),
+    inset 0 0 0 3px rgba(168, 50, 42, 0.55),
+    0 2px 0 var(--wood-deep);
+}
+.cmd-btn:hover .icon-badge, .cmd-btn.kbd-focus .icon-badge,
+.cmd-item:hover .icon-badge, .cmd-item.kbd-focus .icon-badge {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 200, 160, 0.3), transparent 60%),
+    linear-gradient(160deg, var(--zhu-hi), var(--zhu));
+  border-color: var(--gold-hi);
+  color: #ffe9d0;
+  transform: rotate(-8deg) scale(1.14);
+  box-shadow: 0 0 0 2px rgba(168, 50, 42, 0.35), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* 键盘聚焦环(菜单/模态通用) */
+.kbd-focus { outline: 2px solid var(--zhu-hi); outline-offset: 1px; filter: brightness(1.07); }
+
+/* 键盘选目标:当前目标金朱描边 */
+.unit-card.kbd-target .unit-portrait {
+  outline: 3px solid var(--zhu-hi); outline-offset: 2px;
+  animation: pulse 0.8s infinite alternate;
+}
+
+/* ---------- 预期效果预览面板(简报一.2) ---------- */
+.cmd-preview {
+  position: absolute; left: 292px; bottom: 186px; z-index: 30;
+  min-width: 320px; max-width: 48%;
+  padding: 8px 14px;
+  color: var(--text-hi);
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.06) 0 4px, transparent 4px 10px),
+    rgba(36, 24, 18, 0.94);
+  border: 1.5px solid var(--gold); border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3), 0 4px 14px rgba(0, 0, 0, 0.5);
+  font-size: 14px; letter-spacing: 1px;
+  pointer-events: none;
+  animation: bannerIn 0.15s ease;
+}
+.pv-line { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 1px 0; }
+.pv-main { color: var(--text-hi); }
+.pv-side { font-size: 13px; white-space: nowrap; }
+.pv-side.good { color: #7ad76a; }
+.pv-side.bad { color: #ff7a5a; }
+.pv-side.none { color: #cfc8ba; }
+
+/* 窄视口适配(1280×800 不破版):预览条缩短、指令台状态牌收窄 */
+@media (max-width: 1360px) {
+  .cmd-status { width: 220px; }
+  .cmd-preview { left: 240px; min-width: 280px; max-width: 52%; }
+}
+
+/* ================= POLISH v1 · 战斗手感 ================= */
+
+/* 「金克木」三字印:克制命中时盖在目标身上(简报二.3) */
+.wuxing-stamp {
+  color: var(--gold-hi); font-size: 22px; letter-spacing: 4px;
+  border-width: 2.5px;
+  text-shadow: 0 0 10px rgba(201, 162, 39, 0.7), 0 2px 2px #000;
+}
+
+/* ---------- 演出层(简报二.4) ---------- */
+.fx-canvas {
+  position: absolute; inset: 0; z-index: 14;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.fx-tint {
+  position: absolute; inset: 0; z-index: 13;
+  pointer-events: none; opacity: 0;
+}
+.fx-tint.on { opacity: 1; }
+
+/* ---------- 节奏开关组(简报二.5) ---------- */
+.battle-toggles {
+  position: absolute; top: 52px; right: 276px; z-index: 6;
+  display: flex; gap: 6px;
+}
+.toggle-btn {
+  padding: 4px 10px; font-size: 12px; letter-spacing: 1px;
+  color: rgba(244, 234, 210, 0.85);
+  background: linear-gradient(180deg, rgba(84, 64, 44, 0.9), rgba(58, 42, 28, 0.9));
+  border: 1.5px solid rgba(201, 162, 39, 0.6);
+  border-radius: 4px;
+  text-shadow: 0 1px 1px #000;
+}
+.toggle-btn.on {
+  color: #fff;
+  background: linear-gradient(180deg, var(--zhu-hi), var(--zhu));
+  border-color: var(--gold-hi);
+  box-shadow: 0 0 8px rgba(168, 50, 42, 0.5);
+}
+
+/* 窄视口:开关组挪到换阵钮左侧更紧凑 */
+@media (max-width: 1360px) {
+  .battle-toggles { right: 264px; }
+  .toggle-btn { padding: 4px 7px; font-size: 11px; }
+}
+
+/* 预览条在时,常驻五行环让位——两者同处底部左侧一条带,并存必叠字。 */
+body.preview-on .wuxing-ring {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.wuxing-ring { transition: opacity 0.15s ease; }

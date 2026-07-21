@@ -3,7 +3,7 @@
 import {
   createBattle, executeRound, buildActionQueue, effStat, elementRelation, elementCoef,
   calcDamage, makeUnit, levelUpParty, getUnit, aliveUnits, unitSkills, switchFormation,
-  unitLevelStats, effectiveSkill, skillsAtLevel,
+  unitLevelStats, effectiveSkill, skillsAtLevel, previewDamage,
 } from '../js/engine.js';
 import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
@@ -697,6 +697,44 @@ section('批3:众神围剿(门控)/反骗开局/阶段继承等级');
   ok(getUnit(fooled, 'p0').buffs.some((b) => b.id === 'atk_down'), '反骗得逞:悟空开局 atk_down');
   const clean = createBattle({ battleId: 'niumowang', party: partyAt(3), seed: 1 });
   ok(!getUnit(clean, 'p0').buffs.length, '识破反骗:无开局减益');
+}
+
+// ---------- 33. 伤害预览与实际结算一致(POLISH 新增) ----------
+section('伤害预览:与 calcDamage 同公式、不占 rng');
+{
+  const mk = () => createBattle({ battleId: 'luosha', party: partyAt(1), seed: 42 });
+  const s = mk();
+  const att = getUnit(s, 'p0'), boss = getUnit(s, 'e0');
+  // 非暴击区间:多次实际结算全部落在预览区间内
+  const probe = (attacker, defender, skill, label) => {
+    const pv = previewDamage(s, attacker, defender, skill);
+    ok(pv.expected >= pv.min && pv.expected <= pv.max, `${label}:预览期望值落在区间内`);
+    for (let i = 0; i < 24; i++) {
+      const r = calcDamage(s, attacker, defender, skill);
+      ok(r.rel === pv.rel, `${label}:实际五行关系=预览 (${pv.rel})`);
+      if (r.crit) ok(r.amount >= pv.critMin && r.amount <= pv.critMax, `${label}:暴击 ${r.amount} ∈ [${pv.critMin},${pv.critMax}]`);
+      else ok(r.amount >= pv.min && r.amount <= pv.max, `${label}:伤害 ${r.amount} ∈ [${pv.min},${pv.max}]`);
+    }
+    return pv;
+  };
+  const pv1 = probe(att, boss, SKILLS.ruyibang, '悟空棒击罗刹女');
+  ok(pv1.rel === 'ke' && pv1.coef === 1.5, '预览给出克制关系(金克木 ×1.5)');
+  const pv2 = previewDamage(s, getUnit(s, 'p2'), boss, SKILLS.xiangyaozhang);
+  ok(pv2.rel === 'beike' && pv2.max < pv1.max, '被克预览区间显著低于克制');
+  // 防御姿态预览减半
+  boss.defending = true;
+  const pvDef = previewDamage(s, att, boss, SKILLS.ruyibang);
+  ok(pvDef.max <= pv1.max, `防御姿态预览区间下降 (${pv1.max}→${pvDef.max})`);
+  boss.defending = false;
+  // 预览不消耗 rng:反复调用后,同 seed 同指令事件流仍逐字节一致
+  const runOnce = (withPreview) => {
+    const st = mk();
+    if (withPreview) {
+      for (let i = 0; i < 50; i++) previewDamage(st, getUnit(st, 'p0'), getUnit(st, 'e0'), SKILLS.ruyibang);
+    }
+    return JSON.stringify(executeRound(st, { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'defend' }, p2: { type: 'defend' } }));
+  };
+  ok(runOnce(false) === runOnce(true), '调用预览 50 次后事件流仍逐字节一致(不占 rng)');
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);
