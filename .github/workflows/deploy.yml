@@ -1,0 +1,65 @@
+name: Deploy
+
+# Auto-deploy each example to its Vercel project on push to main.
+# Only the example whose build/app changed is deployed (path-filtered).
+# Triggers on push to main ONLY (never pull_request), so fork PRs cannot access
+# the VERCEL_TOKEN secret. Org/project IDs are not secret; only the token is.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'examples/jin-ping-mei/build/app/**'
+      - 'examples/journey-to-the-west/build/app/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      jpm: ${{ steps.filter.outputs.jpm }}
+      jttw: ${{ steps.filter.outputs.jttw }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            jpm:
+              - 'examples/jin-ping-mei/build/app/**'
+            jttw:
+              - 'examples/journey-to-the-west/build/app/**'
+
+  jinpingmei:
+    needs: changes
+    if: needs.changes.outputs.jpm == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_7CeznqN3lf1QyYttbNraqTqn
+      VERCEL_PROJECT_ID: prj_3NivRckkfUDdqFljHLgJAV7W1ZD4
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm i -g vercel@latest
+      - name: Deploy jinpingmei to production
+        working-directory: examples/jin-ping-mei/build/app
+        run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+  xiyouji:
+    needs: changes
+    if: needs.changes.outputs.jttw == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_7CeznqN3lf1QyYttbNraqTqn
+      VERCEL_PROJECT_ID: prj_Cqwwax2RKUR5Snd2CX2yVbmirPDD
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm i -g vercel@latest
+      - name: Deploy xiyouji to production
+        working-directory: examples/journey-to-the-west/build/app
+        run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
