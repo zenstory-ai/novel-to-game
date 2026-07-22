@@ -390,8 +390,8 @@ function doCang(state, a) {
   const p = state.player;
   // 「藏」是全局唯一提升暗账的动作,且不给任何明账
   if (a.mode === 'save') {
-    let gain = 70;
-    if (p.duty === 'puzhang') gain += 40;       // 理铺账者有余银可截
+    let gain = 30;
+    if (p.duty === 'puzhang') gain += 15;       // 理铺账者有余银可截
     const boost = actOf(state) === 3 ? 1.2 : 1;
     gain = Math.round(gain * boost);
     p.sifang += gain;
@@ -574,7 +574,7 @@ export function submitTurn(state) {
   if (p.fengsheng >= 90) applyFaluo(state, report);
   // 月例
   if (!mingDead(state)) {
-    p.sifang += 30;
+    p.sifang += 18;
   }
   // 排行榜记录
   const lb = leaderboard(state);
@@ -665,7 +665,7 @@ function applyFaluo(state, report) {
   p.chong = cap100(p.chong - 20);
   const fine = Math.round(p.sifang * 0.3);
   p.sifang -= fine;
-  p.jinzu = 1;
+  p.jinzu = 2; // advance 即减一,余下的 1 正好禁足下一令——禁足要真的禁
   p.fengsheng = 55;
   pushFloat(state, 'gold', '体面', -25);
   pushFloat(state, 'gold', '宠', -20);
@@ -732,10 +732,11 @@ function rivalOneAct(state, r, report) {
     }
     case 'climber': {
       // 庞春梅:不上榜,暗中跃迁;后期暴起。开罪过她的人,箱笼更常被动。
+      // 财多招贼:箱笼越沉,她下手越狠——藏银不是无本的买卖。
       r.ming = cap100(r.ming + rint(state.rng, 4, 10));
       const stealP = 0.25 + Math.min(0.25, r.hostility / 200);
       if (f >= 12 && chance(state.rng, stealP) && p.sifang > 0) {
-        const steal = Math.min(30, p.sifang);
+        const steal = Math.min(30 + Math.floor(p.sifang / 500) * 10, p.sifang);
         p.sifang -= steal;
         pushFloat(state, 'ink', '私房', -steal);
         report.notes.push('你房里的箱笼像是被人动过。');

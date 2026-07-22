@@ -170,6 +170,13 @@ section('风声累积与发落');
   ok(s.player.faluoEver && s.player.jinzu >= 0, '发落记录与禁足');
   ok(s.player.sifang < si0 + 400, '发落罚没部分私房');
   ok(!s.over, '发落不是 Game Over');
+  // 禁足要真的禁:发落后的下一令行动点为 0,再下一令恢复
+  skipEventIfNoChoice(s);
+  ok(s.ap === 0 && s.player.jinzu === 1, '禁足令:次令行动点为 0');
+  ok(actionError(s, { type: 'cang', mode: 'save' }) === '禁足中', '禁足中一切行动被拒');
+  submitTurn(s);
+  skipEventIfNoChoice(s);
+  ok(s.ap === 3 && s.player.jinzu === 0, '禁足一令即解,不误后来');
 }
 
 // ================= 6. 对手每回合行动 =================

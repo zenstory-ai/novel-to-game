@@ -201,6 +201,14 @@ def main():
             section("第一幕 · 入门")
             ok("过门" in page.locator("#modal-event").inner_text(), "节令1 过门事件")
             qa.shot("f1_event")
+            # 对话卡立绘:任何时刻不超出卡片(首载图片竞态也不许压字)
+            page.wait_for_timeout(900)
+            inside = qa.ev("""(() => {
+              const card = document.querySelector('.modal-card').getBoundingClientRect();
+              const img = document.querySelector('.modal-fig img')?.getBoundingClientRect();
+              return img ? (img.top >= card.top - 1 && img.bottom <= card.bottom + 1) : true;
+            })()""")
+            ok(inside, "事件卡立绘不出框不压字")
             page.click('.choice-btn[data-choice="si"]')
             page.wait_for_timeout(300)
             ok(qa.ev("__game.state().player.sifang") == 600, "嫁妆留一半 → 私房600")
@@ -286,7 +294,14 @@ def main():
                     # 结·私:玩家主动示意——花私房备一份只给家主的东西,记下本令铺垫
                     sf0 = qa.ev("__game.state().player.sifang")
                     ap0 = qa.ev("__game.state().ap")
-                    ok(qa.seal("jie", ["lu:si"]), "结·私子档可打开")
+                    qa.p.locator('[data-seal="jie"]').click()
+                    qa.p.wait_for_selector("#subpanel")
+                    qa.p.locator('[data-pick="lu:si"]').click()
+                    qa.p.wait_for_timeout(80)
+                    ok(qa.ev("[...document.querySelectorAll('.jie-open')].every(r => r.style.display === 'none')"),
+                       "选「私」后对象/礼/银出收起(不误导)")
+                    qa.p.locator("#btn-sub-confirm").click()
+                    qa.p.wait_for_timeout(120)
                     ok(qa.ev("__game.state().shiTonight") == True
                        and qa.ev("__game.state().player.sifang") == sf0 - 40
                        and qa.ev("__game.state().ap") == ap0 - 1, "结·私:耗40私房1行动,记下铺垫")

@@ -134,8 +134,8 @@ button { font-family: var(--serif); cursor: pointer; }
   padding: 8px 14px; min-width: 180px;
 }
 .fest-name { font-size: clamp(18px, 2.6vh, 28px); font-weight: bold; letter-spacing: 4px; }
-.fest-chapter { font-size: clamp(11px, 1.4vh, 14px); color: var(--ink-soft); letter-spacing: 2px; }
-.fest-act { font-size: clamp(11px, 1.4vh, 14px); color: var(--gold); letter-spacing: 2px; }
+.fest-chapter { font-size: clamp(11px, 1.4vh, 14px); color: var(--ink-soft); letter-spacing: 2px; line-height: 1.6; }
+.fest-act { font-size: clamp(11px, 1.4vh, 14px); color: var(--gold); letter-spacing: 2px; line-height: 1.6; }
 .wind-seal {
   position: absolute; top: 2%; left: 19%; z-index: 10;
   display: flex; align-items: center; gap: 8px;
@@ -340,7 +340,7 @@ button { font-family: var(--serif); cursor: pointer; }
 /* ---------- 浮字 ---------- */
 .float-layer { position: absolute; inset: 0; pointer-events: none; z-index: 40; }
 .float-text {
-  position: absolute; top: 55%; font-size: clamp(15px, 2.2vh, 22px); font-weight: bold;
+  position: absolute; top: 44%; font-size: clamp(15px, 2.2vh, 22px); font-weight: bold;
   animation: float-up 2.2s ease forwards;
   /* 浮字会飘过立绘和夜空,单薄的投影读不出来;给一圈纸色描边保证任何底上都清楚 */
   text-shadow:
@@ -389,12 +389,14 @@ button { font-family: var(--serif); cursor: pointer; }
   position: absolute; right: 8px; top: 8px; border: none; background: none;
   font-size: 22px; color: var(--ink-soft);
 }
-/* 对话卡立绘:专属右栏,文字区不越界,收益提示永不被遮;底部羽化融进纸面 */
+/* 对话卡立绘:专属右栏,文字区不越界,收益提示永不被遮;底部羽化融进纸面。
+   栏高始终随卡片(align-self:stretch),立绘限制在栏内——图片未加载完也不许溢出压字。 */
 .modal-card.has-portrait { display: flex; gap: 14px; align-items: stretch; }
 .modal-main { flex: 1; min-width: 0; }
-.modal-fig { width: 30%; max-width: 210px; align-self: flex-end; display: flex; align-items: flex-end; }
+.modal-fig { width: 30%; max-width: 210px; align-self: stretch; display: flex; align-items: flex-end; justify-content: center; }
 .modal-fig img {
-  width: 100%; height: auto; display: block;
+  max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;
+  object-fit: contain; object-position: bottom;
   mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
   -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 99%);
 }
@@ -427,7 +429,7 @@ button { font-family: var(--serif); cursor: pointer; }
   position: absolute; inset: 0; z-index: 70; pointer-events: none;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3vh;
 }
-.clear-line { font-size: clamp(18px, 3vh, 30px); letter-spacing: 6px; color: var(--paper); text-shadow: 0 2px 12px #000; opacity: 0; transition: opacity 1.2s, color 0.9s; }
+.clear-line { font-size: clamp(18px, 3vh, 30px); letter-spacing: 6px; color: var(--paper); text-shadow: 0 2px 14px #000, 0 0 34px rgba(0,0,0,0.92), 0 0 8px #000; opacity: 0; transition: opacity 1.2s, color 0.9s; }
 .clear-line.on { opacity: 1; }
 .clear-line.gold { color: var(--gold-bright); }
 .clear-line.fadegray { color: #9a927e; }
@@ -534,18 +536,22 @@ button { font-family: var(--serif); cursor: pointer; }
   background: radial-gradient(ellipse at center, rgba(255,214,120,1) 0%, rgba(255,172,70,0.55) 42%, rgba(255,150,50,0) 74%);
 }
 .ls-pan.on .ls-spot { animation: lamp-flicker 0.9s infinite alternate 1.3s; }
-/* 帐幔落下:深色帘影自檐下垂落,停住——镜头不进帐子 */
+/* 帐幔落下:深色帘影自檐下垂落,停住——镜头不进帐子。
+   顶边对齐屋檐(锚点上方30%),上窄下宽微梯,宽褶柔渐变,高度足以没过立绘。 */
 .ls-curtain {
-  position: absolute; width: 13%; height: 0;
+  position: absolute; width: 15%; height: 0;
   transform: translateX(-50%);
+  clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
   background:
-    repeating-linear-gradient(90deg, rgba(0,0,0,0.3) 0 7%, transparent 7% 15%),
-    linear-gradient(180deg, #2a1e15 0%, #170f0a 88%, #100a06 100%);
-  border-radius: 0 0 42% 42% / 0 0 10% 10%;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    linear-gradient(90deg,
+      rgba(0,0,0,0.55) 0%, rgba(70,48,32,0.30) 12%, rgba(20,13,9,0.42) 26%,
+      rgba(64,44,30,0.26) 41%, rgba(16,10,7,0.45) 57%,
+      rgba(60,40,28,0.28) 73%, rgba(14,9,6,0.5) 88%, rgba(0,0,0,0.58) 100%),
+    linear-gradient(180deg, #3a291d 0%, #241811 55%, #170f0a 92%, #100a06 100%);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.6), inset 0 -8px 18px rgba(0,0,0,0.55);
   transition: height 1.7s cubic-bezier(0.55, 0, 0.75, 1) 0.9s;
 }
-.lodging-scene.on .ls-curtain { height: 24%; }
+.lodging-scene.on .ls-curtain { height: 36%; }
 .ls-line {
   position: absolute; left: 50%; bottom: 15%; transform: translateX(-50%);
   color: #ece1c6; font-size: clamp(15px, 2.3vh, 23px); letter-spacing: 4px;
@@ -633,20 +639,33 @@ button { font-family: var(--serif); cursor: pointer; }
   content: ""; position: absolute; left: -38%; right: -38%; top: 58%; height: 7%;
   background: #140a06;
 }
-/* 归娘家:两口箱笼,一只包袱 */
+/* 归娘家:两口箱笼叠放,盖缝、铜箍、锁片俱全;旁边一只包袱,结打在顶上 */
 .es-sil-niangjia {
-  width: 10%; height: 6.5%;
-  background: linear-gradient(180deg, #2c1d13, #1e130c); border-radius: 3px;
-  box-shadow: inset 0 0 0 1px rgba(214,182,130,0.14);
+  width: 12%; height: 7.5%; left: 21%; bottom: 9%;
+  background:
+    linear-gradient(0deg, rgba(216,186,134,0.22), rgba(216,186,134,0.22)) 50% 20% / 3.5% 20% no-repeat, /* 锁片 */
+    linear-gradient(0deg, rgba(216,186,134,0.13), rgba(216,186,134,0.13)) 50% 24% / 100% 1px no-repeat, /* 盖缝 */
+    linear-gradient(90deg, transparent 30%, rgba(216,186,134,0.10) 30% 33%, transparent 33% 67%, rgba(216,186,134,0.10) 67% 70%, transparent 70%), /* 铜箍 */
+    linear-gradient(180deg, #33241a 0%, #2a1c12 24%, #1e130b 100%);
+  border-radius: 5px 5px 3px 3px;
+  box-shadow: inset 0 0 0 1px rgba(216,186,134,0.10), 0 4px 10px rgba(0,0,0,0.45);
 }
-.es-sil-niangjia::before {
-  content: ""; position: absolute; left: 14%; bottom: 100%; width: 54%; height: 60%;
-  background: linear-gradient(180deg, #332216, #241710); border-radius: 3px 3px 0 0;
-  box-shadow: inset 0 0 0 1px rgba(214,182,130,0.12);
+.es-sil-niangjia::before { /* 上面一口小的,偏左半指 */
+  content: ""; position: absolute; left: 14%; bottom: 100%; width: 54%; height: 58%;
+  background:
+    linear-gradient(0deg, rgba(216,186,134,0.20), rgba(216,186,134,0.20)) 50% 22% / 6% 22% no-repeat,
+    linear-gradient(0deg, rgba(216,186,134,0.12), rgba(216,186,134,0.12)) 50% 28% / 100% 1px no-repeat,
+    linear-gradient(180deg, #3a281a 0%, #2c1d11 30%, #21150c 100%);
+  border-radius: 4px 4px 0 0;
+  box-shadow: inset 0 0 0 1px rgba(216,186,134,0.09);
 }
-.es-sil-niangjia::after {
-  content: ""; position: absolute; right: -40%; bottom: 0; width: 34%; height: 58%;
-  background: #1a110b; border-radius: 46% 46% 8% 8%;
+.es-sil-niangjia::after { /* 包袱:布团收口,结在顶上 */
+  content: ""; position: absolute; right: -36%; bottom: 0; width: 30%; height: 62%;
+  background:
+    radial-gradient(circle at 50% 6%, #2c1d12 0 14%, rgba(44,29,18,0) 42%),
+    radial-gradient(ellipse at 50% 68%, #241710 0 62%, rgba(36,23,16,0) 100%);
+  border-radius: 48% 48% 12% 12%;
+  transform: rotate(3deg);
 }
 /* 守寡留府:灯下独坐 */
 .es-sil-shoufu { width: 5.5%; height: 11%; }

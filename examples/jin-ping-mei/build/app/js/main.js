@@ -38,8 +38,8 @@ document.addEventListener('pointerdown', () => {
 const EVENT_PORTRAIT = {
   1: 'servant/xue_meipo', 4: 'portrait/pan_jinlian', 6: 'portrait/li_pinger',
   7: 'portrait/ximen_qing', 15: 'portrait/pan_jinlian', 16: 'portrait/li_pinger',
-  19: 'portrait/ximen_qing', 20: 'portrait/wu_yueniang', 21: 'portrait/wu_yueniang',
-  22: 'portrait/wu_yueniang', 23: 'servant/xue_meipo',
+  19: 'portrait/ximen_qing', 20: 'portrait/wu_yueniang_mourning', 21: 'portrait/wu_yueniang_mourning',
+  22: 'portrait/wu_yueniang_mourning', 23: 'servant/xue_meipo',
 };
 
 // ---------- 启动 ----------
@@ -363,6 +363,7 @@ function openSub(type) {
         b.classList.add('sel');
         if (key === 'scheme' && o.id === 'zuoshi') pickZuoshiRumor(panel);
         if (key === 'target') compound?.setFocus(o.id); // 被针对的那一房高亮前推
+        if (key === 'lu') panel.querySelectorAll('.jie-open').forEach((r) => { r.style.display = o.id === 'si' ? 'none' : ''; });
       });
       row.appendChild(b);
     }
@@ -395,12 +396,18 @@ function openSub(type) {
         reason: E.mingDead(state) ? '明账已清' : state.shiTonight ? '本令已递过一份了' : '私房不够',
       },
     ], 'lu'));
-    rows.push(pickRow('对象', [{ id: 'ximen', text: '家主' }, ...rivalOpts()], 'target'));
-    rows.push(pickRow('礼', [{ id: 'small', text: TEXT.ui.giftSmall }, { id: 'big', text: TEXT.ui.giftBig }], 'size'));
-    rows.push(pickRow('银出', [
-      { id: 'si', text: TEXT.ui.fundSi },
-      { id: 'gong', text: TEXT.ui.fundGong, disabled: !state.player.duty, reason: '先担差事' },
-    ], 'fund'));
+    // 路数选「私」时,对象/礼/银出三行与这一记无关,藏起来免得误读
+    for (const r of [
+      pickRow('对象', [{ id: 'ximen', text: '家主' }, ...rivalOpts()], 'target'),
+      pickRow('礼', [{ id: 'small', text: TEXT.ui.giftSmall }, { id: 'big', text: TEXT.ui.giftBig }], 'size'),
+      pickRow('银出', [
+        { id: 'si', text: TEXT.ui.fundSi },
+        { id: 'gong', text: TEXT.ui.fundGong, disabled: !state.player.duty, reason: '先担差事' },
+      ], 'fund'),
+    ]) {
+      r.classList.add('jie-open');
+      rows.push(r);
+    }
     rows.push(el('div', 'sub-note dim', TEXT.ui.shiDesc));
   } else if (type === 'mou') {
     title = TEXT.ui.chooseScheme;
@@ -540,7 +547,7 @@ function playLodgingScene(rep) {
     // 帐幔落下:剪影从上垂落,停在落下的那一刻
     const cur = el('div', 'ls-curtain');
     cur.style.left = `${a.x}%`;
-    cur.style.top = `${a.y - 16}%`;
+    cur.style.top = `${a.y - 30}%`;
     sc.appendChild(cur);
   }
   sc.appendChild(el('div', 'ls-line', line));
@@ -834,7 +841,7 @@ function epilogueScreen() {
   const e = state.ending;
   if (e) {
     const def = TEXT.endings[e.key];
-    panel.appendChild(el('div', 'ending-stats', `你的去向:${def.name}`));
+    panel.appendChild(el('div', 'ending-stats', `你的去向：${def.name}`));
   }
   const root = el('div', 'ending-screen');
   root.id = 'epilogue-root';
