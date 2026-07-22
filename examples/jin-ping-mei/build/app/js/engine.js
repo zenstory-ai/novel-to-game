@@ -11,7 +11,7 @@ import {
   RIVALS, SERVANTS, CRED_TRUTH, RUMOR_TEXTS, SCHEMES, SCHEME_STEP, SCHEME_WIND,
   DUTIES, TUILU, FESTIVALS, ENDING, YANXI, YE_WEIGHT, YE_COST, YE_HAO, YE_BONUS,
   SHI_COST, SHI_BONUS, SHI_SEEN_P,
-  HAO, LODGING_TEXTS, VISITS,
+  HAO, LODGING_TEXTS, VISITS, RIVAL_REACT,
 } from './data.js';
 
 export const ACTS = { 1: 'act1', 2: 'act2', 3: 'act3' };
@@ -46,6 +46,9 @@ export function newGame(seed) {
       tuilu: [], gongzhong: 0,
       fengsheng: 0, jinzu: 0,
       hao: 0,                                // 耗:不上榜的暗指标,暗账负债项
+      // 情:关系账第三轴,玩家自己攒的明面亲密(可读)。与明账/暗账正交;
+      // 键集锁死在成年角色白名单内,永不扩键(安全线,见 test/ledger.mjs)。
+      qing: { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 },
       faluoEver: false, faluoCount: 0,
       duty: null,
     },
@@ -302,6 +305,7 @@ function doShi(state) {
   pushFloat(state, 'ink', '私房', -SHI_COST);
   p.chong = cap100(p.chong + 2);
   pushFloat(state, 'gold', '宠', 2);
+  p.qing.ximen = cap100((p.qing.ximen ?? 0) + 3); // 东西递到他手里,情分先落一笔
   state.shiTonight = true;
   let seen = false;
   if (chance(state.rng, SHI_SEEN_P)) {
@@ -336,9 +340,11 @@ function doJie(state, a, dead) {
   if (a.target === 'ximen') {
     dC = Math.round((a.size === 'big' ? 12 : 5) * boost);
     dT = a.size === 'big' ? 4 : 0;
+    p.qing.ximen = cap100((p.qing.ximen ?? 0) + (a.size === 'big' ? 4 : 2)); // 礼到人前,情分也到人前
   } else {
     const t = state.rivals[a.target];
     t.affection += a.size === 'big' ? 15 : 6;
+    p.qing[a.target] = cap100((p.qing[a.target] ?? 0) + (a.size === 'big' ? 6 : 3)); // 情分:玩家自己攒的明面亲密
     dT = Math.round((a.size === 'big' ? 6 : 3) * boost);
     dC = a.size === 'big' ? 3 : 1;
   }
@@ -512,6 +518,12 @@ function applyEffects(state, fx) {
       pushFloat(state, 'ink', '人情', d);
     }
   }
+  if (fx.qing) {
+    // 情分是玩家已知量:只落在白名单键上,不弹浮字,剖面图上的徽记自会变
+    for (const [who, d] of Object.entries(fx.qing)) {
+      if (who in p.qing) p.qing[who] = cap100((p.qing[who] ?? 0) + d);
+    }
+  }
 }
 
 // ---------- 节令提交:对手行动 → 结算 → 推进 ----------
@@ -567,9 +579,10 @@ export function submitTurn(state) {
       report.notes.push('分家的单子上,你的名下没添几行。');
     }
   }
-  // 宠衰减、风声回落
+  // 宠衰减、风声回落;情分随宠一起淡——不维持就凉(确定性,不引新随机)
   p.chong = cap100(p.chong - 3);
   p.fengsheng = cap100(p.fengsheng - 4);
+  for (const k of Object.keys(p.qing)) p.qing[k] = Math.max(0, p.qing[k] - 1);
   // 发落
   if (p.fengsheng >= 90) applyFaluo(state, report);
   // 月例
@@ -607,7 +620,11 @@ function settleLodging(state, report) {
     p.tiyan = cap100(p.tiyan + 3);
     pushFloat(state, 'gold', '宠', 10);
     pushFloat(state, 'gold', '体面', 3);
+    p.qing.ximen = cap100((p.qing.ximen ?? 0) + 6);
     report.notes.push(LODGING_TEXTS.playerWin);
+    report.notes.push('次日请安,你的座次往前挪了半位。');
+    const react = rivalReact(state);
+    if (react) report.notes.push(react);
     report.lodging = { house: 'player', ye: false, pan: false };
     return;
   }
@@ -631,6 +648,7 @@ function settleLodging(state, report) {
     p.hao = Math.min(100, p.hao + 3);
     pushFloat(state, 'gold', '宠', 10);
     pushFloat(state, 'gold', '体面', 3);
+    p.qing.ximen = cap100((p.qing.ximen ?? 0) + 6);
     if (state.yeTonight) {
       // 争来的夜,满宅都看见了:各房敌意直线上升
       for (const r of Object.values(state.rivals)) if (r.joined && r.alive) r.hostility += 12;
@@ -640,6 +658,9 @@ function settleLodging(state, report) {
       report.notes.push(LODGING_TEXTS.playerWin);
       report.lodging = { house: 'player', ye: false, pan: false };
     }
+    report.notes.push('次日请安,你的座次往前挪了半位。');
+    const react = rivalReact(state);
+    if (react) report.notes.push(react);
   } else {
     const r = state.rivals[win.id];
     r.ming = cap100(r.ming + 6);
@@ -655,6 +676,17 @@ function settleLodging(state, report) {
       report.lodging = { house: r.id, ye: false, pan: win.id === 'pan' };
     }
   }
+}
+
+// 得宠必触发看得见的一场戏:一句指名带动机的对手播报。
+// 抽取走种子流的副本({a} 复刻当前流位),不消耗游戏的随机流,
+// 与 main.js 留宿定格台词同一范式——同种子同操作逐字节可复现不受影响。
+function rivalReact(state) {
+  const pool = Object.values(state.rivals).filter((r) => r.joined && r.alive);
+  if (!pool.length) return null;
+  const rc = { a: state.rng.a };
+  const rv = pick(rc, pool);
+  return RIVAL_REACT[rv.id] ?? null;
 }
 
 function applyFaluo(state, report) {
@@ -907,5 +939,7 @@ export function serialize(state) {
 export function deserialize(json) {
   const s = JSON.parse(json);
   if (s.version !== 2) return null;
+  // 旧档迁移:情分轴是后加的。读进来先按新开局回填,版本号不动,旧档不崩。
+  s.player.qing ??= { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 };
   return s;
 }

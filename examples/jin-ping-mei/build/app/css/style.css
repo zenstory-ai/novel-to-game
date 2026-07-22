@@ -129,7 +129,7 @@ button { font-family: var(--serif); cursor: pointer; }
 
 /* ---------- 顶部:节令与风声 ---------- */
 .fest-banner {
-  position: absolute; top: 2%; left: 2%; z-index: 10;
+  position: absolute; top: 4.4%; left: 2%; z-index: 10;
   background: rgba(236,229,211,0.94); border: 2px solid var(--frame);
   padding: 8px 14px; min-width: 180px;
 }
@@ -137,7 +137,7 @@ button { font-family: var(--serif); cursor: pointer; }
 .fest-chapter { font-size: clamp(11px, 1.4vh, 14px); color: var(--ink-soft); letter-spacing: 2px; line-height: 1.6; }
 .fest-act { font-size: clamp(11px, 1.4vh, 14px); color: var(--gold); letter-spacing: 2px; line-height: 1.6; }
 .wind-seal {
-  position: absolute; top: 2%; left: 19%; z-index: 10;
+  position: absolute; top: 4.4%; left: 19%; z-index: 10;
   display: flex; align-items: center; gap: 8px;
 }
 .wind-stamp {
@@ -151,15 +151,46 @@ button { font-family: var(--serif); cursor: pointer; }
 .wind-seal.hot .wind-stamp { background: var(--verm); color: var(--paper); animation: wind-pulse 1s infinite alternate; }
 @keyframes wind-pulse { from { transform: rotate(-3deg) scale(1); } to { transform: rotate(-3deg) scale(1.08); } }
 .mute-btn {
-  position: absolute; top: 2%; left: 26%; z-index: 10;
+  position: absolute; top: 4.4%; left: 26%; z-index: 10;
   width: clamp(28px, 4vh, 40px); height: clamp(28px, 4vh, 40px);
   border: 2px solid var(--frame); background: rgba(236,229,211,0.9);
   color: var(--ink-soft); font-size: clamp(12px, 1.8vh, 16px);
 }
 
+/* ---------- 屏顶北极星条:榜位 · 白话目标 · 私房退路 ----------
+   开局就把终局说破:暗账是散场那天唯一算数的。常驻,不抢眼。 */
+.northstar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 12;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 18px;
+  background: rgba(30,26,22,0.82); color: #cfc6b4;
+  padding: 5px 14px; font-size: clamp(11px, 1.5vh, 13px); letter-spacing: 2px;
+  border-bottom: 1px solid rgba(87,80,67,0.7);
+}
+.northstar .ns-left { color: var(--gold-bright); font-weight: bold; white-space: nowrap; }
+.northstar .ns-goal { color: #a89e8a; text-align: center; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.northstar .ns-right { color: #cfc6b4; white-space: nowrap; }
+
+/* ---------- 首回合手把手:点亮「结」与「藏」,其余压暗但仍可点 ---------- */
+.seal-btn.coach-dim { opacity: 0.42; }
+.seal-btn.coach-on .seal-stamp {
+  animation: coach-pulse 1.5s ease-in-out infinite alternate;
+  border-color: var(--verm);
+}
+@keyframes coach-pulse {
+  from { box-shadow: 0 0 4px rgba(168,58,42,0.25), inset 0 0 6px rgba(168,58,42,0.10); }
+  to { box-shadow: 0 0 18px rgba(168,58,42,0.75), 0 0 34px rgba(168,58,42,0.35), inset 0 0 8px rgba(168,58,42,0.22); }
+}
+.coach-line {
+  position: absolute; left: 50%; bottom: 13.5%; transform: translateX(-50%);
+  max-width: 72%; text-align: center;
+  color: var(--ink); font-size: clamp(13px, 1.9vh, 17px); letter-spacing: 2px; line-height: 1.7;
+  background: rgba(247,236,208,0.95); border: 1.5px solid var(--verm); padding: 8px 20px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+}
+
 /* ---------- 右上角:金色六房排行榜(全作最大的诱饵) ---------- */
 .leaderboard {
-  position: absolute; top: 2%; right: 2%; z-index: 10;
+  position: absolute; top: 4.4%; right: 2%; z-index: 10;
   width: 15%; min-width: 168px;
   background: linear-gradient(180deg, #f7ecd0 0%, #ecd9a8 100%);
   border: 3px solid var(--gold); outline: 1px solid #7a5c10;
@@ -341,6 +372,7 @@ button { font-family: var(--serif); cursor: pointer; }
 .float-layer { position: absolute; inset: 0; pointer-events: none; z-index: 40; }
 .float-text {
   position: absolute; top: 44%; font-size: clamp(15px, 2.2vh, 22px); font-weight: bold;
+  max-width: 46%; line-height: 1.55; letter-spacing: 1px;
   animation: float-up 2.2s ease forwards;
   /* 浮字会飘过立绘和夜空,单薄的投影读不出来;给一圈纸色描边保证任何底上都清楚 */
   text-shadow:
@@ -357,7 +389,7 @@ button { font-family: var(--serif); cursor: pointer; }
 /* ---------- 模态(对话卡:立绘居右,文本居左) ---------- */
 .modal-mask {
   position: absolute; inset: 0; z-index: 95;
-  background: rgba(30,25,18,0.45); display: flex; align-items: center; justify-content: center;
+  background: rgba(30,25,18,0.6); display: flex; align-items: center; justify-content: center;
 }
 .modal-card {
   background:
@@ -383,7 +415,7 @@ button { font-family: var(--serif); cursor: pointer; }
 }
 .choice-btn:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
 .choice-btn:disabled { opacity: 0.45; cursor: default; }
-.choice-hint { color: var(--gold); font-size: 0.85em; letter-spacing: 1px; }
+.choice-hint { color: #8a6208; font-size: 0.85em; letter-spacing: 1px; }
 .choice-btn:hover:not(:disabled) .choice-hint { color: var(--gold-bright); }
 .modal-x {
   position: absolute; right: 8px; top: 8px; border: none; background: none;
@@ -423,6 +455,37 @@ button { font-family: var(--serif); cursor: pointer; }
 .big-btn:disabled { opacity: 0.35; cursor: default; }
 .title-seed { color: #8a8172; font-size: 12px; letter-spacing: 1px; }
 .title-rating { color: #a08a6a; font-size: 12px; letter-spacing: 2px; margin-top: 6px; border-top: 1px solid #d0c4a8; padding-top: 8px; }
+
+/* ---------- 关系徽记:立绘肩头的一枚小戳,点开关系卡 ---------- */
+.rel-pip {
+  position: absolute; right: 2%; top: 2%; z-index: 7;
+  min-width: 2.6cqh; height: 2.6cqh; padding: 0 0.4cqh;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(243,234,214,0.94); border: 1.5px solid var(--verm);
+  color: var(--verm); font-size: 1.6cqh; font-weight: bold;
+  border-radius: 5px 6px 4px 6px; transform: rotate(-3deg);
+  cursor: pointer; pointer-events: auto;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.rel-pip:hover {
+  transform: rotate(-5deg) scale(1.18);
+  background: #f7ecd0; border-color: var(--gold); color: #6a4e08;
+}
+/* ---------- 争夜旁的身体条:耗的成色,不给数字 ---------- */
+.ye-wrap { display: flex; flex-direction: column; align-items: center; }
+.hao-meter { display: flex; gap: 3px; padding-top: 3px; }
+.hm-cell { width: 11px; height: 4px; border: 1px solid var(--frame); background: transparent; }
+.hm-cell.on { background: #7a6a4e; border-color: #7a6a4e; }
+.hm-cell.on.bad { background: var(--verm); border-color: var(--verm); }
+/* ---------- 关系卡 ---------- */
+.rel-lines { line-height: 2; }
+.rel-tier {
+  display: inline-block; border: 1.5px solid var(--verm); color: var(--verm);
+  padding: 1px 12px; letter-spacing: 4px; font-weight: bold;
+  margin-bottom: 8px; transform: rotate(-2deg);
+}
+.rel-lines .dim { color: var(--ink-soft); font-size: 0.92em; }
 
 /* ---------- 结算/结局 ---------- */
 .clear-overlay {
@@ -473,10 +536,21 @@ button { font-family: var(--serif); cursor: pointer; }
   background: rgba(43,38,32,0.92); color: var(--paper); padding: 8px 18px;
   letter-spacing: 2px; font-size: clamp(12px, 1.8vh, 15px); z-index: 90;
   opacity: 0; transition: opacity 0.35s; pointer-events: none; max-width: 60%;
+  white-space: pre-line; text-align: center; line-height: 1.8;
 }
 .toast.show { opacity: 1; }
 
 .howto-list { line-height: 2; font-size: clamp(13px, 1.9vh, 16px); white-space: pre-line; }
+.howto-more {
+  display: inline-block; margin-top: 10px; border: 1px solid var(--frame);
+  background: #f3ead6; padding: 5px 16px; letter-spacing: 3px;
+  font-size: clamp(12px, 1.7vh, 15px); color: var(--ink);
+}
+.howto-more:hover { background: var(--ink); color: var(--paper); }
+.howto-deep {
+  margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--frame);
+  color: var(--ink-soft); font-size: clamp(12px, 1.7vh, 15px);
+}
 .jinzu-banner { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); z-index: 15; color: var(--verm); font-size: clamp(15px, 2.2vh, 20px); letter-spacing: 4px; background: rgba(236,229,211,0.9); border: 2px solid var(--verm); padding: 6px 16px; }
 .dead-mark { filter: grayscale(1) brightness(0.7); }
 
@@ -487,6 +561,7 @@ button { font-family: var(--serif); cursor: pointer; }
 .stage.in-clearing .rumor-tray,
 .stage.in-clearing .scheme-tray,
 .stage.in-clearing .anledger:not(.open),
+.stage.in-clearing .northstar,
 .stage.in-clearing .wind,
 .stage.in-clearing #btn-mute,
 .stage.in-clearing .banner {
@@ -560,6 +635,18 @@ button { font-family: var(--serif); cursor: pointer; }
 }
 .lodging-scene.on .ls-line { opacity: 1; }
 .ls-lose .ls-line, .ls-fail .ls-line { color: #b9bfc9; }
+/* 亲密层:玩家主动争到的夜,留白台词之下再叠一档情分的戏 */
+.lodging-scene.ls-has-intimacy .ls-line { bottom: 23%; }
+.ls-intimacy {
+  position: absolute; left: 50%; bottom: 4.5%; transform: translateX(-50%);
+  max-width: 56%; text-align: center;
+  color: #e2d3b4; font-size: clamp(12px, 1.7vh, 16px); letter-spacing: 2px; line-height: 1.8;
+  background: rgba(16,13,10,0.52); padding: 7px 16px;
+  text-shadow: 0 1px 10px #000, 0 0 22px rgba(0,0,0,0.8);
+  opacity: 0; transition: opacity 1.2s ease 1.9s;
+}
+.lodging-scene.on .ls-intimacy { opacity: 1; }
+.ls-int-du { color: #ecc9a8; } /* 独宠档:暖一分 */
 
 /* ---------- 节令转场:题签滑过(节令名+回目),淡出 ---------- */
 .fest-slip {

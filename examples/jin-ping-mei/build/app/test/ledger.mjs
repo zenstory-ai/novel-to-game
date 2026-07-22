@@ -7,6 +7,11 @@ import {
   leaderboard, festivalDef, computeEnding, serialize, deserialize, mingDead, playerRank,
   applyVisitChoice, visitDef,
 } from '../js/engine.js';
+import { INTIMACY, intimacyTier, INTIMACY_TIERS } from '../js/data.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+const APP_DIR = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 let passed = 0, failed = 0;
 function ok(cond, name) {
@@ -572,6 +577,56 @@ section('结·私(主动示意)');
   if (late.event.choices?.length) applyEventChoice(late, late.event.choices.at(-1).id);
   else skipEventIfNoChoice(late);
   ok(!applyAction(late, { type: 'shi' }).ok, '第79回后「结·私」不可用');
+}
+
+// ================= 16. 情分(qing)轴与安全线 =================
+section('情分(qing)轴与安全线');
+{
+  // 键集焊死在成年白名单:永不扩键,未成年角色一个字都进不来
+  const ADULT = new Set(['ximen', 'yue', 'lijiaoer', 'xuee', 'pan', 'pinger', 'chunmei']);
+  const keys = Object.keys(newGame(1).player.qing);
+  ok(keys.length > 0 && keys.every((k) => ADULT.has(k)), `qing 键集 ⊆ 成年白名单(${keys.join('/')})`);
+  ok(Object.values(newGame(1).player.qing).every((v) => v === 0), 'qing 初始全 0');
+  // 旧档迁移:无 qing 的 version 2 存档读进来要回填,不崩
+  const legacy = JSON.parse(serialize(newGame(1)));
+  delete legacy.player.qing;
+  const back = deserialize(JSON.stringify(legacy));
+  ok(!!back?.player.qing && Object.keys(back.player.qing).every((k) => ADULT.has(k)), '旧档(无 qing)读入自动回填');
+  // 情分的来路:结/结·私/留宿涨,藏不涨——藏是暗账,与情分轴正交
+  const s = newGame(42);
+  applyEventChoice(s, 'si');
+  applyAction(s, { type: 'jie', target: 'ximen', size: 'small', fund: 'si' });
+  ok(s.player.qing.ximen > 0, '结(家主) → 情分涨');
+  const q0 = s.player.qing.ximen;
+  applyAction(s, { type: 'shi' });
+  ok(s.player.qing.ximen > q0, '结·私 → 情分再涨');
+  applyAction(s, { type: 'cang', mode: 'save' });
+  const qAll0 = JSON.stringify(s.player.qing);
+  submitTurn(s);
+  ok(s.player.qing.ximen < 100, '情分随宠衰减(不维持就淡)');
+  const s2 = newGame(42);
+  applyEventChoice(s2, 'si');
+  const qBefore = JSON.stringify(s2.player.qing);
+  applyAction(s2, { type: 'cang', mode: 'save' });
+  applyAction(s2, { type: 'cang', mode: 'save' });
+  ok(JSON.stringify(s2.player.qing) === qBefore, '「藏」不涨任何情分(暗账正交)');
+  // 分档边界:生分/暧昧/亲密/独宠·露骨
+  ok(intimacyTier(0) === 'sheng' && intimacyTier(19) === 'sheng'
+    && intimacyTier(20) === 'mei' && intimacyTier(49) === 'mei'
+    && intimacyTier(50) === 'qin' && intimacyTier(79) === 'qin'
+    && intimacyTier(80) === 'du' && intimacyTier(100) === 'du', '亲密四档阈值(20/50/80)');
+  ok(INTIMACY_TIERS.every((t) => INTIMACY[t]?.length >= 3), '四档各有至少三条成句');
+  // 童角色词共现扫描:官哥儿/孝哥儿出现的行,不许沾任何情欲词
+  const EROTIC = ['肌肤', '解衣', '褪', '唇', '颈', '气息', '枕', '帐', '腰', '胸', '腿', '喘', '亵', '情欲', '暧昧', '亲密', '露骨'];
+  let clean = true;
+  for (const f of ['js/data.js', 'js/text.js']) {
+    const lines = readFileSync(join(APP_DIR, f), 'utf8').split('\n');
+    for (const line of lines) {
+      if (!/官哥儿|孝哥/.test(line)) continue;
+      if (EROTIC.some((w) => line.includes(w))) { clean = false; console.log(`    共现违例 ${f}: ${line.trim()}`); }
+    }
+  }
+  ok(clean, '官哥儿/孝哥儿相关串与情欲词零共现');
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);

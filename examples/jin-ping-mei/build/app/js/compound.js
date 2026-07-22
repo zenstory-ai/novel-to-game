@@ -212,13 +212,13 @@ export function createCompound(stage) {
     const mourning = state.festival >= 19;
     for (const r of Object.values(state.rivals)) {
       if (!r.joined || !r.alive) continue; // 春梅不上榜,但她在宅子里,看得见
-      putPortrait(r.id, mourning, r.ming);
+      putPortrait(r.id, mourning, r.ming, pipFor(r.id, state));
       putGlow(r.id, state, mourning);
     }
     putPortrait('player', mourning, state.player.chong * 1.6 + state.player.tiyan * 0.4);
     putGlow('player', state, mourning);
     if (!mingDeadNow && state.festival >= 2) {
-      putPortrait('ximen', false, 60);
+      putPortrait('ximen', false, 60, pipFor('ximen', state));
       putGlow('ximen', state, false);
     }
     // 风声≥60:廊下出现窃窃私语的仆役剪影(可读预警)
@@ -252,8 +252,18 @@ export function createCompound(stage) {
     glowLayer.appendChild(g);
   }
 
+  // 关系徽记:挂在立绘肩头的一枚小戳。只读玩家已知量(情分 qing、人情 renqing),
+  // 对手隐藏的真实态度一个字都不读——那是「探」的生意,徽记不许白给。
+  function pipFor(id, state) {
+    const q = state.player.qing?.[id] ?? 0;
+    const rq = state.player.renqing?.[id] ?? 0;
+    if (id === 'ximen') return q >= 80 ? '密' : q >= 50 ? '近' : q >= 20 ? '暖' : '生';
+    const v = q + rq;
+    return v >= 50 ? '厚' : v >= 20 ? '热' : v >= 1 ? '识' : '生';
+  }
+
   // 立绘:得宠衣饰更盛,失宠素净——皮肤层是单图,用饱和与明度逼近装色(换装仍走 mourning 资产)
-  function putPortrait(id, mourning, vigor = 50) {
+  function putPortrait(id, mourning, vigor = 50, pip = null) {
     const a = ROOMS[id];
     if (!a) return;
     const wrap = el('div', `room-fig fig-${id}`);
@@ -274,6 +284,12 @@ export function createCompound(stage) {
     img.style.animationDuration = `${dur}s`;
     img.style.animationDelay = `${-delay}s`;
     wrap.appendChild(img);
+    if (pip) {
+      const badge = el('span', 'rel-pip', pip);
+      badge.dataset.house = id;
+      badge.title = '看看你们到哪一步了';
+      wrap.appendChild(badge);
+    }
     wrap.appendChild(el('span', 'fig-name', NAMES[id]));
     roomLayer.appendChild(wrap);
   }

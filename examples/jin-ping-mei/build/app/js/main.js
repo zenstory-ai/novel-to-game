@@ -2,7 +2,7 @@
 // 引擎在 engine.js(纯逻辑);此文件只做呈现与输入。
 
 import { TEXT } from './text.js';
-import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, ACTION_ECHO, LODGING_SCENES } from './data.js';
+import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, ACTION_ECHO, LODGING_SCENES, INTIMACY, intimacyTier } from './data.js';
 import { pick } from './rng.js';
 import * as E from './engine.js';
 import { loadAssets, coverURL, portraitURL, compoundStyle } from './assets.js';
@@ -79,9 +79,21 @@ function renderTitle() {
   const bHow = el('button', 'big-btn', TEXT.btn.howto);
   bHow.id = 'btn-howto';
   bHow.addEventListener('click', () => {
+    // 紧凑版先给,深读折进「细说规矩」——不发词典,愿意细看的自己翻
+    const wrap = el('div');
+    wrap.appendChild(el('div', 'howto-list', TEXT.howto.join('\n')));
+    const more = el('button', 'howto-more', TEXT.howtoMore);
+    const deep = el('div', 'howto-list howto-deep', TEXT.howtoDeep.join('\n'));
+    deep.style.display = 'none';
+    more.addEventListener('click', () => {
+      const open = deep.style.display === 'none';
+      deep.style.display = open ? '' : 'none';
+      more.textContent = open ? '收起规矩' : TEXT.howtoMore;
+    });
+    wrap.append(more, deep);
     showModal(app, {
       id: 'modal-help', title: TEXT.btn.howto, wide: true,
-      body: el('div', 'howto-list', TEXT.howto.join('\n')),
+      body: wrap,
       choices: [{ id: 'ok', text: TEXT.btn.howtoClose }],
       onPick: () => closeModal(app),
     });
@@ -124,6 +136,8 @@ function buildStage() {
     audio.unlock();
     els.mute.textContent = audio.toggleMuted() ? '默' : '音';
   });
+  // 屏顶北极星条:左榜位、中目标、右暗账——开局就把终局说破
+  els.north = el('div', 'northstar');
   // 右上:金色排行榜;左下:墨色暗账
   els.lb = el('div', 'leaderboard');
   els.an = el('div', 'anledger');
@@ -134,10 +148,59 @@ function buildStage() {
   els.bar = el('div', 'actionbar');
   // 浮字层
   els.floats = el('div', 'float-layer');
-  stage.append(els.banner, els.wind, els.mute, els.lb, els.an, els.schemeTray, els.rumorTray, els.bar, els.floats);
+  stage.append(els.banner, els.wind, els.mute, els.north, els.lb, els.an, els.schemeTray, els.rumorTray, els.bar, els.floats);
   wrap.appendChild(stage);
   app.appendChild(wrap);
   els.stage = stage;
+  // 关系徽记:点开一张关系卡(事件委托,徽记每次 render 重建也不丢)
+  stage.addEventListener('click', (e) => {
+    const pip = e.target.closest?.('.rel-pip');
+    if (pip) openRelCard(pip.dataset.house);
+  });
+}
+
+// ---------- 关系卡:玩家自己知道的那本小账 ----------
+// 只摆玩家已知量:情分档位、人情、妆台上那支钗。对手的真实态度一个字都不读。
+function openRelCard(id) {
+  const def = TEXT.relCards[id];
+  if (!def || state.over) return;
+  audio.sfx('paper');
+  const q = state.player.qing?.[id] ?? 0;
+  const rq = state.player.renqing?.[id] ?? 0;
+  const isX = id === 'ximen';
+  const tierIdx = isX ? (q >= 80 ? 3 : q >= 50 ? 2 : q >= 20 ? 1 : 0)
+    : ((q + rq) >= 50 ? 3 : (q + rq) >= 20 ? 2 : (q + rq) >= 1 ? 1 : 0);
+  const lines = el('div', 'rel-lines');
+  lines.appendChild(el('div', 'rel-tier', (isX ? TEXT.ui.relTierX : TEXT.ui.relTierR)[tierIdx]));
+  lines.appendChild(el('div', '', def.tiers[tierIdx]));
+  if (tierIdx === 0) {
+    // 生分档:露骨项灰化,提示用角色声口,不用系统腔
+    lines.appendChild(el('div', 'dim', isX ? '他还没把心交给你。再走近些。' : '她还没把你算进她的局。常来常往，才有下文。'));
+  }
+  if (rq > 0) lines.appendChild(el('div', 'dim', `她欠你的人情:${rq}`));
+  if (id === 'pan' && state.flags.panChai) lines.appendChild(el('div', 'dim', '她的钗还插在你妆台上。这笔债，她记着呢。'));
+  showModal(app, {
+    id: 'modal-rel', title: def.name, sub: TEXT.rivals[id]?.house ?? '',
+    body: lines,
+    portrait: { src: portraitURL(relPortraitKey(id), def.name) },
+    choices: [{ id: 'ok', text: TEXT.btn.howtoClose }],
+    onPick: () => closeModal(app),
+  });
+}
+
+function relPortraitKey(id) {
+  const mourning = state.festival >= 19;
+  const map = {
+    yue: ['portrait/wu_yueniang', 'portrait/wu_yueniang_mourning'],
+    lijiaoer: ['portrait/li_jiaoer', 'portrait/li_jiaoer'],
+    xuee: ['portrait/sun_xuee', 'portrait/sun_xuee_mourning'],
+    pan: ['portrait/pan_jinlian', 'portrait/pan_jinlian_mourning'],
+    pinger: ['portrait/li_pinger', 'portrait/li_pinger'],
+    chunmei: ['portrait/pang_chunmei', 'portrait/pang_chunmei_madam'], // 她不穿孝,她高升了
+    ximen: ['portrait/ximen_qing', 'portrait/ximen_qing'],
+  };
+  const pair = map[id] ?? map.yue;
+  return mourning ? pair[1] : pair[0];
 }
 
 // ---------- 全量渲染 ----------
@@ -145,6 +208,7 @@ function renderAll() {
   audio.playBGM(sceneFor());
   renderBanner();
   renderWind();
+  renderNorthstar();
   renderLeaderboard();
   renderAnledger();
   renderRumors();
@@ -154,10 +218,25 @@ function renderAll() {
   drainFloats();
 }
 
+// 结算浮字:数字之外带一个具体画面——账是数,也是屋里发生的事。
+// 选句按(节令+序位)定选,确定性,不走 RNG 流。
+const FLOAT_FLAIR = {
+  '宠': ['他今夜多问了句你的起居', '他记着你说过的那句话', '他叫人把你爱吃的送了来', '他的眼风在你脸上多停了一息'],
+  '体面': ['满桌都听见了你的名字', '有人把这件事记下了', '你的座次，又往前挪了挪'],
+  '私房': ['锁片又扣紧了一齿', '这一笔，只有你自己知道'],
+};
 function drainFloats() {
   if (state.floats.length) {
-    const kinds = new Set(state.floats.map((f) => f.k));
-    spawnFloats(els.floats, state.floats.splice(0));
+    const raw = state.floats.splice(0);
+    const kinds = new Set(raw.map((f) => f.k));
+    const floats = raw.map((f, i) => {
+      const m = f.t.match(/^([+-])(\d+) (.+)$/);
+      if (!m || m[1] !== '+') return f;
+      const pool = FLOAT_FLAIR[m[3]];
+      if (!pool) return f;
+      return { ...f, t: `${f.t} · ${pool[(state.festival * 3 + i) % pool.length]}` };
+    });
+    spawnFloats(els.floats, floats);
     // 三色通感:金=清亮金属音,墨=闷木音,朱=擦弦音
     if (kinds.has('gold')) audio.sfx('ming');
     if (kinds.has('ink')) audio.sfx('an');
@@ -184,6 +263,25 @@ function renderWind() {
   els.wind.classList.toggle('hot', w >= 60);
   els.wind.appendChild(el('div', 'wind-stamp', '风'));
   els.wind.appendChild(el('div', 'wind-num', `${w}`));
+}
+
+// 北极星条(常驻屏顶):榜位在左,白话目标在中,私房与退路在右。
+// 暗账终局开局就明示——79 回清零是「早说过」,不是「被耍」。
+function renderNorthstar() {
+  clear(els.north);
+  const p = state.player;
+  let left;
+  if (E.mingDead(state)) {
+    left = TEXT.ui.northBoardGone;
+  } else {
+    const lb = E.leaderboard(state);
+    const me = lb.find((r) => r.you);
+    left = `${TEXT.ui.northBoard} 第${me?.rank ?? '—'}/${lb.length}`;
+  }
+  const right = `私房 ${p.sifang} · 退路 ${p.tuilu.length ? p.tuilu.map((t) => TUILU[t].name).join('、') : '无'}`;
+  els.north.appendChild(el('span', 'ns-left', left));
+  els.north.appendChild(el('span', 'ns-goal', E.mingDead(state) ? TEXT.ui.northGoalDead : TEXT.ui.northGoal));
+  els.north.appendChild(el('span', 'ns-right', right));
 }
 
 let lastRanks = {}; // 位次记忆:变动的那一块木牌要翻,不是数字跳
@@ -263,6 +361,15 @@ function haoText(h) {
   if (h >= 25) return '有亏';
   return '尚可';
 }
+// 争夜旁的身体条:四格四档(尚可/有亏/亏损/沉疴),只给成色,不给数字
+function haoMeter() {
+  const h = state.player.hao;
+  const lit = h >= 85 ? 4 : h >= 55 ? 3 : h >= 25 ? 2 : 1;
+  const m = el('div', 'hao-meter');
+  m.title = `身子:${haoText(h)}`;
+  for (let i = 0; i < 4; i++) m.appendChild(el('span', `hm-cell${i < lit ? ' on' : ''}${lit >= 3 ? ' bad' : ''}`));
+  return m;
+}
 function anRow(k, v, cls = 'an-row') {
   const r = el('div', cls);
   r.appendChild(el('span', '', k));
@@ -310,8 +417,12 @@ function renderSchemes() {
 }
 
 // ---------- 行动栏 ----------
+// 首回合手把手:同时点亮「结」与「藏」——一只手往上争(会看见),一只手往下藏(散场才认)。
+// 压暗只是视觉引导,印章仍然可用;教学藏在后果里,第一笔落定再点破。
+const coachNow = () => state && state.festival === 1 && state.phase === 'actions' && state.ap === 3 && !state.over;
 function renderBar() {
   clear(els.bar);
+  els.floats?.querySelector('.coach-line')?.remove();
   const inActions = state.phase === 'actions' && !state.over;
   const ap = state.ap;
   const dots = el('div', 'ap-dots');
@@ -321,19 +432,30 @@ function renderBar() {
     ['tan', '探', '买传闻'], ['jie', '结', '送礼'], ['ye', '夜', '争夜'],
     ['mou', '谋', '起谋算'], ['chi', '持', '担差事'], ['cang', '藏', '存退路'],
   ];
+  const coaching = coachNow();
   for (const [type, char, label] of defs) {
     const b = sealButton(char, label, () => openSub(type));
     b.dataset.seal = type;
     b.disabled = !inActions || ap <= 0 || (type === 'mou' && !state.flags.mou)
       || (type === 'ye' && (E.mingDead(state) || state.yeTonight || state.player.sifang < YE_COST));
-    if (type === 'mou' && !state.flags.mou) b.title = '第二幕解锁';
+    if (type === 'mou' && !state.flags.mou) b.title = '还不到用谋的时候。先学做人，再学用谋。';
     if (type === 'ye') {
-      if (E.mingDead(state)) b.title = '明账已清';
+      if (E.mingDead(state)) b.title = '明账已清，灯无人可争';
       else if (state.yeTonight) b.title = '今夜已布置下了';
-      else if (state.player.sifang < YE_COST) b.title = '私房不够置办';
+      else if (state.player.sifang < YE_COST) b.title = '置办这桌酒菜头面要六十两，你的私房还凑不齐';
     }
-    els.bar.appendChild(b);
+    if (coaching) b.classList.add(type === 'jie' || type === 'cang' ? 'coach-on' : 'coach-dim');
+    if (type === 'ye') {
+      // 耗改半可见:争夜旁一条身体条,沿用四档声口,不给数字
+      const wrap = el('div', 'ye-wrap');
+      wrap.appendChild(b);
+      wrap.appendChild(haoMeter());
+      els.bar.appendChild(wrap);
+    } else {
+      els.bar.appendChild(b);
+    }
   }
+  if (coaching) els.floats.appendChild(el('div', 'coach-line', TEXT.ui.coachLine));
   const sub = el('button', 'submit-btn', TEXT.btn.submit);
   sub.id = 'btn-submit';
   sub.disabled = state.over || state.phase !== 'actions';
@@ -383,7 +505,7 @@ function openSub(type) {
     title = `${TEXT.ui.chooseServant} · ${TEXT.ui.chooseTarget}`;
     rows.push(pickRow('仆役', Object.entries(SERVANTS).map(([id, s]) => ({
       id, text: `${TEXT.servants[id].name}${s.price ? ` ${s.price}两` : ' 不收钱'}`,
-      disabled: state.player.sifang < s.price, reason: '私房不够',
+      disabled: state.player.sifang < s.price, reason: '线钱还凑不齐',
     })), 'servant'));
     rows.push(pickRow('对象', rivalOpts(), 'target'));
   } else if (type === 'jie') {
@@ -393,7 +515,7 @@ function openSub(type) {
       {
         id: 'si', text: TEXT.ui.luPrivate,
         disabled: E.mingDead(state) || state.shiTonight || state.player.sifang < 40,
-        reason: E.mingDead(state) ? '明账已清' : state.shiTonight ? '本令已递过一份了' : '私房不够',
+        reason: E.mingDead(state) ? '明账已清，示意也递不到他手里' : state.shiTonight ? '本令已递过一份了' : '备这份东西要四十两，你的私房还凑不齐',
       },
     ], 'lu'));
     // 路数选「私」时,对象/礼/银出三行与这一记无关,藏起来免得误读
@@ -402,7 +524,7 @@ function openSub(type) {
       pickRow('礼', [{ id: 'small', text: TEXT.ui.giftSmall }, { id: 'big', text: TEXT.ui.giftBig }], 'size'),
       pickRow('银出', [
         { id: 'si', text: TEXT.ui.fundSi },
-        { id: 'gong', text: TEXT.ui.fundGong, disabled: !state.player.duty, reason: '先担差事' },
+        { id: 'gong', text: TEXT.ui.fundGong, disabled: !state.player.duty, reason: '不曾担差事，动不了公中' },
       ], 'fund'),
     ]) {
       r.classList.add('jie-open');
@@ -419,7 +541,7 @@ function openSub(type) {
     rows.push(pickRow('差事', Object.entries(DUTIES).map(([id, d]) => ({
       id, text: `${TEXT.ui.dutyNames[id]}(+${d.tiyan}体面 公中${d.gong})`,
       disabled: rank !== null && rank >= 5 && id !== 'puzhang',
-      reason: '位次太靠后',
+      reason: '位次靠后，好差事轮不到你',
     })), 'duty'));
     rows.push(el('div', 'sub-note', '担差事耗 2 行动;该令若出事,你是第一责任人。'));
   } else if (type === 'cang') {
@@ -433,7 +555,7 @@ function openSub(type) {
     rows.push(pickRow('退路', Object.entries(TUILU).map(([id, t]) => ({
       id, text: `${t.name} ${E.tuiluCost(state, id)}两`,
       disabled: state.festival < t.open || state.player.tuilu.includes(id) || state.player.sifang < E.tuiluCost(state, id),
-      reason: state.festival < t.open ? `第${t.open}令开` : state.player.tuilu.includes(id) ? '已在手' : '私房不够',
+      reason: state.festival < t.open ? `第${t.open}令才开` : state.player.tuilu.includes(id) ? '这条路已在你手里' : '银子还凑不齐',
     })), 'line'));
   }
   panel.appendChild(el('div', 'sub-title', title));
@@ -474,7 +596,7 @@ function confirmSub(type) {
       : { type, target: subSel.target, size: subSel.size ?? 'small', fund: subSel.fund ?? 'si' };
   }
   if (type === 'mou') {
-    if (!subSel.scheme || !subSel.target) { toast(app, '先拣齐再定。'); return; }
+    if (!subSel.scheme || !subSel.target) { toast(app, '话还没说全，拣齐了再定。'); return; }
     a = { type, scheme: subSel.scheme, target: subSel.target };
     if (subSel.scheme === 'zuoshi') {
       pickZuoshiRumor(els.stage.querySelector('#subpanel'));
@@ -488,11 +610,20 @@ function confirmSub(type) {
     else a = { type, mode: 'save' };
   }
   if (!a || Object.values(a).some((v) => v === undefined)) {
-    toast(app, '先拣齐再定。');
+    toast(app, '话还没说全，拣齐了再定。');
     return;
   }
   doAction(a);
   closeSub();
+}
+
+// 首回合的「后果教学」:第一笔落定才点破,且每类只说一次(纯界面记忆,不进存档)
+const coachShown = new Set();
+function coachToast(type) {
+  if (state.festival !== 1 || coachShown.has(type)) return;
+  coachShown.add(type);
+  if (type === 'jie' || type === 'shi') toast(app, '礼递进去了。满宅的眼睛，都记下了你这一笔。', 3600);
+  else if (type === 'cang') toast(app, '这一笔没人看见。散场那天，只认它。', 3600);
 }
 
 function doAction(a) {
@@ -505,6 +636,7 @@ function doAction(a) {
     toast(app, r.rumor.verified ? '查实了:这话不假。' : '查实了:是假话。');
   } else if (a.type === 'mou') audio.sfx('mou', { progress: r.scheme?.progress });
   else audio.sfx('click');
+  coachToast(a.type);
   renderAll();
   echoFor(a);
   save();
@@ -523,7 +655,7 @@ function echoFor(a) {
 }
 
 // ---------- 留宿定格:全作招牌镜头 ----------
-// 画面压暗,只中签那一房的窗透暖光;赢时帐幔剪影落下,停在那一刻,镜头不进帐子。
+// 画面压暗,只中签那一房的窗透暖光;赢时帐幔剪影落下。
 // 输时反打:你的窗黑着,别处的笑语隔着几进院子传来。潘金莲的夜,亮得最久。
 // 台词按 seedRNG 抽取——取种子流的副本抽,不消耗游戏的随机流,逐字节可复现不受影响。
 function playLodgingScene(rep) {
@@ -544,13 +676,21 @@ function playLodgingScene(rep) {
   spot.style.top = `${a.y - 10}%`;
   sc.append(el('div', 'ls-dim'), spot);
   if (won) {
-    // 帐幔落下:剪影从上垂落,停在落下的那一刻
+    // 帐幔落下:剪影从上垂落
     const cur = el('div', 'ls-curtain');
     cur.style.left = `${a.x}%`;
     cur.style.top = `${a.y - 30}%`;
     sc.appendChild(cur);
   }
   sc.appendChild(el('div', 'ls-line', line));
+  if (won) {
+    // 玩家主动争到的夜,按情分档叠一层戏(生分/暧昧/亲密/独宠·露骨)。
+    // 读的是玩家自己攒的 qing.ximen;副本加盐与定格台词错开,主流一下不动。
+    const tier = intimacyTier(state.player.qing?.ximen ?? 0);
+    const rc = { a: (state.rng.a ^ 0x9e3779b9) | 0 };
+    sc.appendChild(el('div', `ls-intimacy ls-int-${tier}`, pick(rc, INTIMACY[tier])));
+    sc.classList.add('ls-has-intimacy');
+  }
   els.stage.appendChild(sc);
   audio.sfx('watch'); // 更漏两声,夜里最清楚
   return new Promise((resolve) => {
@@ -697,7 +837,15 @@ function showVisitModal() {
       if (!r.ok) { toast(app, r.msg); return; }
       audio.sfx('click');
       closeModal(app);
-      toast(app, r.choice.result, 3200);
+      // 家主进门的夜,也按情分档叠一层戏(与留宿定格同一套分档)
+      const intimate = (def.id === 'ximen_ye' && id === 'open') || (def.id === 'ximen_zui' && id === 'stay');
+      if (intimate) {
+        const tier = intimacyTier(state.player.qing?.ximen ?? 0);
+        const rc = { a: (state.rng.a ^ 0x51ab) | 0 }; // 副本,不动主流
+        toast(app, `${r.choice.result}\n${pick(rc, INTIMACY[tier])}`, 4600);
+      } else {
+        toast(app, r.choice.result, 3200);
+      }
       renderAll();
       save();
     },

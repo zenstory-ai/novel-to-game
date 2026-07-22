@@ -127,7 +127,11 @@ class QA:
     def submit(self):
         self.handle_visit()  # 上门的人不应对,门闩着,提交点不动
         self.p.locator("#btn-submit").click()
-        self.p.wait_for_timeout(1800)
+        # 结算演出(定格+短条逐条)的时长由内容决定:等下一个决策点出现,不用固定时长
+        self.p.wait_for_function(
+            "() => __game.state().over"
+            " || document.querySelector('#modal-event,#modal-visit,#clear-overlay,#ending-root,#epilogue-root')",
+            timeout=20000)
         self.handle_visit()
         self.settle()
         self.p.wait_for_timeout(300)
@@ -191,6 +195,9 @@ def main():
             page.click("#btn-howto")
             page.wait_for_selector("#modal-help")
             ok("藏" in page.locator("#modal-help").inner_text(), "玩法说明含五类行动")
+            page.click("#modal-help .howto-more")
+            page.wait_for_timeout(120)
+            ok("探" in page.locator("#modal-help .howto-deep").inner_text(), "细说规矩可展开深读")
             qa.shot("howto")
             page.click('#modal-help .choice-btn')
             # 静音开关持久化(在局内测)
@@ -215,6 +222,21 @@ def main():
             ok(qa.phase() == "actions", "进入行动阶段")
             ok(page.locator(".leaderboard").is_visible(), "排行榜在(第一幕)")
             ok(page.locator(".lb-row").count() == 4, "初始四房上榜")
+            # 北极星条:榜位/白话目标/私房退路,开局就把终局说破
+            ok(page.locator(".northstar").is_visible(), "北极星条常驻屏顶")
+            ok("第4/4" in page.locator(".northstar").inner_text(), "开局争宠榜垫底(第4/4)")
+            ok("私房" in page.locator(".northstar").inner_text(), "北极星条明示暗账")
+            # 首回合手把手:同时点亮「结」与「藏」
+            ok(page.locator(".seal-btn.coach-on").count() == 2, "首回合点亮「结」与「藏」")
+            # 关系徽记:挂在立绘上,点开关系卡;只读玩家已知量,不漏对手隐藏态度
+            ok(page.locator(".rel-pip").count() >= 4, "关系徽记挂上立绘")
+            page.locator(".rel-pip").first.click()
+            page.wait_for_selector("#modal-rel")
+            rel_txt = page.locator("#modal-rel").inner_text()
+            ok("生分" in rel_txt or "暧昧" in rel_txt, "关系卡给出情分档")
+            ok("敌意" not in rel_txt and "恨" not in rel_txt, "关系卡不漏对手隐藏态度")
+            page.click("#modal-rel .choice-btn")
+            page.wait_for_timeout(150)
             # 音频:AudioContext 已因手势解锁;静音开关持久化
             page.click("#btn-mute"); page.wait_for_timeout(80)
             m1 = qa.ev("localStorage.getItem('jpm_mute')")
@@ -306,9 +328,14 @@ def main():
                        and qa.ev("__game.state().player.sifang") == sf0 - 40
                        and qa.ev("__game.state().ap") == ap0 - 1, "结·私:耗40私房1行动,记下铺垫")
                     ok(qa.ev("__game.state().player.tuilu.length") == 0, "结·私不涨暗账")
+                    # 亲密层:给定情分与灯,验证定格按档叠戏(玩家主动争到的夜)
+                    qa.ev("__game.state().player.qing.ximen = 85; __game.state().lodgingOverride = 'player'; 1")
                 if f == 5:
                     first_false_seen = qa.ev("__game.state().rumors.some(r=>r.truth===false)")
                 qa.submit()
+                if f == 2:
+                    ok(page.locator(".ls-intimacy.ls-int-du").count() == 1, "情分≥80 进独宠·露骨档")
+                    ok(len(page.locator(".ls-intimacy").inner_text()) > 10, "亲密层配一档成句")
             ok(first_false_seen, "第一幕出现第一条假传闻")
             ok(qa.ev("__game.state().rivals.pan.joined"), "潘金莲第9回入门")
             ok(qa.ev("__game.state().rivals.pinger.joined"), "李瓶儿第19回入门")
