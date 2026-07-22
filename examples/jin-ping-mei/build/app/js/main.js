@@ -476,6 +476,8 @@ let subSel = {};
 function openSub(type) {
   closeSub();
   subSel = {};
+  // 子面板与首回合手把手卡占同一片区,打开时先收起手把手,避免重叠
+  els.floats?.querySelector('.coach-line')?.classList.add('coach-hidden');
   els.bar.querySelector(`[data-seal="${type}"]`)?.classList.add('active');
   const panel = el('div', 'subpanel');
   panel.id = 'subpanel';
@@ -589,6 +591,7 @@ function pickZuoshiRumor(panel) {
 
 function closeSub() {
   els.stage?.querySelector('#subpanel')?.remove();
+  els.floats?.querySelector('.coach-line')?.classList.remove('coach-hidden'); // 关闭子面板后若仍在首回合恢复手把手
   els.bar?.querySelectorAll('.seal-btn.active').forEach((b) => b.classList.remove('active'));
   compound?.setFocus(null);
 }
@@ -727,12 +730,24 @@ function playLodgingScene(rep) {
   audio.sfx('watch'); // 更漏两声,夜里最清楚
   return new Promise((resolve) => {
     requestAnimationFrame(() => sc.classList.add('on'));
-    // 正常 3.6 秒(潘金莲的窗多留一拍);fast 模式压缩但保留可观察节拍
-    const hold = FAST ? 420 : (kind === 'pan' ? 4600 : 3600);
-    setTimeout(() => {
+    // 招牌场面:定格时长按台词总长给足(露骨档的长段不再一闪而过),并可点一下继续,
+    // 让玩家自己掌节奏;fast 模式压缩但保留可观察节拍。
+    const textLen = line.length + (sc.querySelector('.ls-intimacy')?.textContent.length ?? 0);
+    const hold = FAST ? 420 : Math.min(13000, Math.max(kind === 'pan' ? 4600 : 3600, 2400 + textLen * 95));
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      clearTimeout(timer);
+      sc.removeEventListener('click', finish);
       sc.classList.add('done');
       setTimeout(resolve, FAST ? 60 : 700);
-    }, hold);
+    };
+    if (!FAST) {
+      sc.classList.add('clickable');
+      setTimeout(() => { if (!done) sc.appendChild(el('div', 'ls-more', '点一下继续')); }, 1500);
+      sc.addEventListener('click', finish);
+    }
+    const timer = setTimeout(finish, hold);
   });
 }
 
@@ -831,7 +846,8 @@ async function doSubmit() {
   showEvent();
 }
 
-// 顶部滑入短条:逐条亮起,自行熄灭,不阻断画面
+// 顶部滑入短条:逐条亮起,自行熄灭,不阻断画面。
+// 停留时长按该句长度给足(长句更久,不再一刀切),点一下可立即翻下一句,由玩家掌节奏。
 function showSettleStrip(notes, danger = false) {
   return new Promise((resolve) => {
     const strip = el('div', `settle-strip${danger ? ' danger' : ''}`);
@@ -839,17 +855,24 @@ function showSettleStrip(notes, danger = false) {
     els.stage.appendChild(strip);
     requestAnimationFrame(() => strip.classList.add('on'));
     let i = 0;
-    const stepMs = FAST ? 240 : 1600;
+    let timer = null;
+    const dwell = (s) => FAST ? 240 : Math.min(6500, 1600 + s.length * 110);
     const tick = () => {
+      clearTimeout(timer);
       if (i >= notes.length) {
+        strip.removeEventListener('click', advance);
         strip.classList.remove('on');
         setTimeout(() => { strip.remove(); resolve(); }, FAST ? 60 : 450);
         return;
       }
+      const line = notes[i++];
       clear(strip);
-      strip.appendChild(el('div', 'settle-line', notes[i++]));
-      setTimeout(tick, stepMs);
+      strip.appendChild(el('div', 'settle-line', line));
+      if (i < notes.length) strip.appendChild(el('div', 'settle-more', '点一下继续'));
+      timer = setTimeout(tick, dwell(line));
     };
+    const advance = () => { if (!FAST) tick(); };
+    if (!FAST) { strip.classList.add('clickable'); strip.addEventListener('click', advance); }
     tick();
   });
 }

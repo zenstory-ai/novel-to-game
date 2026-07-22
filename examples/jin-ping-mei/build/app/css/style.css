@@ -187,6 +187,7 @@ button { font-family: var(--serif); cursor: pointer; }
   background: rgba(247,236,208,0.95); border: 1.5px solid var(--verm); padding: 8px 20px;
   box-shadow: 0 4px 18px rgba(0,0,0,0.35);
 }
+.coach-line.coach-hidden { display: none; }
 
 /* ---------- 右上角:金色六房排行榜(全作最大的诱饵) ---------- */
 .leaderboard {
@@ -520,6 +521,8 @@ button { font-family: var(--serif); cursor: pointer; }
 .settle-strip.danger { color: #e8b0a0; outline-color: var(--verm); border-color: var(--verm); }
 .settle-line { font-size: clamp(13px, 1.9vh, 16px); letter-spacing: 2px; line-height: 1.7; animation: settle-line-in 0.3s ease; }
 @keyframes settle-line-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.settle-strip.clickable { cursor: pointer; }
+.settle-more { margin-top: 5px; font-size: clamp(10px, 1.3vh, 12px); letter-spacing: 3px; color: #b7a98a; opacity: 0.85; }
 
 /* 行动的即时世情短句(墨色,浮字给数值、短句给意义) */
 .echo-line {
@@ -646,6 +649,13 @@ button { font-family: var(--serif); cursor: pointer; }
   opacity: 0; transition: opacity 1.2s ease 1.9s;
 }
 .lodging-scene.on .ls-intimacy { opacity: 1; }
+.lodging-scene.clickable { cursor: pointer; }
+.ls-more {
+  position: absolute; left: 50%; bottom: 1.6%; transform: translateX(-50%);
+  font-size: clamp(10px, 1.3vh, 12px); letter-spacing: 3px; color: #cbbf9c; opacity: 0;
+  text-shadow: 0 1px 8px #000; animation: ls-more-in 0.8s ease forwards;
+}
+@keyframes ls-more-in { to { opacity: 0.8; } }
 .ls-int-du { color: #ecc9a8; } /* 独宠档:暖一分 */
 
 /* ---------- 节令转场:题签滑过(节令名+回目),淡出 ---------- */
