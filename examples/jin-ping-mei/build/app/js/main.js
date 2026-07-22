@@ -2,7 +2,7 @@
 // 引擎在 engine.js(纯逻辑);此文件只做呈现与输入。
 
 import { TEXT } from './text.js';
-import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, ACTION_ECHO, LODGING_SCENES, INTIMACY, intimacyTier } from './data.js';
+import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, YE_WEIGHT, ACTION_ECHO, LODGING_SCENES, INTIMACY, intimacyTier } from './data.js';
 import { pick } from './rng.js';
 import * as E from './engine.js';
 import { loadAssets, coverURL, portraitURL, compoundStyle } from './assets.js';
@@ -179,6 +179,14 @@ function openRelCard(id) {
   }
   if (rq > 0) lines.appendChild(el('div', 'dim', `她欠你的人情:${rq}`));
   if (id === 'pan' && state.flags.panChai) lines.appendChild(el('div', 'dim', '她的钗还插在你妆台上。这笔债，她记着呢。'));
+  if (id === 'pan') {
+    // 梁子是玩家自己的过节流水账:亲眼所见的才记,她的真实敌意一个字不漏
+    const lz = state.player.liangzi?.pan ?? 0;
+    if (lz > 0) lines.appendChild(el('div', 'dim', `你和她结下的梁子:${lz} 桩。满三桩，她就要当着人发难。`));
+    if (state.flags.panShamed && state.festival - state.flags.panShamed <= 1) {
+      lines.appendChild(el('div', 'dim', '席上那一仗，她还没缓过来。'));
+    }
+  }
   showModal(app, {
     id: 'modal-rel', title: def.name, sub: TEXT.rivals[id]?.house ?? '',
     body: lines,
@@ -640,6 +648,30 @@ function doAction(a) {
   renderAll();
   echoFor(a);
   save();
+  if (a.type === 'ye') showYeRivals();
+}
+
+// 争夜赛局播报:布置落定、提交之前,看一眼今夜也在争的人。
+// 只定性不定量——榜上的分明人人看得见,这里只写成灯;春梅不上榜,她的斤两一个字不露。
+// 全部派生自玩家可见量(排行榜 ming 与各房脾性),不走 RNG,不碰 state.rng。
+function showYeRivals() {
+  const lines = el('div');
+  lines.appendChild(el('div', '', '你院里，灯烛头面都备下了。'));
+  for (const r of Object.values(state.rivals)) {
+    if (!r.joined || !r.alive || r.offBoard) continue; // 不上榜的人,提都不提
+    const w = (YE_WEIGHT[r.id] ?? 4) + (r.id === 'lijiaoer' ? 0 : r.ming * 0.1);
+    const t = w >= 20 ? `${r.name}院里也点了灯，备得比你还早。`
+      : w >= 8 ? `${r.name}院里留着灯，可争可不争。`
+      : `${r.name}院里黑得早，今夜想来不争。`;
+    lines.appendChild(el('div', '', t));
+  }
+  lines.appendChild(el('div', 'dim', '还有些人不上榜，灯却也点着。她们的斤两，你看不见。'));
+  showModal(app, {
+    id: 'modal-ye-rivals', title: '今夜也在争的人', sub: '只看得见灯，看不见斤两',
+    body: lines,
+    choices: [{ id: 'ok', text: '各凭本事' }],
+    onPick: () => closeModal(app),
+  });
 }
 
 // 行动的即时世情反馈:浮字给数值,短句给意义。
@@ -704,6 +736,73 @@ function playLodgingScene(rep) {
   });
 }
 
+// ---------- 亲密微选择:灯落你院,帐内还有一步怎么走 ----------
+// 只在 UI 层:不进 headless,不抽 state.rng,不插既有 action 的抽取顺序。
+// 改写的是引擎状态(事后情分、次日别房的醋意),不是 DOM;下一令世界自有回响。
+// 进攻过快则情分回落一档,下一场重新灰化——把够不着的欲望摆出来。
+function showIntimacyChoice() {
+  return new Promise((resolve) => {
+    const q = state.player.qing?.ximen ?? 0;
+    const tier = intimacyTier(q);
+    const body = el('div');
+    body.appendChild(el('div', '', '他在你屋里，更漏滴得慢。这一夜怎么走，你拿主意。'));
+    if (tier === 'sheng') body.appendChild(el('div', 'dim', '他还没允许你走这么近。急了，情分要退。'));
+    // 次日别房的醋意落在谁身上:潘金莲在宅必是她,否则取榜上最靠前那房(榜本就可见)
+    const envyTarget = () => {
+      const pan = state.rivals.pan;
+      if (pan?.joined && pan.alive) return pan;
+      const top = E.leaderboard(state).find((r) => !r.you);
+      return top ? state.rivals[top.id] : null;
+    };
+    showModal(app, {
+      id: 'modal-intimacy', title: '帐幔落下了', sub: '灯落你院',
+      body,
+      choices: [
+        { id: 'jin', text: '你来掌灯', hint: tier === 'sheng' ? '他还没允许你走这么近' : '主导这一夜 · 别房要眼红' },
+        { id: 'tui', text: '由他自己来', hint: '顺势，不露头' },
+        { id: 'kou', text: '套他一句口风', hint: '枕畔的话最真' },
+      ],
+      onPick: (id) => {
+        const p = state.player;
+        let out = '';
+        if (id === 'jin') {
+          if (q < 20) {
+            p.qing.ximen = Math.max(0, q - 3); // 进攻过快:情分回落,下一场重新灰化
+            out = '你太急了。手刚抬起来，他笑着按住了你的腕子。帐子里的热乎气，散了一半。';
+          } else if (q < 50) {
+            p.qing.ximen = Math.min(100, q + 1);
+            out = '你抬手把灯芯捻低了一寸。他顺着那点暗靠过来，你没退。这一寸暗，是你给的。';
+          } else {
+            p.qing.ximen = Math.min(100, q + 3);
+            const r = envyTarget();
+            if (r) r.hostility += 3; // 醋意涟漪,落在引擎状态上
+            out = (q >= 80
+              ? '你抬手灭了灯。黑暗里你先抓住他的手腕，把他按进枕里。他喉间那声气音落进你耳中，你便知道，今夜是他输了。烛芯爆了个花。'
+              : '你抬手灭了灯。黑暗里是你先抓住他的手腕。他怔了一息，随即便由你摆布。')
+              + (r ? `次日请安，${r.name}的眼风在你脸上刮了一下。` : '');
+          }
+        } else if (id === 'tui') {
+          p.qing.ximen = Math.min(100, q + 2);
+          out = q >= 80
+            ? '你由他来。他的掌心烫，贴上你腰窝时，你咬住唇没出声。帐子里的黑很厚，后来什么都静了，只剩更漏。他睡沉了，你还醒着。'
+            : '你由他来。他解你腕上的镯子，解得很慢。镯子落在妆台上，一声轻响，你没去拾。那半寸的靠近，你认了。';
+        } else {
+          p.qing.ximen = Math.min(100, q + 1);
+          const top = E.leaderboard(state).find((r) => !r.you);
+          out = top
+            ? `事后他靠在你肩上养神。你状似无意问起各房，他漏了一句：「${top.name}院里，近来话多。」你把这句记下了。`
+            : '事后他靠在你肩上养神。你问起各房，他只笑了笑。这一夜的话，到枕畔为止。';
+        }
+        closeModal(app);
+        toast(app, out, 4600);
+        renderAll();
+        save();
+        resolve();
+      },
+    });
+  });
+}
+
 // ---------- 提交节令 ----------
 async function doSubmit() {
   closeSub();
@@ -718,6 +817,8 @@ async function doSubmit() {
   if (rep.faluo) audio.sfx('faluo');
   // 留宿定格:灯落谁家,这一幕给足
   await playLodgingScene(rep);
+  // 灯落你院:定格之后,帐内还有一步怎么走(亲密微选择,只在 UI 层)
+  if (rep.lodging?.house === 'player' && !E.mingDead(state)) await showIntimacyChoice();
   await wait(300);
   // 结算不弹窗、不设「继续」:顶部短条按时间轴自动推进,玩家只在需要决策时才点
   if (rep.notes?.length) await showSettleStrip(rep.notes, !!rep.faluo);

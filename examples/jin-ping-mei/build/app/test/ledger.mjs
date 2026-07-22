@@ -7,7 +7,7 @@ import {
   leaderboard, festivalDef, computeEnding, serialize, deserialize, mingDead, playerRank,
   applyVisitChoice, visitDef,
 } from '../js/engine.js';
-import { INTIMACY, intimacyTier, INTIMACY_TIERS } from '../js/data.js';
+import { INTIMACY, intimacyTier, INTIMACY_TIERS, VISITS } from '../js/data.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -627,6 +627,85 @@ section('情分(qing)轴与安全线');
     }
   }
   ok(clean, '官哥儿/孝哥儿相关串与情欲词零共现');
+}
+
+// ================= 17. 潘金莲梁子线与当众交锋 =================
+section('梁子线与当众交锋');
+{
+  // 独立可见计数:初始 0,键只有 pan;只记玩家亲眼所见,不读她的敌意
+  const s = newGame(42);
+  applyEventChoice(s, 'si');
+  ok(s.player.liangzi.pan === 0 && Object.keys(s.player.liangzi).join() === 'pan', '梁子独立计数,初始 0');
+  // 收钗不结梁子;退钗结一桩(玩家亲眼所见)
+  s.visit = { id: 'pan_chai' };
+  applyVisitChoice(s, 'accept');
+  ok(s.player.liangzi.pan === 0, '收下钗:不结梁子');
+  const s2 = newGame(42);
+  applyEventChoice(s2, 'si');
+  s2.visit = { id: 'pan_chai' };
+  const h0 = s2.rivals.pan.hostility;
+  applyVisitChoice(s2, 'refuse');
+  ok(s2.player.liangzi.pan === 1 && s2.rivals.pan.hostility === h0 + 25, '退钗:梁子+1,既有敌意 delta 不改');
+  // 她的绊子进了 report.notes 才算一桩(遍历种子必有例);不进 notes 不计
+  let trip = null;
+  for (let seed = 1; seed <= 80 && !trip; seed++) {
+    const g = newGame(seed);
+    for (let f = 1; f < 7; f++) runFestival(g, f === 1 ? { choice: 'si' } : {});
+    skipEventIfNoChoice(g);
+    g.rivals.pan.hostility = 50; // 抬到她会出手的区间,只改隐藏态找种子,不改逻辑
+    const lz0 = g.player.liangzi.pan;
+    const rep = submitTurn(g);
+    if (rep.notes.some((n) => n.includes('潘金莲在暗处给你使了一回绊子'))) trip = { g, lz0 };
+  }
+  ok(!!trip, '存在潘金莲使绊子的种子');
+  if (trip) ok(trip.g.player.liangzi.pan === trip.lz0 + 1, '绊子进了结算 → 梁子+1(亲眼所见)');
+  // 梁子满三桩,当众交锋进上门池(走 VISITS/choice 既有通道,不进 headless RNG)
+  const def = VISITS.find((v) => v.id === 'pan_dangmian');
+  const g2 = newGame(42);
+  applyEventChoice(g2, 'si');
+  g2.rivals.pan.joined = true; // 直接摆到交锋条件,不改动入门节奏
+  g2.player.liangzi.pan = 3;
+  ok(!!def && def.cond(g2), '梁子满三桩 → 当席发难进上门池');
+  g2.player.liangzi.pan = 2;
+  ok(!def.cond(g2), '梁子未满 → 不进池(门槛只读玩家自己的账)');
+  // 硬怼:她当席掉面子(明账−、席位后退、记下失色),梁子消一桩
+  g2.player.liangzi.pan = 3;
+  g2.visit = { id: 'pan_dangmian' };
+  const ty0 = g2.player.tiyan, pm0 = g2.rivals.pan.ming;
+  const r2 = applyVisitChoice(g2, 'dui');
+  ok(r2.ok && g2.player.tiyan === ty0 + 4 && g2.rivals.pan.ming === pm0 - 6
+    && g2.player.liangzi.pan === 2 && g2.flags.panShamed === g2.festival,
+    '硬怼:她明账−席位后退、立绘转素记下,梁子消一桩');
+  // 忍下:她更得意(明账+),你掉体面,梁子添一桩
+  g2.visit = { id: 'pan_dangmian' };
+  const ty1 = g2.player.tiyan;
+  applyVisitChoice(g2, 'ren');
+  ok(g2.player.liangzi.pan === 3 && g2.rivals.pan.ming === pm0 - 6 + 4 && g2.player.tiyan === ty1 - 4,
+    '忍下:她更得意,梁子添一桩');
+  // 旧档迁移:无梁子的 version 2 存档读进来要回填,不崩
+  const legacy2 = JSON.parse(serialize(newGame(1)));
+  delete legacy2.player.liangzi;
+  const back2 = deserialize(JSON.stringify(legacy2));
+  ok(back2?.player.liangzi?.pan === 0, '旧档(无梁子)读入自动回填');
+  // 当众得体快动作:不做第七枚印章,做成宴席令上的 visit 分支(additive rivalMing)
+  const yd = VISITS.find((v) => v.id === 'yanxi_de');
+  const g3 = newGame(42);
+  ok(!!yd && yd.min >= 6, '宴席分支存在,且前五令上门池与旧版逐字节一致');
+  g3.festival = 6; // 中秋,宴席令
+  ok(yd.cond(g3), '宴席令(中秋)可触发');
+  g3.festival = 7; // 冬至,非宴席令
+  ok(!yd.cond(g3), '非宴席令不触发');
+  g3.festival = 6;
+  g3.visit = { id: 'yanxi_de' };
+  const xm0 = g3.rivals.xuee.ming, ty3 = g3.player.tiyan;
+  const r3 = applyVisitChoice(g3, 'dianpo');
+  ok(r3.ok && g3.rivals.xuee.ming === xm0 - 5 && g3.player.tiyan === ty3 + 4,
+    '当众点破:她席位后退(additive rivalMing,走 VISITS/choice 通道)');
+  g3.visit = { id: 'yanxi_de' };
+  const rx0 = g3.player.renqing.xuee, ty4 = g3.player.tiyan;
+  const r4 = applyVisitChoice(g3, 'yuan');
+  ok(r4.ok && g3.player.renqing.xuee === rx0 + 10 && g3.player.tiyan === ty4 - 3,
+    '圆场:她记下情,众人当你软(没有安全选项)');
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);

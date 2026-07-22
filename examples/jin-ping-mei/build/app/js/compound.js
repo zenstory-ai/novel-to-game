@@ -210,9 +210,11 @@ export function createCompound(stage) {
     clear(whisperLayer);
     clear(glowLayer);
     const mourning = state.festival >= 19;
+    // 当众交锋落败:她当席掉面子,立绘转素,一令之内缓不过来
+    const panShamed = !!state.flags.panShamed && state.festival - state.flags.panShamed <= 1;
     for (const r of Object.values(state.rivals)) {
       if (!r.joined || !r.alive) continue; // 春梅不上榜,但她在宅子里,看得见
-      putPortrait(r.id, mourning, r.ming, pipFor(r.id, state));
+      putPortrait(r.id, mourning, r.ming, pipFor(r.id, state), r.id === 'pan' && panShamed);
       putGlow(r.id, state, mourning);
     }
     putPortrait('player', mourning, state.player.chong * 1.6 + state.player.tiyan * 0.4);
@@ -263,7 +265,7 @@ export function createCompound(stage) {
   }
 
   // 立绘:得宠衣饰更盛,失宠素净——皮肤层是单图,用饱和与明度逼近装色(换装仍走 mourning 资产)
-  function putPortrait(id, mourning, vigor = 50, pip = null) {
+  function putPortrait(id, mourning, vigor = 50, pip = null, forcePale = false) {
     const a = ROOMS[id];
     if (!a) return;
     const wrap = el('div', `room-fig fig-${id}`);
@@ -280,6 +282,7 @@ export function createCompound(stage) {
       if (vigor >= 55) img.classList.add('bloom');
       else if (vigor <= 25) img.classList.add('pale');
     }
+    if (forcePale) img.classList.add('pale'); // 当席掉了面子的人,衣着再盛也压不住
     const [dur, delay] = BREATH[id] ?? [5.5, 0];
     img.style.animationDuration = `${dur}s`;
     img.style.animationDelay = `${-delay}s`;

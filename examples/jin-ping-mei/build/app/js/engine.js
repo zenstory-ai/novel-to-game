@@ -49,6 +49,10 @@ export function newGame(seed) {
       // 情:关系账第三轴,玩家自己攒的明面亲密(可读)。与明账/暗账正交;
       // 键集锁死在成年角色白名单内,永不扩键(安全线,见 test/ledger.mjs)。
       qing: { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 },
+      // 梁子:玩家亲眼所见的过节流水账(独立可见计数)。
+      // 只在玩家目睹的事件里+N(退钗、她的绊子进了结算、当众交锋落败),
+      // 绝不读对手的隐藏敌意——那是「探」的生意,这条账只记你看见的。
+      liangzi: { pan: 0 },
       faluoEver: false, faluoCount: 0,
       duty: null,
     },
@@ -524,6 +528,19 @@ function applyEffects(state, fx) {
       if (who in p.qing) p.qing[who] = cap100((p.qing[who] ?? 0) + d);
     }
   }
+  if (fx.liangzi) {
+    // 梁子是玩家自己的过节流水账:只记亲眼所见,不弹浮字,关系卡上看得见
+    for (const [who, d] of Object.entries(fx.liangzi)) {
+      p.liangzi[who] = clamp((p.liangzi[who] ?? 0) + d, 0, 99);
+    }
+  }
+  if (fx.rivalMing) {
+    // 席位是明面上的事:当众掉的明账,排行榜自会重排。additive,只加这条通道
+    for (const [who, d] of Object.entries(fx.rivalMing)) {
+      const r = state.rivals[who];
+      if (r) r.ming = cap100(r.ming + d);
+    }
+  }
 }
 
 // ---------- 节令提交:对手行动 → 结算 → 推进 ----------
@@ -785,6 +802,8 @@ function rivalOneAct(state, r, report) {
     pushFloat(state, 'gold', '体面', -8);
     pushFloat(state, 'gold', '宠', -4);
     report.notes.push(`${r.name}在暗处给你使了一回绊子。`);
+    // 绊子进了结算,就是你亲眼所见:潘金莲的梁子记一桩(不读她的敌意)
+    if (r.id === 'pan') p.liangzi.pan = clamp((p.liangzi.pan ?? 0) + 1, 0, 99);
     sighting(state, 'daian', r.id, 'yue');
   }
 }
@@ -939,7 +958,8 @@ export function serialize(state) {
 export function deserialize(json) {
   const s = JSON.parse(json);
   if (s.version !== 2) return null;
-  // 旧档迁移:情分轴是后加的。读进来先按新开局回填,版本号不动,旧档不崩。
+  // 旧档迁移:情分轴、梁子账都是后加的。读进来先按新开局回填,版本号不动,旧档不崩。
   s.player.qing ??= { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 };
+  s.player.liangzi ??= { pan: 0 };
   return s;
 }

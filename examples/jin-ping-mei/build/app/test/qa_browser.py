@@ -60,6 +60,7 @@ class QA:
     def __init__(self, page):
         self.p = page
         self.n = 0
+        self.intimacy_seen = 0
 
     def shot(self, name):
         self.n += 1
@@ -124,9 +125,25 @@ class QA:
                 break  # 动作未生效(被拒),避免死循环
         return n
 
+    def handle_intimacy(self):
+        """亲密微选择:灯落你院时,结算前的帐内一步。返回是否处理过。"""
+        if self.p.locator("#modal-intimacy").count() == 0:
+            return False
+        self.intimacy_seen += 1
+        self.p.locator("#modal-intimacy .choice-btn").first.click()
+        self.p.wait_for_timeout(250)
+        return True
+
     def submit(self):
         self.handle_visit()  # 上门的人不应对,门闩着,提交点不动
         self.p.locator("#btn-submit").click()
+        # 留宿定格后可能先弹亲密微选择(灯落你院才有),轮询处理,不用固定时长
+        for _ in range(30):
+            if self.handle_intimacy():
+                break
+            if self.p.locator("#modal-event,#modal-visit,#clear-overlay,#ending-root,#epilogue-root").count() > 0:
+                break
+            self.p.wait_for_timeout(200)
         # 结算演出(定格+短条逐条)的时长由内容决定:等下一个决策点出现,不用固定时长
         self.p.wait_for_function(
             "() => __game.state().over"
@@ -332,10 +349,17 @@ def main():
                     qa.ev("__game.state().player.qing.ximen = 85; __game.state().lodgingOverride = 'player'; 1")
                 if f == 5:
                     first_false_seen = qa.ev("__game.state().rumors.some(r=>r.truth===false)")
+                if f == 2:
+                    qa.intimacy_seen = 0
                 qa.submit()
                 if f == 2:
                     ok(page.locator(".ls-intimacy.ls-int-du").count() == 1, "情分≥80 进独宠·露骨档")
                     ok(len(page.locator(".ls-intimacy").inner_text()) > 10, "亲密层配一档成句")
+                    # 亲密微选择:定格之后帐内还有一步,改写的是引擎状态(情分与别房醋意),不是 DOM
+                    ok(qa.intimacy_seen == 1, "亲密微选择:灯落你院,帐内还有一步")
+                    ok(qa.ev("__game.state().player.qing.ximen") >= 92, "微选择改写事后情分(掌灯 +3)")
+                    ok(qa.ev("Object.values(__game.state().rivals).some(r=>r.hostility>=3)"),
+                       "别房醋意落在引擎状态,不是 DOM")
             ok(first_false_seen, "第一幕出现第一条假传闻")
             ok(qa.ev("__game.state().rivals.pan.joined"), "潘金莲第9回入门")
             ok(qa.ev("__game.state().rivals.pinger.joined"), "李瓶儿第19回入门")
