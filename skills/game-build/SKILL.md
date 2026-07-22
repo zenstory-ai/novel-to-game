@@ -9,6 +9,10 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 读取 [build-brief-contract.md](references/build-brief-contract.md)。必须已有
 `GAME_DESIGN.md` 和 `ART_DIRECTION.md`；缺少产品决策时回到设计阶段。
 
+可玩交付始终是网页可玩的垂直切片，但要按 `PRODUCT_BRIEF.md` 的目标平台惯例来做：竖屏或
+横屏、单局时长、控制方式、小程序/移动的轻量与即开即玩、分级对应的内容边界。原型是目标
+形态的可玩证明，不因"反正是网页"就套用桌面网页的默认布局。
+
 ## 构建说明
 
 只固定：成品目标、核心体验、类型契约中会改变结果的不变量、视觉锚点、原型范围、

@@ -19,8 +19,8 @@ that all the way to a playable prototype.
 
 ## Pipeline
 
-One orchestrator drives six specialist stages, from raw text to a verified,
-playable prototype.
+One orchestrator first frames the product, then drives six specialist stages,
+from raw text to a verified, playable prototype.
 
 ```mermaid
 flowchart LR
@@ -28,15 +28,17 @@ flowchart LR
     classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
 
     novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
-    orch --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
+    orch --> intake --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
     qa -.->|fails| build
 ```
+
+`intake` is the first gate: before deconstructing anything, pin down the product frame with the user — **platform (client / web / mini-program), genre and benchmark titles (found in the market that matches the novel's language), art style, content rating / NSFW, core fantasy** — and lock it into `PRODUCT_BRIEF.md`, which every downstream stage must honor and may not silently rewrite.
 
 ## Skills
 
 | Skill | Purpose |
 |---|---|
-| `novel-to-game` | Orchestrate the complete pipeline in quick or director mode |
+| `novel-to-game` | Orchestrate the pipeline: first a requirements intake that locks `PRODUCT_BRIEF` (platform / genre + benchmarks / art style / rating / core fantasy), then quick or director mode |
 | `novel-game-analyze` | Extract canon, verbs, systems, spaces, agents, and signature moments into a source bible |
 | `game-concept` | Propose, reject, and choose between three genuinely different games |
 | `game-world-design` | Define player experience, world behavior, systems, levels, and the playable prototype |
@@ -106,6 +108,7 @@ Each run creates a compact adaptation workspace:
 
 ```text
 game-adaptations/<project>/
+  PRODUCT_BRIEF.md
   analysis/SOURCE_BIBLE.md
   concepts/CONCEPT.md
   design/GAME_DESIGN.md
@@ -128,6 +131,7 @@ game-adaptations/<project>/
 ```text
 examples/journey-to-the-west/
 ├── source/西游记.txt + SOURCE.md   # Full 100-chapter public-domain source + provenance
+├── PRODUCT_BRIEF.md                # Requirements intake: platform / genre + benchmarks / art / rating / fantasy
 ├── analysis/SOURCE_BIBLE.md        # Gameable canon: rules, verbs, spaces, agents, signature moments
 ├── concepts/CONCEPT.md             # Three materially different concepts, with the chosen one
 ├── design/GAME_DESIGN.md           # Systems: turn order, 五行, skills, pet, formations, forms, boss
@@ -150,6 +154,7 @@ examples/journey-to-the-west/
 ```text
 examples/jin-ping-mei/
 ├── source/金瓶梅.txt + SOURCE.md   # Public-domain 崇祯本 (expurgated) + reproducible expurgate.py
+├── PRODUCT_BRIEF.md                # Requirements intake: web · Chinese · household-politics vs 熹妃传/恋与 · adult
 ├── analysis/SOURCE_BIBLE.md        # Gameable canon: rank vs favour, private capital, information, calendar
 ├── concepts/CONCEPT.md             # Three materially different concepts, with hard vetoes
 ├── design/GAME_DESIGN.md           # Systems: two ledgers, five actions, suspicion, five endings

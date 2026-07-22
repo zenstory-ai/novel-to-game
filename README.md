@@ -16,7 +16,7 @@ NovelToGame 是一套把小说改编成网页游戏的开源技能，适配 Clau
 
 ## 流程
 
-一个总入口串起六个各司其职的环节，把原始文本一路打磨成可验证、可游玩的原型。
+一个总入口先框定产品需求，再串起六个各司其职的环节，把原始文本一路打磨成可验证、可游玩的原型。
 
 ```mermaid
 flowchart LR
@@ -24,15 +24,17 @@ flowchart LR
     classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
 
     novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
-    orch --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
+    orch --> 需求 --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
     验证 -.->|未通过| 构建
 ```
+
+「需求」是第一道门：拿到小说先和用户明确**平台（客户端/网页/小程序）、游戏类型与对标名作（按小说语言对应的市场找）、美术画风、内容分级/NSFW、核心幻想**等产品框架，锁进 `PRODUCT_BRIEF.md`，下游各阶段一律遵守、不得静默改写。
 
 ## 技能
 
 | 技能 | 职责 |
 |---|---|
-| `novel-to-game` | quick / director 两种模式的完整流程总入口 |
+| `novel-to-game` | 总入口：先过需求 intake 锁定 `PRODUCT_BRIEF`（平台/类型+对标/画风/分级/核心幻想），再以 quick / director 两种模式串起全流程 |
 | `novel-game-analyze` | 提取规则、动作、空间、角色、系统与名场面，梳理成一份游戏设定集 |
 | `game-concept` | 生成、淘汰并从三个真正不同的方案中做出选择 |
 | `game-world-design` | 设计玩家体验、会回应的世界、系统、关卡与完整可玩原型 |
@@ -100,6 +102,7 @@ Kimi Code 0.27 或更高版本：
 
 ```text
 game-adaptations/<project>/
+  PRODUCT_BRIEF.md
   analysis/SOURCE_BIBLE.md
   concepts/CONCEPT.md
   design/GAME_DESIGN.md
@@ -122,6 +125,7 @@ game-adaptations/<project>/
 ```text
 examples/journey-to-the-west/
 ├── source/西游记.txt + SOURCE.md   # 完整公版百回本原著 + 来源出处
+├── PRODUCT_BRIEF.md                # 需求 intake：平台/类型+对标/画风/分级/核心幻想
 ├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：规则、动作、空间、角色、名场面
 ├── concepts/CONCEPT.md             # 三个真正不同的概念，含入选方案与取舍
 ├── design/GAME_DESIGN.md           # 系统：行动顺序、五行、技能、携宠、阵型、变化、多阶段Boss
@@ -144,6 +148,7 @@ examples/journey-to-the-west/
 ```text
 examples/jin-ping-mei/
 ├── source/金瓶梅.txt + SOURCE.md   # 公版崇祯本百回原著（删节洁本）+ expurgate.py 可复现生成
+├── PRODUCT_BRIEF.md                # 需求 intake：网页·中文·宅斗对标熹妃传/恋与·成人向
 ├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：名分与恩宠、私财、情报网、节令时钟
 ├── concepts/CONCEPT.md             # 三个真正不同的概念，含入选方案与硬否决
 ├── design/GAME_DESIGN.md           # 系统：明暗两账、五类行动、风声与发落、五种结局
