@@ -9,11 +9,11 @@ description: "NovelToGame 总入口。把任意语言的原始小说、拆文库
 
 开始前读取 [pipeline-contract.md](references/pipeline-contract.md)。
 
-## 第一道门：需求 intake（不可跳过）
+## 第一步：需求 intake（不可跳过）
 
 用户第一次给出小说时，**先框定产品，再进拆解**。平台、目标市场、游戏类型与对标、
-美术画风、内容分级/NSFW、核心幻想这些框架决定，一旦让下游各阶段各自默认，做到一半才
-暴露，返工极贵。按 [intake-method.md](references/intake-method.md) 走这道门：速读原作、替
+美术画风、内容分级/NSFW、核心幻想、游戏引擎这些框架决定，一旦让下游各阶段各自默认，做到
+一半才暴露，返工极贵。按 [intake-method.md](references/intake-method.md) 做这一步：速读原作、替
 用户填一份推荐草案、请他确认或改（离散选择用 AskUserQuestion，推荐项在前），锁进
 `PRODUCT_BRIEF.md`。用户不在场时按默认推进，但把每条标为未确认假设列出。
 
@@ -45,7 +45,7 @@ description: "NovelToGame 总入口。把任意语言的原始小说、拆文库
 ## 流程
 
 1. 创建工作区并在 `_progress.md` 记录来源、模式和当前阶段。
-2. 过需求 intake gate，生成 `PRODUCT_BRIEF.md`（见上）；未确认假设记入 `_progress.md`。
+2. 做需求 intake 这一步，生成 `PRODUCT_BRIEF.md`（见上）；未确认假设记入 `_progress.md`。
 3. 调用 `novel-game-analyze` 生成有必要证据的 `SOURCE_BIBLE.md`。
 4. 调用 `game-concept`，在 `PRODUCT_BRIEF` 框定的平台/类型/画风/分级内生成并选择
    `CONCEPT.md`；`director` 在这里停靠。

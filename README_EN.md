@@ -32,7 +32,7 @@ flowchart LR
     qa -.->|fails| build
 ```
 
-`intake` is the first gate: before deconstructing anything, pin down the product frame with the user — **platform (client / web / mini-program), genre and benchmark titles (found in the market that matches the novel's language), art style, content rating / NSFW, core fantasy** — and lock it into `PRODUCT_BRIEF.md`, which every downstream stage must honor and may not silently rewrite.
+`intake` is the first gate: before deconstructing anything, pin down the product frame with the user — **platform (client / web / mini-program), genre and benchmark titles (found in the market that matches the novel's language), art style, content rating / NSFW, core fantasy, game engine** — and lock it into `PRODUCT_BRIEF.md`, which every downstream stage must honor and may not silently rewrite. Both benchmarks and engine are WebSearch-verified, not recalled from memory.
 
 ## Skills
 
