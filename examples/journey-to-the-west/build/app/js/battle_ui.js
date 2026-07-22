@@ -246,9 +246,19 @@ export async function runBattleScreen(ctx) {
     uc.badge.dataset.el = u.element;
     uc.card.classList.toggle('dead', !u.alive);
     uc.chips.innerHTML = '';
+    // 同 id 增益合并显示(白牛狂暴每回合叠一层,不合并会刷出十几个小芯片)
+    const merged = new Map(); // id -> {count, turns}
     for (const b of u.buffs) {
-      const chip = el('span', 'buff-chip', `${TEXT.buffNames[b.id] ?? b.id}${b.turns}`);
-      chip.dataset.buff = b.id;
+      const m = merged.get(b.id);
+      if (m) { m.count += 1; m.turns = Math.max(m.turns, b.turns); }
+      else merged.set(b.id, { count: 1, turns: b.turns });
+    }
+    for (const [id, m] of merged) {
+      const label = m.count > 1
+        ? `${TEXT.buffNames[id] ?? id}×${m.count}`
+        : `${TEXT.buffNames[id] ?? id}${m.turns}`;
+      const chip = el('span', 'buff-chip', label);
+      chip.dataset.buff = id;
       uc.chips.appendChild(chip);
     }
     if (u.defending) uc.chips.appendChild(el('span', 'buff-chip', TEXT.float.defend));
@@ -775,6 +785,7 @@ export async function runBattleScreen(ctx) {
     pishuijue: 'water', xuanbing_ji: 'water', jinglang: 'water', bingfeng: 'water',
     luohanjinshen: 'gold', hufa: 'gold', gangtie: 'gold', huoyan: 'gold',
     douzhan: 'gold', jinjing: 'gold', guiyuan: 'water',
+    shanfeng: 'wind', // 罗刹女招牌·芭蕉扇风(一借核心意象,非小怪寻常技)
   };
 
   async function showBanner(text, cls = '') {
@@ -855,7 +866,7 @@ export async function runBattleScreen(ctx) {
             const fxKind = SPELL_FX[skillKeyByName[ev.name]];
             if (fxKind && uc) {
               // 标志性法术演出:粒子 + 背景色调突变 + 音效(跳过演出时缩为一道色闪)
-              audio.sfx(fxKind === 'fire' ? 'firefx' : fxKind === 'water' ? 'waterfx' : 'skill');
+              audio.sfx(fxKind === 'fire' ? 'firefx' : fxKind === 'water' ? 'waterfx' : fxKind === 'wind' ? 'fan2' : 'skill');
               await fx.play(fxKind, uc.card, { D, skipFx });
             } else {
               audio.sfx('skill');
@@ -933,6 +944,7 @@ export async function runBattleScreen(ctx) {
           if (ev.buff === 'spd_down') {
             const tu = getUnit(state, ev.target);
             if (tu?.immuneSpdDown && uc) {
+              stampText(uc.anchor, '定风丹', 'ke-stamp');
               floatText(uc.anchor, TEXT.battle.dingfeng, 'ke');
               audio.sfx('ke');
               await fx.play('ward', uc.card, { D, skipFx });
@@ -1267,6 +1279,7 @@ export async function runBattleScreen(ctx) {
     }
 
     // ---------- 结算 ----------
+    root.querySelectorAll('.toast').forEach((n) => n.remove()); // 清掉战斗中的提示,别压在结算面板上
     if (state.winner === 'story') {
       // 剧情桥段:保留战斗画面作过场底景,由 main 在过场结束后移除
       return { winner: 'story', rounds: state.round - 1 };

@@ -212,10 +212,20 @@ export function runOverworld(ctx) {
     g.strokeStyle = '#c9a227';
     g.lineWidth = 3;
     g.stroke();
-    g.fillStyle = '#f2e8d5';
+    // 地标挪到洞口左侧(上方让给「!」指引标记),加描边底牌保证在山体上可读
     g.font = '17px "Songti SC", serif';
     g.textAlign = 'center';
-    g.fillText('翠云山 · 芭蕉洞', ents.luosha.x + 10, ents.luosha.y - 190);
+    g.textBaseline = 'middle';
+    const caveLabel = '翠云山 · 芭蕉洞';
+    const clw = g.measureText(caveLabel).width + 18;
+    const clx = ents.luosha.x - 186, cly = ents.luosha.y - 150;
+    g.fillStyle = 'rgba(43,33,24,0.85)';
+    g.fillRect(clx - clw / 2, cly - 13, clw, 26);
+    g.strokeStyle = 'rgba(201,162,39,0.8)';
+    g.lineWidth = 1;
+    g.strokeRect(clx - clw / 2, cly - 13, clw, 26);
+    g.fillStyle = '#f2e8d5';
+    g.fillText(caveLabel, clx, cly + 1);
     g.restore();
     // 土地庙(贴图优先,缺图回退占位画法)
     const miao = sceneImage('tudimiao');

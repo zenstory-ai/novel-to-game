@@ -281,9 +281,13 @@ section('BOSS 蓄力预警 → 重击');
   const evs3 = executeRound(s, defendAll()); // 回合3:预警
   ok(evs3.some((e) => e.t === 'telegraph'), '第 3 回合发出蓄力预警');
   ok(!evs3.some((e) => e.t === 'heavy'), '预警当回合不重击');
+  // 仅 BOSS 级(ai==='boss')蓄力:玉面/妖将这类小怪不再跟着蓄力(避免同回合多重重击)
+  const telUnits = evs3.filter((e) => e.t === 'telegraph').map((e) => getUnit(s, e.unit));
+  ok(telUnits.length === 1 && telUnits.every((u) => u.ai === 'boss'), `蓄力预警只来自 BOSS 级敌人 (实际 ${telUnits.length} 个)`);
   const evs4 = executeRound(s, defendAll()); // 回合4:重击
   const heavy = evs4.find((e) => e.t === 'heavy');
   ok(!!heavy, '第 4 回合重击落下');
+  ok(evs4.filter((e) => e.t === 'heavy').length === 1, '同回合只有一记 BOSS 重击');
   const target = getUnit(s, heavy.target);
   const ratio = heavy.amount / target.maxHp;
   ok(ratio > 0.22 && ratio < 0.45, `防御下重击≈30%最大血 (实测 ${(ratio * 100).toFixed(0)}%)`);
@@ -598,7 +602,7 @@ section('火炎校尉召唤(每隔数回合一波)');
   const summonEvs = all.filter((e) => e.t === 'summon');
   ok(summonEvs.length >= 1, '校尉召唤了火兵');
   ok(summonEvs[0] && all.find((e) => e.t === 'round' && e.queue.includes(summonEvs[0].unit)) === undefined, '新召唤单位当回合不抢行动');
-  // 上限 2 只
+  // 上限 1 只(试玩打磨:两只叠召是战斗2的难度墙主因)
   const s2 = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 99 });
   let summons = 0;
   guard = 0;
@@ -607,6 +611,7 @@ section('火炎校尉召唤(每隔数回合一波)');
     summons += evs.filter((e) => e.t === 'summon').length;
   }
   ok(summons <= 2, `召唤有上限 (实际 ${summons}≤2)`);
+  ok(summons <= 1, `召唤上限收至 1 (实际 ${summons})`);
   // 召唤不占额外随机:同 seed 全流程一致
   const runOnce = () => {
     const x = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 99 });

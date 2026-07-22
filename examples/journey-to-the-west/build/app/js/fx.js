@@ -269,10 +269,15 @@ export class FxLayer {
         this.tint('radial-gradient(ellipse at 30% 30%, rgba(255,80,30,0.34), rgba(140,20,8,0.22) 70%, transparent)', ms);
         this.spawn(52, () => this.ember(rf(W * 0.1, W * 0.5), rf(this.canvas.height * 0.2, this.canvas.height * 0.7), true));
         break;
-      case 'ward': // 定风丹:一点金光定住风势(短)
-        ms = 800;
-        this.tint('radial-gradient(ellipse at 50% 50%, rgba(230,199,102,0.22), transparent 60%)', ms);
-        this.spawn(16, () => this.mote(anchor.x, anchor.y));
+      case 'ward': // 定风丹:一点金光定住风势——金色风痕在锚点周遭骤停收束
+        ms = 1100;
+        this.tint('radial-gradient(ellipse at 50% 50%, rgba(230,199,102,0.26), rgba(60,120,110,0.10) 55%, transparent 70%)', ms);
+        this.spawn(18, () => this.mote(anchor.x, anchor.y));
+        this.spawn(10, () => {
+          const s = this.streak(anchor.y + rf(-40, 40));
+          s.vx *= 0.35; s.color = `rgba(230, 215, 150, ${rf(0.4, 0.75)})`; // 风痕被「定」住:慢、短、金
+          return s;
+        });
         break;
       default:
         ms = 600;

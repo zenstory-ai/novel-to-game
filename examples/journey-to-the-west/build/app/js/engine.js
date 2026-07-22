@@ -679,9 +679,10 @@ export function executeRound(state, commands) {
     }
   }
 
-  // BOSS:每 3 回合蓄力预警;白牛真身每回合狂暴(攻+8% 可叠加)
+  // BOSS:每 3 回合蓄力预警(仅 BOSS 级;小怪不蓄力,避免同回合多重重击砸向最低血者)
+  // 白牛真身每回合狂暴(攻+8% 可叠加)
   if (state.def.boss) {
-    for (const boss of aliveUnits(state, 'enemy')) {
+    for (const boss of aliveUnits(state, 'enemy').filter((u) => u.ai === 'boss')) {
       if (state.round % 3 === 0 && boss.charge <= 0) {
         boss.charge = 2;
         events.push({ t: 'telegraph', unit: boss.id, name: boss.heavyName ?? '重击' });

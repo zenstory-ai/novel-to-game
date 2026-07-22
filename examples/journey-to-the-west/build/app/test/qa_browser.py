@@ -347,6 +347,7 @@ def run():
         # ---------- 战斗2 ----------
         section("战斗2 · 火焰山火兵(携宠+假扇)")
         page.wait_for_selector("#btn-once-close", timeout=15000)
+        ok(page.locator(".story-bg").count() == 1, "剧情过场底景在场(火焰山)")
         qa.shot("battle2_card")
         page.click("#btn-once-close")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
@@ -562,6 +563,7 @@ def run():
         defend_shot = False
         saw_charge = False
         god_shot = False
+        chip_merged = False
         for i in range(900):
             if qa.defeat_retry():
                 fan_used = 0
@@ -573,6 +575,8 @@ def run():
                 continue
             if qa.battle_over():
                 break
+            if not chip_merged and page.locator('.unit-card.enemy .buff-chip', has_text='×').count() > 0:
+                chip_merged = True
             if qa.cmd_visible():
                 st = qa.battle_state()
                 uid = qa.prompt_unit_id()
@@ -624,6 +628,7 @@ def run():
         ok(saw_charge, "牛魔王发出过蓄力预警")
         ok(phase_shot, "牛魔王变身白牛真身(大体积单位)")
         ok(page.evaluate("__game.battle.godAssisted") == True, "众神围剿登场(门控)")
+        ok(chip_merged, "白牛狂暴增益合并显示(攻击↑×N,不再芯片刷屏)")
         ok(fan_used >= 1, f"真扇使用了 {fan_used} 次")
         st = qa.battle_state()
         ok(st and not any(u["key"] in ("niumowang", "whitebull") and u["alive"] for u in st["units"]), "牛魔王已降伏")
@@ -660,6 +665,8 @@ def run():
         page.click('[data-alloc-recommend="sha"]')
         page.wait_for_selector("#modal-hero")
         ok(page.evaluate("__game.campaign().pendingPoints.sha") == 0, "沙僧一键推荐加点投完")
+        rec_box = page.locator('[data-alloc-recommend="wukong"]').bounding_box()
+        ok(rec_box is not None and rec_box["width"] > 34, "推荐加点按钮横向铺开(不再竖排挤压)")
         qa.shot("panel_hero_alloc")
         page.click("#modal-hero-close")
         page.click("#btn-pet")
@@ -677,6 +684,8 @@ def run():
         page.click("#btn-continue")
         page.wait_for_selector("#dialog", timeout=10000)
         ok("牛魔王" in page.locator("#dialog").inner_text() or "真扇" in page.locator("#dialog").inner_text(), "读档回到 BOSS 战前剧情")
+        ok(page.locator(".story-bg").count() == 1, "读档后剧情底景在场(积雷山)")
+        ok(page.locator("#dialog .dlg-name").evaluate("el => getComputedStyle(el).visibility") == "hidden", "旁白对话不再显示红色空名牌")
         qa.shot("load_continue")
         qa.click_dialogs()
         # 读档后阵型/等级/养成保持

@@ -45,9 +45,11 @@ export function showDialog(root, lines) {
       if (line.who) {
         portrait.src = unitURL(line.who, TEXT.speakers[line.who] ?? line.who);
         portrait.style.visibility = 'visible';
+        name.style.visibility = 'visible';
         name.textContent = TEXT.speakers[line.who] ?? line.who;
       } else {
         portrait.style.visibility = 'hidden';
+        name.style.visibility = 'hidden'; // 旁白不留红色空名牌
         name.textContent = '　';
       }
       text.textContent = line.text;

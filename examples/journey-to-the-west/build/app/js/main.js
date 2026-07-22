@@ -3,7 +3,7 @@
 import { TEXT } from './text.js';
 import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES } from './data.js';
 import { audio } from './audio.js';
-import { loadAssets, coverURL, bgURL, unitURL } from './assets.js';
+import { loadAssets, coverURL, bgURL, unitURL, bgStyle } from './assets.js';
 import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard } from './ui.js';
 import { unitLevelStats, skillsAtLevel } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend } from './growth.js';
@@ -155,7 +155,7 @@ function showHeroPanel(onClose) {
     const nm = el('div', 'hero-name');
     nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
     nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[key] ?? 0}`));
-    const rec = el('button', `btn stat-btn${(campaign.pendingPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommend);
+    const rec = el('button', `btn stat-btn wide${(campaign.pendingPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommend);
     rec.dataset.allocRecommend = key;
     rec.title = '按推荐权重投入全部可用点';
     rec.addEventListener('click', () => { if (applyRecommend(campaign, key) > 0) rebuild(); });
@@ -223,7 +223,7 @@ function showPetPanel(onClose) {
       const nm = el('div', 'hero-name');
       nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
       nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[pet.key] ?? 0}`));
-      const up = el('button', `btn stat-btn${pet.active ? ' disabled' : ''}`, pet.active ? '已上阵' : '上阵');
+      const up = el('button', `btn stat-btn wide${pet.active ? ' disabled' : ''}`, pet.active ? '已上阵' : '上阵');
       up.dataset.petActive = pet.key;
       up.title = pet.active ? '当前上阵召唤兽' : '下次战斗由此召唤兽出战';
       up.addEventListener('click', () => {
@@ -353,8 +353,17 @@ function showTitle() {
 }
 
 function clearScreens() {
-  app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .modal-mask').forEach((n) => n.remove());
+  app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .modal-mask, .story-bg').forEach((n) => n.remove());
   overworldCtl = null;
+}
+
+// 剧情过场底景:战斗之外的对话段落铺在对应场景图上,不再落在黑虚空
+function setStoryBg(bgKey) {
+  app.querySelector('.story-bg')?.remove();
+  if (!bgKey) return;
+  const bg = el('div', 'story-bg');
+  Object.assign(bg.style, bgStyle(bgKey));
+  app.insertBefore(bg, app.firstChild);
 }
 
 function gotoStage() {
@@ -485,6 +494,7 @@ async function startPrologue() {
       campaign.items.fakefan = 1;
       campaign.items.jinchuang = (campaign.items.jinchuang ?? 0) + 1;
       saveGame(true);
+      setStoryBg('cuiyun'); // 交扇一刻,翠云山为底
       await showDialog(app, TEXT.story.postBattle1);
       startPreFire();
     },
@@ -498,6 +508,7 @@ async function startPreFire() {
   phase = 'overworld';
   audio.playBGM('overworld');
   clearScreens();
+  setStoryBg('huoyan'); // 假扇越扇火越旺,火焰山为底
   await showDialog(app, TEXT.story.preBattle2);
   if (!campaign.items.fakefan) campaign.items.fakefan = 1;
   const r = await runBattle('firemobs', 200, { onceCards: ['fakefan'] });
@@ -516,6 +527,7 @@ async function startPreYumian() {
   phase = 'overworld';
   audio.playBGM('overworld');
   clearScreens();
+  setStoryBg('moyundong'); // 摩云洞前,妖云缭绕
   await showDialog(app, TEXT.story.preYumian);
   await showDialog(app, TEXT.story.yumianPre);
   const r = await runBattle('yumian', 400);
@@ -550,10 +562,12 @@ async function startPreNiu1() {
     campaign.pets.push({ key: 'pixie', active: !campaign.pets.some((p) => p.active) });
   }
   campaign.petJoined = true;
-  campaign.levels.pixie = campaign.levels.pixie ?? Math.max(2, (campaign.levels.wukong ?? 2) - 1);
+  // 金睛兽入队即战力:newCampaign 预置的 Lv1 会让它在决战形同纸糊,按队伍等级-1 入队
+  campaign.levels.pixie = Math.max(campaign.levels.pixie ?? 1, (campaign.levels.wukong ?? 2) - 1);
   saveGame(true);
   toast(app, '辟水金睛兽加入召唤兽!');
   // 变牛魔王骗真扇
+  setStoryBg('cuiyun'); // 回翠云山,芭蕉洞为底
   await showChapter('c3'); // 第三借 · 智取真扇
   await showDialog(app, TEXT.story.pianzhen);
   campaign.items.truefan = 3;
@@ -568,6 +582,7 @@ async function startPreBoss() {
   phase = 'overworld';
   audio.playBGM('overworld');
   clearScreens();
+  setStoryBg('leiji'); // 反骗与决战前夜,积雷山为底
   campaign.petJoined = true;
   if (!campaign.items.truefan) campaign.items.truefan = 3;
   // 牛魔王变假八戒反骗(演出;识破与否影响开局)
@@ -629,12 +644,14 @@ async function showEnding() {
     banner.remove();
     if (i === 2) wrap.classList.add('raining');
   }
-  // 四十九扇断火根(结局演出)
+  // 四十九扇断火根(结局演出):雨势随扇数三档渐强,火根断绝时大雨倾盆
   await showDialog(app, [E[5]]);
   const counter = el('div', 'fan-counter', '第 1 扇');
   wrap.appendChild(counter);
   for (let i = 1; i <= 49; i++) {
     counter.textContent = `第 ${i} 扇`;
+    if (i === 17) wrap.classList.add('rain-2');
+    if (i === 33) wrap.classList.add('rain-3');
     if (i % 7 === 0) audio.sfx('click');
     await sleep(45);
   }
