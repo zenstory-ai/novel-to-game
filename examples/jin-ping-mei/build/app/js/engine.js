@@ -10,6 +10,7 @@ import { createRNG, next, rint, chance, pick } from './rng.js';
 import {
   RIVALS, SERVANTS, CRED_TRUTH, RUMOR_TEXTS, SCHEMES, SCHEME_STEP, SCHEME_WIND,
   DUTIES, TUILU, FESTIVALS, ENDING, YANXI, YE_WEIGHT, YE_COST, YE_HAO, YE_BONUS,
+  SHI_COST, SHI_BONUS, SHI_SEEN_P,
   HAO, LODGING_TEXTS, VISITS,
 } from './data.js';
 
@@ -58,6 +59,8 @@ export function newGame(seed) {
     lodging: 'yue',    // 家主今夜歇在谁院里(开局依礼在正房)
     lodgingHistory: {},// festival → houseId
     yeTonight: false,  // 本令玩家是否已布置「争夜」
+    shiTonight: false, // 本令玩家是否已「结·私」(主动示意,铺垫争夜)
+    shiTrace: null,    // 「结·私」留下的痕迹 {rival} — 结算时化成话柄
     visit: null,       // 本令上门事件(见 VISITS),进行动阶段时掷定
     lastVisit: 0,      // 上次有人上门的节令(保证每2-3令至少一次)
     bestRank: null,
@@ -82,6 +85,14 @@ export function actOf(state) {
 // 明账是否已作废(第79回后)
 export function mingDead(state) {
   return state.festival >= 19;
+}
+
+// 退路的实际开价:薛媒婆递过李衙内的话,「官媒门路」便宜一百两。
+export function tuiluCost(state, line) {
+  const def = TUILU[line];
+  if (!def) return Infinity;
+  if (line === 'guanmei' && state.flags.yaneiLine) return def.cost - 100;
+  return def.cost;
 }
 
 // 六房排行榜:玩家与对手同一量纲(0-100);春梅不上榜,死者撤榜。
@@ -125,6 +136,13 @@ export function actionError(state, a) {
       if (mingDead(state)) return '明账已清,无人可争';
       if (state.yeTonight) return '今夜已布置下了';
       if (p.sifang < YE_COST) return '私房不够置办';
+      return null;
+    }
+    case 'shi': {
+      // 「结·私」:主动示意。只抬本节令留宿权重与一点明账,绝不涨暗账。
+      if (mingDead(state)) return '明账已清,示意也递不到他手里';
+      if (state.shiTonight) return '本令已递过一份了';
+      if (p.sifang < SHI_COST) return '私房不够备这份东西';
       return null;
     }
     case 'tan': {
@@ -173,7 +191,7 @@ export function actionError(state, a) {
         if (!def) return '没有这条路';
         if (state.festival < def.open) return '这条路还没开';
         if (p.tuilu.includes(a.line)) return '这条路已在你手里';
-        if (p.sifang < def.cost) return '私房不够';
+        if (p.sifang < tuiluCost(state, a.line)) return '私房不够';
       }
       return null;
     }
@@ -202,6 +220,7 @@ export function applyAction(state, a) {
     case 'chi': return doChi(state, a);
     case 'cang': return doCang(state, a);
     case 'ye': return doYe(state);
+    case 'shi': return doShi(state);
     case 'verify': return doVerify(state, a);
   }
   return { ok: false, msg: '不识此令' };
@@ -271,6 +290,33 @@ function doYe(state) {
   pushFloat(state, 'ink', '耗', YE_HAO);
   state.yeTonight = true;
   return { ok: true };
+}
+
+// 「结·私」:备一份只送给家主的东西(一方帕子、一支钗、一句话带出去)。
+// 抬本节令留宿抽签的权重(SHI_BONUS,与「争夜」可叠加),添一点宠;
+// 但东西过手留下痕迹——若被仆役瞧见,风声起,那一房也可能拿去当话柄。
+// 支点:只影响明账与留宿权重,绝不涨暗账。
+function doShi(state) {
+  const p = state.player;
+  p.sifang -= SHI_COST;
+  pushFloat(state, 'ink', '私房', -SHI_COST);
+  p.chong = cap100(p.chong + 2);
+  pushFloat(state, 'gold', '宠', 2);
+  state.shiTonight = true;
+  let seen = false;
+  if (chance(state.rng, SHI_SEEN_P)) {
+    seen = true;
+    p.fengsheng = cap100(p.fengsheng + 4);
+    pushFloat(state, 'red', '风声', 4);
+    const pool = Object.values(state.rivals).filter((r) => r.joined && r.alive && !r.offBoard);
+    if (pool.length) {
+      const r = pick(state.rng, pool);
+      r.hostility += 6;
+      state.shiTrace = { rival: r.id };
+      sighting(state, pick(state.rng, ['daian', 'xiaoyu', 'fengmama']), 'player', r.id);
+    }
+  }
+  return { ok: true, seen };
 }
 
 function doJie(state, a, dead) {
@@ -361,9 +407,10 @@ function doCang(state, a) {
   }
   if (a.mode === 'tuilu') {
     const def = TUILU[a.line];
-    p.sifang -= def.cost;
+    const cost = tuiluCost(state, a.line);
+    p.sifang -= cost;
     p.tuilu.push(a.line);
-    pushFloat(state, 'ink', '私房', -def.cost);
+    pushFloat(state, 'ink', '私房', -cost);
     return { ok: true };
   }
   return { ok: false, msg: '不识此藏' };
@@ -547,6 +594,11 @@ export function submitTurn(state) {
 function settleLodging(state, report) {
   if (mingDead(state)) return;
   const p = state.player;
+  // 「结·私」留下的痕迹:东西过了手,话就长在别人舌头上
+  if (state.shiTrace) {
+    const tr = state.rivals[state.shiTrace.rival];
+    if (tr) report.notes.push(`你递出去的那份心意,叫${tr.name}院里的人瞧见了——明日这话就值钱了。`);
+  }
   // 家主深夜迎灯:上门事件里已把今夜的灯定下,不走抽签
   if (state.lodgingOverride === 'player') {
     state.lodging = 'player';
@@ -556,10 +608,10 @@ function settleLodging(state, report) {
     pushFloat(state, 'gold', '宠', 10);
     pushFloat(state, 'gold', '体面', 3);
     report.notes.push(LODGING_TEXTS.playerWin);
-    report.lodging = { house: 'player', ye: false };
+    report.lodging = { house: 'player', ye: false, pan: false };
     return;
   }
-  const bids = [{ id: 'player', w: Math.max(1, p.chong) * (state.yeTonight ? 2.2 : 1) + (state.yeTonight ? YE_BONUS : 0) }];
+  const bids = [{ id: 'player', w: Math.max(1, p.chong) * (state.yeTonight ? 2.2 : 1) + (state.yeTonight ? YE_BONUS : 0) + (state.shiTonight ? SHI_BONUS : 0) }];
   for (const r of Object.values(state.rivals)) {
     if (!r.joined || !r.alive) continue;
     // 李娇儿从不经营家主的心:她的明账是坐出来的体面,换不成灯
@@ -583,10 +635,10 @@ function settleLodging(state, report) {
       // 争来的夜,满宅都看见了:各房敌意直线上升
       for (const r of Object.values(state.rivals)) if (r.joined && r.alive) r.hostility += 12;
       report.notes.push(LODGING_TEXTS.playerYeWin);
-      report.lodging = { house: 'player', ye: true };
+      report.lodging = { house: 'player', ye: true, pan: false };
     } else {
       report.notes.push(LODGING_TEXTS.playerWin);
-      report.lodging = { house: 'player', ye: false };
+      report.lodging = { house: 'player', ye: false, pan: false };
     }
   } else {
     const r = state.rivals[win.id];
@@ -596,11 +648,11 @@ function settleLodging(state, report) {
       pushFloat(state, 'red', '风声', 5);
       r.hostility += 8;
       report.notes.push(LODGING_TEXTS.yeFail.replaceAll('{name}', r.name));
-      report.lodging = { house: r.id, ye: 'fail' };
+      report.lodging = { house: r.id, ye: 'fail', pan: win.id === 'pan' };
     } else {
       const key = win.id === 'pan' ? 'rivalPan' : 'rival';
       report.notes.push(LODGING_TEXTS[key].replaceAll('{name}', r.name));
-      report.lodging = { house: r.id, ye: false };
+      report.lodging = { house: r.id, ye: false, pan: win.id === 'pan' };
     }
   }
 }
@@ -791,6 +843,8 @@ function advance(state, report) {
   for (const r of Object.values(state.rivals)) r.recent = [];
   p.duty = null;
   state.yeTonight = false;
+  state.shiTonight = false;
+  state.shiTrace = null;
   state.lodgingOverride = null;
   state.visit = null; // 没应声的人,节令一过就自己走了
   if (p.jinzu > 0) p.jinzu -= 1;

@@ -2,7 +2,8 @@
 // 引擎在 engine.js(纯逻辑);此文件只做呈现与输入。
 
 import { TEXT } from './text.js';
-import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, ACTION_ECHO } from './data.js';
+import { SERVANTS, SCHEMES, DUTIES, TUILU, ENDING, YE_COST, ACTION_ECHO, LODGING_SCENES } from './data.js';
+import { pick } from './rng.js';
 import * as E from './engine.js';
 import { loadAssets, coverURL, portraitURL, compoundStyle } from './assets.js';
 import { el, clear, toast, spawnFloats, showModal, closeModal, sealButton } from './ui.js';
@@ -228,7 +229,19 @@ function renderAnledger(fullscreenLines = null) {
   const head = el('div', 'an-head');
   head.appendChild(el('span', '', `暗账 · 私房 ${p.sifang} 两`));
   head.appendChild(el('span', '', els.an.classList.contains('open') ? '合' : '开'));
-  head.addEventListener('click', () => { els.an.classList.toggle('open'); renderAnledger(); });
+  head.addEventListener('click', () => {
+    const opening = !els.an.classList.contains('open');
+    els.an.classList.toggle('open');
+    renderAnledger();
+    if (opening) {
+      // 线装账册翻页:展开时,账页从订线处翻开
+      audio.sfx('paper');
+      els.an.querySelector('.an-body')?.classList.add('page-flip');
+    } else {
+      els.an.classList.add('shutting');
+      setTimeout(() => els.an.classList.remove('shutting'), 400);
+    }
+  });
   els.an.appendChild(head);
   const body = el('div', 'an-body');
   const rq = Object.entries(p.renqing).filter(([, v]) => v > 0);
@@ -374,12 +387,21 @@ function openSub(type) {
     rows.push(pickRow('对象', rivalOpts(), 'target'));
   } else if (type === 'jie') {
     title = '结 · 送礼应酬';
+    rows.push(pickRow(TEXT.ui.luLabel, [
+      { id: 'open', text: TEXT.ui.luOpen },
+      {
+        id: 'si', text: TEXT.ui.luPrivate,
+        disabled: E.mingDead(state) || state.shiTonight || state.player.sifang < 40,
+        reason: E.mingDead(state) ? '明账已清' : state.shiTonight ? '本令已递过一份了' : '私房不够',
+      },
+    ], 'lu'));
     rows.push(pickRow('对象', [{ id: 'ximen', text: '家主' }, ...rivalOpts()], 'target'));
     rows.push(pickRow('礼', [{ id: 'small', text: TEXT.ui.giftSmall }, { id: 'big', text: TEXT.ui.giftBig }], 'size'));
     rows.push(pickRow('银出', [
       { id: 'si', text: TEXT.ui.fundSi },
       { id: 'gong', text: TEXT.ui.fundGong, disabled: !state.player.duty, reason: '先担差事' },
     ], 'fund'));
+    rows.push(el('div', 'sub-note dim', TEXT.ui.shiDesc));
   } else if (type === 'mou') {
     title = TEXT.ui.chooseScheme;
     rows.push(pickRow('谋算', Object.entries(SCHEMES).map(([id, s]) => ({ id, text: s.name })), 'scheme'));
@@ -402,8 +424,8 @@ function openSub(type) {
     ], 'mode'));
     rows.push(pickRow('对象', rivalOpts(), 'target'));
     rows.push(pickRow('退路', Object.entries(TUILU).map(([id, t]) => ({
-      id, text: `${t.name} ${t.cost}两`,
-      disabled: state.festival < t.open || state.player.tuilu.includes(id) || state.player.sifang < t.cost,
+      id, text: `${t.name} ${E.tuiluCost(state, id)}两`,
+      disabled: state.festival < t.open || state.player.tuilu.includes(id) || state.player.sifang < E.tuiluCost(state, id),
       reason: state.festival < t.open ? `第${t.open}令开` : state.player.tuilu.includes(id) ? '已在手' : '私房不够',
     })), 'line'));
   }
@@ -438,7 +460,12 @@ function confirmSub(type) {
   let a = null;
   if (type === 'ye') a = { type: 'ye' };
   if (type === 'tan') a = { type, servant: subSel.servant, target: subSel.target };
-  if (type === 'jie') a = { type, target: subSel.target, size: subSel.size ?? 'small', fund: subSel.fund ?? 'si' };
+  if (type === 'jie') {
+    // 路数「私」:不拣对象与礼,直接成一记「结·私」
+    a = subSel.lu === 'si'
+      ? { type: 'shi' }
+      : { type, target: subSel.target, size: subSel.size ?? 'small', fund: subSel.fund ?? 'si' };
+  }
   if (type === 'mou') {
     if (!subSel.scheme || !subSel.target) { toast(app, '先拣齐再定。'); return; }
     a = { type, scheme: subSel.scheme, target: subSel.target };
@@ -465,6 +492,7 @@ function doAction(a) {
   const r = E.applyAction(state, a);
   if (!r.ok) { toast(app, r.msg); return; }
   if (a.type === 'tan') audio.sfx('paper');
+  else if (a.type === 'shi' && r.seen) toast(app, '这份心意,叫旁人瞧见了。');
   else if (a.type === 'verify') {
     audio.sfx(r.rumor?.verified === false ? 'wang' : 'paper');
     toast(app, r.rumor.verified ? '查实了:这话不假。' : '查实了:是假话。');
@@ -487,9 +515,52 @@ function echoFor(a) {
   setTimeout(() => n.remove(), FAST ? 700 : 2900);
 }
 
+// ---------- 留宿定格:全作招牌镜头 ----------
+// 画面压暗,只中签那一房的窗透暖光;赢时帐幔剪影落下,停在那一刻,镜头不进帐子。
+// 输时反打:你的窗黑着,别处的笑语隔着几进院子传来。潘金莲的夜,亮得最久。
+// 台词按 seedRNG 抽取——取种子流的副本抽,不消耗游戏的随机流,逐字节可复现不受影响。
+function playLodgingScene(rep) {
+  const l = rep.lodging;
+  if (!l || E.mingDead(state)) return Promise.resolve();
+  const kind = l.house === 'player' ? (l.ye === true ? 'yewin' : 'win')
+    : l.pan ? 'pan'
+    : l.ye === 'fail' ? 'fail' : 'lose';
+  const rngCopy = { a: state.rng.a };
+  const line = pick(rngCopy, LODGING_SCENES[kind]);
+  const won = kind === 'win' || kind === 'yewin';
+  const sc = el('div', `lodging-scene ls-${kind}`);
+  sc.dataset.house = l.house;
+  sc.dataset.kind = kind;
+  const a = compound.ROOMS[l.house] ?? compound.ROOMS.yue;
+  const spot = el('div', 'ls-spot');
+  spot.style.left = `${a.x}%`;
+  spot.style.top = `${a.y - 10}%`;
+  sc.append(el('div', 'ls-dim'), spot);
+  if (won) {
+    // 帐幔落下:剪影从上垂落,停在落下的那一刻
+    const cur = el('div', 'ls-curtain');
+    cur.style.left = `${a.x}%`;
+    cur.style.top = `${a.y - 16}%`;
+    sc.appendChild(cur);
+  }
+  sc.appendChild(el('div', 'ls-line', line));
+  els.stage.appendChild(sc);
+  audio.sfx('watch'); // 更漏两声,夜里最清楚
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => sc.classList.add('on'));
+    // 正常 3.6 秒(潘金莲的窗多留一拍);fast 模式压缩但保留可观察节拍
+    const hold = FAST ? 420 : (kind === 'pan' ? 4600 : 3600);
+    setTimeout(() => {
+      sc.classList.add('done');
+      setTimeout(resolve, FAST ? 60 : 700);
+    }, hold);
+  });
+}
+
 // ---------- 提交节令 ----------
 async function doSubmit() {
   closeSub();
+  els.stage.querySelector('.lodging-scene')?.remove();
   els.bar.querySelector('#btn-submit').disabled = true;
   audio.sfx('submit');
   const rep = E.submitTurn(state);
@@ -498,10 +569,11 @@ async function doSubmit() {
   renderAll();
   if (rep.rankBefore && rep.rankAfter && rep.rankBefore !== rep.rankAfter) audio.sfx('plank');
   if (rep.faluo) audio.sfx('faluo');
+  // 留宿定格:灯落谁家,这一幕给足
+  await playLodgingScene(rep);
   await wait(300);
   // 结算不弹窗、不设「继续」:顶部短条按时间轴自动推进,玩家只在需要决策时才点
   if (rep.notes?.length) await showSettleStrip(rep.notes, !!rep.faluo);
-  audio.sfx('watch'); // 更漏:节令推进
   if (rep.reveal) {
     const t = state.rivals[rep.reveal.target];
     toast(app, `截得书信:${t.name}私房里约 ${rep.reveal.si} 两。`);
@@ -535,6 +607,25 @@ function showSettleStrip(notes, danger = false) {
 }
 
 // ---------- 节令事件 ----------
+// 节令转场:每进新节令,一块题签(节令名+回目)滑过,配更漏两声。
+// 读档回到同一节令不重播;第79回/结局/收束各有自己的演出,不加题签。
+let lastSlip = 0;
+function festSlip(ev) {
+  if (state.festival === lastSlip) return;
+  lastSlip = state.festival;
+  els.stage.dataset.festShown = `${state.festival}`;
+  const slip = el('div', 'fest-slip');
+  slip.appendChild(el('div', 'fs-name', ev.name));
+  slip.appendChild(el('div', 'fs-chapter', `${ev.chapter} · 第${ev.n}令`));
+  els.stage.appendChild(slip);
+  audio.sfx('watch'); // 更漏:节令推进
+  requestAnimationFrame(() => slip.classList.add('on'));
+  setTimeout(() => {
+    slip.classList.remove('on');
+    setTimeout(() => slip.remove(), FAST ? 80 : 900);
+  }, FAST ? 500 : 2100);
+}
+
 function showEvent() {
   save();
   compound.setAct(actKey());
@@ -543,6 +634,7 @@ function showEvent() {
   if (ev.ending) return endingScreen();
   if (ev.epilogue) return epilogueScreen();
   renderAll();
+  festSlip(ev);
   // 读档回到行动阶段:事件已定,直接复原画面(顺带修掉重复应用事件效果的老问题)
   if (state.phase !== 'event') {
     if (state.visit) showVisitModal();
@@ -703,8 +795,23 @@ function endingScreen() {
   stats.appendChild(el('div', 'zero', TEXT.ui.bestUseless));
   panel.appendChild(stats);
   if (def.source) panel.appendChild(el('div', 'ending-src', def.source));
-  const root = el('div', 'ending-screen');
+  const root = el('div', `ending-screen ending-${e.key}`);
   root.id = 'ending-root';
+  // 定格演出:已有宅院背景 + 滤镜 + 剪影 + 粒子 + 一句题字(粒子摆位确定性,不走随机)
+  const scene = el('div', 'ending-scene');
+  Object.assign(scene.style, compoundStyle('compound/act3'));
+  scene.appendChild(el('div', 'es-veil'));
+  scene.appendChild(el('div', `es-sil es-sil-${e.key}`));
+  const parts = el('div', 'es-parts');
+  for (let i = 0; i < 12; i++) {
+    const s = el('span');
+    s.style.left = `${(i * 83 + 5) % 97}%`;
+    s.style.animationDelay = `${((i * 7) % 11) * 0.6}s`;
+    parts.appendChild(s);
+  }
+  scene.appendChild(parts);
+  scene.appendChild(el('div', 'es-tag', def.tag));
+  root.appendChild(scene);
   root.appendChild(panel);
   els.stage.appendChild(root);
   const b = el('button', 'big-btn primary', TEXT.btn.next);

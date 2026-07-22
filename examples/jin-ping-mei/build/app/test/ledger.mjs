@@ -80,6 +80,7 @@ section('明暗两账的不对称(全程扫描)');
   const acts = (f) => [
     { type: 'tan', servant: 'xuemei', target: 'yue' },
     { type: 'jie', target: 'ximen', size: 'small', fund: 'si' },
+    { type: 'shi' },
     { type: 'ye' },
     { type: 'chi', duty: 'yanyan' },
     { type: 'cang', mode: 'save' },
@@ -371,6 +372,8 @@ section('留宿与争夜');
   const rep = submitTurn(s);
   ok(typeof s.lodging === 'string' && s.lodgingHistory[1] === s.lodging, '节令结算判定留宿并记录');
   ok(rep.notes.some((n) => n.includes('灯')), '结算里有灯的去向');
+  ok(rep.lodging && typeof rep.lodging.house === 'string' && typeof rep.lodging.pan === 'boolean',
+    `留宿回报携定格所需字段(house=${rep.lodging?.house}, pan=${rep.lodging?.pan})`);
   // 同种子 A/B:争夜显著抬高留宿归己(布置不走 RNG,抽签位置一致,差异全在权重)
   let yeWins = 0, noWins = 0;
   for (let seed = 100; seed < 130; seed++) {
@@ -455,6 +458,37 @@ section('上门事件分支');
   submitTurn(s);
   ok(s.lodging === 'player', '迎灯当夜留宿归己(不走抽签)');
   ok(s.visit === null, '节令一过,未应的门自己走了');
+  // 第三轮加厚:四个新登门事件,分支都有代价
+  s.visit = { id: 'ximen_zui' };
+  const cz0 = s.player.chong, hz0 = s.player.hao, hp0 = s.rivals.pan.hostility;
+  r = applyVisitChoice(s, 'stay');
+  ok(r.ok && s.player.chong === cz0 + 9 && s.player.hao === hz0 + 6 && s.rivals.pan.hostility === hp0 + 12,
+    '家主醉后走错院:留他 → +宠+耗,别房敌意起');
+  s.visit = { id: 'ximen_zui' };
+  const ct0 = s.player.tiyan, cc0 = s.player.chong, ry0 = s.player.renqing.yue;
+  r = applyVisitChoice(s, 'back');
+  ok(r.ok && s.player.tiyan === ct0 + 6 && s.player.chong === cc0 - 5 && s.player.renqing.yue === ry0 + 8,
+    '家主醉后走错院:送回正房 → +体面−宠,大娘子记情');
+  s.visit = { id: 'pan_jieren' };
+  const ap0 = s.rivals.pan.affection, fw0 = s.player.fengsheng;
+  r = applyVisitChoice(s, 'clever');
+  ok(r.ok && s.rivals.pan.affection === ap0 + 18 && s.player.fengsheng === fw0 + 5,
+    '借伶俐丫头 → 她领情,你屋里的事她也知道了');
+  s.visit = { id: 'pan_jieren' };
+  const hp1 = s.rivals.pan.hostility;
+  r = applyVisitChoice(s, 'refuse');
+  ok(r.ok && s.rivals.pan.hostility === hp1 + 20, '一个也不借 → 当场结怨');
+  s.visit = { id: 'chunmei_chuanhua' };
+  const cc1 = s.player.chong, hh1 = s.player.hao;
+  r = applyVisitChoice(s, 'catch');
+  ok(r.ok && s.player.chong === cc1 + 7 && s.player.hao === hh1 + 5, '接住春梅的下半句 → +宠+耗');
+  s.visit = { id: 'xuemei_yanei' };
+  r = applyVisitChoice(s, 'catch');
+  ok(r.ok && !!s.flags.yaneiLine, '接住李衙内的风声 → 记下这条退路伏笔');
+  s.visit = { id: 'xuemei_yanei' };
+  r = applyVisitChoice(s, 'dodge');
+  ok(r.ok && !!s.flags.yaneiShut, '岔开话 → 她从此不再提');
+  ok(!s.visit, '新登门事件表态后清场');
   // 频次:每 2-3 令至少一次(掷定走 seedRNG)
   const g = newGame(42);
   let count = 0, last = 0, maxGap = 0;
@@ -466,6 +500,71 @@ section('上门事件分支');
   }
   ok(count >= 6, `全程上门 ${count} 次(≥6)`);
   ok(maxGap <= 3, `上门间隔不超过 3 令(最大 ${maxGap})`);
+}
+
+// ================= 15. 「结·私」主动示意 =================
+section('结·私(主动示意)');
+{
+  const s = newGame(42);
+  applyEventChoice(s, 'si');
+  const si0 = s.player.sifang, ap0 = s.ap, c0 = s.player.chong;
+  const rq0 = snap(s.player.renqing), tl0 = s.player.tuilu.length;
+  let r = applyAction(s, { type: 'shi' });
+  ok(r.ok && s.ap === ap0 - 1 && s.player.sifang === si0 - 40, '结·私 耗1行动+40私房');
+  ok(s.shiTonight && s.player.chong === c0 + 2, '结·私 记下铺垫并添一点宠(明账)');
+  ok(snap(s.player.renqing) === rq0 && s.player.tuilu.length === tl0, '结·私 不涨任何暗账');
+  ok(!applyAction(s, { type: 'shi' }).ok, '一令只能递一份');
+  // 节令一过,铺垫清空
+  submitTurn(s);
+  ok(!s.shiTonight && !s.shiTrace, '节令过后铺垫与痕迹清空');
+  // 同种子 A/B:结·私显著抬高留宿归己(与「争夜」同一判据)
+  let shiWins = 0, noWins = 0;
+  for (let seed = 100; seed < 130; seed++) {
+    const run = (shi) => {
+      const g = newGame(seed);
+      for (let f = 1; f <= 5; f++) {
+        if (g.phase === 'event') { if (g.event.choices?.length) applyEventChoice(g, g.event.choices[0].id); else skipEventIfNoChoice(g); }
+        if (g.visit) applyVisitChoice(g, visitDef(g).choices[0].id);
+        if (f === 5) { g.player.chong = 55; g.player.sifang = 500; if (shi) applyAction(g, { type: 'shi' }); }
+        submitTurn(g);
+      }
+      return g.lodgingHistory[5];
+    };
+    if (run(true) === 'player') shiWins++;
+    if (run(false) === 'player') noWins++;
+  }
+  ok(shiWins > noWins, `结·私显著抬高中签(${shiWins} vs ${noWins})`);
+  // 痕迹:被瞧见时风声起、结算里有话柄(遍历种子必有一例)
+  let seenCase = null;
+  for (let seed = 1; seed <= 60 && !seenCase; seed++) {
+    const g = newGame(seed);
+    applyEventChoice(g, 'gong');
+    const rr = applyAction(g, { type: 'shi' });
+    if (rr.ok && rr.seen) seenCase = g;
+  }
+  ok(!!seenCase, '存在被仆役瞧见的种子');
+  if (seenCase) {
+    ok(seenCase.player.fengsheng >= 4 && seenCase.shiTrace?.rival, '被瞧见 → 风声起 + 痕迹记下哪一房');
+    const rep2 = submitTurn(seenCase);
+    ok(rep2.notes.some((n) => n.includes('瞧见')), '结算里那句话成了话柄');
+  }
+  // 薛媒婆的路子:接住李衙内的风声,官媒门路便宜一百两
+  const g2 = newGame(42);
+  for (let f = 1; f <= 16; f++) runFestival(g2, f === 1 ? { choice: 'si' } : {});
+  skipEventIfNoChoice(g2);
+  g2.player.sifang = 350;
+  ok(!applyAction(g2, { type: 'cang', mode: 'tuilu', line: 'guanmei' }).ok, '官媒门路原价400,350两不够');
+  g2.flags.yaneiLine = 10;
+  const rr2 = applyAction(g2, { type: 'cang', mode: 'tuilu', line: 'guanmei' });
+  ok(rr2.ok && g2.player.sifang === 50, '接住风声后官媒门路300两可开');
+  // 第79回后主动示意不可用
+  const late = newGame(42);
+  for (let f = 1; f <= 18; f++) runFestival(late, f === 1 ? { choice: 'gong' } : {});
+  skipEventIfNoChoice(late);
+  submitTurn(late);
+  if (late.event.choices?.length) applyEventChoice(late, late.event.choices.at(-1).id);
+  else skipEventIfNoChoice(late);
+  ok(!applyAction(late, { type: 'shi' }).ok, '第79回后「结·私」不可用');
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);

@@ -74,6 +74,26 @@ export function createCompound(stage) {
     fgLayer.style.transform = `translate(${(dx * 6).toFixed(1)}px, ${(dy * 3).toFixed(1)}px)`;
   });
 
+  // ---------- 立绘微交互:悬到某一房,该房前倾、名牌浮起、其余略暗 ----------
+  // 事件委托在 roomLayer 上(fig 每次 render 重建,委托不丢)。
+  let hoverId = null;
+  roomLayer.addEventListener('pointerover', (e) => {
+    const fig = e.target.closest?.('.room-fig');
+    if (!fig || hoverId === fig.dataset.house) return;
+    hoverId = fig.dataset.house;
+    roomLayer.classList.add('hover-others');
+    for (const f of roomLayer.querySelectorAll('.room-fig')) {
+      f.classList.toggle('hover', f.dataset.house === hoverId);
+    }
+  });
+  roomLayer.addEventListener('pointerout', (e) => {
+    const fig = e.target.closest?.('.room-fig');
+    if (!fig || (e.relatedTarget && fig.contains(e.relatedTarget))) return;
+    hoverId = null;
+    roomLayer.classList.remove('hover-others');
+    for (const f of roomLayer.querySelectorAll('.room-fig')) f.classList.remove('hover');
+  });
+
   // ---------- 氛围粒子(局部 PRNG,密度克制;页面隐藏即停) ----------
   const pctx = particleCanvas.getContext('2d');
   let pType = 'none';

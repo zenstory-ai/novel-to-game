@@ -230,6 +230,20 @@ def main():
             ok(page.locator(".rumor-card").count() >= 1, "传闻卡出现")
             qa.shot("f1_actions")
             ok(asym.get('m0') == asym.get('m1') and asym.get('si1', 0) > asym.get('si0', 0), "「藏」只涨暗账不涨明账")
+            # 立绘微交互:悬到某一房,该房前倾、名牌浮起、其余略暗
+            page.hover(".fig-player")
+            page.wait_for_timeout(150)
+            ok(page.locator(".room-layer.hover-others").count() == 1
+               and page.locator(".room-fig.hover").count() == 1, "立绘悬停微交互(前倾+压暗他房)")
+            # 暗账:展开是线装账册翻页
+            page.click(".an-head")
+            page.wait_for_timeout(120)
+            ok(page.locator(".anledger.open").count() == 1
+               and page.locator(".an-body.page-flip").count() == 1, "暗账翻页展开")
+            qa.shot("anledger_open")
+            page.click(".an-head")
+            page.wait_for_timeout(120)
+            ok(page.locator(".anledger.open").count() == 0, "暗账合上")
             sky1 = qa.ev("document.querySelector('.tint-layer')?.dataset.sky ?? ''")
             qa.submit()
             ok(qa.festival() == 2, "进入节令2")
@@ -237,6 +251,15 @@ def main():
             ok(page.locator(".room-glow.lit").count() == 1, "留宿灯光:只有一房的窗亮着")
             house = qa.ev("document.querySelector('.room-glow.lit')?.dataset.lodging ?? ''")
             ok(house != "" and house == qa.ev("__game.state().lodging"), f"亮灯的一房与引擎留宿一致({house})")
+            # 留宿定格:全作招牌镜头可观察——定格的一房与引擎判定一致,配一句留白台词
+            sc = page.locator(".lodging-scene")
+            ok(sc.count() == 1, "留宿定格已上演")
+            ok(sc.first.get_attribute("data-house") == qa.ev("__game.state().lodging"), "定格的一房与引擎留宿一致")
+            ok(sc.first.get_attribute("data-kind") in ("win", "yewin", "pan", "fail", "lose"), "定格按输赢分型")
+            ok(len(page.locator(".lodging-scene .ls-line").inner_text()) > 4, "定格配一句留白台词")
+            qa.shot("lodging_scene")
+            # 节令转场:题签已滑过(舞台记下所到节令)
+            ok(qa.ev("document.getElementById('stage').dataset.festShown ?? ''") == "2", "节令转场题签生效")
             # F2-F6:走完第一幕
             first_false_seen = False
             for f in range(2, 7):
@@ -259,6 +282,15 @@ def main():
                     if i == 0: qa.seal("tan", ["servant:xuemei", "target:yue"])
                     else: qa.seal("cang", ["mode:save"])
                 qa.actions_phase(pol, limit=2)
+                if f == 2:
+                    # 结·私:玩家主动示意——花私房备一份只给家主的东西,记下本令铺垫
+                    sf0 = qa.ev("__game.state().player.sifang")
+                    ap0 = qa.ev("__game.state().ap")
+                    ok(qa.seal("jie", ["lu:si"]), "结·私子档可打开")
+                    ok(qa.ev("__game.state().shiTonight") == True
+                       and qa.ev("__game.state().player.sifang") == sf0 - 40
+                       and qa.ev("__game.state().ap") == ap0 - 1, "结·私:耗40私房1行动,记下铺垫")
+                    ok(qa.ev("__game.state().player.tuilu.length") == 0, "结·私不涨暗账")
                 if f == 5:
                     first_false_seen = qa.ev("__game.state().rumors.some(r=>r.truth===false)")
                 qa.submit()
@@ -346,6 +378,12 @@ def main():
             ok(ending in ("liyanei", "niangjia", "shoufu", "liuluo", "faluo"), f"结局判定({ending})")
             txt = page.locator("#ending-root").inner_text()
             ok("历史最高位次" in txt and "于结局无所增益" in txt, "结算点破排行榜与结局无关")
+            # 结局定格演出:分型场景、剪影、粒子、题字
+            ok(page.locator(f"#ending-root.ending-{ending}").count() == 1, f"结局定格分型(ending-{ending})")
+            ok(page.locator("#ending-root .ending-scene").count() == 1, "结局定格场景在")
+            ok(page.locator(f"#ending-root .es-sil-{ending}").count() == 1, "结局剪影在")
+            ok(page.locator("#ending-root .es-parts span").count() >= 8, "结局粒子在")
+            ok(len(page.locator("#ending-root .es-tag").inner_text()) > 4, "结局题字在")
             qa.shot("ending")
             page.click("#btn-ending-next")
             page.wait_for_timeout(1500)
@@ -360,6 +398,19 @@ def main():
             page.wait_for_selector("#btn-start", timeout=10000)
             ok(qa.ev("!localStorage.getItem('jpm_save_v1')"), "重开后旧档已清")
             qa.shot("restart")
+
+            # ---------- 双视口不破版 ----------
+            section("1280×800 与 1920×1080")
+            page.click("#btn-start")
+            page.wait_for_selector("#modal-event", timeout=10000)
+            for w, h in ((1280, 800), (1920, 1080)):
+                page.set_viewport_size({"width": w, "height": h})
+                page.wait_for_timeout(300)
+                box = page.locator("#stage").bounding_box()
+                ok(box is not None and box["width"] <= w + 1 and box["height"] <= h + 1,
+                   f"{w}×{h} 舞台不破版")
+                ok(page.locator("#modal-event").is_visible(), f"{w}×{h} 事件卡可见")
+                qa.shot(f"viewport_{w}x{h}")
 
             browser.close()
     finally:
