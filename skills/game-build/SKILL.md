@@ -35,7 +35,9 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 保护原文。
 
 可复用技法见 [production-techniques.md](references/production-techniques.md)：灰盒先行 +
-皮肤层（资产可替换）、可复现的种子随机、把实现模型当导演对象驱动、多视角试玩闭环。
+皮肤层（资产可替换）、可复现的种子随机、把实现模型当导演对象驱动、多视角试玩 → 设计期
+品类保真门、手感打磨(juice) 清单（按类型取用、动效可关）、批量资产受管子流程（视觉键
+清单 + 一致性审查）。
 
 ## 完成循环
 
