@@ -18,7 +18,7 @@ description: "NovelToGame 总入口。把任意语言的原始小说、拆文库
 `PRODUCT_BRIEF.md`。用户不在场时按默认推进，但把每条标为未确认假设列出。
 
 `PRODUCT_BRIEF.md` 是与 `SOURCE_BIBLE.md` 并列的上游事实，进入"不得下游静默改写"的保护
-范围：概念继承它的产品定义，美术读它的画风与平台，构建读它的目标形态。可玩交付始终是
+范围（见 [pipeline-contract.md](references/pipeline-contract.md)）。可玩交付始终是
 一个**网页可玩的垂直切片**，但它要按 `PRODUCT_BRIEF` 里的目标平台惯例来设计（竖屏/横屏、
 单局时长、控制方式、画风上限）。
 

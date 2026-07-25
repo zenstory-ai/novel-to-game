@@ -1,6 +1,6 @@
 # 引擎选型参考：intake 阶段的生产引擎默认值锚点
 
-> 用途：intake 给用户提"有信息量的引擎默认值"时的速查底本。合成自四块联网研究（网页/H5、客户端/移动、小程序/小游戏、品类专用+原型层），共 **34 次 WebSearch**。**这是起点参考，不是结论**——落地前须复核（见文末）。
+> 用途：intake 给用户提"有信息量的引擎默认值"时的速查底本。合成自四块联网研究（网页/H5、客户端/移动、小程序/小游戏、品类专用+原型层）。**这是起点参考，不是结论**——落地前须复核（见文末）。
 
 ## 一、硬规则：引擎受什么约束 & 两层引擎必须分清
 
@@ -75,13 +75,9 @@
 
 **联网不可用时**：不得把本文当权威，须在输出里显式标注 **"凭记忆·未核实"**，让下游知道这是待验证锚点而非定论。
 
-## 六、各块 WebSearch 核实情况汇总
+## 六、核实情况
 
-| 研究块 | WebSearch 次数 | 已联网核实 | 凭记忆·未核实 |
-|---|---|---|---|
-| **网页 / H5** | 11 | Phaser 4.1 Salusa（2026-04-30, MIT）、PixiJS v8.16、Three.js WebGPU r171+/r184、Babylon 9.0、PlayCanvas 引擎 v2.20.6（MIT/云编辑器付费）、Godot 4.6（Web 仅 WASM+WebGL2、无 WebGPU）、Unity Web（原 WebGL 更名/Personal 免费/Runtime Fee 2024 取消）、Cocos 3.8.6 LTS（WebGPU 自 3.6.2） | PixiJS=MIT、Babylon=Apache-2.0、Cocos 引擎免费无版税（仅核实版本与能力，未逐一拉 LICENSE 原文）；表中首屏/包体为经验判断、非实测 |
-| **客户端 / 移动** | 8 | Unity 6 + Runtime Fee 取消、Unreal 5.7 + 5% 分成 + $1M 门槛、Godot（MIT/Web 仅 WebGL2/无官方 WebGPU/4.7）、Cocos 3.8（免费/微信·抖音导出/亚洲定位）、GameMaker（非商用免费/HTML5/$100 一次性）、Unity·Cocos 微信+抖音导出链路、团结引擎 | Godot 无官方主机导出（需 W4 等第三方移植）、GameMaker 主机档 $800/年（出自 2023 报道恐已变）、UE6 仅路线图未发布（生产以 5.7 为准） |
-| **小程序 / 小游戏** | 8 | Cocos 3.8.8（2025）+ 授权、LayaAir 3.3（3.4 beta）+ 3D 市占、Egret 停运、微信/抖音包体+分包（主包 4MB/微信 30MB/抖音 20MB）、Three.js 经 weapp-adapter 可行性、备案/版号合规 | 成人/色情"全面禁止"（未取回渠道条款原文，按监管常识给出并标注）、抖音原生 `tt.*` 细节、Unity 团结引擎小游戏宿主最新商业条款 |
-| **品类专用 + 原型层** | 7 | 全部核实：Ren'Py 版本/许可/Web 导出、TyranoScript/Builder 导出+商用、Naninovel 价格/WebGL、RPG Maker MZ HTML5/移动导出+商用、Twine 版本/许可/HTML 输出、Ink/inkjs 许可+Web 端口、Phaser 4/Three.js 现状 | 仅"Ren'Py Web 仍 beta、存在体积与移动端限制"属官方长期口径、本次未逐条复验（辅助判断） |
-
-**总计 34 次 WebSearch**。整体可信度：**版本号与平台能力多为近期联网核实**；**部分许可原文（PixiJS/Babylon/Cocos 的 LICENSE、成人内容渠道条款）为凭记忆或监管常识**，落地前按第五节复核。
+版本号与平台能力多为近期联网核实。以下仍属凭记忆或监管常识、落地前按第五节复核：
+PixiJS/Babylon/Cocos 的 LICENSE 原文、成人内容渠道条款、GameMaker 主机档价格、Godot 主机
+导出路径、抖音原生 `tt.*` 细节、Unity 团结引擎小游戏最新条款；表中首屏/包体多为经验判断
+而非实测。
