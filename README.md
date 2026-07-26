@@ -138,9 +138,15 @@ examples/journey-to-the-west/
 
 ## 完整示例 —— 《金瓶梅》
 
-从公版崇祯本提炼的《大宅两本账》——一款回合制宅斗策略：明面的位次榜与暗地的私房账此消彼长，到第七十九回家主暴亡、明账一笔勾销。**成人向（17+），情欲作权力货币，笔法留白、不涉露骨**。**在线试玩：[jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
+从公版崇祯本重制的《风月总账》——一款 6 日男性第一人称成人后宫关系模拟：白日经营钱、势与秘密，夜里推进吴月娘、潘金莲、李瓶儿三条独立路线，次晨接住嫉妒、索取与帮助。**18+；关系与明确意愿门控亲密场景；3 种可达收束；永久场景册。** **在线试玩：[jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
 
 ![标题画面](examples/jin-ping-mei/screenshots/title.jpg)
+
+| 次晨回响 | 中秋冲突 | 专一收束 |
+|---|---|---|
+| ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
+
+> 公开 README 只展示安全截图；年龄确认后的 18+ 路线 CG 不嵌入此页。
 
 <details>
 <summary>展开示例的产出目录树</summary>
@@ -148,10 +154,10 @@ examples/journey-to-the-west/
 ```text
 examples/jin-ping-mei/
 ├── source/金瓶梅.txt + SOURCE.md   # 公版崇祯本百回原著（删节洁本）+ expurgate.py 可复现生成
-├── PRODUCT_BRIEF.md                # 需求 intake：网页·中文·宅斗对标熹妃传/恋与·成人向
-├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：名分与恩宠、私财、情报网、节令时钟
+├── PRODUCT_BRIEF.md                # 需求 intake：网页·中文·男性主观后宫·18+
+├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：西门庆资源债、三名女主目标与边界
 ├── concepts/CONCEPT.md             # 三个真正不同的概念，含入选方案与硬否决
-├── design/GAME_DESIGN.md           # 系统：明暗两账、五类行动、风声与发落、五种结局
+├── design/GAME_DESIGN.md           # 系统：6 日日程、人物账、次晨回响、三种收束
 ├── design/ART_DIRECTION.md         # 绣像视觉风格、宅院剖面、功能三色、招牌画面
 ├── build/BUILD_BRIEF.md            # 交给编码智能体的、不挑模型、范围明确的构建说明
 └── build/app/                      # 已构建的可玩游戏——运行方式见 build/app/RUN.md

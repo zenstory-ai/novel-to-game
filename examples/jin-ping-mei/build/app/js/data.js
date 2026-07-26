@@ -1,555 +1,193 @@
-// 数据表驱动:新增节令/传闻/谋算/对手只加数据,不改引擎。
-// 内容规范:成人向文学情色,服务争宠幻想,两情/权谋驱动;仅成年角色,未成年零涉及。
+// 《风月总账》设计数据。成人节点只允许 HEROINE_IDS 中的三名成年角色。
 
-// ---------- 结局判定阈值 ----------
-export const ENDING = {
-  siHigh: 800,   // 私房高档
-  siMid: 300,    // 私房中档
-  windHigh: 60,  // 风声高位
-};
+export const HEROINE_IDS = Object.freeze(['wu_yueniang', 'pan_jinlian', 'li_pinger']);
 
-// ---------- 对手(五位有目标的行动者;李娇儿只上榜、不主动出手) ----------
-export const RIVALS = {
-  yue:     { name: '吴月娘', join: 1, ming: 60, si: 300, style: 'steady' },
-  lijiaoer:{ name: '李娇儿', join: 1, ming: 35, si: 260, style: 'hoarder' },
-  xuee:    { name: '孙雪娥', join: 1, ming: 18, si: 40,  style: 'chaos' },
-  pan:     { name: '潘金莲', join: 4, ming: 26, si: 20,  style: 'aggressive' },
-  pinger:  { name: '李瓶儿', join: 6, ming: 38, si: 900, style: 'defensive' },
-  chunmei: { name: '庞春梅', join: 1, ming: 12, si: 5,   style: 'climber', offBoard: true },
-};
+export const HEROINES = Object.freeze({
+  wu_yueniang: {
+    id: 'wu_yueniang', short: '月娘', name: '吴月娘', house: '正堂', glyph: '正',
+    portrait: 'heroine/yue', close: 'heroine/yue/close', shape: '方签',
+    want: '名分、秩序、公开尊重', gives: '家宅背书与正堂裁决',
+    voice: '她不抬嗓门。账册一合，谁都知道这话到头了。',
+    colors: ['#203b3a', '#b6995f'],
+  },
+  pan_jinlian: {
+    id: 'pan_jinlian', short: '金莲', name: '潘金莲', house: '花园角门', glyph: '扇',
+    portrait: 'heroine/pan', close: 'heroine/pan/close', shape: '斜签',
+    want: '被看见、被优先、能插手局势', gives: '尖消息与敢出手的同谋',
+    voice: '她的话又快又热。你若躲，她就追到人前问。',
+    colors: ['#7f231f', '#c88b69'],
+  },
+  li_pinger: {
+    id: 'li_pinger', short: '瓶儿', name: '李瓶儿', house: '瓶儿私院', glyph: '匣',
+    portrait: 'heroine/pinger', close: 'heroine/pinger/close', shape: '圆签',
+    want: '安全、保护、情感确定', gives: '银钱、货路与一处私人依靠',
+    voice: '她说话软。说到钱和安危，一字也不绕。',
+    colors: ['#8d6a32', '#ead9b4'],
+  },
+});
 
-// ---------- 仆役情报网 ----------
-export const SERVANTS = {
-  daian:    { price: 30, closeTo: null },      // 玳安:谁都能聊,但嘴不稳
-  xiaoyu:   { price: 20, closeTo: 'yue' },
-  fengmama: { price: 20, closeTo: 'pinger' },
-  xuemei:   { price: 0,  closeTo: 'player' },  // 薛媒婆:你的旧识,不收钱
-};
+export const DAY_NAMES = ['正堂起账', '药材被扣', '掌柜偷货', '门外有人', '中秋宴', '风月总账'];
 
-// 可信度 → 为真的概率
-export const CRED_TRUTH = { '高': 0.9, '中': 0.7, '低': 0.5 };
-
-// 传闻模板:{name}=对象房。kind 用于证实后可知的事实类型。
-// 「争」的一档把情欲写成权力货币:灯、更漏、座次、赏赐,各房都懂这个价。
-export const RUMOR_TEXTS = {
-  cang: [
-    '听说{name}院里这几个月只进不出，箱笼都换了新锁。',
-    '{name}房里前两日叫人抬了两口箱子出去，不知去了哪儿。',
-    '{name}屋里的丫头去当铺回来，手里空着，脸上却松快。',
-    '{name}把陪嫁的那对镯子摘了，说是压箱底，压的什么箱底谁知道。',
-    '{name}院里近日总在夜里点灯理账，理到很晚。',
-    '{name}托了外头的人写契，写的什么，写契的先生不肯说。',
-  ],
-  zheng: [
-    '家主前儿把新到的缎子先紧着{name}院里挑了。',
-    '节下的席面，{name}的座次又往前挪了一位。',
-    '{name}院里的灯，这几夜亮得都比别处久。',
-    '家主昨儿回来，先拐进了{name}院里，到四更才听见关门。',
-    '{name}房里新换了一副头面，是外头铺子里最好的水头。',
-  ],
-  scheme: [
-    '有人瞧见{name}院里的人，半夜往{other}院里去。',
-    '{name}房里的妈妈近日总往{other}院门口凑，没安好心。',
-    '{name}问过{other}屋里的丫头两回话，问的都是不该问的。',
-    '{name}使人打听{other}的娘家在哪条街上，打听得很细。',
-    '{name}和{other}院里那个惯会传话的，近来走得近。',
-  ],
-  hostile: [
-    '{name}提起你就咬牙，当心些。',
-    '{name}院里放出话来，说你的闲话早晚要递到大娘子跟前。',
-    '{name}院里的灯这几夜黑得早，黑得早的人，心里都有事。',
-  ],
-  calm: [
-    '{name}院里安安静静的，没什么动静。',
-    '{name}这几日只在屋里做针线，哪儿也没去。',
-    '{name}院门早早就闭了，连丫头也不大出来走动。',
-    '打{name}窗下过了两回，只听见翻书页的声音。',
-    '{name}近日不大说话，问什么都只应一声。',
-    '{name}院里那株石榴谢了，也没见人去扫。',
-    '{name}这几日照常起居，该请安请安，该回房回房。',
-    '厨下说{name}院里的饭食减了一样，别的一切照旧。',
-  ],
-};
-
-// ---------- 谋算种类 ----------
-export const SCHEMES = {
-  sanbu:   { name: '散布流言', desc: '暗中散播对某房不利的说法', mingHit: 14, selfTiyan: 4 },
-  duozhang:{ name: '夺其差事', desc: '运作让某房失去手中差事',   mingHit: 18, selfTiyan: 8 },
-  zuoshi:  { name: '坐实传闻', desc: '把一条已证实的传闻递到明处', mingHit: 22, selfTiyan: 6, needRumor: true },
-  jiexin:  { name: '截留书信', desc: '截看某房与外间往来的书信',   mingHit: 6,  selfTiyan: 2, reveal: true },
-};
-export const SCHEME_STEP = 34;      // 每次「谋」推进的进度
-export const SCHEME_WIND = 6;       // 每次推进升起的风声
-
-// ---------- 差事 ----------
-export const DUTIES = {
-  zhongkui: { tiyan: 12, chong: 4, gong: 120, desc: '执掌中馈，一宅的饭食人事从你手里过' },
-  puzhang:  { tiyan: 10, chong: 3, gong: 260, desc: '理铺子的账，公中银由你经手' },
-  yanyan:   { tiyan: 14, chong: 5, gong: 80,  desc: '操办节令宴席，体面来得最快' },
-};
-
-// ---------- 退路 ----------
-export const TUILU = {
-  niangjia: { name: '娘家门路', open: 3,  cost: 200, desc: '薛媒婆替你走动，娘家那边先递了话' },
-  puzi:     { name: '铺子门路', open: 9,  cost: 300, desc: '韩道国的绒线铺里，有你一分子' },
-  guanmei:  { name: '官媒门路', open: 16, cost: 400, desc: '薛媒婆说，李衙内那边，她替你先看一看' },
-};
-
-// ---------- 24 节令 ----------
-// choice.effects: {tiyan,chong,sifang,feng,gong,renqing:{who:delta},tuilu,flag,setVar}
-export const FESTIVALS = [
-  { n: 1, act: 1, name: '过门', chapter: '第七回',
-    intro: '过门第三日，正堂见礼。上首坐着大娘子吴月娘，底下李娇儿、孙雪娥拿眼风一寸一寸量你。你的陪嫁箱笼还堆在仪门外没搬完，扎眼。\n吴月娘拨着茶，半天不抬眼：「三娘带着家底进门，是福气。这宅里的账，也得一样一样学着上。」\n账房先生执笔待记。你的嫁妆上千两，还有两张南京拔步床、三二百筒三梭布。',
-    choices: [
-      { id: 'gong', text: '登记入公中', hint: '+体面 +宠',
-        effects: { tiyan: 15, chong: 10, sifang: 200 },
-        result: '账房记下你的名字，大娘子当众赞了一句「懂事」。满宅都看见了你的体面。' },
-      { id: 'si', text: '留一半在自己名下', hint: '+私房',
-        effects: { tiyan: 3, sifang: 600 },
-        result: '你把一半箱笼径直抬回自己院里。没人说什么，但也没有人为你说什么。' },
-    ] },
-  { n: 2, act: 1, name: '元宵', chapter: '第十五回',
-    intro: '元宵放灯。堂屋设席，座次就是名分。排行榜今夜第一次挂出来。',
-    settle: 'yanxi' },
-  { n: 3, act: 1, name: '清明', chapter: '第二十五回',
-    intro: '清明烧纸。仆役们开始往你院里走动——传闻可买了。薛媒婆说，娘家那条路，随时可以替你开。',
-    grantRumor: { servant: 'xiaoyu', target: 'xuee', cred: '高', truth: true } },
-  { n: 4, act: 1, name: '端午', chapter: '第九回',
-    intro: '潘金莲入门，行拜见礼，排行第五。她没有嫁妆，没有娘家，只有一双眼睛。\n她给你见礼，腰弯得很浅，眼睛没离你腕上的镯子：「早听说三姐的嫁妆，够咱们几房嚼用一年。今日一见，果然。」\n满屋都听见了，都等着看你接不接。排行榜添了一块新木牌。',
-    join: ['pan'] },
-  { n: 5, act: 1, name: '七夕', chapter: '第二十二回',
-    intro: '七夕乞巧。宅里的嘴多起来——从这一令起，买来的传闻里会有假的。',
-    grantRumor: { servant: 'daian', target: 'yue', cred: '中', truth: false } },
-  { n: 6, act: 1, name: '中秋', chapter: '第十九回',
-    intro: '李瓶儿携资入门，排行第六。她带来的银子比你的还多。今夜满院灯火，座次要重排了。',
-    join: ['pinger'], settle: 'yanxi', dutyRisk: true },
-  { n: 7, act: 2, name: '冬至', chapter: '第三十回',
-    intro: '官哥儿降生，西门庆买得金吾卫副千户的官身。生子加官，全宅到了顶点。从这一令起，「谋」与风声入局。',
-    unlockMou: true },
-  { n: 8, act: 2, name: '立春', chapter: '第三十三回',
-    intro: '开春。各房的眼神都变了——有了官哥儿，这宅子里的每一笔账都要重算。' },
-  { n: 9, act: 2, name: '花朝', chapter: '第三十六回',
-    intro: '花朝节。绒线铺新开张，韩道国做了伙计。铺子那条门路，如今可以走了。' },
-  { n: 10, act: 2, name: '佛诞', chapter: '第四十回',
-    intro: '浴佛。中馈之权要重新分派，大娘子在看谁接。',
-    choices: [
-      { id: 'zheng', text: '当众争这权', hint: '+体面 +风声',
-        effects: { tiyan: 8, feng: 5 },
-        result: '你当席应了下来。有人佩服，也有人记下了你的名字。' },
-      { id: 'rang', text: '让给大娘子的人', hint: '+大娘子人情',
-        effects: { renqing: { yue: 10 } },
-        result: '你退了一步。大娘子看你一眼，什么都没说，什么都记下了。' },
-    ] },
-  { n: 11, act: 2, name: '夏至', chapter: '第四十四回',
-    intro: '夏至。铺账、节礼、人情往来，都赶在这一令。' },
-  { n: 12, act: 2, name: '中元', chapter: '第四十八回',
-    intro: '中元烧包。官场上有人参了西门庆一本，宅子里气压很低——这一令的明账，涨得虚。' },
-  { n: 13, act: 2, name: '重阳', chapter: '第五十二回',
-    intro: '重阳登高。家主的应酬越来越多，回来得越来越晚。各房窗下的灯，一盏一盏地等。' },
-  { n: 14, act: 2, name: '寒衣', chapter: '第五十六回',
-    intro: '寒衣节。李瓶儿房里的灯，常常亮到后半夜。' },
-  { n: 15, act: 2, name: '官哥儿夭', chapter: '第五十九回',
-    intro: '官哥儿受惊，没了。宅子里人人知道是怎么回事，人人不说。你买下的传闻在你袖子里发烫。',
-    choices: [
-      { id: 'jiefa', text: '揭发', hint: '+体面 +风声 · 潘金莲成死敌',
-        effects: { tiyan: 15, feng: 20, flag: 'jiefa' },
-        result: '你把话递到了大娘子跟前。体面是你的了，死敌也是你的了。' },
-      { id: 'chenmo', text: '沉默', hint: '无变化',
-        effects: {},
-        result: '你什么都没说。袖子里那条传闻，慢慢凉了。' },
-      { id: 'huanqu', text: '换取好处', hint: '+私房 +潘金莲人情 −体面',
-        effects: { sifang: 250, renqing: { pan: 20 }, tiyan: -8, flag: 'huanqu' },
-        result: '潘金莲院里的人深夜送来一口小箱子。你们谁都没有提官哥儿。' },
-    ], dutyRisk: true },
-  { n: 16, act: 2, name: '李瓶儿病故', chapter: '第六十二回',
-    intro: '李瓶儿病了三个月，没了。大办丧仪，宅里白幡满院。她的那块木牌，从排行榜上撤了下来。',
-    dead: ['pinger'],
-    choices: [
-      { id: 'jiefa2', text: '借丧仪再提旧事', hint: '+体面 +风声',
-        effects: { tiyan: 8, feng: 12 },
-        result: '丧仪上你又递了一句话。有人开始躲着你走。' },
-      { id: 'songzhong', text: '好好送一程', hint: '+各房人情',
-        effects: { renqing: { yue: 8, xuee: 5 } },
-        result: '你帮着料理了丧仪。人都说三娘心善。' },
-      { id: 'shoulian', text: '收敛不出头', hint: '+私房',
-        effects: { sifang: 120 },
-        result: '白事乱，账也乱。你把自己的东西清点了一遍，又锁紧了一层。' },
-    ] },
-  { n: 17, act: 2, name: '元宵·虚顶', chapter: '第七十八回',
-    intro: '又是元宵。西门庆权势最盛，烟火放到半夜，各房的灯都为他亮着。明账的收益眼下是最好的——可你听得出，这火太旺了。',
-    mingBoost: true },
-  { n: 18, act: 2, name: '重阳·虚顶', chapter: '第七十九回前',
-    intro: '家主连日在王三官府上赴宴，回来时说心口疼。他夜里走的路越来越长，排行榜上的数字还在涨，涨得让人眼热。',
-    mingBoost: true },
-  { n: 19, act: 3, name: '第七十九回', chapter: '第七十九回', clear: true,
-    intro: '这一日，宅子里的事，一件接着一件。' },
-  { n: 20, act: 3, name: '分家 · 债主上门', chapter: '第八十回',
-    intro: '家主一倒，债主上门。李娇儿已经悄悄卷了财物回院里去了。吴月娘主持分家，先问的是现银。',
-    dead: ['lijiaoer'],
-    choices: [
-      { id: 'dadian', text: '拿私房打点', hint: '−150私房 +大娘子人情', needSi: 150,
-        effects: { sifang: -150, renqing: { yue: 12 } },
-        result: '银子递出去，债主的口气软了。大娘子看在眼里。' },
-      { id: 'shuoxiang', text: '请大娘子说项', hint: '−12大娘子人情', needRq: { who: 'yue', n: 12 },
-        effects: { renqing: { yue: -12 }, sifang: 60 },
-        result: '大娘子出面回了几笔。欠她的，从此你心里有数。' },
-      { id: 'yingding', text: '硬顶着不出', hint: '+风声',
-        effects: { feng: 10 },
-        result: '你一两没出。债主走了，话留下了。' },
-    ] },
-  { n: 21, act: 3, name: '分家 · 铺子关张', chapter: '第八十一回',
-    intro: '韩道国拐了一千两货款远遁，来保也欺主自开布铺。铺子一间间关张，人手星散。',
-    settle: 'puzi' },
-  { n: 22, act: 3, name: '分家 · 月娘分派', chapter: '第八十五回',
-    intro: '月娘按礼法与实际把持，分派余下的家产。春梅已被发卖，潘金莲也被逐出。宅子里越来越空。',
-    settle: 'fenpei' },
-  { n: 23, act: 3, name: '去向', chapter: '第九十一回',
-    intro: '尘埃落定。你的去路，只看你这些年藏下的那本账。',
-    ending: true },
-  { n: 24, act: 3, name: '第一百回', chapter: '第一百回',
-    intro: '后来。',
-    epilogue: true },
+export const DAY_PRESSURE = [
+  '公中短了五十两。月娘在正堂等你一句话，金莲端着酒在旁边笑。',
+  '生药铺的货被卡在城门。交银，找官面，或拿一条真消息去说话。',
+  '掌柜手脚不净。你若只会砸钱，他明日还敢伸手。',
+  '昨夜的门响过几次。宅里没人明说，人人都知道你去了哪里。',
+  '中秋开席。私下说过的话，今晚都要摆到桌面上。',
+  '外头又来追账，你胸口也发紧。最后一夜，谁肯与你站在一处？',
 ];
 
-// ---------- 留宿与「耗」 ----------
-// 「宠」的具体载体:每节令结算时判定家主今夜歇在谁院里。
-// 权重是各房「争夜」的脾性——潘金莲最激进,李娇儿几乎从不(她的对照组身份因此更清晰)。
-// 实际中签还叠加各自当前明账(ming*0.25)与玩家的「争夜」布置(+55)。
-export const YE_WEIGHT = {
-  yue: 12,      // 正妻有名分在,不争也有灯
-  lijiaoer: 1,  // 几乎从不争夜:她的心思从来不在宅子里
-  xuee: 4,
-  pan: 30,      // 最激进
-  pinger: 10,
-  chunmei: 8,   // 通房丫鬟,灯也常落在她头上
-};
-export const YE_COST = 60;   // 「争夜」的私房花费:置办酒菜、头面、灯烛
-export const YE_HAO = 7;     // 一次「争夜」添的耗
-export const YE_BONUS = 55;  // 「争夜」给留宿抽签加的权重
+export const DAY_ACTIONS = Object.freeze({
+  ledger: { id: 'ledger', label: '理账', glyph: '理', description: '拿银子，也看清谁在账上动手。' },
+  office: { id: 'office', label: '办差', glyph: '办', description: '用官势、银钱或秘密压下眼前的事。' },
+  listen: { id: 'listen', label: '探话', glyph: '探', description: '找一条有来源的消息。消息也会留下经手人。' },
+  banquet: { id: 'banquet', label: '备宴', glyph: '宴', description: '花银子换家声，也为中秋拿主动。' },
+});
 
-// 「结·私」:备一份只送给家主的东西,先铺垫、再出手。
-// 只抬本节令留宿抽签的权重与一点明账,绝不涨暗账;但东西过手会留下痕迹。
-export const SHI_COST = 40;   // 一方帕子、一支钗,走不得公中的账
-export const SHI_BONUS = 25;  // 给本节令留宿抽签加的权重(与「争夜」可叠加)
-export const SHI_SEEN_P = 0.35; // 被仆役瞧见的概率:风声起,且可能被别房拿去当话柄
+export const OPENING_CHOICES = Object.freeze([
+  { id: 'respect_yue', label: '让月娘主账', hint: '给正堂体面，也把这事交给她', text: '你把公账推到月娘面前。她只说一句：“这才像一家人说话。”' },
+  { id: 'tease_pan', label: '接金莲的酒', hint: '先给她脸，月娘会记得', text: '你接了金莲的杯。她当着正堂笑：“官人说话可要算数。”' },
+]);
 
-// 耗:不上榜的暗指标,暗账的负债项。长期争宠的人,到分家时已经病了。
-// 结局判定时:耗≥55 降一档,≥85 降两档(不推翻发落判定,只削弱出路)。
-export const HAO = { weak: 55, grave: 85 };
+const route = (id, label, hint, text, effects = {}, condition = null, locked = '') =>
+  Object.freeze({ id, label, hint, text, effects, condition, locked });
 
-// 留宿文案:灯的去向是宅里最直白的情欲宣告——谁承宠,全宅第二天都知道。
-export const LODGING_TEXTS = {
-  playerWin: '西角门的灯,今夜落在你的院里。帐幔放下来的时候,更鼓正打三下。',
-  playerYeWin: '你备下的那盏茶没有白凉。灯落在你院里——别的院子,一扇一扇都黑了。',
-  yeFail: '灯落在了{name}院里。你备下的酒菜与头面,原样收回了箱底。',
-  rival: '{name}院里的灯,今夜亮着。',
-  rivalPan: '{name}院里的灯,直烧到四更。',
-};
-
-// 留宿定格:全作的招牌镜头。画面压暗,只一房的窗透暖光,帐幔的剪影落下,配一句留白。
-// 每种情形 4-6 条变体,按 seedRNG 抽取(抽取走种子流的副本,不动游戏的随机流)。
-export const LODGING_SCENES = {
-  // 灯落你院(未曾布置,他自己走来)
-  win: [
-    '更鼓打过了三下。你窗上的纸,还暖着一层光。',
-    '廊下的脚步声到你门口停了。今夜,别处都黑得早。',
-    '灯花爆了一声。你伸手把帐幔放了下来。',
-    '他进门时带进来一阵外头的凉。门一掩,凉就隔在外头了。',
-    '小丫头退出去,脚步轻得像猫。屋里只剩一盏灯。',
-    '衣香还没散,更漏又滴了一声。今夜长得很。',
+export const ROUTE_CHOICES = Object.freeze({
+  wu_yueniang: [
+    [
+      route('yue_share_shortfall', '把缺口说清', '情更近，家宅更稳', '“少多少，就说多少。”月娘把钥匙推来半寸。', { rel: { qing: 18 }, house: 5, flags: ['yue_respected'] }),
+      route('yue_bypass', '叫她先垫上', '眼前省事，她会记这笔', '月娘把钥匙收回袖里：“正堂不是替你遮丑的。”', { rel: { du: 14, qing: -6 }, house: -7 }),
+    ],
+    [
+      route('yue_show_accounts', '先给她看账', '兑现尊重，开共治线', '她逐页看完，抬手给你留了座：“坐。一起算。”', { rel: { qing: 17, yu: 5 }, repute: 1, flags: ['yue_informed'] }),
+      route('yue_hide_accounts', '只说已经办妥', '不让她碰外账', '“办妥了？”她合上空白账册，“那就不必来问我。”', { rel: { du: 12, qing: -5 }, exposure: 6 }),
+    ],
+    [
+      route('yue_keep_word', '照她的话省一桌', '守住前约，亲密门槛', '你真撤了一桌闲酒。月娘看了半晌：“你也有说到做到的时候。”', { rel: { qing: 22, yu: 8 }, silver: 35, house: 6, flags: ['kept_yue_word'] }, 'yue_respected', '你还没给过她一个能守的承诺。'),
+      route('yue_public_spend', '偏要再摆一桌', '家声涨，正堂翻脸', '月娘不拦，只把公中钥匙拿走：“你的热闹，自己付。”', { rel: { du: 18, qing: -8 }, silver: -45, repute: 1, house: -8, flags: ['broken_yue_word'] }),
+    ],
+    [
+      route('yue_ask_backing', '请她替你压事', '关系换家宅背书', '“我可以替你说一次。”她把“一次”两个字说得很清楚。', { rel: { qing: 14, yu: 6, du: -8 }, house: 8, secrets: ['yue_backing'] }, 'yue_informed', '她还没见过你的真账。'),
+      route('yue_soften', '给她斟茶', '少谈账，先哄人', '她接了茶，没有接你的漂亮话。手却没再把杯子推开。', { rel: { qing: 9, yu: 13, du: -6 } }),
+    ],
+    [
+      route('yue_offer_seat', '请她主中秋席', '公开给足正妻体面', '月娘看一眼席面：“既叫我主，就别临席变卦。”', { rel: { qing: 14, yu: 6, du: -10 }, repute: 1 }),
+      route('yue_private_only', '只说夜里再谈', '欲升，公开体面受损', '“夜里是夜里，席上是席上。”她没有替你混过去。', { rel: { yu: 14, du: 9 }, house: -4 }),
+    ],
+    [
+      route('yue_share_keys', '把最后的钥匙给她', '理解型结果：共掌一宅', '你把钥匙放到她掌心。她却分一半回来：“两个人拿，才压得住。”', { rel: { qing: 18, yu: 8, du: -8 }, house: 10, flags: ['yue_co_rule'] }, 'kept_yue_word', '你答应过她的事还没做到。'),
+      route('yue_last_tea', '陪她喝完这盏', '稳住关系，不作新诺', '更漏过一声。月娘道：“今晚不谈旁人。”', { rel: { qing: 12, yu: 10, du: -6 } }),
+    ],
   ],
-  // 你布置下,争来的夜
-  yewin: [
-    '备下的酒还温着。他掀帘进来的时候,满宅的窗一扇一扇黑了。',
-    '这一桌没有白摆。灯落在你院里——别的院子,今夜都睡得早。',
-    '你争来的这一夜,风从廊下过,都要放轻了脚。',
-    '头面在妆台上闪着微光。帐幔落下来,替你挡了满宅的眼睛。',
-    '茶是刚沏的。他坐下来,像是今夜哪儿也不去了。',
-    '你听见远处一扇门关上的声音。然后,是你的门开了。',
+  pan_jinlian: [
+    [
+      route('pan_take_cup', '接她的酒', '她要你当众记住这杯', '金莲把杯沿一转：“酒接了，话也接了？”', { rel: { qing: 12, yu: 20, du: -4 }, flags: ['pan_promised'] }),
+      route('pan_hush', '叫她收声', '家宅稳，她当场结梁子', '她把酒一饮而尽：“好。官人这句话，我替你记牢。”', { rel: { qing: -5, yu: 8, du: 16 }, house: 4 }),
+    ],
+    [
+      route('pan_take_clue', '让她把话说完', '得掌柜偷货线索', '她凑近报出一个名字：“明日查他袖口。别说是我教的。”', { rel: { qing: 16, yu: 10 }, secrets: ['shop_fraud'], flags: ['pan_involved'] }),
+      route('pan_only_flirt', '先不谈铺子', '欲升，错过快线', '“只肯听好听的？”她用扇骨点了点你的手。', { rel: { qing: 7, yu: 16 } }),
+    ],
+    [
+      route('pan_bring_confrontation', '带她去对质', '她参与局势，家宅更乱', '金莲当面报出赃货数，掌柜腿先软了。她回头只问：“这回算我有用？”', { rel: { qing: 20, yu: 12 }, power: 1, house: -5 }, 'pan_involved', '你没有让她碰过这桩事。'),
+      route('pan_keep_out', '不让她碰外头事', '她不服，仍给你留一条退路', '金莲把扇子一收：“不用我？那就看看你自己办成什么样。”', { rel: { qing: 6, yu: 10, du: 10 } }),
+    ],
+    [
+      route('pan_answer_door', '开门让她进', '正面接住她的妒', '她进门先看桌上另一只茶盏：“人走了，味还在。”', { rel: { qing: 13, yu: 13, du: -14 }, secrets: ['pan_rumor'] }),
+      route('pan_make_wait', '让她在门外等', '欲还在，妒会变成公开发难', '门外静了一阵。扇柄在门框上敲了三下。', { rel: { yu: 6, du: 18 } }),
+    ],
+    [
+      route('pan_keep_toast', '第一杯先敬她', '兑现公开承诺', '金莲接杯时没看酒，只盯着你：“这回没躲。”', { rel: { qing: 18, yu: 12, du: -12 }, flags: ['kept_pan_word'] }, 'pan_promised', '你没当众答应过这杯。'),
+      route('pan_call_bluff', '让她别闹席面', '正堂稳，她当众翻脸', '她笑着把杯一放：“席面要体面，官人的话倒不要脸面？”', { rel: { qing: -8, du: 22 }, house: -4, flags: ['broken_pan_word'] }),
+    ],
+    [
+      route('pan_choose_openly', '当众说今夜去她那', '理解型结果：火里同谋', '金莲不再笑。她伸手替你理好衣领：“这句才算数。”', { rel: { qing: 18, yu: 15, du: -10 }, exposure: 7, flags: ['pan_open_choice'] }, 'kept_pan_word', '你许过的话还没当众兑现。'),
+      route('pan_no_more_words', '这回不许空口', '稳住她，不再乱许', '“那就少说。”她把你的手按在杯边，“做给我看。”', { rel: { qing: 12, yu: 12, du: -8 } }),
+    ],
   ],
-  // 布置下了,灯却落到别院
-  fail: [
-    '你院里的灯先灭了。别处的笑语,隔着几进院子,隐隐约约传到你耳边。',
-    '酒菜原样收回箱底。你坐在暗处,听更鼓一声一声过去。',
-    '那盏灯在别院的窗纸上亮了。你吹熄自己的,黑得干脆。',
-    '头面收回匣子里,咔哒一声。今夜也就这样了。',
-    '隔着墙,谁院里在烫酒。你把自己院里的灯,一盏一盏掐了。',
-    '满宅都黑下来了,只有一处还亮着。不是你这处。',
+  li_pinger: [
+    [
+      route('pinger_settle_room', '先问她住得安不安', '她记住你先问人', '瓶儿把箱笼钥匙按在掌下：“住处安稳，心才敢放。”', { rel: { qing: 15, yu: 7 } }),
+      route('pinger_ask_money', '先问她带了多少', '得银，她把心收回去', '她报了数，一文不少。钥匙却没离开掌心。', { rel: { qing: -7, du: 8 }, silver: 45 }),
+    ],
+    [
+      route('pinger_protect_books', '先替她护住账', '开安全线与货路秘密', '你没碰银箱，先把门关严。瓶儿这才把账本递来。', { rel: { qing: 22, yu: 9 }, secrets: ['pinger_funds'], flags: ['pinger_route'] }),
+      route('pinger_take_cash', '先拿八十两救急', '银到手，她看清你先要什么', '银子到手。瓶儿轻声道：“原来你先问的，还是箱子。”', { rel: { qing: -12, du: 12 }, silver: 80 }),
+    ],
+    [
+      route('pinger_protect_public', '当众替她挡话', '兑现保护，明确场景门槛', '你把质问接到自己身上。瓶儿在帘后握紧的手慢慢松了。', { rel: { qing: 22, yu: 10, du: -6 }, house: 4, flags: ['protected_pinger'] }, 'pinger_route', '她还没把账托给你。'),
+      route('pinger_blame', '叫她自己解释', '家宅暂稳，她会关箱', '“好。”瓶儿自己把话说清，也把钥匙收了回去。', { rel: { qing: -14, du: 15 }, repute: 1, flags: ['pinger_exposed'] }),
+    ],
+    [
+      route('pinger_keep_secret', '告诉她账还安全', '信任与货路继续', '她摸了摸锁扣：“你没拿它换人情，我知道。”', { rel: { qing: 15, yu: 11, du: -8 }, secrets: ['merchant_route'] }, 'protected_pinger', '你没有在众人面前护过她。'),
+      route('pinger_sit_quiet', '陪她坐一会', '不碰账，先把人留住', '你没问银箱。瓶儿把茶续满，肩头终于松下来。', { rel: { qing: 12, yu: 8, du: -6 } }),
+    ],
+    [
+      route('pinger_name_source', '席上替她说明货路', '公开保护她的财', '你把货路说成两个人的安排。瓶儿终于敢在席上抬头。', { rel: { qing: 17, yu: 8, du: -10 }, repute: 1 }, 'protected_pinger', '你没有护过她的账。'),
+      route('pinger_spend_on_pan', '拿她的钱给金莲做脸', '银与欲上涨，瓶儿关门', '金莲笑了。瓶儿也笑，回屋便换了锁。', { rel: { qing: -18, du: 20 }, silver: -30, flags: ['pinger_exposed'] }),
+    ],
+    [
+      route('pinger_share_chest', '把追账交给她同办', '理解型结果：同箱共命', '瓶儿打开箱笼，也把你那本烂账放进去：“这回一起算。”', { rel: { qing: 20, yu: 9, du: -8 }, silver: 70, flags: ['pinger_same_chest'] }, 'protected_pinger', '你还没有证明会先护住她。'),
+      route('pinger_return_key', '把钥匙还给她', '不取她的财，关系稳住', '她没有接：“放你手里。今夜只谈我们。”', { rel: { qing: 13, yu: 12, du: -6 } }),
+    ],
   ],
-  // 没有布置,灯落到别院
-  lose: [
-    '今夜你的院子黑着。别处的笑语隔着几进院子,听不真切,也听得真切。',
-    '各房的窗一扇一扇暗下去。亮着的那扇,不是你的。',
-    '你早早睡了。睡到半夜,听见谁的院里还有动静。',
-    '更漏滴到四下。满宅只有一窗灯火,窗纸上映着两个人影。',
-    '廊下提着灯过去了,没有在你门口停。',
-    '黑下来的院子里,秋虫叫得格外清楚。',
-  ],
-  // 潘金莲争到夜:她的窗亮得最久,直烧到四更
-  pan: [
-    '她那扇窗亮得最晚。四更鼓响,满宅都醒着,装睡着。',
-    '她院里的灯,直烧到四更。有人翻来覆去,一夜没合眼。',
-    '今夜的灯在她那儿。烧得很旺,旺得让满宅都看见了。',
-    '四更天,她窗上的光还透着。这宅子里,谁都数着更声。',
-    '她院门闭得最晚。门轴那一声响,半个宅子都听见了。',
-    '灯花落了一地她也不管。今夜,她赢得很响。',
-  ],
-};
+});
 
-// 亲密分档:玩家主动争到的夜,按情分(qing.ximen)叠一层戏。
-// 露骨档三条铁律:视角钉死在一个身体里;激烈之后接一句静物收;每场改变关系账。
-// 仅成年角色;露而不脏,不写器官流水账。
-export const INTIMACY_TIERS = ['sheng', 'mei', 'qin', 'du'];
-export function intimacyTier(q) {
-  return q >= 80 ? 'du' : q >= 50 ? 'qin' : q >= 20 ? 'mei' : 'sheng';
-}
-export const INTIMACY = {
-  // 生分(<20):他只是坐坐。零直白,露骨项灰化
-  sheng: [
-    '他今夜只是坐。吃了半盏茶，说了几句外头的事。走时，你送他到院门口。',
-    '他在你屋里歇脚，你们之间隔着一张案几。案上的灯花，结了个小穗。',
-    '他翻你架上的账本，笑你一句「三娘好算计」。你应着，手心把袖口攥皱了。',
-  ],
-  // 暧昧(20-49):隔物传情,写想碰而未碰的那寸距离
-  mei: [
-    '他替你拢了拢鬓发，指尖没立刻离开。你任他拢着，数自己的呼吸。',
-    '你递茶，他连你的手一起握了一息才放。那一息，满屋的摆设都替你看着。',
-    '他走时在你门口站住，没回头：「你院里的灯，点得比别处暖。」你闩门的手，慢了半拍。',
-  ],
-  // 亲密(50-79):身体先应,理智后退,点到肌肤温度即止
-  qin: [
-    '酒是你亲手温的，他偏不吃，先来握你的手。你素日没在人前软过，这会儿他掌心贴上你后颈，你到底往他肩上靠了半寸。那半寸，就是你今夜认的输。灯花爆了一声，谁也没起身去剪。',
-    '他解你腕上的镯子，解得很慢。镯子落在妆台上，一声轻响。你没去拾，由他把你的手腕握热了。',
-    '更鼓打过三下，他还靠在你肩上说话，声音低得只有你能听。你想着该起身剪灯，身子先替他挪了挪枕。',
-  ],
-  // 独宠·露骨(≥80):解衣、肌肤、气息都写;一动一静,静物收,改变关系
-  du: [
-    '他的手从你后颈一路往下，解衣带解得不慌。你先听见自己的呼吸乱了。外衫褪到肘弯，凉气贴上肩头，他的唇跟着落下来，你便由他把你按进枕里。你素日端着的那副身段，今夜在他手底下一寸一寸松开，连指尖都替你认了输。后来灯芯爆了个花，满室的暗里只剩两个人的气息。他伏在你颈窝睡沉了，你还醒着，替他和自己各算了一笔账。',
-    '帘子是你自己放下来的。他的掌心烫，贴上你腰窝时，你咬住唇没出声。帐子里的黑很厚，他把你的名字含在齿间，一声一声，叫得比白日里软。五更天他睡沉了，你借着窗纸的青看他，伸手把他眉心那道纹抹平了。',
-    '他今夜不走了。你背对着他卸钗，他从身后环上来，下巴抵着你的肩窝。铜镜里两个人影叠成一个。气息交着气息，你抓着妆台的边沿，指节都泛了白。后来什么都静了，只剩更漏。他握着你散下来的头发睡熟，你听着他的心跳，把明天要防的话又想了一遍。',
-  ],
-};
+export const BANQUET_CHOICES = Object.freeze([
+  route('banquet_honor_yue', '请月娘主席', '稳家宅，兑现正堂体面', '月娘按住公账，先把乱话压回桌面。', { relAll: { wu_yueniang: { qing: 16, du: -14 }, pan_jinlian: { du: 8 }, li_pinger: { qing: 4 } }, house: 10 }),
+  route('banquet_toast_pan', '第一杯给金莲', '她得脸，另两人都看见', '金莲举杯不饮，先问你：“今晚也算数？”', { relAll: { pan_jinlian: { qing: 17, yu: 12, du: -15 }, wu_yueniang: { du: 10 }, li_pinger: { du: 7 } }, exposure: 5, flags: ['kept_pan_word'] }),
+  route('banquet_protect_pinger', '替瓶儿护住账', '公开说明她不是钱袋', '你把追问挡下。瓶儿手里的钥匙终于不再发抖。', { relAll: { li_pinger: { qing: 18, du: -12 }, wu_yueniang: { qing: 4 }, pan_jinlian: { du: 8 } }, repute: 1, flags: ['protected_pinger'] }),
+  route('banquet_balance', '三杯一处倒满', '要前约都没破，换平衡', '你不许任何人压过别人。三只杯都满了，三双眼睛还在等下文。', { relAll: { wu_yueniang: { qing: 8, du: -8 }, pan_jinlian: { qing: 8, du: -8 }, li_pinger: { qing: 8, du: -8 } }, house: 6, flags: ['banquet_balanced'] }),
+]);
 
-// ---------- 24 节令天色 ----------
-// 不重画背景图:sky 是天色渐变(远景层),tint 是叠加在宅院上的调光(multiply),
-// particles 是氛围粒子:willow 柳絮 / rain 雨丝 / snow 雪 / ember 灯火余烬 / petal 花瓣 / ash 纸灰。
-export const SKY = [
-  { sky: ['#d9b98a', '#e8d5b0'], tint: 'rgba(216,170,90,0.16)', particles: 'none' },   // 1 过门 暖暮
-  { sky: ['#232c48', '#4a5470'], tint: 'rgba(30,40,70,0.34)', particles: 'ember' },    // 2 元宵 冷蓝夜
-  { sky: ['#9aa8a0', '#c8cfc4'], tint: 'rgba(140,160,150,0.15)', particles: 'rain' },  // 3 清明 青灰雨
-  { sky: ['#d8c090', '#e8d8b0'], tint: 'rgba(200,160,60,0.12)', particles: 'willow' }, // 4 端午 燥黄
-  { sky: ['#7a6a8a', '#c0a8b0'], tint: 'rgba(120,90,140,0.15)', particles: 'none' },   // 5 七夕 暮紫
-  { sky: ['#3a4a68', '#8a9ab8'], tint: 'rgba(40,60,100,0.28)', particles: 'ember' },   // 6 中秋 清白月
-  { sky: ['#2e3a4e', '#6a788c'], tint: 'rgba(30,45,75,0.30)', particles: 'snow' },     // 7 冬至 墨蓝雪
-  { sky: ['#b8c8a8', '#e0e4c8'], tint: 'rgba(150,180,120,0.12)', particles: 'willow' },// 8 立春 新绿
-  { sky: ['#d8b8c0', '#ecdcd8'], tint: 'rgba(220,160,170,0.12)', particles: 'petal' }, // 9 花朝 花信
-  { sky: ['#b8ccd8', '#e4e8dc'], tint: 'rgba(150,190,210,0.10)', particles: 'none' },  // 10 佛诞 晴
-  { sky: ['#d8d0a8', '#ece4c0'], tint: 'rgba(220,200,120,0.14)', particles: 'none' },  // 11 夏至 白燥
-  { sky: ['#8a9484', '#c0bfa8'], tint: 'rgba(110,130,100,0.18)', particles: 'ash' },   // 12 中元 烧包
-  { sky: ['#c8a86a', '#e0cba0'], tint: 'rgba(190,140,60,0.16)', particles: 'none' },   // 13 重阳 琥珀
-  { sky: ['#9aa0a8', '#c8c8c0'], tint: 'rgba(120,130,140,0.18)', particles: 'none' },  // 14 寒衣 冷灰
-  { sky: ['#8a8a88', '#b8b6ae'], tint: 'rgba(100,100,100,0.22)', particles: 'ash' },   // 15 官哥儿夭 灰
-  { sky: ['#a8a8a4', '#d0cec4'], tint: 'rgba(160,160,155,0.20)', particles: 'none' },  // 16 病故 缟素
-  { sky: ['#3a3050', '#7a5a50'], tint: 'rgba(60,40,90,0.28)', particles: 'ember' },    // 17 元宵·虚顶 火太旺
-  { sky: ['#b09a6a', '#d0bd98'], tint: 'rgba(170,140,80,0.16)', particles: 'none' },   // 18 重阳·虚顶
-  { sky: ['#4a5058', '#8a8c88'], tint: 'rgba(60,70,80,0.25)', particles: 'none' },     // 19 第七十九回
-  { sky: ['#585c60', '#9a988c'], tint: 'rgba(70,76,82,0.24)', particles: 'none' },     // 20 债主上门
-  { sky: ['#4e545c', '#8e8c82'], tint: 'rgba(64,72,80,0.24)', particles: 'none' },     // 21 铺子关张
-  { sky: ['#48505c', '#84867e'], tint: 'rgba(56,66,78,0.26)', particles: 'snow' },     // 22 月娘分派 雪
-  { sky: ['#424a56', '#7c7e76'], tint: 'rgba(50,60,72,0.26)', particles: 'snow' },     // 23 去向
-  { sky: ['#3c4450', '#74766e'], tint: 'rgba(46,56,68,0.28)', particles: 'snow' },     // 24 第一百回
-];
+export const SCENES = Object.freeze({
+  yue_prelude: {
+    id: 'yue_prelude', heroine: 'wu_yueniang', participants: ['wu_yueniang'], tier: 'prelude',
+    title: '钥匙未收', asset: 'cg/yue/prelude',
+    body: '月娘把公账推到床脚，没有起身。她先问你答应的事做到了没有。听见肯定，才伸手替你解开外袍扣。',
+  },
+  yue_explicit: {
+    id: 'yue_explicit', heroine: 'wu_yueniang', participants: ['wu_yueniang'], tier: 'explicit',
+    title: '正堂熄灯', asset: 'cg/yue/explicit',
+    body: '她把钥匙攥在你们相扣的手里。床帐落下后，仍不许你拿漂亮话糊弄；每一次靠近，都要你当面应她。',
+  },
+  pan_prelude: {
+    id: 'pan_prelude', heroine: 'pan_jinlian', participants: ['pan_jinlian'], tier: 'prelude',
+    title: '杯沿发热', asset: 'cg/pan/prelude',
+    body: '金莲用扇骨挑开你的衣襟，又停在那里：“今晚还走不走？”她要先听一句真话。',
+  },
+  pan_explicit: {
+    id: 'pan_explicit', heroine: 'pan_jinlian', participants: ['pan_jinlian'], tier: 'explicit',
+    title: '花园门闩', asset: 'cg/pan/explicit',
+    body: '门闩落下，她便不再让你躲。方才席上的狠话被她一件件讨回，连门外脚步停过几次都听得清楚。',
+  },
+  pinger_prelude: {
+    id: 'pinger_prelude', heroine: 'li_pinger', participants: ['li_pinger'], tier: 'prelude',
+    title: '钥匙在掌心', asset: 'cg/pinger/prelude',
+    body: '瓶儿把钥匙放在你掌心，却按住你的手：“先答应我，不拿这屋里的话去换外头的好处。”',
+  },
+  pinger_explicit: {
+    id: 'pinger_explicit', heroine: 'li_pinger', participants: ['li_pinger'], tier: 'explicit',
+    title: '沉香未散', asset: 'cg/pinger/explicit',
+    body: '她确认门外无人，才把最后一点防备放下。箱笼没有再上锁；更漏响时，她仍抓着你的手不肯松。',
+  },
+  banquet_conflict: {
+    id: 'banquet_conflict', heroine: null, participants: [], tier: 'public',
+    title: '三杯都满', asset: 'cg/group/banquet_conflict',
+    body: '月娘压着公账，金莲举杯追问，瓶儿握着钥匙。私下说过的话，今夜都摆到了席面上。',
+  },
+});
 
-// 得宠指名播报:玩家争到夜的次日,别房的反应——指名、带动机。
-// 引擎用种子流副本抽取,不进存档,不动主随机流。
-export const RIVAL_REACT = {
-  yue:      '大娘子房里的灯亮到半夜。小玉来回传了三趟话，没人知道说的什么。',
-  lijiaoer: '李娇儿当着人把你那份节礼掂了一遍，笑了笑，什么也没说。',
-  xuee:     '孙雪娥在厨下摔了一只碗。碎瓷片扫了三遍，火气还没下去。',
-  pan:      '潘金莲当夜就遣冯妈妈出门，打听你嫁妆的底细。',
-  pinger:   '李瓶儿院里请了两回大夫，只说心口疼，药渣倒了一回又一回。',
-  chunmei:  '春梅把你院里的灯油数了一遍，转手报去了正房。',
-};
+export const NIGHT_TEXT = Object.freeze({
+  leave: { label: '到此为止', hint: '尊重边界，今晚离开' },
+  talk: { label: '再陪她一会', hint: '稳稳拉近，不解锁场景' },
+  prelude: { label: '让她再近些', hint: '进入成人前奏；可随时停下' },
+  explicit: { label: '今晚留下', hint: '进入明确 18+ 场景并改变次晨局势' },
+});
 
-// ---------- 上门事件 ----------
-// 节令中途有人主动来找你,打断行动分配,要求当场表态。
-// 文案三行以内,像有人真的站在门口;选项都有代价,没有安全选项。
-// cond 读当前 state(函数不进存档,只用于筛选);flag 效果记录触发时的节令号。
-export const VISITS = [
-  { id: 'xuee_jieqian', min: 3, weight: 3,
-    cond: (s) => s.rivals.xuee.alive,
-    title: '孙雪娥来了', portrait: 'portrait/sun_xuee',
-    text: '她在门口站着，眼睛是红的。\n开口借六十两，说是家里的事，不肯细说。',
-    choices: [
-      { id: 'give', text: '借她六十两', hint: '−60私房 · 她记下这份情',
-        effects: { sifang: -60, renqing: { xuee: 15 }, qing: { xuee: 3 } },
-        result: '她攥着银子，朝你福下去，什么都没说。' },
-      { id: 'refuse', text: '推说手头也紧', hint: '她会记恨',
-        effects: { hostility: { xuee: 20 } },
-        result: '她笑了一下，转身走了。那笑比哭还难看。' },
-    ] },
-  { id: 'pan_chai', min: 5, weight: 3,
-    cond: (s) => s.rivals.pan.joined && s.rivals.pan.alive && !s.flags.panChai,
-    title: '潘金莲来了', portrait: 'portrait/pan_jinlian',
-    text: '她手里拿着一支钗，不由分说插在你妆台上。\n「姊妹一场，别跟我见外。」',
-    choices: [
-      { id: 'accept', text: '收下这支钗', hint: '欠她的，日后要还',
-        effects: { flag: 'panChai', affection: { pan: 20 }, qing: { pan: 4 } },
-        result: '她替你拢了拢鬓角，眼风在你脸上一转，笑着走了。' },
-      { id: 'refuse', text: '不敢受，退回去', hint: '当场结仇 · 梁子记一桩',
-        effects: { hostility: { pan: 25 }, feng: 4, liangzi: { pan: 1 } },
-        result: '她捏着那支钗站了一会儿。「三娘好清高。」门帘甩得山响。' },
-    ] },
-  { id: 'pan_collect', min: 7, weight: 4,
-    cond: (s) => !!s.flags.panChai && s.rivals.pan.alive && s.festival >= s.flags.panChai + 2,
-    title: '潘金莲又来了', portrait: 'portrait/pan_jinlian',
-    text: '她坐下就吃你的茶，吃到第三盏才开口。\n「钗子戴着可还称心？——我如今，有一件小事要你办。」',
-    choices: [
-      { id: 'pay', text: '替她走一百两的账', hint: '−100私房 · 两清', needSi: 100,
-        effects: { sifang: -100, renqing: { pan: 10 }, unflag: 'panChai' },
-        result: '银子过了手，她起身告辞，比来时客气了三分。' },
-      { id: 'word', text: '替她往外递一句话', hint: '+风声',
-        effects: { feng: 8, affection: { pan: 15 }, unflag: 'panChai' },
-        result: '话当夜就递出去了。你知道，这话收不回来。' },
-      { id: 'sick', text: '装病回绝', hint: '结仇',
-        effects: { hostility: { pan: 40 }, feng: 4 },
-        result: '她盯着你看了一会儿。「三娘好生养着。」帘子落下，钗的情分也落了。' },
-    ] },
-  { id: 'pan_dangmian', min: 5, weight: 10,
-    // 梁子满三桩,她就要当着人发难。只读玩家自己的过节账,不读她的敌意。
-    cond: (s) => s.rivals.pan.joined && s.rivals.pan.alive && (s.player.liangzi?.pan ?? 0) >= 3,
-    title: '潘金莲当席发难', portrait: 'portrait/pan_jinlian',
-    text: '席还没散，她端着酒盏就过来了，声音拔得半堂都听见。\n「三姐这阵子好威风。灯天天落你院里，把咱们几房的份都占全了，也不怕撑着。」\n一桌人停了筷子，等你接。',
-    choices: [
-      { id: 'dui', text: '硬怼回去', hint: '她当席掉面子 · 梁子消一桩',
-        effects: { tiyan: 4, rivalMing: { pan: -6 }, liangzi: { pan: -1 }, flag: 'panShamed' },
-        result: '「爹爱歇哪院，你去问他。」你没起身，端着自己那盏茶。「我可管不着他的腿。你管得着？」满桌憋着笑。潘金莲脸上红一阵白一阵，那盏酒搁下时溅了半袖子。次日请安，她的座次往后挪了半位。' },
-      { id: 'yin', text: '笑着阴回一句', hint: '话钉进众人耳朵 · 风声微起',
-        effects: { hostility: { pan: 10 }, feng: 3 },
-        result: '「五姐这话，是替全宅问的，还是替你自己问的？」你笑着替她斟满。「急什么，日子长着呢。」她盯你半晌，没接。这一句你没赢面子，可她的话，钉在了众人耳朵里。' },
-      { id: 'ren', text: '把话咽回去', hint: '她更得意 · 梁子添一桩',
-        effects: { tiyan: -4, rivalMing: { pan: 4 }, liangzi: { pan: 1 } },
-        result: '「五姐说笑了。」你低头拨茶，把这口气咽了回去。她见你软，声气更高了：「我就说三姐是懂事的。」满堂的笑，这回冲的是你。' },
-    ] },
-  { id: 'yanxi_de', min: 6, weight: 3,
-    // 当众得体快动作:不做第七枚印章,做成宴席令上的 visit 分支。
-    // min 取 6 是有讲究的:池子在第 1-5 令与旧版逐字节一致,不动前五令的抽签流。
-    cond: (s) => FESTIVALS[s.festival - 1]?.settle === 'yanxi' && s.rivals.xuee.alive,
-    title: '宴席上的一句错话', portrait: 'portrait/sun_xuee',
-    text: '酒过三巡，孙雪娥把盏搁重了，冲着你来：\n「三娘这座上的位子，是箱子垫出来的吧。」\n满桌一静。座次是体面，当众的话，就得当众还。',
-    choices: [
-      { id: 'dianpo', text: '当众点破她的失仪', hint: '她席位后退 · 你风声微起',
-        effects: { tiyan: 4, rivalMing: { xuee: -5 }, feng: 3, hostility: { xuee: 10 } },
-        result: '「座次是爹排的。」你给上首斟了一盏，声气不高。「四姐有意见，席散了去问爹。」满桌都听见了。她脸上挂不住，退席时碰翻了手边的碟。次日重排座次，她往后挪了一位。' },
-      { id: 'yuan', text: '笑着替她圆过去', hint: '她记下这份情 · 众人当你软',
-        effects: { renqing: { xuee: 10 }, affection: { xuee: 12 }, tiyan: -3 },
-        result: '「四姐吃醉了。」你笑着把她那盏续满，递回她手里。她愣了一下，接了。席上又热络起来，只是有几道眼风，把你从头到脚重新称了一遍。' },
-    ] },
-  { id: 'daian_menkan', min: 4, weight: 3,
-    cond: (s) => s.player.sifang >= 100,
-    title: '玳安来了', portrait: 'servant/daian',
-    text: '玳安凑近了，声音压得很低：\n「三娘上个月那两口箱子……小的都瞧见了。」',
-    choices: [
-      { id: 'seal', text: '封他的口', hint: '−80私房', needSi: 80,
-        effects: { sifang: -80 },
-        result: '银子入手，他笑得见牙不见眼：小的什么也没瞧见。' },
-      { id: 'ignore', text: '不理他', hint: '+风声',
-        effects: { feng: 8 },
-        result: '他躬身退下了。第二天，这话就长在了别人的舌头上。' },
-    ] },
-  { id: 'chunmei_qing', min: 8, weight: 2,
-    cond: (s) => s.rivals.chunmei.alive,
-    title: '春梅来了', portrait: 'portrait/pang_chunmei',
-    text: '春梅越过规矩，亲自来请你。\n「爹屋里新到的果子，请三娘过去说话。」满院的眼睛都看着。',
-    choices: [
-      { id: 'go', text: '去坐坐', hint: '+她欠你 · 惹人眼',
-        effects: { renqing: { chunmei: 10 }, feng: 3, qing: { chunmei: 4 } },
-        result: '她亲自给你斟茶，手很稳。你们都没提规矩两个字。' },
-      { id: 'stay', text: '托词不去', hint: '她会记下',
-        effects: { hostility: { chunmei: 15 } },
-        result: '她福了一福，退出去，脊背挺得笔直。' },
-    ] },
-  { id: 'ximen_ye', min: 6, weight: 3,
-    cond: (s) => true, // 家主深夜上门,前两幕都可能
-    title: '家主深夜到了院门口', portrait: 'portrait/ximen_qing',
-    text: '更鼓打过两下，院门外来了脚步声。\n只有两个小厮打着灯——他今夜，是冲你来的。',
-    choices: [
-      { id: 'open', text: '开门迎灯', hint: '灯落你院 · +耗',
-        effects: { chong: 5, hao: 8, lodging: 'player', qing: { ximen: 5 } },
-        result: '那一夜灯直烧到四更。天明时你的眼圈是青的，腰还是直的。' },
-      { id: 'decline', text: '推说身子不适', hint: '−宠 · 保住这一夜',
-        effects: { chong: -8 },
-        result: '灯在门外停了一停，往别处去了。你睡了一个整觉。' },
-    ] },
-  { id: 'ximen_zui', min: 6, weight: 3,
-    cond: (s) => true,
-    title: '家主醉后走错了院子', portrait: 'portrait/ximen_qing',
-    text: '他喝多了，脚下没数，掀开你的帘子就进来了。\n满院的人都看着——看他进的是谁的门。',
-    choices: [
-      { id: 'stay', text: '留下他', hint: '+宠 +耗 · 别房记下这笔',
-        effects: { chong: 9, hao: 6, hostility: { yue: 8, pan: 12 }, qing: { ximen: 6 } },
-        result: '你替他宽了外袍。帐幔落下来的时候，你想的是明早怎么出这个门。' },
-      { id: 'back', text: '送他回正房', hint: '+体面 −宠 · 大娘子记下这份情',
-        effects: { tiyan: 6, chong: -5, renqing: { yue: 8 } },
-        result: '你扶他到院门口，叫小厮掌灯送回去。正房那边，当夜就知道了。' },
-    ] },
-  { id: 'pan_jieren', min: 5, weight: 2,
-    cond: (s) => s.rivals.pan.joined && s.rivals.pan.alive,
-    title: '潘金莲深夜来借人', portrait: 'portrait/pan_jinlian',
-    text: '她也不坐，倚着门框笑：「借你屋里丫头使两天。」\n借人是假，看看你让不让她的人进你的屋是真。',
-    choices: [
-      { id: 'clever', text: '借她最伶俐的那个', hint: '她领情 · 你屋里的事她也知道了',
-        effects: { affection: { pan: 18 }, feng: 5 },
-        result: '丫头去了两天，回来时话少了。她那边，待你倒热络了三分。' },
-      { id: 'dull', text: '借她个烧火扫地的', hint: '情分薄些 · 话也少漏些',
-        effects: { affection: { pan: 8 }, feng: 2 },
-        result: '她瞟了那丫头一眼，笑了：「三娘会挑人。」话里的刺，你当没听出来。' },
-      { id: 'refuse', text: '一个也不借', hint: '当场结怨',
-        effects: { hostility: { pan: 20 } },
-        result: '「也是，你的人，金贵。」她转身走了，帘子晃了很久才停。' },
-    ] },
-  { id: 'chunmei_chuanhua', min: 8, weight: 2,
-    cond: (s) => s.rivals.chunmei.alive,
-    title: '春梅来传话', portrait: 'portrait/pang_chunmei',
-    text: '春梅站在廊下，话只说了一半：\n「爹说，今夜月色好——」她停了，眼风落在你脸上，等你接下半句。',
-    choices: [
-      { id: 'catch', text: '接住下半句', hint: '+宠 +耗 · 惹人眼',
-        effects: { chong: 7, hao: 5, feng: 3, qing: { ximen: 3 } },
-        result: '「——该有人陪他走走。」你替她说了。她笑了：「那我回话去了。」满院的眼睛都看着。' },
-      { id: 'dodge', text: '装没听懂', hint: '−宠 · 她记下这一笔',
-        effects: { chong: -5, hostility: { chunmei: 10 } },
-        result: '你低头拨你的茶。她站了一会儿，福了一福：「是我说岔了。」退出去，背挺得笔直。' },
-    ] },
-  { id: 'xuemei_yanei', min: 10, weight: 2,
-    cond: (s) => !s.flags.yaneiLine && !s.flags.yaneiShut && !s.player.tuilu.includes('guanmei'),
-    title: '薛媒婆来吃茶', portrait: 'servant/xue_meipo',
-    text: '她吃你的茶，吃到一半，忽然压低了声：\n「李衙内那边，新没了人。三娘，这话我先递到你这儿。」',
-    choices: [
-      { id: 'catch', text: '请她先替你留意', hint: '风声微起 · 官媒门路日后便宜百两',
-        effects: { flag: 'yaneiLine', feng: 2 },
-        result: '她把「李衙内」三个字说得极轻，你听得极真。这条路，她替你先看住了。' },
-      { id: 'dodge', text: '把话岔开', hint: '她从此不再提',
-        effects: { flag: 'yaneiShut' },
-        result: '你问起她女儿的嫁妆。她笑了笑，顺着你的话说下去——那条路上的事，从此再不提。' },
-    ] },
-];
-
-// ---------- 行动的即时世情反馈 ----------
-// 每个动作落定后的一句白描:浮字给数值,短句给意义。按(节令×行动序)定选,不走 RNG 流。
-export const ACTION_ECHO = {
-  tan: ['小玉端着茶站在门口，没有进来。', '玳安把话揣进袖子，左右看了一眼。', '冯妈妈的嘴，凑到你耳边才张开。'],
-  jie: ['礼单递进去，那边院里安静了一会儿。', '收礼的妈妈嘴上说不敢当，手很稳。', '这份人情摆在明面上，满宅都看见了。'],
-  shi: ['帕子叠成方寸，压在袖子里。', '那支钗过了小厮的手。你当没看见他多看了两眼。', '一句话带出去了。话出去了，就不是你的了。'],
-  ye: ['你叫人把院里的灯，提前点上了。', '小厨房温上了酒，没有声张。'],
-  mou: ['有一句话放出去了，收不回来。', '知情人又多了一个。你把名字记在心里。'],
-  chi: ['账房把钥匙交到你手上时，廊下几个人都看着。', '差事落到你手上。体面是你的，纰漏也是你的。'],
-  cang: ['箱笼的锁，又换了一把。', '这一笔，只有你自己知道。'],
-  verify: ['话递了回去，要一个准信。'],
-};
-
-// ---------- 宴席结算(排行榜的诱惑):宠高者席位靠前,额外体面 ----------
-export const YANXI = [
-  { minChong: 40, tiyan: 8, text: '你的席位排得靠前，众人举杯先敬你。' },
-  { minChong: 20, tiyan: 4, text: '你的席位不差，也算体面。' },
-  { minChong: 0, tiyan: 0, text: '你的席位靠后。满桌的笑语，隔着几个人才传到你耳边。' },
-];
+export const ENDINGS = Object.freeze({
+  exclusive: { title: '一院灯深', tag: '专一深线', text: '你把最热的一盏灯留在一处。其余院门冷了些，至少这段关系不是分出来的碎银。' },
+  balanced: { title: '三门未关', tag: '平衡后宫', text: '三个人都肯留门，也都知道你还欠话。宅子暂时稳住，明日的功夫比今晚更多。' },
+  intrigue: { title: '人情能办事', tag: '权谋风月', text: '你用关系里的秘密压住了外账，钱和势都在手。经手的人也都在，她们会来收下一笔。' },
+  unstable: { title: '宅门未稳', tag: '未成局', text: '你尝过几处热，也留下几扇冷门。不是谁教训了你，是答应过的话还没接住。' },
+});

@@ -1,8 +1,8 @@
 {
-  "name": "jinpingmei-liangbenzhang",
+  "name": "jinpingmei-fengyue-ledger",
   "private": true,
   "type": "module",
-  "description": "《金瓶梅·大宅两本账》回合制家宅经营策略(宅斗):明暗两账、仆役传闻网、谋算与风声、五位AI对手、第79回明账清零、种子随机可复现",
+  "description": "《金瓶梅·风月总账》6日男性第一人称成人后宫关系模拟垂直切片",
   "scripts": {
     "start": "python3 -m http.server 5173",
     "test": "node test/ledger.mjs",

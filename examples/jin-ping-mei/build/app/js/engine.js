@@ -1,965 +1,551 @@
-// 纯游戏引擎:不依赖 DOM,node 可直接跑自测。
-// 合同支点:
-//  - 只有「藏」提升暗账;「持」「结」「谋」提升明账并消耗暗账资源;
-//    不存在既涨明账又涨暗账的动作。
-//  - 对手真实状态永不可见;传闻带可信度且可能为假。
-//  - 一切随机走 seedRNG;同种子同操作逐字节可复现。
-//  - 第79回明账清零;五种结局按暗账与风声判定;全程无中途 Game Over。
+// 《风月总账》纯状态引擎：无 DOM、无纯 RNG 路线门槛。
 
-import { createRNG, next, rint, chance, pick } from './rng.js';
 import {
-  RIVALS, SERVANTS, CRED_TRUTH, RUMOR_TEXTS, SCHEMES, SCHEME_STEP, SCHEME_WIND,
-  DUTIES, TUILU, FESTIVALS, ENDING, YANXI, YE_WEIGHT, YE_COST, YE_HAO, YE_BONUS,
-  SHI_COST, SHI_BONUS, SHI_SEEN_P,
-  HAO, LODGING_TEXTS, VISITS, RIVAL_REACT,
+  HEROINE_IDS, HEROINES, DAY_NAMES, DAY_PRESSURE, DAY_ACTIONS,
+  OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, SCENES, ENDINGS,
 } from './data.js';
 
-export const ACTS = { 1: 'act1', 2: 'act2', 3: 'act3' };
+export const SAVE_VERSION = 3;
+export const MAX_DAY = 6;
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const cap100 = (value) => clamp(value, 0, 100);
 
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const cap100 = (v) => clamp(v, 0, 100);
+const makeRel = () => ({ qing: 8, yu: 6, du: 0, ignored: 0, reasons: [] });
 
-// ---------- 新开局 ----------
-export function newGame(seed) {
-  const rng = createRNG(seed);
-  const rivals = {};
-  for (const [id, def] of Object.entries(RIVALS)) {
-    rivals[id] = {
-      id, name: def.name, style: def.style, offBoard: !!def.offBoard,
-      joined: def.join <= 1, alive: true,
-      ming: def.ming, si: def.si,           // 隐藏真实状态
-      hostility: 0,                          // 对玩家的敌意(隐藏)
-      affection: 0,                          // 对玩家的暗好(隐藏)
-      scheme: null,                          // {target, progress}
-      recent: [],                            // 本令动作(供传闻与动线)
-    };
-  }
+export function newGame(seed = 42) {
+  const relations = Object.fromEntries(HEROINE_IDS.map((id) => [id, makeRel()]));
+  relations.wu_yueniang.qing = 10;
+  relations.pan_jinlian.yu = 10;
   return {
-    version: 2,
-    seed, rng,
-    festival: 1,
-    phase: 'event',                          // event → actions → (clear/ending/epilogue)
-    ap: 3,
-    player: {
-      tiyan: 10, chong: 10,
-      sifang: 0, renqing: { yue: 0, pan: 0, pinger: 0, xuee: 0, chunmei: 0 },
-      tuilu: [], gongzhong: 0,
-      fengsheng: 0, jinzu: 0,
-      hao: 0,                                // 耗:不上榜的暗指标,暗账负债项
-      // 情:关系账第三轴,玩家自己攒的明面亲密(可读)。与明账/暗账正交;
-      // 键集锁死在成年角色白名单内,永不扩键(安全线,见 test/ledger.mjs)。
-      qing: { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 },
-      // 梁子:玩家亲眼所见的过节流水账(独立可见计数)。
-      // 只在玩家目睹的事件里+N(退钗、她的绊子进了结算、当众交锋落败),
-      // 绝不读对手的隐藏敌意——那是「探」的生意,这条账只记你看见的。
-      liangzi: { pan: 0 },
-      faluoEver: false, faluoCount: 0,
-      duty: null,
-    },
-    rivals,
-    rumors: [],        // {id,servant,target,kind,text,cred,truth,verified,festival}
-    rumorSeq: 0,
-    schemes: [],       // {id,key,target,progress,informers,rumorId}
-    schemeSeq: 0,
-    flags: {},         // 剧情标记(揭发/换取好处等)
-    sightings: [],     // 本令结算产生的仆役动线 {servant,from,to,note}
-    lodging: 'yue',    // 家主今夜歇在谁院里(开局依礼在正房)
-    lodgingHistory: {},// festival → houseId
-    yeTonight: false,  // 本令玩家是否已布置「争夜」
-    shiTonight: false, // 本令玩家是否已「结·私」(主动示意,铺垫争夜)
-    shiTrace: null,    // 「结·私」留下的痕迹 {rival} — 结算时化成话柄
-    visit: null,       // 本令上门事件(见 VISITS),进行动阶段时掷定
-    lastVisit: 0,      // 上次有人上门的节令(保证每2-3令至少一次)
-    bestRank: null,
-    lastRank: null,
-    log: [],           // 结算记录 [{festival, text}]
-    floats: [],        // 待 UI 弹出的双色浮字 {k:'gold'|'ink'|'red', t}
-    event: FESTIVALS[0],
+    version: SAVE_VERSION,
+    seed: Number.isFinite(Number(seed)) ? Number(seed) : 42,
+    day: 1,
+    phase: 'opening',
+    resources: { silver: 180, power: 2, repute: 3, exposure: 0, strain: 0, house: 65 },
+    relations,
+    secrets: [],
+    secretsUsed: [],
+    flags: {},
+    history: [],
+    log: [],
+    currentHeroine: null,
+    selectedDayAction: null,
+    morning: null,
+    pendingScene: null,
+    sceneReturnPhase: null,
+    unlocked: [],
     ending: null,
     over: false,
   };
 }
 
-// ---------- 派生视图 ----------
-export function festivalDef(state) {
-  return FESTIVALS[state.festival - 1];
+export function dayDef(state) {
+  return { day: state.day, name: DAY_NAMES[state.day - 1], pressure: DAY_PRESSURE[state.day - 1] };
 }
 
-export function actOf(state) {
-  return festivalDef(state).act;
+export function hasToken(state, token) {
+  return !!state.flags[token] || state.secrets.includes(token);
 }
 
-// 明账是否已作废(第79回后)
-export function mingDead(state) {
-  return state.festival >= 19;
+function addReason(rel, text) {
+  rel.reasons.unshift(text);
+  rel.reasons = rel.reasons.slice(0, 3);
 }
 
-// 退路的实际开价:薛媒婆递过李衙内的话,「官媒门路」便宜一百两。
-export function tuiluCost(state, line) {
-  const def = TUILU[line];
-  if (!def) return Infinity;
-  if (line === 'guanmei' && state.flags.yaneiLine) return def.cost - 100;
-  return def.cost;
+function addSecret(state, id) {
+  if (id && !state.secrets.includes(id)) state.secrets.push(id);
 }
 
-// 六房排行榜:玩家与对手同一量纲(0-100);春梅不上榜,死者撤榜。
-export function leaderboard(state) {
-  if (mingDead(state)) return [];
-  const rows = [];
-  const p = state.player;
-  rows.push({ id: 'player', name: '孟玉楼', score: Math.round((p.tiyan + p.chong) / 2), you: true });
-  for (const r of Object.values(state.rivals)) {
-    if (r.offBoard || !r.joined || !r.alive) continue;
-    rows.push({ id: r.id, name: r.name, score: r.ming });
+function removeSecret(state, id) {
+  const index = state.secrets.indexOf(id);
+  if (index >= 0) state.secrets.splice(index, 1);
+}
+
+function addFlag(state, id) {
+  if (id) state.flags[id] = true;
+}
+
+function changeRel(state, heroineId, delta = {}, reason = '') {
+  const rel = state.relations[heroineId];
+  if (!rel) return;
+  for (const key of ['qing', 'yu', 'du']) {
+    if (delta[key]) rel[key] = cap100(rel[key] + delta[key]);
   }
-  rows.sort((a, b) => b.score - a.score);
-  rows.forEach((row, i) => (row.rank = i + 1));
-  return rows;
+  if (reason && Object.values(delta).some(Boolean)) addReason(rel, reason);
 }
 
-export function playerRank(state) {
-  const lb = leaderboard(state);
-  const me = lb.find((r) => r.you);
-  return me ? me.rank : null;
+function changeResources(state, effects = {}) {
+  const r = state.resources;
+  if (effects.silver) r.silver = Math.max(0, r.silver + effects.silver);
+  if (effects.power) r.power = clamp(r.power + effects.power, 0, 6);
+  if (effects.repute) r.repute = clamp(r.repute + effects.repute, 0, 6);
+  if (effects.exposure) r.exposure = cap100(r.exposure + effects.exposure);
+  if (effects.strain) r.strain = cap100(r.strain + effects.strain);
+  if (effects.house) r.house = cap100(r.house + effects.house);
 }
 
-function pushFloat(state, k, label, delta) {
-  if (!delta) return;
-  state.floats.push({ k, t: `${delta > 0 ? '+' : ''}${delta} ${label}` });
-}
-
-// ---------- 行动合法性 ----------
-export function actionError(state, a) {
-  const p = state.player;
-  if (state.phase !== 'actions') return '现在不是行动的时候';
-  if (state.over) return '已至终局';
-  if (p.jinzu > 0) return '禁足中';
-  const cost = a.type === 'chi' ? 2 : 1;
-  if (state.ap < cost) return '行动点不足';
-  switch (a.type) {
-    case 'ye': {
-      // 「争夜」是「结」的高风险高回报版本:只涨明账与耗,绝不涨暗账。
-      // 银子只能从私房出——置办今夜的一桌酒菜、一副头面,走不得公中的账。
-      if (mingDead(state)) return '明账已清,无人可争';
-      if (state.yeTonight) return '今夜已布置下了';
-      if (p.sifang < YE_COST) return '私房不够置办';
-      return null;
-    }
-    case 'shi': {
-      // 「结·私」:主动示意。只抬本节令留宿权重与一点明账,绝不涨暗账。
-      if (mingDead(state)) return '明账已清,示意也递不到他手里';
-      if (state.shiTonight) return '本令已递过一份了';
-      if (p.sifang < SHI_COST) return '私房不够备这份东西';
-      return null;
-    }
-    case 'tan': {
-      const sv = SERVANTS[a.servant];
-      if (!sv) return '没有这个人';
-      if (p.sifang < sv.price) return '私房不够付线钱';
-      const t = state.rivals[a.target];
-      if (!t || !t.joined || !t.alive) return '探不到这一房';
-      return null;
-    }
-    case 'jie': {
-      if (a.target !== 'ximen' && !(state.rivals[a.target]?.joined && state.rivals[a.target]?.alive)) return '这一房结不着';
-      const costSilver = a.size === 'big' ? 150 : 50;
-      if (a.fund === 'si' && p.sifang < costSilver) return '私房不够';
-      if (a.fund === 'gong' && p.gongzhong < costSilver) return '公中银不够';
-      if (a.fund === 'gong' && !p.duty) return '不曾担差事,动不了公中';
-      return null;
-    }
-    case 'mou': {
-      if (festivalDef(state).act < 2) return '还没到用谋的时候';
-      if (!SCHEMES[a.scheme]) return '没有这条谋算';
-      const t = state.rivals[a.target];
-      if (!t || !t.joined || !t.alive) return '谋不到这一房';
-      if (a.scheme === 'zuoshi') {
-        const r = state.rumors.find((x) => x.id === a.rumorId && x.target === a.target && x.verified === true);
-        if (!r) return '须有一条对那一房已证实的传闻';
-      }
-      return null;
-    }
-    case 'chi': {
-      if (!DUTIES[a.duty]) return '没有这件差事';
-      if (mingDead(state)) return '明账已清,差事无用';
-      // 位分靠后有真实代价:好差事轮不到你
-      const rank = playerRank(state);
-      if (rank !== null && rank >= 5 && a.duty !== 'puzhang') return '位次太靠后,接不到这件差事';
-      return null;
-    }
-    case 'cang': {
-      if (a.mode === 'help') {
-        const t = state.rivals[a.target];
-        if (!t || !t.joined || !t.alive) return '助不到这一房';
-        if (p.sifang < 40) return '私房不够';
-      }
-      if (a.mode === 'tuilu') {
-        const def = TUILU[a.line];
-        if (!def) return '没有这条路';
-        if (state.festival < def.open) return '这条路还没开';
-        if (p.tuilu.includes(a.line)) return '这条路已在你手里';
-        if (p.sifang < tuiluCost(state, a.line)) return '私房不够';
-      }
-      return null;
-    }
-    case 'verify': {
-      const r = state.rumors.find((x) => x.id === a.rumorId);
-      if (!r) return '没有这条传闻';
-      if (r.verified !== null) return '这条已经验过';
-      return null;
-    }
-    default:
-      return '不识此令';
+function applyEffects(state, effects = {}, currentHeroine = null, reason = '') {
+  changeResources(state, effects);
+  if (effects.rel && currentHeroine) changeRel(state, currentHeroine, effects.rel, reason);
+  if (effects.relAll) {
+    for (const [id, delta] of Object.entries(effects.relAll)) changeRel(state, id, delta, reason);
   }
+  for (const secret of effects.secrets ?? []) addSecret(state, secret);
+  for (const flag of effects.flags ?? []) addFlag(state, flag);
 }
 
-// ---------- 行动执行(只改 state;浮字进 state.floats) ----------
-export function applyAction(state, a) {
-  const err = actionError(state, a);
-  if (err) return { ok: false, msg: err };
-  const p = state.player;
-  const dead = mingDead(state);
-  state.ap -= a.type === 'chi' ? 2 : 1;
-  switch (a.type) {
-    case 'tan': return doTan(state, a);
-    case 'jie': return doJie(state, a, dead);
-    case 'mou': return doMou(state, a);
-    case 'chi': return doChi(state, a);
-    case 'cang': return doCang(state, a);
-    case 'ye': return doYe(state);
-    case 'shi': return doShi(state);
-    case 'verify': return doVerify(state, a);
-  }
-  return { ok: false, msg: '不识此令' };
+function record(state, type, payload = {}) {
+  state.history.push({ day: state.day, type, ...payload });
 }
 
-function doTan(state, a) {
-  const p = state.player;
-  const sv = SERVANTS[a.servant];
-  p.sifang -= sv.price;
-  if (sv.price) pushFloat(state, 'ink', '私房', -sv.price);
-  // 你买得越多,被卖得越勤
-  const bought = state.rumors.filter((r) => r.festival === state.festival).length;
-  if (bought >= 1 && chance(state.rng, 0.3)) {
-    p.fengsheng = cap100(p.fengsheng + 3);
-    pushFloat(state, 'red', '风声', 3);
-  }
-  const t = state.rivals[a.target];
-  const cred = sv.closeTo === a.target ? '高' : (chance(state.rng, 0.6) ? '中' : '低');
-  const truth = chance(state.rng, CRED_TRUTH[cred]);
-  const rumor = makeRumor(state, a.servant, a.target, cred, truth);
-  state.rumors.push(rumor);
-  return { ok: true, rumor };
-}
-
-function makeRumor(state, servant, target, cred, truth) {
-  const t = state.rivals[target];
-  // 真传闻依据对象本令真实动向;假传闻是编的
-  let kind = 'calm';
-  if (truth) {
-    if (t.recent.length) kind = t.recent[0].kind;
-    else if (t.hostility > 40) kind = 'hostile';
+export function chooseOpening(state, choiceId) {
+  if (state.phase !== 'opening') return { ok: false, error: '正堂这句话已经说过了。' };
+  const choice = OPENING_CHOICES.find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '没有这个选择。' };
+  if (choiceId === 'respect_yue') {
+    changeRel(state, 'wu_yueniang', { qing: 14, yu: 3 }, '你在正堂把主账权给了她');
+    changeRel(state, 'pan_jinlian', { du: 5 }, '你先给了月娘体面');
+    changeResources(state, { house: 5, repute: 1 });
+    addFlag(state, 'yue_respected');
   } else {
-    kind = pick(state.rng, ['cang', 'zheng', 'scheme', 'hostile', 'calm']);
+    changeRel(state, 'pan_jinlian', { qing: 10, yu: 16 }, '你在正堂接了她的酒');
+    changeRel(state, 'wu_yueniang', { du: 10 }, '你在正堂先接了金莲的酒');
+    changeResources(state, { house: -4 });
+    addFlag(state, 'pan_promised');
   }
-  const others = Object.values(state.rivals).filter((r) => r.id !== target && r.joined && r.alive && !r.offBoard);
-  const other = others.length ? pick(state.rng, others).name : '别';
-  // 同一对象已在手的传闻不重复投放同一句:三张一样的卡片看起来像 bug,不像情报。
-  // 仍然只消耗一次 rng 抽取,同种子同操作逐字节可复现不受影响。
-  const sub = (s) => s.replaceAll('{name}', t.name).replaceAll('{other}', other);
-  const used = new Set(state.rumors.filter((r) => r.target === target).map((r) => r.text));
-  const all = RUMOR_TEXTS[kind];
-  const fresh = all.filter((s) => !used.has(sub(s)));
-  let text = sub(pick(state.rng, fresh.length ? fresh : all));
-  if (!truth) {
-    // 假传闻:内容虚构,与事实无关(甚至可能矛盾)
-  }
-  state.rumorSeq += 1;
-  return {
-    id: `r${state.rumorSeq}`, servant, target, kind, text, cred, truth,
-    verified: null, festival: state.festival,
-  };
+  record(state, 'opening', { choice: choiceId, public: true });
+  state.log.push(choice.text);
+  state.phase = 'day';
+  return { ok: true, text: choice.text };
 }
 
-function doVerify(state, a) {
-  const r = state.rumors.find((x) => x.id === a.rumorId);
-  r.verified = r.truth;
-  return { ok: true, rumor: r };
-}
-
-// 「争夜」:置办今夜,争家主歇在自己院里。成败在节令结算的留宿抽签里定。
-// 只涨明账与「耗」,绝不涨任何暗账——它是「结」的高风险高回报版本,不是第六类行动的例外。
-function doYe(state) {
-  const p = state.player;
-  p.sifang -= YE_COST;
-  pushFloat(state, 'ink', '私房', -YE_COST);
-  p.hao = Math.min(100, p.hao + YE_HAO);
-  pushFloat(state, 'ink', '耗', YE_HAO);
-  state.yeTonight = true;
-  return { ok: true };
-}
-
-// 「结·私」:备一份只送给家主的东西(一方帕子、一支钗、一句话带出去)。
-// 抬本节令留宿抽签的权重(SHI_BONUS,与「争夜」可叠加),添一点宠;
-// 但东西过手留下痕迹——若被仆役瞧见,风声起,那一房也可能拿去当话柄。
-// 支点:只影响明账与留宿权重,绝不涨暗账。
-function doShi(state) {
-  const p = state.player;
-  p.sifang -= SHI_COST;
-  pushFloat(state, 'ink', '私房', -SHI_COST);
-  p.chong = cap100(p.chong + 2);
-  pushFloat(state, 'gold', '宠', 2);
-  p.qing.ximen = cap100((p.qing.ximen ?? 0) + 3); // 东西递到他手里,情分先落一笔
-  state.shiTonight = true;
-  let seen = false;
-  if (chance(state.rng, SHI_SEEN_P)) {
-    seen = true;
-    p.fengsheng = cap100(p.fengsheng + 4);
-    pushFloat(state, 'red', '风声', 4);
-    const pool = Object.values(state.rivals).filter((r) => r.joined && r.alive && !r.offBoard);
-    if (pool.length) {
-      const r = pick(state.rng, pool);
-      r.hostility += 6;
-      state.shiTrace = { rival: r.id };
-      sighting(state, pick(state.rng, ['daian', 'xiaoyu', 'fengmama']), 'player', r.id);
+export function dayOptions(state) {
+  return Object.values(DAY_ACTIONS).map((option) => {
+    let hint = option.description;
+    if (option.id === 'office') {
+      const usable = usableSecret(state);
+      if (usable) hint = `用“${secretName(usable)}”压事；会添暴露。`;
+      else if (state.resources.silver < 30) hint = '手里没消息，也拿不出三十两。';
     }
-  }
-  return { ok: true, seen };
-}
-
-function doJie(state, a, dead) {
-  const p = state.player;
-  const silver = a.size === 'big' ? 150 : 50;
-  if (a.fund === 'gong') {
-    p.gongzhong -= silver;
-    p.fengsheng = cap100(p.fengsheng + 8);
-    pushFloat(state, 'red', '风声', 8);
-  } else {
-    p.sifang -= silver;
-    pushFloat(state, 'ink', '私房', -silver);
-  }
-  if (dead) return { ok: true, msg: '明账已清,礼再厚也上不了榜' };
-  const boost = festivalDef(state).mingBoost ? 1.5 : 1;
-  let dT = 0, dC = 0;
-  if (a.target === 'ximen') {
-    dC = Math.round((a.size === 'big' ? 12 : 5) * boost);
-    dT = a.size === 'big' ? 4 : 0;
-    p.qing.ximen = cap100((p.qing.ximen ?? 0) + (a.size === 'big' ? 4 : 2)); // 礼到人前,情分也到人前
-  } else {
-    const t = state.rivals[a.target];
-    t.affection += a.size === 'big' ? 15 : 6;
-    p.qing[a.target] = cap100((p.qing[a.target] ?? 0) + (a.size === 'big' ? 6 : 3)); // 情分:玩家自己攒的明面亲密
-    dT = Math.round((a.size === 'big' ? 6 : 3) * boost);
-    dC = a.size === 'big' ? 3 : 1;
-  }
-  p.tiyan = cap100(p.tiyan + dT);
-  p.chong = cap100(p.chong + dC);
-  pushFloat(state, 'gold', '体面', dT);
-  pushFloat(state, 'gold', '宠', dC);
-  return { ok: true };
-}
-
-function doMou(state, a) {
-  const p = state.player;
-  let s = state.schemes.find((x) => x.key === a.scheme && x.target === a.target);
-  if (!s) {
-    state.schemeSeq += 1;
-    s = { id: `s${state.schemeSeq}`, key: a.scheme, target: a.target, progress: 0, informers: [], rumorId: a.rumorId ?? null };
-    state.schemes.push(s);
-  }
-  s.progress = clamp(s.progress + SCHEME_STEP, 0, 100);
-  // 每推一次,多一名知情者
-  const pool = Object.keys(SERVANTS).filter((x) => !s.informers.includes(x));
-  if (pool.length) s.informers.push(pick(state.rng, pool));
-  p.fengsheng = cap100(p.fengsheng + SCHEME_WIND);
-  pushFloat(state, 'red', '风声', SCHEME_WIND);
-  // 「谋」涨明账:运作的姿态被人看见
-  if (!mingDead(state)) {
-    p.chong = cap100(p.chong + 2);
-    pushFloat(state, 'gold', '宠', 2);
-  }
-  return { ok: true, scheme: s };
-}
-
-function doChi(state, a) {
-  const p = state.player;
-  const d = DUTIES[a.duty];
-  const boost = festivalDef(state).mingBoost ? 1.5 : 1;
-  const dT = Math.round(d.tiyan * boost), dC = Math.round(d.chong * boost);
-  p.tiyan = cap100(p.tiyan + dT);
-  p.chong = cap100(p.chong + dC);
-  p.gongzhong = clamp(p.gongzhong + d.gong, 0, 400);
-  p.duty = a.duty;
-  pushFloat(state, 'gold', '体面', dT);
-  pushFloat(state, 'gold', '宠', dC);
-  pushFloat(state, 'ink', '公中', d.gong);
-  return { ok: true };
-}
-
-function doCang(state, a) {
-  const p = state.player;
-  // 「藏」是全局唯一提升暗账的动作,且不给任何明账
-  if (a.mode === 'save') {
-    let gain = 30;
-    if (p.duty === 'puzhang') gain += 15;       // 理铺账者有余银可截
-    const boost = actOf(state) === 3 ? 1.2 : 1;
-    gain = Math.round(gain * boost);
-    p.sifang += gain;
-    pushFloat(state, 'ink', '私房', gain);
-    return { ok: true };
-  }
-  if (a.mode === 'help') {
-    p.sifang -= 40;
-    p.renqing[a.target] = cap100((p.renqing[a.target] ?? 0) + 15);
-    pushFloat(state, 'ink', '私房', -40);
-    pushFloat(state, 'ink', '人情', 15);
-    return { ok: true };
-  }
-  if (a.mode === 'tuilu') {
-    const def = TUILU[a.line];
-    const cost = tuiluCost(state, a.line);
-    p.sifang -= cost;
-    p.tuilu.push(a.line);
-    pushFloat(state, 'ink', '私房', -cost);
-    return { ok: true };
-  }
-  return { ok: false, msg: '不识此藏' };
-}
-
-// ---------- 事件选择 ----------
-export function eventChoiceError(state, choice) {
-  const p = state.player;
-  if (choice.needSi && p.sifang < choice.needSi) return '私房不够';
-  if (choice.needRq && (p.renqing[choice.needRq.who] ?? 0) < choice.needRq.n) return '人情不够';
-  return null;
-}
-
-export function applyEventChoice(state, choiceId) {
-  const ev = state.event;
-  const choice = ev.choices?.find((c) => c.id === choiceId);
-  if (!choice) return { ok: false, msg: '没有这条路' };
-  const err = eventChoiceError(state, choice);
-  if (err) return { ok: false, msg: err };
-  applyEffects(state, choice.effects ?? {});
-  if (choice.effects?.flag) state.flags[choice.effects.flag] = true;
-  state.phase = 'actions';
-  state.ap = state.player.jinzu > 0 ? 0 : 3;
-  rollVisit(state);
-  return { ok: true, choice };
-}
-
-export function skipEventIfNoChoice(state) {
-  if (state.event.choices?.length) return false;
-  state.phase = 'actions';
-  state.ap = state.player.jinzu > 0 || state.event.clear || state.event.ending || state.event.epilogue ? 0 : 3;
-  rollVisit(state);
-  return true;
-}
-
-// ---------- 上门事件 ----------
-// 进入行动阶段时掷定:距上次满 3 令必有人来,否则四成概率。每令至多一次。
-// 掷定走 seedRNG;不应答的人,节令一过就自己走了(advance 里清掉)。
-function rollVisit(state) {
-  const ev = state.event;
-  if (ev.clear || ev.ending || ev.epilogue || mingDead(state)) return;
-  if (state.phase !== 'actions' || state.ap <= 0) return;
-  if (state.festival < 2) return;
-  const due = state.festival - state.lastVisit >= 3;
-  if (!due && !chance(state.rng, 0.4)) return;
-  const pool = VISITS.filter((v) => state.festival >= v.min && (!v.cond || v.cond(state)));
-  if (!pool.length) return;
-  let total = 0;
-  for (const v of pool) total += v.weight ?? 2;
-  let roll = next(state.rng) * total;
-  let sel = pool[0];
-  for (const v of pool) { roll -= v.weight ?? 2; if (roll <= 0) { sel = v; break; } }
-  state.visit = { id: sel.id };
-}
-
-export function visitDef(state) {
-  return VISITS.find((v) => v.id === state.visit?.id) ?? null;
-}
-
-export function applyVisitChoice(state, choiceId) {
-  const def = visitDef(state);
-  if (!def) return { ok: false, msg: '没有人来' };
-  const choice = def.choices.find((c) => c.id === choiceId);
-  if (!choice) return { ok: false, msg: '没有这条路' };
-  const err = eventChoiceError(state, choice);
-  if (err) return { ok: false, msg: err };
-  applyEffects(state, choice.effects ?? {});
-  if (choice.effects?.flag) state.flags[choice.effects.flag] = state.festival;
-  if (choice.effects?.unflag) delete state.flags[choice.effects.unflag];
-  state.lastVisit = state.festival;
-  state.visit = null;
-  return { ok: true, choice, def };
-}
-
-function applyEffects(state, fx) {
-  const p = state.player;
-  if (fx.tiyan) { p.tiyan = cap100(p.tiyan + fx.tiyan); pushFloat(state, 'gold', '体面', fx.tiyan); }
-  if (fx.chong) { p.chong = cap100(p.chong + fx.chong); pushFloat(state, 'gold', '宠', fx.chong); }
-  if (fx.sifang) { p.sifang = Math.max(0, p.sifang + fx.sifang); pushFloat(state, 'ink', '私房', fx.sifang); }
-  if (fx.feng) { p.fengsheng = cap100(p.fengsheng + fx.feng); pushFloat(state, 'red', '风声', fx.feng); }
-  if (fx.gong) { p.gongzhong = clamp(p.gongzhong + fx.gong, 0, 400); }
-  if (fx.hao) { p.hao = Math.min(100, p.hao + fx.hao); pushFloat(state, 'ink', '耗', fx.hao); }
-  if (fx.lodging === 'player') state.lodgingOverride = 'player'; // 家主迎灯:今夜留宿直接落定
-  if (fx.hostility) {
-    for (const [who, d] of Object.entries(fx.hostility)) {
-      const r = state.rivals[who];
-      if (r) r.hostility = Math.max(0, r.hostility + d); // 敌意是隐藏状态,不弹浮字
-    }
-  }
-  if (fx.affection) {
-    for (const [who, d] of Object.entries(fx.affection)) {
-      const r = state.rivals[who];
-      if (r) r.affection = Math.max(0, r.affection + d); // 暗好同理
-    }
-  }
-  if (fx.renqing) {
-    for (const [who, d] of Object.entries(fx.renqing)) {
-      p.renqing[who] = cap100((p.renqing[who] ?? 0) + d);
-      pushFloat(state, 'ink', '人情', d);
-    }
-  }
-  if (fx.qing) {
-    // 情分是玩家已知量:只落在白名单键上,不弹浮字,剖面图上的徽记自会变
-    for (const [who, d] of Object.entries(fx.qing)) {
-      if (who in p.qing) p.qing[who] = cap100((p.qing[who] ?? 0) + d);
-    }
-  }
-  if (fx.liangzi) {
-    // 梁子是玩家自己的过节流水账:只记亲眼所见,不弹浮字,关系卡上看得见
-    for (const [who, d] of Object.entries(fx.liangzi)) {
-      p.liangzi[who] = clamp((p.liangzi[who] ?? 0) + d, 0, 99);
-    }
-  }
-  if (fx.rivalMing) {
-    // 席位是明面上的事:当众掉的明账,排行榜自会重排。additive,只加这条通道
-    for (const [who, d] of Object.entries(fx.rivalMing)) {
-      const r = state.rivals[who];
-      if (r) r.ming = cap100(r.ming + d);
-    }
-  }
-}
-
-// ---------- 节令提交:对手行动 → 结算 → 推进 ----------
-export function submitTurn(state) {
-  const report = { sightings: [], notes: [], rankBefore: state.lastRank, cleared: false, ending: null };
-  const p = state.player;
-  const ev = festivalDef(state);
-
-  // 对手行动(死者除外)
-  for (const r of Object.values(state.rivals)) {
-    if (!r.joined || !r.alive) continue;
-    rivalAct(state, r, report);
-  }
-  // 玩家谋算:泄密判定与生效
-  settleSchemes(state, report);
-  // 留宿:家主今夜歇在谁院里(争夜的成败在此落定)
-  settleLodging(state, report);
-  // 差事反噬
-  if (p.duty && ev.dutyRisk && chance(state.rng, 0.5)) {
-    p.tiyan = cap100(p.tiyan - 8);
-    pushFloat(state, 'gold', '体面', -8);
-    report.notes.push('你办的差事出了纰漏,你是第一责任人。');
-  }
-  // 宴席结算
-  if (ev.settle === 'yanxi' && !mingDead(state)) {
-    const tier = YANXI.find((t) => p.chong >= t.minChong);
-    if (tier) {
-      p.tiyan = cap100(p.tiyan + tier.tiyan);
-      pushFloat(state, 'gold', '体面', tier.tiyan);
-      report.notes.push(tier.text);
-    }
-  }
-  if (ev.settle === 'puzi') {
-    if (p.tuilu.includes('puzi')) {
-      p.sifang += 200;
-      pushFloat(state, 'ink', '私房', 200);
-      report.notes.push('韩道国跑了,但你早留的铺子门路替你保住了本钱。');
-    } else {
-      const loss = Math.min(100, p.sifang);
-      p.sifang -= loss;
-      if (loss) pushFloat(state, 'ink', '私房', -loss);
-      report.notes.push('铺子关张,你也折了一笔。');
-    }
-  }
-  if (ev.settle === 'fenpei') {
-    const rq = p.renqing.yue ?? 0;
-    const share = rq >= 20 ? 150 : rq >= 10 ? 80 : 0;
-    if (share) {
-      p.sifang += share;
-      pushFloat(state, 'ink', '私房', share);
-      report.notes.push('月娘分派家产,念旧情给了你一份。');
-    } else {
-      report.notes.push('分家的单子上,你的名下没添几行。');
-    }
-  }
-  // 宠衰减、风声回落;情分随宠一起淡——不维持就凉(确定性,不引新随机)
-  p.chong = cap100(p.chong - 3);
-  p.fengsheng = cap100(p.fengsheng - 4);
-  for (const k of Object.keys(p.qing)) p.qing[k] = Math.max(0, p.qing[k] - 1);
-  // 发落
-  if (p.fengsheng >= 90) applyFaluo(state, report);
-  // 月例
-  if (!mingDead(state)) {
-    p.sifang += 18;
-  }
-  // 排行榜记录
-  const lb = leaderboard(state);
-  const me = lb.find((r) => r.you);
-  if (me) {
-    state.lastRank = me.rank;
-    if (state.bestRank === null || me.rank < state.bestRank) state.bestRank = me.rank;
-    report.rankAfter = me.rank;
-  }
-  report.sightings = state.sightings;
-  advance(state, report);
-  return report;
-}
-
-// 留宿判定:各房按脾性权重与当前明账加权抽签(走 seedRNG,同种子逐字节可复现)。
-// 中签者涨明账;玩家中签另添三分耗——承宠本身也耗人。争夜落败则起风声、结怨。
-function settleLodging(state, report) {
-  if (mingDead(state)) return;
-  const p = state.player;
-  // 「结·私」留下的痕迹:东西过了手,话就长在别人舌头上
-  if (state.shiTrace) {
-    const tr = state.rivals[state.shiTrace.rival];
-    if (tr) report.notes.push(`你递出去的那份心意,叫${tr.name}院里的人瞧见了——明日这话就值钱了。`);
-  }
-  // 家主深夜迎灯:上门事件里已把今夜的灯定下,不走抽签
-  if (state.lodgingOverride === 'player') {
-    state.lodging = 'player';
-    state.lodgingHistory[state.festival] = 'player';
-    p.chong = cap100(p.chong + 10);
-    p.tiyan = cap100(p.tiyan + 3);
-    pushFloat(state, 'gold', '宠', 10);
-    pushFloat(state, 'gold', '体面', 3);
-    p.qing.ximen = cap100((p.qing.ximen ?? 0) + 6);
-    report.notes.push(LODGING_TEXTS.playerWin);
-    report.notes.push('次日请安,你的座次往前挪了半位。');
-    const react = rivalReact(state);
-    if (react) report.notes.push(react);
-    report.lodging = { house: 'player', ye: false, pan: false };
-    return;
-  }
-  const bids = [{ id: 'player', w: Math.max(1, p.chong) * (state.yeTonight ? 2.2 : 1) + (state.yeTonight ? YE_BONUS : 0) + (state.shiTonight ? SHI_BONUS : 0) }];
-  for (const r of Object.values(state.rivals)) {
-    if (!r.joined || !r.alive) continue;
-    // 李娇儿从不经营家主的心:她的明账是坐出来的体面,换不成灯
-    const w = (YE_WEIGHT[r.id] ?? 4) + (r.id === 'lijiaoer' ? 0 : r.ming * 0.1);
-    bids.push({ id: r.id, w });
-  }
-  let total = 0;
-  for (const b of bids) total += b.w;
-  let roll = next(state.rng) * total;
-  let win = bids[0];
-  for (const b of bids) { roll -= b.w; if (roll <= 0) { win = b; break; } }
-  state.lodging = win.id;
-  state.lodgingHistory[state.festival] = win.id;
-  if (win.id === 'player') {
-    p.chong = cap100(p.chong + 10);
-    p.tiyan = cap100(p.tiyan + 3);
-    p.hao = Math.min(100, p.hao + 3);
-    pushFloat(state, 'gold', '宠', 10);
-    pushFloat(state, 'gold', '体面', 3);
-    p.qing.ximen = cap100((p.qing.ximen ?? 0) + 6);
-    if (state.yeTonight) {
-      // 争来的夜,满宅都看见了:各房敌意直线上升
-      for (const r of Object.values(state.rivals)) if (r.joined && r.alive) r.hostility += 12;
-      report.notes.push(LODGING_TEXTS.playerYeWin);
-      report.lodging = { house: 'player', ye: true, pan: false };
-    } else {
-      report.notes.push(LODGING_TEXTS.playerWin);
-      report.lodging = { house: 'player', ye: false, pan: false };
-    }
-    report.notes.push('次日请安,你的座次往前挪了半位。');
-    const react = rivalReact(state);
-    if (react) report.notes.push(react);
-  } else {
-    const r = state.rivals[win.id];
-    r.ming = cap100(r.ming + 6);
-    if (state.yeTonight) {
-      p.fengsheng = cap100(p.fengsheng + 5);
-      pushFloat(state, 'red', '风声', 5);
-      r.hostility += 8;
-      report.notes.push(LODGING_TEXTS.yeFail.replaceAll('{name}', r.name));
-      report.lodging = { house: r.id, ye: 'fail', pan: win.id === 'pan' };
-    } else {
-      const key = win.id === 'pan' ? 'rivalPan' : 'rival';
-      report.notes.push(LODGING_TEXTS[key].replaceAll('{name}', r.name));
-      report.lodging = { house: r.id, ye: false, pan: win.id === 'pan' };
-    }
-  }
-}
-
-// 得宠必触发看得见的一场戏:一句指名带动机的对手播报。
-// 抽取走种子流的副本({a} 复刻当前流位),不消耗游戏的随机流,
-// 与 main.js 留宿定格台词同一范式——同种子同操作逐字节可复现不受影响。
-function rivalReact(state) {
-  const pool = Object.values(state.rivals).filter((r) => r.joined && r.alive);
-  if (!pool.length) return null;
-  const rc = { a: state.rng.a };
-  const rv = pick(rc, pool);
-  return RIVAL_REACT[rv.id] ?? null;
-}
-
-function applyFaluo(state, report) {
-  const p = state.player;
-  p.faluoEver = true;
-  p.faluoCount += 1;
-  p.tiyan = cap100(p.tiyan - 25);
-  p.chong = cap100(p.chong - 20);
-  const fine = Math.round(p.sifang * 0.3);
-  p.sifang -= fine;
-  p.jinzu = 2; // advance 即减一,余下的 1 正好禁足下一令——禁足要真的禁
-  p.fengsheng = 55;
-  pushFloat(state, 'gold', '体面', -25);
-  pushFloat(state, 'gold', '宠', -20);
-  pushFloat(state, 'ink', '私房', -fine);
-  report.faluo = { fine };
-  report.notes.push(`风声传到了大娘子耳朵里:降位分,罚没私房 ${fine} 两,禁足一令。是重挫,不是终局。`);
-}
-
-function rivalAct(state, r, report) {
-  const acts = r.style === 'aggressive' ? 2 : (chance(state.rng, 0.5) ? 2 : 1);
-  for (let i = 0; i < acts; i++) rivalOneAct(state, r, report);
-}
-
-function rivalOneAct(state, r, report) {
-  const p = state.player;
-  const f = state.festival;
-  const act2 = f >= 7;
-  const hostileToPinger = act2 && r.id === 'pan' && state.rivals.pinger.alive;
-  switch (r.style) {
-    case 'aggressive': {
-      // 潘金莲:争宠最快,也最会出手
-      if (act2 && chance(state.rng, 0.45)) {
-        rivalScheme(state, r, hostileToPinger ? state.rivals.pinger : pickTarget(state, r), report);
-      } else {
-        const g = rint(state.rng, 6, 12);
-        r.ming = cap100(r.ming + g);
-        r.recent = [{ kind: 'zheng' }];
-      }
-      break;
-    }
-    case 'defensive': {
-      if (chance(state.rng, 0.5)) {
-        r.si += rint(state.rng, 50, 100);
-        r.recent = [{ kind: 'cang' }];
-      } else {
-        r.ming = cap100(r.ming + rint(state.rng, 3, 7));
-        r.recent = [{ kind: 'zheng' }];
-      }
-      break;
-    }
-    case 'steady': {
-      r.ming = cap100(r.ming + rint(state.rng, 4, 8));
-      r.recent = [{ kind: 'zheng' }];
-      break;
-    }
-    case 'hoarder': {
-      r.si += rint(state.rng, 60, 120);
-      r.ming = cap100(r.ming + rint(state.rng, 1, 4));
-      r.recent = [{ kind: 'cang' }];
-      break;
-    }
-    case 'chaos': {
-      // 孙雪娥:便宜且不计后果,常把话往外递
-      if (chance(state.rng, 0.4)) {
-        p.fengsheng = cap100(p.fengsheng + 2);
-        pushFloat(state, 'red', '风声', 2);
-        report.notes.push('厨下有人嚼你的舌根。');
-        sighting(state, 'xiaoyu', 'xuee', 'yue');
-      } else {
-        r.ming = cap100(r.ming + rint(state.rng, 2, 6));
-        r.recent = [{ kind: 'calm' }];
-      }
-      break;
-    }
-    case 'climber': {
-      // 庞春梅:不上榜,暗中跃迁;后期暴起。开罪过她的人,箱笼更常被动。
-      // 财多招贼:箱笼越沉,她下手越狠——藏银不是无本的买卖。
-      r.ming = cap100(r.ming + rint(state.rng, 4, 10));
-      const stealP = 0.25 + Math.min(0.25, r.hostility / 200);
-      if (f >= 12 && chance(state.rng, stealP) && p.sifang > 0) {
-        const steal = Math.min(30 + Math.floor(p.sifang / 500) * 10, p.sifang);
-        p.sifang -= steal;
-        pushFloat(state, 'ink', '私房', -steal);
-        report.notes.push('你房里的箱笼像是被人动过。');
-        sighting(state, 'daian', 'chunmei', 'player');
-      }
-      r.recent = [{ kind: 'zheng' }];
-      break;
-    }
-  }
-  // 敌意高且会用谋的对手,可能算计玩家
-  if (r.style === 'aggressive' && act2 && r.hostility > 30 && chance(state.rng, 0.3) && !mingDead(state)) {
-    p.tiyan = cap100(p.tiyan - 8);
-    p.chong = cap100(p.chong - 4);
-    pushFloat(state, 'gold', '体面', -8);
-    pushFloat(state, 'gold', '宠', -4);
-    report.notes.push(`${r.name}在暗处给你使了一回绊子。`);
-    // 绊子进了结算,就是你亲眼所见:潘金莲的梁子记一桩(不读她的敌意)
-    if (r.id === 'pan') p.liangzi.pan = clamp((p.liangzi.pan ?? 0) + 1, 0, 99);
-    sighting(state, 'daian', r.id, 'yue');
-  }
-}
-
-function pickTarget(state, r) {
-  // 潘金莲第30回后把官哥儿母子视为最大威胁;否则盯榜首
-  const lb = leaderboard(state).filter((x) => x.id !== r.id && !x.you);
-  if (lb.length && chance(state.rng, 0.5)) return state.rivals[lb[0].id];
-  const pool = Object.values(state.rivals).filter((x) => x.id !== r.id && x.joined && x.alive && !x.offBoard);
-  return pool.length ? pick(state.rng, pool) : r;
-}
-
-function rivalScheme(state, r, target, report) {
-  if (!target || target.id === r.id) return;
-  r.scheme = r.scheme ?? { target: target.id, progress: 0 };
-  r.scheme.target = target.id;
-  r.scheme.progress += rint(state.rng, 30, 50);
-  r.recent = [{ kind: 'scheme', target: target.id }];
-  sighting(state, pick(state.rng, ['daian', 'xiaoyu', 'fengmama']), r.id, target.id);
-  if (r.scheme.progress >= 100) {
-    target.ming = cap100(target.ming - 14);
-    r.scheme = null;
-    report.notes.push('宅里起了一阵风言风语,有人吃了暗亏。');
-  }
-}
-
-function sighting(state, servant, from, to) {
-  state.sightings.push({ servant, from, to });
-}
-
-function settleSchemes(state, report) {
-  const p = state.player;
-  const done = [];
-  for (const s of state.schemes) {
-    // 泄密:知情者越多、风声越高,越可能漏
-    const leakP = 0.05 * s.informers.length + (p.fengsheng >= 60 ? 0.06 : 0);
-    if (chance(state.rng, leakP)) {
-      const t = state.rivals[s.target];
-      t.hostility += 30;
-      p.fengsheng = cap100(p.fengsheng + 18);
-      pushFloat(state, 'red', '风声', 18);
-      report.notes.push(`${SCHEMES[s.key].name}泄了——知情者里有人把话递了出去。`);
-      sighting(state, s.informers[0] ?? 'daian', 'player', s.target);
-      done.push(s);
-      continue;
-    }
-    if (s.progress >= 100) {
-      const def = SCHEMES[s.key];
-      const t = state.rivals[s.target];
-      t.ming = cap100(t.ming - def.mingHit);
-      t.hostility += 15;
-      if (!mingDead(state)) {
-        p.tiyan = cap100(p.tiyan + def.selfTiyan);
-        pushFloat(state, 'gold', '体面', def.selfTiyan);
-      }
-      if (def.reveal) report.reveal = { target: s.target, ming: t.ming, si: t.si };
-      report.notes.push(`${SCHEMES[s.key].name}成了。`);
-      done.push(s);
-    }
-  }
-  state.schemes = state.schemes.filter((s) => !done.includes(s));
-}
-
-// ---------- 节令进入效应(入门/亡故/解锁/赠传闻/清零/结局都在节令开始时生效) ----------
-function enterFestival(state) {
-  const ev = festivalDef(state);
-  if (ev.join) for (const id of ev.join) state.rivals[id].joined = true;
-  if (ev.dead) for (const id of ev.dead) state.rivals[id].alive = false;
-  if (ev.unlockMou) state.flags.mou = true;
-  if (ev.grantRumor) makeGrantedRumor(state, ev.grantRumor);
-  if (ev.clear) {
-    // 第79回明账清零:位分/体面/宠归零,排行榜撤下,公中散尽。
-    // 清零前的三值暂存,供演出逐项褪色(体面→宠→位次,三拍)。
-    state.flags.lastMing = { tiyan: state.player.tiyan, chong: state.player.chong, rank: state.lastRank };
-    state.player.tiyan = 0;
-    state.player.chong = 0;
-    state.player.gongzhong = 0;
-    state.lastRank = null;
-  }
-  if (ev.ending) state.ending = computeEnding(state);
-  state.event = ev;
-  state.phase = 'event';
-}
-
-// ---------- 推进节令 ----------
-function advance(state, report) {
-  const p = state.player;
-  state.sightings = [];
-  for (const r of Object.values(state.rivals)) r.recent = [];
-  p.duty = null;
-  state.yeTonight = false;
-  state.shiTonight = false;
-  state.shiTrace = null;
-  state.lodgingOverride = null;
-  state.visit = null; // 没应声的人,节令一过就自己走了
-  if (p.jinzu > 0) p.jinzu -= 1;
-
-  if (state.festival >= 24) {
-    state.over = true;
-    return;
-  }
-  state.festival += 1;
-  enterFestival(state);
-  if (state.event.clear) report.cleared = true;
-  if (state.event.ending) report.ending = state.ending;
-}
-
-function makeGrantedRumor(state, g) {
-  const t = state.rivals[g.target];
-  const kind = g.kind ?? (t.recent.length ? t.recent[0].kind : 'calm');
-  const text = pick(state.rng, RUMOR_TEXTS[kind] ?? RUMOR_TEXTS.calm)
-    .replaceAll('{name}', t.name).replaceAll('{other}', '别');
-  state.rumorSeq += 1;
-  state.rumors.push({
-    id: `r${state.rumorSeq}`, servant: g.servant, target: g.target, kind, text,
-    cred: g.cred, truth: g.truth, verified: null, festival: state.festival, granted: true,
+    if (option.id === 'ledger' && state.flags.pinger_same_chest) hint = '瓶儿与你同算，银钱收益更高。';
+    return { ...option, hint, disabled: option.id === 'office' && !usableSecret(state) && state.resources.silver < 30 };
   });
 }
 
-// ---------- 结局 ----------
-// 阶梯按(私房档 × 退路条数)定五档,两条轴都连续起作用:
-//  tl≥2 且 si≥高档 → 改嫁李衙内;tl≥1 且 si≥中档 → 归娘家;
-//  有路没钱(tl≥1,si<中档) → 投奔不起,守寡留府;无路有钱(tl=0,si≥中档) → 守寡留府;
-//  无路无钱 → 遣散流落。发落过且风声未回落者,一切皆空。
-export function computeEnding(state) {
-  const p = state.player;
-  const si = p.sifang, tl = p.tuilu.length, wind = p.fengsheng;
-  let key;
-  if (p.faluoEver && wind >= ENDING.windHigh) key = 'faluo';
-  else if (tl >= 2 && si >= ENDING.siHigh && wind < ENDING.windHigh) key = 'liyanei';
-  else if (tl >= 1 && si >= ENDING.siMid) key = 'niangjia';
-  else if (tl >= 1 || si >= ENDING.siMid) key = 'shoufu';
-  else key = 'liuluo';
-  // 耗是暗账的负债项:长期争宠的人,到分家时已经病了,走不远。
-  // 耗≥55 出路降一档,≥85 降两档;不推翻发落判定,只削弱出路。
-  const DOWN = { liyanei: 'niangjia', niangjia: 'shoufu', shoufu: 'shoufu', liuluo: 'liuluo', faluo: 'faluo' };
-  if (p.hao >= HAO.grave) key = DOWN[DOWN[key]];
-  else if (p.hao >= HAO.weak) key = DOWN[key];
+const RELATIONSHIP_SECRETS = ['merchant_route', 'pan_rumor', 'shop_fraud', 'pinger_funds', 'yue_backing'];
+const DAY_SECRETS = [
+  'steward_shortfall', 'gate_mood', 'warehouse_key',
+  'servant_footsteps', 'banquet_whisper', 'collector_price', 'steward_gap',
+];
+
+function usableSecret(state) {
+  return [...RELATIONSHIP_SECRETS, ...DAY_SECRETS].find((id) => state.secrets.includes(id)) ?? null;
+}
+
+function secretName(id) {
+  return ({
+    merchant_route: '瓶儿的货路', pan_rumor: '金莲听来的口风', shop_fraud: '掌柜偷货',
+    pinger_funds: '瓶儿的私账', yue_backing: '月娘的正堂背书',
+    steward_shortfall: '采买短款', gate_mood: '守门人的软处', warehouse_key: '后仓钥匙',
+    servant_footsteps: '门外脚步', banquet_whisper: '席上口风', collector_price: '追账人的价码',
+    steward_gap: '管事账上的缺口',
+  })[id] ?? id;
+}
+
+export function chooseDayAction(state, actionId) {
+  if (state.phase !== 'day') return { ok: false, error: '眼下不是办白日事的时候。' };
+  if (!DAY_ACTIONS[actionId]) return { ok: false, error: '没有这条路。' };
+  let text = '';
+  const r = state.resources;
+  switch (actionId) {
+    case 'ledger': {
+      const gain = 35 + (state.flags.pinger_same_chest ? 25 : 0) + (state.day === 6 ? 20 : 0);
+      changeResources(state, { silver: gain });
+      if (state.day === 3) addSecret(state, 'steward_gap');
+      text = `账清了一遍，手里多出 ${gain} 两。`;
+      break;
+    }
+    case 'office': {
+      const secret = usableSecret(state);
+      if (secret) {
+        removeSecret(state, secret);
+        state.secretsUsed.push(secret);
+        changeResources(state, { power: 1, exposure: 12, silver: state.day === 3 ? 45 : 0 });
+        text = `你拿“${secretName(secret)}”去说话。事压下了，经手人也记住了你。`;
+      } else if (r.silver >= 30) {
+        changeResources(state, { silver: -30, power: 1, exposure: 4 });
+        text = '三十两递进门，官面松了一层。';
+      } else return { ok: false, error: '没消息，也没银子。' };
+      break;
+    }
+    case 'listen': {
+      const secret = ['steward_shortfall', 'gate_mood', 'warehouse_key', 'servant_footsteps', 'banquet_whisper', 'collector_price'][state.day - 1];
+      addSecret(state, secret);
+      changeResources(state, { exposure: 7 });
+      text = `消息有了：${({
+        steward_shortfall: '短款出在采买', gate_mood: '守门人怕官面', warehouse_key: '赃货藏在后仓',
+        servant_footsteps: '昨夜有人停在门外', banquet_whisper: '席上有人等你失约', collector_price: '追账人肯拿消息换银',
+      })[secret]}。`;
+      break;
+    }
+    case 'banquet': {
+      if (r.silver < 35) return { ok: false, error: '三十五两也摆不出一桌像样的。' };
+      changeResources(state, { silver: -35, repute: 1, house: 3 });
+      text = '席面备下。花的是银子，买的是当众说话的先手。';
+      break;
+    }
+    default:
+      return { ok: false, error: '不识这条路。' };
+  }
+  state.selectedDayAction = actionId;
+  record(state, 'day_action', { action: actionId, text });
+  state.log.push(text);
+  state.phase = state.day === 5 ? 'banquet' : 'choose_visit';
+  return { ok: true, text };
+}
+
+export function banquetOptions(state) {
+  return BANQUET_CHOICES.map((choice) => ({
+    ...choice,
+    disabled: choice.id === 'banquet_balance' && (state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word),
+    locked: choice.id === 'banquet_balance' ? '有人已经在席前抓住你的失约。' : '',
+  }));
+}
+
+export function chooseBanquet(state, choiceId) {
+  if (state.phase !== 'banquet') return { ok: false, error: '还没到开席的时候。' };
+  const choice = BANQUET_CHOICES.find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '没有这个席面选择。' };
+  if (choiceId === 'banquet_balance' && (state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word)) {
+    return { ok: false, error: '你先前失过约，三杯倒得一样也没人信。' };
+  }
+  applyEffects(state, choice.effects, null, '中秋席上的公开选择');
+  record(state, 'banquet', { choice: choiceId, public: true });
+  unlockScene(state, 'banquet_conflict');
+  state.pendingScene = 'banquet_conflict';
+  state.sceneReturnPhase = 'choose_visit';
+  state.phase = 'scene';
+  state.log.push(choice.text);
+  return { ok: true, text: choice.text, scene: 'banquet_conflict' };
+}
+
+export function visitChoices(state, heroineId) {
+  const rows = ROUTE_CHOICES[heroineId]?.[state.day - 1] ?? [];
+  return rows.map((choice) => ({
+    ...choice,
+    disabled: !!choice.condition && !hasToken(state, choice.condition),
+  }));
+}
+
+export function startVisit(state, heroineId) {
+  if (state.phase !== 'choose_visit') return { ok: false, error: '现在还不能去她屋里。' };
+  if (!HEROINE_IDS.includes(heroineId)) return { ok: false, error: '没有这处院门。' };
+  state.currentHeroine = heroineId;
+  state.phase = 'visit';
+  record(state, 'visit_start', { heroine: heroineId, visible: true });
+  return { ok: true };
+}
+
+export function chooseVisit(state, choiceId) {
+  if (state.phase !== 'visit' || !state.currentHeroine) return { ok: false, error: '先选一处院门。' };
+  const choice = (ROUTE_CHOICES[state.currentHeroine]?.[state.day - 1] ?? []).find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '没有这个回应。' };
+  if (choice.condition && !hasToken(state, choice.condition)) return { ok: false, error: choice.locked || '前面的话还没接上。' };
+  applyEffects(state, choice.effects, state.currentHeroine, choice.text);
+  record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: state.day === 5 });
+  state.log.push(choice.text);
+  state.phase = 'night';
+  return { ok: true, text: choice.text };
+}
+
+function explicitSceneId(heroineId) {
+  return ({ wu_yueniang: 'yue_explicit', pan_jinlian: 'pan_explicit', li_pinger: 'pinger_explicit' })[heroineId];
+}
+
+function preludeSceneId(heroineId) {
+  return ({ wu_yueniang: 'yue_prelude', pan_jinlian: 'pan_prelude', li_pinger: 'pinger_prelude' })[heroineId];
+}
+
+function nightEligibility(state, heroineId) {
+  const rel = state.relations[heroineId];
+  if (heroineId === 'wu_yueniang') return {
+    prelude: rel.qing >= 28 && state.resources.repute >= 3,
+    preludeReason: '她还没信你会把正堂当一回事。',
+    explicit: rel.qing >= 55 && state.flags.kept_yue_word && state.resources.house >= 50 && !state.flags.broken_yue_word && ['ledger', 'banquet'].includes(state.selectedDayAction),
+    explicitReason: '要先守约、稳住宅子；今天还得把账或席面办清。',
+  };
+  if (heroineId === 'pan_jinlian') return {
+    prelude: rel.qing >= 25 && rel.yu >= 40,
+    preludeReason: '她还在等你拿一句真话换近一步。',
+    explicit: rel.qing >= 40 && rel.yu >= 60 && (state.flags.pan_promised || state.flags.kept_pan_word) && !state.flags.broken_pan_word && state.selectedDayAction === 'listen',
+    explicitReason: '她要你先兑现承诺；今天探来的话也得让她参与。',
+  };
   return {
-    key, sifang: si, tuilu: tl, wind,
-    hao: p.hao, haoWeak: p.hao >= HAO.weak,
-    bestRank: state.bestRank,
-    faluoCount: p.faluoCount,
+    prelude: rel.qing >= 35 && state.flags.pinger_route,
+    preludeReason: '她还没把安全与账本一起托给你。',
+    explicit: rel.qing >= 55 && state.flags.protected_pinger && !state.flags.pinger_exposed && ['ledger', 'office'].includes(state.selectedDayAction),
+    explicitReason: '先护住她的账与秘密；今天还得亲手理账或压事。',
   };
 }
 
-// ---------- 存读 ----------
+export function nightOptions(state) {
+  if (!state.currentHeroine) return [];
+  const e = nightEligibility(state, state.currentHeroine);
+  return [
+    { id: 'leave', disabled: false },
+    { id: 'talk', disabled: false },
+    { id: 'prelude', scene: preludeSceneId(state.currentHeroine), disabled: !e.prelude, locked: e.preludeReason },
+    { id: 'explicit', scene: explicitSceneId(state.currentHeroine), disabled: !e.explicit, locked: e.explicitReason },
+  ];
+}
+
+export function chooseNight(state, actionId) {
+  if (state.phase !== 'night' || !state.currentHeroine) return { ok: false, error: '夜里的话还没到这里。' };
+  const option = nightOptions(state).find((item) => item.id === actionId);
+  if (!option) return { ok: false, error: '没有这个夜间选择。' };
+  if (option.disabled) return { ok: false, error: option.locked };
+  const heroine = state.currentHeroine;
+  let text = '';
+  if (actionId === 'leave') {
+    changeRel(state, heroine, { qing: 2, du: -5 }, '你在她停下时也停下');
+    text = '你替她把门留了一线，没有拿今晚逼下一步。';
+  } else if (actionId === 'talk') {
+    changeRel(state, heroine, { qing: 8, yu: 6, du: -5 }, '你陪她把话说完');
+    text = '更漏过了一声。你没急着走，也没急着往下逼。';
+  } else if (actionId === 'prelude') {
+    unlockScene(state, option.scene);
+    changeRel(state, heroine, { qing: 7, yu: 10, du: -4 }, '你尊重她的意愿，走到更近一步');
+    changeResources(state, { strain: 3 });
+    state.pendingScene = option.scene;
+    state.sceneReturnPhase = 'after_night';
+    state.phase = 'scene';
+    text = SCENES[option.scene].body;
+  } else {
+    unlockScene(state, option.scene);
+    if (heroine === 'wu_yueniang') {
+      changeRel(state, heroine, { qing: 10, yu: 6, du: -8 }, '你守约后在正堂留下');
+      changeResources(state, { house: 8, strain: 8 });
+      addSecret(state, 'yue_backing');
+      addFlag(state, 'yue_morning_help');
+    } else if (heroine === 'pan_jinlian') {
+      changeRel(state, heroine, { qing: 9, yu: 9, du: -10 }, '你兑现承诺，在花园留下');
+      changeResources(state, { strain: 12, exposure: 6 });
+      addSecret(state, 'pan_rumor');
+      addFlag(state, 'pan_morning_claim');
+    } else {
+      changeRel(state, heroine, { qing: 12, yu: 6, du: -8 }, '你先护住她，才在私院留下');
+      changeResources(state, { house: 4, strain: 8 });
+      addSecret(state, 'merchant_route');
+      addFlag(state, 'pinger_morning_route');
+    }
+    for (const other of HEROINE_IDS.filter((id) => id !== heroine)) {
+      changeRel(state, other, { du: 9 }, `她知道你昨夜留在${HEROINES[heroine].house}`);
+    }
+    state.pendingScene = option.scene;
+    state.sceneReturnPhase = 'after_night';
+    state.phase = 'scene';
+    text = SCENES[option.scene].body;
+  }
+  record(state, 'night', { heroine, action: actionId, scene: option.scene ?? null, visible: actionId !== 'leave' });
+  state.log.push(text);
+  if (!option.scene) advanceAfterNight(state);
+  return { ok: true, text, scene: option.scene ?? null };
+}
+
+function unlockScene(state, sceneId) {
+  if (!SCENES[sceneId]) throw new Error(`未知场景 ${sceneId}`);
+  if (!state.unlocked.includes(sceneId)) state.unlocked.push(sceneId);
+}
+
+export function closeScene(state) {
+  if (state.phase !== 'scene' || !state.pendingScene) return { ok: false, error: '没有待收的册页。' };
+  const next = state.sceneReturnPhase;
+  state.pendingScene = null;
+  state.sceneReturnPhase = null;
+  if (next === 'choose_visit') {
+    state.phase = 'choose_visit';
+  } else {
+    advanceAfterNight(state);
+  }
+  return { ok: true };
+}
+
+function advanceAfterNight(state) {
+  const visited = state.currentHeroine;
+  for (const id of HEROINE_IDS) {
+    const rel = state.relations[id];
+    if (id === visited) rel.ignored = 0;
+    else {
+      rel.ignored += 1;
+      const rise = state.history.at(-1)?.action === 'leave' ? 2 : 5;
+      rel.du = cap100(rel.du + rise);
+      addReason(rel, `你第${state.day}日去了${HEROINES[visited].house}`);
+    }
+  }
+  state.currentHeroine = null;
+  state.selectedDayAction = null;
+  if (state.day >= MAX_DAY) {
+    state.ending = determineEnding(state);
+    state.phase = 'ending';
+    state.over = true;
+    return;
+  }
+  state.day += 1;
+  state.morning = buildMorning(state, visited);
+  state.phase = 'morning';
+}
+
+function buildMorning(state, visited) {
+  const candidates = HEROINE_IDS.filter((id) => id !== visited).sort((a, b) => state.relations[b].du - state.relations[a].du);
+  const actor = candidates[0];
+  const rel = state.relations[actor];
+  if (state.day === 3 && state.flags.yue_respected && !state.flags.yue_delayed_paid) {
+    return {
+      id: 'yue_delayed', actor: 'wu_yueniang', tone: 'backing',
+      title: '两日前的话有了回音',
+      text: '月娘把采买短款的名字压在账下：“你那日给我体面，今日我替你把人叫来。”',
+    };
+  }
+  if (state.flags.yue_morning_help && !state.flags.yue_help_paid) {
+    return {
+      id: 'yue_help', actor: 'wu_yueniang', tone: 'backing',
+      title: '正堂先替你挡了一桩',
+      text: '月娘已经把催账人请到正堂：“昨夜的话我记得。外头这笔，今日一同办。”',
+    };
+  }
+  if (state.flags.pinger_morning_route && !state.flags.pinger_route_paid) {
+    return { id: 'pinger_help', actor: 'li_pinger', tone: 'backing', title: '瓶儿送来货路', text: '瓶儿把一张货单压在茶盘下。城门那桩事，今天可以不花银。' };
+  }
+  if (state.flags.pan_morning_claim && !state.flags.pan_claim_paid) {
+    return { id: 'pan_claim', actor: 'pan_jinlian', tone: 'jealous', title: '金莲来收一句话', text: '金莲天一亮就来：“昨夜说得热。今日在人前，也别装不认。”' };
+  }
+  if (rel.du >= 18) {
+    return {
+      id: 'jealousy', actor, tone: 'jealous',
+      title: `${HEROINES[actor].short}来敲门`,
+      text: `${HEROINES[actor].name}知道你昨夜去了${HEROINES[visited].house}。她不要一个数字，要你当面接住这件事。`,
+    };
+  }
+  return {
+    id: 'quiet', actor: visited, tone: 'quiet', title: '天亮了',
+    text: `昨夜的门已经关上。${HEROINES[visited].name}记得你做了什么，另外两处院门也记得你没去。`,
+  };
+}
+
+export function morningOptions(state) {
+  if (state.phase !== 'morning' || !state.morning) return [];
+  if (state.morning.id === 'jealousy' || state.morning.id === 'pan_claim') return [
+    { id: 'appease', label: '哄住她', hint: '花二十两，把原因说开', disabled: state.resources.silver < 20 },
+    { id: 'explain', label: '把话说明', hint: '少降妒，多一点暴露' },
+    { id: 'stand', label: '不改昨夜选择', hint: '她更酸，你守住原决定' },
+  ];
+  return [
+    { id: 'accept', label: '接住这份情', hint: '让这次回响进入今天的局面' },
+    { id: 'note', label: '先记在账上', hint: '不加码，只继续' },
+  ];
+}
+
+export function resolveMorning(state, choiceId) {
+  if (state.phase !== 'morning' || !state.morning) return { ok: false, error: '眼下没人来敲门。' };
+  const event = state.morning;
+  const actor = event.actor;
+  if (event.id === 'jealousy' || event.id === 'pan_claim') {
+    if (!['appease', 'explain', 'stand'].includes(choiceId)) return { ok: false, error: '她还在等你的回答。' };
+    if (choiceId === 'appease') {
+      if (state.resources.silver < 20) return { ok: false, error: '手里连哄人的二十两都没有。' };
+      changeResources(state, { silver: -20, house: 3 });
+      changeRel(state, actor, { qing: 4, du: -18 }, '你当面把昨夜说开');
+    } else if (choiceId === 'explain') {
+      changeResources(state, { exposure: 5 });
+      changeRel(state, actor, { qing: 2, du: -10 }, '你把昨夜的来龙去脉说给她听');
+    } else {
+      changeResources(state, { house: -3 });
+      changeRel(state, actor, { du: 10 }, '你没有改昨夜的选择');
+    }
+    if (event.id === 'pan_claim') addFlag(state, 'pan_claim_paid');
+  } else if (event.id === 'yue_delayed') {
+    if (!['accept', 'note'].includes(choiceId)) return { ok: false, error: '先接下正堂这句话。' };
+    if (choiceId === 'accept') {
+      addSecret(state, 'yue_backing');
+      changeRel(state, 'wu_yueniang', { qing: 6, du: -6 }, '两日前的尊重换来今日背书');
+      changeResources(state, { house: 5 });
+    }
+    addFlag(state, 'yue_delayed_paid');
+  } else if (event.id === 'yue_help') {
+    if (!['accept', 'note'].includes(choiceId)) return { ok: false, error: '正堂还在等你接这笔账。' };
+    if (choiceId === 'accept') {
+      addSecret(state, 'yue_backing');
+      changeRel(state, 'wu_yueniang', { qing: 4, du: -5 }, '月娘把昨夜的共同承诺带进白日');
+      changeResources(state, { house: 4 });
+    }
+    addFlag(state, 'yue_help_paid');
+  } else if (event.id === 'pinger_help') {
+    if (choiceId === 'accept') addSecret(state, 'merchant_route');
+    addFlag(state, 'pinger_route_paid');
+  }
+  record(state, 'morning', { event: event.id, actor, choice: choiceId });
+  state.log.push(event.text);
+  state.morning = null;
+  state.phase = 'day';
+  return { ok: true, text: event.text };
+}
+
+export function relationTier(value, kind) {
+  if (kind === 'qing') return value >= 60 ? '知心' : value >= 30 ? '亲近' : '生疏';
+  if (kind === 'yu') return value >= 60 ? '主动' : value >= 30 ? '发热' : '克制';
+  return value >= 70 ? '要翻脸' : value >= 30 ? '发酸' : '平静';
+}
+
+export function determineEnding(state) {
+  const explicitByHeroine = Object.fromEntries(HEROINE_IDS.map((id) => [id, state.unlocked.includes(explicitSceneId(id))]));
+  const qing = Object.fromEntries(HEROINE_IDS.map((id) => [id, state.relations[id].qing]));
+  const sorted = HEROINE_IDS.slice().sort((a, b) => qing[b] - qing[a]);
+  const top = sorted[0];
+  let id = 'unstable';
+  if (HEROINE_IDS.every((heroine) => qing[heroine] >= 30 && state.relations[heroine].du < 70) && state.resources.house >= 45 && state.flags.banquet_balanced) {
+    id = 'balanced';
+  } else if (qing[top] >= 60 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 50)) {
+    id = 'exclusive';
+  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= 250) && state.resources.exposure >= 25) {
+    id = 'intrigue';
+  }
+  const routeResult = id === 'exclusive' ? ({
+    wu_yueniang: state.flags.yue_co_rule ? '共掌一宅' : '一院灯深',
+    pan_jinlian: state.flags.pan_open_choice ? '火里同谋' : '话已算数',
+    li_pinger: state.flags.pinger_same_chest ? '同箱共命' : '钥匙未收',
+  })[top] : null;
+  return {
+    id,
+    ...ENDINGS[id],
+    routeResult,
+    heroine: id === 'exclusive' ? top : null,
+    heroineName: id === 'exclusive' ? HEROINES[top].name : null,
+    resources: { ...state.resources },
+    relations: structuredClone(state.relations),
+    unlocked: [...state.unlocked],
+    unseen: Object.keys(SCENES).filter((sceneId) => !state.unlocked.includes(sceneId)),
+  };
+}
+
 export function serialize(state) {
   return JSON.stringify(state);
 }
 
-export function deserialize(json) {
-  const s = JSON.parse(json);
-  if (s.version !== 2) return null;
-  // 旧档迁移:情分轴、梁子账都是后加的。读进来先按新开局回填,版本号不动,旧档不崩。
-  s.player.qing ??= { ximen: 0, yue: 0, lijiaoer: 0, xuee: 0, pan: 0, pinger: 0, chunmei: 0 };
-  s.player.liangzi ??= { pan: 0 };
-  return s;
+export function deserialize(raw) {
+  if (!raw) return null;
+  try {
+    const state = JSON.parse(raw);
+    if (state?.version !== SAVE_VERSION || !HEROINE_IDS.every((id) => state.relations?.[id])) return null;
+    return state;
+  } catch {
+    return null;
+  }
+}
+
+export function snapshot(state) {
+  return structuredClone(state);
+}
+
+export function sceneIsAdultSafe(scene) {
+  return !!scene && scene.participants.every((id) => HEROINE_IDS.includes(id));
 }

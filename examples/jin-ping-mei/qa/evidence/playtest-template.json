@@ -1,0 +1,43 @@
+{
+  "tester_id": "P00",
+  "adult_confirmed": false,
+  "viewport": "1280x800",
+  "seed": 42,
+  "completed": false,
+  "seconds_to_first_meaningful_choice": null,
+  "two_minute_recall": {
+    "player_identity": "",
+    "current_goal": "",
+    "intended_direction": ""
+  },
+  "observed_path": {
+    "first_visit": "",
+    "first_intimacy_result": "",
+    "understood_locked_reason": null,
+    "jealousy_source_recalled": "",
+    "banquet_choice": "",
+    "ending": ""
+  },
+  "unprompted_after_ending": {
+    "opened_gallery": false,
+    "restarted": false,
+    "said_wants_another_route": false
+  },
+  "ratings_1_to_5": {
+    "male_center": null,
+    "continue_one_heroine": null,
+    "adult_content_was_earned": null,
+    "heroines_are_distinct": null,
+    "day_and_night_support_each_other": null
+  },
+  "heroine_goal_recall": {
+    "wu_yueniang": "",
+    "pan_jinlian": "",
+    "li_pinger": "",
+    "distinct_goals_count": 0
+  },
+  "quotes": [],
+  "friction_points": [],
+  "adult_intensity_feedback": "",
+  "evidence_paths": []
+}
