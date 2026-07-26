@@ -1,15 +1,15 @@
 {
   "date": "2026-07-25",
   "status": "PASS",
-  "scope": "playable_slice",
+  "scope": "playable_slice_with_household_short_arcs",
   "engine": {
     "command": "node test/ledger.mjs",
-    "passed": 38,
+    "passed": 46,
     "failed": 0
   },
   "browser": {
     "command": "python3 test/qa_browser.py",
-    "passed": 124,
+    "passed": 130,
     "failed": 0,
     "console_errors": 0,
     "network_errors": 0,
@@ -18,28 +18,36 @@
       "1280x800",
       "1920x1080"
     ],
-    "local_load_ms": 48.5,
-    "average_frame_interval_ms": 8.4,
+    "local_load_ms": 99.3,
+    "average_frame_interval_ms": 8.3,
     "minimum_text_px": {
       "control": 13,
       "body": 14,
       "relation_reason": 12
     }
   },
-  "app_size_mb": 4.6,
+  "app_size_mb": 6.0,
   "visual_verdict": {
-    "iteration": 5,
-    "score": 97,
+    "iteration": 6,
+    "score": 94,
     "threshold": 90,
     "verdict": "pass"
   },
   "public_screenshots": [
     "screenshots/title.jpg",
+    "screenshots/household.jpg",
     "screenshots/morning.jpg",
     "screenshots/banquet.jpg",
     "screenshots/ending.jpg"
   ],
   "runtime_evidence": "/tmp/jpm_qa",
   "human_target_player_gate": "NOT_RUN",
-  "claim_limit": "可运行垂直切片；未证明好玩、性感、长期平衡或扩展可行性"
+  "claim_limit": "可运行垂直切片；未证明好玩、性感、长期平衡或扩展可行性",
+  "copy_review": {
+    "reference": "oh-story-claudecode/story-deslop",
+    "status": "PASS",
+    "blocking_patterns": 0,
+    "player_facing_meta_terms": 0,
+    "distinct_voices": 6
+  }
 }

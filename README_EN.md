@@ -144,13 +144,13 @@ examples/journey-to-the-west/
 
 ## Complete example — Jin Ping Mei
 
-*Ledger of Desire* — a six-day, male-POV adult harem relationship sim adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day; pursue distinct routes for 吴月娘, 潘金莲, and 李瓶儿 by night; then answer jealousy, demands, and help the next morning. **18+; intimacy is gated by relationship choices and explicit consent; three reachable outcomes and a persistent scene gallery.** **Play it: [jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
+*Ledger of Desire* — a six-day, male-POV adult harem relationship sim adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day while 孟玉楼, 孙雪娥, and 李娇儿 bring their own household problems; pursue full routes for 吴月娘, 潘金莲, and 李瓶儿 by night; then face whoever knocks the next morning. **18+; intimacy is gated by relationship choices and explicit consent; three reachable outcomes and a persistent scene gallery.** **Play it: [jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
 
 ![Title screen](examples/jin-ping-mei/screenshots/title.jpg)
 
-| Morning consequence | Banquet conflict | Exclusive-route ending |
-|---|---|---|
-| ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
+| Household side story | Morning consequence | Banquet conflict | Exclusive-route ending |
+|---|---|---|---|
+| ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
 > The public README embeds safe screenshots only. 18+ route CGs remain behind the in-game age gate.
 
@@ -161,9 +161,9 @@ examples/journey-to-the-west/
 examples/jin-ping-mei/
 ├── source/金瓶梅.txt + SOURCE.md   # Public-domain 崇祯本 (expurgated) + reproducible expurgate.py
 ├── PRODUCT_BRIEF.md                # Requirements intake: web · Chinese · male-POV harem relationship sim · 18+
-├── analysis/SOURCE_BIBLE.md        # Gameable canon: Ximen Qing's resources and debts; three adult heroines' goals and boundaries
+├── analysis/SOURCE_BIBLE.md        # Gameable canon: Ximen Qing's debts plus six household characters' goals and boundaries
 ├── concepts/CONCEPT.md             # Three materially different concepts, with hard vetoes
-├── design/GAME_DESIGN.md           # Systems: six-day schedule, relationship ledger, morning reactions, three outcomes
+├── design/GAME_DESIGN.md           # Systems: six days, three full routes, three short arcs, three outcomes
 ├── design/ART_DIRECTION.md         # Illustration style, compound cutaway, functional colour, signature frames
 ├── build/BUILD_BRIEF.md            # Provider-neutral, bounded brief handed to the coding agent
 └── build/app/                      # The built, playable game — see build/app/RUN.md to run it

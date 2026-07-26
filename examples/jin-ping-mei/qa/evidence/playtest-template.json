@@ -36,6 +36,17 @@
     "li_pinger": "",
     "distinct_goals_count": 0
   },
+  "household_character_recall": {
+    "meng_yulou": "",
+    "sun_xuee": "",
+    "li_jiaoer": "",
+    "first_full_route_candidate": ""
+  },
+  "copy_feedback": {
+    "naturalness_1_to_5": null,
+    "most_natural_line": "",
+    "most_ai_like_line": ""
+  },
   "quotes": [],
   "friction_points": [],
   "adult_intensity_feedback": "",

@@ -223,6 +223,12 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .relation-tiers span { display: flex; flex-direction: column; color: #807463; font: .62rem var(--sans); }
 .relation-tiers b { margin-top: .12rem; color: #d8c6a8; font-size: .75rem; }
 .relation-card p { margin: 0; min-height: 2.6em; color: #948776; font: .68rem/1.55 var(--sans); }
+.household-roster { margin-top: auto; padding: .65rem .7rem .55rem; border-top: 1px solid rgba(216,181,111,.2); background: rgba(0,0,0,.12); }
+.household-roster > p { margin: 0 0 .42rem; color: #897d6b; font: .64rem var(--sans); letter-spacing: .18em; }
+.household-row { display: grid; grid-template-columns: 24px 54px 1fr; align-items: center; min-height: 28px; color: #b8aa93; font: .66rem var(--sans); }
+.household-row > span { width: 20px; height: 20px; display: grid; place-content: center; border: 1px solid rgba(209,177,113,.32); color: #cdb37f; font-size: .58rem; }
+.household-row b { color: #d4c5ad; font-weight: 500; }
+.household-row small { color: #7f7464; font-size: .62rem; text-align: right; }
 
 .phase-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #2c251d; }
 .visual-stage { position: absolute; inset: 0; overflow: hidden; }
@@ -253,6 +259,16 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .courtyard-caption { position: absolute; z-index: 2; inset: 12% 11% auto; display: flex; justify-content: space-between; color: #3b3026; font-weight: 700; letter-spacing: .2em; text-shadow: 0 1px #eadcbf; }
 .day-panel { left: 4%; right: 4%; bottom: 3.5%; padding: 1.2rem 1.4rem; }
 .day-actions { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .65rem; }
+
+/* 宅中短线 */
+.household-stage::after { background: linear-gradient(90deg, rgba(16,11,9,.88) 0%, rgba(16,11,9,.18) 58%, rgba(16,11,9,.1)); }
+.household-portrait { position: absolute; z-index: 2; right: 4%; bottom: -10%; height: 108%; max-width: 48%; object-fit: contain; filter: drop-shadow(-18px 18px 16px rgba(0,0,0,.48)) saturate(.82); }
+.household-panel { left: 4%; top: 8%; width: min(620px, 51%); padding: 1.45rem; }
+.household-panel .choice-grid { margin-top: .9rem; }
+.household-voice { margin: .7rem 0 .6rem; color: #a99a85; font: .76rem/1.7 var(--sans); }
+.household-standing { display: inline-block; padding: .3rem .55rem; border: 1px solid rgba(211,178,111,.28); color: #d1b677; font: .68rem var(--sans); }
+.household-sun_xuee .household-panel { border-color: rgba(150,131,96,.58); }
+.household-li_jiaoer .household-panel { border-color: rgba(149,91,91,.6); }
 
 .choice-button {
   position: relative;
@@ -341,6 +357,9 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .ending-ledger span { display: flex; flex-direction: column; padding: .7rem; border: 1px solid rgba(214,180,113,.24); color: #948674; font: .75rem var(--sans); }
 .ending-ledger b { margin-top: .2rem; color: #d8c5a3; font-size: .8rem; }
 .ending-note { color: #918473; font: .8rem/1.6 var(--sans); }
+.household-ending { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .4rem; margin: 0 0 .75rem; }
+.household-ending span { display: flex; flex-direction: column; padding: .5rem .6rem; border-left: 2px solid rgba(210,174,107,.42); color: #8f8271; font: .67rem/1.45 var(--sans); }
+.household-ending b { color: #cdbb9e; font-size: .72rem; }
 
 /* 场景册 */
 .gallery-overlay { position: fixed; z-index: 500; inset: 0; display: grid; place-items: center; padding: 3vh 3vw; background: rgba(10,7,6,.88); backdrop-filter: blur(8px); }

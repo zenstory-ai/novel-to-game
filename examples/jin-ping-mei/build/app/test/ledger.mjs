@@ -4,7 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as E from '../js/engine.js';
-import { HEROINE_IDS, ROUTE_CHOICES, SCENES, DAY_ACTIONS, OPENING_CHOICES, BANQUET_CHOICES } from '../js/data.js';
+import {
+  HEROINE_IDS, HOUSEHOLD_IDS, HOUSEHOLD, HOUSEHOLD_EVENTS,
+  ROUTE_CHOICES, SCENES, DAY_ACTIONS, OPENING_CHOICES, BANQUET_CHOICES,
+} from '../js/data.js';
 import { ASSET_PATHS, CRITICAL_CG_KEYS } from '../js/assets.js';
 import { TEXT } from '../js/text.js';
 
@@ -14,7 +17,7 @@ const section=n=>console.log(`\n== ${n} ==`);
 function test(n,fn){try{fn();passed++;console.log(`  PASS  ${n}`)}catch(e){failed++;console.log(`  FAIL  ${n}`);console.error(`        ${e.message}`)}}
 const ok=(v,m)=>assert.ok(v,m), eq=(a,b,m)=>assert.deepEqual(a,b,m);
 function morning(s,p){if(s.phase!=='morning')return;const o=E.morningOptions(s).find(x=>x.id===p&&!x.disabled)||E.morningOptions(s).find(x=>!x.disabled);const r=E.resolveMorning(s,o.id);assert.equal(r.ok,true,r.error)}
-function day(s,a,banquet='banquet_balance'){const r=E.chooseDayAction(s,a);assert.equal(r.ok,true,r.error);if(s.phase==='banquet'){let b=E.chooseBanquet(s,banquet);if(!b.ok)b=E.chooseBanquet(s,'banquet_honor_yue');assert.equal(b.ok,true,b.error);E.closeScene(s)}}
+function day(s,a,banquet='banquet_balance'){const r=E.chooseDayAction(s,a);assert.equal(r.ok,true,r.error);if(s.phase==='household'){const option=E.householdOptions(s).find(x=>!x.disabled);assert.ok(option);assert.equal(E.resolveHouseholdEvent(s,option.id).ok,true)}if(s.phase==='banquet'){let b=E.chooseBanquet(s,banquet);if(!b.ok)b=E.chooseBanquet(s,'banquet_honor_yue');assert.equal(b.ok,true,b.error);E.closeScene(s)}}
 function visit(s,h,c,n='talk'){assert.equal(E.startVisit(s,h).ok,true);const rows=E.visitChoices(s,h);const rc=rows.find(x=>x.id===c&&!x.disabled)||rows.find(x=>!x.disabled);assert.ok(rc,`no route d${s.day} ${h}`);assert.equal(E.chooseVisit(s,rc.id).ok,true);const nights=E.nightOptions(s);const nc=nights.find(x=>x.id===n&&!x.disabled)||nights.find(x=>x.id==='prelude'&&!x.disabled)||nights.find(x=>x.id==='talk');assert.ok(nc);const r=E.chooseNight(s,nc.id);assert.equal(r.ok,true,r.error);if(s.phase==='scene')E.closeScene(s);return nc.id}
 function strategy(kind){const s=E.newGame(42);if(kind==='exclusive'){E.chooseOpening(s,'respect_yue');const cs=['yue_share_shortfall','yue_show_accounts','yue_keep_word','yue_ask_backing','yue_offer_seat','yue_share_keys'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,'banquet','banquet_honor_yue');visit(s,'wu_yueniang',cs[d-1],d>=3?'explicit':'prelude')}}else if(kind==='balanced'){E.chooseOpening(s,'respect_yue');const hs=['li_pinger','pan_jinlian','wu_yueniang','li_pinger','pan_jinlian','li_pinger'],cs=['pinger_settle_room','pan_take_clue','yue_keep_word','pinger_sit_quiet','pan_call_bluff','pinger_return_key'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,d===5?'banquet':'ledger');visit(s,hs[d-1],cs[d-1])}}else{E.chooseOpening(s,'tease_pan');const hs=['pan_jinlian','pan_jinlian','wu_yueniang','pan_jinlian','li_pinger','wu_yueniang'],cs=['pan_take_cup','pan_take_clue','yue_public_spend','pan_answer_door','pinger_spend_on_pan','yue_last_tea'],as=['listen','listen','office','listen','office','ledger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,as[d-1],'banquet_honor_yue');visit(s,hs[d-1],cs[d-1])}}return s}
 function explicit(h){const s=E.newGame(91),p={wu_yueniang:['respect_yue',['yue_share_shortfall','yue_show_accounts','yue_keep_word']],pan_jinlian:['tease_pan',['pan_take_cup','pan_take_clue']],li_pinger:['respect_yue',['pinger_settle_room','pinger_protect_books','pinger_protect_public']]}[h];E.chooseOpening(s,p[0]);for(let i=0;i<p[1].length;i++){morning(s,'explain');const final=i===p[1].length-1;day(s,h==='pan_jinlian'&&final?'listen':'ledger');visit(s,h,p[1][i],final?'explicit':'prelude')}return s}
@@ -22,9 +25,10 @@ function explicitGate(h,action){const s=E.newGame(17),p={wu_yueniang:['respect_y
 function directorySize(dir){return fs.readdirSync(dir,{withFileTypes:true}).reduce((sum,entry)=>{const target=path.join(dir,entry.name);return sum+(entry.isDirectory()?directorySize(target):fs.statSync(target).size)},0)}
 
 section('身份与存档');
-test('新局版本 3 且只有三名成年女主',()=>{const s=E.newGame(1);eq(s.version,3);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger'])});
+test('新局版本 4 且三条成人深线不变',()=>{const s=E.newGame(1);eq(s.version,4);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger'])});
 test('开场是正堂身份选择',()=>{const s=E.newGame(1);eq(s.phase,'opening');ok(OPENING_CHOICES.some(x=>x.id==='respect_yue'))});
 test('旧 v1/v2 存档拒读',()=>{eq(E.deserialize('{"version":1}'),null);eq(E.deserialize('{"version":2}'),null)});
+test('v3 存档补齐宅中人后迁入 v4',()=>{const old=E.newGame(1);old.version=3;delete old.household;delete old.currentHouseholdEvent;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,4);eq(Object.keys(loaded.household),HOUSEHOLD_IDS)});
 test('新存档往返一致',()=>{const s=E.newGame(1);E.chooseOpening(s,'respect_yue');eq(E.deserialize(E.serialize(s)),s)});
 test('同 seed 同选择逐字节复现',()=>eq(E.serialize(strategy('exclusive')),E.serialize(strategy('exclusive'))));
 
@@ -55,6 +59,13 @@ test('嫉妒指出玩家可见的具体院门',()=>{const s=explicit('pan_jinlia
 test('次晨哄、说明、坚持有不同代价',()=>{const make=()=>{const s=explicit('pan_jinlian');morning(s,'explain');day(s,'listen');visit(s,'pan_jinlian','pan_bring_confrontation','talk');return s},a=make(),b=make(),c=make();E.resolveMorning(a,'appease');E.resolveMorning(b,'explain');E.resolveMorning(c,'stand');ok(a.resources.silver<b.resources.silver);ok(b.resources.exposure>a.resources.exposure);ok(c.resources.house<b.resources.house)});
 test('第5日宴席解锁群体冲突 CG',()=>{const s=E.newGame(1);E.chooseOpening(s,'respect_yue');for(let d=1;d<=4;d++){morning(s);day(s,'ledger');visit(s,'li_pinger',null)}morning(s);E.chooseDayAction(s,'banquet');E.chooseBanquet(s,'banquet_honor_yue');eq(s.pendingScene,'banquet_conflict');ok(s.unlocked.includes('banquet_conflict'))});
 
+section('宅中短线');
+test('新增三名成年宅中人但不混入成人场景白名单',()=>{eq(HOUSEHOLD_IDS,['meng_yulou','sun_xuee','li_jiaoer']);for(const id of HOUSEHOLD_IDS){ok(HOUSEHOLD[id].adult===true,id);ok(!HEROINE_IDS.includes(id),id);ok(!Object.values(SCENES).some(scene=>scene.participants.includes(id)),id)}});
+test('第2至4日各有一段两选一事件',()=>{eq(Object.keys(HOUSEHOLD_EVENTS).map(Number),[2,3,4]);for(const event of Object.values(HOUSEHOLD_EVENTS)){eq(event.choices.length,2);ok(event.choices.every(choice=>choice.text&&choice.effects&&choice.label),event.id)}});
+test('玉楼事件会留下人情并回到黄昏选门',()=>{const s=E.newGame(5);E.chooseOpening(s,'respect_yue');day(s,'ledger');visit(s,'wu_yueniang','yue_share_shortfall','talk');morning(s);const before=s.household.meng_yulou.regard;E.chooseDayAction(s,'office');eq(s.phase,'household');eq(E.currentHouseholdEvent(s).actor,'meng_yulou');const result=E.resolveHouseholdEvent(s,'meng_let_speak');ok(result.ok);eq(s.phase,'choose_visit');ok(s.household.meng_yulou.regard>before);ok(s.history.some(item=>item.type==='household'&&item.choice==='meng_let_speak'))});
+test('娇儿不会让你拿空口换二十两的门路',()=>{const s=E.newGame(5);s.day=4;s.phase='household';s.currentHouseholdEvent='jiaoer_collector';s.resources.silver=19;const paid=E.householdOptions(s).find(item=>item.id==='jiaoer_buy_name');ok(paid.disabled);eq(E.resolveHouseholdEvent(s,'jiaoer_buy_name').ok,false);eq(s.resources.silver,19)});
+test('宅中人态度写进最终结算',()=>{const s=strategy('balanced');ok(s.ending.householdResults.length===3);ok(s.ending.householdResults.every(item=>item.name&&item.result))});
+
 section('三种收束');
 const ex=strategy('exclusive'),bal=strategy('balanced'),intr=strategy('intrigue');
 test('专一深线 6 日可达',()=>eq(ex.ending.id,'exclusive'));
@@ -68,7 +79,9 @@ test('无白天动作同时抬升全部外账',()=>{for(const a of Object.keys(D
 
 section('声口与数据完整性');
 test('所有主按钮不超过 10 个汉字',()=>{const ls=[...OPENING_CHOICES.map(x=>x.label),...Object.values(DAY_ACTIONS).map(x=>x.label),...Object.values(ROUTE_CHOICES).flat(2).map(x=>x.label),...BANQUET_CHOICES.map(x=>x.label)];for(const l of ls)ok([...l].length<=10,l)});
-test('运行时文本不命中禁用 AI 腔',()=>{const p=JSON.stringify({TEXT,ROUTE_CHOICES,SCENES,OPENING_CHOICES,BANQUET_CHOICES});for(const x of [/并非.{0,20}而是/,/真正的.{0,20}从来不是/,/这一刻你终于明白/,/眼中闪过/,/嘴角勾起/,/仿佛/,/宛若/])ok(!x.test(p),x)});
+test('运行时文本不命中禁用 AI 腔',()=>{const p=JSON.stringify({TEXT,ROUTE_CHOICES,SCENES,OPENING_CHOICES,BANQUET_CHOICES,HOUSEHOLD_EVENTS});for(const x of [/并非.{0,20}而是/,/不是.{0,20}而是/,/真正的.{0,20}从来不是/,/这一刻你终于明白/,/这意味着/,/眼中闪过/,/嘴角勾起/,/仿佛/,/宛若/,/带着一丝/])ok(!x.test(p),x);ok((p.match(/兑现/g)||[]).length<=2,'“兑现”重复过多')});
+test('玩家界面不再露出策划说明书用语',()=>{const source=fs.readFileSync(path.join(ROOT,'js/main.js'),'utf8');for(const phrase of ['她要：','她能给：','理解型结果','关系终段','成人前奏','这里不替你总结人生'])ok(!source.includes(phrase),phrase)});
+test('六个人各有能听出的声口标记',()=>{const routeText=Object.values(ROUTE_CHOICES).flat(2).map(x=>x.text);ok(routeText.filter(x=>x.includes('官人')).length>=3,'金莲声口');ok(HOUSEHOLD.meng_yulou.voice.includes('笑'),'玉楼声口');ok(HOUSEHOLD.sun_xuee.voice.includes('灶'),'雪娥声口');ok(HOUSEHOLD.li_jiaoer.voice.includes('银'),'娇儿声口')});
 test('三人 6 日每天至少一项不锁死',()=>{for(const id of HEROINE_IDS){eq(ROUTE_CHOICES[id].length,6);for(const d of ROUTE_CHOICES[id])ok(d.some(x=>!x.condition),id)}});
 test('每名女主都有前奏与关系终段 CG',()=>{for(const id of HEROINE_IDS)eq(new Set(Object.values(SCENES).filter(x=>x.heroine===id).map(x=>x.tier)),new Set(['prelude','explicit']))});
 test('剧情旗标写入后都有下游消费',()=>{

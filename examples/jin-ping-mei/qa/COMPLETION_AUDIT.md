@@ -10,7 +10,7 @@
 | 要求 | 状态 | 权威证据 |
 |---|---|---|
 | 玩家由孟玉楼改为西门庆，男性主观视角 | `PROVED` | 标题、开场和浏览器“你是西门庆”断言；旧 `jpm_save_v1` 注入隔离 |
-| 白日经营 → 黄昏拜访 → 夜间决定 → 次晨回响 | `PROVED` | `engine.js` phase 状态机；三条浏览器完整路径 |
+| 白日经营 → 宅中插曲 → 黄昏拜访 → 夜间决定 → 次晨来人 | `PROVED` | `engine.js` phase 状态机；三条浏览器完整路径 |
 | 外账、人物 `qing/yu/du`、总账分层 | `PROVED` | `newGame()` 状态 schema、关系边界测试、真实 HUD |
 | 专一、平衡、权谋三种打法均能在 6 日收束 | `PROVED` | `ledger.mjs` 三条极端策略，结局分别为 `exclusive/balanced/intrigue` |
 | 没有一个白天动作通吃全部路线 | `PROVED` | 四种白天动作路线亲和矩阵；`ledger/office/listen/banquet` 解锁集合不同 |
@@ -35,6 +35,19 @@
 瓶儿“只取钱”路径已在真实浏览器中实际选择 `leave`：流程继续、成人册页未误解锁、选择写入
 历史。不是只检查按钮存在。
 
+## 三条宅中短线
+
+| 要求 | 玉楼 | 雪娥 | 娇儿 | 状态 |
+|---|---|---|---|---|
+| 场内物件发动 | 名帖 | 空米袋／后仓木箱 | 描金匣 | `PROVED` |
+| 两项真实选择 | 递话／不让沾手 | 查后仓／赔短账 | 买底价／扣匣子 | `PROVED` |
+| 改变外账或秘密 | `power/meng_favor` | `silver/house/kitchen_witness` | `silver/exposure/collector_price` | `PROVED` |
+| 结算回读态度 | `regard` → 三档文本 | `regard` → 三档文本 | `regard` → 三档文本 | `PROVED` |
+| 真实立绘与双视口 | `household_meng_yulou.png` | `household_sun_xuee.png` | `household_li_jiaoer.png` | `PROVED` |
+| 不混入成人场景 | 不在 `HEROINE_IDS`／`SCENES.participants` | 同左 | 同左 | `PROVED` |
+
+这三段增加宅中人物密度，但没有夜访、专属近景或册页，不能称为三条新完整女主路线。
+
 ## 成人内容、场景册与安全
 
 | 要求 | 状态 | 权威证据 |
@@ -55,8 +68,9 @@
 
 | 要求 | 状态 | 权威证据 |
 |---|---|---|
-| 市井白话、短按钮、三人不同声口 | `PROVED` | 主按钮 ≤10 字、三路线文本与四类定点抽查 |
-| 禁止指定 AI 腔 | `PROVED` | 全部运行时文本机器扫描 0 命中 |
+| 古典白话底子、自然口语、短按钮 | `PROVED` | 主按钮 ≤10 字；36 个深线选项、三段短线和结局已按 `oh-story-claudecode` 规范重写 |
+| 六人不同声口 | `PROVED` | 月娘／金莲／瓶儿／玉楼／雪娥／娇儿声口标记与场内物件静态断言 |
+| 禁止指定 AI 腔与策划术语 | `PROVED` | 高危句式、重复“兑现”与玩家界面说明书用语机器扫描 0 命中 |
 | 对话人物占画面 55%–70% | `PROVED` | 三路线每次近景 bounding box 均为 0.65 |
 | 宅院只作 Hub，关键关系切近景／CG | `PROVED` | opening/day 使用宅院；visit/night/scene 使用人物专属资产 |
 | 中秋三人签名帧 | `PROVED` | `banquet_conflict` 真实触发；安全截图与视觉裁决 |
@@ -64,7 +78,7 @@
 | 色彩带文字／形状冗余 | `PROVED` | 三条关系卡具有不同字形标记、固定位置和文字等级 |
 | 键盘与降运动 | `PROVED` | Tab 聚焦、Escape 分层关闭、`prefers-reduced-motion` |
 | 最小视口文字可读 | `PROVED` | 1280×800：功能标签 13px、正文 14px、人物原因 12px |
-| 视觉方向符合 | `PROVED` | visual-verdict iteration 5：97/100、`pass` |
+| 视觉方向符合 | `PROVED` | visual-verdict iteration 6：94/100、`pass` |
 
 声音存在性与持久化已证明；音色情绪是否符合目标玩家仍属于人工感受，不包装成确定性结论。
 
@@ -73,17 +87,17 @@
 | 要求 | 状态 | 权威证据 |
 |---|---|---|
 | 1280×800 与 1920×1080 不遮挡关键选择 | `PROVED` | 双视口主界面、关系栏、舞台、顶栏 bounding box |
-| 本地首屏低于 2 秒 | `PROVED` | 最新浏览器基线约 48.5 ms |
-| 交互保持 30 FPS 以上 | `PROVED` | 24 帧采样平均帧间隔约 8.4 ms |
-| 包体低于 25 MB | `PROVED` | 运行目录 4.6 MB；纯引擎递归大小断言 |
+| 本地首屏低于 2 秒 | `PROVED` | 最新浏览器基线约 99.3 ms |
+| 交互保持 30 FPS 以上 | `PROVED` | 24 帧采样平均帧间隔约 8.3 ms |
+| 包体低于 25 MB | `PROVED` | 运行目录 6.0 MB；纯引擎递归大小断言 |
 | 控制台与关键资源零错误 | `PROVED` | 真实浏览器 console/pageerror/requestfailed/HTTP 监听均为 0 |
 | 发布模式缺关键 CG 时失败 | `PROVED` | 拦截 `pinger/explicit.webp` 后出现 `#asset-error` |
-| 新旧存档隔离 | `PROVED` | version 3 schema 与旧键注入测试 |
+| 新旧存档隔离与迁移 | `PROVED` | `v3` 补齐宅中人迁入 `v4`；`jpm_save_v1` 旧键仍隔离 |
 | 场景册与周目存档分离 | `PROVED` | 重开清周目、7 页仍保留 |
 | 最小测试钩子 | `PROVED` | `window.__game` 仅暴露状态、动作和资产报告，没有改数值捷径 |
 | 仓库规定命令通过 | `PROVED` | `validate_repo.py` 通过；Python 单元测试 9/9 |
 
-当前自动证据为纯引擎 38/38、真实 Chromium 124/124、视觉 97/100。
+当前自动证据为纯引擎 46/46、真实 Chromium 130/130、视觉 94/100。
 
 ## 仍未跨过的阶段四硬门
 

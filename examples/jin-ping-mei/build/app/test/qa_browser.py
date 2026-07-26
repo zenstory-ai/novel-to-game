@@ -22,6 +22,7 @@ passed = failed = 0
 errors: list[str] = []
 network_errors: list[str] = []
 http_errors: list[str] = []
+household_seen: set[str] = set()
 
 
 def section(name: str) -> None:
@@ -93,8 +94,20 @@ def resolve_morning(page, preferred="explain") -> None:
     page.wait_for_timeout(80)
 
 
-def choose_day(page, action="ledger", banquet="banquet_honor_yue") -> None:
+def choose_day(page, action="ledger", banquet="banquet_honor_yue", household=None) -> None:
     click(page, f'[data-day-action="{action}"]')
+    if phase(page) == "household":
+        stage = page.locator(".household-stage")
+        actor = stage.get_attribute("data-household-actor")
+        if actor not in household_seen:
+            check(page.locator(".household-row").count() == 3, "人物账列出三名宅中短线角色")
+            check(page.locator(".household-portrait").evaluate("e => e.complete && e.naturalHeight > 700"), f"{actor} 立绘真实加载")
+            shot(page, SAFE, f"household_{actor}")
+            household_seen.add(actor)
+        option = page.locator(f'button[data-household="{household}"]:not([disabled])') if household else page.locator('button[data-household]:not([disabled])').first
+        option.click()
+        page.wait_for_timeout(80)
+        assert phase(page) == "choose_visit"
     if phase(page) == "banquet":
         option = page.locator(f'[data-banquet="{banquet}"]:not([disabled])')
         if option.count() == 0:
@@ -170,7 +183,7 @@ def main() -> int:
             click(page, "#btn-age-yes")
             check(page.locator(".title-screen").count() == 1, "确认后进入标题")
             check("你是西门庆" in page.locator(".identity-line").inner_text(), "标题明确玩家是西门庆")
-            check("今晚进谁的门" in page.locator(".title-subtitle").inner_text(), "第一屏给直接欲望与后果")
+            check("今夜进谁的门" in page.locator(".title-subtitle").inner_text(), "第一屏给直接欲望与后果")
             shot(page, SAFE, "02_title")
 
             start_fresh(page, "respect_yue")
@@ -253,7 +266,7 @@ def main() -> int:
             route_night(page, "pan_jinlian", "pan_take_clue", "explicit", "pan_explicit")
             check("pan_explicit" in state(page)["unlocked"], "金莲关系终段由承诺、情与欲解锁")
             check(state(page)["morning"]["id"] == "pan_claim", "金莲次晨主动来收公开承诺")
-            check("人前" in state(page)["morning"]["text"], "金莲把昨夜选择带回公开关系")
+            check("日头" in state(page)["morning"]["text"], "金莲把昨夜选择带回白日")
             resolve_morning(page, "explain")
             choose_day(page, "listen")
             route_night(page, "pan_jinlian", "pan_bring_confrontation", "talk")
@@ -284,7 +297,7 @@ def main() -> int:
             check(page.locator(".gallery-card.locked").count() == 0, "已解锁页不再显示剪影")
             click(page, "#btn-gallery-close")
             page.evaluate("localStorage.setItem('jpm_save_v1', JSON.stringify({version:2,player:{name:'孟玉楼'}}))")
-            check(state(page)["version"] == 3, "旧孟玉楼存档键不污染新周目")
+            check(state(page)["version"] == 4, "旧孟玉楼存档键不污染新周目")
 
             section("双视口、键盘与资源")
             for width, height in [(1280, 800), (1920, 1080)]:

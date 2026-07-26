@@ -2,7 +2,7 @@
   "name": "jinpingmei-fengyue-ledger",
   "private": true,
   "type": "module",
-  "description": "《金瓶梅·风月总账》6日男性第一人称成人后宫关系模拟垂直切片",
+  "description": "《金瓶梅·风月总账》6日男性第一人称成人后宫关系模拟：三条深线与三条宅中短线",
   "scripts": {
     "start": "python3 -m http.server 5173",
     "test": "node test/ledger.mjs",

@@ -1,10 +1,14 @@
 import { TEXT } from './text.js';
-import { HEROINES, HEROINE_IDS, OPENING_CHOICES, NIGHT_TEXT, SCENES } from './data.js';
+import {
+  HEROINES, HEROINE_IDS, HOUSEHOLD, HOUSEHOLD_IDS,
+  OPENING_CHOICES, NIGHT_TEXT, SCENES,
+} from './data.js';
 import * as E from './engine.js';
 import { loadAssets, assetReport, urlFor, assertCriticalAssetSchema } from './assets.js';
 import { audio } from './audio.js';
 
-const SAVE_KEY = 'jpm_fengyue_save_v3';
+const SAVE_KEY = 'jpm_fengyue_save_v4';
+const LEGACY_SAVE_KEY = 'jpm_fengyue_save_v3';
 const GALLERY_KEY = 'jpm_fengyue_gallery_v1';
 const AGE_KEY = 'jpm_fengyue_age_session';
 const params = new URLSearchParams(location.search);
@@ -33,7 +37,7 @@ async function boot() {
 }
 
 function renderAssetFailure(missing) {
-  app.innerHTML = `<main class="fatal-card" id="asset-error"><h1>关键册页没有装订</h1><p>发布模式拒绝用灰盒冒充：${missing.map(escapeHtml).join('、')}</p></main>`;
+  app.innerHTML = `<main class="fatal-card" id="asset-error"><h1>有几页画没有装进来</h1><p>先不让你看残页。缺的是：${missing.map(escapeHtml).join('、')}</p></main>`;
 }
 
 function ageConfirmed() {
@@ -57,14 +61,23 @@ function save() {
 }
 
 function loadSave() {
-  const loaded = E.deserialize(localStorage.getItem(SAVE_KEY));
-  if (!loaded) localStorage.removeItem(SAVE_KEY);
+  const raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(LEGACY_SAVE_KEY);
+  const loaded = E.deserialize(raw);
+  if (!loaded) {
+    localStorage.removeItem(SAVE_KEY);
+    return null;
+  }
+  if (!localStorage.getItem(SAVE_KEY)) {
+    localStorage.setItem(SAVE_KEY, E.serialize(loaded));
+    localStorage.removeItem(LEGACY_SAVE_KEY);
+  }
   return loaded;
 }
 
 function startNew() {
   state = E.newGame(SEED);
   localStorage.removeItem(SAVE_KEY);
+  localStorage.removeItem(LEGACY_SAVE_KEY);
   save();
   audio.playBGM('act1');
   render();
@@ -72,7 +85,7 @@ function startNew() {
 
 function continueGame() {
   const loaded = loadSave();
-  if (!loaded) return showToast('旧版孟玉楼存档不会读进来。请开新局。');
+  if (!loaded) return showToast('这本旧账接不上了，只好从第一日重开。');
   state = loaded;
   audio.playBGM('act1');
   render();
@@ -81,13 +94,14 @@ function continueGame() {
 function restart() {
   state = E.newGame(SEED);
   localStorage.removeItem(SAVE_KEY);
+  localStorage.removeItem(LEGACY_SAVE_KEY);
   save();
   render();
 }
 
 function sfxForPhase() {
   if (!state) return;
-  const map = { day: 'wang', visit: 'paper', night: 'watch', morning: 'plank', scene: 'qing', banquet: 'submit', ending: 'qing' };
+  const map = { day: 'wang', household: 'paper', visit: 'paper', night: 'watch', morning: 'plank', scene: 'qing', banquet: 'submit', ending: 'qing' };
   audio.sfx(map[state.phase] ?? 'click');
 }
 
@@ -104,7 +118,7 @@ function act(fn) {
 
 function render() {
   if (!assets) {
-    app.innerHTML = '<div class="loading">正在装订册页……</div>';
+    app.innerHTML = '<div class="loading">册页还在装订，稍候。</div>';
     return;
   }
   if (!ageConfirmed()) return renderAgeGate();
@@ -132,7 +146,7 @@ function renderTitle() {
     <main class="title-screen">
       <div class="title-art" style="background-image:url('${urlFor('cover')}')" role="img" aria-label="吴月娘、潘金莲与李瓶儿在中秋席上看向玩家"></div>
       <section class="title-copy">
-        <p class="eyebrow">成人后宫关系模拟 · 6 日垂直切片</p>
+        <p class="eyebrow">成人后宫关系游戏 · 六日一局</p>
         <h1>${TEXT.title}</h1>
         <p class="title-subtitle">${TEXT.subtitle}</p>
         <p class="identity-line">${TEXT.identity}</p>
@@ -172,6 +186,10 @@ function renderGame() {
         <aside class="relation-rail" aria-label="人物账">
           <p class="rail-kicker">人物账</p>
           ${HEROINE_IDS.map(renderRelationCard).join('')}
+          <section class="household-roster" aria-label="宅中人">
+            <p>宅中人</p>
+            ${HOUSEHOLD_IDS.map(renderHouseholdRow).join('')}
+          </section>
         </aside>
         <section class="phase-stage" id="phase-stage">
           ${content}
@@ -201,6 +219,14 @@ function renderRelationCard(id) {
     </article>`;
 }
 
+function renderHouseholdRow(id) {
+  const person = HOUSEHOLD[id];
+  const row = state.household[id];
+  return `<div class="household-row" data-household="${id}" data-regard="${row.regard}">
+    <span>${person.glyph}</span><b>${person.name}</b><small>${E.householdTier(row.regard)}</small>
+  </div>`;
+}
+
 function phaseHeader(kicker, title, body) {
   return `<header class="phase-header"><p class="eyebrow">${kicker}</p><h2>${title}</h2><p>${escapeHtml(body)}</p></header>`;
 }
@@ -209,6 +235,7 @@ function renderPhase() {
   switch (state.phase) {
     case 'opening': return renderOpening();
     case 'day': return renderDay();
+    case 'household': return renderHousehold();
     case 'banquet': return renderBanquet();
     case 'choose_visit': return renderVisitHub();
     case 'visit': return renderVisit();
@@ -229,8 +256,8 @@ function renderOpening() {
         ${heroineFigure('li_pinger', 'right')}
       </div>
       <div class="decision-panel opening-panel">
-        ${phaseHeader('第 1 日 · 正堂', '你是西门庆', '公中短了五十两。月娘等你给一句准话，金莲端着酒当面激你。')}
-        <p class="speaker-line">月娘：“账给谁管？”　金莲：“酒先接谁的？”</p>
+        ${phaseHeader('第一日 · 正堂', '五十两银子不见了', '月娘守着账簿，金莲把酒送到你手边。两个人都等你先看谁。')}
+        <p class="speaker-line">月娘：“账放下。”　金莲：“官人，酒要凉了。”</p>
         <div class="choice-grid">${OPENING_CHOICES.map((choice) => choiceButton(choice, 'opening')).join('')}</div>
       </div>
     </div>`;
@@ -249,10 +276,26 @@ function renderDay() {
     </div>`;
 }
 
+function renderHousehold() {
+  const event = E.currentHouseholdEvent(state);
+  const person = HOUSEHOLD[event.actor];
+  const row = state.household[event.actor];
+  return `
+    <div class="household-stage visual-stage household-${event.actor}" data-household-event="${event.id}" data-household-actor="${event.actor}" style="--scene-bg:url('${urlFor('compound')}')">
+      <img class="household-portrait" src="${urlFor(person.portrait)}" alt="${person.name}"/>
+      <div class="decision-panel household-panel">
+        ${phaseHeader(`${person.house} · ${person.glyph}`, event.title, event.text)}
+        <p class="household-voice">${person.voice}</p>
+        <div class="household-standing">她如今${E.householdTier(row.regard)}。</div>
+        <div class="choice-grid">${E.householdOptions(state).map((choice) => choiceButton(choice, 'household')).join('')}</div>
+      </div>
+    </div>`;
+}
+
 function renderVisitHub() {
   return `
     <div class="hub-stage visual-stage evening" style="--scene-bg:url('${urlFor('compound')}')">
-      <div class="visit-prompt">${phaseHeader(`第 ${state.day} 日 · 黄昏`, '三处院门都亮着', TEXT.chooseVisit)}</div>
+      <div class="visit-prompt">${phaseHeader(`第 ${state.day} 日 · 黄昏`, '院门亮了灯', TEXT.chooseVisit)}</div>
       <div class="heroine-doors">
         ${HEROINE_IDS.map((id) => {
           const h = HEROINES[id];
@@ -278,7 +321,7 @@ function renderVisit() {
       <div class="close-cg" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}近景"></div>
       <div class="decision-panel dialogue-panel">
         ${phaseHeader(`${h.house} · ${h.shape}`, h.name, h.voice)}
-        <p class="want-line"><b>她要：</b>${h.want}<br/><b>她能给：</b>${h.gives}</p>
+        <p class="want-line">${h.want}<br/><span>${h.gives}</span></p>
         <div class="choice-stack">${choices.map((choice) => choiceButton(choice, 'route-choice')).join('')}</div>
       </div>
     </div>`;
@@ -293,9 +336,9 @@ function renderNight() {
       <div class="dialogue-backdrop" style="background-image:linear-gradient(90deg,rgba(14,10,10,.95),rgba(35,18,15,.28)),url('${urlFor('compound')}')"></div>
       <div class="close-cg closer" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}夜间近景"></div>
       <div class="decision-panel dialogue-panel">
-        ${phaseHeader('夜 · 意愿由她和你一起决定', h.name, TEXT.nightLead)}
+        ${phaseHeader('夜深了', h.name, TEXT.nightLead)}
         <div class="choice-stack">${choices.map((choice) => choiceButton(choice, 'night')).join('')}</div>
-        <p class="consent-note">“到此为止”始终可选。锁住的场景会告诉你缺的是哪件前事，不用猜数值。</p>
+        <p class="consent-note">随时都能停。若她不肯再近，先前哪句话没说到，她会告诉你。</p>
       </div>
     </div>`;
 }
@@ -307,7 +350,7 @@ function renderMorning() {
     <div class="morning-stage visual-stage tone-${event.tone}" style="--scene-bg:url('${urlFor('compound')}')">
       <div class="morning-cg" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}次晨近景"></div>
       <div class="decision-panel morning-panel">
-        ${phaseHeader(`第 ${state.day} 日 · 次晨`, event.title, event.text)}
+        ${phaseHeader(`第 ${state.day} 日 · 天刚亮`, event.title, event.text)}
         <p class="phase-lead">${TEXT.morningLead}</p>
         <div class="choice-stack">${E.morningOptions(state).map((choice) => choiceButton(choice, 'morning')).join('')}</div>
       </div>
@@ -318,7 +361,7 @@ function renderBanquet() {
   return `
     <div class="banquet-stage visual-stage" style="--scene-bg:url('${urlFor('cg/group/banquet_conflict')}')">
       <div class="decision-panel banquet-panel">
-        ${phaseHeader('第 5 日 · 中秋席', '三杯都在等你', TEXT.banquetLead)}
+        ${phaseHeader('第五日 · 中秋席', '第一杯酒还没递出去', TEXT.banquetLead)}
         <div class="choice-grid">${E.banquetOptions(state).map((choice) => choiceButton(choice, 'banquet')).join('')}</div>
       </div>
     </div>`;
@@ -332,10 +375,10 @@ function renderScene() {
       <img id="scene-image" src="${urlFor(scene.asset)}" alt="${scene.title}"/>
       <div class="scene-scrim"></div>
       <div class="scene-caption">
-        <p class="eyebrow">${adult ? '18+ · 由关系与意愿解锁' : '公开事件 · 中秋席'}</p>
+        <p class="eyebrow">${adult ? '18+ · 她点了头' : '中秋席 · 满桌人都在'}</p>
         <h2>${scene.title}</h2>
         <p>${scene.body}</p>
-        <div class="scene-meta"><span>场景已收入册</span><span>${scene.participants.length ? scene.participants.map((id) => HEROINES[id].name).join('、') : '三人公开冲突'}</span></div>
+        <div class="scene-meta"><span>这一页留下了</span><span>${scene.participants.length ? scene.participants.map((id) => HEROINES[id].name).join('、') : '中秋同席'}</span></div>
         <button class="ink-button primary" id="btn-scene-close">${TEXT.sceneContinue}</button>
       </div>
     </article>`;
@@ -358,7 +401,8 @@ function renderEnding() {
           <span>用过秘密 <b>${state.secretsUsed.length}</b></span>
           <span>未见路线 <b>${end.unseen.length}</b></span>
         </div>
-        <p class="ending-note">钱、势、亲密都先算你赢到什么，再算明早谁来收债。这里不替你总结人生。</p>
+        <div class="household-ending">${end.householdResults.map((item) => `<span><b>${item.name}</b>${item.result}</span>`).join('')}</div>
+        <p class="ending-note">天一亮，正堂那边已经有人翻开账簿。门外又响了两声。</p>
         <div class="button-row"><button class="ink-button primary" id="btn-restart">${TEXT.endingRestart}</button><button class="ink-button" id="btn-gallery">${TEXT.endingGallery}</button></div>
       </div>
     </article>`;
@@ -383,7 +427,7 @@ function appendGallery() {
   overlay.className = 'gallery-overlay';
   overlay.id = 'gallery-modal';
   overlay.innerHTML = `<section class="gallery-book" role="dialog" aria-modal="true" aria-label="场景册" ${gallerySceneId ? 'inert' : ''}>
-    <header><div><p class="eyebrow">永久场景册</p><h2>${TEXT.gallery} <span>${unlocked.size}/7</span></h2><p>${TEXT.galleryKeep}</p></div><button class="plain-button" id="btn-gallery-close">${TEXT.close}</button></header>
+    <header><div><p class="eyebrow">不会丢的册页</p><h2>${TEXT.gallery} <span>${unlocked.size}/7</span></h2><p>${TEXT.galleryKeep}</p></div><button class="plain-button" id="btn-gallery-close">${TEXT.close}</button></header>
     <div class="gallery-grid">${groups.map(([name, ids]) => `<section><h3>${name}</h3><div>${ids.map((id) => galleryCard(SCENES[id], unlocked.has(id))).join('')}</div></section>`).join('')}</div>
   </section>${gallerySceneId ? galleryReplay(SCENES[gallerySceneId]) : ''}`;
   app.appendChild(overlay);
@@ -392,7 +436,7 @@ function appendGallery() {
 function galleryCard(scene, open) {
   return `<button class="gallery-card ${open ? 'unlocked' : 'locked'}" data-gallery-scene="${scene.id}" ${open ? `data-gallery-open="${scene.id}"` : 'disabled'}>
     ${open ? `<img src="${urlFor(scene.asset)}" alt="${scene.title}"/>` : '<div class="locked-art" aria-label="未解锁">未</div>'}
-    <div><b>${open ? scene.title : '题签未开'}</b><small>${open ? (scene.tier === 'public' ? '公开冲突' : scene.tier === 'explicit' ? '关系终段' : '成人前奏') : lockedHint(scene.id)}</small></div>
+    <div><b>${open ? scene.title : '题签未开'}</b><small>${open ? (scene.tier === 'public' ? '中秋同席' : scene.tier === 'explicit' ? '那夜留宿' : '帘前一步') : lockedHint(scene.id)}</small></div>
   </button>`;
 }
 
@@ -400,20 +444,20 @@ function galleryReplay(scene) {
   return `<article class="gallery-replay" id="gallery-replay" data-replay-scene="${scene.id}" role="dialog" aria-modal="true" aria-label="重看${scene.title}">
     <img id="gallery-replay-image" src="${urlFor(scene.asset)}" alt="${scene.title}"/>
     <div class="gallery-replay-copy">
-      <p class="eyebrow">${scene.tier === 'public' ? '公开事件重看' : '18+ · 已解锁场景重看'}</p>
+      <p class="eyebrow">${scene.tier === 'public' ? '再看中秋席' : '18+ · 翻回那一夜'}</p>
       <h2>${scene.title}</h2>
       <p>${scene.body}</p>
-      <p class="replay-note">重看只翻册页，不重复改变人物账、外账或周目历史。</p>
-      <button class="ink-button primary" id="btn-gallery-replay-close">收回册页</button>
+      <p class="replay-note">这次只看画，不改已经走过的路。</p>
+      <button class="ink-button primary" id="btn-gallery-replay-close">合上这一页</button>
     </div>
   </article>`;
 }
 
 function lockedHint(sceneId) {
-  if (sceneId === 'banquet_conflict') return '走到第 5 日中秋席';
-  if (sceneId.startsWith('yue_')) return '守住正堂承诺';
-  if (sceneId.startsWith('pan_')) return '当众兑现她的话';
-  return '先保护她的账';
+  if (sceneId === 'banquet_conflict') return '等中秋开席';
+  if (sceneId.startsWith('yue_')) return '先把答应月娘的事办了';
+  if (sceneId.startsWith('pan_')) return '先还金莲那杯酒';
+  return '先护住瓶儿的账';
 }
 
 function showToast(text) {
@@ -456,6 +500,7 @@ app.addEventListener('click', (event) => {
   else if (button.id === 'btn-scene-close') act(() => E.closeScene(state));
   else if (button.dataset.opening) act(() => E.chooseOpening(state, button.dataset.opening));
   else if (button.dataset.dayAction) act(() => E.chooseDayAction(state, button.dataset.dayAction));
+  else if (button.dataset.household) act(() => E.resolveHouseholdEvent(state, button.dataset.household));
   else if (button.dataset.banquet) act(() => E.chooseBanquet(state, button.dataset.banquet));
   else if (button.dataset.visit) act(() => E.startVisit(state, button.dataset.visit));
   else if (button.dataset.routeChoice) act(() => E.chooseVisit(state, button.dataset.routeChoice));
@@ -480,6 +525,7 @@ window.__game = Object.freeze({
   restart,
   chooseOpening: (id) => act(() => E.chooseOpening(state, id)),
   chooseDay: (id) => act(() => E.chooseDayAction(state, id)),
+  household: (id) => act(() => E.resolveHouseholdEvent(state, id)),
   chooseBanquet: (id) => act(() => E.chooseBanquet(state, id)),
   visit: (id) => act(() => E.startVisit(state, id)),
   chooseVisit: (id) => act(() => E.chooseVisit(state, id)),
