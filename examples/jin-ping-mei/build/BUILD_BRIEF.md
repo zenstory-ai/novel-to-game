@@ -125,7 +125,8 @@ assets/cg/group/banquet_conflict.webp
 25 MB 包体预算。README 只引用
 `screenshots/title.jpg`、`household.jpg`、`morning.jpg`、`banquet.jpg`、`ending.jpg`
 五张安全截图；
-关系终段画面只留在 `/tmp/jpm_qa/adult/` 内部证据目录。
+关系终段画面当时只留在 `/tmp/jpm_qa/adult/` 内部证据目录——该临时目录已失效，按现行
+契约视为无证据；复跑时改落 `qa/evidence/adult/` 受限子目录。
 
 ### 验证
 
@@ -139,9 +140,11 @@ python3 test/qa_browser.py
 # 控制台错误 0；关键资源失败 0
 ```
 
-浏览器证据为 `/tmp/jpm_qa/evidence.json`，安全／18+ 导出清单由同一文件分别记录。
-视觉迭代第 5 轮裁决为 97/100、`pass`，状态在
-`.omx/state/jinpingmei/ralph-progress.json`。完整结论见 `qa/QA_REPORT.md`。
+浏览器证据当时为 `/tmp/jpm_qa/evidence.json`，安全／18+ 导出清单由同一文件分别记录；
+视觉迭代第 5 轮聚合分 97/100 的逐项量表在外部工具状态
+`.omx/state/jinpingmei/ralph-progress.json`。两处均为工作区外路径、现已失效，按现行
+契约视为无证据，聚合分不再作为裁决引用；复跑证据改落 `qa/evidence/`。完整结论与复审
+降级见 `qa/QA_REPORT.md`。
 
 ### 已知限制
 

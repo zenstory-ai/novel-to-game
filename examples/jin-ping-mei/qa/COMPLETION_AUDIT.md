@@ -1,5 +1,9 @@
 # 重制计划完成度审计
 
+> 2026-07-26 复审注：本审计早于现行 qa 契约。文中引用的 `/tmp/jpm_qa/` 与 `.omx` 路径
+> 均已失效、视为无证据；「视觉方向符合 PROVED 94/100」的聚合分裁决已在
+> `qa/QA_REPORT.md` 降级为 `NOT_RUN`，以该报告为准。
+
 审计对象：`.omx/plans/jinpingmei-male-harem-redesign.md`。
 审计日期：2026-07-25。
 状态词：`PROVED` 表示当前证据直接证明；`PARTIAL` 表示实现存在但体验结论仍缺目标玩家证据；

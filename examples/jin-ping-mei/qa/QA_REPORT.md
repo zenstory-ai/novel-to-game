@@ -2,12 +2,14 @@
 
 ## 裁决
 
-- 自动化工程验收：`PASS`
+- 自动化工程验收：`FAIL`（2026-07-26 按现行 qa 契约复审：`/tmp` 与 `.omx` 证据失效降级，
+  独立验证录得 2 `major`，含归属 `design` 的发现，本轮不得 `PASS`；2026-07-25 的
+  `PASS 0/0/0` 原始裁决作废）
 - `blocker`：0
-- `major`：0
-- `minor`：0
+- `major`：2（见发现与回流表）
+- `minor`：2（见发现与回流表）
 - 阶段 4 目标玩家硬门：`NOT_RUN`
-- 可交付称谓：**可运行垂直切片**
+- 可交付称谓：**可运行垂直切片**（工程可运行性结论不变）
 - 禁止声称：已经证明“好玩”“性感”、长期平衡、留存或适合扩成完整流程
 
 自动化结论只说明当前 3 条成人深线 + 3 条宅中短线／6 回合切片可启动、可完成、可拒绝、
@@ -39,10 +41,16 @@ python3 test/qa_browser.py
 # 控制台错误：0；关键资源失败：0
 ```
 
-机器可读摘要落在 `qa/evidence/automated.json`。浏览器逐步截图与当次运行的原始摘要落在
-`/tmp/jpm_qa/`；该临时目录含 18+ 内部截图，不进入 README。
+机器可读摘要落在 `qa/evidence/automated.json`。浏览器逐步截图与当次运行原始摘要当时落在
+`/tmp/jpm_qa/`——按现行契约，工作区外 / 系统临时目录路径视为无证据，该目录现已不存在，
+相关截图证据全部失效；复跑 `python3 test/qa_browser.py` 时截图须落盘 `qa/evidence/`
+（18+ 内部截图放受限子目录并在报告标注）。
 
 ## 关键不变量
+
+复审注（2026-07-26）：下表「证据」列凡仅引用 `safe/*.png`（原 `/tmp/jpm_qa/`）截图者，
+证据已失效，该行按「通过（证据失效·待复跑）」读，不得作为通过依据；仅由可复跑测试断言
+（`test/ledger.mjs`、`test/qa_browser.py`）支撑的行仍可复核。
 
 | 检查 | 结果 | 证据 |
 |---|---|---|
@@ -80,54 +88,74 @@ python3 test/qa_browser.py
 
 ## 三项主观但可观察裁决
 
-### 首次上手：`PASS`
+### 首次上手：`NOT_RUN`（原 `PASS` 降级）
 
 年龄确认后第一屏同时给出“你是西门庆”“今夜进谁的门，明早谁来敲你的门”，进入后无需词典
-即可在正堂二选一。首个选择立即改变人物账并写进公开历史。自动化能证明路径与反馈存在；
-未以此替代新人实际理解度访谈。
+即可在正堂二选一。首个选择立即改变人物账并写进公开历史——路径与反馈存在由可复跑断言
+证明。但两分钟理解度未经干净上下文子代理裁决（`qa/evidence/onboarding.md` 不存在），
+按现行契约首次上手不得判 `PASS`，列入未测试范围。
 
-### 核心幻想演出：`PASS`
+### 核心幻想演出：`PASS`（基于工作区留存截图与可复跑断言）
 
 三位成年女主在标题与路线近景中直接看向玩家；玩家选择一人后，从白天筹码进入人物回应、
 亲密节点，天亮后再面对其他人的嫉妒或索取。第2–4日另有玉楼、雪娥、娇儿三段短线，
 第五天三人同场公开追问玩家。这套体验不只靠 `qing/yu/du` 数字运转，还有角色近景、
 路线 CG、群体冲突、声音与后果场面。
 
-### 招牌帧符合：`PASS`
+### 招牌帧符合：`NOT_RUN`（原 `PASS` 降级，聚合分作废）
 
-视觉裁决第 6 轮为 94/100。标题、人物近景、次晨、中秋宴、三张宅中人页面、场景册重看与
-结算共享晚明册页／工笔套印语言；
-中秋帧中三条视线、账册、酒杯与钥匙在 `1280×800` 均可读。角色近景占舞台宽度
-55%–70%，公开截图不包含关系终段 CG。
+视觉裁决第 6 轮聚合分为 94/100——按现行契约，聚合分只可作摘要，裁决须由逐帧对照表
+（帧名｜真实触发时刻操作路径｜截图路径｜要素核对结论）承载；该轮逐项量表存于外部工具
+状态（`.omx/state/…`，已失效）且未导出为 evidence 文件，故本项降级为无证据、待复跑。
+工作区留存的 `screenshots/title.jpg`、`banquet.jpg` 等只证明画面存在，不构成逐帧裁决。
 
 ## 证据清单
 
-公开安全证据：
+有效证据（工作区内）：
 
 - `screenshots/title.jpg`
 - `screenshots/household.jpg`
 - `screenshots/morning.jpg`
 - `screenshots/banquet.jpg`
 - `screenshots/ending.jpg`
-- `/tmp/jpm_qa/safe/01_age_gate.png`
-- `/tmp/jpm_qa/safe/02_title.png`
-- `/tmp/jpm_qa/safe/03_opening_choice_done.png`
-- `/tmp/jpm_qa/safe/04_delayed_yue_morning.png`
-- `/tmp/jpm_qa/safe/06_banquet_conflict.png`
-- `/tmp/jpm_qa/safe/07_exclusive_ending.png`
-- `/tmp/jpm_qa/safe/08_gallery_after_yue.png`
-- `/tmp/jpm_qa/safe/09_jealousy_chain.png`
-- `/tmp/jpm_qa/safe/household_meng_yulou.png`
-- `/tmp/jpm_qa/safe/household_sun_xuee.png`
-- `/tmp/jpm_qa/safe/household_li_jiaoer.png`
+- `qa/evidence/automated.json`
+- `qa/evidence/design-invariants.md`（2026-07-26 复审静态对照）
 
-内部 18+ 证据：
+已失效证据（原引用 `/tmp/jpm_qa/safe/` 下 01_age_gate、02_title、03_opening_choice_done、
+04_delayed_yue_morning、06_banquet_conflict、07_exclusive_ending、08_gallery_after_yue、
+09_jealousy_chain 与三张宅中人截图——系统临时目录已不存在，按契约视为无证据；复跑时
+落盘 `qa/evidence/safe/`）。
 
-- `/tmp/jpm_qa/adult/`
+内部 18+ 证据：原 `/tmp/jpm_qa/adult/`，已失效；复跑时落盘 `qa/evidence/adult/`
+受限子目录并在报告标注，不进 README。
 
-视觉裁决状态：
+视觉裁决状态：原 `.omx/state/jinpingmei/ralph-progress.json`，外部工具状态、未导出为
+evidence 文件，已失效；处置见「招牌帧符合」降级说明。
 
-- `.omx/state/jinpingmei/ralph-progress.json`
+## 独立验证（2026-07-26 复审）
+
+与实现方测试无关的检查来源：
+
+- 从 `GAME_DESIGN.md` 抄出期望表，逐项静态对照 `engine.js`/`data.js` 常量（起始值、
+  白日/夜间结算增减、CG 门槛、收束条件、妒意结算），结果落盘
+  `qa/evidence/design-invariants.md`；数值门槛与结算全项一致（门槛为设计修订值，见
+  `_progress.md` 回流记录）。
+- 静态只写不读审计：列出全部被写入的资源与量表字段，逐个核对规则读取点；`strain`、
+  `exposure` 的审计结果见发现与回流表。
+- 本节不引用实现方测试计数作为通过依据。
+
+## 发现与回流表
+
+| 编号 | 严重度 | 归属阶段 | 发现 | 复验证据 |
+|---|---|---|---|---|
+| F1 | major | build | 破裂规则漂移：设计为「公开越过两次或 `house<30` → 路线冷却一天」，引擎为单次失信旗标永久锁明确场景、无 `house<30` 触发 | 未修复——已知缺口；`qa/evidence/design-invariants.md` §破裂 |
+| F2 | major | design | `strain` 在 HUD 常驻显示为「耗」代价条，但全程无任何规则读取点（无门槛/事件/收束消费），玩家盯一局的代价条不结账 | 未修复——已知缺口；同上 §只写不读 |
+| F3 | minor | design | `exposure` 仅作为权谋收束的达成条件（≥25），无负向读取点，「秘密换收益会升暴露」的代价语义未兑现 | 未修复——已知缺口；同上 §只写不读 |
+| F4 | minor | build | 「宅门未稳」收束为固定文案，未按设计指出是哪一条公开承诺或路线被关闭 | 未修复——已知缺口；同上 §收束 |
+| （已收敛） | — | design | CG 门槛与收束数值曾漂移（qing≥35→28、yu≥65→60、exposure≥35→25），设计复核采纳为修订值 | `GAME_DESIGN.md` 第 4.5/6/7 节与 `_progress.md` 回流记录 |
+
+标 `design` 的发现在场，本轮不得 `PASS`；回流路由由总入口执行。本表不虚构复验证据，
+未修复项以「已知缺口」如实留档。
 
 ## 未测试范围与硬门
 
