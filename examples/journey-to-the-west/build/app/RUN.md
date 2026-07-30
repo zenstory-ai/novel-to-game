@@ -62,8 +62,8 @@ URL 参数(可选):`?seed=42` 固定全局种子;`&fast=1` 加速动画(自测�
 ## 自测
 
 ```bash
-node test/battle.mjs        # 引擎:固定 seed 可复现(146 项断言)
-python3 test/qa_browser.py  # 浏览器全程:0 控制台报错,截图 → /tmp/xiyou_shots/
+node test/battle.mjs        # 引擎:固定 seed 可复现(202 项断言)
+python3 test/qa_browser.py  # 浏览器全程:0 控制台报错,证据 → qa/evidence/
 ```
 
 - `test/battle.mjs`:node 直接跑纯引擎。断言五行相克系数、伤害公式与暴击序列
@@ -73,8 +73,13 @@ python3 test/qa_browser.py  # 浏览器全程:0 控制台报错,截图 → /tmp/
 - `test/qa_browser.py`:playwright 走通 标题→序幕→全战役(六场战斗)→结局→读档,
   覆盖教学、法术/特技/道具菜单、目标选择、变化、阵型切换(顶栏+战斗内)、
   假扇、真扇三段、白牛真身、成长面板、双召唤兽、存档/读档;
-  断言控制台 0 报错(64 项浏览器断言)并保存约 46 张截图。
+  断言控制台 0 报错(90 项浏览器断言)并保存 51 张截图 → `qa/evidence/shots/`。
+  另测帧时分布(p50/p95/最坏帧,采样落在决战白牛真身与众神围剿两个最重状态)与
+  外部请求域,结果写入 `qa/evidence/automated.json`。
   自带静态服务(若 5173 已被占用则复用);`QA_SLOW=1` 可看常速动画。
+
+  决战招牌帧前会把加速开关复位为常速——招牌帧只能由它声称的那条路径决定,
+  不带上一场战斗留下的持久开关(见 qa-contract 证据帧可单独重跑一条)。
 
 ## 资产与部署
 

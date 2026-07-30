@@ -1,0 +1,59 @@
+{
+  "url": "http://127.0.0.1:5173/?seed=42&fast=1",
+  "normal_speed_run": false,
+  "viewport": "1280x800",
+  "passed": 133,
+  "failed": 0,
+  "console_errors": [],
+  "network_errors": [],
+  "http_errors": [],
+  "performance": {
+    "note": "纯 DOM/CSS，无 rAF 渲染循环；帧率对本作无意义，改测转场延迟与主线程长任务",
+    "local_load_ms": 104.6,
+    "transitions": {
+      "banquet_conflict_close": {
+        "transition_to_paint_ms": 8.1
+      }
+    },
+    "transition_budget_ms": 200.0,
+    "longtasks_over_50ms": [
+      {
+        "ms": 298,
+        "at": 712,
+        "phase": "?"
+      }
+    ],
+    "stall_gate_ms": 200.0,
+    "build_bytes": 6264290
+  },
+  "request_hosts": [
+    "127.0.0.1:5173"
+  ],
+  "external_hosts": [],
+  "safe_screenshots": [
+    "01_age_gate.jpg",
+    "02_title.jpg",
+    "03_opening_choice_done.jpg",
+    "04_delayed_yue_morning.jpg",
+    "06_banquet_conflict.jpg",
+    "07_exclusive_ending.jpg",
+    "08_gallery_after_yue.jpg",
+    "09_jealousy_chain.jpg",
+    "household_li_jiaoer.jpg",
+    "household_meng_yulou.jpg",
+    "household_sun_xuee.jpg"
+  ],
+  "adult_screenshots": [
+    "gallery_replay_yue_prelude.jpg",
+    "pan_explicit.jpg",
+    "pan_prelude.jpg",
+    "pinger_explicit.jpg",
+    "pinger_prelude.jpg",
+    "yue_day1_prelude.jpg",
+    "yue_day2_prelude.jpg",
+    "yue_day3_explicit.jpg",
+    "yue_day4_explicit.jpg",
+    "yue_day5_explicit.jpg",
+    "yue_day6_explicit.jpg"
+  ]
+}

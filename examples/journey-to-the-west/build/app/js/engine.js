@@ -252,7 +252,7 @@ function applyBuff(unit, buff) {
 }
 
 function damageTarget(state, events, attacker, target, skill) {
-  if (!target.alive) return;
+  if (!target || !target.alive) return;
   // 避火符:抵挡一次火系伤害
   if (attacker.element === '火') {
     const wardIdx = target.buffs.findIndex((b) => b.id === 'huo_ward');
@@ -323,7 +323,7 @@ function targetsFor(state, actor, skill, targetId) {
     case 'enemy': {
       let t = targetId ? getUnit(state, targetId) : null;
       if (!t || !t.alive || t.side === actor.side) t = pick(state.rng, foes); // 目标已倒则改打随机活敌
-      return [t];
+      return t ? [t] : []; // 一个敌人都不剩(如助战补刀)时返回空,不返回 [undefined]
     }
     case 'enemies': return foes;
     case 'ally': {
@@ -530,7 +530,6 @@ export function aiCommand(state, unit) {
   const usable = unitSkills(unit)
     .map((k) => ({ key: k, def: SKILLS[k] }))
     .filter((s) => s.def && s.def.mp <= unit.mp);
-  // 敌方单体技锁定当前血量最低的我方
   const lowestHp = (arr) => arr.reduce((a, b) => (a.hp <= b.hp ? a : b));
   // 召唤技:冷却完毕且未达上限、场上有位即召(决定论,不占 rng)
   const summonSkill = usable.find((s) => s.def.summon);
@@ -560,10 +559,35 @@ export function aiCommand(state, unit) {
   const single = usable.filter((s) => s.def.target === 'enemy');
   if (single.length > 0 && chance(rng, 0.75)) {
     const s = pick(rng, single);
-    const target = unit.side === 'enemy' ? lowestHp(foes) : pick(rng, foes);
+    const target = unit.side === 'enemy' ? enemyTarget(state, unit, foes) : pick(rng, foes);
     return { type: 'skill', skillId: s.key, targetId: target.id };
   }
-  return { type: 'attack', targetId: pick(rng, foes).id };
+  const atkTarget = unit.side === 'enemy' ? enemyTarget(state, unit, foes) : pick(rng, foes);
+  return { type: 'attack', targetId: atkTarget.id };
+}
+
+// 敌方择敌:相克体系对双方同时成立,敌方也要读五行,否则相克只是玩家的单向福利。
+// 优先级(全程决定论,不消耗 rng,保持同种子可复现):
+//   1. 会克我的目标 —— 玩家把悟空变成克我的形态、或换上克我的携宠,敌方就集火它;
+//      这是敌方对「玩家已选策略」的直接反应。
+//   2. 给全队上增益的支援位 —— 罗汉金身 / 金睛这类正在生效的团队增益源先拆。
+//   3. 我能克的目标 —— 同等条件下打伤害效率最高的。
+//   同档内取血量最低者,保留原有的集火手感。
+function enemyTarget(state, unit, foes) {
+  const SUPPORT_BUFFS = ['dmg_reduce', 'hit_up'];
+  const score = (f) => {
+    let s = 0;
+    if (elementRelation(f.element, unit.element) === 'ke') s += 4; // 它克我:威胁最高
+    if (f.buffs.some((b) => SUPPORT_BUFFS.includes(b.id))) s += 2; // 团队增益源
+    if (elementRelation(unit.element, f.element) === 'ke') s += 1; // 我克它:效率
+    return s;
+  };
+  let best = foes[0], bestScore = score(foes[0]);
+  for (const f of foes.slice(1)) {
+    const sc = score(f);
+    if (sc > bestScore || (sc === bestScore && f.hp < best.hp)) { best = f; bestScore = sc; }
+  }
+  return best;
 }
 
 // ---------- 阵型(战斗中免费切换,每回合一次) ----------
@@ -638,6 +662,14 @@ function execCommand(state, events, unit, cmd) {
 }
 
 // ---------- 回合 ----------
+// 胜负判定:任何可能让一方全灭的结算之后都要跑一次,否则队列会带着空目标继续行动。
+function settleOutcome(state) {
+  if (state.over) return false;
+  if (aliveUnits(state, 'enemy').length === 0) { state.over = true; state.winner = 'party'; return true; }
+  if (aliveUnits(state, 'party').length === 0) { state.over = true; state.winner = 'enemy'; return true; }
+  return false;
+}
+
 export function executeRound(state, commands) {
   const events = [];
   if (state.over) return events;
@@ -676,6 +708,12 @@ export function executeRound(state, commands) {
         events.push({ t: 'buff', actor: null, target: boss.id, buff: ga.debuff.id, val: ga.debuff.val, turns: ga.debuff.turns });
       }
       checkDeath(state, events, boss);
+      // 助战可能补掉最后一个敌人:不在此判胜负,队列会带着空目标继续行动。
+      if (settleOutcome(state)) {
+        events.push({ t: 'battle_end', winner: state.winner, fled: false });
+        state.round += 1;
+        return events;
+      }
     }
   }
 
@@ -719,25 +757,14 @@ export function executeRound(state, commands) {
       if (unit.charge === 0) {
         events.push({ t: 'turn', unit: id });
         execHeavy(state, events, unit);
-        if (!state.over) {
-          const foes = aliveUnits(state, 'enemy');
-          const friends = aliveUnits(state, 'party');
-          if (foes.length === 0) { state.over = true; state.winner = 'party'; }
-          else if (friends.length === 0) { state.over = true; state.winner = 'enemy'; }
-        }
+        settleOutcome(state);
         continue;
       }
     }
     const cmd = commands[id];
     events.push({ t: 'turn', unit: id });
     execCommand(state, events, unit, cmd);
-    // 每次行动后判定胜负
-    if (!state.over) {
-      const foes = aliveUnits(state, 'enemy');
-      const friends = aliveUnits(state, 'party');
-      if (foes.length === 0) { state.over = true; state.winner = 'party'; }
-      else if (friends.length === 0) { state.over = true; state.winner = 'enemy'; }
-    }
+    settleOutcome(state); // 每次行动后判定胜负
   }
 
   // 回合末:增益、变化与技能冷却计时

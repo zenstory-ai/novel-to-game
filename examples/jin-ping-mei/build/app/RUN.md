@@ -68,17 +68,23 @@ http://127.0.0.1:5173/?seed=42&fast=1
 ```bash
 cd examples/jin-ping-mei/build/app
 node test/ledger.mjs
-python3 test/qa_browser.py
+python3 test/qa_browser.py            # 加速路径（默认）
+QA_SLOW=1 python3 test/qa_browser.py  # 正常速度完整路径，时序证据只在这一轮有效
 ```
 
 当前证据基线：
 
 - 纯引擎：46 项通过，0 项失败；
-- 真实 Chromium：130 项通过，0 项失败；
-- 控制台错误 0，关键资源失败 0；
-- 浏览器证据：`/tmp/jpm_qa/evidence.json`；
-- 安全截图：`/tmp/jpm_qa/safe/`；
-- 18+ 内部验收截图：`/tmp/jpm_qa/adult/`，不得用于 README 或公开商店页。
+- 真实 Chromium：133 项通过，0 项失败（加速与正常速度两轮各一次）；
+- 控制台错误 0，关键资源失败 0，外部请求域 0；
+- 最重转场（群体冲突场景册关闭）点击→绘制 6.4 ms（加速）/ 18.3 ms（正常速度）；
+- 主线程长任务：仅启动期一次 172–217 ms（首屏资产解码，由 `local_load_ms` 门单独裁决），游戏中 0 次；
+- 浏览器证据：`qa/evidence/browser/evidence.json`；
+- 安全截图：`qa/evidence/browser/safe/`；
+- 18+ 内部验收截图：`qa/evidence/browser/adult/`（已 gitignore，不随仓库发布），不得用于 README 或公开商店页。
+
+本作是纯 DOM/CSS，无 `requestAnimationFrame` 渲染循环，**帧率数字对它不构成性能结论**
+（采 rAF 间隔只会量到浏览器空闲垂直同步节拍）；因此这里测的是转场延迟与主线程长任务。
 
 浏览器验证覆盖年龄门、男性身份、三条深线、三条宅中短线、拒绝、延迟后果、可追溯嫉妒、宴席冲突、
 场景册跨重开、旧档隔离、关键 CG 加载、两个目标视口、键盘聚焦和

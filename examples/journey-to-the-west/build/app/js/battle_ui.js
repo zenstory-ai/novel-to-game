@@ -409,7 +409,12 @@ export async function runBattleScreen(ctx) {
         cls: keN ? 'good' : bkN ? 'bad' : 'none',
       }];
     }
-    return dmgPreviewOn(u, skill, foes[0], label);
+    // 单体技的默认预览取首个活敌。这是「悬停预览」而非已确认的出手,必须标明:
+    // 独立 QA 的干净上下文裁决在此处卡住——预览已给出具体敌人与完整数值,
+    // 玩家无法区分它是悬停提示还是这一击已经落定。
+    const rows = dmgPreviewOn(u, skill, foes[0], label);
+    if (foes.length > 1) rows[0].side = `${rows[0].side} · 预览,出手时再选目标`;
+    return rows;
   }
 
   function skillPreviewRows(u, eff) {

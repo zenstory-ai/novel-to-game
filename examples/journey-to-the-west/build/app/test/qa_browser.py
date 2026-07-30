@@ -2,21 +2,35 @@
 """浏览器全程自检(playwright):
 标题 → 序幕(土地对话/阵型/存档) → 战斗1(教学/法术/变化/化虫入腹)
 → 战斗2(携宠/假扇反噬) → BOSS(阵型切换/真扇三段/白牛真身) → 结局 → 读档。
-断言:关键 DOM 存在、控制台 0 报错;截图存 /tmp/xiyou_shots/。
+断言:关键 DOM 存在、控制台 0 报错、帧时分布、无外部请求域;
+截图存示例工作区内 qa/evidence/browser/。
 
 用法: python3 test/qa_browser.py
-环境变量: BASE_URL(默认 http://127.0.0.1:5173), QA_SLOW=1 关闭加速。
+环境变量: BASE_URL(默认 http://127.0.0.1:5173), QA_SLOW=1 关闭加速,
+          QA_SHOTS 覆盖截图目录。
+
+截图默认落在工作区内的持久路径而非系统临时目录:qa 契约把临时目录路径视为无证据,
+对应检查项不得记通过。
 """
-import os, shutil, socket, subprocess, sys, time
+import json, os, shutil, socket, subprocess, sys, time
+from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EXAMPLE_ROOT = os.path.dirname(os.path.dirname(ROOT))
+EVIDENCE = os.path.join(EXAMPLE_ROOT, "qa", "evidence")
 BASE = os.environ.get("BASE_URL", "http://127.0.0.1:5173")
 URL = BASE + "/?seed=42" + ("" if os.environ.get("QA_SLOW") else "&fast=1")
-SHOTS = "/tmp/xiyou_shots"
+SHOTS = os.environ.get("QA_SHOTS", os.path.join(EVIDENCE, "browser"))
+
+# 长卡顿绝对门 200 ms(契约)。帧时 p95 只报不判:PRODUCT_BRIEF 第 1 维性能预算记 `N/A`,
+# 没有锁定基准就不在本层发明一个来判超标(见 QA_REPORT F8)。
+STALL_MS = 200.0
 
 passed, failed = 0, 0
 errors = []
+perf = {}
+request_hosts = set()
 
 
 def ok(cond, name):
@@ -31,6 +45,31 @@ def ok(cond, name):
 
 def section(t):
     print(f"\n== {t} ==")
+
+
+def frame_stats(page, label, n=90):
+    """在当前(最重)画面采 n 帧的帧间隔,返回 p50 / p95 / 最坏帧(ms)。
+
+    保留全部样本、不丢首帧——首帧正是冷路径卡顿会出现的地方;均值不作结论。
+    """
+    samples = page.evaluate(
+        """async (n) => new Promise((resolve) => {
+            const s = []; let last = performance.now();
+            const tick = (now) => {
+                s.push(now - last); last = now;
+                if (s.length >= n) resolve(s); else requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+        })""",
+        n,
+    )
+    s = sorted(samples)
+    pick = lambda q: s[min(len(s) - 1, int(len(s) * q))]
+    st = {"p50": round(pick(0.50), 2), "p95": round(pick(0.95), 2),
+          "max": round(s[-1], 2), "n": len(s)}
+    perf[label] = st
+    print(f"  帧时 {label}: p50 {st['p50']} ms / p95 {st['p95']} ms / 最坏 {st['max']} ms")
+    return st
 
 
 def ensure_server():
@@ -61,8 +100,9 @@ class QA:
         self.n = 0
 
     def shot(self, name):
+        # 存 JPEG:证据要长期留在仓库里,48 张 PNG 约 71MB、JPEG 约 6MB,且不影响判读。
         self.n += 1
-        self.p.screenshot(path=f"{SHOTS}/{self.n:02d}_{name}.png")
+        self.p.screenshot(path=f"{SHOTS}/{self.n:02d}_{name}.jpg", type="jpeg", quality=80)
 
     def click_dialogs(self, max_clicks=20):
         """点完当前剧情对话;返回点击次数。"""
@@ -161,7 +201,40 @@ def main():
     print(f"\n控制台错误: {len(errors)}")
     for e in errors[:10]:
         print("  ERR:", e[:300])
+
+    # ---- 性能与自包含结论(独立于实现方自测,写进 QA_REPORT 环境表) ----
+    local = {urlparse(BASE).netloc, ""}
+    external = sorted(h for h in request_hosts if h not in local)
+    ok(not external, f"无外部请求域(实测 {sorted(request_hosts)})")
+    worst = max((s["max"] for s in perf.values()), default=0.0)
+    worst_p95 = max((s["p95"] for s in perf.values()), default=0.0)
+    ok(bool(perf), "已在最重真实状态采集帧时分布")
+    print(f"  帧时 p95 {worst_p95} ms(只报不判:PRODUCT_BRIEF 性能预算为 N/A,见 QA_REPORT F8)")
+    ok(worst < STALL_MS, f"无 >{STALL_MS:.0f} ms 长卡顿(最坏帧 {worst} ms)")
+
+    size_bytes = sum(
+        os.path.getsize(os.path.join(d, f))
+        for d, _, fs in os.walk(ROOT) for f in fs
+        if ".vercel" not in d and "/test" not in d
+    )
+    os.makedirs(EVIDENCE, exist_ok=True)
+    summary = {
+        "url": URL,
+        "viewport": "1440x900",
+        "passed": passed, "failed": failed, "console_errors": len(errors),
+        "frame_ms": perf,
+        "frame_budget_ms": None, "stall_gate_ms": STALL_MS,
+        "request_hosts": sorted(request_hosts), "external_hosts": external,
+        "build_bytes": size_bytes,
+        "shots_dir": os.path.relpath(SHOTS, EXAMPLE_ROOT),
+        "shots": QA_static_n(),
+    }
+    with open(os.path.join(EVIDENCE, "automated.json"), "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+
+    print(f"包体: {size_bytes/1048576:.2f} MB  外部域: {external or '无'}")
     print(f"结果: {passed} 通过, {failed} 失败, 截图 {QA_static_n()} 张 → {SHOTS}")
+    print(f"证据: {os.path.join(EVIDENCE, 'automated.json')}")
     sys.exit(1 if (failed or errors) else 0)
 
 
@@ -178,6 +251,8 @@ def run():
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         page.on("pageerror", lambda e: errors.append("PAGEERROR: " + str(e)))
         page.on("dialog", lambda d: d.accept())
+        # 自包含切片核对:任何外部请求域都等于绕过体积统计
+        page.on("request", lambda r: request_hosts.add(urlparse(r.url).netloc))
         qa = QA(page)
         _last_qa = qa
 
@@ -304,12 +379,14 @@ def run():
         ok("吹" in page.locator("#dialog").inner_text() or "扇" in page.locator("#dialog").inner_text(), "第3回合剧情吹飞(非失败)")
         qa.shot("battle1_blowaway")
         # 吹飞过场 → 灵吉授定风丹
+        shot_lingji = False
         for _ in range(20):
             if page.locator("#dialog").count() == 0:
                 break
             page.wait_for_timeout(250)
-            if "定风丹" in page.locator("#dialog").inner_text():
-                qa.shot("battle1_lingji")
+            if not shot_lingji and "定风丹" in page.locator("#dialog").inner_text():
+                qa.shot("battle1_lingji")  # 只截一次:这段对白跨多屏,原来会存三张同名重复帧
+                shot_lingji = True
             page.locator("#dialog").click()
         ok(page.evaluate("__game.campaign().treasure") == "dingfengdan", "获得法宝·定风丹")
         # 再战前对话 → 再战
@@ -366,10 +443,20 @@ def run():
         page.click("#btn-skipfx")  # 恢复演出,后续真扇截图要看
         page.wait_for_timeout(150)
         qa.shot("battle2_toggles")
+        # 加速同样要复位:决战的招牌帧(真扇三段/白牛真身/众神围剿)必须只由它声称的那条
+        # 路径决定,不带上一场战斗留下的持久开关。写入已验证,值改回常速仍留在 localStorage,
+        # 决战入口据此核对跨战斗持久化。
+        page.click("#btn-speed")
+        page.wait_for_timeout(150)
+        ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "1", "加速开关复位常速并写回 localStorage")
+        ok("常速" in page.locator("#btn-speed").inner_text(), "加速钮显示常速状态")
         # 先集火火兵·甲至 ≤40% → 捕妖绳收服;再假扇演示;危急用金疮药;败北重试
         caught = False
         fan_used = False
         healed = False
+        # 注意:假扇反噬不在这条通关路径里演示。实测把它插进战斗二会让火敌攻击 +30%,
+        # 直接把该战翻成必败重试循环——反噬强度本身是设计意图。规则层由
+        # test/battle.mjs 的固定种子断言覆盖;浏览器证据帧缺失记 QA_REPORT F9。
         summon_shot = False
         for _ in range(500):
             if qa.defeat_retry():
@@ -407,14 +494,6 @@ def run():
                     # 捕捉前队友守势,防误杀
                     page.click('.cmd-btn[data-cmd="defend"]')
                     page.wait_for_timeout(150)
-                elif uid == "p0" and not fan_used:
-                    # 假扇演示(反噬)
-                    page.click('.cmd-btn[data-cmd="item"]')
-                    page.wait_for_selector('[data-item="fakefan"]')
-                    page.click('[data-item="fakefan"]')
-                    fan_used = True
-                    page.wait_for_timeout(500)
-                    qa.shot("battle2_fakefan")
                 elif uid == "p0" and low and low["hp"] / low["maxHp"] < 0.35 and st["items"].get("jinchuang", 0) > 0:
                     page.click('.cmd-btn[data-cmd="item"]')
                     page.wait_for_selector('[data-item="jinchuang"]')
@@ -555,7 +634,9 @@ def run():
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
         ok(page.locator(".unit-card.enemy").count() == 3, "决战敌方:牛魔王+玉面公主+妖将")
         ok(page.evaluate("__game.campaign().items.truefan") == 3, "持有真扇×3")
-        ok("×2" in page.locator("#btn-speed").inner_text(), "加速开关跨战斗持久化(战斗2设置→决战生效)")
+        # 跨战斗持久化:战斗2 显式写入的值(已复位为常速)在决战被读到,且不是"无键默认"
+        ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "1", "节奏开关跨战斗持久化(战斗2写入→决战读到同值)")
+        ok("常速" in page.locator("#btn-speed").inner_text(), "决战截帧前为常速,招牌帧不含上一场的加速开关")
         qa.shot("battle3_cmd")
         fan_used = 0
         formation_switched = False
@@ -620,9 +701,13 @@ def run():
                     page.wait_for_timeout(300)
                     qa.shot("battle3_whitebull")
                     phase_shot = True
+                    # 帧时采样落在本作最重的真实状态:白牛真身(大体积单位)+ 决战演出进行中,
+                    # 不是标题页或静止对白屏。
+                    frame_stats(page, "battle3_whitebull")
                 if not god_shot and page.locator(".god-overlay").count() > 0:
                     god_shot = True
                     qa.shot("battle3_godassist")
+                    frame_stats(page, "battle3_godassist")
                 page.wait_for_timeout(120)
         qa.wait_victory()
         ok(saw_charge, "牛魔王发出过蓄力预警")

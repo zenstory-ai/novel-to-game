@@ -25,10 +25,38 @@ function explicitGate(h,action){const s=E.newGame(17),p={wu_yueniang:['respect_y
 function directorySize(dir){return fs.readdirSync(dir,{withFileTypes:true}).reduce((sum,entry)=>{const target=path.join(dir,entry.name);return sum+(entry.isDirectory()?directorySize(target):fs.statSync(target).size)},0)}
 
 section('身份与存档');
-test('新局版本 4 且三条成人深线不变',()=>{const s=E.newGame(1);eq(s.version,4);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger'])});
+test('新局版本 5 且三条成人深线不变',()=>{const s=E.newGame(1);eq(s.version,5);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger'])});
 test('开场是正堂身份选择',()=>{const s=E.newGame(1);eq(s.phase,'opening');ok(OPENING_CHOICES.some(x=>x.id==='respect_yue'))});
 test('旧 v1/v2 存档拒读',()=>{eq(E.deserialize('{"version":1}'),null);eq(E.deserialize('{"version":2}'),null)});
-test('v3 存档补齐宅中人后迁入 v4',()=>{const old=E.newGame(1);old.version=3;delete old.household;delete old.currentHouseholdEvent;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,4);eq(Object.keys(loaded.household),HOUSEHOLD_IDS)});
+test('v3 存档补齐宅中人后迁入 v5',()=>{const old=E.newGame(1);old.version=3;delete old.household;delete old.currentHouseholdEvent;delete old.publicOverrides;delete old.routeReopensOn;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,5);eq(Object.keys(loaded.household),HOUSEHOLD_IDS);eq(Object.keys(loaded.publicOverrides),['wu_yueniang','pan_jinlian','li_pinger'])});
+test('v4 存档按失信旗标反推越过计数后迁入 v5',()=>{const old=E.newGame(1);old.version=4;old.flags={broken_pan_word:true};delete old.publicOverrides;delete old.routeReopensOn;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,5);eq(loaded.publicOverrides.pan_jinlian,1);eq(loaded.publicOverrides.wu_yueniang,0);ok(!E.routeCooling(loaded,'pan_jinlian'))});
+test('F1 破裂规则:公开越过一次不锁,两次才冷却一天',()=>{const s=E.newGame(1);s.day=2;
+  s.publicOverrides.wu_yueniang=1;ok(!E.evaluateBreak(s,'wu_yueniang'),'一次不该触发破裂');ok(!E.routeCooling(s,'wu_yueniang'),'一次不该锁');
+  s.publicOverrides.wu_yueniang=2;ok(E.evaluateBreak(s,'wu_yueniang'),'两次应触发破裂');ok(E.routeCooling(s,'wu_yueniang'),'两次该冷却');
+  eq(s.routeReopensOn.wu_yueniang,3);
+  s.day=3;ok(!E.routeCooling(s,'wu_yueniang'),'次日应重开,不是永久锁')});
+test('F1 破裂规则:house 跌破 30 冷却全部三条线',()=>{const s=E.newGame(1);s.day=2;s.resources.house=28;
+  E.evaluateHouseBreak(s);
+  for(const id of ['wu_yueniang','pan_jinlian','li_pinger']) ok(E.routeCooling(s,id),id+' 应随 house 跌破而冷却');
+  s.day=3;for(const id of ['wu_yueniang','pan_jinlian','li_pinger']) ok(!E.routeCooling(s,id),id+' 次日应重开')});
+test('F1 单次公开越过不再永久锁死明确场景',()=>{const s=E.newGame(1);s.day=4;
+  // 走过一次公开越过(旗标 + 计数 1),这是修复前会永久锁死明确场景的状态
+  s.flags.broken_yue_word=true;s.publicOverrides.wu_yueniang=1;
+  ok(!E.routeCooling(s,'wu_yueniang'),'一次失信不得锁死路线');
+  // 门控条件齐备时明确场景应可达(不再被永久旗标一票否决)
+  s.relations.wu_yueniang.qing=60;s.flags.kept_yue_word=true;s.resources.house=55;s.selectedDayAction='ledger';
+  s.currentHeroine='wu_yueniang';s.phase='night';
+  const opt=E.nightOptions(s).find(o=>o.id==='explicit');
+  ok(!opt.disabled,'条件齐备时明确场景应可达,实际锁定原因:'+(opt.locked??''))});
+test('F2 身体耗损有读取点:高耗损撑不起走官面与整席面',()=>{const s=E.newGame(1);s.resources.strain=0;
+  const before=E.dayOptions(s);ok(!before.find(o=>o.id==='banquet').disabled,'低耗损时整席面可选');
+  s.resources.strain=E.STRAIN_STRAINED;
+  const after=E.dayOptions(s);
+  ok(after.find(o=>o.id==='banquet').disabled,'高耗损应锁整席面');
+  ok(after.find(o=>o.id==='office').disabled,'高耗损应锁走官面');
+  ok(!after.find(o=>o.id==='ledger').disabled,'翻账不受耗损影响');
+  ok(!after.find(o=>o.id==='listen').disabled,'问口风不受耗损影响')});
+test('F2 身体耗损会回落:不进场景的一夜减 6',()=>{const s=E.newGame(1);E.chooseOpening(s,'tease_pan');day(s,'ledger');E.startVisit(s,'pan_jinlian');E.chooseVisit(s,'pan_take_cup');s.resources.strain=20;E.chooseNight(s,'talk');eq(s.resources.strain,20-E.STRAIN_REST_RELIEF)});
 test('新存档往返一致',()=>{const s=E.newGame(1);E.chooseOpening(s,'respect_yue');eq(E.deserialize(E.serialize(s)),s)});
 test('同 seed 同选择逐字节复现',()=>eq(E.serialize(strategy('exclusive')),E.serialize(strategy('exclusive'))));
 

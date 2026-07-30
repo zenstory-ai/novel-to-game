@@ -1,0 +1,29 @@
+{
+  "url": "http://127.0.0.1:5174/?seed=42",
+  "fast_mode": false,
+  "bundle": {
+    "total": 4224945,
+    "by_kind": {
+      "html": 345,
+      "css": 42700,
+      "js": 208801,
+      "assets": 3973099
+    }
+  },
+  "first_paint_s": 0.041,
+  "navigation_ms": {
+    "domContentLoaded": 14,
+    "load": 24.40000009536743,
+    "transferSize": 645
+  },
+  "prologue_forced_wait_s": 0.9,
+  "title_to_playable_s": 6.867,
+  "phase_after_prologue": "overworld",
+  "walk_to_encounter_s": 7.431,
+  "pre_battle_dialog_s": 1.83,
+  "battle_fps": 120,
+  "issue_full_round_s": 1.427,
+  "battle_open_to_state_change_s": 3.456,
+  "total_entry_to_first_effect_s": 19.699,
+  "console_errors": []
+}

@@ -6,7 +6,25 @@ import {
   OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, SCENES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
+
+// 破裂规则(GAME_DESIGN 第 5 节「拒绝／破裂」):公开越过她两次、或宅门 house<30,
+// 路线冷却一天。此前实现用单次失信旗标永久锁死明确场景,既漏了计数与 house 触发,
+// 也把「冷却」做成了「永久」——独立 QA 记为 F1。
+export const BREAK_OVERRIDE_LIMIT = 2;
+export const BREAK_HOUSE_FLOOR = 30;
+// 公开越过对应的旗标:每次置位记一次越过。
+const OVERRIDE_FLAG_TO_HEROINE = Object.freeze({
+  broken_yue_word: 'wu_yueniang',
+  broken_pan_word: 'pan_jinlian',
+  pinger_exposed: 'li_pinger',
+});
+
+// 身体耗损的读取点(F2):`strain` 原先只写不读,常驻 HUD 的代价条一局都不结账。
+// 现在它决定次日撑不撑得起需要露面的场面,并在休息之夜回落——代价条会结账,
+// 但不锁死任何一条深线的内容。
+export const STRAIN_STRAINED = 30;   // 撑不起「走官面 / 整席面」
+export const STRAIN_REST_RELIEF = 6; // 不进亲密场景的一夜回落
 export const MAX_DAY = 6;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const cap100 = (value) => clamp(value, 0, 100);
@@ -29,6 +47,8 @@ export function newGame(seed = 42) {
     secrets: [],
     secretsUsed: [],
     flags: {},
+    publicOverrides: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
+    routeReopensOn: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
     history: [],
     log: [],
     currentHeroine: null,
@@ -66,7 +86,37 @@ function removeSecret(state, id) {
 }
 
 function addFlag(state, id) {
-  if (id) state.flags[id] = true;
+  if (!id) return;
+  state.flags[id] = true;
+  const heroine = OVERRIDE_FLAG_TO_HEROINE[id];
+  if (heroine) {
+    state.publicOverrides[heroine] = (state.publicOverrides[heroine] ?? 0) + 1;
+    evaluateBreak(state, heroine);
+  }
+}
+
+// 破裂判定:公开越过达上限、或宅门跌破下限。触发则该路线冷却一天(次日重开),
+// 不是永久锁死。house 跌破会同时冷却全部三条线——正堂不稳时谁都不肯留门。
+export function evaluateBreak(state, heroineId) {
+  const overrides = state.publicOverrides[heroineId] ?? 0;
+  if (overrides < BREAK_OVERRIDE_LIMIT) return false;
+  state.routeReopensOn[heroineId] = state.day + 1;
+  record(state, 'route_break', { heroine: heroineId, cause: 'overrides', overrides });
+  return true;
+}
+
+export function evaluateHouseBreak(state) {
+  if (state.resources.house >= BREAK_HOUSE_FLOOR) return;
+  for (const id of HEROINE_IDS) {
+    if (state.routeReopensOn[id] > state.day) continue;
+    state.routeReopensOn[id] = state.day + 1;
+  }
+  record(state, 'route_break', { heroine: null, cause: 'house', house: state.resources.house });
+}
+
+// 路线是否在冷却中。旧档缺这两个字段时按「未冷却」回退,不影响读档。
+export function routeCooling(state, heroineId) {
+  return (state.routeReopensOn?.[heroineId] ?? 0) > state.day;
 }
 
 function changeRel(state, heroineId, delta = {}, reason = '') {
@@ -94,8 +144,9 @@ function changeResources(state, effects = {}) {
   if (effects.power) r.power = clamp(r.power + effects.power, 0, 6);
   if (effects.repute) r.repute = clamp(r.repute + effects.repute, 0, 6);
   if (effects.exposure) r.exposure = cap100(r.exposure + effects.exposure);
-  if (effects.strain) r.strain = cap100(r.strain + effects.strain);
+  if (effects.strain) r.strain = clamp(r.strain + effects.strain, 0, 100);
   if (effects.house) r.house = cap100(r.house + effects.house);
+  if (effects.house && state.routeReopensOn) evaluateHouseBreak(state);
 }
 
 function applyEffects(state, effects = {}, currentHeroine = null, reason = '') {
@@ -143,7 +194,14 @@ export function dayOptions(state) {
       else if (state.resources.silver < 30) hint = '没话可递，手里也凑不出三十两。';
     }
     if (option.id === 'ledger' && state.flags.pinger_same_chest) hint = '瓶儿已经摊开她的账，这回能多追回一些。';
-    return { ...option, hint, disabled: option.id === 'office' && !usableSecret(state) && state.resources.silver < 30 };
+    // 身体耗损的读取点:需要露面撑场的两条路,撑不住就走不了(F2)。
+    const strained = state.resources.strain >= STRAIN_STRAINED && ['office', 'banquet'].includes(option.id);
+    if (strained) hint = '昨夜撑得太狠，今日撑不起这个场面。';
+    return {
+      ...option,
+      hint,
+      disabled: strained || (option.id === 'office' && !usableSecret(state) && state.resources.silver < 30),
+    };
   });
 }
 
@@ -326,20 +384,20 @@ function nightEligibility(state, heroineId) {
   if (heroineId === 'wu_yueniang') return {
     prelude: rel.qing >= 28 && state.resources.repute >= 3,
     preludeReason: '你在人前还没给够她正堂的脸。',
-    explicit: rel.qing >= 55 && state.flags.kept_yue_word && state.resources.house >= 50 && !state.flags.broken_yue_word && ['ledger', 'banquet'].includes(state.selectedDayAction),
-    explicitReason: '先办成答应她的事。今日的账或席面，也得收拾干净。',
+    explicit: rel.qing >= 55 && state.flags.kept_yue_word && state.resources.house >= 50 && !routeCooling(state, 'wu_yueniang') && ['ledger', 'banquet'].includes(state.selectedDayAction),
+    explicitReason: routeCooling(state, 'wu_yueniang') ? '“正堂不是替你擦屁股的。”今日她不留门。' : '先办成答应她的事。今日的账或席面，也得收拾干净。',
   };
   if (heroineId === 'pan_jinlian') return {
     prelude: rel.qing >= 25 && rel.yu >= 40,
     preludeReason: '她还等着一句不躲闪的真话。',
-    explicit: rel.qing >= 40 && rel.yu >= 60 && (state.flags.pan_promised || state.flags.kept_pan_word) && !state.flags.broken_pan_word && state.selectedDayAction === 'listen',
-    explicitReason: '先还她那杯酒。今日问来的口风，也别瞒着她。',
+    explicit: rel.qing >= 40 && rel.yu >= 60 && (state.flags.pan_promised || state.flags.kept_pan_word) && !routeCooling(state, 'pan_jinlian') && state.selectedDayAction === 'listen',
+    explicitReason: routeCooling(state, 'pan_jinlian') ? '“空话留给席上说。”她今日笑着关门。' : '先还她那杯酒。今日问来的口风，也别瞒着她。',
   };
   return {
     prelude: rel.qing >= 35 && state.flags.pinger_route,
     preludeReason: '那本账，她还没敢交到你手里。',
-    explicit: rel.qing >= 55 && state.flags.protected_pinger && !state.flags.pinger_exposed && ['ledger', 'office'].includes(state.selectedDayAction),
-    explicitReason: '先替她守住那本账。今日的外债，也得亲手办妥。',
+    explicit: rel.qing >= 55 && state.flags.protected_pinger && !routeCooling(state, 'li_pinger') && ['ledger', 'office'].includes(state.selectedDayAction),
+    explicitReason: routeCooling(state, 'li_pinger') ? '“你要的是箱子，不是我。”钥匙今日收着。' : '先替她守住那本账。今日的外债，也得亲手办妥。',
   };
 }
 
@@ -363,9 +421,11 @@ export function chooseNight(state, actionId) {
   let text = '';
   if (actionId === 'leave') {
     changeRel(state, heroine, { qing: 2, du: -5 }, '她停下时，你没有再往前');
+    changeResources(state, { strain: -STRAIN_REST_RELIEF }); // 不进场景的一夜,身体缓过来一些
     text = '你替她掩好衣襟，起身时没有闩死房门。';
   } else if (actionId === 'talk') {
     changeRel(state, heroine, { qing: 8, yu: 6, du: -5 }, '你留下来听她把话说完');
+    changeResources(state, { strain: -STRAIN_REST_RELIEF });
     text = '更漏响过一声，你仍坐在原处。她又替你添了半盏茶。';
   } else if (actionId === 'prelude') {
     unlockScene(state, option.scene);
@@ -603,12 +663,24 @@ export function deserialize(raw) {
   try {
     const state = JSON.parse(raw);
     if (!HEROINE_IDS.every((id) => state?.relations?.[id])) return null;
+    // v3 → v4:补齐宅中人。
     if (state.version === 3) {
-      state.version = SAVE_VERSION;
+      state.version = 4;
       state.household = makeHousehold();
       state.currentHouseholdEvent = null;
     }
+    // v4 → v5:破裂规则从单次永久旗标改为「公开越过计数 + 一天冷却」,
+    // 旧档按已置位的失信旗标反推计数,并从未冷却状态入局。
+    if (state.version === 4) {
+      state.version = 5;
+      state.publicOverrides = { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 };
+      state.routeReopensOn = { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 };
+      for (const [flag, heroine] of Object.entries(OVERRIDE_FLAG_TO_HEROINE)) {
+        if (state.flags?.[flag]) state.publicOverrides[heroine] = 1;
+      }
+    }
     if (state.version !== SAVE_VERSION || !HOUSEHOLD_IDS.every((id) => state.household?.[id])) return null;
+    if (!state.publicOverrides || !state.routeReopensOn) return null;
     return state;
   } catch {
     return null;

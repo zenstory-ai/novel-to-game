@@ -12,3 +12,20 @@ examples/*/build/app/node_modules/
 # Agent orchestration runtime state (operational artifacts, never shipped)
 .omc/
 .omx/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# 成人向内部验收截图:落在项目内的受限子目录以便本地复核,但不进版本库。
+# 契约只要求证据不在系统临时目录、且可复跑重建;18+ 画面本身已由
+# examples/*/build/app/assets/cg/ 承载,QA 截图再入库只是重复暴露面。
+examples/*/qa/evidence/browser/adult/
+
+# 短片的录像与成片都不入库:未剪原片和 20 秒成片各 8MB 上下,合计比全仓游戏资产
+# (9.7MB)还重,而两者都是种子固定、跑 qa/capture_demo_clip.py 就能逐帧重建的。
+# 留在库里的是挑刀的证据——首帧、时标 marks.json、抽帧联络表,加起来不到 700KB。
+examples/*/screenshots/clip/raw_take.webm
+examples/*/screenshots/clip/raw/
+examples/*/screenshots/clip/*.mp4

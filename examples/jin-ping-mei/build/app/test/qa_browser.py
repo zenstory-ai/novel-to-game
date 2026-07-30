@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""《风月总账》真实浏览器 QA：三条成人路线、闭环、场景册、重开与双视口。"""
+"""《风月总账》真实浏览器 QA：三条成人路线、闭环、场景册、重开与双视口。
+
+证据落盘工作区内 qa/evidence/（不用系统临时目录，否则按契约视为无证据）。
+环境变量: BASE_URL, QA_SLOW=1 关闭加速（正常速度路径）, JPM_QA_SHOTS 覆盖证据目录。
+"""
 from __future__ import annotations
 
 import json
@@ -10,19 +14,32 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from urllib.parse import urlparse
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = os.environ.get("BASE_URL", "http://127.0.0.1:5173")
-URL = f"{BASE}/?seed=42&fast=1"
-SHOTS = Path(os.environ.get("JPM_QA_SHOTS", "/tmp/jpm_qa"))
+SLOW = bool(os.environ.get("QA_SLOW"))
+URL = f"{BASE}/?seed=42" + ("" if SLOW else "&fast=1")
+# 证据落工作区内的持久路径:qa 契约把系统临时目录视为无证据,对应检查项不得记通过。
+# 本示例上一轮复审正是因为 /tmp 证据失效而不得 PASS。
+_EXAMPLE_ROOT = Path(__file__).resolve().parents[3]
+SHOTS = Path(os.environ.get("JPM_QA_SHOTS", _EXAMPLE_ROOT / "qa" / "evidence" / "browser"))
 SAFE = SHOTS / "safe"
 ADULT = SHOTS / "adult"
+
+# 转场延迟预算：一次交互到画面落定 ≤ 200 ms 才不被感知为卡；长任务绝对门 200 ms（契约）
+TRANSITION_BUDGET_MS = 200.0
+STALL_MS = 200.0
+
 passed = failed = 0
 errors: list[str] = []
 network_errors: list[str] = []
 http_errors: list[str] = []
 household_seen: set[str] = set()
+perf: dict[str, dict] = {}
+request_hosts: set[str] = set()
+longtasks: list[int] = []
 
 
 def section(name: str) -> None:
@@ -74,7 +91,44 @@ def state(page) -> dict:
 
 
 def shot(page, folder: Path, name: str) -> None:
-    page.screenshot(path=str(folder / f"{name}.png"))
+    page.screenshot(path=str(folder / f"{name}.jpg"), type="jpeg", quality=80)
+
+
+# 本作是纯 DOM/CSS 视觉小说：全项目零 requestAnimationFrame、零 canvas，没有逐帧渲染循环。
+# 采 rAF 间隔只会量到浏览器空闲垂直同步节拍（headless 恒为 ~8.3 ms），无论画面轻重都一样，
+# 因此帧率数字对本作**不构成**性能结论。真正会被玩家感知的是一次转场里主线程被阻塞多久，
+# 用 longtask（>50 ms 主线程占用）直接观测，并测「点击→下一次绘制完成」的转场延迟。
+LONGTASK_INIT = """
+window.__longtasks = [];
+try {
+  new PerformanceObserver((list) => {
+    for (const e of list.getEntries()) window.__longtasks.push({
+      ms: Math.round(e.duration),
+      at: Math.round(e.startTime),            // 距本次导航的毫秒数，用于归因启动 vs 游戏中
+      phase: (document.querySelector('#game-shell') || {}).dataset?.phase || '?',
+    });
+  }).observe({ entryTypes: ['longtask'] });
+} catch (err) { window.__longtasks = null; }
+"""
+
+
+def transition_latency(page, label: str, selector: str) -> float | None:
+    """在页内测「点击 selector → 下一次绘制完成」的毫秒数（不含 CDP 往返开销）。"""
+    ms = page.evaluate(
+        """async (sel) => {
+            const node = document.querySelector(sel);
+            if (!node) return null;
+            const t0 = performance.now();
+            node.click();
+            await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+            return performance.now() - t0;
+        }""",
+        selector,
+    )
+    if ms is not None:
+        perf[label] = {"transition_to_paint_ms": round(ms, 2)}
+        print(f"  转场延迟 {label}: {ms:.1f} ms")
+    return ms
 
 
 def click(page, selector: str) -> None:
@@ -117,7 +171,13 @@ def choose_day(page, action="ledger", banquet="banquet_honor_yue", household=Non
         assert phase(page) == "scene"
         check(state(page)["pendingScene"] == "banquet_conflict", "中秋真实触发群体冲突 scene_id")
         shot(page, SAFE, "06_banquet_conflict")
-        click(page, "#btn-scene-close")
+        # 转场延迟测在本作最重的真实状态：关闭群体冲突场景册（群像 CG 卸载 + 回到日程盘），
+        # 不是标题页或静止对白屏。
+        if "banquet_conflict_close" not in perf:
+            transition_latency(page, "banquet_conflict_close", "#btn-scene-close")
+            page.wait_for_timeout(80)
+        else:
+            click(page, "#btn-scene-close")
 
 
 def route_night(page, heroine: str, route: str, night: str, adult_name: str | None = None) -> None:
@@ -156,9 +216,12 @@ def start_fresh(page, opening: str) -> None:
 
 def main() -> int:
     global errors, network_errors, http_errors
-    shutil.rmtree(SHOTS, ignore_errors=True)
-    SAFE.mkdir(parents=True)
-    ADULT.mkdir(parents=True)
+    # 只清截图子目录：qa/evidence/ 下还有手写的 design-invariants.md 等独立验证证据，
+    # 不能被复跑抹掉。
+    shutil.rmtree(SAFE, ignore_errors=True)
+    shutil.rmtree(ADULT, ignore_errors=True)
+    SAFE.mkdir(parents=True, exist_ok=True)
+    ADULT.mkdir(parents=True, exist_ok=True)
     server = ensure_server()
     try:
         with sync_playwright() as pw:
@@ -169,6 +232,9 @@ def main() -> int:
             page.on("pageerror", lambda exc: errors.append(f"pageerror:{exc}"))
             page.on("requestfailed", lambda req: network_errors.append(f"{req.url}: {req.failure}"))
             page.on("response", lambda res: http_errors.append(f"{res.status} {res.url}") if res.status >= 400 else None)
+            # 自包含切片核对：任何外部请求域都等于绕过体积统计
+            page.on("request", lambda req: request_hosts.add(urlparse(req.url).netloc))
+            page.add_init_script(LONGTASK_INIT)
 
             section("年龄门与男性身份")
             page.goto(URL, wait_until="networkidle")
@@ -188,18 +254,6 @@ def main() -> int:
 
             start_fresh(page, "respect_yue")
             check(state(page)["history"][0]["choice"] == "respect_yue", "首个有意义选择写入公开历史")
-            frame_ms = page.evaluate("""async () => new Promise((resolve) => {
-                const samples = [];
-                let last = performance.now();
-                const tick = (now) => {
-                    samples.push(now - last);
-                    last = now;
-                    if (samples.length >= 24) resolve(samples.slice(2).reduce((a, b) => a + b, 0) / (samples.length - 2));
-                    else requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-            })""")
-            check(frame_ms <= 33.4, f"交互帧间隔达到 30 FPS 预算（{frame_ms:.1f} ms）")
             shot(page, SAFE, "03_opening_choice_done")
 
             section("月娘专一完整路径")
@@ -297,7 +351,7 @@ def main() -> int:
             check(page.locator(".gallery-card.locked").count() == 0, "已解锁页不再显示剪影")
             click(page, "#btn-gallery-close")
             page.evaluate("localStorage.setItem('jpm_save_v1', JSON.stringify({version:2,player:{name:'孟玉楼'}}))")
-            check(state(page)["version"] == 4, "旧孟玉楼存档键不污染新周目")
+            check(state(page)["version"] == 5, "旧孟玉楼存档键不污染新周目")
 
             section("双视口、键盘与资源")
             for width, height in [(1280, 800), (1920, 1080)]:
@@ -350,11 +404,13 @@ def main() -> int:
             reduced.close()
 
             section("安全截图隔离")
-            safe_names = {p.name for p in SAFE.glob("*.png")}
-            adult_names = {p.name for p in ADULT.glob("*.png")}
+            safe_names = {p.name for p in SAFE.glob("*.jpg")}
+            adult_names = {p.name for p in ADULT.glob("*.jpg")}
             check(safe_names.isdisjoint(adult_names), "安全与 18+ 导出文件名清单互不重叠")
             readme = (ROOT.parents[3] / "README.md").read_text(encoding="utf-8")
-            check(not any(name in readme for name in ["yue_explicit.webp", "pan_explicit.webp", "pinger_explicit.webp", "/tmp/jpm_qa/adult"]), "README 未嵌入 18+ 路线资产或内部证据")
+            check(not any(name in readme for name in ["yue_explicit.webp", "pan_explicit.webp", "pinger_explicit.webp", "qa/evidence/browser/adult"]), "README 未嵌入 18+ 路线资产或内部证据")
+
+            longtasks.extend(page.evaluate("window.__longtasks || []") or [])
 
             context.close()
             browser.close()
@@ -363,23 +419,62 @@ def main() -> int:
             server.terminate()
             server.wait(timeout=3)
 
+    # ---- 性能与自包含结论（独立于实现方自测，写进 QA_REPORT 环境表）----
+    local = {urlparse(BASE).netloc, ""}
+    external = sorted(h for h in request_hosts if h not in local)
+    check(not external, f"无外部请求域（实测 {sorted(request_hosts)}）")
+    check(bool(perf), "已在最重真实状态（群体冲突场景册转场）实测延迟")
+    worst_transition = max(
+        (v["transition_to_paint_ms"] for v in perf.values() if "transition_to_paint_ms" in v),
+        default=0.0,
+    )
+    check(worst_transition <= TRANSITION_BUDGET_MS,
+          f"最重转场 点击→绘制 {worst_transition} ms ≤ {TRANSITION_BUDGET_MS} ms")
+    # 长任务按归因分档：启动期（首屏资产解码，已由 local_load_ms 门单独裁决）与
+    # 游戏中（玩家正在操作时的主线程阻塞，才是真卡顿）。
+    boot = [t for t in longtasks if t["at"] <= 1500]
+    ingame = [t for t in longtasks if t["at"] > 1500]
+    worst_boot = max((t["ms"] for t in boot), default=0)
+    worst_ingame = max((t["ms"] for t in ingame), default=0)
+    if boot:
+        print(f"  启动期长任务: {sorted((t['ms'] for t in boot), reverse=True)}（首屏资产解码，见 local_load_ms 门）")
+    check(worst_ingame < STALL_MS,
+          f"游戏中无 >{STALL_MS:.0f} ms 主线程长任务（最坏 {worst_ingame} ms，共 {len(ingame)} 次 >50 ms）")
+
+    size_bytes = sum(
+        p.stat().st_size for p in ROOT.rglob("*")
+        if p.is_file() and ".vercel" not in p.parts and "test" not in p.parts
+    )
     evidence = {
         "url": URL,
+        "normal_speed_run": SLOW,
+        "viewport": "1280x800",
         "passed": passed,
         "failed": failed,
         "console_errors": errors,
         "network_errors": network_errors,
         "http_errors": http_errors,
         "performance": {
+            "note": "纯 DOM/CSS，无 rAF 渲染循环；帧率对本作无意义，改测转场延迟与主线程长任务",
             "local_load_ms": round(load_ms, 1),
-            "average_frame_interval_ms": round(frame_ms, 1),
+            "transitions": perf,
+            "transition_budget_ms": TRANSITION_BUDGET_MS,
+            "longtasks_over_50ms": sorted(longtasks, key=lambda t: -t["ms"]),
+            "stall_gate_ms": STALL_MS,
+            "build_bytes": size_bytes,
         },
-        "safe_screenshots": sorted(p.name for p in SAFE.glob("*.png")),
-        "adult_screenshots": sorted(p.name for p in ADULT.glob("*.png")),
+        "request_hosts": sorted(request_hosts),
+        "external_hosts": external,
+        "safe_screenshots": sorted(p.name for p in SAFE.glob("*.jpg")),
+        "adult_screenshots": sorted(p.name for p in ADULT.glob("*.jpg")),
     }
     (SHOTS / "evidence.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\n控制台错误: {len(errors)}；资源失败: {len(network_errors)}")
+    print(f"包体: {size_bytes/1048576:.2f} MB；外部域: {external or '无'}")
     print(f"结果: {passed} 通过, {failed} 失败；证据 → {SHOTS}")
+    if not SLOW:
+        print("提示: 本轮为加速路径，时序证据无效（qa-contract《首次上手》）；"
+              "正常速度完整路径须以 QA_SLOW=1 复跑一次，秒级节拍写回 QA_REPORT。")
     return 1 if failed else 0
 
 

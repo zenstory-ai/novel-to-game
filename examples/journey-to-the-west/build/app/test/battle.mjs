@@ -742,5 +742,41 @@ section('伤害预览:与 calcDamage 同公式、不占 rng');
   ok(runOnce(false) === runOnce(true), '调用预览 50 次后事件流仍逐字节一致(不占 rng)');
 }
 
+// ---------- 回归:助战补掉最后一个敌人后必须判胜负 ----------
+// 独立 QA 复现:哪吒助战按 maxHp×15% 补刀,若正好打死白牛真身,旧实现不判胜负,
+// 行动队列带着空敌人列表继续走,targetsFor 返回 [undefined] → damageTarget 抛异常。
+section('回归:助战补刀后的胜负判定');
+{
+  const party = [
+    { key: 'wukong', level: 6 }, { key: 'bajie', level: 6 },
+    { key: 'sha', level: 6 }, { key: 'pixie', level: 6 },
+  ];
+  // 直接把白牛真身摆在助战门槛以下、且血量低于助战伤害,构造补刀
+  const s = createBattle({ battleId: 'niumowang', party, seed: 42, items: { truefan: 3 } });
+  const boss = getUnit(s, 'e0');
+  boss.hp = 0; // 触发换阶段 → 白牛真身
+  const phaseEvs = executeRound(s, { p0: { type: 'attack', targetId: 'e0' } });
+  ok(phaseEvs.some((e) => e.t === 'phase'), '牛魔王体力归零换出白牛真身');
+  const white = getUnit(s, 'e0');
+  for (const e of aliveUnits(s, 'enemy')) if (e.id !== 'e0') e.alive = false; // 只留白牛
+  white.hp = Math.round(white.maxHp * 0.05); // ≤50% 触发助战,且 <15% 会被补刀打死
+  let threw = null;
+  let evs = [];
+  try {
+    evs = executeRound(s, {
+      p0: { type: 'skill', skillId: 'qitian', targetId: 'e0' },
+      p1: { type: 'attack', targetId: 'e0' },
+      p2: { type: 'attack', targetId: 'e0' },
+      p3: { type: 'attack', targetId: 'e0' },
+    });
+  } catch (err) { threw = err; }
+  ok(!threw, `助战补刀不抛异常${threw ? ` (${threw.message})` : ''}`);
+  ok(evs.some((e) => e.t === 'god_assist'), '助战事件已发出');
+  ok(s.over === true && s.winner === 'party', '助战补掉最后一个敌人后立即判我方胜');
+  ok(evs.some((e) => e.t === 'battle_end' && e.winner === 'party'), '发出 battle_end');
+  // 空敌人列表下再跑一回合应安全返回
+  ok(executeRound(s, { p0: { type: 'attack', targetId: 'e0' } }).length === 0, '战斗结束后回合调用为空操作');
+}
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);
 process.exit(failed > 0 ? 1 : 0);

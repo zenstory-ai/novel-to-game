@@ -1,0 +1,14 @@
+# 语言统计口径。本仓库的产物是技能与改编策划文档，不是某个语言的代码库。
+#
+# Markdown 是主体内容（skills/ 的 7 个 SKILL.md 与 12 个 references，加两个示例的
+# 策划产物），Linguist 默认把 Markdown 当 prose 排除在语言统计外，于是仅剩
+# scripts/ 与 tests/ 的少量 Python 被计入，整个仓库被误标为 Python。
+*.md linguist-detectable=true
+
+# examples/*/build/app/ 是流程跑出来的构建产物，不是手写源码。
+examples/*/build/app/** linguist-generated=true
+
+# 公版原著全文属第三方内容。
+examples/*/source/*.txt linguist-vendored
+
+# scripts/ 与 tests/ 的 Python 是手写的仓库工具，保留在统计内，不伪标 vendored。

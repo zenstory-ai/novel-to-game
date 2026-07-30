@@ -1,0 +1,115 @@
+{
+  "seed": 42,
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "fast": false,
+  "url": "http://127.0.0.1:5176/?seed=42",
+  "console_errors": [],
+  "source_duration": 70.8,
+  "marks_to_source_offset": 0.947,
+  "marks": [
+    {
+      "label": "title",
+      "t": 0.041
+    },
+    {
+      "label": "overworld",
+      "t": 6.965
+    },
+    {
+      "label": "battle_ready",
+      "t": 16.249
+    },
+    {
+      "label": "r1_cmd0",
+      "t": 16.856
+    },
+    {
+      "label": "r1_cmd1",
+      "t": 20.678
+    },
+    {
+      "label": "r1_cmd2",
+      "t": 21.873
+    },
+    {
+      "label": "r1_resolve",
+      "t": 23.067
+    },
+    {
+      "label": "r1_done",
+      "t": 26.751
+    },
+    {
+      "label": "r2_cmd0",
+      "t": 26.756
+    },
+    {
+      "label": "r2_cmd1",
+      "t": 30.567
+    },
+    {
+      "label": "r2_cmd2",
+      "t": 31.765
+    },
+    {
+      "label": "r2_resolve",
+      "t": 32.963
+    },
+    {
+      "label": "r2_done",
+      "t": 38.502
+    },
+    {
+      "label": "r3_cmd0",
+      "t": 38.506
+    },
+    {
+      "label": "r3_cmd1",
+      "t": 42.317
+    },
+    {
+      "label": "r3_cmd2",
+      "t": 43.516
+    },
+    {
+      "label": "r3_resolve",
+      "t": 44.718
+    },
+    {
+      "label": "r3_done",
+      "t": 55.172
+    },
+    {
+      "label": "r4_cmd0",
+      "t": 55.178
+    },
+    {
+      "label": "r4_cmd1",
+      "t": 59.0
+    },
+    {
+      "label": "r4_cmd2",
+      "t": 60.2
+    },
+    {
+      "label": "r4_resolve",
+      "t": 61.399
+    },
+    {
+      "label": "r4_done",
+      "t": 68.349
+    },
+    {
+      "label": "end",
+      "t": 69.853
+    }
+  ],
+  "cut": {
+    "source_start_s": 31.9,
+    "duration_s": 20.0,
+    "why": "frame 0 must carry the full command tray: X uses it as the thumbnail, and the keyboard highlight on 攻击 plus the damage preview (土->木 被克 x0.66, hit 95%) is what reads as a real UI under human input to someone who cannot read the characters. An earlier cut at 24.50s opened mid-resolution, when the tray is cleared, leaving 21% of the thumbnail as empty cream."
+  }
+}

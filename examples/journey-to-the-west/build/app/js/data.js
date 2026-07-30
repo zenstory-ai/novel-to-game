@@ -228,18 +228,6 @@ export const BATTLES = {
     enemies: ['firemob1', 'firemob1', 'firemob2'],
   },
   yumian: {
-    key: 'yumian', name: '玉面公主', element: '土', portrait: 'yumian', crit: 0.08,
-    base: { hp: 820, mp: 0, atk: 70, def: 46, spd: 76, mag: 88 },
-    growth: { hp: 95, mp: 0, atk: 5, def: 4, spd: 3, mag: 7 },
-    skills: { 1: ['yaofa', 'jiaoman'] }, ai: 'mob',
-  },
-  yaojiang: {
-    key: 'yaojiang', name: '摩云洞妖将', element: '金', portrait: 'yaojiang', crit: 0.06,
-    base: { hp: 560, mp: 0, atk: 78, def: 60, spd: 50, mag: 40 },
-    growth: { hp: 70, mp: 0, atk: 6, def: 5, spd: 2, mag: 3 },
-    skills: { 1: ['tiebi', 'kanxi'] }, ai: 'mob',
-  },
-  yumian: {
     id: 'yumian', name: '积雷山·摩云洞前', bg: 'moyundong', boss: false, enemyLevel: 3,
     enemies: ['yumian', 'yaojiang', 'yaojiang'],
   },
