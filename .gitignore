@@ -29,9 +29,3 @@ examples/*/qa/evidence/browser/adult/
 examples/*/screenshots/clip/raw_take.webm
 examples/*/screenshots/clip/raw/
 examples/*/screenshots/clip/*.mp4
-
-# QA_ONLY 子集跑出的产物。它按定义不是发布门禁——只有整套跑才写
-# qa/evidence/browser/ 与 automated.json——所以这些迭代用的中间证据不入库,
-# 也不能被误当成某一轮的完整结论。
-examples/*/qa/evidence/browser-partial/
-examples/*/qa/evidence/automated-partial.json
