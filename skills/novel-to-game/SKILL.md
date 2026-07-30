@@ -57,7 +57,9 @@ description: "Turn a novel into a playable web game. Orchestrates the whole adap
 7. 调用 `game-build` 实现完整原型，再用 `game-qa` 验证；`blocker`/`major` 按
    `QA_REPORT.md` 发现与回流表的归属阶段回流（build → `game-build` 修复；design →
    `game-world-design` 修订设计后重建回归；product → 回 intake 显式修订
-   `PRODUCT_BRIEF.md`），规则见 pipeline-contract 质量回流一节。
+   `PRODUCT_BRIEF.md`），规则见 pipeline-contract 质量回流一节。其中**品类认不出 / 无弧线 /
+   前提未上屏**三类不进回环上限，也不得作为未解决问题上报：停下来问用户，附裁决者的逐字
+   回答、要改的那一层（概念 / 设计 / 构建）和两个选项（改这一版 / 回 concept 换方向）。
 
 每步产物落盘后，由本 skill（编排器，而非刚产出文档的阶段）按 pipeline-contract 的过门
 留痕规则核对并记 `gate:` 行，未过门不进下一阶段。
@@ -65,6 +67,10 @@ description: "Turn a novel into a playable web game. Orchestrates the whole adap
 ## 不可删除的判断
 
 - 剧情必须转成玩家动词、选择和世界反馈，而非逐章复演。
+- 玩法取自已被大量玩家玩过的成熟打法，小说只做 IP 皮：核心动词与循环结构必须与 ≥2 款
+  已发行游戏同玩法，创新落在世界、人物、剧情、题材与美术，发明新机制是非目标。
+- 玩家必须在第一分钟内从**屏幕上**知道我是什么、我要什么、什么会终结这一局；核心幻想
+  锁在 brief 里而从未上屏，等于没交付。
 - 设计收敛到一个能证明核心幻想且可完整游玩的网页游戏验证切片，时长服从
   `PRODUCT_BRIEF` 锁定的单局时长（默认 10-30 分钟）；brief 时长更长时，切片只做
   全量体验中已声明的一段，不默认做全量。
