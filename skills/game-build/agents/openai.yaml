@@ -1,4 +1,4 @@
 interface:
-  display_name: "游戏构建"
-  short_description: "把批准后的设计实现成可运行游戏"
-  default_prompt: "使用 $game-build 根据批准后的设计生成并验证完整的游戏原型。"
+  display_name: "Game Build"
+  short_description: "Implement the approved design as a running game · 把批准后的设计实现成可运行游戏"
+  default_prompt: "Use $game-build to implement and verify a complete game prototype from the approved design."

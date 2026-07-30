@@ -1,12 +1,14 @@
 ---
 name: game-qa
-description: "网页游戏证据化质量验证。启动生成游戏，检查构建、控制台、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标视口、界面语言、首次上手与核心幻想是否被演出来，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩等需求。"
+description: "Verify a web game with evidence. Launch the game and check the build, console, real rendering, input and state changes, the core loop, designed outcomes, restart, target viewport, interface language, first-time onboarding, and whether the core fantasy is actually performed — without dressing subjective fun up as a certain verdict. Use for test this web game, QA a generated game, check whether the game is fully playable, verify the build. 网页游戏证据化质量验证。启动生成游戏，检查构建、控制台、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标视口、界面语言、首次上手与核心幻想是否被演出来，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩等需求。"
 ---
 # 游戏质量验证
 
 验证游戏能否可靠运行和完成，不给“好玩”伪造客观分数。
 
-读取 [qa-contract.md](references/qa-contract.md)。
+读取 [qa-contract.md](references/qa-contract.md) 定判据，读 [test-design-method.md](references/test-design-method.md) 定怎么设计这些检查。
+
+产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
 ## 执行
 
@@ -33,6 +35,11 @@ description: "网页游戏证据化质量验证。启动生成游戏，检查构
    并检查设计写明的失败现象有没有发生。判据与协议见 [qa-contract.md](references/qa-contract.md)。
 9. 每条 `blocker`/`major` 按 qa-contract 的归属定义标注 `build`/`design`/`product` 并写入
    发现与回流表；标 `design` 的本轮不得 `PASS`；回流路由由总入口执行。
+
+BUILD_BRIEF 含动态媒体台账（视频 / 关键帧驱动演出 / 实时 3D）时，**强制启用**生成媒体
+检查：逐镜对照参考图做漂移证伪（首 / 中 / 尾帧）、相邻镜头边界接续检查、API 证据链
+核对，以及 3D 后端降级与资源释放证据核对——判据见 [qa-contract.md](references/qa-contract.md)
+的生成媒体节，无台账则该节不适用。
 
 优先使用游戏已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA
 重构游戏或强制一种调试接口。

@@ -1,8 +1,10 @@
 {
   "name": "novel-to-game-skills",
-  "owner": {"name": "worldwonderer"},
+  "owner": {
+    "name": "worldwonderer"
+  },
   "metadata": {
-    "description": "通过改编策划、智能体构建和质量验证，把小说转成可玩的游戏。",
+    "description": "Turn any novel into a playable web game, through adaptation planning, agent build, and evidence-based QA. 通过改编策划、智能体构建和质量验证，把小说转成可玩的游戏。",
     "version": "0.1.0"
   },
   "plugins": [
@@ -10,7 +12,7 @@
       "name": "novel-to-game",
       "source": "./",
       "version": "0.1.0",
-      "description": "把小说转成游戏企划与可完整游玩的网页游戏原型。"
+      "description": "Turn any novel into a playable web game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, agent build, and evidence-based QA. 把小说转成游戏企划与可完整游玩的网页游戏原型。"
     }
   ]
 }

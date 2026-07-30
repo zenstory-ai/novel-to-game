@@ -1,4 +1,4 @@
 interface:
-  display_name: "游戏世界设计"
-  short_description: "设计可玩的世界、系统与关卡体验"
-  default_prompt: "使用 $game-world-design 把这个概念深化成可玩的世界与完整游戏原型。"
+  display_name: "Game World Design"
+  short_description: "Design the playable world, systems, and levels · 设计可玩的世界、系统与关卡体验"
+  default_prompt: "Use $game-world-design to deepen this concept into a playable world and a complete prototype."

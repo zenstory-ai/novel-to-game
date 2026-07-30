@@ -1,10 +1,10 @@
 {
   "name": "novel-to-game",
   "version": "0.1.0",
-  "description": "把小说转成游戏企划与可完整游玩的网页游戏原型。",
+  "description": "Turn any novel into a playable web game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, agent build, and evidence-based QA. 把小说转成游戏企划与可完整游玩的网页游戏原型。",
   "skills": "./skills/",
   "interface": {
     "displayName": "NovelToGame",
-    "shortDescription": "把小说转成可玩的游戏"
+    "shortDescription": "Turn novels into playable game prototypes · 把小说转成可玩的游戏"
   }
 }

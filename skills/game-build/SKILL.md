@@ -1,6 +1,6 @@
 ---
 name: game-build
-description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION 压缩成最小 BUILD_BRIEF，交给当前编码智能体、Kimi K3、Claude Fable 5 或其他强模型实现可完整游玩的网页游戏原型，并通过真实运行和截图迭代。用于把批准的游戏方案实现成可运行游戏。"
+description: "Build the game. Compress the approved GAME_DESIGN and ART_DIRECTION into a minimal BUILD_BRIEF, hand it to the current coding agent or another strong model to implement a fully playable web prototype, and iterate against real runs and screenshots. Use for implement the approved game design, build the game prototype, turn this design into a running game. 游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION 压缩成最小 BUILD_BRIEF，交给当前编码智能体、Kimi K3、Claude Fable 5 或其他强模型实现可完整游玩的网页游戏原型，并通过真实运行和截图迭代。用于把批准的游戏方案实现成可运行游戏。"
 ---
 # 游戏构建执行
 
@@ -8,6 +8,8 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 
 读取 [build-brief-contract.md](references/build-brief-contract.md)。必须已有
 `GAME_DESIGN.md` 和 `ART_DIRECTION.md`；缺少产品决策时回到设计阶段。
+
+产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
 可玩交付始终是网页可玩的垂直切片，但要按 `PRODUCT_BRIEF.md` 的目标平台惯例来做：竖屏或
 横屏、单局时长、控制方式、小程序/移动的轻量与即开即玩、分级对应的内容边界。原型是目标
@@ -41,6 +43,12 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 品类保真门、手感打磨(juice) 清单（按类型取用、动效可关）、批量资产受管子流程（视觉键
 清单 + 一致性审查），以及行为保护式文案重构与存档迁移。
 
+BUILD_BRIEF 含动态媒体（视频过场 / 环境循环 / 关键帧驱动演出）时，默认生产链为
+**Codex `imagegen`（`gpt-image-2`）产角色 / 场景 / 关键帧图 → Seedance 2.0 图生视频 /
+多模态参考生视频**，已有可用图片不得退回纯文生视频。完整生产线（最小生产包、参考图
+职责、API 提交轮询下载、逐镜证据与连续性门）见
+[generative-media-pipeline.md](references/generative-media-pipeline.md)。
+
 ## 完成循环
 
 1. 用灰盒实现最小但完整的核心循环，先验证规则和范围。
@@ -58,7 +66,11 @@ description: "游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION
 生成 `build/BUILD_BRIEF.md` 和实际游戏。构建说明在完成后补充运行命令、验证结果与已知
 限制。构建证据（测试输出、证据帧、招牌帧、导出清单）必须落在工作区内 qa/evidence/ 或
 build 目录下的持久路径（本阶段默认 `build/evidence/`），BUILD_BRIEF 用相对路径引用，
-不得只留在系统临时目录；成人向内部验收截图放在项目内不进 README / 公开清单的子目录，
+不得只留在系统临时目录。**这一条要落到生成的测试脚本本身**：脚本里的截图 / 输出目录
+默认值必须是工作区内的相对路径（可用环境变量覆盖），不能默认写 `/tmp`——写测试脚本时
+默认临时目录太顺手，实测两个示例都在这里犯过同一个错，而 qa 契约把临时目录路径视为
+无证据，对应检查项一律不得记通过。截图存 JPEG 而非 PNG：同一批画面 PNG 七十多兆、
+JPEG 十兆量级，判读不受影响。成人向内部验收截图放在项目内不进 README / 公开清单的子目录，
 并在导出清单标注。实现若降级任何「必须提供」项，必须写进构建完成记录的已知限制并回
 设计确认，不得静默省略。只有可运行路径和构建证据存在时才交回总入口进入质量验证，
 不自行调用下一阶段。

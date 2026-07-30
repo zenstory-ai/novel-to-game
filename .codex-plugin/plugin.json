@@ -1,7 +1,7 @@
 {
   "name": "novel-to-game",
   "version": "0.1.0",
-  "description": "把小说转成游戏企划与可完整游玩的网页游戏原型。",
+  "description": "Turn any novel into a playable web game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, agent build, and evidence-based QA. 把小说转成游戏企划与可完整游玩的网页游戏原型。",
   "author": {
     "name": "worldwonderer",
     "url": "https://github.com/worldwonderer"
@@ -9,7 +9,18 @@
   "homepage": "https://github.com/worldwonderer/novel-to-game",
   "repository": "https://github.com/worldwonderer/novel-to-game",
   "license": "MIT",
-  "keywords": ["novel-to-game", "story-to-game", "game-design", "agent-skills"],
+  "keywords": [
+    "novel-to-game",
+    "story-to-game",
+    "book-to-game",
+    "text-to-game",
+    "game-design",
+    "narrative-design",
+    "interactive-fiction",
+    "web-game",
+    "ai-game-development",
+    "agent-skills"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "NovelToGame",
@@ -17,7 +28,9 @@
     "longDescription": "Design and build culturally grounded playable game adaptations from novels.",
     "developerName": "worldwonderer",
     "category": "Productivity",
-    "capabilities": ["Write"],
+    "capabilities": [
+      "Write"
+    ],
     "websiteURL": "https://github.com/worldwonderer/novel-to-game",
     "defaultPrompt": [
       "Turn this novel into a complete 15-minute game prototype.",

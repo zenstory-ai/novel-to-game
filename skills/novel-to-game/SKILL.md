@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成可完整游玩的网页游戏原型，编排游戏化拆解、概念选择、游戏与视觉设计、模型构建和证据化质量验证。用于小说转游戏、novel to game、把这本书做成游戏等需求。"
+description: "Turn a novel into a playable web game. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, agent build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成可完整游玩的网页游戏原型，编排游戏化拆解、概念选择、游戏与视觉设计、模型构建和证据化质量验证。用于小说转游戏、把这本书做成游戏等需求。"
 ---
 # NovelToGame 总入口
 

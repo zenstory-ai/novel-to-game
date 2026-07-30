@@ -1,4 +1,4 @@
 interface:
-  display_name: "小说游戏化拆解"
-  short_description: "从小说中提取可玩的原作事实"
-  default_prompt: "使用 $novel-game-analyze 从这部小说提取可供游戏设计使用的来源设定集。"
+  display_name: "Gameable Book Analysis"
+  short_description: "Extract gameable canon from a novel · 从小说中提取可玩的原作事实"
+  default_prompt: "Use $novel-game-analyze to extract a source bible this novel's game design can build on."

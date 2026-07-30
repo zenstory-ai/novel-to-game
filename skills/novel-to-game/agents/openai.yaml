@@ -1,4 +1,4 @@
 interface:
-  display_name: "小说转游戏"
-  short_description: "把小说转成可玩的游戏"
-  default_prompt: "使用 $novel-to-game 把这部小说转成一个可玩的游戏。"
+  display_name: "NovelToGame"
+  short_description: "Turn a novel into a playable game · 把小说转成可玩的游戏"
+  default_prompt: "Use $novel-to-game to turn this novel into a playable web game."

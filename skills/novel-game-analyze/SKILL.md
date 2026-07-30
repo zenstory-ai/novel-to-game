@@ -1,12 +1,14 @@
 ---
 name: novel-game-analyze
-description: "游戏化拆书。把原始小说、拆文库或写作工程压缩成有必要原文证据的 SOURCE_BIBLE，提取世界规则、玩家动词、空间、角色意志、系统和视觉锚点，不提前发明游戏类型。用于游戏化拆书、分析小说的游戏改编基础等需求。"
+description: "Deconstruct a novel for game adaptation. Compress a raw novel, deconstruction library, or writing project into a SOURCE_BIBLE with cited textual evidence, extracting world rules, player verbs, spaces, character will, systems, and visual anchors — without inventing a genre yet. Use for gameable book analysis, analyze a novel for game adaptation, extract game systems from a book. 游戏化拆书。把原始小说、拆文库或写作工程压缩成有必要原文证据的 SOURCE_BIBLE，提取世界规则、玩家动词、空间、角色意志、系统和视觉锚点，不提前发明游戏类型。用于游戏化拆书、分析小说的游戏改编基础等需求。"
 ---
 # 小说游戏化拆解
 
 建立游戏设计所需的事实层，不评价文笔，也不在此阶段选择游戏类型。
 
 读取 [gameability-protocol.md](references/gameability-protocol.md)。
+
+产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
 原文可以是任意语言。引用保留原文；策划语言或界面语言与原文不同时附必要译文，并建立
 角色名、地名、物件和规则的统一术语表。提取会影响玩家理解的礼制、宗教、神话、幽默、禁忌和

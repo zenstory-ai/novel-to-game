@@ -1,13 +1,15 @@
 ---
 name: game-world-design
-description: "游戏体验、系统与关卡策划。把选定概念收束为一份 GAME_DESIGN，定义玩家承诺、核心循环、世界响应、必要系统、关卡节奏、反馈、失败和可完整游玩的原型。用于设计游戏世界、深化玩法和关卡等需求。"
+description: "Design game experience, systems, and levels. Converge the chosen concept into one GAME_DESIGN defining the player promise, core loop, how the world responds, the systems actually needed, level pacing, feedback, failure, and a fully playable prototype. Use for design the game world, deepen the gameplay and levels, write the game design document. 游戏体验、系统与关卡策划。把选定概念收束为一份 GAME_DESIGN，定义玩家承诺、核心循环、世界响应、必要系统、关卡节奏、反馈、失败和可完整游玩的原型。用于设计游戏世界、深化玩法和关卡等需求。"
 ---
 # 游戏体验与世界设计
 
 把选定概念变成可实现的玩家体验，不写世界观百科或工程方案。
 
-读取 [world-design-method.md](references/world-design-method.md)。输入必须包含
+读取 [world-design-method.md](references/world-design-method.md)；定资源、门槛与难度时同读 [numeric-design-method.md](references/numeric-design-method.md)。输入必须包含
 `SOURCE_BIBLE.md`、已选择的 `CONCEPT.md` 和 `PRODUCT_BRIEF.md`。
+
+产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
 ## 设计
 

@@ -1,13 +1,18 @@
 ---
 name: game-art-direction
-description: "游戏美术与创意方向。把 GAME_DESIGN 转成策划级 ART_DIRECTION，定义可辨识视觉风格、镜头构图、世界与角色语法、功能性色光材质、界面反馈、运动与转场规格、声音方向和每个界面/模式的签名游戏时刻。用于判断游戏应该长什么样、制定游戏美术方向等需求。"
+description: "Direct game art and creative vision. Turn GAME_DESIGN into a production-level ART_DIRECTION defining a recognizable visual style, camera and composition, world and character grammar, functional colour/light/material, HUD feedback, motion and transition specs, audio direction, and a signature moment for every screen and mode. Use for what should the game look like, set the art direction, define the visual style. 游戏美术与创意方向。把 GAME_DESIGN 转成策划级 ART_DIRECTION，定义可辨识视觉风格、镜头构图、世界与角色语法、功能性色光材质、界面反馈、运动与转场规格、声音方向和每个界面/模式的签名游戏时刻。用于判断游戏应该长什么样、制定游戏美术方向等需求。"
 ---
 # 游戏美术与创意方向
 
-定义玩家最终看见、听见和读懂的体验，不选择渲染库或教授资产工程。
+定义玩家最终看见、听见和读懂的体验，不选择渲染库或教授资产工程。动态媒体（视频过场 /
+环境循环 / 实时 3D）在本阶段只定义**体验角色、连续性事实、边界、fallback、权利与证据
+要求**——它演什么、接续什么、缺了什么不行、降级成什么；怎么产、用什么模型和接口由构建
+阶段在既定默认链内决定，本阶段不借机重选玩法或渲染库。
 
 读取 [art-direction-method.md](references/art-direction-method.md)。必须已有批准的
 `GAME_DESIGN.md`；视觉服务玩法，不能用漂亮参考图重写游戏。
+
+产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
 画风与目标平台已由 `PRODUCT_BRIEF.md` 在 intake 锁定（像素/2.5D/写实3D/水墨工笔…、
 客户端/网页/小程序/移动、竖屏或横屏、内容分级）。在这个既定画风与平台内定义视觉语言，
@@ -37,7 +42,8 @@ description: "游戏美术与创意方向。把 GAME_DESIGN 转成策划级 ART_
    **芯色 + 描边或底衬 + 验证帧**。同时定义**声音与音乐方向**（核心动作 / 命中 / 状态变化 /
    转场 / 胜负各自的声音形制：音色来源、文化依据、功能层级、与画风同源）——运动与声音
    都是一等交付，不推给构建即兴补。
-8. 定义界面语言对应的字体、排版密度、阅读顺序和文化符号边界；CJK 功能文本设字号地板。
+8. 定义界面语言对应的字体、排版密度、阅读顺序和文化符号边界；功能文本设字号地板，
+   地板值按文字系统取（CJK 高于拉丁），见 art-direction-method.md。
 9. 为每个不同交互界面 / 模式各描述一张招牌**时刻**（标题 / 主菜单、大地图 / 探索、核心动作、
    转场、高潮 / 结果），每帧附节拍表（拍序 | 谁入场 / 什么在动 | 时长 ms 或帧数 | 镜头 / 转场
    动作）与保护区矩形（视口百分比 + 有意叠放：是 / 否），不固定三张。
@@ -50,7 +56,12 @@ description: "游戏美术与创意方向。把 GAME_DESIGN 转成策划级 ART_
 方向》与覆盖表附录），资产清单按**发布门禁**（缺失即构建失败）与**可降级**（写明降级表达）
 两级分列、每条归且仅归一级，并记录原创/授权边界和仍需验证的视觉风险。
 
+本作含动态媒体（视频过场 / 环境循环 / 关键帧驱动演出 / 实时 3D）时，另附《动态媒体与
+连续性方向》一节，含 art-direction-method.md 要求的四张表（角色表 / 参考包 / 事实分离与
+参考权限 / 镜头边界）；不含动态媒体则整节省略，不写空表。
+
 交付前逐项核对：是否一眼可辨识本作；玩家、目标和威胁是否清楚；核心规则是否能被看见；
 覆盖表每项有对应小节；签名时刻含标题 / 主菜单在列、逐条附节拍表与保护区矩形，缺任一项
 即不完整；所有瞬时叠字规格含双调对比三元组；每个关键反馈是否都有对应声音层；界面和反馈
-是否服务当前决策，且没有售卖未兑现的深度。任一项不过就补方向，不计算自评分。
+是否服务当前决策，且没有售卖未兑现的深度；清单里每条动态媒体都有体验角色、fallback、
+分级与两端边界，相邻镜头边界接得上。任一项不过就补方向，不计算自评分。
