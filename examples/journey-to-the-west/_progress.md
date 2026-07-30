@@ -11,7 +11,7 @@
   1 `major`（敌方 AI 不读五行，招牌系统单向 → 已转 go）、4 `minor`；
   另有 28 项数值漂移已逐项裁决并回写 `design/GAME_DESIGN.md`
 - 复核补记（2026-07-28 二次独立核对）：招牌帧一项由 `qa/evidence/signature-frames.md`
-  按 51 张真实截图逐帧重裁 → 5 帧 0 帧完整达标，记 `major` 归 `design`/`build`；
+  按 47 张真实截图逐帧重裁 → 5 帧 0 帧完整达标，记 `major` 归 `design`/`build`；
   「火焰山·携宠克火」在成品流程里不可达（辟水金睛兽于碧波潭后入队，`build/app/js/main.js:561`），
   故 `gate:qa` 由 pass 下修为 fail，回流见 `qa/QA_REPORT.md` 发现与回流表 F10–F12
 - 未修复已知缺口（如实留档，不作通过依据）：F6 ART_DIRECTION 声音方向未跟上实现、
@@ -23,7 +23,7 @@
   `node qa/enemy_core_system.mjs` 6/6 go ·
   `python3 qa/onboarding_timing.py` 常速首个有意义动作 19.7 秒 ·
   两分钟理解度由干净上下文子代理裁决，逐字存 `qa/evidence/onboarding.md` ·
-  招牌帧逐帧对照存 `qa/evidence/signature-frames.md`（51 张真实截图）
+  招牌帧逐帧对照存 `qa/evidence/signature-frames.md`（47 张真实截图）
 - 实现方自测（参考，非担保人）：`node test/battle.mjs` · `python3 test/qa_browser.py`
 - 备注：构建由 kimi CLI 实现，经多轮打磨（战斗 UI/手感、剧情底景、法宝演出、难度平衡、
   资产瘦身）；最终范围与初版 brief 的差异见 `build/BUILD_BRIEF.md`「最终范围对照」。

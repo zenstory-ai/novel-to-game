@@ -43,7 +43,7 @@
 | 两分钟理解度 | 干净上下文子代理 | 见下「首次上手」 | `qa/evidence/onboarding.md` |
 
 实现方自测作为**参考而非担保人**：`node test/battle.mjs` 208 项通过，
-`python3 test/qa_browser.py` 83 项浏览器断言通过 / 控制台 0 错误 / 46 张证据帧。
+`python3 test/qa_browser.py` 89 项浏览器断言通过 / 控制台 0 错误 / 47 张证据帧。
 
 ## 极端策略验证（取舍是否存在）
 
@@ -99,7 +99,7 @@
 > （`04_dialog_tudi.jpg`、`15_battle1_finisher.jpg`、`21_battle2_summon.jpg`、
 > `37_battle3_whitebull.jpg`、`35_battle3_truefan_3.jpg`、`39_ending_fan49.jpg`、
 > `40_ending.jpg`）在工作区内**均不存在**，按契约「引用……视为无证据，对应检查项不得记通过」，
-> 原 `PASS` 作废。现按 `qa/evidence/browser/` 下 51 张真实截图逐帧重裁，
+> 原 `PASS` 作废。现按 `qa/evidence/browser/` 下 47 张真实截图逐帧重裁，
 > 逐帧对照表存 `qa/evidence/signature-frames.md`。
 
 `ART_DIRECTION` 声明五张招牌画面，**0 帧完整达标**：
