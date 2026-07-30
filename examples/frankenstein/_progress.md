@@ -72,4 +72,10 @@
   degradable keys remain on their named lesser expression.
 - Licence: `public_domain_source`; the two Caslon faces are `OFL-1.1` (licence text ships at
   `build/app/assets/font/OFL.txt`)
+- gate:qa **fail (human playtest, 2026-07-30)** — the owner played it and could neither
+  understand the design nor operate the game. Comprehension and onboarding both fail. The example
+  was **shelved, not released**: the merge to `main` was reverted the same day and this branch
+  holds the work. All automated gates remain green (333/333 at both speeds), which is the finding:
+  a green suite proved it runs, not that it is legible. See `qa/QA_REPORT.md`,
+  *Human playtest, 2026-07-30*.
 - Updated: 2026-07-30

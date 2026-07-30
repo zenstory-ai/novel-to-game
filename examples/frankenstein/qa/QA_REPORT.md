@@ -195,3 +195,47 @@ geometry still sit over finished plates and want the engraved treatment:
   §5.2 accepts a silhouette in plan, but the carry has a read-out and no figure (M3).
 - **The aperture's silhouette** still reads as a torn mount rather than prised boards — F13,
   deliberately deferred, with the regenerated plate now supplying the target shape.
+
+---
+
+## Human playtest, 2026-07-30 — the gate this report left open, and it failed
+
+The two judgements this report kept saying needed a person have now had one. The repository
+owner played the slice and reported, verbatim:
+
+> 我试玩了 Frankenstein 完全不明白这个游戏的设计，也完全玩不明白。
+
+Two separate failures in one sentence, and they are the two the report itself named:
+
+- **Comprehension of the design** — what the game is *about* did not come across.
+- **Onboarding** — how to play did not come across either; the player could not operate it.
+
+This is a `blocker` for shipping as an example, and the example was **shelved rather than
+released**: the merge that added it to `main` was reverted the same day, and this branch is
+where the work is kept. Nothing here is deleted and nothing here is broken — every automated
+gate is still green at both speeds (333/333). That is exactly the point worth recording:
+
+**A green suite proved the slice runs, completes and is internally consistent. It could not
+prove the slice is legible, and it did not.** The report was right to refuse `PASS` on machine
+evidence alone; what it under-weighted is that an example's whole job is to be understood by
+someone who did not build it, so an un-passed onboarding gate is not a loose end on an
+otherwise shippable thing — it is disqualifying for this particular use.
+
+### What a fix would have to attack, in order
+
+1. **The 23-second held cold open (F4).** It is the first thing a player meets and it asks for
+   an input no game has taught yet. It was already flagged twice — F4 as a design call, F19 as
+   a frozen picture — and round 6 fixed the picture but kept the demand. A first-time player
+   who does not hold the key sees nothing happen at all.
+2. **No statement of what you are or what you want.** The creature, the words, the firewood and
+   the door are never named to the player as a goal. §14's beat sheets assume the player already
+   knows the novel's chapters XI–XVI. The `onboarding.md` clean-context judgement that was never
+   run would have caught this — the test-design method's own rule about making a judge separate
+   "what the screen told me" from "what I already knew" was written for exactly this trap.
+3. **The read-outs are unlabelled.** Firing is a pile of courses, Words is a count of scratches,
+   the store is a number the player never sees. All three are diegetic by design and none is
+   legible without the design document.
+4. **The plan view reads as a diagram.** The yard is now engraved (F15) but the creature is a
+   disc, a cottager is a disc, and the load is an amber bar — the figures never became figures.
+
+None of that is a small patch, which is why this is shelved rather than fixed in place.
