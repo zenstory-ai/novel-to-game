@@ -18,7 +18,19 @@ EXPECTED_SKILLS = {
     "game-build",
     "game-qa",
 }
-EXPECTED_EXAMPLES = {"journey-to-the-west", "jin-ping-mei"}
+EXAMPLE_MANIFEST = "example.json"
+# 示例的原著结构因语言而异（回目写法、章数、覆盖节标题、引用格式），
+# 不能写死在校验器里，否则仓库结构上只容得下中文章回体原著。
+# 每个示例用 example.json 自述这些取值，校验器只校验「自述得对不对」。
+MANIFEST_REQUIRED = {"language", "source", "coverageHeading", "citationPattern"}
+SOURCE_REQUIRED = {"chapters", "headingPattern", "numeral"}
+NUMERAL_KINDS = {"chinese", "arabic", "roman"}
+# The orchestrator owns the pipeline-wide language rule; every downstream skill has to
+# restate it, because cross-skill links are rejected and skills must stay self-contained.
+ORCHESTRATOR_SKILL = "novel-to-game"
+OUTPUT_LANGUAGE_RULE = (
+    "产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。"
+)
 PLUGIN_MANIFESTS = {
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
@@ -30,6 +42,10 @@ EXAMPLE_PLANNING_FILES = {
     "design/GAME_DESIGN.md",
     "design/ART_DIRECTION.md",
     "build/BUILD_BRIEF.md",
+}
+# Allowed but not required — see the note at the comparison site.
+OPTIONAL_PLANNING_FILES = {
+    "analysis/_coverage.md",
 }
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")
@@ -53,6 +69,20 @@ CHINESE_DIGITS = {
 }
 
 
+def visible_directories(parent: Path) -> set[str]:
+    """Directory names under `parent`, skipping dotted agent/tooling state dirs.
+
+    `.omc/` and friends are gitignored but still present in a maintainer's working
+    copy, so enumerating raw `iterdir()` made the documented verification command
+    fail locally while CI (a clean checkout) stayed green.
+    """
+    return {
+        path.name
+        for path in parent.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
+    }
+
+
 def parse_frontmatter(text: str) -> dict[str, str]:
     match = FRONTMATTER_RE.match(text)
     if not match:
@@ -63,6 +93,26 @@ def parse_frontmatter(text: str) -> dict[str, str]:
         if field:
             values[field.group(1)] = field.group(2).strip().strip('"')
     return values
+
+
+ROMAN_VALUES = {"i": 1, "v": 5, "x": 10, "l": 50, "c": 100, "d": 500, "m": 1000}
+
+
+def parse_roman_number(value: str) -> int:
+    total, previous = 0, 0
+    for character in reversed(value.lower()):
+        current = ROMAN_VALUES[character]
+        total += current if current >= previous else -current
+        previous = max(previous, current)
+    return total
+
+
+def parse_numeral(value: str, kind: str) -> int:
+    if kind == "arabic":
+        return int(value)
+    if kind == "roman":
+        return parse_roman_number(value)
+    return parse_chinese_number(value)
 
 
 def parse_chinese_number(value: str) -> int:
@@ -85,16 +135,18 @@ def parse_chinese_number(value: str) -> int:
     return total + current
 
 
-def extract_chapters(source: Path) -> list[tuple[int, str, int]]:
+def extract_chapters(
+    source: Path, pattern: re.Pattern[str] | None = None, numeral: str = "chinese"
+) -> list[tuple[int, str, int]]:
+    heading = pattern or CHAPTER_HEADING_RE
     chapters: list[tuple[int, str, int]] = []
     for line_number, line in enumerate(
         source.read_text(encoding="utf-8").splitlines(), start=1
     ):
-        match = CHAPTER_HEADING_RE.match(line)
+        match = heading.match(line)
         if match:
-            chapters.append(
-                (parse_chinese_number(match.group(1)), match.group(2), line_number)
-            )
+            title = match.group(2) if match.lastindex and match.lastindex >= 2 else ""
+            chapters.append((parse_numeral(match.group(1), numeral), title, line_number))
     return chapters
 
 
@@ -108,9 +160,11 @@ def markdown_section(text: str, heading: str) -> str | None:
     return None
 
 
-def chapter_citation_coverage(text: str) -> set[int]:
+def chapter_citation_coverage(
+    text: str, pattern: re.Pattern[str] | None = None
+) -> set[int]:
     coverage: set[int] = set()
-    for match in CHAPTER_CITATION_RE.finditer(text):
+    for match in (pattern or CHAPTER_CITATION_RE).finditer(text):
         first = int(match.group(1))
         last = int(match.group(2) or first)
         if first <= last:
@@ -128,8 +182,15 @@ def validate_skill(skill_dir: Path) -> list[str]:
     frontmatter = parse_frontmatter(text)
     if frontmatter.get("name") != skill_dir.name:
         issues.append(f"{skill_dir.name}: frontmatter name does not match directory")
-    if not frontmatter.get("description"):
+    description = frontmatter.get("description")
+    if not description:
         issues.append(f"{skill_dir.name}: missing description")
+    elif not description[:1].isascii() or not description[:1].isalpha():
+        # The description is what an agent routes an English request against, and what a
+        # plugin directory shows as listing copy with no README_EN fallback.
+        issues.append(f"{skill_dir.name}: description must lead with English")
+    if skill_dir.name != ORCHESTRATOR_SKILL and OUTPUT_LANGUAGE_RULE not in text:
+        issues.append(f"{skill_dir.name}: missing the output-language rule")
     if "TODO" in text:
         issues.append(f"{skill_dir.name}: unresolved TODO")
 
@@ -162,8 +223,59 @@ def validate_skill(skill_dir: Path) -> list[str]:
     return issues
 
 
-def validate_example(example_dir: Path) -> list[str]:
+def read_manifest(example_dir: Path) -> tuple[dict[str, object] | None, list[str]]:
+    """读示例自述文件。返回 (manifest, issues)；manifest 为 None 表示不可用。"""
+    path = example_dir / EXAMPLE_MANIFEST
+    if not path.is_file():
+        return None, [f"{example_dir.name}: missing {EXAMPLE_MANIFEST}"]
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        return None, [f"{example_dir.name}/{EXAMPLE_MANIFEST}: invalid JSON: {error}"]
+    if not isinstance(manifest, dict):
+        return None, [f"{example_dir.name}/{EXAMPLE_MANIFEST}: must be an object"]
+
     issues: list[str] = []
+    missing = MANIFEST_REQUIRED - manifest.keys()
+    if missing:
+        issues.append(
+            f"{example_dir.name}/{EXAMPLE_MANIFEST}: missing {sorted(missing)}"
+        )
+    source = manifest.get("source")
+    if not isinstance(source, dict):
+        issues.append(f"{example_dir.name}/{EXAMPLE_MANIFEST}: source must be an object")
+    else:
+        source_missing = SOURCE_REQUIRED - source.keys()
+        if source_missing:
+            issues.append(
+                f"{example_dir.name}/{EXAMPLE_MANIFEST}: source missing {sorted(source_missing)}"
+            )
+        if source.get("numeral") not in NUMERAL_KINDS:
+            issues.append(
+                f"{example_dir.name}/{EXAMPLE_MANIFEST}: numeral must be one of {sorted(NUMERAL_KINDS)}"
+            )
+    for key in ("headingPattern",):
+        raw = (source or {}).get(key) if isinstance(source, dict) else None
+        if isinstance(raw, str):
+            try:
+                re.compile(raw)
+            except re.error as error:
+                issues.append(f"{example_dir.name}/{EXAMPLE_MANIFEST}: {key}: {error}")
+    raw_citation = manifest.get("citationPattern")
+    if isinstance(raw_citation, str):
+        try:
+            re.compile(raw_citation)
+        except re.error as error:
+            issues.append(
+                f"{example_dir.name}/{EXAMPLE_MANIFEST}: citationPattern: {error}"
+            )
+    return (None if issues else manifest), issues
+
+
+def validate_example(example_dir: Path) -> list[str]:
+    manifest, issues = read_manifest(example_dir)
+    if manifest is None:
+        return issues
     actual_planning_files = {
         path.relative_to(example_dir).as_posix()
         for directory in ("analysis", "concepts", "design", "build")
@@ -171,11 +283,16 @@ def validate_example(example_dir: Path) -> list[str]:
         for path in (example_dir / directory).iterdir()
         if path.is_file()
     }
-    if actual_planning_files != EXAMPLE_PLANNING_FILES:
+    # `analysis/_coverage.md` is required by the pipeline contract (minimal workspace,
+    # and "batch state lives in a self-contained analysis/_coverage.md"), but the two
+    # older examples predate that rule. Allow it without demanding it, so a compliant
+    # example is not rejected and a legacy one is not retroactively failed.
+    graded_planning_files = actual_planning_files - OPTIONAL_PLANNING_FILES
+    if graded_planning_files != EXAMPLE_PLANNING_FILES:
         issues.append(
             f"{example_dir.name}: planning artifact mismatch; "
-            f"missing={sorted(EXAMPLE_PLANNING_FILES - actual_planning_files)} "
-            f"extra={sorted(actual_planning_files - EXAMPLE_PLANNING_FILES)}"
+            f"missing={sorted(EXAMPLE_PLANNING_FILES - graded_planning_files)} "
+            f"extra={sorted(graded_planning_files - EXAMPLE_PLANNING_FILES)}"
         )
 
     source_dir = example_dir / "source"
@@ -186,11 +303,16 @@ def validate_example(example_dir: Path) -> list[str]:
         issues.append(f"{example_dir.name}: expected exactly one source text")
         return issues
 
-    chapters = extract_chapters(source_texts[0])
+    source_spec = manifest["source"]
+    expected_chapters = int(source_spec["chapters"])
+    heading = re.compile(str(source_spec["headingPattern"]))
+    numeral = str(source_spec["numeral"])
+    chapters = extract_chapters(source_texts[0], heading, numeral)
     chapter_numbers = [chapter[0] for chapter in chapters]
-    if chapter_numbers != list(range(1, 101)):
+    if chapter_numbers != list(range(1, expected_chapters + 1)):
         issues.append(
-            f"{example_dir.name}: source must contain consecutive chapters 1-100"
+            f"{example_dir.name}: source must contain consecutive chapters "
+            f"1-{expected_chapters}, found {len(chapter_numbers)}"
         )
         return issues
 
@@ -198,12 +320,13 @@ def validate_example(example_dir: Path) -> list[str]:
     source_bible = example_dir / "analysis/SOURCE_BIBLE.md"
     if source_bible.is_file():
         coverage_section = markdown_section(
-            source_bible.read_text(encoding="utf-8"), "全书覆盖"
+            source_bible.read_text(encoding="utf-8"), str(manifest["coverageHeading"])
         )
         if coverage_section is None:
             issues.append(f"{example_dir.name}: source bible missing full-book coverage")
         else:
-            coverage = chapter_citation_coverage(coverage_section)
+            citation = re.compile(str(manifest["citationPattern"]))
+            coverage = chapter_citation_coverage(coverage_section, citation)
             missing = known_chapters - coverage
             extra = coverage - known_chapters
             if missing or extra:
@@ -212,9 +335,16 @@ def validate_example(example_dir: Path) -> list[str]:
                     f"missing={sorted(missing)} extra={sorted(extra)}"
                 )
 
+    citation = re.compile(str(manifest["citationPattern"]))
+    # 引用格式随语言变。若 citationPattern 在整个示例的策划产物里一次都不匹配,
+    # 下面的逐条校验就会「真空通过」——保证悄悄消失而不是变红。这里只要求全例
+    # 至少命中一次(不要求每份文档都引章节:美术方向讲视觉，本来就不引)。
+    citation_hits = 0
     for relative_path in sorted(EXAMPLE_PLANNING_FILES & actual_planning_files):
         markdown = example_dir / relative_path
-        for match in CHAPTER_CITATION_RE.finditer(markdown.read_text(encoding="utf-8")):
+        body = markdown.read_text(encoding="utf-8")
+        citation_hits += len(citation.findall(body))
+        for match in citation.finditer(body):
             first = int(match.group(1))
             last = int(match.group(2) or first)
             if first > last or any(
@@ -224,6 +354,11 @@ def validate_example(example_dir: Path) -> list[str]:
                     f"{example_dir.name}: invalid chapter citation "
                     f"{match.group(0)} in {relative_path}"
                 )
+    if citation_hits == 0:
+        issues.append(
+            f"{example_dir.name}: citationPattern matches nothing in any planning "
+            f"artifact; the chapter-citation check would pass vacuously"
+        )
     return issues
 
 
@@ -322,7 +457,7 @@ def validate_repository(root: Path) -> list[str]:
             issues.append(f"repository: missing {required}")
 
     skills_root = root / "skills"
-    actual = {path.name for path in skills_root.iterdir() if path.is_dir()}
+    actual = visible_directories(skills_root)
     if actual != EXPECTED_SKILLS:
         issues.append(
             "repository: skill set mismatch; "
@@ -332,14 +467,10 @@ def validate_repository(root: Path) -> list[str]:
         issues.extend(validate_skill(skills_root / name))
 
     examples_root = root / "examples"
-    actual_examples = {path.name for path in examples_root.iterdir() if path.is_dir()}
-    if actual_examples != EXPECTED_EXAMPLES:
-        issues.append(
-            "repository: example set mismatch; "
-            f"missing={sorted(EXPECTED_EXAMPLES - actual_examples)} "
-            f"extra={sorted(actual_examples - EXPECTED_EXAMPLES)}"
-        )
-    for name in sorted(EXPECTED_EXAMPLES & actual_examples):
+    actual_examples = visible_directories(examples_root)
+    if not actual_examples:
+        issues.append("repository: no examples found")
+    for name in sorted(actual_examples):
         issues.extend(validate_example(examples_root / name))
 
     for json_file in root.rglob("*.json"):

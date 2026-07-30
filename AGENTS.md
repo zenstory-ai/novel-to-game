@@ -16,9 +16,20 @@ and reusable workflow knowledge, not a bundled game engine.
   dependencies; invoke another skill by name instead.
 - Do not bind the core design artifacts to Kimi, Claude, or one framework.
 - Keep provider comparisons out of runtime skills; model capabilities change.
-- Write runtime skills, references, and examples in Simplified Chinese. Keep
-  English only for literal filenames, commands, code fields, status/mode values,
-  and proper names. Keep `README.md` Chinese (the default) and `README_EN.md` English for SEO.
+- Language scope is bounded per surface, not global:
+  - **Skill bodies and `references/`**: Simplified Chinese, always. This is prose the
+    agent reads at runtime; keeping it in one language avoids a bilingual layer that
+    would have to be kept in sync through every contract refactor.
+  - **Frontmatter `description`, the four plugin manifests, and `agents/openai.yaml`
+    interface fields**: English first, Chinese after. These are what an agent routes an
+    English request against and what a plugin directory shows as listing copy with no
+    README fallback. `scripts/validate_repo.py` enforces the English-first rule.
+  - **Examples**: each example declares its own artifact language in its
+    `example.json`, and its planning artifacts, source provenance and in-game UI text
+    follow that declaration. `tests/test_validate_repo.py` only requires Chinese
+    headings for examples that declare a `zh*` language.
+  - **README**: `README.md` Chinese (the default), `README_EN.md` English, both kept
+    structurally identical.
 - Treat repository language and generated-project language separately. Accept
   novels in any language; generated artifacts follow the user's requested
   language, or the conversation language when unspecified. Do not duplicate

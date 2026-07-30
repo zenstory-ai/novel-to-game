@@ -1,0 +1,11 @@
+{
+  "language": "zh-Hans",
+  "title": "西游记 · 三借芭蕉扇",
+  "source": {
+    "chapters": 100,
+    "headingPattern": "^\\s*第([〇零○一二三四五六七八九十百]+)回\\s+(.+?)\\s*$",
+    "numeral": "chinese"
+  },
+  "coverageHeading": "全书覆盖",
+  "citationPattern": "第(\\d{1,3})(?:\\s*[-–—至]\\s*(\\d{1,3}))?回"
+}

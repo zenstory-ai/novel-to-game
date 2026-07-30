@@ -12,17 +12,24 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from validate_repo import (  # noqa: E402
+    EXAMPLE_MANIFEST,
     EXAMPLE_PLANNING_FILES,
-    EXPECTED_EXAMPLES,
+    OPTIONAL_PLANNING_FILES,
     EXPECTED_SKILLS,
+    ORCHESTRATOR_SKILL,
+    OUTPUT_LANGUAGE_RULE,
     PLUGIN_MANIFESTS,
     chapter_citation_coverage,
     extract_chapters,
     manifest_skill_root,
     markdown_section,
+    parse_frontmatter,
+    parse_numeral,
+    read_manifest,
     validate_example,
     validate_repository,
     validate_skill,
+    visible_directories,
 )
 
 
@@ -94,33 +101,46 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertEqual(link.resolve().parent, (ROOT / "skills").resolve())
 
     def test_examples_use_compact_planning_artifacts(self) -> None:
-        example_directories = {
-            path.name for path in (ROOT / "examples").iterdir() if path.is_dir()
-        }
-        self.assertEqual(example_directories, EXPECTED_EXAMPLES)
+        examples = visible_directories(ROOT / "examples")
+        self.assertTrue(examples, "no examples found")
 
-        for name in sorted(EXPECTED_EXAMPLES):
+        for name in sorted(examples):
             example = ROOT / "examples" / name
             with self.subTest(example=name):
+                # 逐个目录判存在:缺目录是"这个阶段还没跑"的正常中间态,应当汇报成
+                # 缺哪几份文件,而不是让 iterdir 抛 FileNotFoundError——那条报错既不
+                # 说明缺什么,也盖住了同一个示例其他目录的问题。
                 actual = {
                     path.relative_to(example).as_posix()
                     for directory in ("analysis", "concepts", "design", "build")
+                    if (example / directory).is_dir()
                     for path in (example / directory).iterdir()
                     if path.is_file()
                 }
-                self.assertEqual(actual, EXAMPLE_PLANNING_FILES)
+                # `analysis/_coverage.md` is contract-required but the two older
+                # examples predate the rule: allowed, not demanded.
+                self.assertEqual(actual - OPTIONAL_PLANNING_FILES, EXAMPLE_PLANNING_FILES)
 
     def test_example_source_and_citations_are_structurally_valid(self) -> None:
-        for name in sorted(EXPECTED_EXAMPLES):
+        for name in sorted(visible_directories(ROOT / "examples")):
             example = ROOT / "examples" / name
             with self.subTest(example=name):
+                manifest, issues = read_manifest(example)
+                self.assertEqual(issues, [])
+                spec = manifest["source"]
                 source = next((example / "source").glob("*.txt"))
-                chapters = extract_chapters(source)
+                chapters = extract_chapters(
+                    source, re.compile(spec["headingPattern"]), spec["numeral"]
+                )
 
                 self.assertEqual(
-                    [chapter[0] for chapter in chapters], list(range(1, 101))
+                    [chapter[0] for chapter in chapters],
+                    list(range(1, int(spec["chapters"]) + 1)),
                 )
-                self.assertTrue(all(chapter[1].strip() for chapter in chapters))
+                # 回目标题是章回体的惯例，不是通例：英文原著常见「Chapter 5」无标题。
+                # 只有当 headingPattern 显式捕获了标题组时才要求每章有标题。
+                if re.compile(spec["headingPattern"]).groups >= 2:
+                    self.assertTrue(all(chapter[1].strip() for chapter in chapters))
                 self.assertEqual(
                     [chapter[2] for chapter in chapters],
                     sorted(chapter[2] for chapter in chapters),
@@ -128,25 +148,164 @@ class RepositoryValidationTests(unittest.TestCase):
                 self.assertEqual(validate_example(example), [])
 
     def test_example_source_bible_accounts_for_every_source_chapter(self) -> None:
-        for name in sorted(EXPECTED_EXAMPLES):
+        for name in sorted(visible_directories(ROOT / "examples")):
             example = ROOT / "examples" / name
             with self.subTest(example=name):
+                manifest, issues = read_manifest(example)
+                self.assertEqual(issues, [])
+                spec = manifest["source"]
                 source = next((example / "source").glob("*.txt"))
-                known_chapters = {number for number, _, _ in extract_chapters(source)}
+                known_chapters = {
+                    number
+                    for number, _, _ in extract_chapters(
+                        source, re.compile(spec["headingPattern"]), spec["numeral"]
+                    )
+                }
                 source_bible = (example / "analysis/SOURCE_BIBLE.md").read_text(
                     encoding="utf-8"
                 )
 
-                coverage_section = markdown_section(source_bible, "全书覆盖")
+                coverage_section = markdown_section(
+                    source_bible, manifest["coverageHeading"]
+                )
                 self.assertIsNotNone(coverage_section)
                 self.assertEqual(
-                    chapter_citation_coverage(coverage_section or ""), known_chapters
+                    chapter_citation_coverage(
+                        coverage_section or "", re.compile(manifest["citationPattern"])
+                    ),
+                    known_chapters,
                 )
 
-    def test_runtime_markdown_headings_use_chinese(self) -> None:
+    def test_numeral_parsing_covers_every_declared_kind(self) -> None:
+        self.assertEqual(parse_numeral("一百", "chinese"), 100)
+        self.assertEqual(parse_numeral("三十七", "chinese"), 37)
+        self.assertEqual(parse_numeral("24", "arabic"), 24)
+        self.assertEqual(parse_numeral("XXIV", "roman"), 24)
+        self.assertEqual(parse_numeral("iv", "roman"), 4)
+
+    def test_manifest_validator_rejects_a_bad_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            example = Path(temporary) / "demo"
+            example.mkdir()
+            self.assertTrue(any(EXAMPLE_MANIFEST in issue for issue in read_manifest(example)[1]))
+            (example / EXAMPLE_MANIFEST).write_text("{not json", encoding="utf-8")
+            self.assertTrue(any("invalid JSON" in issue for issue in read_manifest(example)[1]))
+            (example / EXAMPLE_MANIFEST).write_text(
+                json.dumps({
+                    "language": "en",
+                    "source": {"chapters": 24, "headingPattern": "^Chapter ([0-9]+)$", "numeral": "hex"},
+                    "coverageHeading": "Full-book coverage",
+                    "citationPattern": "chapter ([0-9]+)",
+                }),
+                encoding="utf-8",
+            )
+            self.assertTrue(any("numeral must be one of" in issue for issue in read_manifest(example)[1]))
+            (example / EXAMPLE_MANIFEST).write_text(
+                json.dumps({
+                    "language": "en",
+                    "source": {"chapters": 24, "headingPattern": "^Chapter ([0-9+$", "numeral": "arabic"},
+                    "coverageHeading": "Full-book coverage",
+                    "citationPattern": "chapter ([0-9]+)",
+                }),
+                encoding="utf-8",
+            )
+            self.assertTrue(any("headingPattern" in issue for issue in read_manifest(example)[1]))
+
+    def test_visible_directories_skips_agent_state_dirs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "journey-to-the-west").mkdir()
+            (root / ".omc").mkdir()
+            (root / "notes.md").write_text("", encoding="utf-8")
+            self.assertEqual(visible_directories(root), {"journey-to-the-west"})
+
+    def test_every_skill_description_leads_with_english(self) -> None:
+        for name in sorted(EXPECTED_SKILLS):
+            with self.subTest(skill=name):
+                description = parse_frontmatter(
+                    (ROOT / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
+                )["description"]
+                self.assertTrue(
+                    description[0].isascii() and description[0].isalpha(),
+                    f"{name}: description must lead with English, got {description[:24]!r}",
+                )
+
+    def test_downstream_skills_restate_the_output_language_rule(self) -> None:
+        for name in sorted(EXPECTED_SKILLS - {ORCHESTRATOR_SKILL}):
+            with self.subTest(skill=name):
+                body = (ROOT / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
+                self.assertIn(OUTPUT_LANGUAGE_RULE, body)
+
+    def test_plugin_manifest_descriptions_lead_with_english(self) -> None:
+        for relative_path in sorted(PLUGIN_MANIFESTS):
+            with self.subTest(manifest=relative_path):
+                manifest = json.loads(
+                    (ROOT / relative_path).read_text(encoding="utf-8")
+                )
+                self.assertTrue(manifest["description"][0].isascii())
+
+        marketplace = json.loads(
+            (ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8")
+        )
+        self.assertTrue(marketplace["metadata"]["description"][0].isascii())
+        self.assertTrue(marketplace["plugins"][0]["description"][0].isascii())
+
+    def test_skill_validator_rejects_chinese_first_description(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            skill = Path(temporary) / "demo"
+            (skill / "agents").mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                f"---\nname: demo\ndescription: \u4e2d\u6587\u5f00\u5934\u7684\u63cf\u8ff0\n---\n"
+                f"# Demo\n\n{OUTPUT_LANGUAGE_RULE}\n",
+                encoding="utf-8",
+            )
+            (skill / "agents/openai.yaml").write_text(
+                'interface:\n  default_prompt: "Use $demo."\n', encoding="utf-8"
+            )
+            self.assertTrue(
+                any(
+                    "description must lead with English" in issue
+                    for issue in validate_skill(skill)
+                )
+            )
+
+    def test_skill_validator_rejects_missing_output_language_rule(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            skill = Path(temporary) / "demo"
+            (skill / "agents").mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "---\nname: demo\ndescription: An English-first description.\n---\n"
+                "# Demo\n\n\u6ca1\u6709\u8bed\u8a00\u89c4\u5219\u3002\n",
+                encoding="utf-8",
+            )
+            (skill / "agents/openai.yaml").write_text(
+                'interface:\n  default_prompt: "Use $demo."\n', encoding="utf-8"
+            )
+            self.assertTrue(
+                any(
+                    "missing the output-language rule" in issue
+                    for issue in validate_skill(skill)
+                )
+            )
+
+    def test_runtime_markdown_headings_match_the_declared_language(self) -> None:
+        """\u6280\u80fd\u4e0e references \u6052\u4e3a\u7b80\u4f53\u4e2d\u6587\uff1b\u793a\u4f8b\u6309\u81ea\u5df1 manifest \u58f0\u660e\u7684\u8bed\u8a00\u5224\u3002"""
         cjk = re.compile(r"[\u3400-\u9fff]")
-        markdown_files = list((ROOT / "skills").rglob("*.md"))
-        markdown_files.extend((ROOT / "examples").rglob("*.md"))
+        markdown_files = [
+            path
+            for path in (ROOT / "skills").rglob("*.md")
+            if not any(part.startswith(".") for part in path.relative_to(ROOT).parts)
+        ]
+        for name in sorted(visible_directories(ROOT / "examples")):
+            manifest, issues = read_manifest(ROOT / "examples" / name)
+            self.assertEqual(issues, [])
+            if not str(manifest["language"]).startswith("zh"):
+                continue
+            markdown_files.extend(
+                path
+                for path in (ROOT / "examples" / name).rglob("*.md")
+                if not any(part.startswith(".") for part in path.relative_to(ROOT).parts)
+            )
 
         violations: list[str] = []
         for markdown in markdown_files:
