@@ -1,0 +1,11 @@
+{
+  "language": "en",
+  "title": "Frankenstein; or, The Modern Prometheus",
+  "source": {
+    "chapters": 24,
+    "headingPattern": "^Chapter (\\d{1,2})\\s*$",
+    "numeral": "arabic"
+  },
+  "coverageHeading": "Full-book coverage",
+  "citationPattern": "[Cc]hapter (\\d{1,3})(?:\\s*(?:[-–—]|to)\\s*(\\d{1,3}))?"
+}

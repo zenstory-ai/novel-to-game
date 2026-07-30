@@ -1,0 +1,665 @@
+{
+  "url": "http://127.0.0.1:5199/?seed=42",
+  "normal_speed_run": true,
+  "viewport": "1280x800",
+  "partial": false,
+  "passes_run": "all",
+  "passed": 333,
+  "failed": 0,
+  "console_errors": [],
+  "network_errors": [],
+  "request_hosts": [
+    "127.0.0.1:5199"
+  ],
+  "external_hosts": [],
+  "frame_ms": {
+    "keyboard_title": {
+      "p50": 8.3,
+      "p95": 9.6,
+      "max": 10.4,
+      "n": 90
+    },
+    "keyboard_playing": {
+      "p50": 8.3,
+      "p95": 9.1,
+      "max": 10.4,
+      "n": 90
+    },
+    "mouse_title": {
+      "p50": 8.3,
+      "p95": 9.4,
+      "max": 10.1,
+      "n": 90
+    },
+    "mouse_playing": {
+      "p50": 8.3,
+      "p95": 9.5,
+      "max": 10.3,
+      "n": 90
+    }
+  },
+  "frame_floor_ms": 33.4,
+  "stall_gate_ms": 200.0,
+  "longtasks_over_50ms": [],
+  "build_bytes": 1640343,
+  "shots": 51,
+  "shots_dir": "qa/evidence/browser",
+  "run": {
+    "keyboard": {
+      "title_shot": "01_keyboard_title.jpg",
+      "cold_open_shot": "02_keyboard_cold_open.jpg",
+      "cold_open_seconds": 23.2,
+      "playing_shot": "03_keyboard_playing.jpg",
+      "state_changed": [
+        "minute"
+      ],
+      "night_reached": 1,
+      "restart_shot": "04_keyboard_restart.jpg"
+    },
+    "mouse": {
+      "title_shot": "05_mouse_title.jpg",
+      "title_button_shot": "06_mouseclick_title_button.jpg",
+      "cold_open_shot": "07_mouse_cold_open.jpg",
+      "cold_open_seconds": 23.2,
+      "playing_shot": "08_mouse_playing.jpg",
+      "state_changed": [
+        "minute"
+      ],
+      "night_reached": 1,
+      "restart_shot": "09_mouse_restart.jpg"
+    },
+    "campaign": {
+      "plan": "listen n1-2; carry n3; lesson+carry n4; lesson n5-7; walk day 8 (5 slots); five exchanges; epilogue; restart",
+      "words_after_n1": 14,
+      "words_after_n2": 22,
+      "yard_probe": {
+        "cottage_wall": {
+          "unique": 49,
+          "var": 2199.7
+        },
+        "wood_edge": {
+          "unique": 418,
+          "var": 1193.6
+        },
+        "milkhouse": {
+          "unique": 136,
+          "var": 3500.1
+        },
+        "woodpile": {
+          "unique": 157,
+          "var": 3404
+        },
+        "cottage_interior": {
+          "unique": 1,
+          "var": 0
+        },
+        "open_ground": {
+          "unique": 8,
+          "var": 0.7
+        },
+        "cones": 0
+      },
+      "yard_shot": "10_campaign_yard_plate.jpg",
+      "n3_carry_shot": "11_campaign_n3_carry.jpg",
+      "hovel_f1_shot": "12_campaign_hovel_firing1.jpg",
+      "lesson_mint_shot": "13_campaign_lesson_mint.jpg",
+      "n4_carry_shot": "14_campaign_n4_carry.jpg",
+      "hovel_f2_shot": "15_campaign_hovel_firing2.jpg",
+      "hovel_dawn_shot": "16_campaign_hovel_dawn.jpg",
+      "hovel_probe": {
+        "slot": {
+          "unique": 638,
+          "var": 471.2
+        },
+        "plank": {
+          "unique": 145,
+          "var": 1111.6
+        },
+        "bundle": {
+          "unique": 197,
+          "var": 773.2
+        },
+        "straw_slot": {
+          "unique": 1776,
+          "var": 689.9
+        },
+        "straw_plank": {
+          "unique": 15767,
+          "var": 1621.9
+        },
+        "straw_bundle": {
+          "unique": 648,
+          "var": 611.8
+        }
+      },
+      "hovel_shot": "17_campaign_hovel_night.jpg",
+      "aperture_probe": {
+        "bottom": {
+          "n": 69,
+          "var": 20.91,
+          "min": 410,
+          "max": 434
+        },
+        "left": {
+          "n": 19,
+          "var": 1.41,
+          "min": 174,
+          "max": 180
+        },
+        "right": {
+          "n": 42,
+          "var": 36.71,
+          "min": 553,
+          "max": 575
+        },
+        "bandTop": {
+          "n": 234,
+          "var": 0,
+          "min": 705,
+          "max": 705
+        }
+      },
+      "aperture_shot": "18_campaign_hovel_aperture.jpg",
+      "nights_completed": 7,
+      "words_at_walk": 100,
+      "walk_shot": "19_campaign_walk.jpg",
+      "door_shot": "20_campaign_door.jpg",
+      "ending": "door",
+      "exchanges": 5,
+      "epilogue_model": {
+        "ending": "door",
+        "exchange5": true,
+        "exchanges": 5,
+        "nothingPutBy": false,
+        "journal": false,
+        "satUp": false,
+        "beds": 1,
+        "storeAtFlight": 3,
+        "firingAtFlight": 1,
+        "fewLessons": false,
+        "seenBy": null,
+        "seenContext": null
+      },
+      "epilogue_shot": "21_campaign_epilogue.jpg",
+      "darkday_shot": "22_campaign_darkday.jpg",
+      "moonset_shot": "23_campaign_moonset.jpg",
+      "afterrun_shot": "24_campaign_afterrun.jpg",
+      "restart_shot": "25_campaign_restart.jpg",
+      "completed": true
+    },
+    "mouse_campaign": {
+      "plan": "as [campaign], but no keyboard input anywhere; hotspots carry the context actions (walk-and-act on arrival)",
+      "title_button_shot": "26_mousecampaign_title_button.jpg",
+      "words_after_n1": 14,
+      "words_after_n2": 22,
+      "move_shot": "27_mouseclick_yard_move.jpg",
+      "n3_carry_shot": "28_mousecampaign_n3_carry.jpg",
+      "n4_carry_shot": "29_mousecampaign_n4_carry.jpg",
+      "nights_completed": 7,
+      "words_at_walk": 100,
+      "walk_shot": "30_mousecampaign_walk.jpg",
+      "door_shot": "31_mousecampaign_door.jpg",
+      "ending": "door",
+      "exchanges": 5,
+      "epilogue_shot": "32_mousecampaign_epilogue.jpg",
+      "afterrun_shot": "33_mousecampaign_afterrun.jpg",
+      "restart_shot": "34_mousecampaign_restart.jpg",
+      "completed": true
+    },
+    "seen": {
+      "plan": "night 1: step out of the mouth, stand still; Agatha's retiring patrol sees the creature at minute ~= 1.38",
+      "freeze_shot": "35_seen_freeze.jpg",
+      "card_shot": "36_seen_card.jpg",
+      "completed": true
+    },
+    "want": {
+      "plan": "one milk-house take per night, nights 1-5: store 4,2,0,0,0; zeroStoreRun 3 at dawn 6 -> the family is gone (want)",
+      "nights_completed": 5,
+      "ending": "want",
+      "gone_shot": "37_want_gone_card.jpg",
+      "epilogue_model": {
+        "ending": "want",
+        "exchange5": false,
+        "exchanges": 0,
+        "nothingPutBy": true,
+        "journal": false,
+        "satUp": false,
+        "beds": 0,
+        "storeAtFlight": 0,
+        "firingAtFlight": 0,
+        "fewLessons": true,
+        "seenBy": null,
+        "seenContext": null
+      },
+      "afterrun_shot": "38_want_afterrun.jpg",
+      "restart_shot": "39_want_restart.jpg",
+      "completed": true
+    },
+    "silence": {
+      "plan": "take n1 (store 1 at dawn 6 -> the errand walk, day 9, two slots); wait out n2-8 inside; knock in the 15-30 s band (words 0 -> one slot); never answer: the 30 s clock runs out at index 0",
+      "nights_completed": 8,
+      "door_shot": "40_silence_door.jpg",
+      "ending": "silence",
+      "exchanges": 0,
+      "epilogue_model": {
+        "ending": "silence",
+        "exchange5": false,
+        "exchanges": 0,
+        "nothingPutBy": false,
+        "journal": false,
+        "satUp": false,
+        "beds": 0,
+        "storeAtFlight": 1,
+        "firingAtFlight": 0,
+        "fewLessons": true,
+        "seenBy": null,
+        "seenContext": null
+      },
+      "afterrun_shot": "41_silence_afterrun.jpg",
+      "restart_shot": "42_silence_restart.jpg",
+      "completed": true
+    },
+    "card_layout": {
+      "layout": {
+        "checked": 2898,
+        "nStrings": 229,
+        "wide": [],
+        "tall": [],
+        "overChars": [],
+        "smallPx": [],
+        "badLead": [],
+        "badAlign": [],
+        "under": [],
+        "heavy": [
+          {
+            "first": "At dawn, two men stood in the lane. The othe",
+            "logical": 4,
+            "buttons": 1,
+            "scales": {
+              "1": {
+                "px": 15,
+                "nLines": 8,
+                "maxChars": 60
+              },
+              "1.25": {
+                "px": 21,
+                "nLines": 8,
+                "maxChars": 60
+              },
+              "1.5": {
+                "px": 26,
+                "nLines": 8,
+                "maxChars": 60
+              }
+            }
+          },
+          {
+            "first": "At dawn, two men stood in the lane. The othe",
+            "logical": 4,
+            "buttons": 1,
+            "scales": {
+              "1": {
+                "px": 15,
+                "nLines": 8,
+                "maxChars": 58
+              },
+              "1.25": {
+                "px": 21,
+                "nLines": 8,
+                "maxChars": 58
+              },
+              "1.5": {
+                "px": 26,
+                "nLines": 8,
+                "maxChars": 58
+              }
+            }
+          },
+          {
+            "first": "At dawn, two men stood in the lane. The othe",
+            "logical": 4,
+            "buttons": 0,
+            "scales": {
+              "1": {
+                "px": 20,
+                "nLines": 8,
+                "maxChars": 60
+              },
+              "1.25": {
+                "px": 25,
+                "nLines": 8,
+                "maxChars": 60
+              },
+              "1.5": {
+                "px": 30,
+                "nLines": 8,
+                "maxChars": 60
+              }
+            }
+          },
+          {
+            "first": "At dawn, two men stood in the lane. The othe",
+            "logical": 4,
+            "buttons": 0,
+            "scales": {
+              "1": {
+                "px": 20,
+                "nLines": 8,
+                "maxChars": 58
+              },
+              "1.25": {
+                "px": 25,
+                "nLines": 8,
+                "maxChars": 58
+              },
+              "1.5": {
+                "px": 30,
+                "nLines": 8,
+                "maxChars": 58
+              }
+            }
+          },
+          {
+            "first": "Sound and text",
+            "logical": 7,
+            "buttons": 1,
+            "scales": {
+              "1": {
+                "px": 17,
+                "nLines": 7,
+                "maxChars": 25
+              },
+              "1.25": {
+                "px": 23,
+                "nLines": 7,
+                "maxChars": 25
+              },
+              "1.5": {
+                "px": 30,
+                "nLines": 7,
+                "maxChars": 25
+              }
+            }
+          },
+          {
+            "first": "Sound and text",
+            "logical": 7,
+            "buttons": 1,
+            "scales": {
+              "1": {
+                "px": 17,
+                "nLines": 7,
+                "maxChars": 25
+              },
+              "1.25": {
+                "px": 23,
+                "nLines": 7,
+                "maxChars": 25
+              },
+              "1.5": {
+                "px": 30,
+                "nLines": 7,
+                "maxChars": 25
+              }
+            }
+          }
+        ],
+        "shrunk": [
+          {
+            "scale": 1,
+            "shrink": 0.78,
+            "px": 17,
+            "logical": 7,
+            "buttons": 1,
+            "first": "Sound and text"
+          },
+          {
+            "scale": 1.25,
+            "shrink": 0.85,
+            "px": 23,
+            "logical": 7,
+            "buttons": 1,
+            "first": "Sound and text"
+          },
+          {
+            "scale": 1.5,
+            "shrink": 0.92,
+            "px": 30,
+            "logical": 7,
+            "buttons": 1,
+            "first": "Sound and text"
+          },
+          {
+            "scale": 1,
+            "shrink": 0.92,
+            "px": 20,
+            "logical": 4,
+            "buttons": 0,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1.25,
+            "shrink": 0.92,
+            "px": 25,
+            "logical": 4,
+            "buttons": 0,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1.5,
+            "shrink": 0.92,
+            "px": 30,
+            "logical": 4,
+            "buttons": 0,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1,
+            "shrink": 0.66,
+            "px": 15,
+            "logical": 4,
+            "buttons": 1,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1.25,
+            "shrink": 0.78,
+            "px": 21,
+            "logical": 4,
+            "buttons": 1,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1.5,
+            "shrink": 0.78,
+            "px": 26,
+            "logical": 4,
+            "buttons": 1,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1,
+            "shrink": 0.85,
+            "px": 19,
+            "logical": 3,
+            "buttons": 1,
+            "first": "At dawn, two men stood in the lane. The othe"
+          },
+          {
+            "scale": 1.25,
+            "shrink": 0.92,
+            "px": 25,
+            "logical": 3,
+            "buttons": 1,
+            "first": "At dawn, two men stood in the lane. The othe"
+          }
+        ]
+      },
+      "about_shot": "43_card_about.jpg",
+      "options_shot": "44_card_options_scale125.jpg",
+      "completed": true
+    },
+    "epilogue_textscale": {
+      "shot_scale1": "45_epilogue_textscale1.jpg",
+      "shot_scale1.5": "46_epilogue_textscale1.5.jpg",
+      "layouts": {
+        "1": {
+          "px": 22,
+          "pxTitle": 30,
+          "lines": 6,
+          "maxChars": 57,
+          "align": "left",
+          "paperW": 717,
+          "bottom": 491,
+          "limit": 540
+        },
+        "1.5": {
+          "px": 33,
+          "pxTitle": 45,
+          "lines": 6,
+          "maxChars": 60,
+          "align": "left",
+          "paperW": 1075,
+          "bottom": 527,
+          "limit": 620
+        }
+      },
+      "completed": true
+    },
+    "fonts": {
+      "measure": {
+        "checkText": true,
+        "checkDisp": true,
+        "pending": [],
+        "body": "hold to keep watching · lift the plank",
+        "disp": "Frankenstein; or, The Modern Prometheus",
+        "textW": 345.3997497558594,
+        "textGeoW": 321.416015625,
+        "dispW": 472.9197082519531,
+        "dispGeoW": 567.0849609375,
+        "textOnDisp": 607.73974609375,
+        "dispOnText": 267.07965087890625
+      },
+      "title_shot": "47_fonts_title.jpg",
+      "prompt_shot": "48_fonts_coldopen_prompt.jpg",
+      "completed": true
+    },
+    "audio": {
+      "plan": "register + offline renders (no input); the sound switch; then nights 1-5: clear the path n1, a garden print and the first carry n2, the taper n3 (waited out inside), the second carry n4, the thaw and the sty n5 -> every gated key from real state",
+      "pending": [],
+      "context_before_input": "suspended",
+      "renders": {
+        "footfall/snow": {
+          "rms": 0.0017511626073515691,
+          "peak": 0.02780964784324169,
+          "hf900": 0.0009932528688925985,
+          "samples": 26460
+        },
+        "footfall/path": {
+          "rms": 0.0015929249485159612,
+          "peak": 0.038232091814279556,
+          "hf900": 0.001238304548330557,
+          "samples": 26460
+        },
+        "footfall/earth": {
+          "rms": 0.00087928096180643,
+          "peak": 0.013799362815916538,
+          "hf900": 0.0004558428955089268,
+          "samples": 26460
+        },
+        "footfall/straw": {
+          "rms": 0.0009339632527216127,
+          "peak": 0.019588889554142952,
+          "hf900": 0.0007801255062959189,
+          "samples": 26460
+        },
+        "load-down": {
+          "rms": 0.017393855115703544,
+          "peak": 0.2900618314743042,
+          "hf900": 0.0049505832865994834,
+          "samples": 52920
+        },
+        "latch": {
+          "rms": 0.021385072675283338,
+          "peak": 0.2600450813770294,
+          "hf900": 0.0072094436407151834,
+          "samples": 26460
+        },
+        "hearth/small": {
+          "rms": 0.006200418853669055,
+          "peak": 0.029265448451042175,
+          "hf900": 0.0034602724318786643,
+          "samples": 110250
+        },
+        "hearth/high": {
+          "rms": 0.01512176712508535,
+          "peak": 0.07131992280483246,
+          "hf900": 0.008457436215928918,
+          "samples": 110250
+        },
+        "taper-strike": {
+          "rms": 0.005880384372183502,
+          "peak": 0.05374464765191078,
+          "hf900": 0.004249497234068729,
+          "samples": 44100
+        },
+        "dawn-bird": {
+          "rms": 0.03738707831628059,
+          "peak": 0.3058464825153351,
+          "hf900": 0.024308861661376996,
+          "samples": 88200
+        },
+        "wind": {
+          "rms": 0.006043444883971927,
+          "peak": 0.024921884760260582,
+          "hf900": 0.0018452498150136759,
+          "samples": 132300
+        },
+        "guitar": {
+          "rms": 0.05522366273029564,
+          "peak": 0.27002424001693726,
+          "hf900": 0.02570507529338174,
+          "samples": 330750
+        },
+        "wind/l2up": {
+          "rms": 0.027847738927122365,
+          "peak": 0.10923892259597778,
+          "hf900": 0.021503868194289885,
+          "samples": 132300
+        },
+        "wind/l2down": {
+          "rms": 0.006043444883971927,
+          "peak": 0.024921884760260582,
+          "hf900": 0.0018452498150136759,
+          "samples": 132300
+        },
+        "off": {
+          "rms": 0,
+          "peak": 0,
+          "hf900": 0,
+          "samples": 26460
+        },
+        "offBed": {
+          "rms": 0,
+          "peak": 0,
+          "hf900": 0,
+          "samples": 88200
+        },
+        "missing": {
+          "rms": 0,
+          "peak": 0,
+          "hf900": 0,
+          "samples": 26460
+        },
+        "taperYard": {
+          "rms": 0.013260636379049895,
+          "peak": 0.18485130369663239,
+          "hf900": 0.011272294651326212,
+          "samples": 44100
+        }
+      },
+      "audio_n4_carry_shot": "49_campaign_audio_n4_carry.jpg",
+      "completed": true
+    }
+  }
+}
