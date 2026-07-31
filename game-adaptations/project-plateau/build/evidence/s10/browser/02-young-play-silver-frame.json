@@ -1,0 +1,18 @@
+{
+  "inputs": [
+    "Right Mouse",
+    "Left Mouse",
+    "live commitment"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "visionMode": "full-colour",
+  "url": "http://127.0.0.1:4173/?qa=s10",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785532467058
+}

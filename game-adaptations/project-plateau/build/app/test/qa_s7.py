@@ -126,7 +126,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s7", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         page.wait_for_function("window.__projectPlateau.snapshot().firstRenderedAt !== null")
-        assert page.evaluate("window.__projectPlateau.stage") in {"s7-lifecycle", "s8-input-paths", "s9-living-plates"}
+        assert page.evaluate("window.__projectPlateau.stage") in {"s7-lifecycle", "s8-input-paths", "s9-living-plates", "s10-glade-clarity"}
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)

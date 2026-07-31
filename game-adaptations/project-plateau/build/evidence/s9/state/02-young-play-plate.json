@@ -1,5 +1,5 @@
 {
-  "stage": "s9-living-plates",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 12.884,
+    "elapsedSeconds": 12.895,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -39,7 +39,7 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.009699999809265137,
+    "attackSeconds": 0.009799999952316283,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 167.116,
+    "remainingLight": 167.105,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -110,8 +110,8 @@
     "response": "orbit",
     "position": {
       "x": 4.94,
-      "y": 10.04,
-      "z": -14.4
+      "y": 9.97,
+      "z": -14.36
     }
   },
   "familyVisual": {
@@ -158,6 +158,12 @@
       ],
       "branchPresent": true,
       "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -178,77 +184,77 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.197
+        "at": 0.181
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.203
+        "at": 0.192
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.293
+        "at": 0.277
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.288
+        "at": 2.272
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.288
+        "at": 2.272
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.464
+        "at": 2.448
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.549
+        "at": 2.533
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.539
+        "at": 4.523
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.539
+        "at": 4.523
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.613
+        "at": 10.608
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.699
+        "at": 10.693
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.704
+        "at": 10.699
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.789
+        "at": 10.784
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 12.784
+        "at": 12.779
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 12.789
+        "at": 12.779
       }
     ]
   },
@@ -275,22 +281,22 @@
       true,
       false
     ],
-    "fieldNote": "The young keep close while the adults feed.",
+    "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": true,
     "caption": "[glass plate seats in its case]",
     "lightWatch": 168,
     "terminal": null
   },
-  "sceneChildren": 26,
-  "calls": 107,
-  "triangles": 27010,
-  "textures": 1,
-  "geometries": 84,
+  "sceneChildren": 30,
+  "calls": 249,
+  "triangles": 49482,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 210.09999990463257,
+  "firstRenderedAt": 169.20000004768372,
   "recentMedianFrameMs": 8.3
 }

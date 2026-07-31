@@ -86,7 +86,7 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s9", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") == "s9-living-plates"
+        assert page.evaluate("window.__projectPlateau.stage") in {"s9-living-plates", "s10-glade-clarity"}
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)

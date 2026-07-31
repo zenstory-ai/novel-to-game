@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    "Chromium achromatopsia",
+    "F raised rifle"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "visionMode": "achromatopsia",
+  "url": "http://127.0.0.1:4173/?qa=s10",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785532471250
+}

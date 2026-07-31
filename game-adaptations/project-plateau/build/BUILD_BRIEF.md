@@ -190,6 +190,9 @@ geography, camera, outcome or copied modern artwork.
   records the downstream brook response.
 - Iguanodon young play near adults; one adult pulls down a branch; the family
   withdraws. It never displays enemy health, target outline or reward hit pose.
+- The glade protects a broad sightline from the observation position, holds the
+  family and red basalt in one warm sun lane, and keeps dense vegetation at the
+  frame edges rather than across the subject corridor.
 - The plate preview preserves the exact local renderer view at commitment and
   pairs it with the frame's obstruction, scale and behavior flags. A crack
   removes that exact plate's cues and recovered image.

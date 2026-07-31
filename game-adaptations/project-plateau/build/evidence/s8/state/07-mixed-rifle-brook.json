@@ -1,23 +1,23 @@
 {
-  "stage": "s9-living-plates",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 3.42,
-      "z": 3.216
+      "x": 3.418,
+      "z": 3.208
     },
     "lastStablePosition": {
-      "x": 3.42,
-      "z": 3.216
+      "x": 3.418,
+      "z": 3.208
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 23.968,
-    "distanceTravelled": 70.305,
+    "elapsedSeconds": 23.949,
+    "distanceTravelled": 70.298,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -46,7 +46,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.0907999999523192,
+    "previewSeconds": 3.101599999904638,
     "lastProofEvent": {
       "plateIndex": 2,
       "frameKey": "glade-young-play",
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 138.032,
+    "remainingLight": 138.051,
     "returnRoute": "exposed",
     "returnCostSeconds": 18,
     "returnStrike": false,
@@ -109,9 +109,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 23.78,
+      "x": 23.62,
       "y": 13.17,
-      "z": -16.12
+      "z": -16.06
     }
   },
   "familyVisual": {
@@ -158,6 +158,12 @@
       ],
       "branchPresent": true,
       "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -173,82 +179,82 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 59.909
+        "at": 59.877
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 59.909
+        "at": 59.877
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 66.651
+        "at": 66.619
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 66.725
+        "at": 66.699
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 68.715
+        "at": 68.677
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 68.715
+        "at": 68.677
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 68.752
+        "at": 68.72
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 72.357
+        "at": 72.336
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 72.677
+        "at": 72.651
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 72.688
+        "at": 72.656
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 72.763
+        "at": 72.731
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 74.752
+        "at": 74.72
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 74.752
+        "at": 74.72
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 74.944
+        "at": 74.901
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 74.944
+        "at": 74.901
       },
       {
         "cue": "brook-response",
         "caption": "[brush thrashes beside the brook]",
-        "at": 75.536
+        "at": 75.504
       }
     ]
   },
@@ -275,22 +281,22 @@
       true,
       false
     ],
-    "fieldNote": "The young keep close while the adults feed.",
+    "fieldNote": null,
     "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
     "cartridgesVisible": true,
     "caption": "[brush thrashes beside the brook]",
     "lightWatch": 139,
     "terminal": null
   },
-  "sceneChildren": 26,
-  "calls": 110,
-  "triangles": 26942,
-  "textures": 1,
-  "geometries": 87,
+  "sceneChildren": 30,
+  "calls": 251,
+  "triangles": 49412,
+  "textures": 3,
+  "geometries": 98,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 170.90000009536743,
+  "firstRenderedAt": 241.60000014305115,
   "recentMedianFrameMs": 8.3
 }

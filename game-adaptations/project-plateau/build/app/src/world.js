@@ -10,6 +10,8 @@ const shared = {
   fernMaterial: new THREE.MeshStandardMaterial({ color: PALETTE.fern, roughness: 0.92 }),
 };
 
+const GLADE_SIGHTLINE_HALF_WIDTH = 22;
+
 export function terrainHeight(x, z) {
   const broad = Math.sin(x * 0.045) * 0.7 + Math.cos(z * 0.052) * 0.45;
   const basin = -Math.exp(-(x * x + (z + 8) * (z + 8)) / 1200) * 1.4;
@@ -32,7 +34,7 @@ function makeTerrain(scene) {
     metalness: 0,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.receiveShadow = false;
+  mesh.receiveShadow = true;
   mesh.name = 'world.connected_route.terrain';
   scene.add(mesh);
 }
@@ -152,7 +154,10 @@ function placeVegetation(scene) {
     do {
       x = (random() - 0.5) * 150;
       z = (random() - 0.5) * 190;
-    } while (Math.abs(x - 4) < 9 && z > -65);
+    } while (
+      (Math.abs(x - 4) < 9 && z > -65)
+      || (z > -52 && z < 12 && Math.abs(x - 1) < GLADE_SIGHTLINE_HALF_WIDTH)
+    );
     const scale = 0.72 + random() * 0.7;
     const y = terrainHeight(x, z);
     dummy.position.set(x, y + 2.8 * scale, z);
@@ -169,6 +174,10 @@ function placeVegetation(scene) {
   }
   trunkMesh.name = 'world.connected_route.tree_trunks';
   crownMesh.name = 'world.connected_route.canopy';
+  trunkMesh.castShadow = true;
+  trunkMesh.receiveShadow = true;
+  crownMesh.castShadow = true;
+  crownMesh.receiveShadow = true;
   scene.add(trunkMesh, crownMesh);
 
   const fernMesh = new THREE.InstancedMesh(
@@ -187,6 +196,8 @@ function placeVegetation(scene) {
     fernMesh.setMatrixAt(i, dummy.matrix);
   }
   fernMesh.name = 'world.connected_route.ferns';
+  fernMesh.castShadow = true;
+  fernMesh.receiveShadow = true;
   scene.add(fernMesh);
 }
 
@@ -214,20 +225,25 @@ function primitive(material, geometry, position, scale, rotation = [0, 0, 0]) {
   mesh.position.set(...position);
   mesh.scale.set(...scale);
   mesh.rotation.set(...rotation);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   return mesh;
 }
 
 function makeIguanodon(scene, x, z, scale, heading, young, behaviorRole) {
   const group = new THREE.Group();
   const skin = new THREE.MeshStandardMaterial({
-    color: young ? 0x65736b : PALETTE.slate,
-    roughness: 0.9,
+    color: young ? 0x81906e : 0x61756c,
+    roughness: 0.86,
+    flatShading: true,
   });
   const underside = new THREE.MeshStandardMaterial({
-    color: young ? 0x7a7969 : 0x6f725f,
-    roughness: 0.94,
+    color: young ? 0x9a956f : 0x878066,
+    roughness: 0.9,
+    flatShading: true,
   });
   const claw = new THREE.MeshStandardMaterial({ color: 0x343b37, roughness: 0.86 });
+  const eye = new THREE.MeshStandardMaterial({ color: 0x121715, roughness: 0.42 });
   const bodyGeometry = new THREE.IcosahedronGeometry(1, 1);
   const limbGeometry = new THREE.CylinderGeometry(0.18, 0.26, 1.8, 6);
   const tailGeometry = new THREE.ConeGeometry(0.45, 3.8, 7);
@@ -239,7 +255,9 @@ function makeIguanodon(scene, x, z, scale, heading, young, behaviorRole) {
   const neck = primitive(skin, new THREE.CylinderGeometry(0.42, 0.72, 1.75, 7), [0.5, 0.42, 0], [1, 1, 1], [0, 0, -0.72]);
   const head = primitive(skin, bodyGeometry, [1.18, 0.5, 0], [0.68, 0.62, 0.58]);
   const muzzle = primitive(underside, bodyGeometry, [1.72, 0.31, 0], [0.62, 0.38, 0.48]);
-  headPivot.add(neck, head, muzzle);
+  const leftEye = primitive(eye, new THREE.SphereGeometry(0.085, 8, 6), [1.43, 0.7, -0.48], [1, 1, 1]);
+  const rightEye = primitive(eye, new THREE.SphereGeometry(0.085, 8, 6), [1.43, 0.7, 0.48], [1, 1, 1]);
+  headPivot.add(neck, head, muzzle, leftEye, rightEye);
   const tail = primitive(skin, tailGeometry, [-3.6, 1.65, 0], [1, 1, 1], [0, 0, Math.PI / 2]);
   tail.rotation.z = -Math.PI / 2;
   for (const side of [-0.62, 0.62]) {
@@ -305,6 +323,30 @@ function makeFeedingBranch(scene) {
   group.position.set(14.5, terrainHeight(14.5, -36), -36);
   group.name = 'subject.iguanodon_family.feeding_branch';
   group.userData.branchPivot = branchPivot;
+  scene.add(group);
+  return group;
+}
+
+function makeGladeSunLane(scene) {
+  const group = new THREE.Group();
+  const groundGlow = new THREE.Mesh(
+    new THREE.CircleGeometry(1, 48),
+    new THREE.MeshBasicMaterial({
+      color: 0xd5b36a,
+      transparent: true,
+      opacity: 0.11,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -2,
+    }),
+  );
+  groundGlow.rotation.x = -Math.PI / 2;
+  groundGlow.position.set(1, terrainHeight(1, -30) + 0.055, -30);
+  groundGlow.scale.set(17, 24, 1);
+  groundGlow.receiveShadow = true;
+
+  group.add(groundGlow);
+  group.name = 'world.iguanodon_glade.sun_lane';
   scene.add(group);
   return group;
 }
@@ -464,6 +506,7 @@ export function createWorld(scene) {
   makeBasalt(scene);
   const family = makeFamily(scene);
   const feedingBranch = makeFeedingBranch(scene);
+  const gladeSunLane = makeGladeSunLane(scene);
   const pterodactyls = [
     makePterodactyl(scene, 29, 23, 0.0, 0.88),
     makePterodactyl(scene, 37, 28, 2.2, 0.62),
@@ -644,6 +687,15 @@ export function createWorld(scene) {
           branchPresent: feedingBranch.parent === scene,
           visibleParts: family.reduce((total, animal) => total + animal.children.length, 0)
             + feedingBranch.children.length,
+        },
+        gladeComposition: {
+          sightlineHalfWidth: GLADE_SIGHTLINE_HALF_WIDTH,
+          sunLanePresent: gladeSunLane.parent === scene,
+          shadowCastingSubjects: family.filter((animal) => (
+            animal.children.some((part) => part.castShadow)
+          )).length,
+          familyWidth: Math.max(...family.map((animal) => animal.userData.baseX))
+            - Math.min(...family.map((animal) => animal.userData.baseX)),
         },
       };
     },

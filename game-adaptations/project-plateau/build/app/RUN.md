@@ -83,12 +83,20 @@ board and clean image reset with:
 npm run verify:s9
 ```
 
+Run the protected-glade checkpoint with its unobstructed family sightline,
+both live camera behaviors, Chromium achromatopsia attack state, Strong plate
+board, clean restart and focus-region pixel floor with:
+
+```bash
+npm run verify:s10
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S9 write separate
+the corresponding `../evidence/s*/` directory. S3 through S10 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S9 foundation, not the completed game. It proves the approved local
+This is an S10 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -133,7 +141,14 @@ behavior windows under separate frame keys. Every shutter now preserves the
 actual local renderer view, without the camera body, as that plate's
 monochrome image; the preview and terminal board carry the same image and a
 restart clears it. The six-checkpoint S9 asset matrix verifies four distinct
-captured images, non-colour treatment, exact Strong output and 120.5/99.0 FPS.
+captured images, non-colour treatment, exact Strong output and 120.5/98.0 FPS.
 It uses QA placement to isolate those states and therefore does not replace S8
 traversal evidence or independent anatomy, composition and first-time premise
-review.
+review. S10 protects a 44-unit glade corridor, moves dense vegetation to the
+frame edges and adds warm/cool subject separation, faceted animal planes and
+visible eyes. Its six-checkpoint matrix clears the observation prose before
+the hero frame, preserves both behavior commitments, exercises one real
+Chromium achromatopsia attack state and retains the Strong board/reset. The
+focus region records about 19.8% dark / 59.3% bright / 82.1% chromatic pixels at
+120.5/98.0 FPS. These numeric floors detect gross occlusion and flat exposure;
+they do not replace independent composition, anatomy, motion or premise review.

@@ -45,6 +45,16 @@ test('the family asset exposes two adults, three young and both authored behavio
   assert.equal(world.familySnapshot().moment, 'glade-branch-pull');
 });
 
+test('the glade composition protects a lit family-and-basalt sightline', () => {
+  const scene = new THREE.Scene();
+  const world = createWorld(scene);
+  const composition = world.assetSnapshot().gladeComposition;
+  assert.ok(composition.sightlineHalfWidth >= 20);
+  assert.equal(composition.sunLanePresent, true);
+  assert.equal(composition.shadowCastingSubjects, 5);
+  assert.ok(composition.familyWidth >= 14);
+});
+
 test('frame percentile is stable and keeps the slow tail visible', () => {
   const frames = [16, 17, 15, 18, 40, 14, 16, 17, 19, 16];
   assert.equal(percentile(frames, 0.5), 17);

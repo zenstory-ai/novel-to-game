@@ -55,7 +55,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S9 · living plates';
+document.querySelector('#s0-badge').textContent = 'S10 · clear glade';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -80,7 +80,9 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.08;
+renderer.toneMappingExposure = 1.16;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(PALETTE.amber);
@@ -93,7 +95,21 @@ const titleCameraTarget = new THREE.Vector3(-2, 5.5, -38);
 const hemisphere = new THREE.HemisphereLight(PALETTE.amber, PALETTE.canopy, 2.3);
 const sun = new THREE.DirectionalLight(0xffdba1, 3.4);
 sun.position.set(-38, 62, 45);
-scene.add(hemisphere, sun);
+sun.target.position.set(1, 0, -28);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -58;
+sun.shadow.camera.right = 58;
+sun.shadow.camera.top = 74;
+sun.shadow.camera.bottom = -74;
+sun.shadow.camera.near = 8;
+sun.shadow.camera.far = 150;
+sun.shadow.bias = -0.00045;
+const gladeFill = new THREE.PointLight(0xffd8a1, 34, 58, 1.75);
+gladeFill.position.set(-4, 13, -18);
+const canopyRim = new THREE.DirectionalLight(0xb9d5bb, 1.15);
+canopyRim.position.set(32, 24, -36);
+scene.add(hemisphere, sun, sun.target, gladeFill, canopyRim);
 
 const world = createWorld(scene);
 scene.add(camera);
@@ -575,7 +591,7 @@ document.addEventListener('keydown', (event) => {
     const previousObservation = player.lastObservation;
     player = examine(player);
     if (player.lastObservation && player.lastObservation !== previousObservation) {
-      observationNoticeUntil = performance.now() + 4200;
+      observationNoticeUntil = performance.now() + 1400;
       emitCue('examine');
     }
     return;
@@ -694,7 +710,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's9-living-plates',
+  stage: 's10-glade-clarity',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,

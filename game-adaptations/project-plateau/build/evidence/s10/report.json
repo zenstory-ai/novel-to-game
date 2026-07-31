@@ -1,0 +1,133 @@
+{
+  "stage": "s10-glade-clarity",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "viewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "protectedGladeSightline": true,
+    "familyAndBasaltShareSunLane": true,
+    "allFiveSubjectsCastShadows": true,
+    "observationNoteClearsBeforeHeroFrame": true,
+    "focusRegionPixelFloor": true,
+    "youngPlayAndBranchPullRemainDistinct": true,
+    "achromatopsiaAttackRetainsShapeAndToolState": true,
+    "strongBoardUsesFourCapturedViews": true,
+    "restartClearsCapturedViews": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "focusRegion": {
+    "width": 777,
+    "height": 504,
+    "darkRatio": 0.1979,
+    "brightRatio": 0.5926,
+    "chromaticRatio": 0.8213
+  },
+  "visuals": [
+    {
+      "path": "build/evidence/s10/01-clear-family-sightline.jpg",
+      "bytes": 105921,
+      "sha256": "098bb6a3a8857e1dcbfd720ad5b5d72830bd106e97b81335e5c6deac927cc2fd",
+      "visionMode": "full-colour"
+    },
+    {
+      "path": "build/evidence/s10/02-young-play-silver-frame.jpg",
+      "bytes": 111850,
+      "sha256": "1494de669668cff50386eb19f64dcef3e0cc601551488ff60b31890229ff45a9",
+      "visionMode": "full-colour"
+    },
+    {
+      "path": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
+      "bytes": 114977,
+      "sha256": "bf40bb1d9d76f9cc7efe9af181d062849fe1a3f7603042c9510f4d2aa82e76d9",
+      "visionMode": "full-colour"
+    },
+    {
+      "path": "build/evidence/s10/04-achromatopsia-attack.jpg",
+      "bytes": 106627,
+      "sha256": "1e0f88386198fcc526eeaec7d2528fba6676ad3e44ff23c54f8b0c2486ce654a",
+      "visionMode": "achromatopsia"
+    },
+    {
+      "path": "build/evidence/s10/05-strong-plate-board.jpg",
+      "bytes": 93403,
+      "sha256": "fa7c823107e43563d14b98dbedee91ba30d0112c3ad1c2e62b8cfd8603f2e9e6",
+      "visionMode": "full-colour"
+    },
+    {
+      "path": "build/evidence/s10/06-clean-restart.jpg",
+      "bytes": 74861,
+      "sha256": "39bbe88c7c0e5bb6ad7762429ce11b83f167145ba3cae09fb108fbabda9a0e6e",
+      "visionMode": "full-colour"
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 98,
+    "worstFrameMs": 10.3
+  },
+  "checkpoints": [
+    {
+      "id": "01-clear-family-sightline",
+      "state": "build/evidence/s10/state/01-clear-family-sightline.json",
+      "browser": "build/evidence/s10/browser/01-clear-family-sightline.json",
+      "visual": "build/evidence/s10/01-clear-family-sightline.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "02-young-play-silver-frame",
+      "state": "build/evidence/s10/state/02-young-play-silver-frame.json",
+      "browser": "build/evidence/s10/browser/02-young-play-silver-frame.json",
+      "visual": "build/evidence/s10/02-young-play-silver-frame.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "03-branch-pull-silver-frame",
+      "state": "build/evidence/s10/state/03-branch-pull-silver-frame.json",
+      "browser": "build/evidence/s10/browser/03-branch-pull-silver-frame.json",
+      "visual": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "04-achromatopsia-attack",
+      "state": "build/evidence/s10/state/04-achromatopsia-attack.json",
+      "browser": "build/evidence/s10/browser/04-achromatopsia-attack.json",
+      "visual": "build/evidence/s10/04-achromatopsia-attack.jpg",
+      "visionMode": "achromatopsia"
+    },
+    {
+      "id": "05-strong-plate-board",
+      "state": "build/evidence/s10/state/05-strong-plate-board.json",
+      "browser": "build/evidence/s10/browser/05-strong-plate-board.json",
+      "visual": "build/evidence/s10/05-strong-plate-board.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "06-clean-restart",
+      "state": "build/evidence/s10/state/06-clean-restart.json",
+      "browser": "build/evidence/s10/browser/06-clean-restart.json",
+      "visual": "build/evidence/s10/06-clean-restart.jpg",
+      "visionMode": "full-colour"
+    }
+  ],
+  "limitations": [
+    "S10 uses QA placement to isolate visual states; S8 remains the input-only traversal and timing evidence.",
+    "The focus-region pixel floor detects gross occlusion and flat exposure, not subjective composition quality.",
+    "The achromatopsia checkpoint proves one busy attack frame retains silhouette, rifle and cartridge channels; it is not the complete route accessibility matrix.",
+    "Automated state and image checks do not replace independent anatomy, motion, premise or first-time player review."
+  ]
+}

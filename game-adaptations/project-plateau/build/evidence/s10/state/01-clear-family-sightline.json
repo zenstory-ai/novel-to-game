@@ -1,0 +1,282 @@
+{
+  "stage": "s10-glade-clarity",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 2
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 2
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 12.332,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "examined:behavior",
+    "zone": "iguanodon-glade",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "canopy-overlook",
+      "iguanodon-glade"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 2,
+    "threatState": "search",
+    "lastThreatEvent": "glade-search",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 167.668,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "search",
+    "response": "orbit",
+    "position": {
+      "x": -6.54,
+      "y": 10.85,
+      "z": -28.49
+    }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "search",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.181
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.187
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.272
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 2.261
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.261
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 2.427
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 2.512
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 4.496
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 4.496
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 10.576
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 10.667
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": null,
+    "capturedPlateImages": [
+      true,
+      true,
+      false,
+      false
+    ],
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "caption": "[fern brushes aside; pencil marks the field card]",
+    "lightWatch": 168,
+    "terminal": null
+  },
+  "sceneChildren": 30,
+  "calls": 248,
+  "triangles": 49480,
+  "textures": 3,
+  "geometries": 95,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 181.40000009536743,
+  "recentMedianFrameMs": 8.3
+}

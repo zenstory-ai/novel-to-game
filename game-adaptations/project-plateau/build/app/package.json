@@ -28,7 +28,9 @@
     "test:s8": "python3 test/qa_s8.py",
     "verify:s8": "npm test && npm run build && npm run test:s8",
     "test:s9": "python3 test/qa_s9.py",
-    "verify:s9": "npm test && npm run build && npm run test:s9"
+    "verify:s9": "npm test && npm run build && npm run test:s9",
+    "test:s10": "python3 test/qa_s10.py",
+    "verify:s10": "npm test && npm run build && npm run test:s10"
   },
   "dependencies": {
     "three": "0.185.1"

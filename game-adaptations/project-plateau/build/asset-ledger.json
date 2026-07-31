@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT · S9",
+  "updated": "2026-07-31 PT · S10",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -31,9 +31,11 @@
         "evidence/s8/05-strong-input-result.jpg",
         "evidence/s8/07-mixed-rifle-brook.jpg",
         "evidence/s9/01-young-play-commitment.jpg",
-        "evidence/s9/03-branch-pull-commitment.jpg"
+        "evidence/s9/03-branch-pull-commitment.jpg",
+        "evidence/s10/01-clear-family-sightline.jpg",
+        "evidence/s10/02-young-play-silver-frame.jpg"
       ],
-      "remaining": "The route passes input-only Strong/Mixed/Panic traversal and now presents the family at readable glade scale; landmark polish and first-time human navigation evidence remain."
+      "remaining": "The route passes input-only Strong/Mixed/Panic traversal; its glade now protects a broad lit subject corridor with edge-framed vegetation. Remaining gates are landmark polish and first-time human navigation evidence."
     },
     {
       "key": "tool.field_camera",
@@ -112,9 +114,12 @@
         "evidence/s8/03-strong-glade-frames.jpg",
         "evidence/s9/01-young-play-commitment.jpg",
         "evidence/s9/03-branch-pull-commitment.jpg",
-        "evidence/s9/05-distinct-recovered-plates.jpg"
+        "evidence/s9/05-distinct-recovered-plates.jpg",
+        "evidence/s10/01-clear-family-sightline.jpg",
+        "evidence/s10/02-young-play-silver-frame.jpg",
+        "evidence/s10/03-branch-pull-silver-frame.jpg"
       ],
-      "remaining": "Two adults and three young now have expanded anatomy, graze/play/branch-pull roles and a feeding branch with distinct committed frames; independent anatomy, motion and first-time readability review remain."
+      "remaining": "Two adults and three young now have expanded faceted anatomy, eye/underside separation, graze/play/branch-pull roles, a feeding branch and distinct lit commitments; independent anatomy, motion and first-time readability review remain."
     },
     {
       "key": "threat.pterodactyl",
@@ -143,9 +148,12 @@
         "evidence/s8/04-strong-covered-return.jpg",
         "evidence/s8/07-mixed-rifle-brook.jpg",
         "evidence/s8/09-panic-first-contact.jpg",
-        "evidence/s8/10-panic-input-failure.jpg"
+        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s10/02-young-play-silver-frame.jpg",
+        "evidence/s10/03-branch-pull-silver-frame.jpg",
+        "evidence/s10/04-achromatopsia-attack.jpg"
       ],
-      "remaining": "Four states, timed contact, shot response and cover pull-up now pass Strong/Mixed/Panic input paths; anatomy, material, shadow and later-view polish remain."
+      "remaining": "Four states, timed contact, shot response and cover pull-up pass input paths; one real achromatopsia attack frame retains silhouette and tool response. Anatomy, material and complete muted/non-colour route review remain."
     },
     {
       "key": "ui.field_system",
@@ -188,9 +196,13 @@
         "evidence/s9/02-young-play-plate.jpg",
         "evidence/s9/04-branch-pull-plate.jpg",
         "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s9/06-clean-order-no-plates.jpg"
+        "evidence/s9/06-clean-order-no-plates.jpg",
+        "evidence/s10/02-young-play-silver-frame.jpg",
+        "evidence/s10/04-achromatopsia-attack.jpg",
+        "evidence/s10/05-strong-plate-board.jpg",
+        "evidence/s10/06-clean-restart.jpg"
       ],
-      "remaining": "Field prompts, physical resources, distinct renderer-derived plate previews, all result/failure bands and restart state are implemented; final full non-colour and independent composition review remain."
+      "remaining": "Field prompts, physical resources, renderer-derived previews, result/failure bands and restart are implemented; one achromatopsia busy frame passes, while the complete non-colour route and independent composition review remain."
     },
     {
       "key": "light.functional_arc",
@@ -208,9 +220,11 @@
         "evidence/s5/07-strong-result-1280x720.jpg",
         "evidence/s8/05-strong-input-result.jpg",
         "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg"
+        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s10/01-clear-family-sightline.jpg",
+        "evidence/s10/02-young-play-silver-frame.jpg"
       ],
-      "remaining": "The revised 180-second budget is grounded by a roughly 51.6-second Strong path with 100.3 seconds left and measured Mixed/Panic outcomes; sky/light interpolation and low-light legibility remain."
+      "remaining": "The 180-second budget is grounded by measured paths, and the glade now separates subjects with one warm lane, cool rim and shadows; full sky/light interpolation and low-light legibility remain."
     },
     {
       "key": "audio.core_world",
@@ -253,9 +267,10 @@
         "evidence/s7/02-settings-150-minimum.jpg",
         "evidence/s7/06-focus-pause-commitment-minimum.jpg",
         "evidence/s7/09-restored-defaults-target.jpg",
-        "evidence/s9/05-distinct-recovered-plates.jpg"
+        "evidence/s9/05-distinct-recovered-plates.jpg",
+        "evidence/s10/04-achromatopsia-attack.jpg"
       ],
-      "remaining": "Persisted presentation controls and monochrome plate/result treatment are verified; the complete threat/route grayscale and colour-vision regression remains."
+      "remaining": "Persisted controls, monochrome plate/result treatment and one real Chromium achromatopsia attack checkpoint are verified; the complete threat/route grayscale and colour-vision regression remains."
     }
   ]
 }

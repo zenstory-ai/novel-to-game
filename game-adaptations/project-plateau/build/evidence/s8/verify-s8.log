@@ -6,48 +6,49 @@
 > project-plateau-proof-before-dark@0.1.0 test
 > node --test test/*.test.js
 
-✔ every core field cue has a concise sound caption (1.664167ms)
-✔ audio settings clamp channel volumes and expose caption state (0.156833ms)
-✔ cue history and threat transitions stay observable without Web Audio (0.245625ms)
-✔ cue history remains bounded during a long field session (0.124208ms)
-✔ foundation exposes the locked viewport and performance budgets (1.491084ms)
-✔ procedural placement is deterministic for a recorded seed (0.103042ms)
-✔ representative scene contains all declared subject and pressure groups (0.082333ms)
-✔ the family asset exposes two adults, three young and both authored behaviors (14.440875ms)
-✔ frame percentile is stable and keeps the slow tail visible (0.111583ms)
-✔ runtime sources contain no remote asset or CDN request (5.399583ms)
-✔ presentation settings normalize invalid persisted values (1.743333ms)
-✔ settings round-trip through versioned storage and can be reset (0.181375ms)
-✔ blocked or malformed storage falls back without disabling controls (0.173875ms)
-✔ the measured compact route starts with a 180-second light budget (0.984084ms)
-✔ fresh and restarted player states are clean copies (0.964583ms)
-✔ walking, sprinting and crouching have ordered deterministic speeds (0.574167ms)
-✔ pause freezes both world time and movement (0.109333ms)
-✔ a solid obstacle blocks penetration and permits axis sliding (0.169208ms)
-✔ leaving the navigable world recovers the last stable position (0.102916ms)
-✔ zone topology distinguishes the observation fork and both return routes (0.076834ms)
-✔ territory, glade, open proof and cover produce four readable threat states (0.416625ms)
-✔ examining the brook makes context eligible without awarding evidence (0.125542ms)
-✔ successive observed glade plates record young play and branch pull separately (0.202042ms)
-✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.185042ms)
-✔ open proof adds two awareness states and contact cracks the best intact plate (0.1885ms)
-✔ a later contact without body margin fails while the first contact remains recoverable (0.067209ms)
-✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.141417ms)
-✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.067459ms)
-✔ restart clears observation, proof, damage and action history (0.073ms)
-✔ intact evidence and all four result thresholds are deterministic (0.082875ms)
-✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.152292ms)
-✔ an attack-state exposed return cracks the best plate without spending body margin (0.09575ms)
-✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.072708ms)
-✔ remaining light expires outside Fort with exact cause and actionable cue (0.065583ms)
-ℹ tests 34
+✔ every core field cue has a concise sound caption (1.846708ms)
+✔ audio settings clamp channel volumes and expose caption state (0.191167ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.253417ms)
+✔ cue history remains bounded during a long field session (0.129667ms)
+✔ foundation exposes the locked viewport and performance budgets (1.468709ms)
+✔ procedural placement is deterministic for a recorded seed (0.099042ms)
+✔ representative scene contains all declared subject and pressure groups (0.081959ms)
+✔ the family asset exposes two adults, three young and both authored behaviors (15.231667ms)
+✔ the glade composition protects a lit family-and-basalt sightline (5.096625ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.132167ms)
+✔ runtime sources contain no remote asset or CDN request (5.099292ms)
+✔ presentation settings normalize invalid persisted values (1.704833ms)
+✔ settings round-trip through versioned storage and can be reset (0.187333ms)
+✔ blocked or malformed storage falls back without disabling controls (0.200625ms)
+✔ the measured compact route starts with a 180-second light budget (0.974709ms)
+✔ fresh and restarted player states are clean copies (0.811667ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.50825ms)
+✔ pause freezes both world time and movement (0.10225ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.669917ms)
+✔ leaving the navigable world recovers the last stable position (0.131917ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.081125ms)
+✔ territory, glade, open proof and cover produce four readable threat states (0.419292ms)
+✔ examining the brook makes context eligible without awarding evidence (0.152125ms)
+✔ successive observed glade plates record young play and branch pull separately (0.203458ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.160542ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (0.207667ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.067625ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.131041ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.071666ms)
+✔ restart clears observation, proof, damage and action history (0.073084ms)
+✔ intact evidence and all four result thresholds are deterministic (0.086125ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.155667ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.094417ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.072458ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.075ms)
+ℹ tests 35
 ℹ suites 0
-ℹ pass 34
+ℹ pass 35
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 148.721791
+ℹ duration_ms 156.570583
 
 > project-plateau-proof-before-dark@0.1.0 build
 > vite build
@@ -59,9 +60,9 @@ rendering chunks...
 computing gzip size...
 dist/index.html                   6.78 kB │ gzip:   2.09 kB
 dist/assets/index-BtoLHCaQ.css   13.35 kB │ gzip:   4.21 kB
-dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
+dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
 
-✓ built in 159ms
+✓ built in 164ms
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
@@ -92,10 +93,10 @@ dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
   },
   "pathMetrics": {
     "Strong": {
-      "wallSeconds": 51.57,
-      "simulationSeconds": 51.66,
-      "distanceTravelled": 128.336,
-      "remainingLight": 100.34,
+      "wallSeconds": 51.557,
+      "simulationSeconds": 51.646,
+      "distanceTravelled": 128.355,
+      "remainingLight": 100.354,
       "returnCostSeconds": 28,
       "route": "covered",
       "result": {
@@ -107,15 +108,15 @@ dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
         "survivingPlates": 4,
         "route": "covered",
         "brookResponse": null,
-        "remainingLight": 100.3,
+        "remainingLight": 100.4,
         "gunshotCallback": null
       }
     },
     "Mixed": {
-      "wallSeconds": 38.021,
-      "simulationSeconds": 38.009,
+      "wallSeconds": 37.998,
+      "simulationSeconds": 37.984,
       "distanceTravelled": 129.103,
-      "remainingLight": 123.991,
+      "remainingLight": 124.016,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -132,10 +133,10 @@ dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
       }
     },
     "Panic": {
-      "wallSeconds": 26.516,
-      "simulationSeconds": 26.502,
-      "distanceTravelled": 79.584,
-      "remainingLight": 135.498,
+      "wallSeconds": 26.515,
+      "simulationSeconds": 26.508,
+      "distanceTravelled": 79.535,
+      "remainingLight": 135.492,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -151,12 +152,12 @@ dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 97.1,
-    "worstFrameMs": 10.4
+    "onePercentLowFps": 99,
+    "worstFrameMs": 10.3
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "5c830e13d8d24f13c5471660150ced879c991dd6a6a8f2effb4d55fbe11442fb"
+    "sha256": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268"
   }
 }
 S8 PASS: build/evidence/s8/report.json

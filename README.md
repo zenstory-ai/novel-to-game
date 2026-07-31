@@ -17,7 +17,20 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 | 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 关系策略游戏：六日日程、角色意志、资源债与三种收束 |
 | **[在线试玩](https://xiyouji.vibecoco.ai)** · [完整工件](examples/journey-to-the-west/) · [原著出处](examples/journey-to-the-west/source/SOURCE.md) | **[在线试玩](https://jinpingmei.vibecoco.ai)** · [完整工件](examples/jin-ping-mei/) · [原著出处](examples/jin-ping-mei/source/SOURCE.md) |
 
-两个示例都包含原著来源、产品约束、游戏化拆解、概念取舍、世界与美术设计、构建说明以及可运行源码。下一份英文示例正在把同一流程带入**第一人称 3D 探索**，验证它并不局限于文字或叙事类游戏。
+两份已发布示例都包含原著来源、产品约束、游戏化拆解、概念取舍、世界与美术设计、构建说明以及可运行源码。
+
+### 开发中 · Project Plateau: Proof Before Dark
+
+下一份英文参考构建正在把同一流程带入实时**第一人称 3D 生存摄影闭环**：穿过连通的高原区域，读懂一个活着的恐龙家庭，在空中威胁下完成四张实体玻璃底片，并带回途中真正保存下来的视野。
+
+| 活体家庭取景 | 带回的玻璃底片 |
+|---|---|
+| [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
+| 两只成年、三只幼体、动态空中威胁与真实运作的时代相机 | 四个渲染器实拍视野被完整保留到最终野外记录 |
+
+**[本地运行](game-adaptations/project-plateau/build/app/RUN.md)** · [可玩源码](game-adaptations/project-plateau/build/app/) · [完整策划工件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [浏览器证据](game-adaptations/project-plateau/build/evidence/s10/report.json)
+
+这里展示的是仓库内检查点，而不是已托管发布；独立首次体验审查和公网环境验证仍未完成。
 
 ## 快速开始
 

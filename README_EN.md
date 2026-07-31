@@ -17,7 +17,20 @@ NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and K
 | Turn-based systems RPG: elements, formations, transformations, companion, and multi-stage boss | 18+ relationship strategy game: six-day schedule, character agency, resource debts, and three outcomes |
 | **[Play online](https://xiyouji.vibecoco.ai)** · [Full artifacts](examples/journey-to-the-west/) · [Source provenance](examples/journey-to-the-west/source/SOURCE.md) | **[Play online](https://jinpingmei.vibecoco.ai)** · [Full artifacts](examples/jin-ping-mei/) · [Source provenance](examples/jin-ping-mei/source/SOURCE.md) |
 
-Both examples include source provenance, product constraints, adaptation analysis, concept trade-offs, world and art direction, a build brief, and runnable source. The next English example is taking the same pipeline into **first-person 3D exploration**, demonstrating that it is not limited to text-forward or narrative genres.
+Both released examples include source provenance, product constraints, adaptation analysis, concept trade-offs, world and art direction, a build brief, and runnable source.
+
+### In development · Project Plateau: Proof Before Dark
+
+The next English reference build takes the same pipeline into a real-time **first-person 3D survival-photography loop**. Traverse a connected plateau, read a living family, commit four physical glass plates under aerial pressure, and return with the exact views that survived the route.
+
+| Live family frame | Recovered glass plates |
+|---|---|
+| [![Iguanodon family through the field camera](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![Four recovered field plates](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
+| Two adults, three young, a moving aerial threat, and a live period camera | Four renderer-derived views preserved through the final field record |
+
+**[Run locally](game-adaptations/project-plateau/build/app/RUN.md)** · [Playable source](game-adaptations/project-plateau/build/app/) · [Planning artifacts](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Browser evidence](game-adaptations/project-plateau/build/evidence/s10/report.json)
+
+This is a repository checkpoint rather than a hosted release. Independent first-time review and public-host verification remain open.
 
 ## Quick Start
 

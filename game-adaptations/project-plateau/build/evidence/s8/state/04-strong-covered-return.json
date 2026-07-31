@@ -1,23 +1,23 @@
 {
-  "stage": "s9-living-plates",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.68,
-      "z": 3.212
+      "x": 2.681,
+      "z": 3.216
     },
     "lastStablePosition": {
-      "x": 2.68,
-      "z": 3.212
+      "x": 2.681,
+      "z": 3.216
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 37.618,
-    "distanceTravelled": 69.546,
+    "elapsedSeconds": 37.605,
+    "distanceTravelled": 69.556,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -34,7 +34,7 @@
     ],
     "reachedGlade": true,
     "inCover": true,
-    "coverSeconds": 0.00679999995231384,
+    "coverSeconds": 0.008099999904632504,
     "sprintExposureSeconds": 0,
     "sprintEscalationCharged": false,
     "threatAwareness": 2,
@@ -99,7 +99,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 114.382,
+    "remainingLight": 114.395,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -110,9 +110,9 @@
     "state": "search",
     "response": "orbit",
     "position": {
-      "x": 19.57,
-      "y": 10.27,
-      "z": -21.12
+      "x": 19.54,
+      "y": 10.31,
+      "z": -21.01
     }
   },
   "familyVisual": {
@@ -159,6 +159,12 @@
       ],
       "branchPresent": true,
       "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -174,82 +180,82 @@
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.229
+        "at": 8.219
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.864
+        "at": 14.848
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.944
+        "at": 14.923
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.923
+        "at": 16.912
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.923
+        "at": 16.912
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.051
+        "at": 23.029
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 26.944
+        "at": 26.928
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 26.949
+        "at": 26.928
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 27.024
+        "at": 27.008
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 29.013
+        "at": 28.992
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 29.013
+        "at": 28.992
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.099
+        "at": 29.077
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.173
+        "at": 29.152
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 31.163
+        "at": 31.136
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 31.525
+        "at": 31.493
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 37.52
+        "at": 37.493
       }
     ]
   },
@@ -283,15 +289,15 @@
     "lightWatch": 115,
     "terminal": null
   },
-  "sceneChildren": 26,
-  "calls": 107,
-  "triangles": 27010,
-  "textures": 1,
-  "geometries": 84,
+  "sceneChildren": 30,
+  "calls": 248,
+  "triangles": 49480,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 170.90000009536743,
+  "firstRenderedAt": 241.60000014305115,
   "recentMedianFrameMs": 8.3
 }
