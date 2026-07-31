@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -112,6 +115,82 @@ class RepositoryValidationTests(unittest.TestCase):
                         any(marker in issue for issue in issues), issues
                     )
                 path.write_text(original, encoding="utf-8")
+
+    def test_minimal_evidence_fixture_runs_one_complete_verification(self) -> None:
+        fixture = ROOT / "tests/fixtures/minimal-evidence"
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            shutil.copytree(fixture, project)
+            environment = os.environ.copy()
+            environment["SOURCE_COMMIT"] = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=ROOT,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            result = subprocess.run(
+                [sys.executable, "verify.py"],
+                cwd=project,
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+            verification = json.loads(
+                (project / "qa/verification.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(verification["sourceCommit"], environment["SOURCE_COMMIT"])
+            self.assertEqual(verification["verify"]["exitCode"], 0)
+            self.assertTrue(
+                all(suite["executed"] for suite in verification["verify"]["suites"])
+            )
+            complete_run = verification["completeRun"]
+            self.assertTrue(complete_run["cleanContext"])
+            self.assertEqual(complete_run["terminal"], "extracted_with_proof")
+            self.assertEqual(complete_run["restart"], "initial_state")
+            self.assertGreaterEqual(len(complete_run["steps"]), 3)
+            self.assertTrue((project / verification["verify"]["log"]).is_file())
+            checkpoint_ids = {
+                checkpoint["id"] for checkpoint in verification["checkpoints"]
+            }
+            self.assertEqual(
+                {step["checkpoint"] for step in complete_run["steps"]},
+                checkpoint_ids,
+            )
+
+            for checkpoint in verification["checkpoints"]:
+                for channel in ("state", "browser", "visual"):
+                    evidence = checkpoint[channel]
+                    if evidence.startswith("NOT_RUN: "):
+                        self.assertGreater(len(evidence.removeprefix("NOT_RUN: ")), 0)
+                    else:
+                        self.assertTrue((project / evidence).is_file(), evidence)
+
+    def test_minimal_evidence_fixture_reports_an_orphaned_suite(self) -> None:
+        fixture = ROOT / "tests/fixtures/minimal-evidence"
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "project"
+            shutil.copytree(fixture, project)
+            orphan = project / "tests/test_orphan.py"
+            orphan.write_text(
+                "import unittest\n\n"
+                "class OrphanTest(unittest.TestCase):\n"
+                "    def test_unregistered(self):\n"
+                "        self.assertTrue(True)\n",
+                encoding="utf-8",
+            )
+            result = subprocess.run(
+                [sys.executable, "verify.py"],
+                cwd=project,
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("ORPHANED_TEST_SUITE", result.stdout + result.stderr)
 
     def test_native_plugins_expose_one_shared_skill_bundle(self) -> None:
         for relative_path in PLUGIN_MANIFESTS:
