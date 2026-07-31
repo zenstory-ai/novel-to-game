@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    "Hold in cover for six seconds",
+    "Right Mouse",
+    "Left Mouse"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s4",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785525622629
+}

@@ -1,0 +1,155 @@
+{
+  "stage": "s4-complete-loop",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 70
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 70
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 15.158,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:strong-field-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "iguanodon-glade",
+      "covered-return",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 3,
+    "threatState": "attack",
+    "lastThreatEvent": "plate-exposure:+1",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.9497999999523166,
+    "lastProofEvent": {
+      "plateIndex": 3,
+      "frameKey": "return-occluded",
+      "points": 1,
+      "label": "PARTIAL \u2014 thorn hides the body.",
+      "zone": "covered-return"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      },
+      {
+        "index": 3,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 thorn hides the body.",
+        "frameKey": "return-occluded"
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 376.842,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "strong-field-record",
+      "title": "Strong field record",
+      "copy": "Scale. Living form. Behavior. The field record holds.",
+      "evidence": 6,
+      "survivingPlates": 4,
+      "route": "covered",
+      "remainingLight": 376.8,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "attack",
+    "position": {
+      "x": -7.53,
+      "y": 10.8,
+      "z": 55.87
+    }
+  },
+  "ui": {
+    "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "PARTIAL \u2014 thorn hides the body.",
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": true,
+    "lightWatch": 377,
+    "terminal": {
+      "kind": "alive",
+      "title": "Strong field record",
+      "copy": "Scale. Living form. Behavior. The field record holds.",
+      "detail": "6 evidence cues \u00b7 4 surviving plates \u00b7 covered return \u00b7 377s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 23,
+  "calls": 63,
+  "triangles": 25384,
+  "textures": 1,
+  "geometries": 30,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 254.80000019073486,
+  "recentMedianFrameMs": 8.3
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT \u00b7 S3",
+  "updated": "2026-07-31 PT \u00b7 S4",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -20,9 +20,11 @@
         "evidence/s2/01-fort-distant.jpg",
         "evidence/s2/02-canopy-watch.jpg",
         "evidence/s2/03-glade-search.jpg",
-        "evidence/s2/05-covered-deescalation.jpg"
+        "evidence/s2/05-covered-deescalation.jpg",
+        "evidence/s4/02-covered-return-committed.jpg",
+        "evidence/s4/04-strong-result.jpg"
       ],
-      "remaining": "Connected node/return-zone state exists; final cover volumes, committed route costs, landmark polish and complete-run evidence remain."
+      "remaining": "Connected route, one-time covered/exposed costs and Fort submission exist; final cover volumes, route-landmark polish and uncompressed reference runs remain."
     },
     {
       "key": "tool.field_camera",
@@ -50,9 +52,11 @@
       "rights": "Original project geometry required",
       "evidence": [
         "evidence/s3/05-partial-plate.jpg",
-        "evidence/s3/06-recoverable-contact.jpg"
+        "evidence/s3/06-recoverable-contact.jpg",
+        "evidence/s4/04-strong-result.jpg",
+        "evidence/s4/09-second-contact-failure.jpg"
       ],
-      "remaining": "Four exact slots, 0/1/2 cue states, preview and physical crack state exist; final plate insertion/fracture motion and review board remain."
+      "remaining": "Four exact slots, 0/1/2 cue states, previews, crack states and terminal review board exist; final plate-specific imagery, hand placement and fracture motion remain."
     },
     {
       "key": "tool.period_rifle",
@@ -97,9 +101,11 @@
         "evidence/s2/04-creek-attack.jpg",
         "evidence/s2/05-covered-deescalation.jpg",
         "evidence/s3/06-recoverable-contact.jpg",
-        "evidence/s3/07-shot-interrupt.jpg"
+        "evidence/s3/07-shot-interrupt.jpg",
+        "evidence/s4/02-covered-return-committed.jpg",
+        "evidence/s4/09-second-contact-failure.jpg"
       ],
-      "remaining": "Four state poses/orbits, cover de-escalation, timed contact and shot response exist; shadow polish, cover pull-up, audio and final unclipped composition remain."
+      "remaining": "Four states, cover de-escalation, timed contact, shot response and terminal cause frame exist; shadow polish, cover pull-up and audio remain. Attack framing was pulled fully inside the primary S4 corridor but needs later-view regression."
     },
     {
       "key": "ui.field_system",
@@ -120,9 +126,13 @@
         "evidence/s3/04-paused-commitment.jpg",
         "evidence/s3/05-partial-plate.jpg",
         "evidence/s3/06-recoverable-contact.jpg",
-        "evidence/s3/07-shot-interrupt.jpg"
+        "evidence/s3/07-shot-interrupt.jpg",
+        "evidence/s4/02-covered-return-committed.jpg",
+        "evidence/s4/04-strong-result.jpg",
+        "evidence/s4/06-timeout-failure.jpg",
+        "evidence/s4/09-second-contact-failure.jpg"
       ],
-      "remaining": "Context prompts, camera overlay, plate rail/previews, chamber marks and contact feedback exist; watch, captions, result and failure states remain."
+      "remaining": "Context prompts, camera/plate/chamber edges, remaining-light watch and result/failure/restart states exist; captions, audio settings and complete 1280×720 regression remain."
     },
     {
       "key": "light.functional_arc",
@@ -134,9 +144,11 @@
       "rights": "Original project code; no third-party sky",
       "evidence": [
         "evidence/s0/01-title.jpg",
-        "evidence/s0/03-glade-heavy.jpg"
+        "evidence/s0/03-glade-heavy.jpg",
+        "evidence/s4/02-covered-return-committed.jpg",
+        "evidence/s4/06-timeout-failure.jpg"
       ],
-      "remaining": "Deadline arc and decision-state legibility are not implemented."
+      "remaining": "The exact 420-second deadline, watch and terminal timeout exist; sky/light interpolation across the deadline and low-light route/subject legibility remain."
     },
     {
       "key": "audio.core_world",

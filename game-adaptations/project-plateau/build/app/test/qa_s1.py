@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert response and response.ok
         assert page.evaluate("window.__projectPlateau.stage") in {
-            "s1-controller", "s2-topology", "s3-exposed-proof"
+            "s1-controller", "s2-topology", "s3-exposed-proof", "s4-complete-loop"
         }
 
         def snapshot() -> dict[str, object]:

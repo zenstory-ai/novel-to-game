@@ -1,0 +1,141 @@
+{
+  "stage": "s4-complete-loop",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 45
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 45
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 420.134,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "failure:remaining-light-expired",
+    "zone": "brook-blind",
+    "zoneHistory": [
+      "fort",
+      "brook-blind"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 0,
+    "threatState": "distant",
+    "lastThreatEvent": "distant",
+    "attackSeconds": 0,
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
+    "cameraRaised": false,
+    "plateRailRevealed": false,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": null,
+    "plates": [
+      {
+        "index": 0,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": true,
+    "failureCause": "remaining-light-expired",
+    "contactCount": 0,
+    "remainingLight": 0,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "failure",
+    "result": {
+      "kind": "failure",
+      "cause": "remaining-light-expired",
+      "title": "The basin went dark",
+      "copy": "The basin went dark. The brook was no longer enough.",
+      "cue": "Leave the last frame, or take the shorter return while it is still usable."
+    }
+  },
+  "threatVisual": {
+    "state": "distant",
+    "position": {
+      "x": 8.03,
+      "y": 23.64,
+      "z": 29.75
+    }
+  },
+  "ui": {
+    "prompt": "Examine the track [E]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": false,
+    "platePreview": null,
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "lightWatch": null,
+    "terminal": {
+      "kind": "failure",
+      "title": "The basin went dark",
+      "copy": "The basin went dark. The brook was no longer enough.",
+      "detail": "Leave the last frame, or take the shorter return while it is still usable.",
+      "callback": null
+    }
+  },
+  "sceneChildren": 23,
+  "calls": 63,
+  "triangles": 25384,
+  "textures": 1,
+  "geometries": 30,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 254.80000019073486,
+  "recentMedianFrameMs": 8.3
+}

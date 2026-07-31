@@ -17,6 +17,30 @@ export const NAVIGATION = Object.freeze({
 
 export const EXPOSURE_SECONDS = 2;
 export const CONTACT_SECONDS = 3;
+export const INITIAL_LIGHT_SECONDS = 420;
+
+export const RESULT_BANDS = Object.freeze([
+  Object.freeze({
+    key: 'returned-without-record', min: 0, max: 0,
+    title: 'Returned without a record',
+    copy: 'You returned with a story. Stories are what they came to dispute.',
+  }),
+  Object.freeze({
+    key: 'insufficient-record', min: 1, max: 3,
+    title: 'Insufficient record',
+    copy: 'The plates survived. The animal never stands clear.',
+  }),
+  Object.freeze({
+    key: 'corroborating-record', min: 4, max: 5,
+    title: 'Corroborating record',
+    copy: 'Living form, more than one angle. The argument can begin again.',
+  }),
+  Object.freeze({
+    key: 'strong-field-record', min: 6, max: 7,
+    title: 'Strong field record',
+    copy: 'Scale. Living form. Behavior. The field record holds.',
+  }),
+]);
 
 const SPEED = Object.freeze({ walk: 4.2, sprint: 6.8, crouch: 2.2 });
 const THREAT_STATES = Object.freeze(['distant', 'watch', 'search', 'attack']);
@@ -94,6 +118,12 @@ export function createPlayerState() {
     failed: false,
     failureCause: null,
     contactCount: 0,
+    remainingLight: INITIAL_LIGHT_SECONDS,
+    returnRoute: null,
+    returnCostSeconds: 0,
+    returnStrike: false,
+    runStatus: 'active',
+    result: null,
   };
 }
 
@@ -161,6 +191,18 @@ export function frameForState(state) {
     },
   };
   return { ...frames[state.zone] };
+}
+
+export function intactEvidence(state) {
+  return state.plates.reduce(
+    (total, plate) => total + (plate.status === 'exposed' ? plate.points : 0),
+    0,
+  );
+}
+
+export function resultBandForEvidence(points) {
+  const bounded = Math.max(0, Math.min(7, points));
+  return RESULT_BANDS.find((band) => bounded >= band.min && bounded <= band.max);
 }
 
 export function setCameraRaised(state, raised) {
@@ -246,6 +288,14 @@ export function applyThreatContact(state) {
     return copyState(state, {
       failed: true,
       failureCause: 'second-unblocked-strike',
+      runStatus: 'failure',
+      result: {
+        kind: 'failure',
+        cause: 'second-unblocked-strike',
+        title: 'The second pass',
+        copy: 'The second pass found you in open ground.',
+        cue: 'Break the dive under the trees, or fire before contact.',
+      },
       rifleRaised: false,
       cameraRaised: false,
       pendingExposure: null,
@@ -277,6 +327,94 @@ export function applyThreatContact(state) {
     threatState: 'watch',
     lastThreatEvent: 'contact-recovered',
     lastEvent: crackedIndex >= 0 ? `contact:plate-${crackedIndex + 1}-cracked` : 'contact:body-margin',
+  });
+}
+
+function crackHighestValuePlate(state) {
+  const plates = state.plates.map(clonePlate);
+  const crackedIndex = highestValueIntactPlateIndex(plates);
+  if (crackedIndex >= 0) {
+    plates[crackedIndex] = {
+      ...plates[crackedIndex],
+      status: 'cracked',
+      lostPoints: plates[crackedIndex].points,
+      points: 0,
+    };
+  }
+  return { plates, crackedIndex };
+}
+
+function commitReturnRoute(state, zone) {
+  if (state.returnRoute || !state.reachedGlade) return state;
+  if (zone !== 'covered-return' && zone !== 'exposed-creek') return state;
+
+  const route = zone === 'covered-return' ? 'covered' : 'exposed';
+  const cost = route === 'covered' ? 28 : state.gunshotFired ? 18 : 12;
+  let next = copyState(state, {
+    returnRoute: route,
+    returnCostSeconds: cost,
+    remainingLight: Math.max(0, state.remainingLight - cost),
+    lastEvent: `return:${route}:committed`,
+  });
+
+  if (route === 'exposed' && state.threatAwareness === 3 && !state.gunshotFired) {
+    const strike = crackHighestValuePlate(next);
+    next = copyState(next, {
+      plates: strike.plates,
+      returnStrike: true,
+      attackSeconds: 0,
+      threatAwareness: 1,
+      threatState: 'watch',
+      lastThreatEvent: 'exposed-return-case-strike',
+      lastEvent: strike.crackedIndex >= 0
+        ? `return:plate-${strike.crackedIndex + 1}-cracked`
+        : 'return:case-strike-empty',
+    });
+  }
+  return next;
+}
+
+function submitAtFort(state) {
+  const evidence = intactEvidence(state);
+  const band = resultBandForEvidence(evidence);
+  return copyState(state, {
+    runStatus: 'result',
+    cameraRaised: false,
+    rifleRaised: false,
+    pendingExposure: null,
+    result: {
+      kind: 'alive',
+      band: band.key,
+      title: band.title,
+      copy: band.copy,
+      evidence,
+      survivingPlates: state.plates.filter((plate) => plate.status === 'exposed').length,
+      route: state.returnRoute,
+      remainingLight: Number(state.remainingLight.toFixed(1)),
+      gunshotCallback: state.gunshotFired
+        ? 'The report carried. Something answered by the brook.'
+        : null,
+    },
+    lastEvent: `result:${band.key}`,
+  });
+}
+
+function failForTimeout(state) {
+  return copyState(state, {
+    failed: true,
+    failureCause: 'remaining-light-expired',
+    runStatus: 'failure',
+    cameraRaised: false,
+    rifleRaised: false,
+    pendingExposure: null,
+    result: {
+      kind: 'failure',
+      cause: 'remaining-light-expired',
+      title: 'The basin went dark',
+      copy: 'The basin went dark. The brook was no longer enough.',
+      cue: 'Leave the last frame, or take the shorter return while it is still usable.',
+    },
+    lastEvent: 'failure:remaining-light-expired',
   });
 }
 
@@ -394,7 +532,7 @@ function finalizeExposure(state, pending, threat) {
 
 export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const deltaSeconds = Math.max(0, Math.min(rawDeltaSeconds, 1));
-  if (state.paused || state.failed) return copyState(state);
+  if (state.paused || state.runStatus !== 'active') return copyState(state);
 
   const heading = Number.isFinite(input.heading) ? input.heading : state.heading;
   const pitch = Number.isFinite(input.pitch) ? input.pitch : state.pitch;
@@ -438,6 +576,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     pitch,
     stance,
     elapsedSeconds: state.elapsedSeconds + deltaSeconds,
+    remainingLight: Math.max(0, state.remainingLight - deltaSeconds),
     distanceTravelled: state.distanceTravelled + travelled,
     boundaryRecoveries: state.boundaryRecoveries + (boundaryRecovered ? 1 : 0),
     collisions: state.collisions + (resolved.collision ? 1 : 0),
@@ -464,8 +603,12 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     next = copyState(next, finalizeExposure(next, pendingExposure, threat));
   }
 
+  next = commitReturnRoute(next, zone);
+  if (zone === 'fort' && next.returnRoute) return submitAtFort(next);
+  if (next.remainingLight <= 0 && zone !== 'fort') return failForTimeout(next);
+
   const attackSeconds = next.threatAwareness === 3 && !next.inCover
-    ? state.attackSeconds + deltaSeconds
+    ? next.attackSeconds + deltaSeconds
     : 0;
   next.attackSeconds = attackSeconds;
   if (attackSeconds >= CONTACT_SECONDS) next = applyThreatContact(next);

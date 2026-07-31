@@ -75,7 +75,8 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s2", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") in {"s2-topology", "s3-exposed-proof"}
+        runtime_stage = page.evaluate("window.__projectPlateau.stage")
+        assert runtime_stage in {"s2-topology", "s3-exposed-proof", "s4-complete-loop"}
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(180)
@@ -123,17 +124,31 @@ def run() -> dict[str, object]:
         wait_for_threat()
         capture("glade-search", "03-glade-search.jpg")
 
-        page.evaluate("window.__projectPlateau.teleportForTest({x: 7, z: 18})")
-        page.keyboard.down("ShiftLeft")
-        page.keyboard.down("KeyW")
-        page.wait_for_timeout(1150)
-        page.keyboard.up("KeyW")
-        page.keyboard.up("ShiftLeft")
-        page.wait_for_timeout(120)
+        if runtime_stage == "s4-complete-loop":
+            page.mouse.move(720, 450)
+            page.mouse.down(button="right")
+            page.wait_for_timeout(50)
+            page.mouse.down(button="left")
+            page.mouse.up(button="left")
+            page.mouse.up(button="right")
+            page.wait_for_function(
+                "window.__projectPlateau.snapshot().player.threatState === 'attack'",
+                timeout=3500,
+            )
+        else:
+            page.evaluate("window.__projectPlateau.teleportForTest({x: 7, z: 18})")
+            page.keyboard.down("ShiftLeft")
+            page.keyboard.down("KeyW")
+            page.wait_for_timeout(1150)
+            page.keyboard.up("KeyW")
+            page.keyboard.up("ShiftLeft")
+            page.wait_for_timeout(120)
         attack = snap()
-        assert attack["player"]["zone"] == "exposed-creek", attack
+        expected_attack_zone = "iguanodon-glade" if runtime_stage == "s4-complete-loop" else "exposed-creek"
+        assert attack["player"]["zone"] == expected_attack_zone, attack
         assert attack["player"]["threatState"] == "attack", attack
-        assert attack["player"]["lastThreatEvent"] == "exposed-sprint", attack
+        expected_attack_event = "plate-exposure:+2" if runtime_stage == "s4-complete-loop" else "exposed-sprint"
+        assert attack["player"]["lastThreatEvent"] == expected_attack_event, attack
         assert attack["threatVisual"]["state"] == "attack", attack
         wait_for_threat(max_x=5, min_forward=7)
         capture("creek-attack", "04-creek-attack.jpg")
@@ -149,7 +164,10 @@ def run() -> dict[str, object]:
         capture("covered-deescalation", "05-covered-deescalation.jpg")
 
         history = covered["player"]["zoneHistory"]
-        for expected in ("fort", "canopy-overlook", "iguanodon-glade", "exposed-creek", "covered-return"):
+        expected_history = ["fort", "canopy-overlook", "iguanodon-glade", "covered-return"]
+        if runtime_stage != "s4-complete-loop":
+            expected_history.append("exposed-creek")
+        for expected in expected_history:
             assert expected in history, history
         performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
         assert performance["medianFps"] >= 45 and performance["onePercentLowFps"] >= 30, performance

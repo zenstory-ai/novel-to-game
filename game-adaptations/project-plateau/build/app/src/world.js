@@ -356,7 +356,7 @@ export function createWorld(scene) {
         const { radius, height, phase } = mesh.userData;
         const isPrimary = index === 0;
         const stateRadius = isPrimary ? [radius, 26, 17, 9][awareness] : radius;
-        const stateHeight = isPrimary ? [height, 12, 10, 8][awareness] : height;
+        const stateHeight = isPrimary ? [height, 12, 10, 6.7][awareness] : height;
         const stateSpeed = speed * (1 + awareness * 0.42) * (1 + index * 0.08);
         const angle = phase + elapsed * stateSpeed;
         if (isPrimary && awareness === 3) {
@@ -365,7 +365,7 @@ export function createWorld(scene) {
           mesh.position.set(
             playerPosition.x + Math.cos(angle) * stateRadius * (1 - approach * 0.72),
             stateHeight + (1 - approach) * 5,
-            playerPosition.z - 14 + Math.sin(angle) * 3 + approach * 4,
+            playerPosition.z - 15 + Math.sin(angle) * 2.5 + approach,
           );
           mesh.scale.set(mesh.userData.baseScale * 0.58, mesh.userData.baseScale, mesh.userData.baseScale);
           mesh.rotation.x = -0.42 * approach;

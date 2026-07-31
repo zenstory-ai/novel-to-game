@@ -3,12 +3,15 @@ import test from 'node:test';
 import {
   CONTACT_SECONDS,
   EXPOSURE_SECONDS,
+  INITIAL_LIGHT_SECONDS,
   INITIAL_PLAYER,
   applyThreatContact,
   createPlayerState,
   examine,
   fireDefensiveShot,
   frameForState,
+  intactEvidence,
+  resultBandForEvidence,
   restartPlayer,
   setCameraRaised,
   setPaused,
@@ -84,7 +87,7 @@ test('zone topology distinguishes the observation fork and both return routes', 
   assert.equal(zoneForPosition({ x: 7, z: 18 }, true), 'exposed-creek');
 });
 
-test('territory, glade, exposed sprint and cover produce four readable threat states', () => {
+test('territory, glade, open proof and cover produce four readable threat states', () => {
   let player = createPlayerState();
   player.position = { x: 0, z: 18 };
   player.lastStablePosition = { ...player.position };
@@ -98,12 +101,11 @@ test('territory, glade, exposed sprint and cover produce four readable threat st
   assert.equal(player.zone, 'iguanodon-glade');
   assert.equal(player.threatState, 'search');
 
-  player.position = { x: 7, z: 18 };
-  player.lastStablePosition = { ...player.position };
-  player = stepPlayer(player, { forward: 1, sprint: true }, 1);
-  assert.equal(player.zone, 'exposed-creek');
+  player = startExposure(setCameraRaised(player, true));
+  player = stepPlayer(player, {}, 1);
+  player = stepPlayer(player, {}, 1);
   assert.equal(player.threatState, 'attack');
-  assert.equal(player.lastThreatEvent, 'exposed-sprint');
+  assert.equal(player.lastThreatEvent, 'plate-exposure:+2');
 
   player.position = { x: 0, z: 18 };
   player.lastStablePosition = { ...player.position };
@@ -220,4 +222,102 @@ test('restart clears observation, proof, damage and action history', () => {
   assert.equal(restarted.bodyMargin, 1);
   assert.equal(restarted.gunshotFired, false);
   assert.equal(restarted.cartridges, 2);
+  assert.equal(restarted.remainingLight, INITIAL_LIGHT_SECONDS);
+  assert.equal(restarted.returnRoute, null);
+  assert.equal(restarted.runStatus, 'active');
+});
+
+test('intact evidence and all four result thresholds are deterministic', () => {
+  const player = createPlayerState();
+  player.plates = [
+    { ...player.plates[0], status: 'exposed', points: 2 },
+    { ...player.plates[1], status: 'cracked', points: 0, lostPoints: 2 },
+    { ...player.plates[2], status: 'exposed', points: 1 },
+    player.plates[3],
+  ];
+  assert.equal(intactEvidence(player), 3);
+  assert.equal(resultBandForEvidence(0).key, 'returned-without-record');
+  assert.equal(resultBandForEvidence(3).key, 'insufficient-record');
+  assert.equal(resultBandForEvidence(5).key, 'corroborating-record');
+  assert.equal(resultBandForEvidence(7).key, 'strong-field-record');
+});
+
+test('covered return commits its deterministic cost once and submits intact proof at Fort', () => {
+  let player = createPlayerState();
+  player.reachedGlade = true;
+  player.zone = 'iguanodon-glade';
+  player.position = { x: 0, z: -8 };
+  player.lastStablePosition = { ...player.position };
+  player.plates = player.plates.map((plate, index) => ({
+    ...plate,
+    status: index < 3 ? 'exposed' : 'unexposed',
+    points: index < 3 ? 2 : 0,
+  }));
+  player.position = { x: 0, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.returnRoute, 'covered');
+  assert.equal(player.returnCostSeconds, 28);
+  assert.equal(player.remainingLight, INITIAL_LIGHT_SECONDS - 28.1);
+  const afterHold = stepPlayer(player, {}, 0.1);
+  assert.equal(afterHold.returnCostSeconds, 28);
+  assert.ok(Math.abs(afterHold.remainingLight - (INITIAL_LIGHT_SECONDS - 28.2)) < 1e-8);
+
+  player = afterHold;
+  player.position = { x: 0, z: 70 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.runStatus, 'result');
+  assert.equal(player.result.band, 'strong-field-record');
+  assert.equal(player.result.evidence, 6);
+  assert.equal(player.result.route, 'covered');
+});
+
+test('an attack-state exposed return cracks the best plate without spending body margin', () => {
+  let player = createPlayerState();
+  player.reachedGlade = true;
+  player.zone = 'iguanodon-glade';
+  player.position = { x: 7, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player.threatAwareness = 3;
+  player.threatState = 'attack';
+  player.plates[0] = { ...player.plates[0], status: 'exposed', points: 1 };
+  player.plates[1] = { ...player.plates[1], status: 'exposed', points: 2 };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.returnRoute, 'exposed');
+  assert.equal(player.returnCostSeconds, 12);
+  assert.equal(player.returnStrike, true);
+  assert.equal(player.plates[1].status, 'cracked');
+  assert.equal(player.bodyMargin, 1);
+  assert.equal(player.threatState, 'watch');
+});
+
+test('a fired-shot exposed return costs eighteen seconds and preserves its best plate', () => {
+  let player = createPlayerState();
+  player.reachedGlade = true;
+  player.zone = 'iguanodon-glade';
+  player.position = { x: 7, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player.threatAwareness = 1;
+  player.threatState = 'watch';
+  player.gunshotFired = true;
+  player.plates[0] = { ...player.plates[0], status: 'exposed', points: 2 };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.returnRoute, 'exposed');
+  assert.equal(player.returnCostSeconds, 18);
+  assert.equal(player.returnStrike, false);
+  assert.equal(player.plates[0].status, 'exposed');
+});
+
+test('remaining light expires outside Fort with exact cause and actionable cue', () => {
+  let player = createPlayerState();
+  player.zone = 'brook-blind';
+  player.position = { x: 0, z: 45 };
+  player.lastStablePosition = { ...player.position };
+  player.remainingLight = 0.05;
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.runStatus, 'failure');
+  assert.equal(player.failureCause, 'remaining-light-expired');
+  assert.equal(player.result.copy, 'The basin went dark. The brook was no longer enough.');
+  assert.equal(player.result.cue, 'Leave the last frame, or take the shorter return while it is still usable.');
 });

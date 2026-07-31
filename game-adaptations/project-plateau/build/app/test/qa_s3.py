@@ -86,7 +86,9 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s3", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") == "s3-exposed-proof"
+        assert page.evaluate("window.__projectPlateau.stage") in {
+            "s3-exposed-proof", "s4-complete-loop"
+        }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(180)

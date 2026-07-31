@@ -36,7 +36,16 @@ const plateSlots = [...plateRail.children];
 const cartridgeDisplay = document.querySelector('#cartridge-display');
 const cartridgeSlots = [...cartridgeDisplay.children];
 const rifleOverlay = document.querySelector('#rifle-overlay');
-document.querySelector('#s0-badge').textContent = 'S3 · exposed proof';
+const lightWatch = document.querySelector('#light-watch');
+const lightSeconds = document.querySelector('#light-seconds');
+const terminalPanel = document.querySelector('#terminal-panel');
+const terminalBoardSlots = [...terminalPanel.querySelector('.terminal-board').children];
+const terminalEyebrow = document.querySelector('#terminal-eyebrow');
+const terminalTitle = document.querySelector('#terminal-title');
+const terminalResultCopy = document.querySelector('#terminal-result-copy');
+const terminalDetail = document.querySelector('#terminal-detail');
+const terminalCallback = document.querySelector('#terminal-callback');
+document.querySelector('#s0-badge').textContent = 'S4 · complete loop';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -109,6 +118,7 @@ function contextualCopy() {
   if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Examine the track [E]';
   if (player.zone === 'brook-blind') return 'Raise camera [Right Mouse]';
   if (player.zone === 'iguanodon-glade' && !player.observedBehavior) return 'Read the family [E]';
+  if (player.returnRoute) return 'Follow the Fort smoke through the gate.';
   if (player.zone !== 'fort' && player.plates.some((plate) => plate.status === 'unexposed')) {
     return 'Raise camera [Right Mouse]';
   }
@@ -161,6 +171,9 @@ function updateFieldHud(now) {
       `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.status === 'exposed' ? `, ${plate.points} cues` : ''}`,
     );
   });
+
+  lightWatch.hidden = !player.plateRailRevealed;
+  lightSeconds.textContent = Math.max(0, Math.ceil(player.remainingLight));
 
   const showPreview = player.previewSeconds > 0 && player.lastProofEvent;
   platePreview.hidden = !showPreview;
@@ -253,6 +266,54 @@ function requestFieldPointerLock() {
   }
 }
 
+function presentTerminal() {
+  if (!player.result) return;
+  runActive = false;
+  cameraMode = 'terminal';
+  document.body.dataset.mode = 'terminal';
+  document.body.dataset.camera = 'folded';
+  document.body.dataset.rifle = 'lowered';
+  terminalPanel.hidden = false;
+  terminalPanel.dataset.kind = player.result.kind;
+  pausePanel.hidden = true;
+  document.querySelector('#field-order').hidden = true;
+  if (document.pointerLockElement === canvas) document.exitPointerLock();
+
+  terminalBoardSlots.forEach((slot, index) => {
+    const plate = player.plates[index];
+    slot.dataset.status = plate.status;
+    slot.setAttribute(
+      'aria-label',
+      `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.label ? ` — ${plate.label}` : ''}`,
+    );
+  });
+
+  if (player.result.kind === 'alive') {
+    terminalEyebrow.textContent = 'WHAT REACHED CAMP';
+    terminalTitle.textContent = player.result.title;
+    terminalResultCopy.textContent = player.result.copy;
+    terminalDetail.textContent = `${player.result.evidence} evidence cues · ${player.result.survivingPlates} surviving plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
+    terminalCallback.hidden = !player.result.gunshotCallback;
+    terminalCallback.textContent = player.result.gunshotCallback ?? '';
+  } else {
+    terminalEyebrow.textContent = 'FIELD WORK ENDED';
+    terminalTitle.textContent = player.result.title;
+    terminalResultCopy.textContent = player.result.copy;
+    terminalDetail.textContent = player.result.cue;
+    terminalCallback.hidden = true;
+    terminalCallback.textContent = '';
+  }
+}
+
+function returnToFieldOrder() {
+  player = createPlayerState();
+  runActive = false;
+  terminalPanel.hidden = true;
+  closePanels();
+  setView('order');
+  document.querySelector('#field-order').hidden = false;
+}
+
 function beginRun() {
   player = restartPlayer(player);
   runActive = true;
@@ -261,6 +322,7 @@ function beginRun() {
   observationNoticeUntil = 0;
   contactNoticeUntil = 0;
   pausePanel.hidden = true;
+  terminalPanel.hidden = true;
   setView('field');
   requestFieldPointerLock();
 }
@@ -287,6 +349,7 @@ function resumeRun() {
 function update(deltaSeconds, now) {
   if (runActive && !player.paused) {
     const previousContacts = player.contactCount;
+    const previousRunStatus = player.runStatus;
     player = stepPlayer(player, inputSnapshot(), deltaSeconds);
     if (player.contactCount > previousContacts) {
       contactNoticeUntil = now + 3200;
@@ -295,11 +358,12 @@ function update(deltaSeconds, now) {
         ? `CASE STRIKE — PLATE ${ROMAN_PLATES[cracked.index]} CRACKED.`
         : 'CASE STRIKE — THE NEXT PASS WILL END THE RUN.';
     }
+    if (previousRunStatus === 'active' && player.runStatus !== 'active') presentTerminal();
     visualElapsed += deltaSeconds;
-  } else if (!runActive) {
+  } else if (!runActive && cameraMode !== 'terminal') {
     visualElapsed += deltaSeconds;
   }
-  world.update(visualElapsed, reducedMotion || player.paused, {
+  world.update(visualElapsed, reducedMotion || player.paused || cameraMode === 'terminal', {
     threatAwareness: player.threatAwareness,
     playerPosition: player.position,
     shotCount: player.shotCount,
@@ -353,6 +417,7 @@ document.querySelector('#dismiss-order').addEventListener('click', () => {
 });
 document.querySelector('#resume-button').addEventListener('click', resumeRun);
 document.querySelector('#restart-button').addEventListener('click', beginRun);
+document.querySelector('#terminal-restart').addEventListener('click', returnToFieldOrder);
 document.querySelector('#settings-button').addEventListener('click', () => {
   closePanels();
   document.querySelector('#settings-panel').hidden = false;
@@ -477,11 +542,12 @@ function playerSnapshot() {
     pitch: Number(player.pitch.toFixed(4)),
     elapsedSeconds: Number(player.elapsedSeconds.toFixed(3)),
     distanceTravelled: Number(player.distanceTravelled.toFixed(3)),
+    remainingLight: Number(player.remainingLight.toFixed(3)),
   };
 }
 
 window.__projectPlateau = {
-  stage: 's3-exposed-proof',
+  stage: 's4-complete-loop',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -496,6 +562,17 @@ window.__projectPlateau = {
     player.position = { x: position.x, z: position.z };
     player.lastStablePosition = { ...player.position };
     setCameraToPlayer();
+  },
+  advanceTimeForTest(seconds) {
+    if (!query.has('qa')) throw new Error('advanceTimeForTest requires a qa query');
+    let remaining = Math.max(0, Number(seconds) || 0);
+    while (remaining > 0 && player.runStatus === 'active') {
+      const delta = Math.min(1, remaining);
+      player = stepPlayer(player, {}, delta);
+      remaining -= delta;
+    }
+    if (player.runStatus !== 'active') presentTerminal();
+    return playerSnapshot();
   },
   snapshot() {
     return {
@@ -515,6 +592,16 @@ window.__projectPlateau = {
         fieldNote: fieldNote.hidden ? null : fieldNote.textContent,
         contactNote: contactNote.hidden ? null : contactNote.textContent,
         cartridgesVisible: !cartridgeDisplay.hidden,
+        lightWatch: lightWatch.hidden ? null : Number(lightSeconds.textContent),
+        terminal: terminalPanel.hidden
+          ? null
+          : {
+              kind: terminalPanel.dataset.kind,
+              title: terminalTitle.textContent,
+              copy: terminalResultCopy.textContent,
+              detail: terminalDetail.textContent,
+              callback: terminalCallback.hidden ? null : terminalCallback.textContent,
+            },
       },
       sceneChildren: scene.children.length,
       calls: renderer.info.render.calls,
