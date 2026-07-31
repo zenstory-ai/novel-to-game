@@ -1,52 +1,50 @@
 # NovelToGame
 
-> Turn any novel into a playable web game.
+> Turn a novel in any language into a source-grounded, fully playable web game.
 
-NovelToGame is an open-source skill set that turns novels into playable web
-games, for Claude Code, Codex, and Kimi Code. It reads the source for what is
-actually playable, picks a strong adaptation direction, designs the world and
-the on-screen experience, then hands a bounded build brief to a coding agent and
-checks that the result runs.
+[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
 
-[中文](README.md)
+NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It does not pour a book into dialogue boxes. It turns the source's own rules, spaces, factions, and conflicts into player verbs, systems, levels, and a verifiable complete run.
 
-## Why It Exists
+[中文](README.md) · [Install](#install) · [Quick Start](#quick-start) · [See the Output](#output)
 
-Hand a novel to a model and ask for a game, and you usually get a generic reskin.
-NovelToGame solves the hard part: turning the book's own world, map, factions, quests, items, and drama into
-player verbs and a core loop, deciding what game it should become, and driving
-that all the way to a playable prototype.
+## Play the Games
 
-## Pipeline
+| Journey to the West · Three Borrowings of the Banana Fan | Jin Ping Mei · Ledger of Desire |
+|---|---|
+| [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
+| Turn-based systems RPG: elements, formations, transformations, companion, and multi-stage boss | 18+ relationship strategy game: six-day schedule, character agency, resource debts, and three outcomes |
+| **[Play online](https://xiyouji.vibecoco.ai)** · [Full artifacts](examples/journey-to-the-west/) · [Source provenance](examples/journey-to-the-west/source/SOURCE.md) | **[Play online](https://jinpingmei.vibecoco.ai)** · [Full artifacts](examples/jin-ping-mei/) · [Source provenance](examples/jin-ping-mei/source/SOURCE.md) |
 
-One orchestrator first frames the product, then drives six specialist stages,
-from raw text to a verified, playable prototype.
+Both examples include source provenance, product constraints, adaptation analysis, concept trade-offs, world and art direction, a build brief, and runnable source. The next English example is taking the same pipeline into **first-person 3D exploration**, demonstrating that it is not limited to text-forward or narrative genres.
 
-```mermaid
-flowchart LR
-    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
-    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
+## Quick Start
 
-    novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
-    orch --> intake --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
-    qa -.->|fails| build
+After installation, give the agent a novel file, directory, or link:
+
+```text
+Turn this novel into a complete 15-minute web game with novel-to-game quick.
+The player should enter the world as an original character rather than replay
+the protagonist's exact plot.
 ```
 
-`intake` is the first gate: before deconstructing anything, pin down the product frame with the user — **platform (client / web / mini-program), genre and benchmark titles (found in the market that matches the novel's language), art style, content rating / NSFW, core fantasy, game engine** — and lock it into `PRODUCT_BRIEF.md`, which every downstream stage must honor and may not silently rewrite. Both benchmarks and engine are WebSearch-verified, not recalled from memory.
+`quick` automatically selects the best-evidenced direction. Use `director` when you want to choose between three concepts before world design begins.
 
-## Skills
+## What It Solves
 
-| Skill | Purpose |
-|---|---|
-| `novel-to-game` | Orchestrate the pipeline: first a requirements intake that locks `PRODUCT_BRIEF` (platform / genre + benchmarks / art style / rating / core fantasy), then quick or director mode |
-| `novel-game-analyze` | Extract canon, verbs, systems, spaces, agents, and signature moments into a source bible |
-| `game-concept` | Propose, reject, and choose between three genuinely different games |
-| `game-world-design` | Define player experience, world behavior, systems, levels, and the playable prototype |
-| `game-art-direction` | Define visual pillars, camera, world grammar, HUD, feedback, and signature frames |
-| `game-build` | Produce the build brief and drive an implementation agent to a verified build |
-| `game-qa` | Verify startup, rendering, interaction, state transitions, completion, and restart |
+Ask a model to “make this book into a game” and the result is often a generic reskin or a clickable plot summary. NovelToGame separates the decisions that require real adaptation judgment:
 
-## Install With Agent Skills
+- **Lock product boundaries first:** platform, genre, target experience, art, rating, engine, and non-negotiables;
+- **Find playable evidence in the source:** rules, verbs, spaces, character agency, systems, and visual anchors;
+- **Give concept, level design, and art separate ownership:** implementation may not silently redesign them;
+- **Finish with real execution evidence:** startup, input, state changes, complete run, outcome, restart, and target viewport.
+
+Input novels may use any language. Generated artifacts follow the requested language or the conversation language while preserving necessary quotations and one terminology table.
+
+## Install
+
+### Agent Skills
 
 Install all seven skills for the CLI you use:
 
@@ -56,7 +54,7 @@ Install all seven skills for the CLI you use:
 | Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
-To install all three adapters at once, repeat `-a`:
+Install all three adapters at once:
 
 ```bash
 npx skills add worldwonderer/novel-to-game -g -y -s '*' \
@@ -65,7 +63,7 @@ npx skills add worldwonderer/novel-to-game -g -y -s '*' \
 
 Cloning the repository also enables project-local discovery in all three CLIs.
 
-## Native Plugin Install
+### Native Plugins
 
 Claude Code:
 
@@ -90,21 +88,37 @@ Kimi Code 0.27 or newer:
 /skill:novel-to-game quick
 ```
 
-## Quick Start
+## Pipeline
 
-```text
-Turn this novel into a complete 15-minute web game with novel-to-game quick.
-The player should enter the world as an original character rather than replay
-the protagonist's exact plot.
+The orchestrator freezes `PRODUCT_BRIEF.md`, then runs six stages with separate ownership. Failed QA returns to the build instead of being explained away in prose.
+
+```mermaid
+flowchart LR
+    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
+    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
+
+    novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
+    orch --> intake --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
+    qa -.->|fails| build
 ```
 
-`quick` is the default and auto-selects the best-evidenced concept. Use
-`director` when you want to pick between three concept directions before world
-design begins.
+Intake locks the platform, genre and web-verified benchmarks, art direction, content rating, core fantasy, and engine. Downstream stages must honor those boundaries instead of switching to an easier game during implementation.
+
+## Seven Skills
+
+| Skill | Purpose |
+|---|---|
+| `novel-to-game` | Orchestrate intake, mode selection, stage handoffs, and progress recovery |
+| `novel-game-analyze` | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
+| `game-concept` | Generate three materially different directions and choose with hard vetoes and trade-offs |
+| `game-world-design` | Define the player promise, core loop, world response, systems, levels, failure, and outcomes |
+| `game-art-direction` | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
+| `game-build` | Compress a build brief and drive a coding agent to a fully playable implementation |
+| `game-qa` | Verify with commands, states, screenshots, and real play paths without pretending subjective certainty |
 
 ## Output
 
-Each run creates a compact adaptation workspace:
+Each run creates a compact, self-contained adaptation workspace:
 
 ```text
 game-adaptations/<project>/
@@ -119,57 +133,31 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-## Worked Example — Journey to the West
+Core design artifacts do not depend on one model or frontend framework. The build stage chooses an implementation only after the design is approved.
 
-**三借芭蕉扇 (Three Borrowings of the Banana Fan)** — a turn-based command RPG in the 《梦幻西游》 tradition, distilled from the full 100-chapter public-domain text. **Play it: [xiyouji.vibecoco.ai](https://xiyouji.vibecoco.ai)**
+## Example Artifacts
 
-![Title screen](examples/journey-to-the-west/screenshots/title.jpg)
+### Journey to the West · Three Borrowings of the Banana Fan
 
-<details>
-<summary>Show the example's output tree</summary>
+A turn-based command RPG distilled from the complete 100-chapter public-domain text. Rather than replaying the novel, the player uses elements, formations, a companion, and transformations to complete a new loop across a multi-stage boss encounter.
 
-```text
-examples/journey-to-the-west/
-├── source/西游记.txt + SOURCE.md   # Full 100-chapter public-domain source + provenance
-├── PRODUCT_BRIEF.md                # Requirements intake: platform / genre + benchmarks / art / rating / fantasy
-├── analysis/SOURCE_BIBLE.md        # Gameable canon: rules, verbs, spaces, agents, signature moments
-├── concepts/CONCEPT.md             # Three materially different concepts, with the chosen one
-├── design/GAME_DESIGN.md           # Systems: turn order, 五行, skills, pet, formations, forms, boss
-├── design/ART_DIRECTION.md         # Woodblock visual identity, battle staging, HUD, signature frames
-├── build/BUILD_BRIEF.md            # Provider-neutral, bounded brief handed to the coding agent
-└── build/app/                      # The built, playable game — see build/app/RUN.md to run it
-```
+**[Play online](https://xiyouji.vibecoco.ai)** · [Runnable source](examples/journey-to-the-west/build/app/) · [Build brief](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA report](examples/journey-to-the-west/qa/QA_REPORT.md)
 
-</details>
+| Battle | Emerald Wave Pool | Hero panel |
+|---|---|---|
+| ![](examples/journey-to-the-west/screenshots/battle.jpg) | ![](examples/journey-to-the-west/screenshots/bibotan.jpg) | ![](examples/journey-to-the-west/screenshots/hero-panel.jpg) |
 
-## Complete example — Jin Ping Mei
+### Jin Ping Mei · Ledger of Desire
 
-*Ledger of Desire* — a six-day, male-POV adult harem relationship sim adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day while 孟玉楼, 孙雪娥, and 李娇儿 bring their own household problems; pursue full routes for 吴月娘, 潘金莲, and 李瓶儿 by night; then face whoever knocks the next morning. **18+; intimacy is gated by relationship choices and explicit consent; three reachable outcomes and a persistent scene gallery.** **Play it: [jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
+A six-day, male-POV relationship strategy game adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day, pursue three independent long routes by night, and face how the household responds the following morning.
 
-![Title screen](examples/jin-ping-mei/screenshots/title.jpg)
+**18+; intimate content is gated by relationship choices and explicit consent.** **[Play online](https://jinpingmei.vibecoco.ai)** · [Runnable source](examples/jin-ping-mei/build/app/) · [Build brief](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA report](examples/jin-ping-mei/qa/QA_REPORT.md)
 
 | Household side story | Morning consequence | Banquet conflict | Exclusive-route ending |
 |---|---|---|---|
 | ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
 > The public README embeds safe screenshots only. 18+ route CGs remain behind the in-game age gate.
-
-<details>
-<summary>Show the example's output tree</summary>
-
-```text
-examples/jin-ping-mei/
-├── source/金瓶梅.txt + SOURCE.md   # Public-domain 崇祯本 (expurgated) + reproducible expurgate.py
-├── PRODUCT_BRIEF.md                # Requirements intake: web · Chinese · male-POV harem relationship sim · 18+
-├── analysis/SOURCE_BIBLE.md        # Gameable canon: Ximen Qing's debts plus six household characters' goals and boundaries
-├── concepts/CONCEPT.md             # Three materially different concepts, with hard vetoes
-├── design/GAME_DESIGN.md           # Systems: six days, three full routes, three short arcs, three outcomes
-├── design/ART_DIRECTION.md         # Illustration style, compound cutaway, functional colour, signature frames
-├── build/BUILD_BRIEF.md            # Provider-neutral, bounded brief handed to the coding agent
-└── build/app/                      # The built, playable game — see build/app/RUN.md to run it
-```
-
-</details>
 
 ## Acknowledgments
 

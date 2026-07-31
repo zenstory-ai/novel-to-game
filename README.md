@@ -1,48 +1,49 @@
 # NovelToGame
 
-> 把任何小说变成可玩的网页游戏。
+> 把任何语言的小说，变成有原著依据、可完整游玩的网页游戏。
 
-NovelToGame 是一套把小说改编成网页游戏的开源技能，适配 Claude Code、Codex 和 Kimi Code。
-它先从原著里找出真正能玩的部分，挑一个合适的改编方向，设计出可玩的世界和画面，再把一份
-范围明确的构建说明交给编码智能体去实现，最后验证成品能不能跑起来。
+[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
 
-[English](README_EN.md)
+NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它负责的不是把原文套进对话框，而是把小说特有的规则、空间、势力和冲突变成玩家动作、系统、关卡与可验证的完整流程。
 
-## 为什么需要它
+[English](README_EN.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出)
 
-直接把小说丢给模型做游戏，出来的多半是换皮的通用玩法。NovelToGame 解决真正难的那一步：
-把这本书特有的世界观、地图、势力、任务、物品和情绪变成玩家动作和核心循环，判断它该做成什么游戏，再一路推进到
-能玩的原型。
+## 先玩成品
 
-## 流程
+| 《西游记》· 三借芭蕉扇 | 《金瓶梅》· 风月总账 |
+|---|---|
+| [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
+| 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 关系策略游戏：六日日程、角色意志、资源债与三种收束 |
+| **[在线试玩](https://xiyouji.vibecoco.ai)** · [完整工件](examples/journey-to-the-west/) · [原著出处](examples/journey-to-the-west/source/SOURCE.md) | **[在线试玩](https://jinpingmei.vibecoco.ai)** · [完整工件](examples/jin-ping-mei/) · [原著出处](examples/jin-ping-mei/source/SOURCE.md) |
 
-一个总入口先框定产品需求，再串起六个各司其职的环节，把原始文本一路打磨成可验证、可游玩的原型。
+两个示例都包含原著来源、产品约束、游戏化拆解、概念取舍、世界与美术设计、构建说明以及可运行源码。下一份英文示例正在把同一流程带入**第一人称 3D 探索**，验证它并不局限于文字或叙事类游戏。
 
-```mermaid
-flowchart LR
-    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
-    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
+## 快速开始
 
-    novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
-    orch --> 需求 --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
-    验证 -.->|未通过| 构建
+安装后，把小说文件、目录或链接交给 Agent：
+
+```text
+用 novel-to-game quick 把这本小说做成一个 15 分钟可完整游玩的网页游戏。
+玩家以原创身份进入世界，不要逐段复演原作剧情。
 ```
 
-「需求」是第一步：拿到小说先和用户明确**平台（客户端/网页/小程序）、游戏类型与对标名作（按小说语言对应的市场找）、美术画风、内容分级/NSFW、核心幻想、游戏引擎**等产品框架，锁进 `PRODUCT_BRIEF.md`，下游各阶段一律遵守、不得静默改写。对标与引擎都要 WebSearch 联网核实，不凭记忆。
+`quick` 会自动选择证据最强的方向；想在世界设计之前从三个方案里亲自选择，就使用 `director`。
 
-## 技能
+## 它解决什么
 
-| 技能 | 职责 |
-|---|---|
-| `novel-to-game` | 总入口：先过需求 intake 锁定 `PRODUCT_BRIEF`（平台/类型+对标/画风/分级/核心幻想），再以 quick / director 两种模式串起全流程 |
-| `novel-game-analyze` | 提取规则、动作、空间、角色、系统与名场面，梳理成一份游戏设定集 |
-| `game-concept` | 生成、淘汰并从三个真正不同的方案中做出选择 |
-| `game-world-design` | 设计玩家体验、会回应的世界、系统、关卡与完整可玩原型 |
-| `game-art-direction` | 定义核心视觉原则、镜头、世界的视觉语言、界面、反馈与招牌画面 |
-| `game-build` | 写出构建说明，并让编码智能体完成一次可验证的构建 |
-| `game-qa` | 验证启动、画面、交互、状态切换、通关与重开 |
+直接让模型“把这本书做成游戏”，经常只会得到换皮玩法或可点击的剧情摘要。NovelToGame 把最需要判断力的部分拆成明确关卡：
 
-## 通过 Agent Skills 安装
+- **先锁产品边界**：平台、类型、目标体验、画风、分级、引擎和不可改写项；
+- **再找可玩的原著证据**：规则、动作、空间、角色意志、系统与视觉锚点；
+- **让概念、关卡和美术各自负责**：实现阶段不能静默重做策划；
+- **以真实运行收尾**：启动、输入、状态变化、完整流程、结果、重开和目标视口都必须留下证据。
+
+输入小说可以是任意语言；生成工件默认跟随用户要求或对话语言，并保留必要的原文引证与术语表。
+
+## 安装
+
+### Agent Skills
 
 为你使用的 CLI 安装全部七个技能：
 
@@ -52,16 +53,16 @@ flowchart LR
 | Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
-同时安装三端，重复 `-a` 即可：
+同时安装三端：
 
 ```bash
 npx skills add worldwonderer/novel-to-game -g -y -s '*' \
   -a claude-code -a codex -a kimi-code-cli
 ```
 
-克隆仓库后，三端也都能发现项目内的 7 个技能。
+克隆仓库后，三端也能发现项目内的七个技能。
 
-## 原生插件安装
+### 原生插件
 
 Claude Code：
 
@@ -86,19 +87,37 @@ Kimi Code 0.27 或更高版本：
 /skill:novel-to-game quick
 ```
 
-## 快速开始
+## 流程
 
-```text
-用 novel-to-game quick 把这本小说做成一个 15 分钟可完整游玩的网页游戏。
-玩家以原创身份进入世界，不要逐段复演原作剧情。
+总入口先冻结 `PRODUCT_BRIEF.md`，再串起六个职责分离的阶段；验证失败会回到构建，而不是用文字结论替代修复。
+
+```mermaid
+flowchart LR
+    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
+    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
+
+    novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
+    orch --> 需求 --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
+    验证 -.->|未通过| 构建
 ```
 
-`quick` 是默认模式，会自动挑证据最强的方案；想在世界设计之前先从三个方向里做选择，
-就用 `director` 模式。
+需求阶段会锁定平台、游戏类型与联网核实的对标、美术方向、内容分级、核心幻想和引擎。下游必须遵守这些边界，不能在实现时悄悄换成更容易做的游戏。
+
+## 七个技能
+
+| 技能 | 职责 |
+|---|---|
+| `novel-to-game` | 总入口：需求 intake、模式选择、阶段编排与进度恢复 |
+| `novel-game-analyze` | 提取规则、动作、空间、角色、系统与名场面，形成有引证的设定集 |
+| `game-concept` | 生成三个真正不同的方向，用硬否决与取舍选出一个 |
+| `game-world-design` | 定义玩家承诺、核心循环、世界响应、系统、关卡、失败与结果 |
+| `game-art-direction` | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
+| `game-build` | 压缩构建说明，驱动编码智能体实现可完整游玩的原型 |
+| `game-qa` | 用命令、状态、截图与实际游玩路径验证构建，不伪装主观结论 |
 
 ## 产出
 
-每次运行都会创建一个紧凑的改编工作区：
+每次运行创建一个紧凑、自包含的改编工作区：
 
 ```text
 game-adaptations/<project>/
@@ -113,57 +132,31 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-## 完整示例 —— 《西游记》
+核心设计工件不绑定某个模型或前端框架；构建阶段再根据已批准的设计选择合适实现。
 
-从完整公版百回本提炼的《三借芭蕉扇》——一款《梦幻西游》风格的回合制指令 RPG。**在线试玩：[xiyouji.vibecoco.ai](https://xiyouji.vibecoco.ai)**
+## 示例工件
 
-![标题画面](examples/journey-to-the-west/screenshots/title.jpg)
+### 《西游记》· 三借芭蕉扇
 
-<details>
-<summary>展开示例的产出目录树</summary>
+从完整公版百回本提炼的回合制指令 RPG。玩家不是复述原著，而是利用五行、阵型、携宠和变化，在多阶段 Boss 战中完成新的行动闭环。
 
-```text
-examples/journey-to-the-west/
-├── source/西游记.txt + SOURCE.md   # 完整公版百回本原著 + 来源出处
-├── PRODUCT_BRIEF.md                # 需求 intake：平台/类型+对标/画风/分级/核心幻想
-├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：规则、动作、空间、角色、名场面
-├── concepts/CONCEPT.md             # 三个真正不同的概念，含入选方案与取舍
-├── design/GAME_DESIGN.md           # 系统：行动顺序、五行、技能、携宠、阵型、变化、多阶段Boss
-├── design/ART_DIRECTION.md         # 木刻视觉风格、战斗舞台、界面、招牌画面
-├── build/BUILD_BRIEF.md            # 交给编码智能体的、不挑模型、范围明确的构建说明
-└── build/app/                      # 已构建的可玩游戏——运行方式见 build/app/RUN.md
-```
+**[在线试玩](https://xiyouji.vibecoco.ai)** · [运行源码](examples/journey-to-the-west/build/app/) · [构建说明](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA 报告](examples/journey-to-the-west/qa/QA_REPORT.md)
 
-</details>
+| 战斗 | 碧波潭 | 主角面板 |
+|---|---|---|
+| ![](examples/journey-to-the-west/screenshots/battle.jpg) | ![](examples/journey-to-the-west/screenshots/bibotan.jpg) | ![](examples/journey-to-the-west/screenshots/hero-panel.jpg) |
 
-## 完整示例 —— 《金瓶梅》
+### 《金瓶梅》· 风月总账
 
-从公版崇祯本重制的《风月总账》——一款 6 日男性第一人称成人后宫关系模拟：白日经营钱、势与秘密，也会碰上孟玉楼、孙雪娥、李娇儿递来的三桩事；夜里推进吴月娘、潘金莲、李瓶儿三条独立深线，天亮便有人来敲门。**18+；关系与明确意愿门控亲密场景；3 种可达收束；永久场景册。** **在线试玩：[jinpingmei.vibecoco.ai](https://jinpingmei.vibecoco.ai)**
+从公版崇祯本重制的六日男性第一人称关系策略游戏。白日经营钱、势与秘密，夜里推进三条独立深线，次日承担人物和宅院对前一日选择的回应。
 
-![标题画面](examples/jin-ping-mei/screenshots/title.jpg)
+**18+；亲密内容由关系选择和明确意愿门控。** **[在线试玩](https://jinpingmei.vibecoco.ai)** · [运行源码](examples/jin-ping-mei/build/app/) · [构建说明](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA 报告](examples/jin-ping-mei/qa/QA_REPORT.md)
 
 | 宅中短线 | 次晨回响 | 中秋冲突 | 专一收束 |
 |---|---|---|---|
 | ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
 > 公开 README 只展示安全截图；年龄确认后的 18+ 路线 CG 不嵌入此页。
-
-<details>
-<summary>展开示例的产出目录树</summary>
-
-```text
-examples/jin-ping-mei/
-├── source/金瓶梅.txt + SOURCE.md   # 公版崇祯本百回原著（删节洁本）+ expurgate.py 可复现生成
-├── PRODUCT_BRIEF.md                # 需求 intake：网页·中文·男性主观后宫·18+
-├── analysis/SOURCE_BIBLE.md        # 游戏化设定集：西门庆资源债、六名宅中人物的目标与边界
-├── concepts/CONCEPT.md             # 三个真正不同的概念，含入选方案与硬否决
-├── design/GAME_DESIGN.md           # 系统：6 日日程、三条深线、三条短线、三种收束
-├── design/ART_DIRECTION.md         # 绣像视觉风格、宅院剖面、功能三色、招牌画面
-├── build/BUILD_BRIEF.md            # 交给编码智能体的、不挑模型、范围明确的构建说明
-└── build/app/                      # 已构建的可玩游戏——运行方式见 build/app/RUN.md
-```
-
-</details>
 
 ## 致谢
 
