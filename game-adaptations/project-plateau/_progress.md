@@ -5,6 +5,7 @@
 - Current stage: `build`
 - Completed stages: `intake`, `analyze`, `concept`, `world-design`, `art-direction`
 - Selected concept: `Proof Before Dark` in `concepts/CONCEPT.md`
+- Frozen build contract: `build/BUILD_BRIEF.md`
 - Updated: 2026-07-31 PT
 - Analysis coverage: `analysis/_coverage.md`; source 16 / success 16 / failed 0
 
@@ -17,6 +18,8 @@
 `gate:world-design pass` — `design/GAME_DESIGN.md` defines one core system, two supports, a five-beat complete run, first-minute copy, four deterministic outcome bands, a reachable numeric budget, a four-state decision flip and bound Strong/Mixed/Panic reference paths. It does not promote factions, combat breadth or a true open world into the prototype.
 
 `gate:art-direction pass` — `design/ART_DIRECTION.md` covers every designed space, unit, interaction and terminal state; binds all five core verbs to motion, sound and reduced-motion feedback; defines seven buildable signature moments; and separates release-gate assets from degradable fallbacks with explicit reference-rights boundaries. Real-render screenshot and video evidence remains a build/QA release gate rather than a claim made by this planning artifact.
+
+`gate:build-brief pass` — `build/BUILD_BRIEF.md` freezes the approved loop before implementation, including exact first-minute copy, five verb-to-state contracts, the three-part action arc, ten release-gate asset keys, seven dynamic-media boundaries and one authoritative three-suite verification plan. Runtime results and final scope reconciliation remain open until the playable build exists.
 
 ## Notes
 
