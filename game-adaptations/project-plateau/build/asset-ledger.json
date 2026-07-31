@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-07-31 PT",
+  "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
+  "entries": [
+    {
+      "key": "world.connected_route",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/src/world.js",
+      "provenance": "Original deterministic procedural geometry",
+      "rights": "Original project code and geometry",
+      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/03-glade-heavy.jpg"],
+      "remaining": "Collision, final route topology, cover and all landmarks must pass real-play evidence."
+    },
+    {
+      "key": "tool.field_camera",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/src/world.js",
+      "provenance": "Original primitive model informed by generic period camera construction",
+      "rights": "Original project geometry; no maker marks or copied product mesh",
+      "evidence": ["evidence/s0/01-title.jpg"],
+      "remaining": "Player-held folded/raised states, plate insertion and shutter commitment are not implemented."
+    },
+    {
+      "key": "tool.plate_case",
+      "tier": "release-gate",
+      "status": "not-started",
+      "releaseGatePassed": false,
+      "source": "NOT_AVAILABLE: later build gate",
+      "provenance": "Planned original geometry",
+      "rights": "Original project geometry required",
+      "evidence": [],
+      "remaining": "Four exact slots, cue states, preview and physical cracks."
+    },
+    {
+      "key": "tool.period_rifle",
+      "tier": "release-gate",
+      "status": "not-started",
+      "releaseGatePassed": false,
+      "source": "NOT_AVAILABLE: later build gate",
+      "provenance": "Planned original subordinate silhouette",
+      "rights": "Original project geometry required",
+      "evidence": [],
+      "remaining": "Hidden/raised/chamber states and timely response."
+    },
+    {
+      "key": "subject.iguanodon_family",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/src/world.js",
+      "provenance": "Original low-poly procedural family blockout",
+      "rights": "Original project geometry; museum pages inform facts only",
+      "evidence": ["evidence/s0/03-glade-heavy.jpg"],
+      "remaining": "Distinct anatomy, family readability and graze/play/branch-pull/withdraw states need production and evidence."
+    },
+    {
+      "key": "threat.pterodactyl",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/src/world.js",
+      "provenance": "Original membrane-wing silhouette and deterministic orbit",
+      "rights": "Original project geometry; museum pages inform facts only",
+      "evidence": ["evidence/s0/02-field-order.jpg", "evidence/s0/03-glade-heavy.jpg"],
+      "remaining": "Watch/search/attack, shadow, cover pull-up and shot response are not implemented."
+    },
+    {
+      "key": "ui.field_system",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/index.html; app/src/styles.css",
+      "provenance": "Original HTML/CSS interface using system fonts",
+      "rights": "Original project layout and icons",
+      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/02-field-order.jpg", "evidence/s0/04-minimum-viewport.jpg"],
+      "remaining": "Gameplay prompts, watch, chambers, plate previews, pause, result and failure states remain."
+    },
+    {
+      "key": "light.functional_arc",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/src/main.js; app/src/config.js",
+      "provenance": "Original real-time lighting and approved functional palette",
+      "rights": "Original project code; no third-party sky",
+      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/03-glade-heavy.jpg"],
+      "remaining": "Deadline arc and decision-state legibility are not implemented."
+    },
+    {
+      "key": "audio.core_world",
+      "tier": "release-gate",
+      "status": "not-started",
+      "releaseGatePassed": false,
+      "source": "NOT_AVAILABLE: later build gate",
+      "provenance": "Planned original synthesis or redistribution-compatible local recording",
+      "rights": "Asset-level rights record required",
+      "evidence": [],
+      "remaining": "All core action, threat, cover, rifle, result and failure layers."
+    },
+    {
+      "key": "accessibility.presentation",
+      "tier": "release-gate",
+      "status": "functional-graybox",
+      "releaseGatePassed": false,
+      "source": "app/index.html; app/src/main.js; app/src/styles.css",
+      "provenance": "Original reduced-motion and text-scale controls",
+      "rights": "Original project UI",
+      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/04-minimum-viewport.jpg"],
+      "remaining": "Captions, channel volume controls, gameplay non-colour redundancy and saved settings remain."
+    }
+  ]
+}

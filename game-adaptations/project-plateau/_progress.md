@@ -21,6 +21,8 @@
 
 `gate:build-brief pass` — `build/BUILD_BRIEF.md` freezes the approved loop before implementation, including exact first-minute copy, five verb-to-state contracts, the three-part action arc, ten release-gate asset keys, seven dynamic-media boundaries and one authoritative three-suite verification plan. Runtime results and final scope reconciliation remain open until the playable build exists.
 
+`checkpoint:S0 pass` — the local Three.js `0.185.1` / Vite `8.2.0` foundation renders a real WebGL2 title, field-order handoff and representative 25,001-triangle glade at both locked viewports with no console errors or external request hosts. The recorded 240-frame headless sample measured 120.5 median FPS / 98.0 one-percent-low FPS, 874.4 ms observed navigation-to-ready and 138,574 gzip bytes. This checkpoint does not claim locomotion, collision, gameplay state, audio or a complete run; those remain open gates in `build/evidence/s0/report.json` and `build/asset-ledger.json`.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

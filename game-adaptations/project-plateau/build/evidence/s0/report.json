@@ -1,0 +1,85 @@
+{
+  "stage": "s0-renderer",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "46e28d1029ca457e53b297ab6549490d5d42fd004dba7e6e99eb04a77a87cdc5"
+  },
+  "environment": {
+    "node": "v25.9.0",
+    "npm": "11.12.1",
+    "vite": "8.2.0",
+    "three": "0.185.1",
+    "python": "3.14.5",
+    "browser": "Google Chrome 150.0.7871.187",
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "webgl2": true,
+    "titleMenu": true,
+    "fieldOrder": true,
+    "representativeHeavyFrame": true,
+    "minimumViewport": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 98,
+    "worstFrameMs": 10.3
+  },
+  "loading": {
+    "observedTtiMs": 874.4,
+    "budgetTtiMs": 8000,
+    "distRawBytes": 548896,
+    "distGzipBytes": 138574,
+    "initialCompressedBudgetBytes": 20971520
+  },
+  "render": {
+    "stage": "s0-renderer",
+    "mode": "field",
+    "renderer": "WebGL2",
+    "sceneChildren": 21,
+    "calls": 55,
+    "triangles": 25001,
+    "textures": 1,
+    "geometries": 25,
+    "viewport": [
+      1440,
+      900
+    ],
+    "firstRenderedAt": 299.2000000476837,
+    "recentMedianFrameMs": 8.3
+  },
+  "minimumRender": {
+    "stage": "s0-renderer",
+    "mode": "field",
+    "renderer": "WebGL2",
+    "sceneChildren": 21,
+    "calls": 56,
+    "triangles": 25004,
+    "textures": 1,
+    "geometries": 25,
+    "viewport": [
+      1280,
+      720
+    ],
+    "firstRenderedAt": 299.2000000476837,
+    "recentMedianFrameMs": 8.3
+  },
+  "screenshots": [
+    "build/evidence/s0/01-title.jpg",
+    "build/evidence/s0/02-field-order.jpg",
+    "build/evidence/s0/03-glade-heavy.jpg",
+    "build/evidence/s0/04-minimum-viewport.jpg"
+  ],
+  "limitations": [
+    "S0 proves the renderer, representative scene density, loading and viewport baseline only.",
+    "Player locomotion, collision, gameplay state, audio and complete-run evidence remain later gates.",
+    "Performance was sampled headlessly on one development machine and is not a target-device matrix."
+  ]
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Project Plateau: a first-person 3D field-record survival prototype."
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <title>Project Plateau · Proof Before Dark</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="game-canvas" aria-label="A live three-dimensional plateau at late afternoon"></canvas>
+      <section id="unsupported" class="card" hidden>
+        <p class="eyebrow">Renderer unavailable</p>
+        <h1>WebGL2 is required.</h1>
+        <p>This desktop prototype needs a browser with WebGL2 enabled.</p>
+      </section>
+
+      <section id="title-screen" aria-labelledby="game-title">
+        <div class="glass-plate" aria-hidden="true">
+          <span class="plate-cliff"></span>
+          <span class="plate-tree"></span>
+          <span class="plate-wing"></span>
+        </div>
+        <div class="title-copy">
+          <p class="eyebrow">A field record from the plateau</p>
+          <h1 id="game-title">Project Plateau</h1>
+          <p class="subtitle">Proof Before Dark</p>
+          <div class="menu" aria-label="Main menu">
+            <button id="enter-button" type="button">Enter the basin</button>
+            <button id="settings-button" type="button" class="secondary">Settings</button>
+            <button id="credits-button" type="button" class="secondary">Credits</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="field-order" class="card" hidden aria-labelledby="order-title">
+        <p id="order-title" class="eyebrow">FIELD ORDER // FORWARD SCOUT</p>
+        <p>Photograph living proof. Return to Fort Challenger before sundown.</p>
+        <p class="order-condition">A sighting without the plate will not survive London.</p>
+        <button id="dismiss-order" type="button">Begin field work</button>
+      </section>
+
+      <section id="settings-panel" class="card panel" hidden aria-labelledby="settings-title">
+        <button class="panel-close" type="button" aria-label="Close settings">×</button>
+        <p class="eyebrow">Field settings</p>
+        <h2 id="settings-title">Presentation</h2>
+        <label><input id="reduced-motion" type="checkbox" /> Reduced motion</label>
+        <label>
+          Text size
+          <select id="text-scale">
+            <option value="1">100%</option>
+            <option value="1.25">125%</option>
+            <option value="1.5">150%</option>
+          </select>
+        </label>
+      </section>
+
+      <section id="credits-panel" class="card panel" hidden aria-labelledby="credits-title">
+        <button class="panel-close" type="button" aria-label="Close credits">×</button>
+        <p class="eyebrow">Source note</p>
+        <h2 id="credits-title">Project Plateau</h2>
+        <p>
+          Adapted from Arthur Conan Doyle's 1912 novel <cite>The Lost World</cite>,
+          using the public-domain Project Gutenberg text in the repository.
+        </p>
+        <p>Original real-time scene and interface. No modern adaptation assets.</p>
+      </section>
+
+      <div id="field-hud" hidden aria-live="polite">
+        <p id="control-hint">Move [WASD] · Look [Mouse]</p>
+        <div id="plate-rail" aria-label="Four unexposed glass plates">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <aside id="s0-badge" aria-label="Development build">S0 · renderer proof</aside>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

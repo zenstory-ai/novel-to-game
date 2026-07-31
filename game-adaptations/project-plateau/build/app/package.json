@@ -1,0 +1,24 @@
+{
+  "name": "project-plateau-proof-before-dark",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A first-person 3D field-record survival slice inspired by Arthur Conan Doyle's The Lost World.",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test test/*.test.js",
+    "test:browser": "python3 test/qa_s0.py",
+    "verify:s0": "npm test && npm run build && npm run test:browser"
+  },
+  "dependencies": {
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "vite": "8.2.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
