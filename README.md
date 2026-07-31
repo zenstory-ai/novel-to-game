@@ -7,7 +7,7 @@
 
 NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它负责的不是把原文套进对话框，而是把小说特有的规则、空间、势力和冲突变成玩家动作、系统、关卡与可验证的完整流程。
 
-[English](README_EN.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出)
+[English](README_EN.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出) · [参与贡献](CONTRIBUTING.md)
 
 ## 先玩成品
 
@@ -170,6 +170,11 @@ game-adaptations/<project>/
 | ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
 > 公开 README 只展示安全截图；年龄确认后的 18+ 路线 CG 不嵌入此页。
+
+## 参与贡献
+
+欢迎提交可复现的 Bug、有证据的 Skill 能力缺口和具有新改编价值的示例提案。
+请先阅读 [贡献指南](CONTRIBUTING.md)，并使用仓库的结构化 Issue 与 PR 模板。
 
 ## 致谢
 

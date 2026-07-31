@@ -7,7 +7,7 @@
 
 NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It does not pour a book into dialogue boxes. It turns the source's own rules, spaces, factions, and conflicts into player verbs, systems, levels, and a verifiable complete run.
 
-[中文](README.md) · [Install](#install) · [Quick Start](#quick-start) · [See the Output](#output)
+[中文](README.md) · [Install](#install) · [Quick Start](#quick-start) · [See the Output](#output) · [Contributing](CONTRIBUTING.md)
 
 ## Play the Games
 
@@ -171,6 +171,12 @@ A six-day, male-POV relationship strategy game adapted from the public-domain �
 | ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
 > The public README embeds safe screenshots only. 18+ route CGs remain behind the in-game age gate.
+
+## Contributing
+
+Reproducible bugs, evidenced skill gaps, and example proposals with a distinct
+adaptation lesson are welcome. Read the [contribution guide](CONTRIBUTING.md)
+and use the repository's structured issue and pull request templates.
 
 ## Acknowledgments
 

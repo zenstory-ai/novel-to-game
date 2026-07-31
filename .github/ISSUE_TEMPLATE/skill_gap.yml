@@ -1,0 +1,77 @@
+name: Skill gap / Skill 能力缺口
+description: Propose reusable adaptation guidance for a specific, evidenced failure. / 提交有证据的可复用改编能力缺口。
+title: "[Skill gap]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A skill gap is not a provider comparison or a request to teach a mainstream framework. Show the adaptation judgment that is missing and a case that would distinguish success from failure.
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Pipeline stage / 流程阶段
+      options:
+        - Requirements intake and orchestration
+        - Novel analysis
+        - Game concept
+        - World, systems, or level design
+        - Art direction
+        - Build handoff and implementation
+        - Game QA and evidence
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_case
+    attributes:
+      label: User case / 用户场景
+      description: What source-safe request exposes the gap? Preserve the source language when it matters.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_failure
+    attributes:
+      label: Current failure / 当前失败
+      description: Describe the predictable bad decision or artifact, not only the desired feature.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reusable_judgment
+    attributes:
+      label: Reusable adaptation judgment / 可复用的改编判断
+      description: What decision rule, handoff contract, or evidence requirement should the skill encode?
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence / 验收证据
+      description: Give a bounded case and observable evidence that would distinguish a fix from a prose-only change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Scope boundaries / 范围边界
+      description: What should remain unchanged? Note language, source, rating, provider, framework, or dependency constraints.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks / 提交检查
+      options:
+        - label: I searched for an existing skill gap covering the same adaptation decision.
+          required: true
+        - label: This proposal is about reusable adaptation know-how, a necessary handoff, or evidence-based QA.
+          required: true
+        - label: The report contains no private manuscript or unlicensed asset.
+          required: true

@@ -43,6 +43,46 @@ class RepositoryValidationTests(unittest.TestCase):
     def test_repository_contract_is_valid(self) -> None:
         self.assertEqual(validate_repository(ROOT), [])
 
+    def test_community_contribution_surface_is_complete(self) -> None:
+        required_markers = {
+            "CONTRIBUTING.md": [
+                "python3 scripts/validate_repo.py",
+                "python3 -m unittest discover -s tests -v",
+                "source and asset provenance",
+                "NOT_RUN: <reason>",
+            ],
+            ".github/ISSUE_TEMPLATE/config.yml": [
+                "blank_issues_enabled: false",
+                "/discussions",
+            ],
+            ".github/ISSUE_TEMPLATE/bug_report.yml": [
+                "Minimal reproduction",
+                "Environment",
+                "Evidence",
+            ],
+            ".github/ISSUE_TEMPLATE/skill_gap.yml": [
+                "Reusable adaptation judgment",
+                "Acceptance evidence",
+                "Scope boundaries",
+            ],
+            ".github/ISSUE_TEMPLATE/example_proposal.yml": [
+                "Rights and redistribution",
+                "Distinct learning value",
+                "Complete vertical slice",
+                "Evidence plan",
+            ],
+            ".github/pull_request_template.md": [
+                "Source and asset provenance",
+                "Risks and untested scope",
+                "README.md` and `README_EN.md",
+            ],
+        }
+        for relative_path, markers in required_markers.items():
+            with self.subTest(path=relative_path):
+                content = (ROOT / relative_path).read_text(encoding="utf-8")
+                for marker in markers:
+                    self.assertIn(marker, content)
+
     def test_skill_validator_rejects_todo_and_broken_link(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             skill = Path(temporary) / "demo"

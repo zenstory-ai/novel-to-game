@@ -1,0 +1,87 @@
+name: Example proposal / 示例提案
+description: Propose a source-grounded playable example with a distinct product-learning purpose. / 提案有明确学习价值的可玩示例。
+title: "[Example]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Examples are evidence for the adaptation pipeline, not a gallery slot. The proposal must have a legal source, a distinct learning purpose, a complete playable scope, and a realistic evidence plan.
+
+  - type: textarea
+    id: source
+    attributes:
+      label: Source work and edition / 原著与版本
+      description: Give title, author, source language, edition or archive identifier, and authoritative URL.
+    validations:
+      required: true
+
+  - type: textarea
+    id: rights
+    attributes:
+      label: Rights and redistribution / 权利与再分发
+      description: State the public-domain or licence basis separately for text, images, audio, fonts, and models.
+    validations:
+      required: true
+
+  - type: input
+    id: artifact_language
+    attributes:
+      label: Artifact language / 工件语言
+      description: The language that example.json, planning artifacts, provenance, and in-game UI will declare.
+      placeholder: "en, zh-CN, ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: playable_promise
+    attributes:
+      label: Playable promise / 可玩承诺
+      description: What will the player repeatedly do, decide, risk, and complete?
+    validations:
+      required: true
+
+  - type: textarea
+    id: learning_value
+    attributes:
+      label: Distinct learning value / 独特学习价值
+      description: Which new genre, interaction model, language, source structure, or evidence pattern does this add beyond existing examples?
+    validations:
+      required: true
+
+  - type: textarea
+    id: vertical_slice
+    attributes:
+      label: Complete vertical slice / 完整垂直切片
+      description: Bound the spaces, systems, outcomes, restart, target viewport, and expected run length.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence_plan
+    attributes:
+      label: Evidence plan / 证据计划
+      description: List source citations, verification command, complete-run path, state/browser/visual checkpoints, and known subjective gates.
+    validations:
+      required: true
+
+  - type: input
+    id: content_rating
+    attributes:
+      label: Content rating and boundaries / 内容分级与边界
+      placeholder: "Audience, sensitive content, age gate, excluded material"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks / 提交检查
+      options:
+        - label: I verified that the proposed source and bundled assets may be redistributed.
+          required: true
+        - label: The example adds a distinct adaptation or evidence lesson rather than only another theme.
+          required: true
+        - label: I did not paste a private or copyrighted manuscript into this issue.
+          required: true

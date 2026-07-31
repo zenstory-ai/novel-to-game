@@ -1,0 +1,97 @@
+name: Bug report / Bug 报告
+description: Report a reproducible failure in a skill, plugin, validator, example, or documented command. / 报告可复现故障。
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for making the failure reproducible. Remove credentials, private prompts, manuscripts, and unlicensed source material before submitting.
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface / 受影响范围
+      options:
+        - Orchestration or requirements intake
+        - Novel analysis or source evidence
+        - Concept selection
+        - World or level design
+        - Art direction
+        - Game build
+        - Game QA or evidence
+        - Plugin installation or discovery
+        - Repository validator or tests
+        - Shipped example
+        - In-development adaptation
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit / 版本或提交
+      description: Include the NovelToGame version or commit and the agent CLI when relevant.
+      placeholder: "NovelToGame 0.1.0 at abc1234; Codex CLI ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior / 实际行为
+      description: Describe the user-visible failure and its impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction / 最小复现
+      description: Give the smallest source-safe input and exact steps or commands.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期行为
+      description: Point to the documented contract when possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment / 环境
+      description: OS, agent CLI and version, browser/runtime, installation method, and relevant model surface.
+      value: |
+        - OS:
+        - Agent CLI and version:
+        - Browser/runtime:
+        - Installation method:
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / 证据
+      description: Paste concise logs or attach screenshots/state records. Remove secrets and private source text.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks / 提交检查
+      options:
+        - label: I searched existing issues and pull requests for this failure.
+          required: true
+        - label: I removed credentials, private prompts, manuscripts, and unlicensed assets from the report.
+          required: true
