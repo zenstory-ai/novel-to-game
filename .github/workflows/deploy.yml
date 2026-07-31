@@ -1,7 +1,7 @@
 name: Deploy
 
-# Auto-deploy each example to its Vercel project on push to main.
-# Only the example whose build/app changed is deployed (path-filtered).
+# Auto-deploy each public build to its Vercel project on push to main.
+# Only the build whose app changed is deployed (path-filtered).
 # Triggers on push to main ONLY (never pull_request), so fork PRs cannot access
 # the VERCEL_TOKEN secret. Org/project IDs are not secret; only the token is.
 
@@ -11,6 +11,7 @@ on:
     paths:
       - 'examples/jin-ping-mei/build/app/**'
       - 'examples/journey-to-the-west/build/app/**'
+      - 'game-adaptations/project-plateau/build/app/**'
 
 permissions:
   contents: read
@@ -25,9 +26,10 @@ jobs:
     outputs:
       jpm: ${{ steps.filter.outputs.jpm }}
       jttw: ${{ steps.filter.outputs.jttw }}
+      plateau: ${{ steps.filter.outputs.plateau }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -35,6 +37,8 @@ jobs:
               - 'examples/jin-ping-mei/build/app/**'
             jttw:
               - 'examples/journey-to-the-west/build/app/**'
+            plateau:
+              - 'game-adaptations/project-plateau/build/app/**'
 
   jinpingmei:
     needs: changes
@@ -44,8 +48,8 @@ jobs:
       VERCEL_ORG_ID: team_7CeznqN3lf1QyYttbNraqTqn
       VERCEL_PROJECT_ID: prj_3NivRckkfUDdqFljHLgJAV7W1ZD4
     steps:
-      - uses: actions/checkout@v4
-      - run: npm i -g vercel@latest
+      - uses: actions/checkout@v7
+      - run: npm i -g vercel@56.4.0
       - name: Deploy jinpingmei to production
         working-directory: examples/jin-ping-mei/build/app
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
@@ -58,8 +62,22 @@ jobs:
       VERCEL_ORG_ID: team_7CeznqN3lf1QyYttbNraqTqn
       VERCEL_PROJECT_ID: prj_Cqwwax2RKUR5Snd2CX2yVbmirPDD
     steps:
-      - uses: actions/checkout@v4
-      - run: npm i -g vercel@latest
+      - uses: actions/checkout@v7
+      - run: npm i -g vercel@56.4.0
       - name: Deploy xiyouji to production
         working-directory: examples/journey-to-the-west/build/app
+        run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+  project-plateau:
+    needs: changes
+    if: needs.changes.outputs.plateau == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_7CeznqN3lf1QyYttbNraqTqn
+      VERCEL_PROJECT_ID: prj_jDsj0qy6UFiwnVpAAqsSQayVpMQU
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm i -g vercel@56.4.0
+      - name: Deploy Project Plateau preview to production
+        working-directory: game-adaptations/project-plateau/build/app
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
