@@ -1,0 +1,208 @@
+{
+  "capture": "one continuous input-only Strong run",
+  "edit": "uniform time compression only; no state cuts or splices",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "url": "http://127.0.0.1:4173/?media=strong",
+  "sourceFingerprint": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268",
+  "consoleErrors": [],
+  "requestHosts": [
+    "127.0.0.1:4173"
+  ],
+  "externalHosts": [],
+  "raw": {
+    "path": "media/clip/raw_take.webm",
+    "bytes": 6004702,
+    "sha256": "f59316610ae4f7ecb7f845c5ba8720d5444ff9d98fe80afd68830530d9342a5a",
+    "durationSeconds": 56.64,
+    "marksToSourceOffset": 0.873
+  },
+  "strongWindow": {
+    "sourceStartSeconds": 3.085,
+    "sourceDurationSeconds": 53.555
+  },
+  "marks": [
+    {
+      "label": "strong_start",
+      "t": 2.212,
+      "state": "field-order"
+    },
+    {
+      "label": "fort_to_brook:start",
+      "t": 2.588,
+      "input": "KeyW",
+      "position": {
+        "x": 3,
+        "z": 70
+      }
+    },
+    {
+      "label": "fort_to_brook:end",
+      "t": 8.627,
+      "position": {
+        "x": 3,
+        "z": 44.977
+      }
+    },
+    {
+      "label": "brook_plate:start",
+      "t": 8.629,
+      "input": "Right Mouse + Left Mouse",
+      "plate": 1
+    },
+    {
+      "label": "brook_plate:end",
+      "t": 10.779,
+      "frame": "brook-partial",
+      "points": 1
+    },
+    {
+      "label": "brook_to_basalt:start",
+      "t": 10.784,
+      "input": "KeyW",
+      "position": {
+        "x": 3,
+        "z": 44.977
+      }
+    },
+    {
+      "label": "brook_to_basalt:end",
+      "t": 17.284,
+      "position": {
+        "x": 3,
+        "z": 17.987
+      }
+    },
+    {
+      "label": "basalt_plate:start",
+      "t": 17.284,
+      "input": "Right Mouse + Left Mouse",
+      "plate": 2
+    },
+    {
+      "label": "basalt_plate:end",
+      "t": 19.435,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "label": "enter_canopy:start",
+      "t": 19.438,
+      "input": "KeyA",
+      "position": {
+        "x": 3,
+        "z": 17.987
+      }
+    },
+    {
+      "label": "enter_canopy:end",
+      "t": 19.592,
+      "position": {
+        "x": 2.682,
+        "z": 17.987
+      }
+    },
+    {
+      "label": "first_cover_read:start",
+      "t": 19.592,
+      "input": "hold position under cover"
+    },
+    {
+      "label": "first_cover_read:end",
+      "t": 25.448,
+      "awareness": 2
+    },
+    {
+      "label": "canopy_to_glade:start",
+      "t": 25.452,
+      "input": "KeyW",
+      "position": {
+        "x": 2.682,
+        "z": 17.987
+      }
+    },
+    {
+      "label": "canopy_to_glade:end",
+      "t": 29.333,
+      "position": {
+        "x": 2.682,
+        "z": 1.994
+      }
+    },
+    {
+      "label": "young_play_plate:start",
+      "t": 29.335,
+      "input": "Right Mouse + Left Mouse",
+      "plate": 3
+    },
+    {
+      "label": "young_play_plate:end",
+      "t": 31.485,
+      "frame": "glade-young-play",
+      "points": 2
+    },
+    {
+      "label": "branch_pull_plate:start",
+      "t": 31.485,
+      "input": "Right Mouse + Left Mouse",
+      "plate": 4
+    },
+    {
+      "label": "branch_pull_plate:end",
+      "t": 33.634,
+      "frame": "glade-branch-pull",
+      "points": 2
+    },
+    {
+      "label": "retreat_to_cover:start",
+      "t": 33.636,
+      "input": "KeyS",
+      "position": {
+        "x": 2.682,
+        "z": 1.994
+      }
+    },
+    {
+      "label": "retreat_to_cover:end",
+      "t": 34.002,
+      "position": {
+        "x": 2.682,
+        "z": 3.219
+      }
+    },
+    {
+      "label": "final_cover_read:start",
+      "t": 34.002,
+      "input": "hold position under cover"
+    },
+    {
+      "label": "final_cover_read:end",
+      "t": 39.87,
+      "awareness": 2
+    },
+    {
+      "label": "covered_return:start",
+      "t": 39.872,
+      "input": "KeyS",
+      "position": {
+        "x": 2.682,
+        "z": 3.219
+      }
+    },
+    {
+      "label": "covered_return:end",
+      "t": 53.959,
+      "position": {
+        "x": 2.682,
+        "z": 62.02
+      }
+    },
+    {
+      "label": "strong_end",
+      "t": 55.767,
+      "state": "strong-field-record"
+    }
+  ]
+}

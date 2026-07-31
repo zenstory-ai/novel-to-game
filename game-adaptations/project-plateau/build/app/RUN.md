@@ -91,6 +91,18 @@ board, clean restart and focus-region pixel floor with:
 npm run verify:s10
 ```
 
+Record one continuous input-only Strong run and derive the local 30-second and
+15-second delivery encodes, tracked marks, manifest, contact sheet and share
+card with:
+
+```bash
+python3 test/capture_demo_clip.py
+```
+
+The raw WebM and derived MP4 files are reproducible and ignored by Git; their
+hashes and measured delivery properties live in `../media/clip/manifest.json`.
+Use `--reuse-raw` to repeat only the encoding and media checks.
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
 the corresponding `../evidence/s*/` directory. S3 through S10 write separate
@@ -152,3 +164,9 @@ Chromium achromatopsia attack state and retains the Strong board/reset. The
 focus region records about 19.8% dark / 59.3% bright / 82.1% chromatic pixels at
 120.5/98.0 FPS. These numeric floors detect gross occlusion and flat exposure;
 they do not replace independent composition, anatomy, motion or premise review.
+
+The media capture replays the S8 Strong class without teleport or direct-time
+hooks. Its 30-second and 15-second versions uniformly compress the same uncut
+source window and pass all 14 container/codec/profile/pixel/aspect/frame-rate/
+duration/size/audio/first-frame/fast-start checks. Because their playback is
+time-compressed, S8—not the delivery clips—remains the timing authority.
