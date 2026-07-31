@@ -1,6 +1,6 @@
 ---
 name: game-build
-description: "Build the game. Compress the approved GAME_DESIGN and ART_DIRECTION into a minimal BUILD_BRIEF, hand it to the current coding agent or another strong model to implement a fully playable web prototype, and iterate against real runs and screenshots. Use for implement the approved game design, build the game prototype, turn this design into a running game. 游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION 压缩成最小 BUILD_BRIEF，交给当前编码智能体或其他强模型实现可完整游玩的网页游戏原型，并通过真实运行和截图迭代。用于把批准的游戏方案实现成可运行游戏。"
+description: "Build the game for its approved target runtime. Compress GAME_DESIGN and ART_DIRECTION into a minimal BUILD_BRIEF, hand it to the current coding agent or another strong model to implement a fully playable build, and iterate against real runs and captured evidence. Use for implement the approved game design, build the game prototype, turn this design into a running game. 游戏构建执行。把批准后的 GAME_DESIGN 与 ART_DIRECTION 压缩成最小 BUILD_BRIEF，交给当前编码智能体或其他强模型，在选定的目标运行环境中实现可完整游玩的版本，并通过真实运行和证据迭代。用于把批准的游戏方案实现成可运行游戏。"
 ---
 # 游戏构建执行
 
@@ -11,14 +11,14 @@ description: "Build the game. Compress the approved GAME_DESIGN and ART_DIRECTIO
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
-可玩交付始终是网页可玩的垂直切片，但要按 `PRODUCT_BRIEF.md` 的目标平台惯例来做：竖屏或
-横屏、单局时长、控制方式、小程序/移动的轻量与即开即玩、分级对应的内容边界。原型是目标
-形态的可玩证明，不因"反正是网页"就套用桌面网页的默认布局。
+可玩交付跟随 `PRODUCT_BRIEF.md` 锁定的目标平台、生产引擎与交付运行时：可以是 PC 可执行
+文件、引擎工程内可运行关卡、移动设备或模拟器构建、小程序开发者工具构建，也可以是网页。
+分辨率与朝向、单局时长、控制方式、包体、分级和离线/联网边界都按目标平台执行。
 
-引擎按 `PRODUCT_BRIEF.md` 的两层决定：**生产引擎**是成品方向，原型这一趟落到**网页零构建
-切片**（vanilla / Phaser / Three，或生产引擎的 Web 导出）。原型层的具体 web 实现（选哪个库、
-文件拆分、渲染细节）仍由实现模型在既定引擎与平台意图内决定，但不得静默改掉 `PRODUCT_BRIEF`
-锁定的生产引擎方向与目标形态。
+目标工具链在当前环境可用时，直接用生产引擎构建并在目标运行时验证。工具链不可用时，不得
+自动改做网页版本；先读取 `PRODUCT_BRIEF.md` 是否批准了**替代验证运行时**。获批的替代版本要在
+`BUILD_BRIEF.md` 分开记录 `targetRuntime` 与 `testedRuntime`，并把无法证明的目标平台输入、性能、
+打包与发布项标为 `NOT_RUN`。实现模型可在这些边界内决定架构、文件拆分、渲染和资产管线。
 
 ## 构建说明
 
@@ -52,16 +52,18 @@ BUILD_BRIEF 含动态媒体（视频过场 / 环境循环 / 关键帧驱动演�
 ## 完成循环
 
 1. 用灰盒实现最小但完整的核心循环，先验证规则和范围。
-2. 从实际环境回写 runtime、runtime version、package manager、浏览器版本，以及 install / start
-   命令；再从 manifest scripts、CI workflow、测试目录与 BUILD_BRIEF runner 声明中发现 suite，
-   给 required suite 稳定 ID。未知值写 `NOT_AVAILABLE: 原因`，不猜版本。
+2. 从实际环境回写目标平台、生产引擎、实际运行器及其版本、包管理器；网页项目再记录浏览器
+   版本。记录 install / build / start / export 命令，再从 manifest scripts、CI workflow、测试目录
+   与 BUILD_BRIEF runner 声明中发现 suite，给 required suite 稳定 ID。未知值写
+   `NOT_AVAILABLE: 原因`，不猜版本。
 3. 定义并实际运行一条**权威验证命令**，把完整输出保存到 `qa/evidence/verify.log`。该次 log 必须
    能证明每个 required suite 被调用，并在 `qa/verification.json` 逐项记 `executed: true`；发现
    已存在的 suite 未被命令调用时，先修 verify 再交付，不能用手工补跑冒充一次通过。
 4. 用同一 source commit 从 `clean start → 核心动作 → 设计结果 → restart` 跑一条最小完整路径，
-   把步骤与 checkpoint 写进 `qa/verification.json`。每个 checkpoint 分别登记 state、browser、
-   visual 相对路径；取不到就写 `NOT_RUN: 原因`，不让截图证明隐藏状态，也不让状态值证明画面。
-5. 启动真实游戏并修复浏览器控制台、资源和运行错误。
+   把步骤与 checkpoint 写进 `qa/verification.json`。每个 checkpoint 分别登记 state、runtime、
+   visual 相对路径；已有网页项目可用 `browser` 作为 `runtime` 的兼容字段。取不到就写
+   `NOT_RUN: 原因`，不让截图证明隐藏状态，也不让状态值证明画面。
+5. 在 `testedRuntime` 启动真实游戏，修复构建失败、运行日志错误、资源失败和崩溃。
 6. **前提与品类自查（排在美术打磨之前）**：灰盒能完整游玩时，先起一个不给任何策划 / 构建
    文档的干净上下文子代理，只喂常速冷启动第一分钟按序截取的画面，让它回答四问：我是什么 /
    我要什么 / 什么会终结这一局 / 这是哪一类游戏（我主要在反复做什么、像我玩过的哪款游戏）。
@@ -74,7 +76,7 @@ BUILD_BRIEF 含动态媒体（视频过场 / 环境循环 / 关键帧驱动演�
    到不了或不符的按缺陷修复；一轮核对零新缺陷即停，证据帧随构建完成记录交 QA 复核。
 8. 操作核心路径、设计要求的结果和重开；根据证据修复并重复权威验证与完整路径。
 
-游戏必须提供一种可重复核心路径和足够的可观察状态，但具体使用界面、网址参数、
+游戏必须提供一种可重复核心路径和足够的可观察状态，但具体使用命令行参数、启动配置、
 测试接口或自动演示由实现模型决定。
 
 ## 输出

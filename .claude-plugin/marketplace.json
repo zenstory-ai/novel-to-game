@@ -4,7 +4,7 @@
     "name": "worldwonderer"
   },
   "metadata": {
-    "description": "Turn any novel into a playable web game, through adaptation planning, agent build, and evidence-based QA. 通过改编策划、智能体构建和质量验证，把小说转成可玩的游戏。",
+    "description": "Turn any novel into a source-grounded, fully playable game through adaptation planning, target-platform build, and evidence-based QA. 通过改编策划、目标平台构建和证据化质量验证，把小说转成可完整游玩的游戏。",
     "version": "0.1.0"
   },
   "plugins": [
@@ -12,7 +12,7 @@
       "name": "novel-to-game",
       "source": "./",
       "version": "0.1.0",
-      "description": "Turn any novel into a playable web game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, agent build, and evidence-based QA. 把小说转成游戏企划与可完整游玩的网页游戏原型。"
+      "description": "Turn any novel into a source-grounded, fully playable game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, target-platform build, and evidence-based QA. 把小说转成有原著依据、可在目标平台完整游玩的游戏。"
     }
   ]
 }

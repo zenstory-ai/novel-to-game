@@ -129,6 +129,14 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertEqual(validate_minimal_evidence_contract(root), [])
 
             cases = {
+                "target runtime": (
+                    "skills/game-build/references/build-brief-contract.md",
+                    "targetRuntime:",
+                ),
+                "tested runtime": (
+                    "skills/game-build/references/build-brief-contract.md",
+                    "testedRuntime:",
+                ),
                 "runtime version": (
                     "skills/game-build/references/build-brief-contract.md",
                     "runtimeVersion:",
@@ -144,6 +152,10 @@ class RepositoryValidationTests(unittest.TestCase):
                 "evidence channel boundary": (
                     "skills/game-qa/references/qa-contract.md",
                     "NOT_RUN: reason",
+                ),
+                "platform-aware QA": (
+                    "skills/game-qa/references/qa-contract.md",
+                    "目标运行环境",
                 ),
             }
             for label, (relative_path, marker) in cases.items():
@@ -433,6 +445,52 @@ class RepositoryValidationTests(unittest.TestCase):
         )
         self.assertTrue(marketplace["metadata"]["description"][0].isascii())
         self.assertTrue(marketplace["plugins"][0]["description"][0].isascii())
+
+    def test_public_product_copy_does_not_limit_the_pipeline_to_web_games(self) -> None:
+        surfaces = {
+            "README.md": (ROOT / "README.md").read_text(encoding="utf-8"),
+            "README_EN.md": (ROOT / "README_EN.md").read_text(encoding="utf-8"),
+        }
+        for relative_path in sorted(PLUGIN_MANIFESTS):
+            manifest = json.loads((ROOT / relative_path).read_text(encoding="utf-8"))
+            surfaces[f"{relative_path}:description"] = manifest["description"]
+        marketplace = json.loads(
+            (ROOT / ".claude-plugin/marketplace.json").read_text(encoding="utf-8")
+        )
+        surfaces["marketplace:metadata"] = marketplace["metadata"]["description"]
+        surfaces["marketplace:plugin"] = marketplace["plugins"][0]["description"]
+        for name in ("novel-to-game", "game-build", "game-qa"):
+            skill = ROOT / "skills" / name
+            surfaces[f"{name}:description"] = parse_frontmatter(
+                (skill / "SKILL.md").read_text(encoding="utf-8")
+            )["description"]
+            surfaces[f"{name}:default_prompt"] = (
+                skill / "agents" / "openai.yaml"
+            ).read_text(encoding="utf-8")
+
+        web_only_phrases = ("playable web game", "web game prototype", "网页游戏")
+        for surface, copy in surfaces.items():
+            with self.subTest(surface=surface):
+                lowered = copy.lower()
+                for phrase in web_only_phrases:
+                    self.assertNotIn(phrase, lowered)
+
+    def test_runtime_pipeline_follows_the_selected_target_platform(self) -> None:
+        expected_markers = {
+            "skills/novel-to-game/SKILL.md": "目标运行形态",
+            "skills/novel-to-game/references/intake-method.md": "目标交付运行时",
+            "skills/game-build/references/build-brief-contract.md": "targetRuntime:",
+            "skills/game-qa/references/qa-contract.md": "目标运行环境",
+        }
+        for relative_path, marker in expected_markers.items():
+            with self.subTest(path=relative_path):
+                content = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertIn(marker, content)
+
+    def test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"不是[^。\n]{0,80}[，,]?\s*而是", readme))
+        self.assertNotIn("活体家庭取景", readme)
 
     def test_skill_validator_rejects_chinese_first_description(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

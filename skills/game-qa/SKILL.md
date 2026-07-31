@@ -1,6 +1,6 @@
 ---
 name: game-qa
-description: "Verify a web game with evidence. Launch the game and check the build, console, real rendering, input and state changes, the core loop, designed outcomes, restart, target viewport, interface language, first-time onboarding, and whether the core fantasy is actually performed — without dressing subjective fun up as a certain verdict. Use for test this web game, QA a generated game, check whether the game is fully playable, verify the build. 网页游戏证据化质量验证。启动生成游戏，检查构建、控制台、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标视口、界面语言、首次上手与核心幻想是否被演出来，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩等需求。"
+description: "Verify a game with evidence on its selected target runtime. Launch the actual build and check logs, real rendering, input and state changes, the core loop, designed outcomes, restart, target display modes, interface language, first-time onboarding, and whether the core fantasy is actually performed — without dressing subjective fun up as a certain verdict. Use for test a generated game, QA a game build, check whether the game is fully playable, verify the build. 游戏证据化质量验证。在选定的目标运行环境中启动实际构建，检查日志、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标显示模式、界面语言、首次上手与核心幻想是否真正出现，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩等需求。"
 ---
 # 游戏质量验证
 
@@ -17,7 +17,8 @@ description: "Verify a web game with evidence. Launch the game and check the bui
    `suite | discovered from | files | runner | observed in verify | result`；发现 required suite 存在
    却未被权威命令执行，报告 `ORPHANED_TEST_SUITE`，严重度 `major`。vendored/build output/
    明确 archived fixture 不算 suite，但例外必须写理由。
-2. 从项目脚本和 `BUILD_BRIEF.md` 发现运行方式，使用现有浏览器测试能力。独立运行 brief 声明的
+2. 从项目脚本和 `BUILD_BRIEF.md` 发现目标平台、`targetRuntime`、`testedRuntime` 与启动方式，
+   使用当前环境中适合该运行时的测试能力；网页才使用浏览器测试。独立运行 brief 声明的
    权威 verify，记录实际 command、exit code、duration、environment 和 source commit；不能只
    接受实现方贴出的绿色摘要。提取不变量以
    `BUILD_BRIEF.md` 回写后的「# 范围」与「最终范围对照」为依据；发现 brief 范围与代码
@@ -26,17 +27,19 @@ description: "Verify a web game with evidence. Launch the game and check the bui
    source commit。复跑一条 `clean start → 核心动作 → 设计结果 → restart`，逐步核对 checkpoint；
    缺字段、路径不存在或只有临时目录路径时不得通过。等价结构只有在 BUILD_BRIEF 与 QA_REPORT
    给出稳定映射时接受。
-4. 启动真实页面，记录构建失败、页面异常、控制台错误和关键资源失败。
-5. 证明画面非空且会变化；画布元素存在本身不算渲染成功。
+4. 在 `testedRuntime` 启动真实构建，记录构建/导出失败、运行日志错误、崩溃和关键资源失败。
+   若 `testedRuntime` 不等于 `targetRuntime`，把目标平台独有的输入、性能、打包和发布项列为
+   `NOT_RUN`，不得借替代版本判过。
+5. 证明画面非空且会变化；网页画布、引擎场景节点或窗口存在本身都不算渲染成功。
 6. 从 `GAME_DESIGN.md` 提取会改变结果的关键不变量：把每个数值门槛、结局条件、破裂/冷却
    条件，以及「三段弧」每期的结束标记与新增动词 / 可达空间、BUILD_BRIEF 的「同玩法动词
    清单」，抄成期望表落盘 `qa/evidence/design-invariants.md`，逐项对照引擎常量或运行态
    取值，记录一致或漂移及证据。后两项要跑实测取证，核对文档写没写不算数。
 7. 使用真实输入走核心动作、进程变化、设计要求的结果和重开；确定性系统至少复现一次
    相同状态与输入得到相同结果。
-8. 在目标视口检查遮挡、溢出、文字和控件可操作性；逐一切换策划要求的界面语言，
+8. 在目标分辨率、窗口模式或设备朝向下检查遮挡、溢出、文字和控件可操作性；逐一切换策划要求的界面语言，
    检查缺字、截断、阅读顺序、术语一致性和关键玩法信息。
-   视口、界面语言、控制方式与内容尺度按 `PRODUCT_BRIEF.md` 的目标平台与分级核对：
+   显示模式、界面语言、控制方式与内容尺度按 `PRODUCT_BRIEF.md` 的目标平台与分级核对：
    竖屏/横屏、单局结构、交互约束是否兑现，内容是否落在批准的分级内（未逾越，也未被下游
    悄悄收回到更保守）。
 9. 对文化关键名称、符号和提示抽查原作语义，避免翻译或本地化改变规则与角色关系。

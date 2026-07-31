@@ -4,7 +4,7 @@
 
 ```text
 # 成品目标
-[目标平台、受众、时长和完整体验；逐字抄入 PRODUCT_BRIEF.md 声明的目标视口 / 朝向 /
+[目标平台、目标交付物、受众、时长和完整体验；逐字抄入 PRODUCT_BRIEF.md 声明的目标视口 / 朝向 /
 最小分辨率，以及首屏加载 / 总包体上限 / 目标帧率的性能预算；性能预算为 N/A 时，回总入口
 把推荐值以未确认假设写入 PRODUCT_BRIEF.md 后再抄入本 brief，不得在本层就地发明]
 
@@ -37,18 +37,25 @@
 [必须包含；明确排除]
 
 # 实现自由
-根据当前环境自行选择最能实现已批准设计的技术方案，但切片必须自包含：脚本、字体、图片、音频
-一律走仓库内相对路径，不引 CDN 或任何远程资源（Phaser / Three / inkjs 这类零构建写法要把库
-文件落进仓库，不挂 CDN 标签或 unpkg importmap）。
+根据当前环境自行选择最能实现已批准设计的技术方案。依赖、脚本、字体、图片、音频和导出设置
+必须在仓库或引擎工程中可复现；远程运行依赖只有在 PRODUCT_BRIEF 明确批准联网能力时可用，
+并写明离线或服务失效时的行为。网页项目使用 Phaser / Three / inkjs 等库时把依赖锁定并随项目
+交付，不挂未锁版本的 CDN 标签或 import map。
 
 # 工具链与权威验证
 toolchain:
+  targetPlatform: [PRODUCT_BRIEF 锁定的平台]
+  targetRuntime: [计划交付和发布的运行环境]
+  testedRuntime: [本次实际启动验证的运行环境；与 targetRuntime 不同时写批准依据]
+  engine: [实际引擎或框架]
+  engineVersion: [实际版本；不可取得时写 NOT_AVAILABLE: 原因]
   runtime: [实际 runtime；不可取得时写 NOT_AVAILABLE: 原因]
   runtimeVersion: [实际版本；不可取得时写 NOT_AVAILABLE: 原因]
   packageManager: [name@version；无包管理器写 none]
-  browser: [实际测试的浏览器与版本]
+  browser: [仅网页项目填写实际浏览器与版本；其他平台写 N/A]
 commands:
   install: [实际命令；无需安装写 NONE]
+  buildOrExport: [构建或导出命令；无需单独构建写 NONE]
   start: [实际命令]
   verify: [一条权威验证命令]
 verification:
@@ -57,9 +64,10 @@ verification:
   evidenceIndex: qa/verification.json#checkpoints
 
 # 完成证据
-[如何运行；必须走通的动作、结果、重开；在目标视口 / 朝向 / 最小分辨率下实测；核对性能预算
+[如何运行；必须走通的动作、结果、重开；在目标分辨率 / 窗口模式 / 朝向 / 设备下实测；核对性能预算
 （首屏 / 包体 / 帧率）未超；权威验证的实际 command、exit code、duration、environment、log，
-以及每个 required suite 是否在该次 log 中被调用]
+以及每个 required suite 是否在该次 log 中被调用；testedRuntime 与 targetRuntime 不同时，逐项
+列出目标平台仍为 NOT_RUN 的输入、性能、打包、设备和发布门]
 ```
 
 不要粘贴完整小说，也不要规定模型可以从环境正确决定的框架、类、着色器或资产

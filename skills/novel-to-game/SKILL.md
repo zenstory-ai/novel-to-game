@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a playable web game. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, agent build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成可完整游玩的网页游戏原型，编排游戏化拆解、概念选择、游戏与视觉设计、模型构建和证据化质量验证。用于小说转游戏、把这本书做成游戏等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏等需求。"
 ---
 # NovelToGame 总入口
 
@@ -19,9 +19,11 @@ description: "Turn a novel into a playable web game. Orchestrates the whole adap
 未确认假设列出。
 
 `PRODUCT_BRIEF.md` 是与 `SOURCE_BIBLE.md` 并列的上游事实，进入"不得下游静默改写"的保护
-范围（见 [pipeline-contract.md](references/pipeline-contract.md)）。可玩交付始终是
-一个**网页可玩的垂直切片**，但它要按 `PRODUCT_BRIEF` 里的目标平台惯例来设计（竖屏/横屏、
-单局时长、控制方式、画风上限）。
+范围（见 [pipeline-contract.md](references/pipeline-contract.md)）。其中必须锁定**目标运行形态**：
+平台、生产引擎、实际交付物和验收设备或运行器。网页、PC 客户端、移动 App、小程序、引擎工程
+和设备构建都可以成为交付形态，构建阶段按这里的选择执行。当前环境缺少目标工具链时，只能使用
+`PRODUCT_BRIEF.md` 已显式批准的替代验证运行时；替代版本只证明它实际覆盖的玩法，不代表目标
+平台已经通过。
 
 ## 模式
 
@@ -71,10 +73,10 @@ description: "Turn a novel into a playable web game. Orchestrates the whole adap
   已发行游戏同玩法，创新落在世界、人物、剧情、题材与美术，发明新机制是非目标。
 - 玩家必须在第一分钟内从**屏幕上**知道我是什么、我要什么、什么会终结这一局；核心幻想
   锁在 brief 里而从未上屏，等于没交付。
-- 设计收敛到一个能证明核心幻想且可完整游玩的网页游戏验证切片，时长服从
+- 设计收敛到一个能证明核心幻想、并在目标运行形态中可完整游玩的验证切片，时长服从
   `PRODUCT_BRIEF` 锁定的单局时长（默认 10-30 分钟）；brief 时长更长时，切片只做
   全量体验中已声明的一段，不默认做全量。
-- 实现模型在 `PRODUCT_BRIEF` 锁定的引擎/原型层决定内自由选择其余技术，不能静默改变
+- 实现模型在 `PRODUCT_BRIEF` 锁定的生产引擎、目标运行时和可选替代运行时内自由选择其余技术，不能静默改变
   批准的体验与视觉风格。
 - 完成必须以运行、输入、画面、结果和重开证据为准。
 - AI 不能客观证明趣味、长期平衡或商业价值。

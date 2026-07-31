@@ -225,7 +225,7 @@ shasum -a 256 "$OUT_DIR/$SHOT_KEY.mp4" | awk '{print $1}' > "$OUT_DIR/$SHOT_KEY.
 - 请求体与参考图大小上限、真人脸审核策略、价格与限流；
 - 结果 URL 时效与任务记录保留期。
 
-Seedance 2.0 的 4K 输出为 H.265 / 10bit——目标浏览器解码兼容性未验证前，4K 不得进入
+Seedance 2.0 的 4K 输出为 H.265 / 10bit——目标运行环境的解码兼容性未验证前，4K 不得进入
 游戏主线（720p / 1080p 的 H.264 产物是当前安全档）。
 
 官方资料入口：模型页 <https://seed.bytedance.com/en/seedance2_0>；模型列表

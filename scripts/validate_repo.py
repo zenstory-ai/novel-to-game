@@ -41,6 +41,8 @@ PLUGIN_MANIFESTS = {
 # framework, schema package, or runtime dependency on generated projects.
 MINIMAL_EVIDENCE_REQUIREMENTS = {
     "skills/game-build/references/build-brief-contract.md": (
+        "targetRuntime:",
+        "testedRuntime:",
         "runtimeVersion:",
         "verify:",
         "completeRun: qa/verification.json#completeRun",
@@ -59,6 +61,7 @@ MINIMAL_EVIDENCE_REQUIREMENTS = {
         "clean start",
     ),
     "skills/game-qa/references/qa-contract.md": (
+        "目标运行环境",
         "suite | discovered from | files | runner | observed in verify | result",
         "NOT_RUN: reason",
         "同一个 complete-run step",
