@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { globSync } from 'node:fs';
 import test from 'node:test';
+import * as THREE from 'three';
 import { PRODUCT_BUDGET, SCENE_BUDGET, percentile, seededRandom } from '../src/config.js';
+import { createWorld } from '../src/world.js';
 
 const root = new URL('../', import.meta.url);
 
@@ -28,6 +30,19 @@ test('representative scene contains all declared subject and pressure groups', (
   assert.equal(SCENE_BUDGET.youngIguanodons, 3);
   assert.ok(SCENE_BUDGET.pterodactyls >= 1);
   assert.ok(SCENE_BUDGET.trees + SCENE_BUDGET.ferns >= 400);
+});
+
+test('the family asset exposes two adults, three young and both authored behaviors', () => {
+  const scene = new THREE.Scene();
+  const world = createWorld(scene);
+  const family = world.assetSnapshot().family;
+  assert.equal(family.adults, 2);
+  assert.equal(family.young, 3);
+  assert.deepEqual(family.behaviors, ['graze', 'branch-pull', 'young-play']);
+  assert.equal(family.branchPresent, true);
+
+  world.update(1, false, { familyMoment: 'glade-branch-pull' });
+  assert.equal(world.familySnapshot().moment, 'glade-branch-pull');
 });
 
 test('frame percentile is stable and keeps the slow tail visible', () => {

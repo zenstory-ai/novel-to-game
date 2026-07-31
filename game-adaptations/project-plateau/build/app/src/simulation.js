@@ -168,6 +168,9 @@ export function examine(state) {
 }
 
 export function frameForState(state) {
+  const hasYoungPlay = state.plates.some((plate) => (
+    plate.frameKey === 'glade-young-play' || plate.frameKey === 'glade-behavior'
+  ));
   const frames = {
     fort: {
       key: 'empty-fort', points: 0, label: 'EMPTY — no living subject in frame.', exposure: 0,
@@ -182,7 +185,9 @@ export function frameForState(state) {
       key: 'basalt-scale', points: 2, label: 'CONTEXT — basalt gives scale.', exposure: 2,
     },
     'iguanodon-glade': state.observedBehavior
-      ? { key: 'glade-behavior', points: 2, label: 'BEHAVIOR — young play beside the adults.', exposure: 2 }
+      ? hasYoungPlay
+        ? { key: 'glade-branch-pull', points: 2, label: 'BEHAVIOR — an adult pulls the branch down.', exposure: 2 }
+        : { key: 'glade-young-play', points: 2, label: 'BEHAVIOR — young play beside the adults.', exposure: 2 }
       : { key: 'glade-form', points: 1, label: 'FORM — the family stands clear.', exposure: 2 },
     'covered-return': {
       key: 'return-occluded', points: 1, label: 'PARTIAL — thorn hides the body.', exposure: 1,

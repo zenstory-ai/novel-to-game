@@ -190,8 +190,9 @@ geography, camera, outcome or copied modern artwork.
   records the downstream brook response.
 - Iguanodon young play near adults; one adult pulls down a branch; the family
   withdraws. It never displays enemy health, target outline or reward hit pose.
-- The plate preview is always derived from the committed frame's obstruction,
-  scale and behavior flags. A crack removes that exact plate's cues.
+- The plate preview preserves the exact local renderer view at commitment and
+  pairs it with the frame's obstruction, scale and behavior flags. A crack
+  removes that exact plate's cues and recovered image.
 - Remaining light changes sky value, shadow length, watch state and deadline,
   never a full-screen danger tint.
 - Results place only surviving plates, then show result copy. Failure preserves

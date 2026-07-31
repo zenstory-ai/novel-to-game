@@ -133,6 +133,27 @@ test('examining the brook makes context eligible without awarding evidence', () 
   assert.equal(frameForState(player).points, 1);
 });
 
+test('successive observed glade plates record young play and branch pull separately', () => {
+  const player = createPlayerState();
+  player.zone = 'iguanodon-glade';
+  player.observedBehavior = true;
+  const play = frameForState(player);
+  assert.equal(play.key, 'glade-young-play');
+  assert.match(play.label, /young play/i);
+
+  player.plates[0] = {
+    ...player.plates[0],
+    status: 'exposed',
+    points: play.points,
+    label: play.label,
+    frameKey: play.key,
+  };
+  const branch = frameForState(player);
+  assert.equal(branch.key, 'glade-branch-pull');
+  assert.match(branch.label, /branch/i);
+  assert.equal(branch.points, 2);
+});
+
 test('camera raise slows movement and shutter commits one physical plate for two live seconds', () => {
   let normal = createPlayerState();
   normal.position = { x: 0, z: 45 };

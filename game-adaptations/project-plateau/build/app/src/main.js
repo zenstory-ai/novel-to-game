@@ -36,6 +36,7 @@ const cameraOverlay = document.querySelector('#camera-overlay');
 const frameCondition = document.querySelector('#frame-condition');
 const commitLine = document.querySelector('#commit-line');
 const platePreview = document.querySelector('#plate-preview');
+const previewImage = platePreview.querySelector('.preview-image');
 const previewNumber = document.querySelector('#preview-number');
 const previewCopy = document.querySelector('#preview-copy');
 const contactNote = document.querySelector('#contact-note');
@@ -54,11 +55,12 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S8 · measured paths';
+document.querySelector('#s0-badge').textContent = 'S9 · living plates';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
   alpha: false,
+  preserveDrawingBuffer: true,
   powerPreference: 'high-performance',
 });
 
@@ -123,6 +125,18 @@ let contactNoticeUntil = 0;
 let captionNoticeUntil = 0;
 
 const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
+let plateImages = Array(ROMAN_PLATES.length).fill(null);
+
+function applyPlateImage(element, image) {
+  element.dataset.captured = image ? 'true' : 'false';
+  element.style.backgroundImage = image ? `url("${image}")` : '';
+}
+
+function clearPlateImages() {
+  plateImages = Array(ROMAN_PLATES.length).fill(null);
+  applyPlateImage(previewImage, null);
+  terminalBoardSlots.forEach((slot) => applyPlateImage(slot, null));
+}
 
 function syncSettingsControls() {
   document.querySelector('#reduced-motion').checked = presentationSettings.reducedMotion;
@@ -182,6 +196,8 @@ function frameConditionCopy(frame) {
     'basalt-scale': 'OPEN SIGHT // BASALT SCALE',
     'glade-form': 'FAMILY // BEHAVIOR NOT YET READ',
     'glade-behavior': 'FAMILY // LIVING BEHAVIOR',
+    'glade-young-play': 'FAMILY // YOUNG AT PLAY',
+    'glade-branch-pull': 'FAMILY // BRANCH PULL',
     'return-occluded': 'THORN // BODY PARTLY OCCLUDED',
     'creek-scale': 'OPEN SIGHT // CREEK SCALE',
   };
@@ -225,11 +241,19 @@ function updateFieldHud(now) {
   lightWatch.hidden = !player.plateRailRevealed;
   lightSeconds.textContent = Math.max(0, Math.ceil(player.remainingLight));
 
-  const showPreview = player.previewSeconds > 0 && player.lastProofEvent;
+  const previewPlate = player.lastProofEvent
+    ? player.plates[player.lastProofEvent.plateIndex]
+    : null;
+  const showPreview = player.previewSeconds > 0
+    && player.lastProofEvent
+    && previewPlate?.status === 'exposed';
   platePreview.hidden = !showPreview;
   if (showPreview) {
-    previewNumber.textContent = ROMAN_PLATES[player.lastProofEvent.plateIndex];
+    const { plateIndex, key } = player.lastProofEvent;
+    previewNumber.textContent = ROMAN_PLATES[plateIndex];
     previewCopy.textContent = player.lastProofEvent.label;
+    previewImage.dataset.frame = key;
+    applyPlateImage(previewImage, plateImages[plateIndex]);
   }
 
   fieldNote.hidden = !player.lastObservation || now >= observationNoticeUntil;
@@ -336,6 +360,7 @@ function presentTerminal() {
     slot.dataset.status = plate.status;
     slot.dataset.frame = plate.frameKey ?? 'empty';
     slot.dataset.cues = plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
+    applyPlateImage(slot, plate.status === 'exposed' ? plateImages[index] : null);
     slot.setAttribute(
       'aria-label',
       `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.label ? ` — ${plate.label}` : ''}`,
@@ -361,6 +386,7 @@ function presentTerminal() {
 
 function returnToFieldOrder() {
   player = createPlayerState();
+  clearPlateImages();
   runActive = false;
   terminalPanel.hidden = true;
   closePanels();
@@ -371,6 +397,7 @@ function returnToFieldOrder() {
 
 function beginRun() {
   player = restartPlayer(player);
+  clearPlateImages();
   fieldAudio.resetRun();
   runActive = true;
   observedBoundaryRecoveries = 0;
@@ -406,6 +433,18 @@ function resumeRun() {
   requestFieldPointerLock();
 }
 
+function worldRuntime(deltaSeconds = 0) {
+  return {
+    threatAwareness: player.threatAwareness,
+    playerPosition: player.position,
+    shotCount: player.shotCount,
+    brookResponse: player.brookResponse,
+    inCover: player.inCover,
+    familyMoment: player.pendingExposure?.key ?? null,
+    deltaSeconds,
+  };
+}
+
 function update(deltaSeconds, now) {
   if (runActive && !player.paused) {
     const previousContacts = player.contactCount;
@@ -439,14 +478,11 @@ function update(deltaSeconds, now) {
   } else if (!runActive && cameraMode !== 'terminal') {
     visualElapsed += deltaSeconds;
   }
-  world.update(visualElapsed, reducedMotion || player.paused || cameraMode === 'terminal', {
-    threatAwareness: player.threatAwareness,
-    playerPosition: player.position,
-    shotCount: player.shotCount,
-    brookResponse: player.brookResponse,
-    inCover: player.inCover,
-    deltaSeconds,
-  });
+  world.update(
+    visualElapsed,
+    reducedMotion || player.paused || cameraMode === 'terminal',
+    worldRuntime(deltaSeconds),
+  );
 
   if (cameraMode === 'field' || cameraMode === 'order') {
     setCameraToPlayer(now);
@@ -577,7 +613,18 @@ document.addEventListener('mousedown', (event) => {
     event.preventDefault();
     const hadPendingExposure = Boolean(player.pendingExposure);
     player = startExposure(player);
-    if (!hadPendingExposure && player.pendingExposure) emitCue('shutter');
+    if (!hadPendingExposure && player.pendingExposure) {
+      world.update(visualElapsed, reducedMotion, worldRuntime(0));
+      const cameraWasVisible = world.fieldCamera.visible;
+      const rifleWasVisible = world.rifle.visible;
+      world.fieldCamera.visible = false;
+      world.rifle.visible = false;
+      renderer.render(scene, camera);
+      plateImages[player.pendingExposure.plateIndex] = canvas.toDataURL('image/jpeg', 0.76);
+      world.fieldCamera.visible = cameraWasVisible;
+      world.rifle.visible = rifleWasVisible;
+      emitCue('shutter');
+    }
   }
 });
 document.addEventListener('mouseup', (event) => {
@@ -647,7 +694,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's8-input-paths',
+  stage: 's9-living-plates',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -694,6 +741,7 @@ window.__projectPlateau = {
       renderer: this.renderer,
       player: playerSnapshot(),
       threatVisual: world.threatSnapshot(),
+      familyVisual: world.familySnapshot(),
       brookResponseVisual: world.brookResponseSnapshot(),
       assets: world.assetSnapshot(),
       audio: fieldAudio.snapshot(),
@@ -708,6 +756,7 @@ window.__projectPlateau = {
         rifleOverlay: !rifleOverlay.hidden,
         plateRail: !plateRail.hidden,
         platePreview: platePreview.hidden ? null : previewCopy.textContent,
+        capturedPlateImages: plateImages.map(Boolean),
         fieldNote: fieldNote.hidden ? null : fieldNote.textContent,
         contactNote: contactNote.hidden ? null : contactNote.textContent,
         cartridgesVisible: !cartridgeDisplay.hidden,

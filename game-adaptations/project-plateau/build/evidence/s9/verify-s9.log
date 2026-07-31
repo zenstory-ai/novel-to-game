@@ -1,0 +1,128 @@
+
+> project-plateau-proof-before-dark@0.1.0 verify:s9
+> npm test && npm run build && npm run test:s9
+
+
+> project-plateau-proof-before-dark@0.1.0 test
+> node --test test/*.test.js
+
+✔ every core field cue has a concise sound caption (1.646792ms)
+✔ audio settings clamp channel volumes and expose caption state (0.157666ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.243125ms)
+✔ cue history remains bounded during a long field session (0.12525ms)
+✔ foundation exposes the locked viewport and performance budgets (1.41125ms)
+✔ procedural placement is deterministic for a recorded seed (0.095375ms)
+✔ representative scene contains all declared subject and pressure groups (0.082792ms)
+✔ the family asset exposes two adults, three young and both authored behaviors (14.768625ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.108417ms)
+✔ runtime sources contain no remote asset or CDN request (5.55075ms)
+✔ presentation settings normalize invalid persisted values (1.5565ms)
+✔ settings round-trip through versioned storage and can be reset (0.176917ms)
+✔ blocked or malformed storage falls back without disabling controls (0.188167ms)
+✔ the measured compact route starts with a 180-second light budget (1.221542ms)
+✔ fresh and restarted player states are clean copies (0.907666ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.556542ms)
+✔ pause freezes both world time and movement (0.119167ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.163458ms)
+✔ leaving the navigable world recovers the last stable position (0.110166ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.080833ms)
+✔ territory, glade, open proof and cover produce four readable threat states (0.422209ms)
+✔ examining the brook makes context eligible without awarding evidence (0.144375ms)
+✔ successive observed glade plates record young play and branch pull separately (0.223666ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.18075ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (0.190375ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.150708ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.22ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.134041ms)
+✔ restart clears observation, proof, damage and action history (0.101541ms)
+✔ intact evidence and all four result thresholds are deterministic (0.107167ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.194041ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.098125ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.086375ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.080792ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 152.2085
+
+> project-plateau-proof-before-dark@0.1.0 build
+> vite build
+
+vite v8.2.0 building client environment for production...
+
+transforming...✓ 12 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.78 kB │ gzip:   2.09 kB
+dist/assets/index-BtoLHCaQ.css   13.35 kB │ gzip:   4.21 kB
+dist/assets/index-Lsk42uWo.js   579.85 kB │ gzip: 149.99 kB
+
+✓ built in 204ms
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+> project-plateau-proof-before-dark@0.1.0 test:s9
+> python3 test/qa_s9.py
+
+{
+  "stage": "s9-living-plates",
+  "checks": {
+    "twoAdultsThreeYoung": true,
+    "youngPlayAndBranchPullDistinct": true,
+    "rendererCanvasFeedsEveryPlate": true,
+    "fourCapturedPlatesAreDistinct": true,
+    "plateImagesUseNonColourTreatment": true,
+    "strongRecoveredBoardUsesCapturedViews": true,
+    "restartClearsCapturedViews": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "plateImages": [
+    {
+      "plate": 1,
+      "bytesInCssValue": 64314,
+      "sha256": "39e0caf1143e0c13851413d7870af3b45835eeeacb3097c6ffba069595baa4bd",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 2,
+      "bytesInCssValue": 67194,
+      "sha256": "b53e354d46b5f61c3eb4b935e59046750bbd29f03f20dfb323022a0b817f32d7",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 3,
+      "bytesInCssValue": 67922,
+      "sha256": "c6c8264e5c0427eac91cda8861bd8df85e4bc20d7ef5e2a03e67bf57016b9eff",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 4,
+      "bytesInCssValue": 72030,
+      "sha256": "0bea36e4b3e5202245746db03e3823aff7a5e85aeb0b5b40e5a9a6479f429b0e",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 99,
+    "worstFrameMs": 10.2
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "5c830e13d8d24f13c5471660150ced879c991dd6a6a8f2effb4d55fbe11442fb"
+  }
+}
+S9 PASS: build/evidence/s9/report.json

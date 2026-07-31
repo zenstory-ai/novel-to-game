@@ -1,5 +1,5 @@
 {
-  "stage": "s8-input-paths",
+  "stage": "s9-living-plates",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 3,
-      "z": 17.978
+      "z": 17.994
     },
     "lastStablePosition": {
       "x": 3,
-      "z": 17.978
+      "z": 17.994
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 17.097,
-    "distanceTravelled": 52.022,
+    "elapsedSeconds": 17.094,
+    "distanceTravelled": 52.006,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -37,14 +37,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.08440000009536743,
+    "attackSeconds": 0.08210000014305113,
     "examinedTrack": true,
     "observedBehavior": false,
     "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9251999998092666,
+    "previewSeconds": 3.925500000000001,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -96,7 +96,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 162.903,
+    "remainingLight": 162.906,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -107,10 +107,23 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 5.37,
-      "y": 7.87,
-      "z": 5.77
+      "x": 5.39,
+      "y": 7.89,
+      "z": 5.78
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -132,6 +145,17 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
     }
   },
   "audio": {
@@ -157,22 +181,22 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 6.165
+        "at": 6.16
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 6.229
+        "at": 6.235
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.24
+        "at": 8.229
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.24
+        "at": 8.229
       },
       {
         "cue": "camera-raise",
@@ -182,7 +206,7 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.928
+        "at": 14.944
       },
       {
         "cue": "attack",
@@ -213,6 +237,12 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "capturedPlateImages": [
+      true,
+      true,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": true,
@@ -220,15 +250,15 @@
     "lightWatch": 163,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 92,
-  "triangles": 26484,
+  "sceneChildren": 26,
+  "calls": 118,
+  "triangles": 27500,
   "textures": 1,
-  "geometries": 63,
+  "geometries": 84,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 184.60000014305115,
+  "firstRenderedAt": 170.90000009536743,
   "recentMedianFrameMs": 8.3
 }

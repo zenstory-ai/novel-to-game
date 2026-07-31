@@ -75,12 +75,20 @@ clean restart with:
 npm run verify:s8
 ```
 
+Run the living-family and physical-proof checkpoint with distinct young-play
+and branch-pull frames, renderer-derived monochrome plates, a four-view result
+board and clean image reset with:
+
+```bash
+npm run verify:s9
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S8 write separate
+the corresponding `../evidence/s*/` directory. S3 through S9 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S8 foundation, not the completed game. It proves the approved local
+This is an S9 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -111,12 +119,21 @@ manual pause, focus-loss pause, result and restart at `1440×900` and
 frame in 2.16 seconds; the built app measured 596,121 raw / 152,779 gzip bytes.
 Public-host cold loading, final non-colour review and uncompressed reference
 runs remained open at that checkpoint. S8 replaces the earlier paper timing
-assumption with measured traversal: its Strong path finishes in 51.56 seconds,
-travels 128.37 world units, preserves seven cues and returns with 100.35 seconds
+assumption with measured traversal: its Strong path finishes in about 51.6 seconds,
+travels 128.3 world units, preserves seven cues and returns with about 100.3 seconds
 of the revised 180-second light budget. Mixed reaches the four-cue result with
 one shot and its creek callback; Panic reaches the second-contact failure after
 spending both rounds. All three use keyboard/mouse movement without teleport or
 direct-time hooks. This establishes repeatable reference paths, but automated
 state evidence does not replace independent first-time perception, three
 external tester records, final family animation review, public-host loading or
-the authoritative verification handoff.
+the authoritative verification handoff. S9 gives the two-adult/three-young
+family distinct graze, young-play and branch-pull roles, and records the two
+behavior windows under separate frame keys. Every shutter now preserves the
+actual local renderer view, without the camera body, as that plate's
+monochrome image; the preview and terminal board carry the same image and a
+restart clears it. The six-checkpoint S9 asset matrix verifies four distinct
+captured images, non-colour treatment, exact Strong output and 120.5/99.0 FPS.
+It uses QA placement to isolate those states and therefore does not replace S8
+traversal evidence or independent anatomy, composition and first-time premise
+review.

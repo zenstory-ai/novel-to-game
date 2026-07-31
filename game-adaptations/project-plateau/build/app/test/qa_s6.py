@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s6", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") in {
-            "s6-field-feedback", "s7-lifecycle", "s8-input-paths"
+            "s6-field-feedback", "s7-lifecycle", "s8-input-paths", "s9-living-plates"
         }
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:

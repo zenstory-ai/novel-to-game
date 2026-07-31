@@ -217,46 +217,96 @@ function primitive(material, geometry, position, scale, rotation = [0, 0, 0]) {
   return mesh;
 }
 
-function makeIguanodon(scene, x, z, scale, heading, young = false) {
+function makeIguanodon(scene, x, z, scale, heading, young, behaviorRole) {
   const group = new THREE.Group();
   const skin = new THREE.MeshStandardMaterial({
     color: young ? 0x65736b : PALETTE.slate,
     roughness: 0.9,
   });
+  const underside = new THREE.MeshStandardMaterial({
+    color: young ? 0x7a7969 : 0x6f725f,
+    roughness: 0.94,
+  });
+  const claw = new THREE.MeshStandardMaterial({ color: 0x343b37, roughness: 0.86 });
   const bodyGeometry = new THREE.IcosahedronGeometry(1, 1);
   const limbGeometry = new THREE.CylinderGeometry(0.18, 0.26, 1.8, 6);
   const tailGeometry = new THREE.ConeGeometry(0.45, 3.8, 7);
   const body = primitive(skin, bodyGeometry, [0, 1.7, 0], [2.8, 1.45, 1.1]);
+  const belly = primitive(underside, bodyGeometry, [0.15, 1.38, 0], [2.5, 0.72, 1.02]);
   const shoulder = primitive(skin, bodyGeometry, [1.75, 2.0, 0], [1.15, 1.2, 0.95]);
-  const head = primitive(skin, bodyGeometry, [2.75, 2.45, 0], [0.68, 0.62, 0.58]);
-  const muzzle = primitive(skin, bodyGeometry, [3.28, 2.28, 0], [0.6, 0.38, 0.48]);
+  const headPivot = new THREE.Group();
+  headPivot.position.set(1.8, 2.0, 0);
+  const neck = primitive(skin, new THREE.CylinderGeometry(0.42, 0.72, 1.75, 7), [0.5, 0.42, 0], [1, 1, 1], [0, 0, -0.72]);
+  const head = primitive(skin, bodyGeometry, [1.18, 0.5, 0], [0.68, 0.62, 0.58]);
+  const muzzle = primitive(underside, bodyGeometry, [1.72, 0.31, 0], [0.62, 0.38, 0.48]);
+  headPivot.add(neck, head, muzzle);
   const tail = primitive(skin, tailGeometry, [-3.6, 1.65, 0], [1, 1, 1], [0, 0, Math.PI / 2]);
   tail.rotation.z = -Math.PI / 2;
-  for (const xLeg of [-1.35, 1.3]) {
-    for (const side of [-0.6, 0.6]) {
-      const leg = primitive(skin, limbGeometry, [xLeg, 0.75, side], [1, 1, 1]);
-      group.add(leg);
-    }
+  for (const side of [-0.62, 0.62]) {
+    const hind = primitive(skin, limbGeometry, [-1.25, 0.72, side], [1.24, 1.08, 1.24]);
+    const fore = primitive(skin, limbGeometry, [1.45, 0.84, side], [0.86, 0.92, 0.86]);
+    const thumb = primitive(
+      claw,
+      new THREE.ConeGeometry(0.12, 0.72, 5),
+      [1.52, 1.05, side + Math.sign(side) * 0.2],
+      [1, 1, 1],
+      [0, 0, Math.sign(side) * 0.48],
+    );
+    group.add(hind, fore, thumb);
   }
-  group.add(body, shoulder, head, muzzle, tail);
+  group.add(body, belly, shoulder, headPivot, tail);
   group.position.set(x, terrainHeight(x, z) + 0.1, z);
   group.rotation.y = heading;
   group.scale.setScalar(scale);
   group.name = young ? 'subject.iguanodon_family.young' : 'subject.iguanodon_family.adult';
-  group.userData.baseY = group.position.y;
-  group.userData.phase = x * 0.7 + z;
+  group.userData = {
+    baseX: x,
+    baseY: group.position.y,
+    baseZ: z,
+    baseHeading: heading,
+    phase: x * 0.7 + z,
+    young,
+    behaviorRole,
+    headPivot,
+  };
   scene.add(group);
   return group;
 }
 
 function makeFamily(scene) {
   return [
-    makeIguanodon(scene, -6, -47, 1.36, -0.18, false),
-    makeIguanodon(scene, 10, -54, 1.24, 2.7, false),
-    makeIguanodon(scene, -1, -42, 0.68, 0.4, true),
-    makeIguanodon(scene, 4, -48, 0.62, -0.65, true),
-    makeIguanodon(scene, 1, -56, 0.72, 2.2, true),
+    makeIguanodon(scene, -6, -30, 1.36, -0.18, false, 'graze'),
+    makeIguanodon(scene, 9, -36, 1.24, 0, false, 'branch-pull'),
+    makeIguanodon(scene, -1, -24, 0.68, 0.4, true, 'young-play'),
+    makeIguanodon(scene, 4, -30, 0.62, -0.65, true, 'young-play'),
+    makeIguanodon(scene, 1, -38, 0.72, 2.2, true, 'stay-close'),
   ];
+}
+
+function makeFeedingBranch(scene) {
+  const group = new THREE.Group();
+  const bark = new THREE.MeshStandardMaterial({ color: 0x3a3f2f, roughness: 1 });
+  const leaf = new THREE.MeshStandardMaterial({ color: PALETTE.wetFern, roughness: 0.94 });
+  const trunk = primitive(bark, new THREE.CylinderGeometry(0.32, 0.48, 8.5, 7), [0, 1.4, 0], [1, 1, 1]);
+  const branchPivot = new THREE.Group();
+  branchPivot.position.set(0, 4.6, 0);
+  const bough = primitive(bark, new THREE.CylinderGeometry(0.14, 0.26, 5.4, 7), [-2.35, 0, 0], [1, 1, 1], [0, 0, Math.PI / 2]);
+  branchPivot.add(bough);
+  for (let index = 0; index < 4; index += 1) {
+    const crown = primitive(
+      leaf,
+      new THREE.IcosahedronGeometry(0.72 + (index % 2) * 0.12, 1),
+      [-1.1 - index * 0.92, 0.28 + (index % 2) * 0.38, (index % 2 - 0.5) * 0.75],
+      [1.15, 0.72, 0.9],
+    );
+    branchPivot.add(crown);
+  }
+  group.add(trunk, branchPivot);
+  group.position.set(14.5, terrainHeight(14.5, -36), -36);
+  group.name = 'subject.iguanodon_family.feeding_branch';
+  group.userData.branchPivot = branchPivot;
+  scene.add(group);
+  return group;
 }
 
 function makePterodactyl(scene, radius, height, phase, scale = 1) {
@@ -413,6 +463,7 @@ export function createWorld(scene) {
   placeVegetation(scene);
   makeBasalt(scene);
   const family = makeFamily(scene);
+  const feedingBranch = makeFeedingBranch(scene);
   const pterodactyls = [
     makePterodactyl(scene, 29, 23, 0.0, 0.88),
     makePterodactyl(scene, 37, 28, 2.2, 0.62),
@@ -424,6 +475,7 @@ export function createWorld(scene) {
   const rifle = makeRifle(scene);
   let renderedThreatState = 'distant';
   let renderedThreatResponse = 'orbit';
+  let renderedFamilyMoment = 'glade-young-play';
   let observedShotCount = 0;
   let flashSeconds = 0;
 
@@ -440,6 +492,11 @@ export function createWorld(scene) {
       renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
       renderedThreatResponse = awareness === 3 && runtime.inCover ? 'cover-pull-up' : 'orbit';
       const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
+      const requestedFamilyMoment = runtime.familyMoment;
+      renderedFamilyMoment = requestedFamilyMoment === 'glade-young-play'
+        || requestedFamilyMoment === 'glade-branch-pull'
+        ? requestedFamilyMoment
+        : elapsed % 12 < 6 ? 'glade-young-play' : 'glade-branch-pull';
       brookResponse.userData.response = runtime.brookResponse ?? null;
       const responseStrength = runtime.brookResponse === 'brush-moving'
         ? 0.24
@@ -501,9 +558,36 @@ export function createWorld(scene) {
         mesh.rotation.z = Math.sin(angle * 2.4) * (0.16 + awareness * 0.035);
       });
       family.forEach((animal, index) => {
-        animal.position.y = animal.userData.baseY + Math.sin(elapsed * 0.8 + animal.userData.phase) * (reducedMotion ? 0.008 : 0.035);
-        animal.rotation.z = Math.sin(elapsed * 0.45 + index) * (reducedMotion ? 0.002 : 0.008);
+        const { baseX, baseY, baseZ, baseHeading, behaviorRole, headPivot, phase } = animal.userData;
+        const youngPlay = behaviorRole === 'young-play' && renderedFamilyMoment === 'glade-young-play';
+        const branchPull = behaviorRole === 'branch-pull' && renderedFamilyMoment === 'glade-branch-pull';
+        const motion = reducedMotion ? 0.12 : 1;
+        animal.position.x = baseX;
+        animal.position.z = baseZ;
+        animal.position.y = baseY + Math.sin(elapsed * 0.8 + phase) * 0.035 * motion;
+        animal.rotation.y = baseHeading;
+        animal.rotation.z = Math.sin(elapsed * 0.45 + index) * 0.008 * motion;
+        headPivot.rotation.z = behaviorRole === 'graze' ? -0.28 : 0;
+
+        if (youngPlay) {
+          const playPhase = elapsed * 1.25 + phase;
+          animal.position.x += Math.sin(playPhase) * 1.15 * motion;
+          animal.position.z += Math.cos(playPhase * 0.74) * 0.72 * motion;
+          animal.position.y += Math.max(0, Math.sin(playPhase * 1.6)) * 0.22 * motion;
+          animal.rotation.y = (baseX < 2 ? 0 : Math.PI) + Math.sin(playPhase) * 0.18 * motion;
+          headPivot.rotation.z = 0.16 + Math.sin(playPhase * 1.3) * 0.1 * motion;
+        } else if (branchPull) {
+          const pull = 0.78 + Math.sin(elapsed * 1.1) * 0.1 * motion;
+          headPivot.rotation.z = -0.5 * pull;
+          animal.position.x -= 0.18 * pull;
+        } else if (behaviorRole === 'stay-close') {
+          headPivot.rotation.z = 0.08;
+        }
       });
+      const branchPull = renderedFamilyMoment === 'glade-branch-pull';
+      feedingBranch.userData.branchPivot.rotation.z = branchPull
+        ? 0.5 + Math.sin(elapsed * 1.1) * (reducedMotion ? 0.015 : 0.06)
+        : 0.08;
       smoke.children.forEach((puff, index) => {
         puff.position.x = Math.sin(elapsed * 0.22 + index) * (reducedMotion ? 0.15 : 0.55);
       });
@@ -530,6 +614,15 @@ export function createWorld(scene) {
         },
       };
     },
+    familySnapshot() {
+      return {
+        moment: renderedFamilyMoment,
+        adults: family.filter((animal) => !animal.userData.young).length,
+        young: family.filter((animal) => animal.userData.young).length,
+        branchAngle: Number(feedingBranch.userData.branchPivot.rotation.z.toFixed(3)),
+        roles: family.map((animal) => animal.userData.behaviorRole),
+      };
+    },
     assetSnapshot() {
       return {
         fieldCamera: {
@@ -543,6 +636,14 @@ export function createWorld(scene) {
         cover: {
           archCount: coverArches.userData.archCount,
           visibleParts: coverArches.children.length,
+        },
+        family: {
+          adults: family.filter((animal) => !animal.userData.young).length,
+          young: family.filter((animal) => animal.userData.young).length,
+          behaviors: ['graze', 'branch-pull', 'young-play'],
+          branchPresent: feedingBranch.parent === scene,
+          visibleParts: family.reduce((total, animal) => total + animal.children.length, 0)
+            + feedingBranch.children.length,
         },
       };
     },

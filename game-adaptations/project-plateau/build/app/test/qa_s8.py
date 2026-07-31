@@ -93,7 +93,7 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s8", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") == "s8-input-paths"
+        assert page.evaluate("window.__projectPlateau.stage") in {"s8-input-paths", "s9-living-plates"}
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
@@ -262,6 +262,10 @@ def run() -> dict[str, object]:
         expose_plate("Strong", 3, "branch-pull frame")
         glade = capture("03-strong-glade-frames", ["W to glade", "E", "two camera commitments"])
         assert sum(plate["points"] for plate in glade["player"]["plates"]) == 7, glade
+        assert [plate["frameKey"] for plate in glade["player"]["plates"][2:]] == [
+            "glade-young-play",
+            "glade-branch-pull",
+        ], glade
         move_until("Strong", "KeyS", "window.__projectPlateau.snapshot().player.position.z > 3.2", "retreat into cover")
         wait_for_cover("Strong", "break the final dive")
         covered = capture("04-strong-covered-return", ["S into cover", "hold until wider pass"])
@@ -363,6 +367,7 @@ def run() -> dict[str, object]:
             "noTeleportOrDirectTimeAdvance": True,
             "strongAllFiveVerbsNoShot": True,
             "strongEvidenceSevenAndBodyMargin": True,
+            "strongDistinctBehaviorFrames": True,
             "strongRemainingLightWithinReferenceWindow": True,
             "mixedOneShotNoisyCreekAndCallback": True,
             "mixedCorroboratingEvidenceFour": True,
@@ -387,7 +392,7 @@ def run() -> dict[str, object]:
         "limitations": [
             "The paths use real keyboard/mouse movement and wait on observed state, but they are deterministic automation rather than first-time human navigation evidence.",
             "S8 validates the reconciled 1–3 minute product budget; independent perception and three external tester records remain required.",
-            "The Strong path performs two approved behavior frames in the same glade implementation; family animation distinction remains an art/QA gate.",
+            "The Strong path records distinct young-play and branch-pull states, but automated pose checks do not establish anatomy or animation quality.",
             "Subjective fun, balance and audio mix are not inferred from the deterministic results.",
         ],
     }

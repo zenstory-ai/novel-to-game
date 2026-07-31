@@ -1,5 +1,5 @@
 {
-  "stage": "s8-input-paths",
+  "stage": "s9-living-plates",
   "mode": "order",
   "cameraMode": "order",
   "runActive": false,
@@ -99,10 +99,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": -14.49,
-      "y": 21.85,
-      "z": 53.1
+      "x": -14.64,
+      "y": 21.84,
+      "z": 53.05
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.501,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -124,6 +137,17 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
     }
   },
   "audio": {
@@ -139,82 +163,82 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 102.107
+        "at": 102.171
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 102.107
+        "at": 102.171
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 102.197
+        "at": 102.267
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 102.261
+        "at": 102.341
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 104.272
+        "at": 104.331
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 104.272
+        "at": 104.331
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 107.264
+        "at": 107.323
       },
       {
         "cue": "contact",
         "caption": "[case strike; glass cracks]",
-        "at": 107.264
+        "at": 107.323
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 110.869
+        "at": 110.939
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 111.195
+        "at": 111.264
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 111.259
+        "at": 111.339
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 113.253
+        "at": 113.328
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 113.253
+        "at": 113.328
       },
       {
         "cue": "brook-response",
         "caption": "[brush thrashes beside the brook]",
-        "at": 113.76
+        "at": 113.84
       },
       {
         "cue": "contact",
         "caption": "[case strike; glass cracks]",
-        "at": 116.256
+        "at": 116.32
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 116.256
+        "at": 116.32
       }
     ]
   },
@@ -235,6 +259,12 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": "CASE STRIKE \u2014 PLATE I CRACKED.",
     "cartridgesVisible": false,
@@ -242,15 +272,15 @@
     "lightWatch": null,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 88,
-  "triangles": 26290,
+  "sceneChildren": 26,
+  "calls": 114,
+  "triangles": 27306,
   "textures": 1,
-  "geometries": 66,
+  "geometries": 87,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 184.60000014305115,
+  "firstRenderedAt": 170.90000009536743,
   "recentMedianFrameMs": 8.3
 }

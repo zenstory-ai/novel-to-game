@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT · S8",
+  "updated": "2026-07-31 PT · S9",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -29,9 +29,11 @@
         "evidence/s6/08-rifle-brook-response.jpg",
         "evidence/s8/04-strong-covered-return.jpg",
         "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/07-mixed-rifle-brook.jpg"
+        "evidence/s8/07-mixed-rifle-brook.jpg",
+        "evidence/s9/01-young-play-commitment.jpg",
+        "evidence/s9/03-branch-pull-commitment.jpg"
       ],
-      "remaining": "The connected route and 28/12/18-second commitments now pass input-only Strong/Mixed/Panic traversal without teleport or direct time advancement; landmark polish and first-time human navigation evidence remain."
+      "remaining": "The route passes input-only Strong/Mixed/Panic traversal and now presents the family at readable glade scale; landmark polish and first-time human navigation evidence remain."
     },
     {
       "key": "tool.field_camera",
@@ -53,7 +55,7 @@
     {
       "key": "tool.plate_case",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "functional-prototype",
       "releaseGatePassed": false,
       "source": "app/index.html; app/src/main.js; app/src/simulation.js; app/src/styles.css",
       "provenance": "Original HTML/CSS plate previews and deterministic resource state",
@@ -69,9 +71,13 @@
         "evidence/s8/03-strong-glade-frames.jpg",
         "evidence/s8/05-strong-input-result.jpg",
         "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg"
+        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s9/02-young-play-plate.jpg",
+        "evidence/s9/04-branch-pull-plate.jpg",
+        "evidence/s9/05-distinct-recovered-plates.jpg",
+        "evidence/s9/06-clean-order-no-plates.jpg"
       ],
-      "remaining": "Four exact slots, cue previews, crack states and frame-key-specific terminal grayboxes pass all three input-only reference paths; final plate renders, hand placement and fracture motion remain."
+      "remaining": "Every shutter now preserves its exact local renderer view as a monochrome plate through preview, result and restart; hand placement, insertion/fracture motion and independent composition review remain."
     },
     {
       "key": "tool.period_rifle",
@@ -96,16 +102,19 @@
     {
       "key": "subject.iguanodon_family",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "procedural-prototype",
       "releaseGatePassed": false,
       "source": "app/src/world.js",
       "provenance": "Original low-poly procedural family blockout",
       "rights": "Original project geometry; museum pages inform facts only",
       "evidence": [
         "evidence/s0/03-glade-heavy.jpg",
-        "evidence/s8/03-strong-glade-frames.jpg"
+        "evidence/s8/03-strong-glade-frames.jpg",
+        "evidence/s9/01-young-play-commitment.jpg",
+        "evidence/s9/03-branch-pull-commitment.jpg",
+        "evidence/s9/05-distinct-recovered-plates.jpg"
       ],
-      "remaining": "The family is visible during the measured Strong behavior frames, but distinct anatomy and readable graze/play/branch-pull/withdraw animation still need production and independent evidence."
+      "remaining": "Two adults and three young now have expanded anatomy, graze/play/branch-pull roles and a feeding branch with distinct committed frames; independent anatomy, motion and first-time readability review remain."
     },
     {
       "key": "threat.pterodactyl",
@@ -175,9 +184,13 @@
         "evidence/s8/05-strong-input-result.jpg",
         "evidence/s8/08-mixed-input-result.jpg",
         "evidence/s8/10-panic-input-failure.jpg",
-        "evidence/s8/11-clean-order-after-paths.jpg"
+        "evidence/s8/11-clean-order-after-paths.jpg",
+        "evidence/s9/02-young-play-plate.jpg",
+        "evidence/s9/04-branch-pull-plate.jpg",
+        "evidence/s9/05-distinct-recovered-plates.jpg",
+        "evidence/s9/06-clean-order-no-plates.jpg"
       ],
-      "remaining": "Field prompts, physical resource edges, all result/failure bands and restart state now pass three input-only reference paths; final non-colour and authored-plate review remain."
+      "remaining": "Field prompts, physical resources, distinct renderer-derived plate previews, all result/failure bands and restart state are implemented; final full non-colour and independent composition review remain."
     },
     {
       "key": "light.functional_arc",
@@ -197,7 +210,7 @@
         "evidence/s8/08-mixed-input-result.jpg",
         "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "The revised 180-second budget is grounded by a 51.56-second Strong path with 100.35 seconds left and measured Mixed/Panic outcomes; sky/light interpolation and low-light legibility remain."
+      "remaining": "The revised 180-second budget is grounded by a roughly 51.6-second Strong path with 100.3 seconds left and measured Mixed/Panic outcomes; sky/light interpolation and low-light legibility remain."
     },
     {
       "key": "audio.core_world",
@@ -239,9 +252,10 @@
         "evidence/s7/01-persisted-settings-target.jpg",
         "evidence/s7/02-settings-150-minimum.jpg",
         "evidence/s7/06-focus-pause-commitment-minimum.jpg",
-        "evidence/s7/09-restored-defaults-target.jpg"
+        "evidence/s7/09-restored-defaults-target.jpg",
+        "evidence/s9/05-distinct-recovered-plates.jpg"
       ],
-      "remaining": "Pause/focus freeze, validated persisted text/reduced-motion/caption/channel controls, 150% minimum-viewport layout and defaults reset exist; complete grayscale/non-colour regression remains."
+      "remaining": "Persisted presentation controls and monochrome plate/result treatment are verified; the complete threat/route grayscale and colour-vision regression remains."
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "stage": "s8-input-paths",
+  "stage": "s9-living-plates",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 2.68,
-      "z": 62.017
+      "z": 62.002
     },
     "lastStablePosition": {
       "x": 2.68,
-      "z": 62.017
+      "z": 62.002
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 51.655,
-    "distanceTravelled": 128.368,
+    "elapsedSeconds": 51.66,
+    "distanceTravelled": 128.336,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -52,9 +52,9 @@
     "previewSeconds": 0,
     "lastProofEvent": {
       "plateIndex": 3,
-      "frameKey": "glade-behavior",
+      "frameKey": "glade-branch-pull",
       "points": 2,
-      "label": "BEHAVIOR \u2014 young play beside the adults.",
+      "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
       "zone": "iguanodon-glade"
     },
     "plates": [
@@ -80,15 +80,15 @@
         "points": 2,
         "lostPoints": 0,
         "label": "BEHAVIOR \u2014 young play beside the adults.",
-        "frameKey": "glade-behavior"
+        "frameKey": "glade-young-play"
       },
       {
         "index": 3,
         "status": "exposed",
         "points": 2,
         "lostPoints": 0,
-        "label": "BEHAVIOR \u2014 young play beside the adults.",
-        "frameKey": "glade-behavior"
+        "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
+        "frameKey": "glade-branch-pull"
       }
     ],
     "cartridges": 2,
@@ -101,7 +101,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 100.345,
+    "remainingLight": 100.34,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -125,8 +125,21 @@
     "position": {
       "x": 27.2,
       "y": 11.25,
-      "z": 33.99
+      "z": 33.97
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -148,6 +161,17 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
     }
   },
   "audio": {
@@ -163,7 +187,7 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.928
+        "at": 14.944
       },
       {
         "cue": "attack",
@@ -178,12 +202,12 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.045
+        "at": 23.051
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 26.939
+        "at": 26.944
       },
       {
         "cue": "camera-raise",
@@ -193,7 +217,7 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 27.013
+        "at": 27.024
       },
       {
         "cue": "attack",
@@ -208,12 +232,12 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.093
+        "at": 29.099
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.163
+        "at": 29.173
       },
       {
         "cue": "plate-slide",
@@ -223,12 +247,12 @@
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 31.52
+        "at": 31.525
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 37.515
+        "at": 37.52
       },
       {
         "cue": "watch",
@@ -238,7 +262,7 @@
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 51.552
+        "at": 51.563
       }
     ]
   },
@@ -259,6 +283,12 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": null,
+    "capturedPlateImages": [
+      true,
+      true,
+      true,
+      true
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
@@ -272,15 +302,15 @@
       "callback": null
     }
   },
-  "sceneChildren": 25,
-  "calls": 111,
-  "triangles": 27050,
+  "sceneChildren": 26,
+  "calls": 137,
+  "triangles": 28066,
   "textures": 1,
-  "geometries": 63,
+  "geometries": 84,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 184.60000014305115,
+  "firstRenderedAt": 170.90000009536743,
   "recentMedianFrameMs": 8.3
 }

@@ -1,0 +1,106 @@
+{
+  "stage": "s9-living-plates",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "5c830e13d8d24f13c5471660150ced879c991dd6a6a8f2effb4d55fbe11442fb"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "viewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "twoAdultsThreeYoung": true,
+    "youngPlayAndBranchPullDistinct": true,
+    "rendererCanvasFeedsEveryPlate": true,
+    "fourCapturedPlatesAreDistinct": true,
+    "plateImagesUseNonColourTreatment": true,
+    "strongRecoveredBoardUsesCapturedViews": true,
+    "restartClearsCapturedViews": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "plateImages": [
+    {
+      "plate": 1,
+      "bytesInCssValue": 64314,
+      "sha256": "39e0caf1143e0c13851413d7870af3b45835eeeacb3097c6ffba069595baa4bd",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 2,
+      "bytesInCssValue": 67194,
+      "sha256": "b53e354d46b5f61c3eb4b935e59046750bbd29f03f20dfb323022a0b817f32d7",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 3,
+      "bytesInCssValue": 67922,
+      "sha256": "c6c8264e5c0427eac91cda8861bd8df85e4bc20d7ef5e2a03e67bf57016b9eff",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 4,
+      "bytesInCssValue": 72030,
+      "sha256": "0bea36e4b3e5202245746db03e3823aff7a5e85aeb0b5b40e5a9a6479f429b0e",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 99,
+    "worstFrameMs": 10.2
+  },
+  "checkpoints": [
+    {
+      "id": "01-young-play-commitment",
+      "state": "build/evidence/s9/state/01-young-play-commitment.json",
+      "browser": "build/evidence/s9/browser/01-young-play-commitment.json",
+      "visual": "build/evidence/s9/01-young-play-commitment.jpg"
+    },
+    {
+      "id": "02-young-play-plate",
+      "state": "build/evidence/s9/state/02-young-play-plate.json",
+      "browser": "build/evidence/s9/browser/02-young-play-plate.json",
+      "visual": "build/evidence/s9/02-young-play-plate.jpg"
+    },
+    {
+      "id": "03-branch-pull-commitment",
+      "state": "build/evidence/s9/state/03-branch-pull-commitment.json",
+      "browser": "build/evidence/s9/browser/03-branch-pull-commitment.json",
+      "visual": "build/evidence/s9/03-branch-pull-commitment.jpg"
+    },
+    {
+      "id": "04-branch-pull-plate",
+      "state": "build/evidence/s9/state/04-branch-pull-plate.json",
+      "browser": "build/evidence/s9/browser/04-branch-pull-plate.json",
+      "visual": "build/evidence/s9/04-branch-pull-plate.jpg"
+    },
+    {
+      "id": "05-distinct-recovered-plates",
+      "state": "build/evidence/s9/state/05-distinct-recovered-plates.json",
+      "browser": "build/evidence/s9/browser/05-distinct-recovered-plates.json",
+      "visual": "build/evidence/s9/05-distinct-recovered-plates.jpg"
+    },
+    {
+      "id": "06-clean-order-no-plates",
+      "state": "build/evidence/s9/state/06-clean-order-no-plates.json",
+      "browser": "build/evidence/s9/browser/06-clean-order-no-plates.json",
+      "visual": "build/evidence/s9/06-clean-order-no-plates.jpg"
+    }
+  ],
+  "limitations": [
+    "S9 uses QA placement to isolate asset states; S8 remains the input-only traversal and timing evidence.",
+    "The plate images are real renderer-canvas captures with monochrome treatment, while evidence grading remains deterministic simulation state.",
+    "Automated shape/state checks do not replace independent anatomy, premise or first-time player perception review.",
+    "Subjective composition, animation quality and visual appeal are not inferred from deterministic checks."
+  ]
+}

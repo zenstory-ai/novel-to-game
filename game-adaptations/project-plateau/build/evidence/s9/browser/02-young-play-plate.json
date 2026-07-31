@@ -1,16 +1,15 @@
 {
   "inputs": [
-    "three input-only frames",
-    "attack begins"
+    "wait for Plate III to seat"
   ],
   "viewport": [
     1440,
     900
   ],
-  "url": "http://127.0.0.1:4173/?qa=s8",
+  "url": "http://127.0.0.1:4173/?qa=s9",
   "consoleErrorsAtCheckpoint": [],
   "requestHostsAtCheckpoint": [
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785531049539
+  "capturedAtUnixMs": 1785530942430
 }
