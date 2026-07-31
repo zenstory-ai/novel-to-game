@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT · S10",
+  "updated": "2026-07-31 PT · S10 colour-vision matrix",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -29,7 +29,7 @@
         "evidence/s6/08-rifle-brook-response.jpg",
         "evidence/s8/04-strong-covered-return.jpg",
         "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/07-mixed-rifle-brook.jpg",
+        "evidence/s8/08-mixed-rifle-brook.jpg",
         "evidence/s9/01-young-play-commitment.jpg",
         "evidence/s9/03-branch-pull-commitment.jpg",
         "evidence/s10/01-clear-family-sightline.jpg",
@@ -72,8 +72,8 @@
         "evidence/s6/05-plate-slide-caption.jpg",
         "evidence/s8/03-strong-glade-frames.jpg",
         "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s8/09-mixed-input-result.jpg",
+        "evidence/s8/12-panic-input-failure.jpg",
         "evidence/s9/02-young-play-plate.jpg",
         "evidence/s9/04-branch-pull-plate.jpg",
         "evidence/s9/05-distinct-recovered-plates.jpg",
@@ -94,10 +94,10 @@
         "evidence/s5/03-noisy-exposed-return.jpg",
         "evidence/s5/04-corroborating-shot-result.jpg",
         "evidence/s6/08-rifle-brook-response.jpg",
-        "evidence/s8/07-mixed-rifle-brook.jpg",
-        "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/09-panic-first-contact.jpg",
-        "evidence/s8/10-panic-input-failure.jpg"
+        "evidence/s8/08-mixed-rifle-brook.jpg",
+        "evidence/s8/09-mixed-input-result.jpg",
+        "evidence/s8/11-panic-first-contact.jpg",
+        "evidence/s8/12-panic-input-failure.jpg"
       ],
       "remaining": "Hidden/raised state, two chamber marks, timely interruption, report/echo, brook response and result callback pass one-shot Mixed and two-shot Panic input paths; final recoil and production mix remain."
     },
@@ -146,14 +146,18 @@
         "evidence/s6/06-membrane-wing-attack.jpg",
         "evidence/s6/07-cover-pull-up.jpg",
         "evidence/s8/04-strong-covered-return.jpg",
-        "evidence/s8/07-mixed-rifle-brook.jpg",
-        "evidence/s8/09-panic-first-contact.jpg",
-        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s8/08-mixed-rifle-brook.jpg",
+        "evidence/s8/11-panic-first-contact.jpg",
+        "evidence/s8/12-panic-input-failure.jpg",
+        "evidence/s8/18-achromatopsia-covered-return.jpg",
         "evidence/s10/02-young-play-silver-frame.jpg",
         "evidence/s10/03-branch-pull-silver-frame.jpg",
-        "evidence/s10/04-achromatopsia-attack.jpg"
+        "evidence/s10/04-achromatopsia-attack.jpg",
+        "evidence/s10/10-protanopia-attack-defense.jpg",
+        "evidence/s10/11-deuteranopia-attack-defense.jpg",
+        "evidence/s10/12-tritanopia-attack-defense.jpg"
       ],
-      "remaining": "Four states, timed contact, shot response and cover pull-up pass input paths; one real achromatopsia attack frame retains silhouette and tool response. Anatomy, material and complete muted/non-colour route review remain."
+      "remaining": "Four states, timed contact, shot response and cover pull-up pass full-colour and achromatopsia input routes; protanopia, deuteranopia and tritanopia attack/defence checkpoints retain the encoded state. Anatomy, material and independent colour-cue readability review remain."
     },
     {
       "key": "ui.field_system",
@@ -190,9 +194,12 @@
         "evidence/s7/05-manual-pause-minimum.jpg",
         "evidence/s7/07-result-minimum.jpg",
         "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg",
-        "evidence/s8/11-clean-order-after-paths.jpg",
+        "evidence/s8/09-mixed-input-result.jpg",
+        "evidence/s8/12-panic-input-failure.jpg",
+        "evidence/s8/13-panic-clean-restart.jpg",
+        "evidence/s8/14-achromatopsia-field-order.jpg",
+        "evidence/s8/19-achromatopsia-input-result.jpg",
+        "evidence/s8/20-achromatopsia-clean-restart.jpg",
         "evidence/s9/02-young-play-plate.jpg",
         "evidence/s9/04-branch-pull-plate.jpg",
         "evidence/s9/05-distinct-recovered-plates.jpg",
@@ -200,9 +207,10 @@
         "evidence/s10/02-young-play-silver-frame.jpg",
         "evidence/s10/04-achromatopsia-attack.jpg",
         "evidence/s10/05-strong-plate-board.jpg",
-        "evidence/s10/06-clean-restart.jpg"
+        "evidence/s10/06-clean-restart.jpg",
+        "evidence/s10/report.json"
       ],
-      "remaining": "Field prompts, physical resources, renderer-derived previews, result/failure bands and restart are implemented; one achromatopsia busy frame passes, while the complete non-colour route and independent composition review remain."
+      "remaining": "Field prompts, physical resources, renderer-derived previews, result/failure bands and restart are implemented. Complete full-colour and achromatopsia routes plus the three-mode checkpoint matrix pass technical checks; independent composition and colour-cue readability review remain."
     },
     {
       "key": "light.functional_arc",
@@ -219,8 +227,8 @@
         "evidence/s4/06-timeout-failure.jpg",
         "evidence/s5/07-strong-result-1280x720.jpg",
         "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s8/09-mixed-input-result.jpg",
+        "evidence/s8/12-panic-input-failure.jpg",
         "evidence/s10/01-clear-family-sightline.jpg",
         "evidence/s10/02-young-play-silver-frame.jpg"
       ],
@@ -242,9 +250,9 @@
         "evidence/s6/09-result-cue.jpg",
         "evidence/s6/10-failure-cue.jpg",
         "evidence/s7/06-focus-pause-commitment-minimum.jpg",
-        "evidence/s8/07-mixed-rifle-brook.jpg",
-        "evidence/s8/08-mixed-input-result.jpg",
-        "evidence/s8/10-panic-input-failure.jpg"
+        "evidence/s8/08-mixed-rifle-brook.jpg",
+        "evidence/s8/09-mixed-input-result.jpg",
+        "evidence/s8/12-panic-input-failure.jpg"
       ],
       "remaining": "Core cues and captions remain active across measured Strong/Mixed/Panic paths; production mix, richer ambience and subjective listening review remain."
     },
@@ -267,10 +275,12 @@
         "evidence/s7/02-settings-150-minimum.jpg",
         "evidence/s7/06-focus-pause-commitment-minimum.jpg",
         "evidence/s7/09-restored-defaults-target.jpg",
+        "evidence/s8/report.json",
         "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s10/04-achromatopsia-attack.jpg"
+        "evidence/s10/04-achromatopsia-attack.jpg",
+        "evidence/s10/report.json"
       ],
-      "remaining": "Persisted controls, monochrome plate/result treatment and one real Chromium achromatopsia attack checkpoint are verified; the complete threat/route grayscale and colour-vision regression remains."
+      "remaining": "Persisted controls, monochrome plate/result treatment, complete full-colour and achromatopsia input routes, and the protanopia/deuteranopia/tritanopia checkpoint matrix are verified technically; independent colour-cue readability review remains."
     }
   ]
 }

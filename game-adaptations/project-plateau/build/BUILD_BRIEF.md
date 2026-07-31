@@ -307,7 +307,7 @@ verification:
 ```
 
 `npm run verify` is the single authoritative command. It must discover runnable
-test suites before invoking all three stable IDs and fail with
+test suites before invoking all registered suite IDs and fail with
 `ORPHANED_TEST_SUITE major` if an authored suite is not registered. Manually
 running green suites separately is diagnostic only and cannot satisfy the
 handoff.
@@ -342,9 +342,9 @@ are not claimed by automated verification.
 ## Final scope reconciliation
 
 Reconciled on 2026-07-31 against source commit
-`565e2f6c20f1aafe99fc098a73c09f2e5432a720` and authoritative command
-`npm run verify`. The 462.634-second run executed all seven registered suites
-and sixteen underlying commands; its log and 22-checkpoint handoff are
+`8793fb904ca6ac1aedf62f296febff6c68a9bb3d` and authoritative command
+`npm run verify`. The 509.894-second run executed all seven registered suites
+and sixteen underlying commands; its log and 41-checkpoint handoff are
 `../qa/evidence/verify.log` and `../qa/verification.json`.
 
 | Approved scope | Delivery | Evidence or deliberate boundary |
@@ -353,11 +353,12 @@ and sixteen underlying commands; its log and 22-checkpoint handoff are
 | Continuous first-person connected zone, collision, pause, focus recovery and restart | Delivered | S1/S2/S7 plus the S8 input-only complete run |
 | Five same-play verbs performed by input | Delivered | `../qa/evidence/design-invariants.md#same-play-verbs`; S8 input trace and checkpoints |
 | Four physical plates with view-dependent proof and persistent recovered views | Delivered | S3/S9/S10 state, browser and renderer-derived visual evidence |
-| Four readable threat states, cover, one recoverable contact and limited defensive shot | Delivered | S2/S3/S5/S6; one achromatopsia pressure frame in S10 |
+| Four readable threat states, cover, one recoverable contact and limited defensive shot | Delivered technically | S2/S3/S5/S6; complete full-colour and achromatopsia routes in S8; three additional colour-vision attack/defence checkpoints in S10; independent cue review remains open |
 | Covered and exposed returns with different time, plate and callback consequences | Delivered | S5 and input-only Strong/Mixed/Panic paths in S8 |
 | Strong, partial and failure outcomes followed by a clean restart | Delivered | S4/S5 plus per-terminal S8 restart checkpoints |
 | Local audio/captions, HUD, sensitivity, motion reduction and text scaling | Delivered | S6/S7; subjective mix and comfort remain outside automated proof |
-| Payload, loading, lifecycle and heaviest-state performance budgets | Delivered locally | 154,906 gzip bytes; 2,217.3 ms local 25 Mbps first frame; 120.5/106.4 target median/1%-low FPS in S7 |
+| Non-colour redundancy across the supported colour-vision modes | Delivered technically | S8 complete full-colour and achromatopsia routes plus S10 protanopia/deuteranopia/tritanopia order, glade, attack/defence and result checkpoints; independent cue-readability review remains open |
+| Payload, loading, lifecycle and heaviest-state performance budgets | Delivered locally | 154,906 gzip bytes; 2,198.3 ms local 25 Mbps first frame; 120.5/106.4 target median/1%-low FPS in S7 |
 | First-time premise, genre and route comprehension | Not delivered as evidence | Three independent raw player records remain NOT_RUN; automation cannot substitute |
 | Independent anatomy, motion and composition approval | Not delivered as evidence | Current numeric/image floors detect gross failures only |
 | Public deployment | Not delivered | Public-host cold load, anonymous play and restart smoke remain a release gate |

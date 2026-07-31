@@ -475,6 +475,24 @@ class RepositoryValidationTests(unittest.TestCase):
                 for phrase in web_only_phrases:
                     self.assertNotIn(phrase, lowered)
 
+    def test_in_development_asset_ledgers_reference_existing_evidence(self) -> None:
+        missing_evidence = []
+        ledgers = sorted(
+            (ROOT / "game-adaptations").glob("*/build/asset-ledger.json")
+        )
+        for ledger in ledgers:
+            data = json.loads(ledger.read_text(encoding="utf-8"))
+            for entry in data.get("entries", []):
+                for target in entry.get("evidence", []):
+                    if "://" in target:
+                        continue
+                    if not (ledger.parent / target).is_file():
+                        missing_evidence.append(
+                            f"{ledger.relative_to(ROOT)}:{entry.get('key')} -> {target}"
+                        )
+
+        self.assertEqual([], missing_evidence)
+
     def test_runtime_pipeline_follows_the_selected_target_platform(self) -> None:
         expected_markers = {
             "skills/novel-to-game/SKILL.md": "目标运行形态",
