@@ -122,7 +122,8 @@ when available. It saves JPEGs, timings, render counters and a JSON report under
 the corresponding `../evidence/s*/` directory. S3 through S10 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S10 foundation, not the completed game. It proves the approved local
+This repository checkpoint is locally playable and passes the automated build
+handoff; it is not a hosted release. The staged evidence proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -134,8 +135,8 @@ covered/exposed return, Fort submission, one of four evidence bands, timeout or
 second-contact failure, and a clean field-order restart. S4 browser evidence
 captures one Strong-band proof → covered return → result → restart path plus
 both terminal failures. It uses QA-only walking/time compression and therefore
-does not replace final uncompressed reference paths, audio, route consequence
-coverage, production art or the authoritative verification handoff. S5 adds
+did not replace the later uncompressed reference paths, audio, route consequence
+coverage, production art or authoritative verification. S5 adds
 all four alive result bands, the no-shot Strong line, a shot/callback Mixed
 line, an explicit Panic failure, the 28/12/18-second route-cost matrix, a
 visible brook-brush response and a five-verb evidence index. Those paths still
@@ -160,8 +161,8 @@ one shot and its creek callback; Panic reaches the second-contact failure after
 spending both rounds. All three use keyboard/mouse movement without teleport or
 direct-time hooks. This establishes repeatable reference paths, but automated
 state evidence does not replace independent first-time perception, three
-external tester records, final family animation review, public-host loading or
-the authoritative verification handoff. S9 gives the two-adult/three-young
+external tester records, final family animation review or public-host loading.
+S9 gives the two-adult/three-young
 family distinct graze, young-play and branch-pull roles, and records the two
 behavior windows under separate frame keys. Every shutter now preserves the
 actual local renderer view, without the camera body, as that plate's
@@ -184,3 +185,12 @@ hooks. Its 30-second and 15-second versions uniformly compress the same uncut
 source window and pass all 14 container/codec/profile/pixel/aspect/frame-rate/
 duration/size/audio/first-frame/fast-start checks. Because their playback is
 time-compressed, S8—not the delivery clips—remains the timing authority.
+
+The latest clean-install `npm run verify` handoff passed seven suites and all
+sixteen commands, indexed 22 direct checkpoints and produced a separate 9/9
+design-invariant audit. See [`../../qa/QA_REPORT.md`](../../qa/QA_REPORT.md) and
+[`../../qa/verification.json`](../../qa/verification.json). Independent
+first-time sessions, perception review and colour-vision routes now have
+executable protocols in [`../../qa/PLAYTEST_PROTOCOL.md`](../../qa/PLAYTEST_PROTOCOL.md)
+and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md);
+their raw records and the public-host smoke remain open.

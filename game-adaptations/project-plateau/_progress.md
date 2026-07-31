@@ -47,6 +47,8 @@
 
 `verification:authoritative pass` — source commit `565e2f6` adds the declared `npm run verify` handoff. One 462.634-second invocation discovered 15 pass/fail files, classified two non-suite tools, ran seven stable suites and sixteen commands, regenerated S0–S10 against fingerprint `e99883ce…`, and wrote `qa/verification.json`, `qa/evidence/verify.log` and a 9/9 design-invariant audit. The Strong complete run now binds clean order, first proof, seven-point glade proof, covered return, renderer-derived result and an immediate clean restart through six state/browser/visual steps. Local automation is green; independent first-time/perception records, a full non-colour route and public-host smoke remain NOT_RUN, so release stays closed.
 
+`qa:independent-protocols ready` — `qa/PLAYTEST_PROTOCOL.md` freezes the three-participant clean-context script, observer boundaries, raw-record schema and falsifiable first-time thresholds. `qa/PERCEPTION_REVIEW_PROTOCOL.md` freezes an independent anatomy/motion/composition review, full-colour plus achromatopsia routes and the three additional colour-vision checkpoint sets. No result is inferred from writing the protocols: participant files and the independent review remain NOT_RUN.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

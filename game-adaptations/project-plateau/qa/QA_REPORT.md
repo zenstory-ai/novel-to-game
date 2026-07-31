@@ -99,11 +99,11 @@ comprehension or subjective visual questions.
 
 | Gate | Status | Severity before public release | Required next evidence |
 |---|---|---|---|
-| Three first-time players recognize 3D action/exploration and not a text/VN presentation | NOT_RUN | major | Three raw sessions; at least two meet the stated threshold |
-| First meaningful interaction within 90 seconds and result within 15 minutes | NOT_RUN | major | Timestamped player records without coaching |
-| Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Post-run answers linked to each raw session |
-| Independent anatomy, motion and composition review | NOT_RUN | major | Reviewer identity/context, frame-level findings and disposition |
-| Complete route under non-colour/colour-vision modes | NOT_RUN | major | Full input route, not one isolated attack screenshot |
+| Three first-time players recognize 3D action/exploration and not a text/VN presentation | NOT_RUN | major | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |
+| First meaningful interaction within 90 seconds and result within 15 minutes | NOT_RUN | major | Timestamped, uncoached player records using the same protocol |
+| Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Verbatim post-run answers linked to each raw session |
+| Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), reviewer context, frame-level findings and disposition |
+| Complete route under non-colour/colour-vision modes | NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets; one isolated attack screenshot is insufficient |
 | Anonymous public HTTPS load, play, result and restart | NOT_RUN | release-blocking | Public URL, cold-load/browser log and clean-context smoke |
 | Platform upload/transcode for short media | NOT_RUN | release-blocking for that attachment | Uploaded file hash and playback check |
 
