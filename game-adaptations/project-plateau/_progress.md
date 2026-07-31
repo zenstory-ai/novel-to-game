@@ -2,8 +2,8 @@
 
 - Source: Project Gutenberg eBook #139, exact local bytes recorded in `source/SOURCE.md`
 - Mode: `quick`
-- Current stage: `art-direction`
-- Completed stages: `intake`, `analyze`, `concept`, `world-design`
+- Current stage: `build`
+- Completed stages: `intake`, `analyze`, `concept`, `world-design`, `art-direction`
 - Selected concept: `Proof Before Dark` in `concepts/CONCEPT.md`
 - Updated: 2026-07-31 PT
 - Analysis coverage: `analysis/_coverage.md`; source 16 / success 16 / failed 0
@@ -15,6 +15,8 @@
 `gate:concept pass` — all three candidates preserve the locked first-person 3D survival-adventure frame, pass the hard vetoes and cite at least two verified high-adoption same-play precedents. Quick mode selects `Proof Before Dark` because one bounded run can test evidence quality, ecological response, limited defense and extraction together.
 
 `gate:world-design pass` — `design/GAME_DESIGN.md` defines one core system, two supports, a five-beat complete run, first-minute copy, four deterministic outcome bands, a reachable numeric budget, a four-state decision flip and bound Strong/Mixed/Panic reference paths. It does not promote factions, combat breadth or a true open world into the prototype.
+
+`gate:art-direction pass` — `design/ART_DIRECTION.md` covers every designed space, unit, interaction and terminal state; binds all five core verbs to motion, sound and reduced-motion feedback; defines seven buildable signature moments; and separates release-gate assets from degradable fallbacks with explicit reference-rights boundaries. Real-render screenshot and video evidence remains a build/QA release gate rather than a claim made by this planning artifact.
 
 ## Notes
 
