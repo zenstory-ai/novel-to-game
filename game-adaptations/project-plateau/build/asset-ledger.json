@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT \u00b7 S1",
+  "updated": "2026-07-31 PT \u00b7 S2",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -16,9 +16,13 @@
         "evidence/s0/03-glade-heavy.jpg",
         "evidence/s1/01-clean-start.jpg",
         "evidence/s1/03-collision-slide.jpg",
-        "evidence/s1/04-boundary-recovery.jpg"
+        "evidence/s1/04-boundary-recovery.jpg",
+        "evidence/s2/01-fort-distant.jpg",
+        "evidence/s2/02-canopy-watch.jpg",
+        "evidence/s2/03-glade-search.jpg",
+        "evidence/s2/05-covered-deescalation.jpg"
       ],
-      "remaining": "Final node topology, cover volumes, sight lines and gameplay-route evidence remain."
+      "remaining": "Connected node/return-zone state exists; final cover volumes, committed route costs, landmark polish and complete-run evidence remain."
     },
     {
       "key": "tool.field_camera",
@@ -79,9 +83,14 @@
       "rights": "Original project geometry; museum pages inform facts only",
       "evidence": [
         "evidence/s0/02-field-order.jpg",
-        "evidence/s0/03-glade-heavy.jpg"
+        "evidence/s0/03-glade-heavy.jpg",
+        "evidence/s2/01-fort-distant.jpg",
+        "evidence/s2/02-canopy-watch.jpg",
+        "evidence/s2/03-glade-search.jpg",
+        "evidence/s2/04-creek-attack.jpg",
+        "evidence/s2/05-covered-deescalation.jpg"
       ],
-      "remaining": "Watch/search/attack, shadow, cover pull-up and shot response are not implemented."
+      "remaining": "Four state poses/orbits and cover de-escalation exist; shadow, contact, cover pull-up, shot response, audio and final unclipped composition remain."
     },
     {
       "key": "ui.field_system",

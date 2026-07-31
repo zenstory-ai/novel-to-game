@@ -25,6 +25,8 @@
 
 `checkpoint:S1 pass` — the deterministic controller now supplies mouse look, walk, sprint, crouch, foundation collision/slide, actionable boundary recovery, manual pause, focus-loss freeze and a clean restart. `build/evidence/s1/report.json` records the real Chrome path and a continuous 600.01-second / 299-input-segment smoke with zero console errors or external request hosts; its final 240-frame sample measured 120.5 median FPS / 97.1 one-percent-low FPS. Route topology, observation, threat, proof, defense, audio and extraction remain later gates.
 
+`checkpoint:S2 pass` — the simulation now records a connected Fort → brook → canopy/basalt fork → glade → covered/exposed return history and drives the primary aerial silhouette through distant, watch, search and attack without a threat meter. A six-second covered hold de-escalates the state. `build/evidence/s2/report.json` binds all five real rendered states to hidden state snapshots, records zero console errors/external hosts and retains 120.5 median FPS / 101.0 one-percent-low FPS. Contact, defense, photographic proof, audio and extraction remain open.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

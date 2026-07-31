@@ -90,7 +90,17 @@ function makeRouteAndBrook(scene) {
   const route = makeRibbon(routePoints, 4.8, 0x74664a, 0.055);
   route.material.opacity = 0.68;
   route.name = 'world.connected_route.track';
-  scene.add(route);
+  const canopyFork = makeRibbon([
+    [5, 35], [-4, 25], [-12, 13], [-10, 1], [0, -13],
+  ].map(([x, z]) => new THREE.Vector3(x, 0, z)), 3.7, 0x43563c, 0.07);
+  canopyFork.material.opacity = 0.72;
+  canopyFork.name = 'world.connected_route.covered_fork';
+  const basaltFork = makeRibbon([
+    [5, 35], [13, 25], [20, 13], [18, 0], [7, -14],
+  ].map(([x, z]) => new THREE.Vector3(x, 0, z)), 4.2, 0x8a6240, 0.075);
+  basaltFork.material.opacity = 0.76;
+  basaltFork.name = 'world.connected_route.exposed_fork';
+  scene.add(route, canopyFork, basaltFork);
 }
 
 function placeVegetation(scene) {
@@ -237,6 +247,7 @@ function makePterodactyl(scene, radius, height, phase, scale = 1) {
   mesh.scale.setScalar(scale);
   mesh.name = 'threat.pterodactyl.distant';
   mesh.userData = { radius, height, phase };
+  mesh.userData.baseScale = scale;
   scene.add(mesh);
   return mesh;
 }
@@ -294,20 +305,47 @@ export function createWorld(scene) {
   ];
   const smoke = makeFort(scene);
   const fieldCamera = makeFieldCamera(scene);
+  let renderedThreatState = 'distant';
 
   return {
     family,
     pterodactyls,
     smoke,
     fieldCamera,
-    update(elapsed, reducedMotion = false) {
+    update(elapsed, reducedMotion = false, runtime = {}) {
+      const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
+      renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
+      const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
       const speed = reducedMotion ? 0.08 : 0.18;
       pterodactyls.forEach((mesh, index) => {
         const { radius, height, phase } = mesh.userData;
-        const angle = phase + elapsed * speed * (1 + index * 0.08);
-        mesh.position.set(Math.cos(angle) * radius, height + Math.sin(angle * 2) * 1.2, -35 + Math.sin(angle) * radius * 0.45);
+        const isPrimary = index === 0;
+        const stateRadius = isPrimary ? [radius, 26, 17, 9][awareness] : radius;
+        const stateHeight = isPrimary ? [height, 12, 10, 8][awareness] : height;
+        const stateSpeed = speed * (1 + awareness * 0.42) * (1 + index * 0.08);
+        const angle = phase + elapsed * stateSpeed;
+        if (isPrimary && awareness === 3) {
+          const dive = (elapsed % 3.2) / 3.2;
+          const approach = dive < 0.72 ? dive / 0.72 : (1 - dive) / 0.28;
+          mesh.position.set(
+            playerPosition.x + Math.cos(angle) * stateRadius * (1 - approach * 0.72),
+            stateHeight + (1 - approach) * 5,
+            playerPosition.z - 14 + Math.sin(angle) * 3 + approach * 4,
+          );
+          mesh.scale.set(mesh.userData.baseScale * 0.58, mesh.userData.baseScale, mesh.userData.baseScale);
+          mesh.rotation.x = -0.42 * approach;
+        } else {
+          mesh.position.set(
+            playerPosition.x + Math.cos(angle) * stateRadius,
+            stateHeight + Math.sin(angle * 2) * 1.2,
+            playerPosition.z - 25 + Math.sin(angle) * stateRadius * 0.35,
+          );
+          mesh.scale.setScalar(mesh.userData.baseScale);
+          mesh.rotation.x = 0;
+        }
+        mesh.name = `threat.pterodactyl.${isPrimary ? renderedThreatState : 'distant'}`;
         mesh.rotation.y = -angle + Math.PI / 2;
-        mesh.rotation.z = Math.sin(angle * 2.4) * 0.16;
+        mesh.rotation.z = Math.sin(angle * 2.4) * (0.16 + awareness * 0.035);
       });
       family.forEach((animal, index) => {
         animal.position.y = animal.userData.baseY + Math.sin(elapsed * 0.8 + animal.userData.phase) * (reducedMotion ? 0.008 : 0.035);
@@ -316,6 +354,17 @@ export function createWorld(scene) {
       smoke.children.forEach((puff, index) => {
         puff.position.x = Math.sin(elapsed * 0.22 + index) * (reducedMotion ? 0.15 : 0.55);
       });
+    },
+    threatSnapshot() {
+      const primary = pterodactyls[0];
+      return {
+        state: renderedThreatState,
+        position: {
+          x: Number(primary.position.x.toFixed(2)),
+          y: Number(primary.position.y.toFixed(2)),
+          z: Number(primary.position.z.toFixed(2)),
+        },
+      };
     },
   };
 }

@@ -6,6 +6,7 @@ import {
   restartPlayer,
   setPaused,
   stepPlayer,
+  zoneForPosition,
 } from '../src/simulation.js';
 
 test('fresh and restarted player states are clean copies', () => {
@@ -62,4 +63,43 @@ test('leaving the navigable world recovers the last stable position', () => {
   assert.deepEqual(after.position, player.lastStablePosition);
   assert.equal(after.boundaryRecoveries, 1);
   assert.equal(after.lastEvent, 'boundary-recovery');
+});
+
+test('zone topology distinguishes the observation fork and both return routes', () => {
+  assert.equal(zoneForPosition({ x: 0, z: 70 }), 'fort');
+  assert.equal(zoneForPosition({ x: 0, z: 45 }), 'brook-blind');
+  assert.equal(zoneForPosition({ x: 0, z: 18 }), 'canopy-overlook');
+  assert.equal(zoneForPosition({ x: 7, z: 18 }), 'basalt-shelf');
+  assert.equal(zoneForPosition({ x: 0, z: -20 }), 'iguanodon-glade');
+  assert.equal(zoneForPosition({ x: 0, z: 18 }, true), 'covered-return');
+  assert.equal(zoneForPosition({ x: 7, z: 18 }, true), 'exposed-creek');
+});
+
+test('territory, glade, exposed sprint and cover produce four readable threat states', () => {
+  let player = createPlayerState();
+  player.position = { x: 0, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.zone, 'canopy-overlook');
+  assert.equal(player.threatState, 'watch');
+
+  player.position = { x: 0, z: -10 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.zone, 'iguanodon-glade');
+  assert.equal(player.threatState, 'search');
+
+  player.position = { x: 7, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, { forward: 1, sprint: true }, 1);
+  assert.equal(player.zone, 'exposed-creek');
+  assert.equal(player.threatState, 'attack');
+  assert.equal(player.lastThreatEvent, 'exposed-sprint');
+
+  player.position = { x: 0, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  for (let second = 0; second < 6; second += 1) player = stepPlayer(player, {}, 1);
+  assert.equal(player.zone, 'covered-return');
+  assert.equal(player.threatState, 'search');
+  assert.equal(player.lastThreatEvent, 'cover-deescalation');
 });

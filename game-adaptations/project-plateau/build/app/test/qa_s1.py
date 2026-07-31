@@ -86,7 +86,7 @@ def run() -> dict[str, object]:
         response = page.goto(f"{BASE_URL}/?qa=s1", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert response and response.ok
-        assert page.evaluate("window.__projectPlateau.stage") == "s1-controller"
+        assert page.evaluate("window.__projectPlateau.stage") in {"s1-controller", "s2-topology"}
 
         def snapshot() -> dict[str, object]:
             return page.evaluate("window.__projectPlateau.snapshot()")

@@ -24,12 +24,19 @@ browser smoke with:
 SMOKE_SECONDS=600 npm run verify:s1
 ```
 
+Run the connected-zone and four-state primitive threat checkpoint with:
+
+```bash
+npm run verify:s2
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
 `../evidence/s0/`.
 
-This is an S1 foundation, not the completed game. It proves the approved local
+This is an S2 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
-performance baseline. Observation, threat, proof, defense, audio, extraction
+performance baseline, plus connected zone history and four primitive threat
+states. Observation, photographic proof, contact, defense, audio, extraction
 and complete-run evidence remain subsequent gates.

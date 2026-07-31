@@ -1,0 +1,363 @@
+{
+  "stage": "s2-topology",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "9316f4d78c2529e0a2a9429e596e8c2f649e256d3da2e2b0335e13d0fb107a9a"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "viewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "connectedZoneHistory": true,
+    "distant": true,
+    "watch": true,
+    "search": true,
+    "attack": true,
+    "coverDeescalation": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 98,
+    "worstFrameMs": 10.4
+  },
+  "checkpoints": [
+    {
+      "id": "fort-distant",
+      "state": {
+        "stage": "s2-topology",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "lastStablePosition": {
+            "x": 3,
+            "z": 70
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 0.192,
+          "distanceTravelled": 0,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle",
+          "zone": "fort",
+          "zoneHistory": [
+            "fort"
+          ],
+          "reachedGlade": false,
+          "inCover": false,
+          "coverSeconds": 0,
+          "sprintExposureSeconds": 0,
+          "sprintEscalationCharged": false,
+          "threatAwareness": 0,
+          "threatState": "distant",
+          "lastThreatEvent": "distant"
+        },
+        "threatVisual": {
+          "state": "distant",
+          "position": {
+            "x": 31.61,
+            "y": 23.38,
+            "z": 46.65
+          }
+        },
+        "sceneChildren": 23,
+        "calls": 63,
+        "triangles": 25384,
+        "textures": 1,
+        "geometries": 29,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 232.90000009536743,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s2/01-fort-distant.jpg"
+    },
+    {
+      "id": "canopy-watch",
+      "state": {
+        "stage": "s2-topology",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 0,
+            "z": 18
+          },
+          "lastStablePosition": {
+            "x": 0,
+            "z": 18
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 3.891,
+          "distanceTravelled": 0,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle",
+          "zone": "canopy-overlook",
+          "zoneHistory": [
+            "fort",
+            "canopy-overlook"
+          ],
+          "reachedGlade": false,
+          "inCover": true,
+          "coverSeconds": 3.665300000190734,
+          "sprintExposureSeconds": 0,
+          "sprintEscalationCharged": false,
+          "threatAwareness": 1,
+          "threatState": "watch",
+          "lastThreatEvent": "territory-watch"
+        },
+        "threatVisual": {
+          "state": "watch",
+          "position": {
+            "x": 9.97,
+            "y": 12.85,
+            "z": 1.4
+          }
+        },
+        "sceneChildren": 23,
+        "calls": 63,
+        "triangles": 25384,
+        "textures": 1,
+        "geometries": 29,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 232.90000009536743,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s2/02-canopy-watch.jpg"
+    },
+    {
+      "id": "glade-search",
+      "state": {
+        "stage": "s2-topology",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 0,
+            "z": -10
+          },
+          "lastStablePosition": {
+            "x": 0,
+            "z": -10
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 4.15,
+          "distanceTravelled": 0,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle",
+          "zone": "iguanodon-glade",
+          "zoneHistory": [
+            "fort",
+            "canopy-overlook",
+            "iguanodon-glade"
+          ],
+          "reachedGlade": true,
+          "inCover": false,
+          "coverSeconds": 0,
+          "sprintExposureSeconds": 0,
+          "sprintEscalationCharged": false,
+          "threatAwareness": 2,
+          "threatState": "search",
+          "lastThreatEvent": "glade-search"
+        },
+        "threatVisual": {
+          "state": "search",
+          "position": {
+            "x": -0.69,
+            "y": 9.9,
+            "z": -29.05
+          }
+        },
+        "sceneChildren": 23,
+        "calls": 63,
+        "triangles": 25384,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 232.90000009536743,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s2/03-glade-search.jpg"
+    },
+    {
+      "id": "creek-attack",
+      "state": {
+        "stage": "s2-topology",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 7,
+            "z": 10.117
+          },
+          "lastStablePosition": {
+            "x": 7,
+            "z": 10.117
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 7.109,
+          "distanceTravelled": 7.883,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle",
+          "zone": "exposed-creek",
+          "zoneHistory": [
+            "fort",
+            "canopy-overlook",
+            "iguanodon-glade",
+            "exposed-creek"
+          ],
+          "reachedGlade": true,
+          "inCover": false,
+          "coverSeconds": 0,
+          "sprintExposureSeconds": 0,
+          "sprintEscalationCharged": false,
+          "threatAwareness": 3,
+          "threatState": "attack",
+          "lastThreatEvent": "exposed-sprint"
+        },
+        "threatVisual": {
+          "state": "attack",
+          "position": {
+            "x": 2.01,
+            "y": 9.91,
+            "z": -1.53
+          }
+        },
+        "sceneChildren": 23,
+        "calls": 63,
+        "triangles": 25384,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 232.90000009536743,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s2/04-creek-attack.jpg"
+    },
+    {
+      "id": "covered-deescalation",
+      "state": {
+        "stage": "s2-topology",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 0,
+            "z": 18
+          },
+          "lastStablePosition": {
+            "x": 0,
+            "z": 18
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 13.392,
+          "distanceTravelled": 7.883,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle",
+          "zone": "covered-return",
+          "zoneHistory": [
+            "fort",
+            "canopy-overlook",
+            "iguanodon-glade",
+            "exposed-creek",
+            "covered-return"
+          ],
+          "reachedGlade": true,
+          "inCover": true,
+          "coverSeconds": 0.25099999999999884,
+          "sprintExposureSeconds": 0,
+          "sprintEscalationCharged": false,
+          "threatAwareness": 2,
+          "threatState": "search",
+          "lastThreatEvent": "cover-deescalation"
+        },
+        "threatVisual": {
+          "state": "search",
+          "position": {
+            "x": -0.68,
+            "y": 10.1,
+            "z": -12.95
+          }
+        },
+        "sceneChildren": 23,
+        "calls": 62,
+        "triangles": 25381,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 232.90000009536743,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s2/05-covered-deescalation.jpg"
+    }
+  ],
+  "limitations": [
+    "S2 threat state changes are driven by topology, exposed sprint and cover; plate exposure joins in S3.",
+    "Primitive flight communicates distance, orbit and folded dive but does not yet apply contact or audio.",
+    "Final cover density, route commitment costs and extraction remain later gates."
+  ]
+}

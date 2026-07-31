@@ -12,7 +12,9 @@
     "test:browser": "python3 test/qa_s0.py",
     "verify:s0": "npm test && npm run build && npm run test:browser",
     "test:s1": "python3 test/qa_s1.py",
-    "verify:s1": "npm test && npm run build && npm run test:s1"
+    "verify:s1": "npm test && npm run build && npm run test:s1",
+    "test:s2": "python3 test/qa_s2.py",
+    "verify:s2": "npm test && npm run build && npm run test:s2"
   },
   "dependencies": {
     "three": "0.185.1"

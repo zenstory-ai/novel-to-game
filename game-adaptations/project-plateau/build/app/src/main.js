@@ -10,7 +10,7 @@ const pausePanel = document.querySelector('#pause-panel');
 const pauseLabel = document.querySelector('#pause-label');
 const boundaryNote = document.querySelector('#boundary-note');
 const fieldHud = document.querySelector('#field-hud');
-document.querySelector('#s0-badge').textContent = 'S1 · controller proof';
+document.querySelector('#s0-badge').textContent = 'S2 · topology proof';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -168,7 +168,10 @@ function update(deltaSeconds, now) {
   } else if (!runActive) {
     visualElapsed += deltaSeconds;
   }
-  world.update(visualElapsed, reducedMotion || player.paused);
+  world.update(visualElapsed, reducedMotion || player.paused, {
+    threatAwareness: player.threatAwareness,
+    playerPosition: player.position,
+  });
 
   if (cameraMode === 'field' || cameraMode === 'order') {
     setCameraToPlayer(now);
@@ -304,7 +307,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's1-controller',
+  stage: 's2-topology',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -328,6 +331,7 @@ window.__projectPlateau = {
       runActive,
       renderer: this.renderer,
       player: playerSnapshot(),
+      threatVisual: world.threatSnapshot(),
       sceneChildren: scene.children.length,
       calls: renderer.info.render.calls,
       triangles: renderer.info.render.triangles,

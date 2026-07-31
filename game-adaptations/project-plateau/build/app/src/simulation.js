@@ -16,6 +16,7 @@ export const NAVIGATION = Object.freeze({
 });
 
 const SPEED = Object.freeze({ walk: 4.2, sprint: 6.8, crouch: 2.2 });
+const THREAT_STATES = Object.freeze(['distant', 'watch', 'search', 'attack']);
 
 function clonePosition(position) {
   return { x: position.x, z: position.z };
@@ -35,6 +36,16 @@ export function createPlayerState() {
     boundaryRecoveries: 0,
     collisions: 0,
     lastEvent: 'clean-start',
+    zone: 'fort',
+    zoneHistory: ['fort'],
+    reachedGlade: false,
+    inCover: false,
+    coverSeconds: 0,
+    sprintExposureSeconds: 0,
+    sprintEscalationCharged: false,
+    threatAwareness: 0,
+    threatState: 'distant',
+    lastThreatEvent: 'distant',
   };
 }
 
@@ -76,6 +87,56 @@ function obstacleAt(position) {
       && position.z < obstacle.maxZ + radius
     );
   });
+}
+
+export function zoneForPosition(position, reachedGlade = false) {
+  if (position.z >= 62) return 'fort';
+  if (position.z >= 34) return 'brook-blind';
+  if (position.z <= 3) return 'iguanodon-glade';
+  if (reachedGlade) return position.x < 3 ? 'covered-return' : 'exposed-creek';
+  return position.x < 3 ? 'canopy-overlook' : 'basalt-shelf';
+}
+
+function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
+  const entered = zone !== state.zone;
+  const inCover = zone === 'canopy-overlook' || zone === 'covered-return';
+  let awareness = state.threatAwareness;
+  let coverSeconds = inCover ? state.coverSeconds + deltaSeconds : 0;
+  let sprintExposureSeconds = stance === 'sprint' && travelled > 0 && (zone === 'basalt-shelf' || zone === 'exposed-creek')
+    ? state.sprintExposureSeconds + deltaSeconds
+    : 0;
+  let sprintEscalationCharged = state.sprintEscalationCharged;
+  let event = state.lastThreatEvent;
+
+  if (entered && (zone === 'canopy-overlook' || zone === 'basalt-shelf')) {
+    awareness = Math.max(awareness, 1);
+    event = 'territory-watch';
+  }
+  if (entered && zone === 'iguanodon-glade') {
+    awareness = Math.max(awareness, 2);
+    event = 'glade-search';
+  }
+  if (sprintExposureSeconds >= 1 && !sprintEscalationCharged) {
+    awareness = Math.min(3, awareness + 1);
+    sprintEscalationCharged = true;
+    event = 'exposed-sprint';
+  }
+  if (stance !== 'sprint' || inCover) sprintEscalationCharged = false;
+  if (coverSeconds >= 6) {
+    awareness = Math.max(0, awareness - 1);
+    coverSeconds -= 6;
+    event = 'cover-deescalation';
+  }
+
+  return {
+    awareness,
+    threatState: THREAT_STATES[awareness],
+    inCover,
+    coverSeconds,
+    sprintExposureSeconds,
+    sprintEscalationCharged,
+    event,
+  };
 }
 
 function resolveObstacleMovement(position, delta) {
@@ -138,6 +199,10 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     resolved.position.x - state.position.x,
     resolved.position.z - state.position.z,
   );
+  const reachedGlade = state.reachedGlade || resolved.position.z <= 3;
+  const zone = zoneForPosition(resolved.position, reachedGlade);
+  const threat = updateThreatState(state, zone, stance, deltaSeconds, travelled);
+  const zoneHistory = zone === state.zone ? [...state.zoneHistory] : [...state.zoneHistory, zone];
   return {
     ...state,
     position: clonePosition(resolved.position),
@@ -149,5 +214,15 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     distanceTravelled: state.distanceTravelled + travelled,
     collisions: state.collisions + (resolved.collision ? 1 : 0),
     lastEvent: resolved.collision ? `collision:${resolved.collision}` : travelled > 0 ? 'movement' : 'idle',
+    zone,
+    zoneHistory,
+    reachedGlade,
+    inCover: threat.inCover,
+    coverSeconds: threat.coverSeconds,
+    sprintExposureSeconds: threat.sprintExposureSeconds,
+    sprintEscalationCharged: threat.sprintEscalationCharged,
+    threatAwareness: threat.awareness,
+    threatState: threat.threatState,
+    lastThreatEvent: threat.event,
   };
 }
