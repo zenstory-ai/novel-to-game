@@ -44,12 +44,19 @@ terminal failures and clean restart from every terminal—with:
 npm run verify:s4
 ```
 
+Run the route/outcome matrix with all four alive bands, Strong/Mixed/Panic,
+exposed-case versus noisy-creek consequences and the minimum viewport with:
+
+```bash
+npm run verify:s5
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 and S4 write separate
+the corresponding `../evidence/s*/` directory. S3 through S5 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S4 foundation, not the completed game. It proves the approved local
+This is an S5 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -62,4 +69,8 @@ second-contact failure, and a clean field-order restart. S4 browser evidence
 captures one Strong-band proof → covered return → result → restart path plus
 both terminal failures. It uses QA-only walking/time compression and therefore
 does not replace final uncompressed reference paths, audio, route consequence
-coverage, production art or the authoritative verification handoff.
+coverage, production art or the authoritative verification handoff. S5 adds
+all four alive result bands, the no-shot Strong line, a shot/callback Mixed
+line, an explicit Panic failure, the 28/12/18-second route-cost matrix, a
+visible brook-brush response and a five-verb evidence index. Those paths still
+use QA-only walking compression, and the final uncompressed runs remain open.

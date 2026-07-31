@@ -1,0 +1,164 @@
+{
+  "stage": "s5-route-outcomes",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 70
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 70
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 2.367,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:insufficient-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "iguanodon-glade",
+      "covered-return",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 2,
+    "threatState": "search",
+    "lastThreatEvent": "glade-search",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.8417999999523165,
+    "lastProofEvent": {
+      "plateIndex": 0,
+      "frameKey": "brook-partial",
+      "points": 1,
+      "label": "PARTIAL \u2014 foliage hides the flank.",
+      "zone": "brook-blind"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 389.633,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "insufficient-record",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "evidence": 1,
+      "survivingPlates": 1,
+      "route": "covered",
+      "brookResponse": null,
+      "remainingLight": 389.6,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "search",
+    "position": {
+      "x": 14.41,
+      "y": 11.08,
+      "z": 48.16
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "ui": {
+    "prompt": "Follow the Fort smoke through the gate.",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "PARTIAL \u2014 foliage hides the flank.",
+    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "lightWatch": 390,
+    "terminal": {
+      "kind": "alive",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "detail": "1 evidence cues \u00b7 1 recorded plates \u00b7 covered return \u00b7 390s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 24,
+  "calls": 68,
+  "triangles": 25424,
+  "textures": 1,
+  "geometries": 35,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 213.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

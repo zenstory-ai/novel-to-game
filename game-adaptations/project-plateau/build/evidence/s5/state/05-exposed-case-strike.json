@@ -1,0 +1,147 @@
+{
+  "stage": "s5-route-outcomes",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 7,
+      "z": 18
+    },
+    "lastStablePosition": {
+      "x": 7,
+      "z": 18
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 4.658,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "return:plate-2-cracked",
+    "zone": "exposed-creek",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "iguanodon-glade",
+      "exposed-creek"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "exposed-return-case-strike",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.8000000000000007,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "cracked",
+        "points": 0,
+        "lostPoints": 2,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 403.342,
+    "returnRoute": "exposed",
+    "returnCostSeconds": 12,
+    "returnStrike": true,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": -5.09,
+      "y": 12.99,
+      "z": -15.06
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "ui": {
+    "prompt": "Follow the Fort smoke through the gate.",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "lightWatch": 404,
+    "terminal": null
+  },
+  "sceneChildren": 24,
+  "calls": 62,
+  "triangles": 25381,
+  "textures": 1,
+  "geometries": 38,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 213.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

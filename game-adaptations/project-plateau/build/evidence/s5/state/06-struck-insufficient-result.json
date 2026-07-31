@@ -1,0 +1,165 @@
+{
+  "stage": "s5-route-outcomes",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 70
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 70
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 4.726,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:insufficient-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "iguanodon-glade",
+      "exposed-creek",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "exposed-return-case-strike",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.732500000000001,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "cracked",
+        "points": 0,
+        "lostPoints": 2,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 403.274,
+    "returnRoute": "exposed",
+    "returnCostSeconds": 12,
+    "returnStrike": true,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "insufficient-record",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "evidence": 1,
+      "survivingPlates": 1,
+      "route": "exposed",
+      "brookResponse": null,
+      "remainingLight": 403.3,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": -8.09,
+      "y": 11.29,
+      "z": 53.65
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "ui": {
+    "prompt": "Follow the Fort smoke through the gate.",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "lightWatch": 404,
+    "terminal": {
+      "kind": "alive",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "detail": "1 evidence cues \u00b7 1 recorded plates \u00b7 exposed return \u00b7 404s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 24,
+  "calls": 68,
+  "triangles": 25424,
+  "textures": 1,
+  "geometries": 38,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 213.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

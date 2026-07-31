@@ -1,0 +1,126 @@
+{
+  "stage": "s5-route-outcomes",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "bd3edb90f0a40171291ada6faf015905d347d7a85ba7478dc879c5bb059a2cdd"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "targetViewport": [
+      1440,
+      900
+    ],
+    "minimumViewport": [
+      1280,
+      720
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "allFourAliveBands": true,
+    "strongNoShotCoveredReturn": true,
+    "mixedShotCallbackCorroboratingReturn": true,
+    "panicExplicitFailure": true,
+    "exposedAttackCracksBestPlateNotBody": true,
+    "coveredExposedAndNoisyCosts": {
+      "covered": 28,
+      "exposed": 12,
+      "noisyExposed": 18
+    },
+    "pauseFreezesCommittedDive": true,
+    "minimumViewportTerminal": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "verbEvidenceMatrix": {
+    "traverse": "03-noisy-exposed-return",
+    "observe": "03-noisy-exposed-return",
+    "commitExposedObjective": "03-noisy-exposed-return",
+    "evadeOrDefend": "03-noisy-exposed-return",
+    "reachRelativeSafety": "04-corroborating-shot-result"
+  },
+  "referencePaths": {
+    "Strong": {
+      "result": "strong-field-record",
+      "checkpoint": "07-strong-result-1280x720",
+      "shot": false
+    },
+    "Mixed": {
+      "result": "corroborating-record",
+      "checkpoint": "04-corroborating-shot-result",
+      "shot": true
+    },
+    "Panic": {
+      "result": "second-unblocked-strike",
+      "checkpoint": "08-panic-second-contact",
+      "shot": false
+    }
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 97.1,
+    "worstFrameMs": 10.3
+  },
+  "checkpoints": [
+    {
+      "id": "01-returned-without-record",
+      "state": "build/evidence/s5/state/01-returned-without-record.json",
+      "browser": "build/evidence/s5/browser/01-returned-without-record.json",
+      "visual": "build/evidence/s5/01-returned-without-record.jpg"
+    },
+    {
+      "id": "02-insufficient-record",
+      "state": "build/evidence/s5/state/02-insufficient-record.json",
+      "browser": "build/evidence/s5/browser/02-insufficient-record.json",
+      "visual": "build/evidence/s5/02-insufficient-record.jpg"
+    },
+    {
+      "id": "03-noisy-exposed-return",
+      "state": "build/evidence/s5/state/03-noisy-exposed-return.json",
+      "browser": "build/evidence/s5/browser/03-noisy-exposed-return.json",
+      "visual": "build/evidence/s5/03-noisy-exposed-return.jpg"
+    },
+    {
+      "id": "04-corroborating-shot-result",
+      "state": "build/evidence/s5/state/04-corroborating-shot-result.json",
+      "browser": "build/evidence/s5/browser/04-corroborating-shot-result.json",
+      "visual": "build/evidence/s5/04-corroborating-shot-result.jpg"
+    },
+    {
+      "id": "05-exposed-case-strike",
+      "state": "build/evidence/s5/state/05-exposed-case-strike.json",
+      "browser": "build/evidence/s5/browser/05-exposed-case-strike.json",
+      "visual": "build/evidence/s5/05-exposed-case-strike.jpg"
+    },
+    {
+      "id": "06-struck-insufficient-result",
+      "state": "build/evidence/s5/state/06-struck-insufficient-result.json",
+      "browser": "build/evidence/s5/browser/06-struck-insufficient-result.json",
+      "visual": "build/evidence/s5/06-struck-insufficient-result.jpg"
+    },
+    {
+      "id": "07-strong-result-1280x720",
+      "state": "build/evidence/s5/state/07-strong-result-1280x720.json",
+      "browser": "build/evidence/s5/browser/07-strong-result-1280x720.json",
+      "visual": "build/evidence/s5/07-strong-result-1280x720.jpg"
+    },
+    {
+      "id": "08-panic-second-contact",
+      "state": "build/evidence/s5/state/08-panic-second-contact.json",
+      "browser": "build/evidence/s5/browser/08-panic-second-contact.json",
+      "visual": "build/evidence/s5/08-panic-second-contact.jpg"
+    }
+  ],
+  "limitations": [
+    "S5 uses QA-only walking compression between decision spaces; it does not yet satisfy the final uncompressed reference-run gate.",
+    "The five verbs occur in the Mixed state path with a real movement input, but full geographic traversal still needs authoritative evidence.",
+    "Brook response is a deterministic local brush animation and result callback; production audio remains pending.",
+    "Terminal plates now vary by frame key but remain CSS grayboxes rather than accepted final plate renders."
+  ]
+}

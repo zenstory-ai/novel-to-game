@@ -276,6 +276,22 @@ function makeFort(scene) {
   return smoke;
 }
 
+function makeBrookResponse(scene) {
+  const group = new THREE.Group();
+  const material = new THREE.MeshStandardMaterial({ color: 0x2a4c35, roughness: 0.94 });
+  for (let index = 0; index < 5; index += 1) {
+    const frond = new THREE.Mesh(new THREE.ConeGeometry(0.45, 3.2, 4), material);
+    frond.position.set((index - 2) * 0.72, 1.35 + (index % 2) * 0.18, (index % 3) * 0.42);
+    frond.rotation.z = (index - 2) * 0.08;
+    group.add(frond);
+  }
+  group.position.set(-10.5, terrainHeight(-10.5, 47), 47);
+  group.name = 'world.connected_route.brook_response';
+  group.userData.response = null;
+  scene.add(group);
+  return group;
+}
+
 function makeFieldCamera(scene) {
   const group = new THREE.Group();
   const wood = new THREE.MeshStandardMaterial({ color: 0x4b2f24, roughness: 0.76 });
@@ -328,6 +344,7 @@ export function createWorld(scene) {
     makePterodactyl(scene, 45, 32, 4.1, 0.46),
   ];
   const smoke = makeFort(scene);
+  const brookResponse = makeBrookResponse(scene);
   const fieldCamera = makeFieldCamera(scene);
   const rifle = makeRifle(scene);
   let renderedThreatState = 'distant';
@@ -338,12 +355,21 @@ export function createWorld(scene) {
     family,
     pterodactyls,
     smoke,
+    brookResponse,
     fieldCamera,
     rifle,
     update(elapsed, reducedMotion = false, runtime = {}) {
       const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
       renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
       const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
+      brookResponse.userData.response = runtime.brookResponse ?? null;
+      const responseStrength = runtime.brookResponse === 'brush-moving'
+        ? 0.24
+        : runtime.brookResponse === 'answering-call' ? 0.08 : 0.015;
+      brookResponse.children.forEach((frond, index) => {
+        frond.rotation.z = (index - 2) * 0.08
+          + Math.sin(elapsed * (2.4 + index * 0.12) + index) * responseStrength;
+      });
       if ((runtime.shotCount ?? 0) > observedShotCount) {
         observedShotCount = runtime.shotCount;
         flashSeconds = 0.1;
@@ -398,6 +424,16 @@ export function createWorld(scene) {
           x: Number(primary.position.x.toFixed(2)),
           y: Number(primary.position.y.toFixed(2)),
           z: Number(primary.position.z.toFixed(2)),
+        },
+      };
+    },
+    brookResponseSnapshot() {
+      return {
+        state: brookResponse.userData.response,
+        position: {
+          x: Number(brookResponse.position.x.toFixed(2)),
+          y: Number(brookResponse.position.y.toFixed(2)),
+          z: Number(brookResponse.position.z.toFixed(2)),
         },
       };
     },

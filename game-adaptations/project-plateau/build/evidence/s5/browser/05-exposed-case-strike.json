@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    "partial plate",
+    "basalt plate",
+    "attack-state exposed return"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s5",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785526250620
+}

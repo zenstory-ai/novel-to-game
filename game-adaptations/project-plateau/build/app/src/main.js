@@ -45,7 +45,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S4 · complete loop';
+document.querySelector('#s0-badge').textContent = 'S5 · route outcomes';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -165,6 +165,8 @@ function updateFieldHud(now) {
   plateSlots.forEach((slot, index) => {
     const plate = player.plates[index];
     slot.dataset.status = plate.status;
+    slot.dataset.frame = plate.frameKey ?? 'empty';
+    slot.dataset.cues = plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
     slot.style.setProperty('--plate-fill', `${plate.points * 50}%`);
     slot.setAttribute(
       'aria-label',
@@ -282,6 +284,8 @@ function presentTerminal() {
   terminalBoardSlots.forEach((slot, index) => {
     const plate = player.plates[index];
     slot.dataset.status = plate.status;
+    slot.dataset.frame = plate.frameKey ?? 'empty';
+    slot.dataset.cues = plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
     slot.setAttribute(
       'aria-label',
       `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.label ? ` — ${plate.label}` : ''}`,
@@ -292,7 +296,7 @@ function presentTerminal() {
     terminalEyebrow.textContent = 'WHAT REACHED CAMP';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
-    terminalDetail.textContent = `${player.result.evidence} evidence cues · ${player.result.survivingPlates} surviving plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
+    terminalDetail.textContent = `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
     terminalCallback.hidden = !player.result.gunshotCallback;
     terminalCallback.textContent = player.result.gunshotCallback ?? '';
   } else {
@@ -367,6 +371,7 @@ function update(deltaSeconds, now) {
     threatAwareness: player.threatAwareness,
     playerPosition: player.position,
     shotCount: player.shotCount,
+    brookResponse: player.brookResponse,
     deltaSeconds,
   });
 
@@ -547,7 +552,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's4-complete-loop',
+  stage: 's5-route-outcomes',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -583,6 +588,7 @@ window.__projectPlateau = {
       renderer: this.renderer,
       player: playerSnapshot(),
       threatVisual: world.threatSnapshot(),
+      brookResponseVisual: world.brookResponseSnapshot(),
       ui: {
         prompt: contextPrompt.hidden ? null : contextPrompt.textContent,
         cameraOverlay: !cameraOverlay.hidden,

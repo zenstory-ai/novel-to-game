@@ -1,0 +1,157 @@
+{
+  "stage": "s5-route-outcomes",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 70
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 70
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 0.633,
+    "distanceTravelled": 1.539,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:returned-without-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "iguanodon-glade",
+      "covered-return",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 2,
+    "threatState": "search",
+    "lastThreatEvent": "glade-search",
+    "attackSeconds": 0,
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
+    "cameraRaised": false,
+    "plateRailRevealed": false,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": null,
+    "plates": [
+      {
+        "index": 0,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 391.366,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "returned-without-record",
+      "title": "Returned without a record",
+      "copy": "You returned with a story. Stories are what they came to dispute.",
+      "evidence": 0,
+      "survivingPlates": 0,
+      "route": "covered",
+      "brookResponse": null,
+      "remainingLight": 391.4,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "search",
+    "position": {
+      "x": 16.66,
+      "y": 10.47,
+      "z": 46.18
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "ui": {
+    "prompt": "Follow the Fort smoke through the gate.",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": false,
+    "platePreview": null,
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "lightWatch": null,
+    "terminal": {
+      "kind": "alive",
+      "title": "Returned without a record",
+      "copy": "You returned with a story. Stories are what they came to dispute.",
+      "detail": "0 evidence cues \u00b7 0 recorded plates \u00b7 covered return \u00b7 392s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 24,
+  "calls": 68,
+  "triangles": 25424,
+  "textures": 1,
+  "geometries": 34,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 213.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

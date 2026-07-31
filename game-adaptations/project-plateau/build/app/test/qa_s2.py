@@ -76,7 +76,9 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s2", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         runtime_stage = page.evaluate("window.__projectPlateau.stage")
-        assert runtime_stage in {"s2-topology", "s3-exposed-proof", "s4-complete-loop"}
+        assert runtime_stage in {
+            "s2-topology", "s3-exposed-proof", "s4-complete-loop", "s5-route-outcomes"
+        }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(180)
@@ -124,7 +126,7 @@ def run() -> dict[str, object]:
         wait_for_threat()
         capture("glade-search", "03-glade-search.jpg")
 
-        if runtime_stage == "s4-complete-loop":
+        if runtime_stage in {"s4-complete-loop", "s5-route-outcomes"}:
             page.mouse.move(720, 450)
             page.mouse.down(button="right")
             page.wait_for_timeout(50)
@@ -144,10 +146,11 @@ def run() -> dict[str, object]:
             page.keyboard.up("ShiftLeft")
             page.wait_for_timeout(120)
         attack = snap()
-        expected_attack_zone = "iguanodon-glade" if runtime_stage == "s4-complete-loop" else "exposed-creek"
+        complete_loop_stage = runtime_stage in {"s4-complete-loop", "s5-route-outcomes"}
+        expected_attack_zone = "iguanodon-glade" if complete_loop_stage else "exposed-creek"
         assert attack["player"]["zone"] == expected_attack_zone, attack
         assert attack["player"]["threatState"] == "attack", attack
-        expected_attack_event = "plate-exposure:+2" if runtime_stage == "s4-complete-loop" else "exposed-sprint"
+        expected_attack_event = "plate-exposure:+2" if complete_loop_stage else "exposed-sprint"
         assert attack["player"]["lastThreatEvent"] == expected_attack_event, attack
         assert attack["threatVisual"]["state"] == "attack", attack
         wait_for_threat(max_x=5, min_forward=7)
@@ -165,7 +168,7 @@ def run() -> dict[str, object]:
 
         history = covered["player"]["zoneHistory"]
         expected_history = ["fort", "canopy-overlook", "iguanodon-glade", "covered-return"]
-        if runtime_stage != "s4-complete-loop":
+        if not complete_loop_stage:
             expected_history.append("exposed-creek")
         for expected in expected_history:
             assert expected in history, history

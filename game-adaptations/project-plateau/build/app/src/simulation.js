@@ -113,6 +113,7 @@ export function createPlayerState() {
     rifleRaised: false,
     rifleRevealed: false,
     gunshotFired: false,
+    brookResponse: null,
     shotCount: 0,
     bodyMargin: 1,
     failed: false,
@@ -261,6 +262,7 @@ export function fireDefensiveShot(state) {
     rifleRaised: false,
     rifleRevealed: true,
     gunshotFired: true,
+    brookResponse: 'answering-call',
     shotCount: state.shotCount + 1,
     threatAwareness: awareness,
     threatState: THREAT_STATES[awareness],
@@ -355,6 +357,7 @@ function commitReturnRoute(state, zone) {
     returnCostSeconds: cost,
     remainingLight: Math.max(0, state.remainingLight - cost),
     lastEvent: `return:${route}:committed`,
+    brookResponse: route === 'exposed' && state.gunshotFired ? 'brush-moving' : state.brookResponse,
   });
 
   if (route === 'exposed' && state.threatAwareness === 3 && !state.gunshotFired) {
@@ -390,6 +393,7 @@ function submitAtFort(state) {
       evidence,
       survivingPlates: state.plates.filter((plate) => plate.status === 'exposed').length,
       route: state.returnRoute,
+      brookResponse: state.brookResponse,
       remainingLight: Number(state.remainingLight.toFixed(1)),
       gunshotCallback: state.gunshotFired
         ? 'The report carried. Something answered by the brook.'

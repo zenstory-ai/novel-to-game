@@ -193,6 +193,7 @@ test('a timely raised-rifle shot spends one cartridge and interrupts attack', ()
   player = fireDefensiveShot(player);
   assert.equal(player.cartridges, 1);
   assert.equal(player.gunshotFired, true);
+  assert.equal(player.brookResponse, 'answering-call');
   assert.equal(player.shotCount, 1);
   assert.equal(player.threatAwareness, 1);
   assert.equal(player.threatState, 'watch');
@@ -307,6 +308,13 @@ test('a fired-shot exposed return costs eighteen seconds and preserves its best 
   assert.equal(player.returnCostSeconds, 18);
   assert.equal(player.returnStrike, false);
   assert.equal(player.plates[0].status, 'exposed');
+  assert.equal(player.brookResponse, 'brush-moving');
+
+  player.position = { x: 0, z: 70 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.result.brookResponse, 'brush-moving');
+  assert.equal(player.result.gunshotCallback, 'The report carried. Something answered by the brook.');
 });
 
 test('remaining light expires outside Fort with exact cause and actionable cue', () => {

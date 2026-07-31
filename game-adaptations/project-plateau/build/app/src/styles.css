@@ -102,6 +102,11 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .terminal-board span[data-status="unexposed"]::before { display: none; }
 .terminal-board span[data-status="cracked"] { background: #3f3934; border-color: #8b3d34; opacity: .72; }
 .terminal-board span[data-status="cracked"]::after { content: ""; position: absolute; left: 48%; top: -12%; width: 2px; height: 130%; background: #e1cdc4; transform: rotate(23deg); box-shadow: 25px 38px 0 -0.5px #e1cdc4, -21px 62px 0 -0.5px #e1cdc4; }
+.terminal-board span[data-status="exposed"]::after { content: attr(data-cues); position: absolute; right: .45rem; bottom: .35rem; padding: .15rem .3rem; color: #e8e2d1; background: rgba(22,27,24,.72); font-size: max(9px, .58rem); letter-spacing: .08em; text-transform: uppercase; filter: none; }
+.terminal-board span[data-frame="brook-partial"] { background: repeating-linear-gradient(104deg, #c5c0b2 0 18px, #737a74 18px 27px); }
+.terminal-board span[data-frame="basalt-scale"]::before { clip-path: polygon(0 76%, 18% 30%, 38% 43%, 57% 8%, 75% 48%, 100% 18%, 100% 90%, 0 90%); }
+.terminal-board span[data-frame="glade-behavior"]::before { clip-path: polygon(0 67%, 14% 44%, 34% 47%, 44% 31%, 60% 49%, 77% 25%, 100% 35%, 92% 69%, 63% 78%, 36% 74%); }
+.terminal-board span[data-frame="return-occluded"] { background: repeating-linear-gradient(72deg, #c3beb0 0 26px, #6a716c 26px 32px); }
 .terminal-copy { padding: 2rem 2.4rem; border-left: 1px solid rgba(176,139,79,.7); }
 .terminal-copy h2 { margin: .15rem 0 1.1rem; font-size: clamp(2.1rem, 4vw, 4.8rem); line-height: .95; }
 #terminal-result-copy { max-width: 34rem; font: italic clamp(1.05rem, 1.5vw, 1.4rem)/1.55 Georgia, serif; color: #f0e2bf; }

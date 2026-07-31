@@ -1,0 +1,148 @@
+{
+  "stage": "s5-route-outcomes",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": -10.5,
+      "z": 52
+    },
+    "lastStablePosition": {
+      "x": -10.5,
+      "z": 52
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 7.716,
+    "distanceTravelled": 1.262,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "return:exposed:committed",
+    "zone": "brook-blind",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "canopy-overlook",
+      "iguanodon-glade",
+      "exposed-creek",
+      "brook-blind"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "defensive-shot-interrupt",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.185700000047683,
+    "lastProofEvent": {
+      "plateIndex": 2,
+      "frameKey": "glade-behavior",
+      "points": 2,
+      "label": "BEHAVIOR \u2014 young play beside the adults.",
+      "zone": "iguanodon-glade"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "FORM \u2014 a full flank clears the fern.",
+        "frameKey": "canopy-flank"
+      },
+      {
+        "index": 2,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 1,
+    "rifleRaised": false,
+    "rifleRevealed": true,
+    "gunshotFired": true,
+    "brookResponse": "brush-moving",
+    "shotCount": 1,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 394.284,
+    "returnRoute": "exposed",
+    "returnCostSeconds": 18,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": -36.09,
+      "y": 11.58,
+      "z": 28.62
+    }
+  },
+  "brookResponseVisual": {
+    "state": "brush-moving",
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "BEHAVIOR \u2014 young play beside the adults.",
+    "fieldNote": "The young keep close while the adults feed.",
+    "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
+    "cartridgesVisible": true,
+    "lightWatch": 395,
+    "terminal": null
+  },
+  "sceneChildren": 24,
+  "calls": 68,
+  "triangles": 25424,
+  "textures": 1,
+  "geometries": 38,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 213.20000004768372,
+  "recentMedianFrameMs": 8.3
+}
