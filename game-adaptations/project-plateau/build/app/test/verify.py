@@ -223,6 +223,7 @@ def write_verification(
     *,
     source_commit: str,
     fingerprint: str,
+    environment_record: dict[str, object],
     started: float,
     registry: dict[str, object],
     suite_results: list[dict[str, object]],
@@ -233,7 +234,7 @@ def write_verification(
         "schemaVersion": 1,
         "sourceCommit": source_commit,
         "sourceFingerprint": fingerprint,
-        "environment": environment(),
+        "environment": environment_record,
         "verify": {
             "command": "npm run verify",
             "log": "qa/evidence/verify.log",
@@ -338,11 +339,16 @@ def main() -> int:
     started = time.monotonic()
     source_commit = git_head()
     fingerprint = app_fingerprint()
+    environment_record = environment()
     log_lines = [
         "command=npm run verify",
         f"sourceCommit={source_commit}",
         f"sourceFingerprint={fingerprint}",
-        f"runtimeVersion={platform.python_version()}",
+        f"runtime={environment_record['runtime']}",
+        f"runtimeVersion={environment_record['runtimeVersion']}",
+        f"packageManager={environment_record['packageManager']}",
+        f"pythonVersion={environment_record['pythonVersion']}",
+        f"browser={environment_record['browser']}",
         "registered=" + ",".join(registry["registered"]),
         "excluded=" + json.dumps(registry["excluded"], sort_keys=True),
     ]
@@ -404,6 +410,7 @@ def main() -> int:
     write_verification(
         source_commit=source_commit,
         fingerprint=fingerprint,
+        environment_record=environment_record,
         started=started,
         registry=registry,
         suite_results=suite_results,
