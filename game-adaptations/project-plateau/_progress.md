@@ -27,6 +27,8 @@
 
 `checkpoint:S2 pass` — the simulation now records a connected Fort → brook → canopy/basalt fork → glade → covered/exposed return history and drives the primary aerial silhouette through distant, watch, search and attack without a threat meter. A six-second covered hold de-escalates the state. `build/evidence/s2/report.json` binds all five real rendered states to hidden state snapshots, records zero console errors/external hosts and retains 120.5 median FPS / 101.0 one-percent-low FPS. Contact, defense, photographic proof, audio and extraction remain open.
 
+`checkpoint:S3 pass` — examination now unlocks photographic context without awarding evidence; raising the camera slows movement, and a shutter release holds the live world for two seconds before spending one of four physical plates. Covered/open frames deterministically yield 0/1/2 cues and advance the hidden threat by the approved amount. One contact consumes the body margin and cracks the highest-value intact plate; a timely raised-rifle shot spends one of two cartridges, interrupts the dive and persists the gunshot flag. `build/evidence/s3/report.json` indexes seven independent state/browser/visual checkpoints, including pause during commitment, recoverable contact and defense, with zero console errors/external hosts and 120.5 median / 99.0 one-percent-low FPS. This remains a checkpoint rather than a complete run: deadline, route commitment, extraction, result/failure presentation and final audio are still open.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

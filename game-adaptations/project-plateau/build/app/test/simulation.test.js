@@ -1,10 +1,19 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  CONTACT_SECONDS,
+  EXPOSURE_SECONDS,
   INITIAL_PLAYER,
+  applyThreatContact,
   createPlayerState,
+  examine,
+  fireDefensiveShot,
+  frameForState,
   restartPlayer,
+  setCameraRaised,
   setPaused,
+  setRifleRaised,
+  startExposure,
   stepPlayer,
   zoneForPosition,
 } from '../src/simulation.js';
@@ -102,4 +111,113 @@ test('territory, glade, exposed sprint and cover produce four readable threat st
   assert.equal(player.zone, 'covered-return');
   assert.equal(player.threatState, 'search');
   assert.equal(player.lastThreatEvent, 'cover-deescalation');
+});
+
+test('examining the brook makes context eligible without awarding evidence', () => {
+  let player = createPlayerState();
+  player.position = { x: 0, z: 45 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(frameForState(player).points, 0);
+  player = examine(player);
+  assert.equal(player.examinedTrack, true);
+  assert.equal(player.lastObservation, 'Three toes. Fresh. The brook runs back to camp.');
+  assert.equal(player.plates.reduce((total, plate) => total + plate.points, 0), 0);
+  assert.equal(frameForState(player).points, 1);
+});
+
+test('camera raise slows movement and shutter commits one physical plate for two live seconds', () => {
+  let normal = createPlayerState();
+  normal.position = { x: 0, z: 45 };
+  normal.lastStablePosition = { ...normal.position };
+  normal = stepPlayer(normal, {}, 0.1);
+  normal = examine(normal);
+
+  const walking = stepPlayer(normal, { forward: 1 }, 1);
+  let camera = setCameraRaised(normal, true);
+  const careful = stepPlayer(camera, { forward: 1 }, 1);
+  assert.ok(normal.position.z - careful.position.z < normal.position.z - walking.position.z);
+  assert.equal(camera.plateRailRevealed, true);
+
+  camera = startExposure(camera);
+  assert.equal(camera.pendingExposure.remainingSeconds, EXPOSURE_SECONDS);
+  const held = stepPlayer(camera, { forward: 1 }, 1);
+  assert.deepEqual(held.position, camera.position);
+  assert.equal(held.plates[0].status, 'unexposed');
+  const exposed = stepPlayer(held, { forward: 1 }, 1);
+  assert.equal(exposed.pendingExposure, null);
+  assert.equal(exposed.plates[0].status, 'exposed');
+  assert.equal(exposed.plates[0].points, 1);
+  assert.equal(exposed.plates[0].label, 'PARTIAL — foliage hides the flank.');
+  assert.equal(exposed.threatAwareness, 1);
+  assert.equal(exposed.cameraRaised, false);
+});
+
+test('open proof adds two awareness states and contact cracks the best intact plate', () => {
+  let player = createPlayerState();
+  player.position = { x: 8, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  assert.equal(player.threatAwareness, 1);
+  player = startExposure(setCameraRaised(player, true));
+  for (let second = 0; second < EXPOSURE_SECONDS; second += 1) player = stepPlayer(player, {}, 1);
+  assert.equal(player.threatState, 'attack');
+  assert.equal(player.plates[0].points, 2);
+
+  for (let second = 0; second < CONTACT_SECONDS; second += 1) player = stepPlayer(player, {}, 1);
+  assert.equal(player.bodyMargin, 0);
+  assert.equal(player.threatState, 'watch');
+  assert.equal(player.plates[0].status, 'cracked');
+  assert.equal(player.plates[0].points, 0);
+  assert.equal(player.plates[0].lostPoints, 2);
+  assert.equal(player.failed, false);
+});
+
+test('a later contact without body margin fails while the first contact remains recoverable', () => {
+  const first = applyThreatContact(createPlayerState());
+  assert.equal(first.failed, false);
+  assert.equal(first.bodyMargin, 0);
+  const second = applyThreatContact(first);
+  assert.equal(second.failed, true);
+  assert.equal(second.failureCause, 'second-unblocked-strike');
+});
+
+test('a timely raised-rifle shot spends one cartridge and interrupts attack', () => {
+  let player = createPlayerState();
+  player.threatAwareness = 3;
+  player.threatState = 'attack';
+  player.attackSeconds = 1.5;
+  player = setRifleRaised(player, true);
+  player = fireDefensiveShot(player);
+  assert.equal(player.cartridges, 1);
+  assert.equal(player.gunshotFired, true);
+  assert.equal(player.shotCount, 1);
+  assert.equal(player.threatAwareness, 1);
+  assert.equal(player.threatState, 'watch');
+  assert.equal(player.attackSeconds, 0);
+  assert.equal(player.lastThreatEvent, 'defensive-shot-interrupt');
+});
+
+test('pause freezes a raised camera and live shutter commitment without spending a plate', () => {
+  let player = startExposure(setCameraRaised(createPlayerState(), true));
+  player = setPaused(player, true, 'window-inactive');
+  const after = stepPlayer(player, {}, 20);
+  assert.equal(after.pendingExposure.remainingSeconds, EXPOSURE_SECONDS);
+  assert.equal(after.plates[0].status, 'unexposed');
+  assert.equal(after.elapsedSeconds, 0);
+});
+
+test('restart clears observation, proof, damage and action history', () => {
+  let player = createPlayerState();
+  player = examine({ ...player, zone: 'brook-blind' });
+  player.plates[0] = { ...player.plates[0], status: 'exposed', points: 2 };
+  player.bodyMargin = 0;
+  player.gunshotFired = true;
+  player.cartridges = 1;
+  const restarted = restartPlayer(player);
+  assert.equal(restarted.examinedTrack, false);
+  assert.equal(restarted.plates.every((plate) => plate.status === 'unexposed'), true);
+  assert.equal(restarted.bodyMargin, 1);
+  assert.equal(restarted.gunshotFired, false);
+  assert.equal(restarted.cartridges, 2);
 });

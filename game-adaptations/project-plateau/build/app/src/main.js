@@ -1,7 +1,19 @@
 import * as THREE from 'three';
 import './styles.css';
 import { PALETTE, PRODUCT_BUDGET, SCENE_BUDGET, percentile } from './config.js';
-import { createPlayerState, restartPlayer, setPaused, stepPlayer } from './simulation.js';
+import {
+  EXPOSURE_SECONDS,
+  createPlayerState,
+  examine,
+  fireDefensiveShot,
+  frameForState,
+  restartPlayer,
+  setCameraRaised,
+  setPaused,
+  setRifleRaised,
+  startExposure,
+  stepPlayer,
+} from './simulation.js';
 import { createWorld, terrainHeight } from './world.js';
 
 const canvas = document.querySelector('#game-canvas');
@@ -10,7 +22,21 @@ const pausePanel = document.querySelector('#pause-panel');
 const pauseLabel = document.querySelector('#pause-label');
 const boundaryNote = document.querySelector('#boundary-note');
 const fieldHud = document.querySelector('#field-hud');
-document.querySelector('#s0-badge').textContent = 'S2 · topology proof';
+const contextPrompt = document.querySelector('#context-prompt');
+const fieldNote = document.querySelector('#field-note');
+const cameraOverlay = document.querySelector('#camera-overlay');
+const frameCondition = document.querySelector('#frame-condition');
+const commitLine = document.querySelector('#commit-line');
+const platePreview = document.querySelector('#plate-preview');
+const previewNumber = document.querySelector('#preview-number');
+const previewCopy = document.querySelector('#preview-copy');
+const contactNote = document.querySelector('#contact-note');
+const plateRail = document.querySelector('#plate-rail');
+const plateSlots = [...plateRail.children];
+const cartridgeDisplay = document.querySelector('#cartridge-display');
+const cartridgeSlots = [...cartridgeDisplay.children];
+const rifleOverlay = document.querySelector('#rifle-overlay');
+document.querySelector('#s0-badge').textContent = 'S3 · exposed proof';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -52,9 +78,13 @@ scene.add(hemisphere, sun);
 const world = createWorld(scene);
 scene.add(camera);
 camera.add(world.fieldCamera);
+camera.add(world.rifle);
 world.fieldCamera.position.set(0.58, -0.72, -1.35);
 world.fieldCamera.rotation.set(-0.08, 0.18, 0);
 world.fieldCamera.scale.setScalar(0.34);
+world.rifle.position.set(0.64, -0.72, -1.08);
+world.rifle.rotation.set(-0.11, 0.12, -0.08);
+world.rifle.scale.setScalar(0.27);
 const clock = new THREE.Clock();
 const pressed = new Set();
 let player = createPlayerState();
@@ -67,6 +97,95 @@ let firstRenderedAt = null;
 let visualElapsed = 0;
 let boundaryNoticeUntil = 0;
 let observedBoundaryRecoveries = 0;
+let observationNoticeUntil = 0;
+let contactNoticeUntil = 0;
+
+const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
+
+function contextualCopy() {
+  if (player.pendingExposure) return 'Hold steady.';
+  if (player.cameraRaised) return 'Hold steady. Release the shutter [Left Mouse]';
+  if (player.threatState === 'attack') return 'Raise rifle [F] · Fire before contact [Left Mouse]';
+  if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Examine the track [E]';
+  if (player.zone === 'brook-blind') return 'Raise camera [Right Mouse]';
+  if (player.zone === 'iguanodon-glade' && !player.observedBehavior) return 'Read the family [E]';
+  if (player.zone !== 'fort' && player.plates.some((plate) => plate.status === 'unexposed')) {
+    return 'Raise camera [Right Mouse]';
+  }
+  return '';
+}
+
+function frameConditionCopy(frame) {
+  const conditions = {
+    'empty-fort': 'NO LIVING SUBJECT',
+    'brook-unread': 'TRACK CONTEXT // UNREAD',
+    'brook-partial': 'FOLIAGE // SUBJECT PARTLY OCCLUDED',
+    'canopy-flank': 'FERN GAP // FLANK CLEAR',
+    'basalt-scale': 'OPEN SIGHT // BASALT SCALE',
+    'glade-form': 'FAMILY // BEHAVIOR NOT YET READ',
+    'glade-behavior': 'FAMILY // LIVING BEHAVIOR',
+    'return-occluded': 'THORN // BODY PARTLY OCCLUDED',
+    'creek-scale': 'OPEN SIGHT // CREEK SCALE',
+  };
+  return conditions[frame.key] ?? 'FIELD FRAME';
+}
+
+function updateFieldHud(now) {
+  const currentFrame = player.pendingExposure ?? frameForState(player);
+  const prompt = contextualCopy();
+  contextPrompt.textContent = prompt;
+  contextPrompt.hidden = !prompt || player.failed;
+
+  cameraOverlay.hidden = !player.cameraRaised;
+  frameCondition.textContent = frameConditionCopy(currentFrame);
+  const commitProgress = player.pendingExposure
+    ? ((EXPOSURE_SECONDS - player.pendingExposure.remainingSeconds) / EXPOSURE_SECONDS) * 100
+    : 0;
+  commitLine.style.setProperty('--commit-progress', `${Math.max(0, Math.min(100, commitProgress))}%`);
+  document.body.dataset.camera = player.cameraRaised ? 'raised' : 'folded';
+
+  rifleOverlay.hidden = !player.rifleRaised;
+  document.body.dataset.rifle = player.rifleRaised ? 'raised' : 'lowered';
+  cartridgeDisplay.hidden = !(player.rifleRevealed || player.threatState === 'attack');
+  cartridgeSlots.forEach((slot, index) => {
+    slot.classList.toggle('spent', index >= player.cartridges);
+  });
+
+  plateRail.hidden = !player.plateRailRevealed;
+  plateSlots.forEach((slot, index) => {
+    const plate = player.plates[index];
+    slot.dataset.status = plate.status;
+    slot.style.setProperty('--plate-fill', `${plate.points * 50}%`);
+    slot.setAttribute(
+      'aria-label',
+      `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.status === 'exposed' ? `, ${plate.points} cues` : ''}`,
+    );
+  });
+
+  const showPreview = player.previewSeconds > 0 && player.lastProofEvent;
+  platePreview.hidden = !showPreview;
+  if (showPreview) {
+    previewNumber.textContent = ROMAN_PLATES[player.lastProofEvent.plateIndex];
+    previewCopy.textContent = player.lastProofEvent.label;
+  }
+
+  fieldNote.hidden = !player.lastObservation || now >= observationNoticeUntil;
+  if (!fieldNote.hidden) fieldNote.textContent = player.lastObservation;
+  contactNote.hidden = now >= contactNoticeUntil;
+  document.body.dataset.contact = contactNote.hidden ? 'false' : 'true';
+
+  world.fieldCamera.visible = runActive && !player.failed && !player.rifleRaised;
+  world.rifle.visible = runActive && !player.failed && player.rifleRaised;
+  if (player.cameraRaised) {
+    world.fieldCamera.position.set(0.08, -0.57, -1.02);
+    world.fieldCamera.rotation.set(-0.02, 0, 0);
+    world.fieldCamera.scale.setScalar(0.45);
+  } else {
+    world.fieldCamera.position.set(0.58, -0.72, -1.35);
+    world.fieldCamera.rotation.set(-0.08, 0.18, 0);
+    world.fieldCamera.scale.setScalar(0.34);
+  }
+}
 
 function setCameraToPlayer(now = performance.now()) {
   const moving = pressed.has('KeyW') || pressed.has('KeyA') || pressed.has('KeyS') || pressed.has('KeyD');
@@ -85,11 +204,13 @@ function setCameraToPlayer(now = performance.now()) {
     boundaryNoticeUntil = now + 1500;
   }
   boundaryNote.hidden = now >= boundaryNoticeUntil;
+  updateFieldHud(now);
 }
 
 function setView(view) {
   cameraMode = view;
   world.fieldCamera.visible = view === 'field' || view === 'glade';
+  world.rifle.visible = false;
   if (view === 'field' || view === 'order') {
     document.body.dataset.mode = view;
     fieldHud.hidden = view !== 'field';
@@ -137,6 +258,8 @@ function beginRun() {
   runActive = true;
   observedBoundaryRecoveries = 0;
   boundaryNoticeUntil = 0;
+  observationNoticeUntil = 0;
+  contactNoticeUntil = 0;
   pausePanel.hidden = true;
   setView('field');
   requestFieldPointerLock();
@@ -163,7 +286,15 @@ function resumeRun() {
 
 function update(deltaSeconds, now) {
   if (runActive && !player.paused) {
+    const previousContacts = player.contactCount;
     player = stepPlayer(player, inputSnapshot(), deltaSeconds);
+    if (player.contactCount > previousContacts) {
+      contactNoticeUntil = now + 3200;
+      const cracked = player.plates.find((plate) => plate.status === 'cracked');
+      contactNote.textContent = cracked
+        ? `CASE STRIKE — PLATE ${ROMAN_PLATES[cracked.index]} CRACKED.`
+        : 'CASE STRIKE — THE NEXT PASS WILL END THE RUN.';
+    }
     visualElapsed += deltaSeconds;
   } else if (!runActive) {
     visualElapsed += deltaSeconds;
@@ -171,6 +302,8 @@ function update(deltaSeconds, now) {
   world.update(visualElapsed, reducedMotion || player.paused, {
     threatAwareness: player.threatAwareness,
     playerPosition: player.position,
+    shotCount: player.shotCount,
+    deltaSeconds,
   });
 
   if (cameraMode === 'field' || cameraMode === 'order') {
@@ -244,9 +377,50 @@ document.addEventListener('keydown', (event) => {
     else pauseRun('manual');
     return;
   }
+  if (event.code === 'KeyE' && !event.repeat && runActive && !player.paused) {
+    const previousObservation = player.lastObservation;
+    player = examine(player);
+    if (player.lastObservation && player.lastObservation !== previousObservation) {
+      observationNoticeUntil = performance.now() + 4200;
+    }
+    return;
+  }
+  if (event.code === 'KeyF' && runActive && !player.paused) {
+    player = setRifleRaised(player, true);
+    return;
+  }
   pressed.add(event.code);
 });
-document.addEventListener('keyup', (event) => pressed.delete(event.code));
+document.addEventListener('keyup', (event) => {
+  if (event.code === 'KeyF') player = setRifleRaised(player, false);
+  pressed.delete(event.code);
+});
+document.addEventListener('mousedown', (event) => {
+  if (!runActive || player.paused || cameraMode !== 'field') return;
+  if (event.button === 2) {
+    event.preventDefault();
+    player = setCameraRaised(player, true);
+  } else if (event.button === 0 && player.rifleRaised) {
+    event.preventDefault();
+    const previousShotCount = player.shotCount;
+    player = fireDefensiveShot(player);
+    if (player.shotCount > previousShotCount) {
+      contactNoticeUntil = performance.now() + 2600;
+      contactNote.textContent = player.lastThreatEvent === 'defensive-shot-interrupt'
+        ? 'RIFLE REPORT — THE DIVE SHEARS AWAY.'
+        : 'RIFLE REPORT — THE DIVE WAS NOT COMMITTED.';
+    }
+  } else if (event.button === 0 && player.cameraRaised) {
+    event.preventDefault();
+    player = startExposure(player);
+  }
+});
+document.addEventListener('mouseup', (event) => {
+  if (event.button === 2) player = setCameraRaised(player, false);
+});
+document.addEventListener('contextmenu', (event) => {
+  if (runActive && !player.paused) event.preventDefault();
+});
 document.addEventListener('mousemove', (event) => {
   if (document.pointerLockElement !== canvas || player.paused || cameraMode !== 'field') return;
   player.heading -= event.movementX * 0.002;
@@ -307,7 +481,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's2-topology',
+  stage: 's3-exposed-proof',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -332,6 +506,16 @@ window.__projectPlateau = {
       renderer: this.renderer,
       player: playerSnapshot(),
       threatVisual: world.threatSnapshot(),
+      ui: {
+        prompt: contextPrompt.hidden ? null : contextPrompt.textContent,
+        cameraOverlay: !cameraOverlay.hidden,
+        rifleOverlay: !rifleOverlay.hidden,
+        plateRail: !plateRail.hidden,
+        platePreview: platePreview.hidden ? null : previewCopy.textContent,
+        fieldNote: fieldNote.hidden ? null : fieldNote.textContent,
+        contactNote: contactNote.hidden ? null : contactNote.textContent,
+        cartridgesVisible: !cartridgeDisplay.hidden,
+      },
       sceneChildren: scene.children.length,
       calls: renderer.info.render.calls,
       triangles: renderer.info.render.triangles,

@@ -292,6 +292,30 @@ function makeFieldCamera(scene) {
   return group;
 }
 
+function makeRifle(scene) {
+  const group = new THREE.Group();
+  const wood = new THREE.MeshStandardMaterial({ color: 0x503126, roughness: 0.8 });
+  const steel = new THREE.MeshStandardMaterial({ color: 0x252a28, roughness: 0.48, metalness: 0.62 });
+  const brass = new THREE.MeshStandardMaterial({ color: PALETTE.brass, roughness: 0.45, metalness: 0.55 });
+  const flashMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffd58a, transparent: true, opacity: 0, depthWrite: false,
+  });
+  const stock = primitive(wood, new THREE.BoxGeometry(1, 1, 1), [0.25, -0.1, 0], [0.42, 0.3, 2.5], [0.03, 0, 0]);
+  const barrel = primitive(steel, new THREE.CylinderGeometry(0.09, 0.13, 4.8, 10), [0.1, 0.14, -2.45], [1, 1, 1], [Math.PI / 2, 0, 0]);
+  const chamber = primitive(brass, new THREE.BoxGeometry(1, 1, 1), [0.1, 0.06, -0.25], [0.36, 0.26, 0.6]);
+  const flash = primitive(flashMaterial, new THREE.ConeGeometry(0.35, 1.5, 8), [0.1, 0.14, -5.25], [1, 1, 1], [-Math.PI / 2, 0, 0]);
+  flash.name = 'tool.period_rifle.muzzle_flash';
+  flash.visible = false;
+  group.add(stock, barrel, chamber, flash);
+  group.position.set(2.8, 1.2, 67);
+  group.rotation.set(-0.16, Math.PI, 0);
+  group.scale.setScalar(0.34);
+  group.name = 'tool.period_rifle';
+  group.userData.flash = flash;
+  scene.add(group);
+  return group;
+}
+
 export function createWorld(scene) {
   makeTerrain(scene);
   makeRouteAndBrook(scene);
@@ -305,17 +329,28 @@ export function createWorld(scene) {
   ];
   const smoke = makeFort(scene);
   const fieldCamera = makeFieldCamera(scene);
+  const rifle = makeRifle(scene);
   let renderedThreatState = 'distant';
+  let observedShotCount = 0;
+  let flashSeconds = 0;
 
   return {
     family,
     pterodactyls,
     smoke,
     fieldCamera,
+    rifle,
     update(elapsed, reducedMotion = false, runtime = {}) {
       const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
       renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
       const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
+      if ((runtime.shotCount ?? 0) > observedShotCount) {
+        observedShotCount = runtime.shotCount;
+        flashSeconds = 0.1;
+      }
+      flashSeconds = Math.max(0, flashSeconds - (runtime.deltaSeconds ?? 0));
+      rifle.userData.flash.visible = flashSeconds > 0;
+      rifle.userData.flash.material.opacity = flashSeconds > 0 ? flashSeconds * 8 : 0;
       const speed = reducedMotion ? 0.08 : 0.18;
       pterodactyls.forEach((mesh, index) => {
         const { radius, height, phase } = mesh.userData;

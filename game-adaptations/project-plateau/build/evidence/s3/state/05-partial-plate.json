@@ -1,0 +1,127 @@
+{
+  "stage": "s3-exposed-proof",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 45
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 45
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 3.098,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "plate:1:exposed",
+    "zone": "brook-blind",
+    "zoneHistory": [
+      "fort",
+      "brook-blind"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "plate-exposure:+1",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.691599999904633,
+    "lastProofEvent": {
+      "plateIndex": 0,
+      "frameKey": "brook-partial",
+      "points": 1,
+      "label": "PARTIAL \u2014 foliage hides the flank.",
+      "zone": "brook-blind"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": 14.18,
+      "y": 13.1,
+      "z": 27.63
+    }
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "PARTIAL \u2014 foliage hides the flank.",
+    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "contactNote": null,
+    "cartridgesVisible": false
+  },
+  "sceneChildren": 23,
+  "calls": 63,
+  "triangles": 25384,
+  "textures": 1,
+  "geometries": 29,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 315.40000009536743,
+  "recentMedianFrameMs": 8.3
+}

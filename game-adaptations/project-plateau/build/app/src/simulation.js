@@ -15,11 +15,40 @@ export const NAVIGATION = Object.freeze({
   ]),
 });
 
+export const EXPOSURE_SECONDS = 2;
+export const CONTACT_SECONDS = 3;
+
 const SPEED = Object.freeze({ walk: 4.2, sprint: 6.8, crouch: 2.2 });
 const THREAT_STATES = Object.freeze(['distant', 'watch', 'search', 'attack']);
 
 function clonePosition(position) {
   return { x: position.x, z: position.z };
+}
+
+function clonePlate(plate) {
+  return { ...plate };
+}
+
+function copyState(state, changes = {}) {
+  return {
+    ...state,
+    position: clonePosition(state.position),
+    lastStablePosition: clonePosition(state.lastStablePosition),
+    plates: state.plates.map(clonePlate),
+    pendingExposure: state.pendingExposure ? { ...state.pendingExposure } : null,
+    ...changes,
+  };
+}
+
+function emptyPlate(index) {
+  return {
+    index,
+    status: 'unexposed',
+    points: 0,
+    lostPoints: 0,
+    label: null,
+    frameKey: null,
+  };
 }
 
 export function createPlayerState() {
@@ -46,6 +75,25 @@ export function createPlayerState() {
     threatAwareness: 0,
     threatState: 'distant',
     lastThreatEvent: 'distant',
+    attackSeconds: 0,
+    examinedTrack: false,
+    observedBehavior: false,
+    lastObservation: null,
+    cameraRaised: false,
+    plateRailRevealed: false,
+    pendingExposure: null,
+    previewSeconds: 0,
+    lastProofEvent: null,
+    plates: Array.from({ length: 4 }, (_, index) => emptyPlate(index)),
+    cartridges: 2,
+    rifleRaised: false,
+    rifleRevealed: false,
+    gunshotFired: false,
+    shotCount: 0,
+    bodyMargin: 1,
+    failed: false,
+    failureCause: null,
+    contactCount: 0,
   };
 }
 
@@ -54,14 +102,182 @@ export function restartPlayer() {
 }
 
 export function setPaused(state, paused, reason = null) {
-  return {
-    ...state,
-    position: clonePosition(state.position),
-    lastStablePosition: clonePosition(state.lastStablePosition),
+  return copyState(state, {
     paused,
     pauseReason: paused ? reason : null,
     lastEvent: paused ? `paused:${reason ?? 'manual'}` : 'resumed',
+  });
+}
+
+export function zoneForPosition(position, reachedGlade = false) {
+  if (position.z >= 62) return 'fort';
+  if (position.z >= 34) return 'brook-blind';
+  if (position.z <= 3) return 'iguanodon-glade';
+  if (reachedGlade) return position.x < 3 ? 'covered-return' : 'exposed-creek';
+  return position.x < 3 ? 'canopy-overlook' : 'basalt-shelf';
+}
+
+export function examine(state) {
+  if (state.paused || state.failed || state.pendingExposure) return copyState(state);
+  if (state.zone === 'brook-blind') {
+    return copyState(state, {
+      examinedTrack: true,
+      lastObservation: 'Three toes. Fresh. The brook runs back to camp.',
+      lastEvent: 'examined:track',
+    });
+  }
+  if (state.zone === 'iguanodon-glade') {
+    return copyState(state, {
+      observedBehavior: true,
+      lastObservation: 'The young keep close while the adults feed.',
+      lastEvent: 'examined:behavior',
+    });
+  }
+  return copyState(state, { lastEvent: 'examine:no-trace' });
+}
+
+export function frameForState(state) {
+  const frames = {
+    fort: {
+      key: 'empty-fort', points: 0, label: 'EMPTY — no living subject in frame.', exposure: 0,
+    },
+    'brook-blind': state.examinedTrack
+      ? { key: 'brook-partial', points: 1, label: 'PARTIAL — foliage hides the flank.', exposure: 1 }
+      : { key: 'brook-unread', points: 0, label: 'UNCLEAR — the track has not been read.', exposure: 1 },
+    'canopy-overlook': {
+      key: 'canopy-flank', points: 1, label: 'FORM — a full flank clears the fern.', exposure: 1,
+    },
+    'basalt-shelf': {
+      key: 'basalt-scale', points: 2, label: 'CONTEXT — basalt gives scale.', exposure: 2,
+    },
+    'iguanodon-glade': state.observedBehavior
+      ? { key: 'glade-behavior', points: 2, label: 'BEHAVIOR — young play beside the adults.', exposure: 2 }
+      : { key: 'glade-form', points: 1, label: 'FORM — the family stands clear.', exposure: 2 },
+    'covered-return': {
+      key: 'return-occluded', points: 1, label: 'PARTIAL — thorn hides the body.', exposure: 1,
+    },
+    'exposed-creek': {
+      key: 'creek-scale', points: 2, label: 'CONTEXT — the open creek gives scale.', exposure: 2,
+    },
   };
+  return { ...frames[state.zone] };
+}
+
+export function setCameraRaised(state, raised) {
+  if (state.pendingExposure) return copyState(state, { cameraRaised: true, rifleRaised: false });
+  const canRaise = !state.paused
+    && !state.failed
+    && state.plates.some((plate) => plate.status === 'unexposed');
+  const cameraRaised = Boolean(raised && canRaise);
+  return copyState(state, {
+    cameraRaised,
+    plateRailRevealed: state.plateRailRevealed || cameraRaised,
+    rifleRaised: cameraRaised ? false : state.rifleRaised,
+    lastEvent: cameraRaised ? 'camera:raised' : state.lastEvent,
+  });
+}
+
+export function startExposure(state) {
+  if (state.paused || state.failed || !state.cameraRaised || state.pendingExposure) {
+    return copyState(state);
+  }
+  const plateIndex = state.plates.findIndex((plate) => plate.status === 'unexposed');
+  if (plateIndex < 0) return copyState(state, { cameraRaised: false, lastEvent: 'camera:no-plates' });
+  return copyState(state, {
+    pendingExposure: {
+      ...frameForState(state),
+      plateIndex,
+      remainingSeconds: EXPOSURE_SECONDS,
+      zone: state.zone,
+    },
+    previewSeconds: 0,
+    rifleRaised: false,
+    lastEvent: 'camera:shutter-commit',
+  });
+}
+
+export function setRifleRaised(state, raised) {
+  const rifleRaised = Boolean(
+    raised && !state.paused && !state.failed && !state.pendingExposure && state.cartridges > 0,
+  );
+  return copyState(state, {
+    rifleRaised,
+    rifleRevealed: state.rifleRevealed || rifleRaised,
+    cameraRaised: rifleRaised ? false : state.cameraRaised,
+    lastEvent: rifleRaised ? 'rifle:raised' : state.lastEvent,
+  });
+}
+
+export function fireDefensiveShot(state) {
+  if (state.paused || state.failed || state.pendingExposure || !state.rifleRaised || state.cartridges <= 0) {
+    return copyState(state);
+  }
+  const interrupted = state.threatAwareness === 3;
+  const awareness = interrupted ? Math.max(0, state.threatAwareness - 2) : state.threatAwareness;
+  return copyState(state, {
+    cartridges: state.cartridges - 1,
+    rifleRaised: false,
+    rifleRevealed: true,
+    gunshotFired: true,
+    shotCount: state.shotCount + 1,
+    threatAwareness: awareness,
+    threatState: THREAT_STATES[awareness],
+    attackSeconds: 0,
+    lastThreatEvent: interrupted ? 'defensive-shot-interrupt' : 'defensive-shot-missed-window',
+    lastEvent: interrupted ? 'rifle:interrupt' : 'rifle:missed-window',
+  });
+}
+
+function highestValueIntactPlateIndex(plates) {
+  let best = -1;
+  let bestPoints = -1;
+  plates.forEach((plate, index) => {
+    if (plate.status === 'exposed' && plate.points > bestPoints) {
+      best = index;
+      bestPoints = plate.points;
+    }
+  });
+  return best;
+}
+
+export function applyThreatContact(state) {
+  if (state.failed) return copyState(state);
+  if (state.bodyMargin <= 0) {
+    return copyState(state, {
+      failed: true,
+      failureCause: 'second-unblocked-strike',
+      rifleRaised: false,
+      cameraRaised: false,
+      pendingExposure: null,
+      attackSeconds: 0,
+      contactCount: state.contactCount + 1,
+      lastThreatEvent: 'second-contact-failure',
+      lastEvent: 'failure:second-contact',
+    });
+  }
+
+  const plates = state.plates.map(clonePlate);
+  const crackedIndex = highestValueIntactPlateIndex(plates);
+  if (crackedIndex >= 0) {
+    plates[crackedIndex] = {
+      ...plates[crackedIndex],
+      status: 'cracked',
+      lostPoints: plates[crackedIndex].points,
+      points: 0,
+    };
+  }
+  return copyState(state, {
+    plates,
+    bodyMargin: 0,
+    cameraRaised: false,
+    pendingExposure: null,
+    attackSeconds: 0,
+    contactCount: state.contactCount + 1,
+    threatAwareness: 1,
+    threatState: 'watch',
+    lastThreatEvent: 'contact-recovered',
+    lastEvent: crackedIndex >= 0 ? `contact:plate-${crackedIndex + 1}-cracked` : 'contact:body-margin',
+  });
 }
 
 function insideBounds(position) {
@@ -89,20 +305,12 @@ function obstacleAt(position) {
   });
 }
 
-export function zoneForPosition(position, reachedGlade = false) {
-  if (position.z >= 62) return 'fort';
-  if (position.z >= 34) return 'brook-blind';
-  if (position.z <= 3) return 'iguanodon-glade';
-  if (reachedGlade) return position.x < 3 ? 'covered-return' : 'exposed-creek';
-  return position.x < 3 ? 'canopy-overlook' : 'basalt-shelf';
-}
-
 function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
   const entered = zone !== state.zone;
   const inCover = zone === 'canopy-overlook' || zone === 'covered-return';
   let awareness = state.threatAwareness;
   let coverSeconds = inCover ? state.coverSeconds + deltaSeconds : 0;
-  let sprintExposureSeconds = stance === 'sprint' && travelled > 0 && (zone === 'basalt-shelf' || zone === 'exposed-creek')
+  const sprintExposureSeconds = stance === 'sprint' && travelled > 0 && (zone === 'basalt-shelf' || zone === 'exposed-creek')
     ? state.sprintExposureSeconds + deltaSeconds
     : 0;
   let sprintEscalationCharged = state.sprintEscalationCharged;
@@ -155,15 +363,38 @@ function resolveObstacleMovement(position, delta) {
   return { position: clonePosition(position), collision: hit.id };
 }
 
+function finalizeExposure(state, pending, threat) {
+  const plates = state.plates.map(clonePlate);
+  plates[pending.plateIndex] = {
+    ...plates[pending.plateIndex],
+    status: 'exposed',
+    points: pending.points,
+    label: pending.label,
+    frameKey: pending.key,
+  };
+  const awareness = Math.min(3, threat.awareness + pending.exposure);
+  return {
+    plates,
+    pendingExposure: null,
+    previewSeconds: 4,
+    cameraRaised: false,
+    threatAwareness: awareness,
+    threatState: THREAT_STATES[awareness],
+    lastThreatEvent: pending.exposure > 0 ? `plate-exposure:+${pending.exposure}` : threat.event,
+    lastProofEvent: {
+      plateIndex: pending.plateIndex,
+      frameKey: pending.key,
+      points: pending.points,
+      label: pending.label,
+      zone: pending.zone,
+    },
+    lastEvent: `plate:${pending.plateIndex + 1}:exposed`,
+  };
+}
+
 export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const deltaSeconds = Math.max(0, Math.min(rawDeltaSeconds, 1));
-  if (state.paused) {
-    return {
-      ...state,
-      position: clonePosition(state.position),
-      lastStablePosition: clonePosition(state.lastStablePosition),
-    };
-  }
+  if (state.paused || state.failed) return copyState(state);
 
   const heading = Number.isFinite(input.heading) ? input.heading : state.heading;
   const pitch = Number.isFinite(input.pitch) ? input.pitch : state.pitch;
@@ -173,28 +404,22 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const normalizedForward = magnitude > 1 ? forward / magnitude : forward;
   const normalizedRight = magnitude > 1 ? right / magnitude : right;
   const stance = input.crouch ? 'crouch' : input.sprint ? 'sprint' : 'walk';
-  const distance = SPEED[stance] * deltaSeconds;
+  const toolMultiplier = state.pendingExposure ? 0 : state.cameraRaised ? 0.35 : 1;
+  const distance = SPEED[stance] * toolMultiplier * deltaSeconds;
   const delta = {
     x: (Math.sin(heading) * normalizedForward + Math.cos(heading) * normalizedRight) * distance,
     z: (-Math.cos(heading) * normalizedForward + Math.sin(heading) * normalizedRight) * distance,
   };
   const full = { x: state.position.x + delta.x, z: state.position.z + delta.z };
 
+  let resolved;
+  let boundaryRecovered = false;
   if (!insideBounds(full)) {
-    return {
-      ...state,
-      position: clonePosition(state.lastStablePosition),
-      lastStablePosition: clonePosition(state.lastStablePosition),
-      heading,
-      pitch,
-      stance,
-      elapsedSeconds: state.elapsedSeconds + deltaSeconds,
-      boundaryRecoveries: state.boundaryRecoveries + 1,
-      lastEvent: 'boundary-recovery',
-    };
+    resolved = { position: clonePosition(state.lastStablePosition), collision: null };
+    boundaryRecovered = true;
+  } else {
+    resolved = resolveObstacleMovement(state.position, delta);
   }
-
-  const resolved = resolveObstacleMovement(state.position, delta);
   const travelled = Math.hypot(
     resolved.position.x - state.position.x,
     resolved.position.z - state.position.z,
@@ -203,8 +428,10 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const zone = zoneForPosition(resolved.position, reachedGlade);
   const threat = updateThreatState(state, zone, stance, deltaSeconds, travelled);
   const zoneHistory = zone === state.zone ? [...state.zoneHistory] : [...state.zoneHistory, zone];
-  return {
-    ...state,
+  const pendingExposure = state.pendingExposure
+    ? { ...state.pendingExposure, remainingSeconds: Math.max(0, state.pendingExposure.remainingSeconds - deltaSeconds) }
+    : null;
+  let next = copyState(state, {
     position: clonePosition(resolved.position),
     lastStablePosition: clonePosition(resolved.position),
     heading,
@@ -212,8 +439,13 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     stance,
     elapsedSeconds: state.elapsedSeconds + deltaSeconds,
     distanceTravelled: state.distanceTravelled + travelled,
+    boundaryRecoveries: state.boundaryRecoveries + (boundaryRecovered ? 1 : 0),
     collisions: state.collisions + (resolved.collision ? 1 : 0),
-    lastEvent: resolved.collision ? `collision:${resolved.collision}` : travelled > 0 ? 'movement' : 'idle',
+    lastEvent: boundaryRecovered
+      ? 'boundary-recovery'
+      : resolved.collision
+        ? `collision:${resolved.collision}`
+        : travelled > 0 ? 'movement' : state.lastEvent === 'clean-start' ? 'idle' : state.lastEvent,
     zone,
     zoneHistory,
     reachedGlade,
@@ -224,5 +456,18 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     threatAwareness: threat.awareness,
     threatState: threat.threatState,
     lastThreatEvent: threat.event,
-  };
+    pendingExposure,
+    previewSeconds: Math.max(0, state.previewSeconds - deltaSeconds),
+  });
+
+  if (pendingExposure && pendingExposure.remainingSeconds <= 0) {
+    next = copyState(next, finalizeExposure(next, pendingExposure, threat));
+  }
+
+  const attackSeconds = next.threatAwareness === 3 && !next.inCover
+    ? state.attackSeconds + deltaSeconds
+    : 0;
+  next.attackSeconds = attackSeconds;
+  if (attackSeconds >= CONTACT_SECONDS) next = applyThreatContact(next);
+  return next;
 }

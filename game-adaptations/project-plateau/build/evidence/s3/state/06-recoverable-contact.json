@@ -1,0 +1,128 @@
+{
+  "stage": "s3-exposed-proof",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 8,
+      "z": 18
+    },
+    "lastStablePosition": {
+      "x": 8,
+      "z": 18
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 8.356,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "contact:plate-2-cracked",
+    "zone": "basalt-shelf",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "contact-recovered",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 1.0005999999046395,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "cracked",
+        "points": 0,
+        "lostPoints": 2,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "shotCount": 0,
+    "bodyMargin": 0,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 1
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": -10.05,
+      "y": 10.8,
+      "z": -0.45
+    }
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "fieldNote": null,
+    "contactNote": "CASE STRIKE \u2014 PLATE II CRACKED.",
+    "cartridgesVisible": false
+  },
+  "sceneChildren": 23,
+  "calls": 63,
+  "triangles": 25384,
+  "textures": 1,
+  "geometries": 30,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 315.40000009536743,
+  "recentMedianFrameMs": 8.3
+}

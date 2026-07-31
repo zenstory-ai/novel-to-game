@@ -1,0 +1,122 @@
+{
+  "stage": "s3-exposed-proof",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 7,
+      "z": 11.144
+    },
+    "lastStablePosition": {
+      "x": 7,
+      "z": 11.144
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 1.438,
+    "distanceTravelled": 6.856,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "rifle:interrupt",
+    "zone": "exposed-creek",
+    "zoneHistory": [
+      "fort",
+      "iguanodon-glade",
+      "exposed-creek"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "defensive-shot-interrupt",
+    "attackSeconds": 0,
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
+    "cameraRaised": false,
+    "plateRailRevealed": false,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": null,
+    "plates": [
+      {
+        "index": 0,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 1,
+    "rifleRaised": false,
+    "rifleRevealed": true,
+    "gunshotFired": true,
+    "shotCount": 1,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0
+  },
+  "threatVisual": {
+    "state": "watch",
+    "position": {
+      "x": -16.67,
+      "y": 11.1,
+      "z": -10.09
+    }
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": false,
+    "platePreview": null,
+    "fieldNote": null,
+    "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
+    "cartridgesVisible": true
+  },
+  "sceneChildren": 23,
+  "calls": 63,
+  "triangles": 25384,
+  "textures": 1,
+  "geometries": 33,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 315.40000009536743,
+  "recentMedianFrameMs": 8.3
+}

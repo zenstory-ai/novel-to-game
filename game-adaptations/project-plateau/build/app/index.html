@@ -82,9 +82,32 @@
 
       <div id="field-hud" hidden aria-live="polite">
         <span id="reticle" aria-hidden="true"></span>
+        <div id="camera-overlay" hidden aria-hidden="true">
+          <span class="frame-corner top-left"></span>
+          <span class="frame-corner top-right"></span>
+          <span class="frame-corner bottom-left"></span>
+          <span class="frame-corner bottom-right"></span>
+          <p id="frame-condition">FOLIAGE // SUBJECT PARTLY OCCLUDED</p>
+          <div id="commit-line"><span></span></div>
+        </div>
+        <div id="rifle-overlay" hidden aria-hidden="true">
+          <span class="rifle-barrel"></span>
+          <span class="rifle-sight"></span>
+        </div>
+        <p id="context-prompt"></p>
+        <p id="field-note" hidden></p>
+        <section id="plate-preview" hidden aria-label="Latest exposed plate">
+          <p class="eyebrow">Plate <span id="preview-number">I</span></p>
+          <div class="preview-image" aria-hidden="true"><span></span></div>
+          <p id="preview-copy"></p>
+        </section>
+        <p id="contact-note" hidden></p>
         <p id="boundary-note" hidden>The red cliff gives no path here.</p>
-        <p id="control-hint">Move [WASD] · Look [Mouse] · Pause [P]</p>
-        <div id="plate-rail" aria-label="Four unexposed glass plates">
+        <p id="control-hint">Move [WASD] · Sprint [Shift] · Crouch [C] · Pause [P]</p>
+        <div id="cartridge-display" hidden aria-label="Two rifle cartridges">
+          <span></span><span></span>
+        </div>
+        <div id="plate-rail" hidden aria-label="Four unexposed glass plates">
           <span></span><span></span><span></span><span></span>
         </div>
       </div>
