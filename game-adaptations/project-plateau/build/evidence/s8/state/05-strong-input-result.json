@@ -1,0 +1,286 @@
+{
+  "stage": "s8-input-paths",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 2.68,
+      "z": 62.017
+    },
+    "lastStablePosition": {
+      "x": 2.68,
+      "z": 62.017
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 51.655,
+    "distanceTravelled": 128.368,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:strong-field-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "canopy-overlook",
+      "iguanodon-glade",
+      "covered-return",
+      "brook-blind",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "cover-deescalation",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": {
+      "plateIndex": 3,
+      "frameKey": "glade-behavior",
+      "points": 2,
+      "label": "BEHAVIOR \u2014 young play beside the adults.",
+      "zone": "iguanodon-glade"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      },
+      {
+        "index": 3,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 100.345,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "strong-field-record",
+      "title": "Strong field record",
+      "copy": "Scale. Living form. Behavior. The field record holds.",
+      "evidence": 7,
+      "survivingPlates": 4,
+      "route": "covered",
+      "brookResponse": null,
+      "remainingLight": 100.3,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "watch",
+    "response": "orbit",
+    "position": {
+      "x": 27.2,
+      "y": 11.25,
+      "z": 33.99
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 14.928
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 16.923
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 16.923
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 23.045
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 26.939
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 26.949
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 27.013
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 29.013
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 29.013
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 29.093
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 29.163
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 31.163
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 31.52
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 37.515
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 43.515
+      },
+      {
+        "cue": "result",
+        "caption": "[glass plates settle on the light board]",
+        "at": 51.552
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": null,
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "caption": null,
+    "lightWatch": 101,
+    "terminal": {
+      "kind": "alive",
+      "title": "Strong field record",
+      "copy": "Scale. Living form. Behavior. The field record holds.",
+      "detail": "7 evidence cues \u00b7 4 recorded plates \u00b7 covered return \u00b7 101s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 25,
+  "calls": 111,
+  "triangles": 27050,
+  "textures": 1,
+  "geometries": 63,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 184.60000014305115,
+  "recentMedianFrameMs": 8.3
+}

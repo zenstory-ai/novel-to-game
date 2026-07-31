@@ -1,0 +1,18 @@
+{
+  "inputs": [
+    "F",
+    "Left Mouse",
+    "D to creek",
+    "S into exposed return"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s8",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785529661220
+}

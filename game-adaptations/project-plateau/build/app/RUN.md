@@ -67,12 +67,20 @@ terminal restart and heavy-state performance with:
 npm run verify:s7
 ```
 
+Run the input-only Strong/Mixed/Panic reference paths with real keyboard and
+mouse traversal, no teleport or direct-time shortcuts, exact outcomes and a
+clean restart with:
+
+```bash
+npm run verify:s8
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S7 write separate
+the corresponding `../evidence/s*/` directory. S3 through S8 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S7 foundation, not the completed game. It proves the approved local
+This is an S8 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -102,4 +110,13 @@ manual pause, focus-loss pause, result and restart at `1440×900` and
 `1280×720`, including 150% text. Its no-cache 25 Mbps run reached the first
 frame in 2.16 seconds; the built app measured 596,121 raw / 152,779 gzip bytes.
 Public-host cold loading, final non-colour review and uncompressed reference
-runs remain open.
+runs remained open at that checkpoint. S8 replaces the earlier paper timing
+assumption with measured traversal: its Strong path finishes in 51.56 seconds,
+travels 128.37 world units, preserves seven cues and returns with 100.35 seconds
+of the revised 180-second light budget. Mixed reaches the four-cue result with
+one shot and its creek callback; Panic reaches the second-contact failure after
+spending both rounds. All three use keyboard/mouse movement without teleport or
+direct-time hooks. This establishes repeatable reference paths, but automated
+state evidence does not replace independent first-time perception, three
+external tester records, final family animation review, public-host loading or
+the authoritative verification handoff.

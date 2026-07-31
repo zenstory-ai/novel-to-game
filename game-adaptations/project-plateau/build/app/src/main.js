@@ -54,7 +54,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S7 · lifecycle proof';
+document.querySelector('#s0-badge').textContent = 'S8 · measured paths';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -647,7 +647,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's7-lifecycle',
+  stage: 's8-input-paths',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,

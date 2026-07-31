@@ -427,7 +427,7 @@ beats.
 | Dynamic media | Experience role | Duration / rhythm | State position | Fallback | Class |
 |---|---|---|---|---|---|
 | Title live-world loop | Establish plate-to-living-world identity before play. | 8–12 s seamless loop; one smoke rise and one distant wing crossing. | Title / menu only. | Static colour scene behind the plate; title/menu timing unchanged. | Degradable |
-| Connected real-time route | Deliver every core verb and spatial decision under free look. | Full 5–8 minute run; no authored camera cuts. | Active play. | None; a non-interactive substitute fails the product. | Release gate |
+| Connected real-time route | Deliver every core verb and spatial decision under free look. | Full 1–3 minute run; no authored camera cuts or empty travel added to stretch duration. | Active play. | None; a non-interactive substitute fails the product. | Release gate |
 | Plate-exposure sequence | Make commitment, grading and material proof continuous. | 180 ms raise, player-paced settle, 80 ms shutter, two-second commitment, preview. | Camera action. | Reduced-motion static raise/preview with identical lock and world-state timing. | Release gate |
 | Pterodactyl state motion | Expose distant/watch/search/attack and cover/rifle response. | Multi-second continuous cycles; dive must telegraph before contact. | Development/test beats. | Simpler authored silhouette poses and shadow track with full audio/state timing. | Release gate |
 | Iguanodon behaviour loop | Supply living evidence windows and wonder without a cutscene. | Grazing base loop plus young play and branch-pull events, each with readable anticipation/recovery. | Glade combination beat. | One adult + one young with pose/scale reuse; behaviour events remain. | Release gate |

@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s4", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") in {
-            "s4-complete-loop", "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
+            "s4-complete-loop", "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle", "s8-input-paths"
         }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
@@ -132,7 +132,7 @@ def run() -> dict[str, object]:
             return snapshot(page)
 
         clean = capture("01-clean-start", ["Enter the basin", "Begin field work"])
-        assert clean["player"]["remainingLight"] <= 420
+        assert clean["player"]["remainingLight"] <= 180
         assert clean["player"]["runStatus"] == "active"
 
         # One uninterrupted deterministic Strong-band state path. QA teleports only
@@ -185,7 +185,7 @@ def run() -> dict[str, object]:
         assert restarted["mode"] == "order", restarted
         assert restarted["runActive"] is False, restarted
         assert restarted["player"]["runStatus"] == "active", restarted
-        assert restarted["player"]["remainingLight"] == 420, restarted
+        assert restarted["player"]["remainingLight"] == 180, restarted
         assert all(plate["status"] == "unexposed" for plate in restarted["player"]["plates"]), restarted
 
         # Timeout failure and clean restart.
@@ -193,8 +193,8 @@ def run() -> dict[str, object]:
         page.wait_for_timeout(80)
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: 45})")
         page.wait_for_timeout(50)
-        page.evaluate("window.__projectPlateau.advanceTimeForTest(421)")
-        timeout = capture("06-timeout-failure", ["Begin field work", "QA time compression: 421 seconds outside Fort"])
+        page.evaluate("window.__projectPlateau.advanceTimeForTest(181)")
+        timeout = capture("06-timeout-failure", ["Begin field work", "QA time compression: 181 seconds outside Fort"])
         assert timeout["player"]["runStatus"] == "failure", timeout
         assert timeout["player"]["failureCause"] == "remaining-light-expired", timeout
         assert timeout["ui"]["terminal"]["copy"] == "The basin went dark. The brook was no longer enough.", timeout
@@ -202,7 +202,7 @@ def run() -> dict[str, object]:
         page.wait_for_timeout(80)
         timeout_restart = capture("07-timeout-restart", ["Take the route again"])
         assert timeout_restart["mode"] == "order", timeout_restart
-        assert timeout_restart["player"]["remainingLight"] == 420, timeout_restart
+        assert timeout_restart["player"]["remainingLight"] == 180, timeout_restart
 
         # Two unblocked contacts: the first is recoverable and the second is terminal.
         page.get_by_role("button", name="Begin field work").click()

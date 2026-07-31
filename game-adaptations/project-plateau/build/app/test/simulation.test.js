@@ -21,6 +21,11 @@ import {
   zoneForPosition,
 } from '../src/simulation.js';
 
+test('the measured compact route starts with a 180-second light budget', () => {
+  assert.equal(INITIAL_LIGHT_SECONDS, 180);
+  assert.equal(createPlayerState().remainingLight, 180);
+});
+
 test('fresh and restarted player states are clean copies', () => {
   const first = createPlayerState();
   first.position.x += 9;

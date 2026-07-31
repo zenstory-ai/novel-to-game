@@ -88,7 +88,7 @@ def run() -> dict[str, object]:
         assert response and response.ok
         assert page.evaluate("window.__projectPlateau.stage") in {
             "s1-controller", "s2-topology", "s3-exposed-proof", "s4-complete-loop",
-            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
+            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle", "s8-input-paths"
         }
 
         def snapshot() -> dict[str, object]:
@@ -200,6 +200,8 @@ def run() -> dict[str, object]:
         smoke_started = time.monotonic()
         pattern = ["KeyW", "KeyD", "KeyS", "KeyA"]
         index = 0
+        smoke_elapsed_before_restarts = 0.0
+        smoke_lifecycle_restarts = 0
         while time.monotonic() - smoke_started < SMOKE_SECONDS:
             code = pattern[index % len(pattern)]
             page.keyboard.down(code)
@@ -208,9 +210,19 @@ def run() -> dict[str, object]:
             index += 1
             current = snapshot()
             assert not current["player"]["paused"], current
+            if current["player"]["runStatus"] != "active":
+                smoke_elapsed_before_restarts += current["player"]["elapsedSeconds"]
+                page.get_by_role("button", name="Take the route again").click()
+                page.get_by_role("button", name="Begin field work").click()
+                page.wait_for_timeout(80)
+                smoke_lifecycle_restarts += 1
         smoke_duration = round(time.monotonic() - smoke_started, 2)
         smoke_end_state = snapshot()
-        elapsed_gain = smoke_end_state["player"]["elapsedSeconds"] - smoke_start_state["player"]["elapsedSeconds"]
+        elapsed_gain = (
+            smoke_elapsed_before_restarts
+            + smoke_end_state["player"]["elapsedSeconds"]
+            - smoke_start_state["player"]["elapsedSeconds"]
+        )
         assert elapsed_gain >= SMOKE_SECONDS * 0.9, (elapsed_gain, SMOKE_SECONDS)
         performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
         assert performance["medianFps"] >= 45, performance
@@ -256,6 +268,7 @@ def run() -> dict[str, object]:
             "wallSeconds": smoke_duration,
             "simulatedElapsedGain": round(elapsed_gain, 3),
             "inputSegments": index,
+            "lifecycleRestarts": smoke_lifecycle_restarts,
             "memory": memory,
         },
         "performance": performance,

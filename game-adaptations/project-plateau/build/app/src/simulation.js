@@ -17,7 +17,7 @@ export const NAVIGATION = Object.freeze({
 
 export const EXPOSURE_SECONDS = 2;
 export const CONTACT_SECONDS = 3;
-export const INITIAL_LIGHT_SECONDS = 420;
+export const INITIAL_LIGHT_SECONDS = 180;
 
 export const RESULT_BANDS = Object.freeze([
   Object.freeze({

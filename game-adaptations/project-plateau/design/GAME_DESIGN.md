@@ -109,7 +109,7 @@ read one signal or threat pose
   commits only when scale and behavior share the frame, and saves ammunition
   for a deadline-dependent route reversal.
 
-### One-to-five-minute loop
+### One-to-three-minute loop
 
 ```text
 leave a safe landmark
@@ -186,7 +186,7 @@ There is one core system and two supporting systems.
 
 | Resource / measure | What it measures | Production | Consumption | Scarcity ratio in a strong run | Rule read point |
 |---|---|---|---|---|---|
-| Remaining light | Time before the return trail becomes an automatic failure. | Starts at 420 seconds; never replenished. | Real play and route commitments consume it continuously. | 420 available / roughly 330–390 desired = 1.08–1.27. | Route choice, timeout and extraction result. |
+| Remaining light | Time before the return trail becomes an automatic failure. | Starts at 180 seconds; never replenished. | Real play and route commitments consume it continuously. | Input-only Strong baseline consumes about 83 seconds including its 28-second route commitment, leaving about 97; first-time hesitation can use the rest. | Route choice, timeout and extraction result. |
 | Four glass-plate slots | Remaining chances to make a record and the physical survival of the record. | Four intact, unexposed plates at start; no new plates. | Every shutter spends one unexposed plate; a case strike cracks one intact plate. | Four available / four desirable exposures = 1.0. | Camera availability, evidence total and ending grade. |
 | Intact evidence points | Quality/context visible across recovered plate previews. | Each exposed intact plate adds zero, one or two; the authored run maximum is seven. | Breaking a plate removes its points. | Seven authored points / six needed for the strongest field grade = 1.17. | Plate feedback, current record band and final result. |
 | Two rifle cartridges | Number of loud emergency interruptions. | Two at start; no production. | One per shot whether timed correctly or not. | Two available / up to three tempting pressure moments = 0.67. | Fire availability, attack interruption and gunshot route consequence. |
@@ -209,7 +209,7 @@ action-history flag is read later and therefore is not orphan state.
 | Strong field record | 0 evidence | Three later strong frames add 2 each | 4 shutters | Tutorial partial `1` + scale `2` + young-at-play behavior `2` + branch-pull behavior `2` = `7`; threshold is `6`, so three good later decisions are required. |
 | Survive one mistake | 1 body margin | One unblocked strike costs 1 and one best plate | 1 avoided follow-up | `1 - 1 = 0`; the next unblocked strike fails. |
 | Use every tempting defense window | 2 cartridges | Each timely interruption costs 1 | Impossible to cover all 3 authored pressure moments | `2 - 3 = -1`; the player must solve at least one pressure moment with cover or route. |
-| Finish before dark | 420 seconds | Core decisions consume about 20–70 seconds each | 5 authored beats | Strong reference path: `60 + 70 + 75 + 55 + 80 = 340`, leaving `80` seconds; deliberate recovery may spend up to the remaining buffer. |
+| Finish before dark | 180 seconds | Movement, four two-second commitments, cover holds and one route cost | 5 authored beats | Measured input-only Strong baseline: `55.3` real-play seconds + `28` covered-route seconds = `83.3` consumed, leaving `96.7`; no teleport or direct time advancement. |
 
 ### Result bands
 
@@ -224,21 +224,28 @@ action-history flag is read later and therefore is not orphan state.
 ### Passing reference path
 
 ```text
-start: 420 seconds, 4 clean plates, 0 evidence, 2 cartridges,
+start: 180 seconds, 4 clean plates, 0 evidence, 2 cartridges,
        awareness 0, body margin 1
 
-inspect track and reach blind                 -> 360 s
+inspect track and reach blind                 -> frame context eligible, evidence 0
 partial covered tutorial plate                -> evidence 1, plates 3 unused, awareness 1
-take basalt scale frame after reading shadow  -> 290 s, evidence 3, awareness 2
-wait under broad fern, record young at play   -> 215 s, evidence 5, awareness 2
-record adult pull branch, retreat into cover  -> 160 s, evidence 7, awareness 3 then 2
-use covered return and reach Fort             -> 80 s, evidence 7, 4 intact, 2 cartridges
+take basalt scale frame after reading shadow  -> evidence 3, awareness 3
+use canopy until the attack widens            -> awareness 2
+record young at play and adult branch pull     -> evidence 7, awareness 3
+retreat into cover, wait for the wider pass    -> awareness 2
+use covered return and reach Fort              -> about 97 s remain, evidence 7, 4 intact, 2 cartridges
 
 result: alive + strong field record
 ```
 
 The path reaches the top band through three later correct observation choices,
 not through the tutorial plate or starting state.
+
+The timing above was reconciled after an input-only browser path completed the
+full route in `55.2` wall-clock seconds and showed that the former 420-second,
+5–8 minute assumption was not represented by playable space. The 180-second
+budget preserves the existing decisions and makes hesitation plus the 28/12/18
+route costs consequential without inserting empty distance or mandatory waits.
 
 ## Decision-depth example
 

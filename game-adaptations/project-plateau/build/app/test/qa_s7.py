@@ -126,7 +126,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s7", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         page.wait_for_function("window.__projectPlateau.snapshot().firstRenderedAt !== null")
-        assert page.evaluate("window.__projectPlateau.stage") == "s7-lifecycle"
+        assert page.evaluate("window.__projectPlateau.stage") in {"s7-lifecycle", "s8-input-paths"}
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
@@ -276,7 +276,7 @@ def run() -> dict[str, object]:
         page.wait_for_timeout(60)
         restarted = capture("08-restart-order-minimum", ["Take the route again"])
         assert restarted["mode"] == "order", restarted
-        assert restarted["player"]["remainingLight"] == 420, restarted
+        assert restarted["player"]["remainingLight"] == 180, restarted
         assert restarted["presentationSettings"]["textScale"] == "1.5", restarted
         assert_within_viewport(page.locator("#field-order"))
 

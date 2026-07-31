@@ -1,0 +1,278 @@
+{
+  "stage": "s8-input-paths",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 3.424,
+      "z": 13.152
+    },
+    "lastStablePosition": {
+      "x": 3.424,
+      "z": 13.152
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 26.492,
+    "distanceTravelled": 79.621,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "failure:second-contact",
+    "zone": "exposed-creek",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "iguanodon-glade",
+      "exposed-creek"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 3,
+    "threatState": "attack",
+    "lastThreatEvent": "second-contact-failure",
+    "attackSeconds": 0,
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 0.9999000000953684,
+    "lastProofEvent": {
+      "plateIndex": 3,
+      "frameKey": "glade-form",
+      "points": 1,
+      "label": "FORM \u2014 the family stands clear.",
+      "zone": "iguanodon-glade"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "cracked",
+        "points": 0,
+        "lostPoints": 2,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 3,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "FORM \u2014 the family stands clear.",
+        "frameKey": "glade-form"
+      }
+    ],
+    "cartridges": 0,
+    "rifleRaised": false,
+    "rifleRevealed": true,
+    "gunshotFired": true,
+    "brookResponse": "brush-moving",
+    "shotCount": 2,
+    "bodyMargin": 0,
+    "failed": true,
+    "failureCause": "second-unblocked-strike",
+    "contactCount": 2,
+    "remainingLight": 135.508,
+    "returnRoute": "exposed",
+    "returnCostSeconds": 18,
+    "returnStrike": false,
+    "runStatus": "failure",
+    "result": {
+      "kind": "failure",
+      "cause": "second-unblocked-strike",
+      "title": "The second pass",
+      "copy": "The second pass found you in open ground.",
+      "cue": "Break the dive under the trees, or fire before contact."
+    }
+  },
+  "threatVisual": {
+    "state": "attack",
+    "response": "orbit",
+    "position": {
+      "x": 0.73,
+      "y": 7.88,
+      "z": 0.79
+    }
+  },
+  "brookResponseVisual": {
+    "state": "brush-moving",
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 102.107
+      },
+      {
+        "cue": "rifle",
+        "caption": "[rifle report; echo runs toward the brook]",
+        "at": 102.107
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 102.197
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 102.261
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 104.272
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 104.272
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 107.264
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 107.264
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 110.869
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 111.195
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 111.259
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 113.253
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 113.253
+      },
+      {
+        "cue": "brook-response",
+        "caption": "[brush thrashes beside the brook]",
+        "at": 113.76
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 116.256
+      },
+      {
+        "cue": "failure",
+        "caption": "[the field sound narrows to wind and brook]",
+        "at": 116.256
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "FORM \u2014 the family stands clear.",
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": true,
+    "caption": "[the field sound narrows to wind and brook]",
+    "lightWatch": 136,
+    "terminal": {
+      "kind": "failure",
+      "title": "The second pass",
+      "copy": "The second pass found you in open ground.",
+      "detail": "Break the dive under the trees, or fire before contact.",
+      "callback": null
+    }
+  },
+  "sceneChildren": 25,
+  "calls": 86,
+  "triangles": 26238,
+  "textures": 1,
+  "geometries": 66,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 184.60000014305115,
+  "recentMedianFrameMs": 8.3
+}

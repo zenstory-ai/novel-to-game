@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    "three input-only frames",
+    "attack begins"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s8",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785529660410
+}

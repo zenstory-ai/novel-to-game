@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT \u00b7 S7",
+  "updated": "2026-07-31 PT · S8",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -26,9 +26,12 @@
         "evidence/s5/03-noisy-exposed-return.jpg",
         "evidence/s5/05-exposed-case-strike.jpg",
         "evidence/s6/07-cover-pull-up.jpg",
-        "evidence/s6/08-rifle-brook-response.jpg"
+        "evidence/s6/08-rifle-brook-response.jpg",
+        "evidence/s8/04-strong-covered-return.jpg",
+        "evidence/s8/05-strong-input-result.jpg",
+        "evidence/s8/07-mixed-rifle-brook.jpg"
       ],
-      "remaining": "Connected route, 28/12/18-second commitments, five branch arches, visible cover pull-up, noisy-brook response and Fort submission exist; route-landmark polish and uncompressed reference runs remain."
+      "remaining": "The connected route and 28/12/18-second commitments now pass input-only Strong/Mixed/Panic traversal without teleport or direct time advancement; landmark polish and first-time human navigation evidence remain."
     },
     {
       "key": "tool.field_camera",
@@ -62,9 +65,13 @@
         "evidence/s4/09-second-contact-failure.jpg",
         "evidence/s5/04-corroborating-shot-result.jpg",
         "evidence/s5/07-strong-result-1280x720.jpg",
-        "evidence/s6/05-plate-slide-caption.jpg"
+        "evidence/s6/05-plate-slide-caption.jpg",
+        "evidence/s8/03-strong-glade-frames.jpg",
+        "evidence/s8/05-strong-input-result.jpg",
+        "evidence/s8/08-mixed-input-result.jpg",
+        "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "Four exact slots, cue previews, crack states and frame-key-specific terminal grayboxes exist; final plate renders, hand placement and fracture motion remain."
+      "remaining": "Four exact slots, cue previews, crack states and frame-key-specific terminal grayboxes pass all three input-only reference paths; final plate renders, hand placement and fracture motion remain."
     },
     {
       "key": "tool.period_rifle",
@@ -78,9 +85,13 @@
         "evidence/s3/07-shot-interrupt.jpg",
         "evidence/s5/03-noisy-exposed-return.jpg",
         "evidence/s5/04-corroborating-shot-result.jpg",
-        "evidence/s6/08-rifle-brook-response.jpg"
+        "evidence/s6/08-rifle-brook-response.jpg",
+        "evidence/s8/07-mixed-rifle-brook.jpg",
+        "evidence/s8/08-mixed-input-result.jpg",
+        "evidence/s8/09-panic-first-contact.jpg",
+        "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "Hidden/raised state, two chamber marks, timely interruption, synthesized report/echo, visible brook response and exact result callback exist; final recoil and production mix remain."
+      "remaining": "Hidden/raised state, two chamber marks, timely interruption, report/echo, brook response and result callback pass one-shot Mixed and two-shot Panic input paths; final recoil and production mix remain."
     },
     {
       "key": "subject.iguanodon_family",
@@ -91,9 +102,10 @@
       "provenance": "Original low-poly procedural family blockout",
       "rights": "Original project geometry; museum pages inform facts only",
       "evidence": [
-        "evidence/s0/03-glade-heavy.jpg"
+        "evidence/s0/03-glade-heavy.jpg",
+        "evidence/s8/03-strong-glade-frames.jpg"
       ],
-      "remaining": "Distinct anatomy, family readability and graze/play/branch-pull/withdraw states need production and evidence."
+      "remaining": "The family is visible during the measured Strong behavior frames, but distinct anatomy and readable graze/play/branch-pull/withdraw animation still need production and independent evidence."
     },
     {
       "key": "threat.pterodactyl",
@@ -118,9 +130,13 @@
         "evidence/s5/03-noisy-exposed-return.jpg",
         "evidence/s5/05-exposed-case-strike.jpg",
         "evidence/s6/06-membrane-wing-attack.jpg",
-        "evidence/s6/07-cover-pull-up.jpg"
+        "evidence/s6/07-cover-pull-up.jpg",
+        "evidence/s8/04-strong-covered-return.jpg",
+        "evidence/s8/07-mixed-rifle-brook.jpg",
+        "evidence/s8/09-panic-first-contact.jpg",
+        "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "A separate membrane-wing/body/head/crest silhouette now carries four states, timed contact, shot response and a visible cover pull-up with sound/caption feedback; anatomy, material, shadow and later-view polish remain."
+      "remaining": "Four states, timed contact, shot response and cover pull-up now pass Strong/Mixed/Panic input paths; anatomy, material, shadow and later-view polish remain."
     },
     {
       "key": "ui.field_system",
@@ -155,9 +171,13 @@
         "evidence/s6/10-failure-cue.jpg",
         "evidence/s7/02-settings-150-minimum.jpg",
         "evidence/s7/05-manual-pause-minimum.jpg",
-        "evidence/s7/07-result-minimum.jpg"
+        "evidence/s7/07-result-minimum.jpg",
+        "evidence/s8/05-strong-input-result.jpg",
+        "evidence/s8/08-mixed-input-result.jpg",
+        "evidence/s8/10-panic-input-failure.jpg",
+        "evidence/s8/11-clean-order-after-paths.jpg"
       ],
-      "remaining": "Context prompts, camera/plate/chamber edges, watch, all alive bands, captions, persisted channel controls and target/minimum lifecycle states exist; final non-colour and authored-plate review remain."
+      "remaining": "Field prompts, physical resource edges, all result/failure bands and restart state now pass three input-only reference paths; final non-colour and authored-plate review remain."
     },
     {
       "key": "light.functional_arc",
@@ -172,9 +192,12 @@
         "evidence/s0/03-glade-heavy.jpg",
         "evidence/s4/02-covered-return-committed.jpg",
         "evidence/s4/06-timeout-failure.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg"
+        "evidence/s5/07-strong-result-1280x720.jpg",
+        "evidence/s8/05-strong-input-result.jpg",
+        "evidence/s8/08-mixed-input-result.jpg",
+        "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "The exact 420-second deadline, watch and terminal timeout exist; sky/light interpolation across the deadline and low-light route/subject legibility remain."
+      "remaining": "The revised 180-second budget is grounded by a 51.56-second Strong path with 100.35 seconds left and measured Mixed/Panic outcomes; sky/light interpolation and low-light legibility remain."
     },
     {
       "key": "audio.core_world",
@@ -191,9 +214,12 @@
         "evidence/s6/08-rifle-brook-response.jpg",
         "evidence/s6/09-result-cue.jpg",
         "evidence/s6/10-failure-cue.jpg",
-        "evidence/s7/06-focus-pause-commitment-minimum.jpg"
+        "evidence/s7/06-focus-pause-commitment-minimum.jpg",
+        "evidence/s8/07-mixed-rifle-brook.jpg",
+        "evidence/s8/08-mixed-input-result.jpg",
+        "evidence/s8/10-panic-input-failure.jpg"
       ],
-      "remaining": "Browser audio state, cue scheduling, all core action/threat/outcome layers and captions are verified; production mix, richer ambience and subjective listening review remain."
+      "remaining": "Core cues and captions remain active across measured Strong/Mixed/Panic paths; production mix, richer ambience and subjective listening review remain."
     },
     {
       "key": "accessibility.presentation",

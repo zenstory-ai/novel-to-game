@@ -5,7 +5,7 @@
 - **Selected direction:** *Proof Before Dark*
 - **Product:** a free, single-player, first-person 3D connected-zone survival
 adventure for desktop web
-- **Session:** one complete 5–8 minute run
+- **Session:** one compact 1–3 minute run; learned reference paths complete in 45–120 seconds
 - **Target language and culture market:** English-first international players who
 already understand first-person movement and readable survival/stealth cues,
 but need no knowledge of Arthur Conan Doyle's novel
@@ -49,7 +49,7 @@ prototype exists to answer that question before adding breadth.
 All three candidate directions keep the same protected frame: English-first,
 desktop web, real-time first-person 3D, connected zones, single player,
 keyboard/mouse, Teen-equivalent peril, no backend, no monetization and one
-complete 5–8 minute run. The player's performed fantasy remains scout →
+compact 1–3 minute run. The player's performed fantasy remains scout →
 document → survive → extract. Three.js/Vite remains the recorded implementation
 candidate, not a concept differentiator.
 

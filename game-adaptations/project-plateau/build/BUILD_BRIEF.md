@@ -3,8 +3,8 @@
 ## Finished-product target
 
 Build a free, anonymous, single-player desktop web vertical slice for English-
-speaking players who already understand first-person controls. One complete run
-lasts 5–8 minutes: leave Fort Challenger, read the plateau, make a limited
+speaking players who already understand first-person controls. One compact run
+lasts 1–3 minutes: leave Fort Challenger, read the plateau, make a limited
 photographic record of living iguanodons, respond to a pterodactyl, return with
 the surviving plates, receive a result and restart.
 
@@ -50,7 +50,7 @@ leave relative safety
 
 - One core system: exposed photographic proof.
 - Two support systems: wildlife awareness; route/cover/limited defense.
-- Initial budget: 420 seconds, four plates, two rifle cartridges, awareness
+- Initial budget: 180 seconds, four plates, two rifle cartridges, awareness
   state 0–3 and one recoverable body margin.
 - A plate earns 0, 1 or 2 evidence cues from visible framing conditions. At
   most seven evidence points are authored across the four plates.

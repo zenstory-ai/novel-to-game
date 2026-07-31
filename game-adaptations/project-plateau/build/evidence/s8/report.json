@@ -1,0 +1,587 @@
+{
+  "stage": "s8-input-paths",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "ae82188ba42ada9e9662dc6a14d853938cc90ac822a161d0f84b55093a56e04a"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "viewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "noTeleportOrDirectTimeAdvance": true,
+    "strongAllFiveVerbsNoShot": true,
+    "strongEvidenceSevenAndBodyMargin": true,
+    "strongRemainingLightWithinReferenceWindow": true,
+    "mixedOneShotNoisyCreekAndCallback": true,
+    "mixedCorroboratingEvidenceFour": true,
+    "panicBothShotsAllPlatesAndSecondContact": true,
+    "cleanRestartAfterEveryReferenceClass": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "verbEvidenceMatrix": {
+    "traverse": "Strong input trace + 05-strong-input-result",
+    "observe": "01-strong-brook-frame + 03-strong-glade-frames",
+    "commitExposedObjective": "02-strong-basalt-frame + 03-strong-glade-frames",
+    "evadeOrDefend": "04-strong-covered-return",
+    "reachRelativeSafety": "05-strong-input-result"
+  },
+  "pathMetrics": {
+    "Strong": {
+      "wallSeconds": 51.557,
+      "simulationSeconds": 51.655,
+      "distanceTravelled": 128.368,
+      "remainingLight": 100.345,
+      "returnCostSeconds": 28,
+      "route": "covered",
+      "result": {
+        "kind": "alive",
+        "band": "strong-field-record",
+        "title": "Strong field record",
+        "copy": "Scale. Living form. Behavior. The field record holds.",
+        "evidence": 7,
+        "survivingPlates": 4,
+        "route": "covered",
+        "brookResponse": null,
+        "remainingLight": 100.3,
+        "gunshotCallback": null
+      }
+    },
+    "Mixed": {
+      "wallSeconds": 37.98,
+      "simulationSeconds": 37.975,
+      "distanceTravelled": 129.084,
+      "remainingLight": 124.025,
+      "returnCostSeconds": 18,
+      "route": "exposed",
+      "result": {
+        "kind": "alive",
+        "band": "corroborating-record",
+        "title": "Corroborating record",
+        "copy": "Living form, more than one angle. The argument can begin again.",
+        "evidence": 4,
+        "survivingPlates": 3,
+        "route": "exposed",
+        "brookResponse": "brush-moving",
+        "remainingLight": 124,
+        "gunshotCallback": "The report carried. Something answered by the brook."
+      }
+    },
+    "Panic": {
+      "wallSeconds": 26.499,
+      "simulationSeconds": 26.492,
+      "distanceTravelled": 79.621,
+      "remainingLight": 135.508,
+      "returnCostSeconds": 18,
+      "route": "exposed",
+      "result": {
+        "kind": "failure",
+        "cause": "second-unblocked-strike",
+        "title": "The second pass",
+        "copy": "The second pass found you in open ground.",
+        "cue": "Break the dive under the trees, or fire before contact."
+      }
+    }
+  },
+  "inputTrace": [
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "Fort to brook",
+      "wallSeconds": 6.041,
+      "start": {
+        "x": 3,
+        "z": 70
+      },
+      "end": {
+        "x": 3,
+        "z": 44.968
+      },
+      "distanceAfter": 25.032
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "partial tutorial frame",
+      "wallSeconds": 2.159,
+      "plate": 1,
+      "frame": "brook-partial",
+      "points": 1
+    },
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "brook to basalt",
+      "wallSeconds": 6.501,
+      "start": {
+        "x": 3,
+        "z": 44.968
+      },
+      "end": {
+        "x": 3,
+        "z": 17.978
+      },
+      "distanceAfter": 52.022
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "basalt scale frame",
+      "wallSeconds": 2.142,
+      "plate": 2,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyA",
+      "purpose": "enter canopy",
+      "wallSeconds": 0.154,
+      "start": {
+        "x": 3,
+        "z": 17.978
+      },
+      "end": {
+        "x": 2.68,
+        "z": 17.978
+      },
+      "distanceAfter": 52.342
+    },
+    {
+      "path": "Strong",
+      "input": "hold position under cover",
+      "purpose": "widen the attack before glade",
+      "wallSeconds": 5.857,
+      "awarenessBefore": 3,
+      "awarenessAfter": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "canopy to glade",
+      "wallSeconds": 3.886,
+      "start": {
+        "x": 2.68,
+        "z": 17.978
+      },
+      "end": {
+        "x": 2.68,
+        "z": 1.985
+      },
+      "distanceAfter": 68.335
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "young-at-play frame",
+      "wallSeconds": 2.148,
+      "plate": 3,
+      "frame": "glade-behavior",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "branch-pull frame",
+      "wallSeconds": 2.15,
+      "plate": 4,
+      "frame": "glade-behavior",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyS",
+      "purpose": "retreat into cover",
+      "wallSeconds": 0.369,
+      "start": {
+        "x": 2.68,
+        "z": 1.985
+      },
+      "end": {
+        "x": 2.68,
+        "z": 3.212
+      },
+      "distanceAfter": 69.562
+    },
+    {
+      "path": "Strong",
+      "input": "hold position under cover",
+      "purpose": "break the final dive",
+      "wallSeconds": 5.867,
+      "awarenessBefore": 3,
+      "awarenessAfter": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyS",
+      "purpose": "covered return to Fort",
+      "wallSeconds": 14.078,
+      "start": {
+        "x": 2.68,
+        "z": 3.212
+      },
+      "end": {
+        "x": 2.68,
+        "z": 62.017
+      },
+      "distanceAfter": 128.368
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyW",
+      "purpose": "Fort to brook",
+      "wallSeconds": 6.036,
+      "start": {
+        "x": 3,
+        "z": 70
+      },
+      "end": {
+        "x": 3,
+        "z": 44.975
+      },
+      "distanceAfter": 25.025
+    },
+    {
+      "path": "Mixed",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "partial tutorial frame",
+      "wallSeconds": 2.156,
+      "plate": 1,
+      "frame": "brook-partial",
+      "points": 1
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyA",
+      "purpose": "choose canopy",
+      "wallSeconds": 0.148,
+      "start": {
+        "x": 3,
+        "z": 44.975
+      },
+      "end": {
+        "x": 2.684,
+        "z": 44.975
+      },
+      "distanceAfter": 25.342
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyW",
+      "purpose": "brook to canopy frame",
+      "wallSeconds": 6.495,
+      "start": {
+        "x": 2.684,
+        "z": 44.975
+      },
+      "end": {
+        "x": 2.684,
+        "z": 17.994
+      },
+      "distanceAfter": 52.322
+    },
+    {
+      "path": "Mixed",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "covered flank frame",
+      "wallSeconds": 2.15,
+      "plate": 2,
+      "frame": "canopy-flank",
+      "points": 1
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyW",
+      "purpose": "canopy to glade",
+      "wallSeconds": 3.882,
+      "start": {
+        "x": 2.684,
+        "z": 17.994
+      },
+      "end": {
+        "x": 2.684,
+        "z": 1.992
+      },
+      "distanceAfter": 68.324
+    },
+    {
+      "path": "Mixed",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "single behavior frame",
+      "wallSeconds": 2.147,
+      "plate": 3,
+      "frame": "glade-behavior",
+      "points": 2
+    },
+    {
+      "path": "Mixed",
+      "input": "F + Left Mouse",
+      "purpose": "interrupt committed dive",
+      "wallSeconds": 0.158,
+      "shotCount": 1,
+      "cartridges": 1
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyD",
+      "purpose": "line up exposed creek",
+      "wallSeconds": 0.255,
+      "start": {
+        "x": 2.684,
+        "z": 1.992
+      },
+      "end": {
+        "x": 3.42,
+        "z": 1.992
+      },
+      "distanceAfter": 69.061
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyS",
+      "purpose": "commit exposed return",
+      "wallSeconds": 0.363,
+      "start": {
+        "x": 3.42,
+        "z": 1.992
+      },
+      "end": {
+        "x": 3.42,
+        "z": 3.217
+      },
+      "distanceAfter": 70.285
+    },
+    {
+      "path": "Mixed",
+      "input": "KeyS",
+      "purpose": "creek return to Fort",
+      "wallSeconds": 14.073,
+      "start": {
+        "x": 3.42,
+        "z": 3.217
+      },
+      "end": {
+        "x": 3.42,
+        "z": 62.016
+      },
+      "distanceAfter": 129.084
+    },
+    {
+      "path": "Panic",
+      "input": "KeyW",
+      "purpose": "sprint Fort to shelf",
+      "wallSeconds": 7.725,
+      "start": {
+        "x": 3,
+        "z": 70
+      },
+      "end": {
+        "x": 3,
+        "z": 17.977
+      },
+      "distanceAfter": 52.023
+    },
+    {
+      "path": "Panic",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "first immediate open frame",
+      "wallSeconds": 2.14,
+      "plate": 1,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "path": "Panic",
+      "input": "F + Left Mouse",
+      "purpose": "interrupt committed dive",
+      "wallSeconds": 0.154,
+      "shotCount": 1,
+      "cartridges": 1
+    },
+    {
+      "path": "Panic",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "second immediate open frame",
+      "wallSeconds": 2.144,
+      "plate": 2,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "path": "Panic",
+      "input": "F + Left Mouse",
+      "purpose": "interrupt committed dive",
+      "wallSeconds": 0.155,
+      "shotCount": 2,
+      "cartridges": 0
+    },
+    {
+      "path": "Panic",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "third immediate open frame",
+      "wallSeconds": 2.155,
+      "plate": 3,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "path": "Panic",
+      "input": "KeyW",
+      "purpose": "continue to glade",
+      "wallSeconds": 3.884,
+      "start": {
+        "x": 3,
+        "z": 17.977
+      },
+      "end": {
+        "x": 3,
+        "z": 1.977
+      },
+      "distanceAfter": 68.023
+    },
+    {
+      "path": "Panic",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "fourth immediate frame without behavior read",
+      "wallSeconds": 2.143,
+      "plate": 4,
+      "frame": "glade-form",
+      "points": 1
+    },
+    {
+      "path": "Panic",
+      "input": "KeyD",
+      "purpose": "line up creek",
+      "wallSeconds": 0.18,
+      "start": {
+        "x": 3,
+        "z": 1.977
+      },
+      "end": {
+        "x": 3.424,
+        "z": 1.977
+      },
+      "distanceAfter": 68.446
+    },
+    {
+      "path": "Panic",
+      "input": "KeyS",
+      "purpose": "take exposed creek",
+      "wallSeconds": 0.371,
+      "start": {
+        "x": 3.424,
+        "z": 1.977
+      },
+      "end": {
+        "x": 3.424,
+        "z": 3.209
+      },
+      "distanceAfter": 69.678
+    },
+    {
+      "path": "Panic",
+      "input": "KeyS",
+      "purpose": "continue without cover discipline",
+      "wallSeconds": 2.441,
+      "start": {
+        "x": 3.424,
+        "z": 3.209
+      },
+      "end": {
+        "x": 3.424,
+        "z": 13.152
+      },
+      "distanceAfter": 79.621
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 98,
+    "worstFrameMs": 10.4
+  },
+  "checkpoints": [
+    {
+      "id": "01-strong-brook-frame",
+      "state": "build/evidence/s8/state/01-strong-brook-frame.json",
+      "browser": "build/evidence/s8/browser/01-strong-brook-frame.json",
+      "visual": "build/evidence/s8/01-strong-brook-frame.jpg"
+    },
+    {
+      "id": "02-strong-basalt-frame",
+      "state": "build/evidence/s8/state/02-strong-basalt-frame.json",
+      "browser": "build/evidence/s8/browser/02-strong-basalt-frame.json",
+      "visual": "build/evidence/s8/02-strong-basalt-frame.jpg"
+    },
+    {
+      "id": "03-strong-glade-frames",
+      "state": "build/evidence/s8/state/03-strong-glade-frames.json",
+      "browser": "build/evidence/s8/browser/03-strong-glade-frames.json",
+      "visual": "build/evidence/s8/03-strong-glade-frames.jpg"
+    },
+    {
+      "id": "04-strong-covered-return",
+      "state": "build/evidence/s8/state/04-strong-covered-return.json",
+      "browser": "build/evidence/s8/browser/04-strong-covered-return.json",
+      "visual": "build/evidence/s8/04-strong-covered-return.jpg"
+    },
+    {
+      "id": "05-strong-input-result",
+      "state": "build/evidence/s8/state/05-strong-input-result.json",
+      "browser": "build/evidence/s8/browser/05-strong-input-result.json",
+      "visual": "build/evidence/s8/05-strong-input-result.jpg"
+    },
+    {
+      "id": "06-mixed-return-attack",
+      "state": "build/evidence/s8/state/06-mixed-return-attack.json",
+      "browser": "build/evidence/s8/browser/06-mixed-return-attack.json",
+      "visual": "build/evidence/s8/06-mixed-return-attack.jpg"
+    },
+    {
+      "id": "07-mixed-rifle-brook",
+      "state": "build/evidence/s8/state/07-mixed-rifle-brook.json",
+      "browser": "build/evidence/s8/browser/07-mixed-rifle-brook.json",
+      "visual": "build/evidence/s8/07-mixed-rifle-brook.jpg"
+    },
+    {
+      "id": "08-mixed-input-result",
+      "state": "build/evidence/s8/state/08-mixed-input-result.json",
+      "browser": "build/evidence/s8/browser/08-mixed-input-result.json",
+      "visual": "build/evidence/s8/08-mixed-input-result.jpg"
+    },
+    {
+      "id": "09-panic-first-contact",
+      "state": "build/evidence/s8/state/09-panic-first-contact.json",
+      "browser": "build/evidence/s8/browser/09-panic-first-contact.json",
+      "visual": "build/evidence/s8/09-panic-first-contact.jpg"
+    },
+    {
+      "id": "10-panic-input-failure",
+      "state": "build/evidence/s8/state/10-panic-input-failure.json",
+      "browser": "build/evidence/s8/browser/10-panic-input-failure.json",
+      "visual": "build/evidence/s8/10-panic-input-failure.jpg"
+    },
+    {
+      "id": "11-clean-order-after-paths",
+      "state": "build/evidence/s8/state/11-clean-order-after-paths.json",
+      "browser": "build/evidence/s8/browser/11-clean-order-after-paths.json",
+      "visual": "build/evidence/s8/11-clean-order-after-paths.jpg"
+    }
+  ],
+  "limitations": [
+    "The paths use real keyboard/mouse movement and wait on observed state, but they are deterministic automation rather than first-time human navigation evidence.",
+    "S8 validates the reconciled 1\u20133 minute product budget; independent perception and three external tester records remain required.",
+    "The Strong path performs two approved behavior frames in the same glade implementation; family animation distinction remains an art/QA gate.",
+    "Subjective fun, balance and audio mix are not inferred from the deterministic results."
+  ]
+}

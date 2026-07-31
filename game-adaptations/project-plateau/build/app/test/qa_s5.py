@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s5", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") in {
-            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
+            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle", "s8-input-paths"
         }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
@@ -136,7 +136,7 @@ def run() -> dict[str, object]:
             page.get_by_role("button", name="Take the route again").click()
             page.wait_for_timeout(50)
             clean = snapshot(page)
-            assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 420, clean
+            assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
             page.get_by_role("button", name="Begin field work").click()
             page.wait_for_timeout(70)
 
@@ -304,7 +304,7 @@ def run() -> dict[str, object]:
         final_clean = snapshot(page)
         assert final_clean["mode"] == "order", final_clean
         assert final_clean["player"]["brookResponse"] is None, final_clean
-        assert final_clean["player"]["remainingLight"] == 420, final_clean
+        assert final_clean["player"]["remainingLight"] == 180, final_clean
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(80)
         performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")

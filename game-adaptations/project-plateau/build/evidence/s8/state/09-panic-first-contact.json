@@ -1,0 +1,264 @@
+{
+  "stage": "s8-input-paths",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 3,
+      "z": 17.977
+    },
+    "lastStablePosition": {
+      "x": 3,
+      "z": 17.977
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 17.5,
+    "distanceTravelled": 52.023,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "contact:plate-1-cracked",
+    "zone": "basalt-shelf",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 1,
+    "threatState": "watch",
+    "lastThreatEvent": "contact-recovered",
+    "attackSeconds": 0,
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 1.0085000000000037,
+    "lastProofEvent": {
+      "plateIndex": 2,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "cracked",
+        "points": 0,
+        "lostPoints": 2,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 0,
+    "rifleRaised": false,
+    "rifleRevealed": true,
+    "gunshotFired": true,
+    "brookResponse": "answering-call",
+    "shotCount": 2,
+    "bodyMargin": 0,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 1,
+    "remainingLight": 162.5,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "watch",
+    "response": "orbit",
+    "position": {
+      "x": -17.25,
+      "y": 10.83,
+      "z": -1.31
+    }
+  },
+  "brookResponseVisual": {
+    "state": "answering-call",
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 99.664
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 99.664
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 99.808
+      },
+      {
+        "cue": "rifle",
+        "caption": "[rifle report; echo runs toward the brook]",
+        "at": 99.808
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 99.904
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 99.968
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 101.963
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 101.963
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 102.107
+      },
+      {
+        "cue": "rifle",
+        "caption": "[rifle report; echo runs toward the brook]",
+        "at": 102.107
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 102.197
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 102.261
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 104.272
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 104.272
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 107.264
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 107.264
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "fieldNote": null,
+    "contactNote": "CASE STRIKE \u2014 PLATE I CRACKED.",
+    "cartridgesVisible": true,
+    "caption": "[case strike; glass cracks]",
+    "lightWatch": 163,
+    "terminal": null
+  },
+  "sceneChildren": 25,
+  "calls": 95,
+  "triangles": 26512,
+  "textures": 1,
+  "geometries": 66,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 184.60000014305115,
+  "recentMedianFrameMs": 8.3
+}

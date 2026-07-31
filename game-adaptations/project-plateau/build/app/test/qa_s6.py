@@ -86,7 +86,9 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s6", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") in {"s6-field-feedback", "s7-lifecycle"}
+        assert page.evaluate("window.__projectPlateau.stage") in {
+            "s6-field-feedback", "s7-lifecycle", "s8-input-paths"
+        }
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
@@ -234,7 +236,7 @@ def run() -> dict[str, object]:
         assert [event["cue"] for event in clean_audio["recentCues"]] == ["field-start"], clean_audio
         assert clean_audio["volumes"] == {"ambience": 0.25, "effects": 0.45, "music": 0.15}, clean_audio
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: -10})")
-        page.evaluate("window.__projectPlateau.advanceTimeForTest(420)")
+        page.evaluate("window.__projectPlateau.advanceTimeForTest(180)")
         failure = capture("10-failure-cue", ["restart", "QA deadline advance outside Fort"])
         assert failure["player"]["failureCause"] == "remaining-light-expired", failure
         assert failure["audio"]["recentCues"][-1]["cue"] == "failure", failure
