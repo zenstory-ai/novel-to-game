@@ -1,0 +1,11 @@
+{
+  "language": "en",
+  "title": "The Lost World · Project Plateau",
+  "source": {
+    "chapters": 16,
+    "headingPattern": "^\\s*CHAPTER\\s+([IVXLCDM]+)\\s*$",
+    "numeral": "roman"
+  },
+  "coverageHeading": "Full-book coverage",
+  "citationPattern": "Chapter (\\d{1,2})(?:\\s*(?:[-–—]|to)\\s*(\\d{1,2}))?"
+}
