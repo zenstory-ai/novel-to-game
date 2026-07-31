@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the protected glade composition and a real non-colour pressure frame."""
+"""Verify the protected glade and colour-vision review checkpoints."""
 
 from __future__ import annotations
 
@@ -113,6 +113,10 @@ def run() -> dict[str, object]:
     hosts: set[str] = set()
     checkpoints: list[dict[str, object]] = []
     visuals: list[dict[str, object]] = []
+    colour_vision_modes = ("protanopia", "deuteranopia", "tritanopia")
+    colour_vision_matrix: dict[str, dict[str, str]] = {
+        mode: {} for mode in colour_vision_modes
+    }
 
     with sync_playwright() as playwright:
         options: dict[str, object] = {"headless": True}
@@ -129,6 +133,14 @@ def run() -> dict[str, object]:
         assert page.evaluate("window.__projectPlateau.stage") == "s10-glade-clarity"
 
         vision_mode = "full-colour"
+
+        def set_vision(mode: str) -> None:
+            nonlocal vision_mode
+            vision_mode = mode
+            cdp.send(
+                "Emulation.setEmulatedVisionDeficiency",
+                {"type": "none" if mode == "full-colour" else mode},
+            )
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
@@ -205,6 +217,15 @@ def run() -> dict[str, object]:
             return state
 
         page.get_by_role("button", name="Enter the basin").click()
+        for index, mode in enumerate(colour_vision_modes):
+            set_vision(mode)
+            identifier = f"00{chr(ord('a') + index)}-{mode}-field-order"
+            order = capture(identifier, [f"Chromium {mode}", "Enter the basin"])
+            assert order["mode"] == "order", order
+            assert page.locator("#field-order").is_visible()
+            assert "Photograph living proof" in page.locator("#field-order").inner_text()
+            colour_vision_matrix[mode]["order"] = identifier
+        set_vision("full-colour")
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(100)
 
@@ -234,6 +255,17 @@ def run() -> dict[str, object]:
         assert focus["brightRatio"] >= 0.52, focus
         assert focus["chromaticRatio"] >= 0.6, focus
 
+        for index, mode in enumerate(colour_vision_modes, start=7):
+            set_vision(mode)
+            identifier = f"{index:02d}-{mode}-glade"
+            glade_mode = capture(identifier, [f"Chromium {mode}", "glade decision checkpoint"])
+            assert glade_mode["mode"] == "field", glade_mode
+            assert glade_mode["ui"]["prompt"] == "Raise camera [Right Mouse]", glade_mode
+            assert glade_mode["ui"]["plateRail"], glade_mode
+            assert glade_mode["ui"]["lightWatch"] is not None, glade_mode
+            colour_vision_matrix[mode]["glade"] = identifier
+        set_vision("full-colour")
+
         young_pending = begin_exposure(2, "glade-young-play")
         assert young_pending["familyVisual"]["moment"] == "glade-young-play", young_pending
         young = capture("02-young-play-silver-frame", ["Right Mouse", "Left Mouse", "live commitment"])
@@ -252,8 +284,7 @@ def run() -> dict[str, object]:
             timeout=3500,
         )
 
-        vision_mode = "achromatopsia"
-        cdp.send("Emulation.setEmulatedVisionDeficiency", {"type": vision_mode})
+        set_vision("achromatopsia")
         page.keyboard.down("KeyF")
         page.wait_for_timeout(120)
         non_colour = capture("04-achromatopsia-attack", ["Chromium achromatopsia", "F raised rifle"])
@@ -262,9 +293,17 @@ def run() -> dict[str, object]:
         assert non_colour["ui"]["rifleOverlay"], non_colour
         assert non_colour["ui"]["cartridgesVisible"], non_colour
         assert non_colour["assets"]["pterodactyl"]["silhouette"] == "membrane-wing", non_colour
+        for index, mode in enumerate(colour_vision_modes, start=10):
+            set_vision(mode)
+            identifier = f"{index:02d}-{mode}-attack-defense"
+            attack_mode = capture(identifier, [f"Chromium {mode}", "F raised rifle"])
+            assert attack_mode["player"]["threatState"] == "attack", attack_mode
+            assert attack_mode["ui"]["prompt"].startswith("Raise rifle"), attack_mode
+            assert attack_mode["ui"]["rifleOverlay"], attack_mode
+            assert attack_mode["ui"]["cartridgesVisible"], attack_mode
+            colour_vision_matrix[mode]["attackDefense"] = identifier
         page.keyboard.up("KeyF")
-        vision_mode = "full-colour"
-        cdp.send("Emulation.setEmulatedVisionDeficiency", {"type": "none"})
+        set_vision("full-colour")
 
         teleport(0, 4)
         page.wait_for_function("window.__projectPlateau.snapshot().player.threatAwareness <= 2", timeout=8000)
@@ -274,6 +313,15 @@ def run() -> dict[str, object]:
         assert result["player"]["result"]["band"] == "strong-field-record", result
         assert result["player"]["result"]["evidence"] == 7, result
         assert result["ui"]["capturedPlateImages"] == [True, True, True, True], result
+        for index, mode in enumerate(colour_vision_modes, start=13):
+            set_vision(mode)
+            identifier = f"{index:02d}-{mode}-strong-result"
+            result_mode = capture(identifier, [f"Chromium {mode}", "Strong result checkpoint"])
+            assert result_mode["mode"] == "terminal", result_mode
+            assert result_mode["ui"]["terminal"]["title"] == "Strong field record", result_mode
+            assert "7 evidence cues" in result_mode["ui"]["terminal"]["detail"], result_mode
+            colour_vision_matrix[mode]["result"] = identifier
+        set_vision("full-colour")
 
         page.get_by_role("button", name="Take the route again").click()
         page.wait_for_timeout(80)
@@ -308,6 +356,10 @@ def run() -> dict[str, object]:
             "focusRegionPixelFloor": True,
             "youngPlayAndBranchPullRemainDistinct": True,
             "achromatopsiaAttackRetainsShapeAndToolState": True,
+            "colourVisionCheckpointMatrixComplete": all(
+                set(records) == {"order", "glade", "attackDefense", "result"}
+                for records in colour_vision_matrix.values()
+            ),
             "strongBoardUsesFourCapturedViews": True,
             "restartClearsCapturedViews": True,
             "consoleErrors": errors,
@@ -315,13 +367,15 @@ def run() -> dict[str, object]:
             "externalHosts": external,
         },
         "focusRegion": focus,
+        "colourVisionMatrix": colour_vision_matrix,
         "visuals": visuals,
         "performance": performance,
         "checkpoints": checkpoints,
         "limitations": [
             "S10 uses QA placement to isolate visual states; S8 remains the input-only traversal and timing evidence.",
             "The focus-region pixel floor detects gross occlusion and flat exposure, not subjective composition quality.",
-            "The achromatopsia checkpoint proves one busy attack frame retains silhouette, rifle and cartridge channels; it is not the complete route accessibility matrix.",
+            "S8 provides the complete full-colour and achromatopsia input routes; S10 adds the required protanopia, deuteranopia and tritanopia review checkpoints.",
+            "Chromium emulation and state assertions prepare a reproducible matrix, but an independent reviewer must still judge cue readability.",
             "Automated state and image checks do not replace independent anatomy, motion, premise or first-time player review.",
         ],
     }

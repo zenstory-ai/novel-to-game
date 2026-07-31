@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Strong, Mixed and Panic through real keyboard/mouse traversal only."""
+"""Run reference paths and a full achromatopsia route with real input only."""
 
 from __future__ import annotations
 
@@ -91,12 +91,14 @@ def run() -> dict[str, object]:
             options["executable_path"] = str(CHROME)
         browser = playwright.chromium.launch(**options)
         page = browser.new_page(viewport={"width": 1440, "height": 900})
+        cdp = page.context.new_cdp_session(page)
         page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
         page.on("pageerror", lambda error: errors.append(f"PAGEERROR: {error}"))
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s8", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") in {"s8-input-paths", "s9-living-plates", "s10-glade-clarity"}
+        vision_mode = "full-colour"
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
@@ -110,6 +112,7 @@ def run() -> dict[str, object]:
             browser_record = {
                 "inputs": inputs,
                 "viewport": [viewport["width"], viewport["height"]],
+                "visionMode": vision_mode,
                 "url": page.url,
                 "consoleErrorsAtCheckpoint": list(errors),
                 "requestHostsAtCheckpoint": sorted(hosts),
@@ -247,43 +250,67 @@ def run() -> dict[str, object]:
                 "returnCostSeconds": player["returnCostSeconds"],
                 "route": player["returnRoute"],
                 "result": player["result"],
+                "visionMode": vision_mode,
             }
+
+        def run_strong_path(
+            path: str,
+            started: float,
+            identifiers: tuple[str, str, str, str, str],
+        ) -> dict[str, object]:
+            brook_id, basalt_id, glade_id, covered_id, result_id = identifiers
+            move_until(path, "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 45", "Fort to brook")
+            page.keyboard.press("KeyE")
+            expose_plate(path, 0, "partial tutorial frame")
+            partial = capture(brook_id, ["W to brook", "E", "camera commitment"])
+            assert partial["player"]["plates"][0]["points"] == 1, partial
+            move_until(path, "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 18", "brook to basalt")
+            expose_plate(path, 1, "basalt scale frame")
+            basalt = capture(basalt_id, ["W to basalt", "camera commitment"])
+            assert basalt["player"]["plates"][1]["points"] == 2, basalt
+            move_until(path, "KeyA", "window.__projectPlateau.snapshot().player.position.x < 2.7", "enter canopy")
+            wait_for_cover(path, "widen the attack before glade")
+            move_until(path, "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 2", "canopy to glade")
+            page.keyboard.press("KeyE")
+            expose_plate(path, 2, "young-at-play frame")
+            expose_plate(path, 3, "branch-pull frame")
+            glade = capture(glade_id, ["W to glade", "E", "two camera commitments"])
+            assert sum(plate["points"] for plate in glade["player"]["plates"]) == 7, glade
+            assert [plate["frameKey"] for plate in glade["player"]["plates"][2:]] == [
+                "glade-young-play",
+                "glade-branch-pull",
+            ], glade
+            move_until(path, "KeyS", "window.__projectPlateau.snapshot().player.position.z > 3.2", "retreat into cover")
+            wait_for_cover(path, "break the final dive")
+            covered = capture(covered_id, ["S into cover", "hold until wider pass"])
+            assert covered["player"]["returnRoute"] == "covered", covered
+            move_until(
+                path,
+                "KeyS",
+                "window.__projectPlateau.snapshot().player.runStatus === 'result'",
+                "covered return through the Fort gate",
+            )
+            strong = capture(result_id, ["S along the complete return to Fort"])
+            assert strong["player"]["result"]["band"] == "strong-field-record", strong
+            assert strong["player"]["result"]["evidence"] == 7, strong
+            assert strong["player"]["shotCount"] == 0 and strong["player"]["bodyMargin"] == 1, strong
+            assert 30 <= strong["player"]["remainingLight"] <= 120, strong
+            finish_metrics(path, started, strong)
+            return strong
 
         # Strong: four real exposures, two cover reads, covered return, no shot.
         strong_started = begin_first_path()
-        move_until("Strong", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 45", "Fort to brook")
-        page.keyboard.press("KeyE")
-        expose_plate("Strong", 0, "partial tutorial frame")
-        partial = capture("01-strong-brook-frame", ["W to brook", "E", "camera commitment"])
-        assert partial["player"]["plates"][0]["points"] == 1, partial
-        move_until("Strong", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 18", "brook to basalt")
-        expose_plate("Strong", 1, "basalt scale frame")
-        basalt = capture("02-strong-basalt-frame", ["W to basalt", "camera commitment"])
-        assert basalt["player"]["plates"][1]["points"] == 2, basalt
-        move_until("Strong", "KeyA", "window.__projectPlateau.snapshot().player.position.x < 2.7", "enter canopy")
-        wait_for_cover("Strong", "widen the attack before glade")
-        move_until("Strong", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 2", "canopy to glade")
-        page.keyboard.press("KeyE")
-        expose_plate("Strong", 2, "young-at-play frame")
-        expose_plate("Strong", 3, "branch-pull frame")
-        glade = capture("03-strong-glade-frames", ["W to glade", "E", "two camera commitments"])
-        assert sum(plate["points"] for plate in glade["player"]["plates"]) == 7, glade
-        assert [plate["frameKey"] for plate in glade["player"]["plates"][2:]] == [
-            "glade-young-play",
-            "glade-branch-pull",
-        ], glade
-        move_until("Strong", "KeyS", "window.__projectPlateau.snapshot().player.position.z > 3.2", "retreat into cover")
-        wait_for_cover("Strong", "break the final dive")
-        covered = capture("04-strong-covered-return", ["S into cover", "hold until wider pass"])
-        assert covered["player"]["returnRoute"] == "covered", covered
-        move_until("Strong", "KeyS", "window.__projectPlateau.snapshot().player.position.z >= 62", "covered return to Fort")
-        page.wait_for_function("window.__projectPlateau.snapshot().player.runStatus === 'result'", timeout=1000)
-        strong = capture("05-strong-input-result", ["S along the complete return to Fort"])
-        assert strong["player"]["result"]["band"] == "strong-field-record", strong
-        assert strong["player"]["result"]["evidence"] == 7, strong
-        assert strong["player"]["shotCount"] == 0 and strong["player"]["bodyMargin"] == 1, strong
-        assert 30 <= strong["player"]["remainingLight"] <= 120, strong
-        finish_metrics("Strong", strong_started, strong)
+        run_strong_path(
+            "Strong",
+            strong_started,
+            (
+                "01-strong-brook-frame",
+                "02-strong-basalt-frame",
+                "03-strong-glade-frames",
+                "04-strong-covered-return",
+                "05-strong-input-result",
+            ),
+        )
 
         # Mixed: weaker covered view, one strong behavior frame, one shot and noisy creek.
         mixed_started = restart_path("06-strong-clean-restart")
@@ -350,6 +377,37 @@ def run() -> dict[str, object]:
         clean = capture("13-panic-clean-restart", ["Take the route again"])
         assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
         assert clean["player"]["distanceTravelled"] == 0, clean
+
+        # Repeat the complete Strong route with Chromium's achromatopsia
+        # emulation. This is input/state evidence; an independent reviewer still
+        # decides whether the visual cues are perceptually sufficient.
+        vision_mode = "achromatopsia"
+        cdp.send("Emulation.setEmulatedVisionDeficiency", {"type": vision_mode})
+        achrom_order = capture("14-achromatopsia-field-order", ["Chromium achromatopsia"])
+        assert achrom_order["mode"] == "order", achrom_order
+        page.get_by_role("button", name="Begin field work").click()
+        page.wait_for_timeout(100)
+        achrom_started = time.monotonic()
+        achrom = run_strong_path(
+            "Achromatopsia Strong",
+            achrom_started,
+            (
+                "15-achromatopsia-brook-frame",
+                "16-achromatopsia-basalt-frame",
+                "17-achromatopsia-glade-frames",
+                "18-achromatopsia-covered-return",
+                "19-achromatopsia-input-result",
+            ),
+        )
+        assert achrom["player"]["result"]["band"] == "strong-field-record", achrom
+        page.get_by_role("button", name="Take the route again").click()
+        page.wait_for_timeout(80)
+        achrom_restart = capture("20-achromatopsia-clean-restart", ["Take the route again"])
+        assert achrom_restart["mode"] == "order", achrom_restart
+        assert achrom_restart["player"]["distanceTravelled"] == 0, achrom_restart
+
+        vision_mode = "full-colour"
+        cdp.send("Emulation.setEmulatedVisionDeficiency", {"type": "none"})
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(80)
         performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
@@ -379,6 +437,8 @@ def run() -> dict[str, object]:
             "mixedCorroboratingEvidenceFour": True,
             "panicBothShotsAllPlatesAndSecondContact": True,
             "cleanRestartAfterEveryReferenceClass": True,
+            "achromatopsiaStrongInputRoute": True,
+            "achromatopsiaStrongCleanRestart": True,
             "noThreatMeter": no_threat_meter,
             "consoleErrors": errors,
             "requestHosts": sorted(hosts),
@@ -392,6 +452,24 @@ def run() -> dict[str, object]:
             "reachRelativeSafety": "05-strong-input-result",
         },
         "pathMetrics": path_metrics,
+        "visionRoutes": {
+            "full-colour": [
+                "00-clean-field-order",
+                "01-strong-brook-frame",
+                "03-strong-glade-frames",
+                "04-strong-covered-return",
+                "05-strong-input-result",
+                "06-strong-clean-restart",
+            ],
+            "achromatopsia": [
+                "14-achromatopsia-field-order",
+                "15-achromatopsia-brook-frame",
+                "17-achromatopsia-glade-frames",
+                "18-achromatopsia-covered-return",
+                "19-achromatopsia-input-result",
+                "20-achromatopsia-clean-restart",
+            ],
+        },
         "inputTrace": input_trace,
         "performance": performance,
         "checkpoints": checkpoints,
@@ -399,6 +477,7 @@ def run() -> dict[str, object]:
             "The paths use real keyboard/mouse movement and wait on observed state, but they are deterministic automation rather than first-time human navigation evidence.",
             "S8 validates the reconciled 1–3 minute product budget; independent perception and three external tester records remain required.",
             "The Strong path records distinct young-play and branch-pull states, but automated pose checks do not establish anatomy or animation quality.",
+            "Chromium emulation plus deterministic input proves route and UI state continuity; it does not prove that a person can distinguish every visual cue.",
             "Subjective fun, balance and audio mix are not inferred from the deterministic results.",
         ],
     }

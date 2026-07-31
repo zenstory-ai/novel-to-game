@@ -239,6 +239,33 @@ def main() -> int:
         "build/evidence/s10/report.json#checks",
     )
 
+    full_colour_route = s8["visionRoutes"]["full-colour"]
+    achromatopsia_route = s8["visionRoutes"]["achromatopsia"]
+    colour_matrix = s10["colourVisionMatrix"]
+    expected_review_states = {"order", "glade", "attackDefense", "result"}
+    colour_vision_pass = (
+        len(full_colour_route) == 6
+        and len(achromatopsia_route) == 6
+        and s8_checks["achromatopsiaStrongInputRoute"]
+        and s8_checks["achromatopsiaStrongCleanRestart"]
+        and s8["pathMetrics"]["Achromatopsia Strong"]["result"]["band"]
+        == "strong-field-record"
+        and s10["checks"]["colourVisionCheckpointMatrixComplete"]
+        and set(colour_matrix) == {"protanopia", "deuteranopia", "tritanopia"}
+        and all(set(records) == expected_review_states for records in colour_matrix.values())
+    )
+    check(
+        "colour-vision-evidence-matrix",
+        "Full-colour and achromatopsia have complete input routes; the other three modes expose every required review checkpoint",
+        {
+            "fullColourRoute": full_colour_route,
+            "achromatopsiaRoute": achromatopsia_route,
+            "reviewCheckpoints": colour_matrix,
+        },
+        colour_vision_pass,
+        "build/evidence/s8/report.json#visionRoutes; s10/report.json#colourVisionMatrix",
+    )
+
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# Project Plateau design-invariant audit",
@@ -263,7 +290,7 @@ def main() -> int:
             "",
             "- Automated invariants establish deterministic state, input-path, loading, performance and gross visual floors only.",
             "- Independent first-time premise/genre comprehension, anatomy, motion and composition review remain NOT_RUN.",
-            "- The achromatopsia evidence covers one busy attack frame, not the complete route or every colour-vision mode.",
+            "- Chromium emulation covers two complete input routes and the remaining colour-vision checkpoint matrix; independent human cue-readability review remains NOT_RUN.",
             "- Local throttling is not public-host cold-load evidence.",
             "",
         ]

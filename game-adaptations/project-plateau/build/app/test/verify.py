@@ -307,11 +307,16 @@ def write_verification(
             "restart": "clean-field-order",
         }
         verification["checkpoints"] = checkpoints
+        verification["colourVisionEvidence"] = {
+            "completeInputRoutes": load_report("s8")["visionRoutes"],
+            "reviewCheckpoints": load_report("s10")["colourVisionMatrix"],
+            "independentCueReadability": "NOT_RUN",
+        }
         verification["claimBoundaries"] = [
             "Automated paths are not first-time human navigation or premise-comprehension evidence.",
             "Pixel and state checks do not prove subjective composition, anatomy, motion, fun or balance.",
             "Local 25 Mbps throttling is not public-host cold-loading evidence.",
-            "One achromatopsia attack frame is not a complete colour-vision route matrix.",
+            "Chromium-emulated routes and checkpoints do not prove independent human cue readability.",
         ]
     VERIFICATION.parent.mkdir(parents=True, exist_ok=True)
     VERIFICATION.write_text(json.dumps(verification, indent=2) + "\n", encoding="utf-8")
