@@ -51,12 +51,20 @@ exposed-case versus noisy-creek consequences and the minimum viewport with:
 npm run verify:s5
 ```
 
+Run the field-feedback checkpoint with the bellows camera, membrane-wing threat,
+covered-route pull-up, local Web Audio cues, captions, channel controls and
+distinct result/failure sound states with:
+
+```bash
+npm run verify:s6
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S5 write separate
+the corresponding `../evidence/s*/` directory. S3 through S6 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S5 foundation, not the completed game. It proves the approved local
+This is an S6 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -73,4 +81,11 @@ coverage, production art or the authoritative verification handoff. S5 adds
 all four alive result bands, the no-shot Strong line, a shot/callback Mixed
 line, an explicit Panic failure, the 28/12/18-second route-cost matrix, a
 visible brook-brush response and a five-verb evidence index. Those paths still
-use QA-only walking compression, and the final uncompressed runs remain open.
+use QA-only walking compression. S6 replaces the camera and aerial-threat
+silhouettes with more recognizable procedural structures, frames the covered
+route with physical arches and a visible pull-up response, and adds lazy local
+Web Audio, captions, three independent volume controls, cue-state inspection
+and clean per-run audio reset. Its browser evidence proves that audio nodes and
+cues run without console or remote-host errors; it does not claim subjective
+mix quality. Final asset polish, persisted settings and uncompressed reference
+runs remain open.

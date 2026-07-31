@@ -1,0 +1,230 @@
+{
+  "stage": "s6-field-feedback",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 18
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 18
+    },
+    "heading": 0,
+    "pitch": 0.32,
+    "stance": "walk",
+    "elapsedSeconds": 5.098,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "return:covered:committed",
+    "zone": "covered-return",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "basalt-shelf",
+      "iguanodon-glade",
+      "covered-return"
+    ],
+    "reachedGlade": true,
+    "inCover": true,
+    "coverSeconds": 0.12539999985694883,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 3,
+    "threatState": "attack",
+    "lastThreatEvent": "glade-search",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 3.6667000000476837,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "basalt-scale",
+      "points": 2,
+      "label": "CONTEXT \u2014 basalt gives scale.",
+      "zone": "basalt-shelf"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "CONTEXT \u2014 basalt gives scale.",
+        "frameKey": "basalt-scale"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 386.902,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "attack",
+    "response": "cover-pull-up",
+    "position": {
+      "x": -2.21,
+      "y": 18.25,
+      "z": 3.03
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.229
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.331
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.469
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 2.469
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.469
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 2.597
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 2.672
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 4.672
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 4.672
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 4.885
+      }
+    ]
+  },
+  "ui": {
+    "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "fieldNote": null,
+    "contactNote": null,
+    "cartridgesVisible": true,
+    "caption": "[branches scrape the camera; wingbeats widen]",
+    "lightWatch": 387,
+    "terminal": null
+  },
+  "sceneChildren": 25,
+  "calls": 99,
+  "triangles": 26658,
+  "textures": 1,
+  "geometries": 63,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 171.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

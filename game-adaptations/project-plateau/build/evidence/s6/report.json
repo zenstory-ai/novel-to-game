@@ -1,0 +1,107 @@
+{
+  "stage": "s6-field-feedback",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "6b2e21ebf906ca435bdca4f416883ee8c0c9c79979dae5319a6ba1b0b8610e33"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "targetViewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "recognizableBellowsCameraStructure": true,
+    "membraneWingThreatStructure": true,
+    "coverArchesAndPullUpResponse": true,
+    "lazyLocalWebAudioRunning": true,
+    "threeChannelVolumeControls": true,
+    "captionsToggleAndCoreCueCaptions": true,
+    "rifleAndBrookResponseCues": true,
+    "distinctResultAndFailureCues": true,
+    "runResetClearsCueHistoryAndPreservesSettings": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 98,
+    "worstFrameMs": 10.4
+  },
+  "checkpoints": [
+    {
+      "id": "01-audio-settings",
+      "state": "build/evidence/s6/state/01-audio-settings.json",
+      "browser": "build/evidence/s6/browser/01-audio-settings.json",
+      "visual": "build/evidence/s6/01-audio-settings.jpg"
+    },
+    {
+      "id": "02-field-sound-start",
+      "state": "build/evidence/s6/state/02-field-sound-start.json",
+      "browser": "build/evidence/s6/browser/02-field-sound-start.json",
+      "visual": "build/evidence/s6/02-field-sound-start.jpg"
+    },
+    {
+      "id": "03-examine-caption",
+      "state": "build/evidence/s6/state/03-examine-caption.json",
+      "browser": "build/evidence/s6/browser/03-examine-caption.json",
+      "visual": "build/evidence/s6/03-examine-caption.jpg"
+    },
+    {
+      "id": "04-bellows-camera-raised",
+      "state": "build/evidence/s6/state/04-bellows-camera-raised.json",
+      "browser": "build/evidence/s6/browser/04-bellows-camera-raised.json",
+      "visual": "build/evidence/s6/04-bellows-camera-raised.jpg"
+    },
+    {
+      "id": "05-plate-slide-caption",
+      "state": "build/evidence/s6/state/05-plate-slide-caption.json",
+      "browser": "build/evidence/s6/browser/05-plate-slide-caption.json",
+      "visual": "build/evidence/s6/05-plate-slide-caption.jpg"
+    },
+    {
+      "id": "06-membrane-wing-attack",
+      "state": "build/evidence/s6/state/06-membrane-wing-attack.json",
+      "browser": "build/evidence/s6/browser/06-membrane-wing-attack.json",
+      "visual": "build/evidence/s6/06-membrane-wing-attack.jpg"
+    },
+    {
+      "id": "07-cover-pull-up",
+      "state": "build/evidence/s6/state/07-cover-pull-up.json",
+      "browser": "build/evidence/s6/browser/07-cover-pull-up.json",
+      "visual": "build/evidence/s6/07-cover-pull-up.jpg"
+    },
+    {
+      "id": "08-rifle-brook-response",
+      "state": "build/evidence/s6/state/08-rifle-brook-response.json",
+      "browser": "build/evidence/s6/browser/08-rifle-brook-response.json",
+      "visual": "build/evidence/s6/08-rifle-brook-response.jpg"
+    },
+    {
+      "id": "09-result-cue",
+      "state": "build/evidence/s6/state/09-result-cue.json",
+      "browser": "build/evidence/s6/browser/09-result-cue.json",
+      "visual": "build/evidence/s6/09-result-cue.jpg"
+    },
+    {
+      "id": "10-failure-cue",
+      "state": "build/evidence/s6/state/10-failure-cue.json",
+      "browser": "build/evidence/s6/browser/10-failure-cue.json",
+      "visual": "build/evidence/s6/10-failure-cue.jpg"
+    }
+  ],
+  "limitations": [
+    "The audio evidence proves browser audio-node state, cue scheduling, settings and captions; it does not claim subjective mix or sound quality.",
+    "Core sound is original Web Audio synthesis rather than final recorded or authored production sound.",
+    "The camera, pterodactyl and cover volumes are improved procedural assets, but the remaining release-gate assets and final animation polish are still open.",
+    "S6 retains QA-only route compression; uncompressed reference runs remain a later authoritative gate."
+  ]
+}

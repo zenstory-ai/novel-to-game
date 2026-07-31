@@ -103,6 +103,35 @@ function makeRouteAndBrook(scene) {
   scene.add(route, canopyFork, basaltFork);
 }
 
+function makeCoverArches(scene) {
+  const group = new THREE.Group();
+  const bark = new THREE.MeshStandardMaterial({ color: 0x29382d, roughness: 1 });
+  const leaf = new THREE.MeshStandardMaterial({ color: 0x153d2a, roughness: 0.96 });
+  const trunkGeometry = new THREE.CylinderGeometry(0.32, 0.48, 6.5, 7);
+  const leafGeometry = new THREE.IcosahedronGeometry(2.4, 1);
+  const arches = [[-4, 26], [-8, 16], [-10, 6], [-7, -4], [-2, 12]];
+  arches.forEach(([centerX, z], index) => {
+    const ground = terrainHeight(centerX, z);
+    const spread = 2.7 + (index % 2) * 0.35;
+    const left = primitive(bark, trunkGeometry, [centerX - spread, ground + 3, z], [1, 1, 1], [0, 0, -0.24]);
+    const right = primitive(bark, trunkGeometry, [centerX + spread, ground + 3, z], [1, 1, 1], [0, 0, 0.24]);
+    const crown = primitive(
+      bark,
+      new THREE.CylinderGeometry(0.3, 0.42, spread * 2.35, 7),
+      [centerX, ground + 6.45, z],
+      [1, 1, 1],
+      [0, 0, Math.PI / 2],
+    );
+    const leftCrown = primitive(leaf, leafGeometry, [centerX - 2.5, ground + 5.7, z], [1.2, 0.8, 1], [0, index, 0]);
+    const rightCrown = primitive(leaf, leafGeometry, [centerX + 2.5, ground + 5.7, z], [1.2, 0.8, 1], [0, -index, 0]);
+    group.add(left, right, crown, leftCrown, rightCrown);
+  });
+  group.name = 'world.connected_route.cover_arches';
+  group.userData.archCount = arches.length;
+  scene.add(group);
+  return group;
+}
+
 function placeVegetation(scene) {
   const random = seededRandom(139);
   const trunkMesh = new THREE.InstancedMesh(
@@ -231,25 +260,47 @@ function makeFamily(scene) {
 }
 
 function makePterodactyl(scene, radius, height, phase, scale = 1) {
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute([
-    0, 0, 0, -5, 0, 1.3, -1, 0, -0.8,
-    0, 0, 0, 5, 0, 1.3, 1, 0, -0.8,
-    -0.45, 0, 0.2, 0.45, 0, 0.2, 0, 0, -3.2,
-  ], 3));
-  geometry.computeVertexNormals();
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x796f66,
+  const group = new THREE.Group();
+  const membrane = new THREE.MeshStandardMaterial({
+    color: 0x665f58,
     roughness: 0.82,
     side: THREE.DoubleSide,
   });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.scale.setScalar(scale);
-  mesh.name = 'threat.pterodactyl.distant';
-  mesh.userData = { radius, height, phase };
-  mesh.userData.baseScale = scale;
-  scene.add(mesh);
-  return mesh;
+  const hide = new THREE.MeshStandardMaterial({ color: 0x403e39, roughness: 0.9 });
+  const wingGeometry = (side) => {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute([
+      0, 0, 0,
+      side * 5.4, 0, 1.5,
+      side * 1.15, 0, -0.65,
+      side * 5.4, 0, 1.5,
+      side * 3.2, 0, -0.25,
+      side * 1.15, 0, -0.65,
+    ], 3));
+    geometry.computeVertexNormals();
+    return geometry;
+  };
+  const leftWing = new THREE.Mesh(wingGeometry(-1), membrane);
+  const rightWing = new THREE.Mesh(wingGeometry(1), membrane);
+  const body = primitive(hide, new THREE.ConeGeometry(0.42, 3.5, 7), [0, 0.02, -1.25], [1, 1, 1], [-Math.PI / 2, 0, 0]);
+  const head = primitive(hide, new THREE.ConeGeometry(0.22, 1.7, 6), [0, 0, -3.1], [1, 1, 1], [-Math.PI / 2, 0, 0]);
+  const crest = primitive(membrane, new THREE.ConeGeometry(0.24, 1.15, 5), [0, 0.16, -2.75], [1, 1, 1], [Math.PI / 2, 0, 0]);
+  leftWing.name = 'threat.pterodactyl.left-wing';
+  rightWing.name = 'threat.pterodactyl.right-wing';
+  group.add(leftWing, rightWing, body, head, crest);
+  group.scale.setScalar(scale);
+  group.name = 'threat.pterodactyl.distant';
+  group.userData = {
+    radius,
+    height,
+    phase,
+    baseScale: scale,
+    leftWing,
+    rightWing,
+    silhouette: 'membrane-wing',
+  };
+  scene.add(group);
+  return group;
 }
 
 function makeFort(scene) {
@@ -297,13 +348,36 @@ function makeFieldCamera(scene) {
   const wood = new THREE.MeshStandardMaterial({ color: 0x4b2f24, roughness: 0.76 });
   const brass = new THREE.MeshStandardMaterial({ color: PALETTE.brass, roughness: 0.52, metalness: 0.45 });
   const black = new THREE.MeshStandardMaterial({ color: 0x151a18, roughness: 0.85 });
-  group.add(primitive(wood, new THREE.BoxGeometry(1, 1, 1), [0, 0, 0], [1.7, 1.05, 0.8]));
-  group.add(primitive(black, new THREE.CylinderGeometry(0.45, 0.63, 0.8, 12), [0, 0, -0.75], [1, 1, 1], [Math.PI / 2, 0, 0]));
-  group.add(primitive(brass, new THREE.TorusGeometry(0.48, 0.09, 8, 18), [0, 0, -1.18], [1, 1, 1], [Math.PI / 2, 0, 0]));
+  const glass = new THREE.MeshStandardMaterial({ color: 0x9ba69d, roughness: 0.2, metalness: 0.1 });
+  const rear = primitive(wood, new THREE.BoxGeometry(1, 1, 1), [0, 0, 0.34], [1.8, 1.16, 0.34]);
+  const glassBack = primitive(glass, new THREE.BoxGeometry(1, 1, 1), [0, 0, 0.53], [1.38, 0.78, 0.05]);
+  group.add(rear, glassBack);
+  for (let index = 0; index < 5; index += 1) {
+    const depth = -0.05 - index * 0.23;
+    const taper = 1 - index * 0.065;
+    group.add(primitive(
+      index % 2 ? wood : black,
+      new THREE.BoxGeometry(1, 1, 1),
+      [0, 0, depth],
+      [1.48 * taper, 0.9 * taper, 0.14],
+    ));
+  }
+  const front = primitive(wood, new THREE.BoxGeometry(1, 1, 1), [0, 0, -1.25], [1.28, 0.88, 0.18]);
+  const lens = primitive(black, new THREE.CylinderGeometry(0.45, 0.63, 0.78, 12), [0, 0, -1.75], [1, 1, 1], [Math.PI / 2, 0, 0]);
+  const lensRing = primitive(brass, new THREE.TorusGeometry(0.48, 0.09, 8, 18), [0, 0, -2.16], [1, 1, 1], [Math.PI / 2, 0, 0]);
+  const railGeometry = new THREE.BoxGeometry(0.12, 0.12, 2.45);
+  group.add(front, lens, lensRing);
+  group.add(primitive(brass, railGeometry, [-0.68, -0.58, -0.78], [1, 1, 1]));
+  group.add(primitive(brass, railGeometry, [0.68, -0.58, -0.78], [1, 1, 1]));
+  const handle = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 7, 16, Math.PI), brass);
+  handle.position.set(0, 0.67, 0.18);
+  handle.rotation.z = Math.PI;
+  group.add(handle);
   group.position.set(2.8, 1.55, 67);
   group.rotation.set(-0.06, Math.PI, 0);
   group.scale.setScalar(0.78);
   group.name = 'tool.field_camera';
+  group.userData.assetVersion = 'bellows-camera';
   scene.add(group);
   return group;
 }
@@ -335,6 +409,7 @@ function makeRifle(scene) {
 export function createWorld(scene) {
   makeTerrain(scene);
   makeRouteAndBrook(scene);
+  const coverArches = makeCoverArches(scene);
   placeVegetation(scene);
   makeBasalt(scene);
   const family = makeFamily(scene);
@@ -348,11 +423,13 @@ export function createWorld(scene) {
   const fieldCamera = makeFieldCamera(scene);
   const rifle = makeRifle(scene);
   let renderedThreatState = 'distant';
+  let renderedThreatResponse = 'orbit';
   let observedShotCount = 0;
   let flashSeconds = 0;
 
   return {
     family,
+    coverArches,
     pterodactyls,
     smoke,
     brookResponse,
@@ -361,6 +438,7 @@ export function createWorld(scene) {
     update(elapsed, reducedMotion = false, runtime = {}) {
       const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
       renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
+      renderedThreatResponse = awareness === 3 && runtime.inCover ? 'cover-pull-up' : 'orbit';
       const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
       brookResponse.userData.response = runtime.brookResponse ?? null;
       const responseStrength = runtime.brookResponse === 'brush-moving'
@@ -385,7 +463,15 @@ export function createWorld(scene) {
         const stateHeight = isPrimary ? [height, 12, 10, 6.7][awareness] : height;
         const stateSpeed = speed * (1 + awareness * 0.42) * (1 + index * 0.08);
         const angle = phase + elapsed * stateSpeed;
-        if (isPrimary && awareness === 3) {
+        if (isPrimary && awareness === 3 && runtime.inCover) {
+          mesh.position.set(
+            playerPosition.x + Math.cos(angle) * 3,
+            stateHeight + 12 + Math.sin(angle * 1.6) * 0.7,
+            playerPosition.z - 17 + Math.sin(angle) * 3,
+          );
+          mesh.scale.setScalar(mesh.userData.baseScale);
+          mesh.rotation.x = 0.32;
+        } else if (isPrimary && awareness === 3) {
           const dive = (elapsed % 3.2) / 3.2;
           const approach = dive < 0.72 ? dive / 0.72 : (1 - dive) / 0.28;
           mesh.position.set(
@@ -393,7 +479,7 @@ export function createWorld(scene) {
             stateHeight + (1 - approach) * 5,
             playerPosition.z - 15 + Math.sin(angle) * 2.5 + approach,
           );
-          mesh.scale.set(mesh.userData.baseScale * 0.58, mesh.userData.baseScale, mesh.userData.baseScale);
+          mesh.scale.set(mesh.userData.baseScale * 0.7, mesh.userData.baseScale, mesh.userData.baseScale);
           mesh.rotation.x = -0.42 * approach;
         } else {
           mesh.position.set(
@@ -405,6 +491,12 @@ export function createWorld(scene) {
           mesh.rotation.x = 0;
         }
         mesh.name = `threat.pterodactyl.${isPrimary ? renderedThreatState : 'distant'}`;
+        const wingFold = isPrimary && awareness === 3 && !runtime.inCover
+          ? 0.24 + Math.abs(Math.sin(angle * 2)) * 0.08
+          : 0;
+        const wingBeat = reducedMotion ? 0 : Math.sin(angle * (2.8 + awareness * 0.4)) * (0.05 + awareness * 0.025);
+        mesh.userData.leftWing.rotation.z = wingFold + wingBeat;
+        mesh.userData.rightWing.rotation.z = -wingFold - wingBeat;
         mesh.rotation.y = -angle + Math.PI / 2;
         mesh.rotation.z = Math.sin(angle * 2.4) * (0.16 + awareness * 0.035);
       });
@@ -420,6 +512,7 @@ export function createWorld(scene) {
       const primary = pterodactyls[0];
       return {
         state: renderedThreatState,
+        response: renderedThreatResponse,
         position: {
           x: Number(primary.position.x.toFixed(2)),
           y: Number(primary.position.y.toFixed(2)),
@@ -434,6 +527,22 @@ export function createWorld(scene) {
           x: Number(brookResponse.position.x.toFixed(2)),
           y: Number(brookResponse.position.y.toFixed(2)),
           z: Number(brookResponse.position.z.toFixed(2)),
+        },
+      };
+    },
+    assetSnapshot() {
+      return {
+        fieldCamera: {
+          version: fieldCamera.userData.assetVersion,
+          visibleParts: fieldCamera.children.length,
+        },
+        pterodactyl: {
+          silhouette: pterodactyls[0].userData.silhouette,
+          visibleParts: pterodactyls[0].children.length,
+        },
+        cover: {
+          archCount: coverArches.userData.archCount,
+          visibleParts: coverArches.children.length,
         },
       };
     },

@@ -1,0 +1,18 @@
+{
+  "inputs": [
+    "Settings",
+    "set three channel volumes",
+    "captions off",
+    "captions on"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s6",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785527523881
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT \u00b7 S5",
+  "updated": "2026-07-31 PT \u00b7 S6",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -24,14 +24,16 @@
         "evidence/s4/02-covered-return-committed.jpg",
         "evidence/s4/04-strong-result.jpg",
         "evidence/s5/03-noisy-exposed-return.jpg",
-        "evidence/s5/05-exposed-case-strike.jpg"
+        "evidence/s5/05-exposed-case-strike.jpg",
+        "evidence/s6/07-cover-pull-up.jpg",
+        "evidence/s6/08-rifle-brook-response.jpg"
       ],
-      "remaining": "Connected route, 28/12/18-second commitments, visible noisy-brook response and Fort submission exist; final cover volumes, route-landmark polish and uncompressed reference runs remain."
+      "remaining": "Connected route, 28/12/18-second commitments, five branch arches, visible cover pull-up, noisy-brook response and Fort submission exist; route-landmark polish and uncompressed reference runs remain."
     },
     {
       "key": "tool.field_camera",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "procedural-prototype",
       "releaseGatePassed": false,
       "source": "app/src/world.js",
       "provenance": "Original primitive model informed by generic period camera construction",
@@ -40,9 +42,10 @@
         "evidence/s0/01-title.jpg",
         "evidence/s1/01-clean-start.jpg",
         "evidence/s3/03-camera-raised.jpg",
-        "evidence/s3/05-partial-plate.jpg"
+        "evidence/s3/05-partial-plate.jpg",
+        "evidence/s6/04-bellows-camera-raised.jpg"
       ],
-      "remaining": "Folded/raised graybox, camera overlay and live shutter commitment exist; recognizable bellows/lens polish and plate insertion motion remain."
+      "remaining": "The folded/raised model now has a rear standard, ground glass, five bellows folds, brass rails and lens; hand placement, plate insertion motion and final material polish remain."
     },
     {
       "key": "tool.plate_case",
@@ -58,7 +61,8 @@
         "evidence/s4/04-strong-result.jpg",
         "evidence/s4/09-second-contact-failure.jpg",
         "evidence/s5/04-corroborating-shot-result.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg"
+        "evidence/s5/07-strong-result-1280x720.jpg",
+        "evidence/s6/05-plate-slide-caption.jpg"
       ],
       "remaining": "Four exact slots, cue previews, crack states and frame-key-specific terminal grayboxes exist; final plate renders, hand placement and fracture motion remain."
     },
@@ -73,9 +77,10 @@
       "evidence": [
         "evidence/s3/07-shot-interrupt.jpg",
         "evidence/s5/03-noisy-exposed-return.jpg",
-        "evidence/s5/04-corroborating-shot-result.jpg"
+        "evidence/s5/04-corroborating-shot-result.jpg",
+        "evidence/s6/08-rifle-brook-response.jpg"
       ],
-      "remaining": "Hidden/raised state, two chamber marks, timely interruption, visible brook response and exact result callback exist; final recoil and report/callback audio remain."
+      "remaining": "Hidden/raised state, two chamber marks, timely interruption, synthesized report/echo, visible brook response and exact result callback exist; final recoil and production mix remain."
     },
     {
       "key": "subject.iguanodon_family",
@@ -93,7 +98,7 @@
     {
       "key": "threat.pterodactyl",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "procedural-prototype",
       "releaseGatePassed": false,
       "source": "app/src/world.js",
       "provenance": "Original membrane-wing silhouette and deterministic orbit",
@@ -111,14 +116,16 @@
         "evidence/s4/02-covered-return-committed.jpg",
         "evidence/s4/09-second-contact-failure.jpg",
         "evidence/s5/03-noisy-exposed-return.jpg",
-        "evidence/s5/05-exposed-case-strike.jpg"
+        "evidence/s5/05-exposed-case-strike.jpg",
+        "evidence/s6/06-membrane-wing-attack.jpg",
+        "evidence/s6/07-cover-pull-up.jpg"
       ],
-      "remaining": "Four states, cover de-escalation, timed contact, shot response and terminal cause frame exist; shadow polish, cover pull-up and audio remain. Attack framing was pulled fully inside the primary S4 corridor but needs later-view regression."
+      "remaining": "A separate membrane-wing/body/head/crest silhouette now carries four states, timed contact, shot response and a visible cover pull-up with sound/caption feedback; anatomy, material, shadow and later-view polish remain."
     },
     {
       "key": "ui.field_system",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "functional-prototype",
       "releaseGatePassed": false,
       "source": "app/index.html; app/src/styles.css",
       "provenance": "Original HTML/CSS interface using system fonts",
@@ -142,9 +149,12 @@
         "evidence/s5/01-returned-without-record.jpg",
         "evidence/s5/02-insufficient-record.jpg",
         "evidence/s5/04-corroborating-shot-result.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg"
+        "evidence/s5/07-strong-result-1280x720.jpg",
+        "evidence/s6/01-audio-settings.jpg",
+        "evidence/s6/04-bellows-camera-raised.jpg",
+        "evidence/s6/10-failure-cue.jpg"
       ],
-      "remaining": "Context prompts, camera/plate/chamber edges, watch, all alive bands and failure/restart states exist at target viewport; captions, audio settings and full minimum-viewport regression remain."
+      "remaining": "Context prompts, camera/plate/chamber edges, watch, all alive bands, sound captions, three channel controls and failure/restart states exist; persisted settings and full minimum-viewport regression remain."
     },
     {
       "key": "light.functional_arc",
@@ -166,18 +176,25 @@
     {
       "key": "audio.core_world",
       "tier": "release-gate",
-      "status": "not-started",
+      "status": "functional-prototype",
       "releaseGatePassed": false,
-      "source": "NOT_AVAILABLE: later build gate",
-      "provenance": "Planned original synthesis or redistribution-compatible local recording",
-      "rights": "Asset-level rights record required",
-      "evidence": [],
-      "remaining": "All core action, threat, cover, rifle, result and failure layers."
+      "source": "app/src/audio.js; app/src/main.js",
+      "provenance": "Original runtime Web Audio synthesis and authored English captions",
+      "rights": "Original project code; no recorded or third-party audio asset",
+      "evidence": [
+        "evidence/s6/02-field-sound-start.jpg",
+        "evidence/s6/03-examine-caption.jpg",
+        "evidence/s6/05-plate-slide-caption.jpg",
+        "evidence/s6/08-rifle-brook-response.jpg",
+        "evidence/s6/09-result-cue.jpg",
+        "evidence/s6/10-failure-cue.jpg"
+      ],
+      "remaining": "Browser audio state, cue scheduling, all core action/threat/outcome layers and captions are verified; production mix, richer ambience and subjective listening review remain."
     },
     {
       "key": "accessibility.presentation",
       "tier": "release-gate",
-      "status": "functional-graybox",
+      "status": "functional-prototype",
       "releaseGatePassed": false,
       "source": "app/index.html; app/src/main.js; app/src/styles.css",
       "provenance": "Original reduced-motion and text-scale controls",
@@ -185,9 +202,12 @@
       "evidence": [
         "evidence/s0/01-title.jpg",
         "evidence/s0/04-minimum-viewport.jpg",
-        "evidence/s1/05-manual-pause.jpg"
+        "evidence/s1/05-manual-pause.jpg",
+        "evidence/s6/01-audio-settings.jpg",
+        "evidence/s6/03-examine-caption.jpg",
+        "evidence/s6/10-failure-cue.jpg"
       ],
-      "remaining": "Pause/focus freeze and text/reduced-motion controls exist; captions, channel volumes, gameplay non-colour redundancy and persistence remain."
+      "remaining": "Pause/focus freeze, text/reduced-motion controls, captions and three channel volumes exist; settings persistence and complete non-colour regression remain."
     }
   ]
 }

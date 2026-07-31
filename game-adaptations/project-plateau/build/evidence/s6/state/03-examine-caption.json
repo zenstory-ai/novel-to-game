@@ -1,0 +1,176 @@
+{
+  "stage": "s6-field-feedback",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 45
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 45
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 0.388,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "examined:track",
+    "zone": "brook-blind",
+    "zoneHistory": [
+      "fort",
+      "brook-blind"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 0,
+    "threatState": "distant",
+    "lastThreatEvent": "distant",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": false,
+    "plateRailRevealed": false,
+    "pendingExposure": null,
+    "previewSeconds": 0,
+    "lastProofEvent": null,
+    "plates": [
+      {
+        "index": 0,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 419.612,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "distant",
+    "response": "orbit",
+    "position": {
+      "x": 28.34,
+      "y": 23.5,
+      "z": 22.16
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "captionsEnabled": true,
+    "threatState": "distant",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.229
+      }
+    ]
+  },
+  "ui": {
+    "prompt": "Raise camera [Right Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": false,
+    "platePreview": null,
+    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "caption": "[fern brushes aside; pencil marks the field card]",
+    "lightWatch": null,
+    "terminal": null
+  },
+  "sceneChildren": 25,
+  "calls": 99,
+  "triangles": 26936,
+  "textures": 1,
+  "geometries": 58,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 171.20000004768372,
+  "recentMedianFrameMs": 8.3
+}

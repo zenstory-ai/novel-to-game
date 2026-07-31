@@ -50,6 +50,7 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .panel { left: auto; right: 6vw; width: min(29rem, 88vw); }
 .panel h2 { margin: .2rem 0 1.2rem; font-size: 2rem; }
 .panel label { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: .8rem 0; }
+.panel input[type="range"] { width: 9rem; accent-color: var(--brass); }
 .panel-close { position: absolute; min-width: auto !important; right: .8rem; top: .7rem; border: 0 !important; font-size: 1.6rem !important; padding: .2rem .6rem !important; }
 .pause-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .pause-actions button { min-width: 11rem; }
@@ -79,6 +80,7 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .preview-image span { position: absolute; left: 0; top: 0; width: 42%; height: 100%; background: repeating-linear-gradient(104deg, rgba(39,52,42,.86) 0 8px, transparent 8px 17px); }
 #preview-copy { min-height: 2.4em; margin: .72rem 0 .15rem; color: #252825; font: 700 .78rem/1.35 ui-sans-serif, system-ui, sans-serif; letter-spacing: .045em; }
 #contact-note { position: absolute; left: 50%; top: 20%; transform: translateX(-50%); margin: 0; padding: .72rem .9rem; color: #fff4dc; background: rgba(85,31,25,.94); border: 1px solid #d5664b; text-transform: uppercase; letter-spacing: .08em; }
+#caption-line { position: absolute; left: 50%; bottom: 8vh; transform: translateX(-50%); max-width: min(44rem, 74vw); margin: 0; padding: .42rem .65rem; color: #f0e2bf; background: rgba(20,27,24,.82); font-size: max(11px, .76rem); letter-spacing: .04em; text-align: center; }
 #rifle-overlay { position: absolute; right: 13vw; bottom: 0; width: 24vw; height: 46vh; transform: rotate(-8deg); transform-origin: bottom right; }
 .rifle-barrel { position: absolute; right: 29%; bottom: -8%; width: 16px; height: 120%; background: linear-gradient(90deg, #171b1a, #59605b 48%, #1b201e); border: 1px solid #0e100f; }
 .rifle-sight { position: absolute; right: calc(29% + 3px); top: 4%; width: 10px; height: 22px; border: 2px solid #c1b697; border-bottom: 0; }

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import './styles.css';
+import { FieldAudio, captionForCue } from './audio.js';
 import { PALETTE, PRODUCT_BUDGET, SCENE_BUDGET, percentile } from './config.js';
 import {
   EXPOSURE_SECONDS,
@@ -36,6 +37,7 @@ const plateSlots = [...plateRail.children];
 const cartridgeDisplay = document.querySelector('#cartridge-display');
 const cartridgeSlots = [...cartridgeDisplay.children];
 const rifleOverlay = document.querySelector('#rifle-overlay');
+const captionLine = document.querySelector('#caption-line');
 const lightWatch = document.querySelector('#light-watch');
 const lightSeconds = document.querySelector('#light-seconds');
 const terminalPanel = document.querySelector('#terminal-panel');
@@ -45,7 +47,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S5 · route outcomes';
+document.querySelector('#s0-badge').textContent = 'S6 · field feedback';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -95,6 +97,7 @@ world.rifle.position.set(0.64, -0.72, -1.08);
 world.rifle.rotation.set(-0.11, 0.12, -0.08);
 world.rifle.scale.setScalar(0.27);
 const clock = new THREE.Clock();
+const fieldAudio = new FieldAudio();
 const pressed = new Set();
 let player = createPlayerState();
 let runActive = false;
@@ -108,8 +111,21 @@ let boundaryNoticeUntil = 0;
 let observedBoundaryRecoveries = 0;
 let observationNoticeUntil = 0;
 let contactNoticeUntil = 0;
+let captionNoticeUntil = 0;
 
 const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
+
+function showCaption(cue, duration = 2400) {
+  const copy = captionForCue(cue);
+  if (!copy || !fieldAudio.captionsEnabled) return;
+  captionLine.textContent = copy;
+  captionNoticeUntil = performance.now() + duration;
+}
+
+function emitCue(cue, duration) {
+  fieldAudio.cue(cue);
+  showCaption(cue, duration);
+}
 
 function contextualCopy() {
   if (player.pendingExposure) return 'Hold steady.';
@@ -187,6 +203,7 @@ function updateFieldHud(now) {
   fieldNote.hidden = !player.lastObservation || now >= observationNoticeUntil;
   if (!fieldNote.hidden) fieldNote.textContent = player.lastObservation;
   contactNote.hidden = now >= contactNoticeUntil;
+  captionLine.hidden = !fieldAudio.captionsEnabled || now >= captionNoticeUntil;
   document.body.dataset.contact = contactNote.hidden ? 'false' : 'true';
 
   world.fieldCamera.visible = runActive && !player.failed && !player.rifleRaised;
@@ -270,6 +287,7 @@ function requestFieldPointerLock() {
 
 function presentTerminal() {
   if (!player.result) return;
+  emitCue(player.result.kind === 'alive' ? 'result' : 'failure', 3200);
   runActive = false;
   cameraMode = 'terminal';
   document.body.dataset.mode = 'terminal';
@@ -316,18 +334,22 @@ function returnToFieldOrder() {
   closePanels();
   setView('order');
   document.querySelector('#field-order').hidden = false;
+  void fieldAudio.pause();
 }
 
 function beginRun() {
   player = restartPlayer(player);
+  fieldAudio.resetRun();
   runActive = true;
   observedBoundaryRecoveries = 0;
   boundaryNoticeUntil = 0;
   observationNoticeUntil = 0;
   contactNoticeUntil = 0;
+  captionNoticeUntil = 0;
   pausePanel.hidden = true;
   terminalPanel.hidden = true;
   setView('field');
+  void fieldAudio.start().then(() => showCaption('field-start', 2600));
   requestFieldPointerLock();
 }
 
@@ -338,6 +360,7 @@ function pauseRun(reason = 'manual') {
   pauseLabel.textContent = reason === 'window-inactive' ? 'PAUSED — WINDOW INACTIVE' : 'PAUSED';
   pausePanel.hidden = false;
   document.body.dataset.mode = 'paused';
+  void fieldAudio.pause();
   if (document.pointerLockElement === canvas) document.exitPointerLock();
 }
 
@@ -347,6 +370,7 @@ function resumeRun() {
   pausePanel.hidden = true;
   cameraMode = 'field';
   document.body.dataset.mode = 'field';
+  void fieldAudio.resume();
   requestFieldPointerLock();
 }
 
@@ -354,8 +378,24 @@ function update(deltaSeconds, now) {
   if (runActive && !player.paused) {
     const previousContacts = player.contactCount;
     const previousRunStatus = player.runStatus;
+    const previousThreatState = player.threatState;
+    const previousProofPlate = player.lastProofEvent?.plateIndex ?? -1;
+    const previousRoute = player.returnRoute;
+    const previousBrookResponse = player.brookResponse;
     player = stepPlayer(player, inputSnapshot(), deltaSeconds);
+    if (player.threatState !== previousThreatState) {
+      fieldAudio.setThreatState(player.threatState);
+      if (player.threatState !== 'distant') showCaption(player.threatState);
+    }
+    if ((player.lastProofEvent?.plateIndex ?? -1) !== previousProofPlate) {
+      emitCue('plate-slide');
+    }
+    if (player.returnRoute !== previousRoute && player.returnRoute === 'covered') emitCue('cover');
+    if (player.brookResponse !== previousBrookResponse && player.brookResponse === 'brush-moving') {
+      emitCue('brook-response', 3000);
+    }
     if (player.contactCount > previousContacts) {
+      emitCue('contact', 2800);
       contactNoticeUntil = now + 3200;
       const cracked = player.plates.find((plate) => plate.status === 'cracked');
       contactNote.textContent = cracked
@@ -372,6 +412,7 @@ function update(deltaSeconds, now) {
     playerPosition: player.position,
     shotCount: player.shotCount,
     brookResponse: player.brookResponse,
+    inCover: player.inCover,
     deltaSeconds,
   });
 
@@ -437,6 +478,15 @@ document.querySelector('#reduced-motion').addEventListener('change', (event) => 
   reducedMotion = event.currentTarget.checked;
   document.body.classList.toggle('reduced-motion', reducedMotion);
 });
+document.querySelector('#captions-enabled').addEventListener('change', (event) => {
+  fieldAudio.setCaptionsEnabled(event.currentTarget.checked);
+  if (!fieldAudio.captionsEnabled) captionLine.hidden = true;
+});
+for (const channel of ['ambience', 'effects', 'music']) {
+  document.querySelector(`#${channel}-volume`).addEventListener('input', (event) => {
+    fieldAudio.setVolume(channel, event.currentTarget.value);
+  });
+}
 document.querySelector('#text-scale').addEventListener('change', (event) => {
   document.documentElement.style.setProperty('--text-scale', event.currentTarget.value);
 });
@@ -452,6 +502,7 @@ document.addEventListener('keydown', (event) => {
     player = examine(player);
     if (player.lastObservation && player.lastObservation !== previousObservation) {
       observationNoticeUntil = performance.now() + 4200;
+      emitCue('examine');
     }
     return;
   }
@@ -469,12 +520,16 @@ document.addEventListener('mousedown', (event) => {
   if (!runActive || player.paused || cameraMode !== 'field') return;
   if (event.button === 2) {
     event.preventDefault();
+    const wasRaised = player.cameraRaised;
     player = setCameraRaised(player, true);
+    if (!wasRaised && player.cameraRaised) emitCue('camera-raise');
   } else if (event.button === 0 && player.rifleRaised) {
     event.preventDefault();
     const previousShotCount = player.shotCount;
     player = fireDefensiveShot(player);
     if (player.shotCount > previousShotCount) {
+      fieldAudio.setThreatState(player.threatState);
+      emitCue('rifle', 3200);
       contactNoticeUntil = performance.now() + 2600;
       contactNote.textContent = player.lastThreatEvent === 'defensive-shot-interrupt'
         ? 'RIFLE REPORT — THE DIVE SHEARS AWAY.'
@@ -482,7 +537,9 @@ document.addEventListener('mousedown', (event) => {
     }
   } else if (event.button === 0 && player.cameraRaised) {
     event.preventDefault();
+    const hadPendingExposure = Boolean(player.pendingExposure);
     player = startExposure(player);
+    if (!hadPendingExposure && player.pendingExposure) emitCue('shutter');
   }
 });
 document.addEventListener('mouseup', (event) => {
@@ -552,7 +609,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's5-route-outcomes',
+  stage: 's6-field-feedback',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
@@ -566,6 +623,8 @@ window.__projectPlateau = {
     if (!query.has('qa')) throw new Error('teleportForTest requires a qa query');
     player.position = { x: position.x, z: position.z };
     player.lastStablePosition = { ...player.position };
+    if (Number.isFinite(position.heading)) player.heading = position.heading;
+    if (Number.isFinite(position.pitch)) player.pitch = position.pitch;
     setCameraToPlayer();
   },
   advanceTimeForTest(seconds) {
@@ -589,6 +648,8 @@ window.__projectPlateau = {
       player: playerSnapshot(),
       threatVisual: world.threatSnapshot(),
       brookResponseVisual: world.brookResponseSnapshot(),
+      assets: world.assetSnapshot(),
+      audio: fieldAudio.snapshot(),
       ui: {
         prompt: contextPrompt.hidden ? null : contextPrompt.textContent,
         cameraOverlay: !cameraOverlay.hidden,
@@ -598,6 +659,7 @@ window.__projectPlateau = {
         fieldNote: fieldNote.hidden ? null : fieldNote.textContent,
         contactNote: contactNote.hidden ? null : contactNote.textContent,
         cartridgesVisible: !cartridgeDisplay.hidden,
+        caption: captionLine.hidden ? null : captionLine.textContent,
         lightWatch: lightWatch.hidden ? null : Number(lightSeconds.textContent),
         terminal: terminalPanel.hidden
           ? null

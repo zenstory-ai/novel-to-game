@@ -73,6 +73,7 @@
         <p class="eyebrow">Field settings</p>
         <h2 id="settings-title">Presentation</h2>
         <label><input id="reduced-motion" type="checkbox" /> Reduced motion</label>
+        <label><input id="captions-enabled" type="checkbox" checked /> Sound captions</label>
         <label>
           Text size
           <select id="text-scale">
@@ -81,6 +82,9 @@
             <option value="1.5">150%</option>
           </select>
         </label>
+        <label>Ambience <input id="ambience-volume" type="range" min="0" max="1" step="0.01" value="0.34" /></label>
+        <label>Effects <input id="effects-volume" type="range" min="0" max="1" step="0.01" value="0.72" /></label>
+        <label>Music <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.2" /></label>
       </section>
 
       <section id="credits-panel" class="card panel" hidden aria-labelledby="credits-title">
@@ -116,6 +120,7 @@
           <p id="preview-copy"></p>
         </section>
         <p id="contact-note" hidden></p>
+        <p id="caption-line" hidden></p>
         <p id="boundary-note" hidden>The red cliff gives no path here.</p>
         <p id="light-watch" hidden><span id="light-seconds">420</span>s light</p>
         <p id="control-hint">Move [WASD] · Sprint [Shift] · Crouch [C] · Pause [P]</p>

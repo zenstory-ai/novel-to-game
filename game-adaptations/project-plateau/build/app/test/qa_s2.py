@@ -77,7 +77,8 @@ def run() -> dict[str, object]:
         page.wait_for_function("window.__projectPlateau?.ready === true")
         runtime_stage = page.evaluate("window.__projectPlateau.stage")
         assert runtime_stage in {
-            "s2-topology", "s3-exposed-proof", "s4-complete-loop", "s5-route-outcomes"
+            "s2-topology", "s3-exposed-proof", "s4-complete-loop", "s5-route-outcomes",
+            "s6-field-feedback"
         }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
@@ -126,7 +127,7 @@ def run() -> dict[str, object]:
         wait_for_threat()
         capture("glade-search", "03-glade-search.jpg")
 
-        if runtime_stage in {"s4-complete-loop", "s5-route-outcomes"}:
+        if runtime_stage in {"s4-complete-loop", "s5-route-outcomes", "s6-field-feedback"}:
             page.mouse.move(720, 450)
             page.mouse.down(button="right")
             page.wait_for_timeout(50)
@@ -146,7 +147,7 @@ def run() -> dict[str, object]:
             page.keyboard.up("ShiftLeft")
             page.wait_for_timeout(120)
         attack = snap()
-        complete_loop_stage = runtime_stage in {"s4-complete-loop", "s5-route-outcomes"}
+        complete_loop_stage = runtime_stage in {"s4-complete-loop", "s5-route-outcomes", "s6-field-feedback"}
         expected_attack_zone = "iguanodon-glade" if complete_loop_stage else "exposed-creek"
         assert attack["player"]["zone"] == expected_attack_zone, attack
         assert attack["player"]["threatState"] == "attack", attack
