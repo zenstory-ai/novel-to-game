@@ -2,8 +2,8 @@
 
 - Source: Project Gutenberg eBook #139, exact local bytes recorded in `source/SOURCE.md`
 - Mode: `quick`
-- Current stage: `world-design`
-- Completed stages: `intake`, `analyze`, `concept`
+- Current stage: `art-direction`
+- Completed stages: `intake`, `analyze`, `concept`, `world-design`
 - Selected concept: `Proof Before Dark` in `concepts/CONCEPT.md`
 - Updated: 2026-07-31 PT
 - Analysis coverage: `analysis/_coverage.md`; source 16 / success 16 / failed 0
@@ -13,6 +13,8 @@
 `gate:analyze pass` — the recorded Gutenberg bytes yield sixteen stable chapter boundaries; every body was read and compressed into `analysis/SOURCE_BIBLE.md`, with colonial-era framing retained as an explicit adaptation risk rather than treated as neutral world truth.
 
 `gate:concept pass` — all three candidates preserve the locked first-person 3D survival-adventure frame, pass the hard vetoes and cite at least two verified high-adoption same-play precedents. Quick mode selects `Proof Before Dark` because one bounded run can test evidence quality, ecological response, limited defense and extraction together.
+
+`gate:world-design pass` — `design/GAME_DESIGN.md` defines one core system, two supports, a five-beat complete run, first-minute copy, four deterministic outcome bands, a reachable numeric budget, a four-state decision flip and bound Strong/Mixed/Panic reference paths. It does not promote factions, combat breadth or a true open world into the prototype.
 
 ## Notes
 
