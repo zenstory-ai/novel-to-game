@@ -2,13 +2,15 @@
 
 - Source: Project Gutenberg eBook #139, exact local bytes recorded in `source/SOURCE.md`
 - Mode: `quick`
-- Current stage: `analyze`
-- Completed stages: `intake`
+- Current stage: `concept`
+- Completed stages: `intake`, `analyze`
 - Selected concept: pending concept comparison
 - Updated: 2026-07-31 PT
-- Analysis coverage: pending `analysis/_coverage.md`; source 16 / success 0 / failed 0
+- Analysis coverage: `analysis/_coverage.md`; source 16 / success 16 / failed 0
 
 `gate:intake pass` — all eleven product dimensions have values; user-confirmed 3D/English/genre intent and the bounded plan are separated from recorded implementation assumptions.
+
+`gate:analyze pass` — the recorded Gutenberg bytes yield sixteen stable chapter boundaries; every body was read and compressed into `analysis/SOURCE_BIBLE.md`, with colonial-era framing retained as an explicit adaptation risk rather than treated as neutral world truth.
 
 ## Notes
 
