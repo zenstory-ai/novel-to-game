@@ -45,6 +45,8 @@
 
 `media:strong-run pass` — `build/app/test/capture_demo_clip.py` records one continuous input-only Strong route at `1280×800`, then uniformly time-compresses that uncut window into exact 30-second and 15-second delivery versions. Both local MP4s pass 14/14 container, H.264 High Profile, `yuv420p`, scan, size, aspect, 30 FPS, duration, file-size, silent-track, non-black-first-frame and fast-start checks. The raw/derived videos stay out of Git; `build/media/clip/marks.json` and `manifest.json` retain their hashes, source fingerprint, every capture mark and full probe results, while a ten-frame contact sheet and crop-only 1280×640 share card remain reviewable in the repository. These accelerated delivery files do not replace S8 timing evidence.
 
+`verification:authoritative pass` — source commit `565e2f6` adds the declared `npm run verify` handoff. One 462.634-second invocation discovered 15 pass/fail files, classified two non-suite tools, ran seven stable suites and sixteen commands, regenerated S0–S10 against fingerprint `e99883ce…`, and wrote `qa/verification.json`, `qa/evidence/verify.log` and a 9/9 design-invariant audit. The Strong complete run now binds clean order, first proof, seven-point glade proof, covered return, renderer-derived result and an immediate clean restart through six state/browser/visual steps. Local automation is green; independent first-time/perception records, a full non-colour route and public-host smoke remain NOT_RUN, so release stays closed.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

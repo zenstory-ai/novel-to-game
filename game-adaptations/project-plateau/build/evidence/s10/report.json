@@ -2,7 +2,7 @@
   "stage": "s10-glade-clarity",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -32,44 +32,44 @@
     "width": 777,
     "height": 504,
     "darkRatio": 0.1979,
-    "brightRatio": 0.5926,
+    "brightRatio": 0.5927,
     "chromaticRatio": 0.8213
   },
   "visuals": [
     {
       "path": "build/evidence/s10/01-clear-family-sightline.jpg",
-      "bytes": 105921,
-      "sha256": "098bb6a3a8857e1dcbfd720ad5b5d72830bd106e97b81335e5c6deac927cc2fd",
+      "bytes": 105966,
+      "sha256": "e673f781eabed72c6398b32ce9c7f58f9b0158704918cd8182ba46b028fe3bcc",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/02-young-play-silver-frame.jpg",
-      "bytes": 111850,
-      "sha256": "1494de669668cff50386eb19f64dcef3e0cc601551488ff60b31890229ff45a9",
+      "bytes": 111933,
+      "sha256": "353cd6d7979973191a262c4743c9af45ea6897a0ec0e9ca1c0b18342167ac691",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
-      "bytes": 114977,
-      "sha256": "bf40bb1d9d76f9cc7efe9af181d062849fe1a3f7603042c9510f4d2aa82e76d9",
+      "bytes": 114904,
+      "sha256": "2286516462861d48fb87597e1fda0ada7b47377f2b132187b2b0cbc069418935",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/04-achromatopsia-attack.jpg",
-      "bytes": 106627,
-      "sha256": "1e0f88386198fcc526eeaec7d2528fba6676ad3e44ff23c54f8b0c2486ce654a",
+      "bytes": 106633,
+      "sha256": "74ae8ebf0118d7987c1389474663a877111432e1d3e25652055f99f85f249e4b",
       "visionMode": "achromatopsia"
     },
     {
       "path": "build/evidence/s10/05-strong-plate-board.jpg",
-      "bytes": 93403,
-      "sha256": "fa7c823107e43563d14b98dbedee91ba30d0112c3ad1c2e62b8cfd8603f2e9e6",
+      "bytes": 93405,
+      "sha256": "03ea2b141485216f1c53c38dfa0dcbfae81636bf21a0e7e616f9b4c51a198af9",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/06-clean-restart.jpg",
-      "bytes": 74861,
-      "sha256": "39bbe88c7c0e5bb6ad7762429ce11b83f167145ba3cae09fb108fbabda9a0e6e",
+      "bytes": 74886,
+      "sha256": "3465fb3c67dfac5e43f117f496c34da3077ae1f70759442c111e9a9c246910a3",
       "visionMode": "full-colour"
     }
   ],
@@ -77,8 +77,8 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 98,
-    "worstFrameMs": 10.3
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 10.9
   },
   "checkpoints": [
     {

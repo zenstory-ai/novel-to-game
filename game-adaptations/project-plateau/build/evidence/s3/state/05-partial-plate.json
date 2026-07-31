@@ -1,5 +1,5 @@
 {
-  "stage": "s3-exposed-proof",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 3.098,
+    "elapsedSeconds": 3.024,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.691599999904633,
+    "previewSeconds": 3.708299999952317,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "brook-partial",
@@ -89,19 +89,132 @@
     "rifleRaised": false,
     "rifleRevealed": false,
     "gunshotFired": false,
+    "brookResponse": null,
     "shotCount": 0,
     "bodyMargin": 1,
     "failed": false,
     "failureCause": null,
-    "contactCount": 0
+    "contactCount": 0,
+    "remainingLight": 176.976,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
   },
   "threatVisual": {
     "state": "watch",
+    "response": "orbit",
     "position": {
-      "x": 14.18,
-      "y": 13.1,
-      "z": 27.63
+      "x": 15.06,
+      "y": 13.13,
+      "z": 27.42
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.368
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.496
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.645
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 2.624
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.624
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise camera [Right Mouse]",
@@ -109,19 +222,28 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "PARTIAL \u2014 foliage hides the flank.",
-    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "capturedPlateImages": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "fieldNote": null,
     "contactNote": null,
-    "cartridgesVisible": false
+    "cartridgesVisible": false,
+    "caption": "[glass plate seats in its case]",
+    "lightWatch": 177,
+    "terminal": null
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 29,
+  "sceneChildren": 30,
+  "calls": 271,
+  "triangles": 50474,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 315.40000009536743,
+  "firstRenderedAt": 188.59999990463257,
   "recentMedianFrameMs": 8.3
 }

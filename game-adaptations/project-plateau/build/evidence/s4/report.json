@@ -2,7 +2,7 @@
   "stage": "s4-complete-loop",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "15a8d173b0192d0efd9ed42974ddca051e921a01904c0e31286c78210fa16997"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -42,8 +42,8 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 97.1,
-    "worstFrameMs": 10.4
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 11.5
   },
   "checkpoints": [
     {

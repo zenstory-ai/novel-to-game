@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 17.095,
+    "elapsedSeconds": 17.07,
     "distanceTravelled": 52.009,
     "paused": false,
     "pauseReason": null,
@@ -37,14 +37,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.08189999985694885,
+    "attackSeconds": 0.08419999980926512,
     "examinedTrack": true,
     "observedBehavior": false,
     "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9265,
+    "previewSeconds": 3.9249000000953678,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -96,7 +96,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 162.905,
+    "remainingLight": 162.93,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -107,9 +107,9 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 5.18,
-      "y": 7.73,
-      "z": 5.84
+      "x": 5.16,
+      "y": 7.71,
+      "z": 5.85
     }
   },
   "familyVisual": {
@@ -182,12 +182,12 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 6.144
+        "at": 6.155
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 6.155
+        "at": 6.16
       },
       {
         "cue": "shutter",
@@ -197,32 +197,32 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.219
+        "at": 8.213
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.219
+        "at": 8.213
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.848
+        "at": 14.832
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.923
+        "at": 14.912
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.912
+        "at": 16.891
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.912
+        "at": 16.891
       }
     ]
   },
@@ -265,6 +265,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 241.60000014305115,
+  "firstRenderedAt": 188.90000009536743,
   "recentMedianFrameMs": 8.3
 }

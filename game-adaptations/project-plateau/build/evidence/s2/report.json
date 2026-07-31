@@ -2,7 +2,7 @@
   "stage": "s2-topology",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "9316f4d78c2529e0a2a9429e596e8c2f649e256d3da2e2b0335e13d0fb107a9a"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -30,14 +30,14 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 98,
-    "worstFrameMs": 10.4
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.4
   },
   "checkpoints": [
     {
       "id": "fort-distant",
       "state": {
-        "stage": "s2-topology",
+        "stage": "s10-glade-clarity",
         "mode": "field",
         "cameraMode": "field",
         "runActive": true,
@@ -54,7 +54,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 0.192,
+          "elapsedSeconds": 0.294,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -72,26 +72,185 @@
           "sprintEscalationCharged": false,
           "threatAwareness": 0,
           "threatState": "distant",
-          "lastThreatEvent": "distant"
+          "lastThreatEvent": "distant",
+          "attackSeconds": 0,
+          "examinedTrack": false,
+          "observedBehavior": false,
+          "lastObservation": null,
+          "cameraRaised": false,
+          "plateRailRevealed": false,
+          "pendingExposure": null,
+          "previewSeconds": 0,
+          "lastProofEvent": null,
+          "plates": [
+            {
+              "index": 0,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "cartridges": 2,
+          "rifleRaised": false,
+          "rifleRevealed": false,
+          "gunshotFired": false,
+          "brookResponse": null,
+          "shotCount": 0,
+          "bodyMargin": 1,
+          "failed": false,
+          "failureCause": null,
+          "contactCount": 0,
+          "remainingLight": 179.706,
+          "returnRoute": null,
+          "returnCostSeconds": 0,
+          "returnStrike": false,
+          "runStatus": "active",
+          "result": null
         },
         "threatVisual": {
           "state": "distant",
+          "response": "orbit",
           "position": {
-            "x": 31.61,
-            "y": 23.38,
-            "z": 46.65
+            "x": 31.5,
+            "y": 23.43,
+            "z": 46.87
           }
         },
-        "sceneChildren": 23,
-        "calls": 63,
-        "triangles": 25384,
-        "textures": 1,
-        "geometries": 29,
+        "familyVisual": {
+          "moment": "glade-young-play",
+          "adults": 2,
+          "young": 3,
+          "branchAngle": 0.08,
+          "roles": [
+            "graze",
+            "branch-pull",
+            "young-play",
+            "young-play",
+            "stay-close"
+          ]
+        },
+        "brookResponseVisual": {
+          "state": null,
+          "position": {
+            "x": -10.5,
+            "y": -0.77,
+            "z": 47
+          }
+        },
+        "assets": {
+          "fieldCamera": {
+            "version": "bellows-camera",
+            "visibleParts": 13
+          },
+          "pterodactyl": {
+            "silhouette": "membrane-wing",
+            "visibleParts": 5
+          },
+          "cover": {
+            "archCount": 5,
+            "visibleParts": 25
+          },
+          "family": {
+            "adults": 2,
+            "young": 3,
+            "behaviors": [
+              "graze",
+              "branch-pull",
+              "young-play"
+            ],
+            "branchPresent": true,
+            "visibleParts": 57
+          },
+          "gladeComposition": {
+            "sightlineHalfWidth": 22,
+            "sunLanePresent": true,
+            "shadowCastingSubjects": 5,
+            "familyWidth": 15
+          }
+        },
+        "audio": {
+          "status": "running",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "captionsEnabled": true,
+          "threatState": "distant",
+          "recentCues": [
+            {
+              "cue": "field-start",
+              "caption": "[brook water and insects under the canopy]",
+              "at": 0
+            }
+          ]
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v1"
+        },
+        "ui": {
+          "prompt": null,
+          "cameraOverlay": false,
+          "rifleOverlay": false,
+          "plateRail": false,
+          "platePreview": null,
+          "capturedPlateImages": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "fieldNote": null,
+          "contactNote": null,
+          "cartridgesVisible": false,
+          "caption": "[brook water and insects under the canopy]",
+          "lightWatch": null,
+          "terminal": null
+        },
+        "sceneChildren": 30,
+        "calls": 268,
+        "triangles": 50426,
+        "textures": 3,
+        "geometries": 93,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 232.90000009536743,
+        "firstRenderedAt": 209.79999995231628,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s2/01-fort-distant.jpg"
@@ -99,7 +258,7 @@
     {
       "id": "canopy-watch",
       "state": {
-        "stage": "s2-topology",
+        "stage": "s10-glade-clarity",
         "mode": "field",
         "cameraMode": "field",
         "runActive": true,
@@ -116,7 +275,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 3.891,
+          "elapsedSeconds": 3.869,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -130,31 +289,195 @@
           ],
           "reachedGlade": false,
           "inCover": true,
-          "coverSeconds": 3.665300000190734,
+          "coverSeconds": 3.5338999998569416,
           "sprintExposureSeconds": 0,
           "sprintEscalationCharged": false,
           "threatAwareness": 1,
           "threatState": "watch",
-          "lastThreatEvent": "territory-watch"
+          "lastThreatEvent": "territory-watch",
+          "attackSeconds": 0,
+          "examinedTrack": false,
+          "observedBehavior": false,
+          "lastObservation": null,
+          "cameraRaised": false,
+          "plateRailRevealed": false,
+          "pendingExposure": null,
+          "previewSeconds": 0,
+          "lastProofEvent": null,
+          "plates": [
+            {
+              "index": 0,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "cartridges": 2,
+          "rifleRaised": false,
+          "rifleRevealed": false,
+          "gunshotFired": false,
+          "brookResponse": null,
+          "shotCount": 0,
+          "bodyMargin": 1,
+          "failed": false,
+          "failureCause": null,
+          "contactCount": 0,
+          "remainingLight": 176.131,
+          "returnRoute": null,
+          "returnCostSeconds": 0,
+          "returnStrike": false,
+          "runStatus": "active",
+          "result": null
         },
         "threatVisual": {
           "state": "watch",
+          "response": "orbit",
           "position": {
-            "x": 9.97,
+            "x": 9.98,
             "y": 12.85,
             "z": 1.4
           }
         },
-        "sceneChildren": 23,
-        "calls": 63,
-        "triangles": 25384,
-        "textures": 1,
-        "geometries": 29,
+        "familyVisual": {
+          "moment": "glade-young-play",
+          "adults": 2,
+          "young": 3,
+          "branchAngle": 0.08,
+          "roles": [
+            "graze",
+            "branch-pull",
+            "young-play",
+            "young-play",
+            "stay-close"
+          ]
+        },
+        "brookResponseVisual": {
+          "state": null,
+          "position": {
+            "x": -10.5,
+            "y": -0.77,
+            "z": 47
+          }
+        },
+        "assets": {
+          "fieldCamera": {
+            "version": "bellows-camera",
+            "visibleParts": 13
+          },
+          "pterodactyl": {
+            "silhouette": "membrane-wing",
+            "visibleParts": 5
+          },
+          "cover": {
+            "archCount": 5,
+            "visibleParts": 25
+          },
+          "family": {
+            "adults": 2,
+            "young": 3,
+            "behaviors": [
+              "graze",
+              "branch-pull",
+              "young-play"
+            ],
+            "branchPresent": true,
+            "visibleParts": 57
+          },
+          "gladeComposition": {
+            "sightlineHalfWidth": 22,
+            "sunLanePresent": true,
+            "shadowCastingSubjects": 5,
+            "familyWidth": 15
+          }
+        },
+        "audio": {
+          "status": "running",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "captionsEnabled": true,
+          "threatState": "watch",
+          "recentCues": [
+            {
+              "cue": "field-start",
+              "caption": "[brook water and insects under the canopy]",
+              "at": 0
+            },
+            {
+              "cue": "watch",
+              "caption": "[one wing call answers at a distance]",
+              "at": 0.24
+            }
+          ]
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v1"
+        },
+        "ui": {
+          "prompt": "Raise camera [Right Mouse]",
+          "cameraOverlay": false,
+          "rifleOverlay": false,
+          "plateRail": false,
+          "platePreview": null,
+          "capturedPlateImages": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "fieldNote": null,
+          "contactNote": null,
+          "cartridgesVisible": false,
+          "caption": null,
+          "lightWatch": null,
+          "terminal": null
+        },
+        "sceneChildren": 30,
+        "calls": 261,
+        "triangles": 50078,
+        "textures": 3,
+        "geometries": 93,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 232.90000009536743,
+        "firstRenderedAt": 209.79999995231628,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s2/02-canopy-watch.jpg"
@@ -162,7 +485,7 @@
     {
       "id": "glade-search",
       "state": {
-        "stage": "s2-topology",
+        "stage": "s10-glade-clarity",
         "mode": "field",
         "cameraMode": "field",
         "runActive": true,
@@ -179,7 +502,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 4.15,
+          "elapsedSeconds": 4.127,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -199,26 +522,195 @@
           "sprintEscalationCharged": false,
           "threatAwareness": 2,
           "threatState": "search",
-          "lastThreatEvent": "glade-search"
+          "lastThreatEvent": "glade-search",
+          "attackSeconds": 0,
+          "examinedTrack": false,
+          "observedBehavior": false,
+          "lastObservation": null,
+          "cameraRaised": false,
+          "plateRailRevealed": false,
+          "pendingExposure": null,
+          "previewSeconds": 0,
+          "lastProofEvent": null,
+          "plates": [
+            {
+              "index": 0,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "cartridges": 2,
+          "rifleRaised": false,
+          "rifleRevealed": false,
+          "gunshotFired": false,
+          "brookResponse": null,
+          "shotCount": 0,
+          "bodyMargin": 1,
+          "failed": false,
+          "failureCause": null,
+          "contactCount": 0,
+          "remainingLight": 175.873,
+          "returnRoute": null,
+          "returnCostSeconds": 0,
+          "returnStrike": false,
+          "runStatus": "active",
+          "result": null
         },
         "threatVisual": {
           "state": "search",
+          "response": "orbit",
           "position": {
-            "x": -0.69,
-            "y": 9.9,
+            "x": -0.67,
+            "y": 9.91,
             "z": -29.05
           }
         },
-        "sceneChildren": 23,
-        "calls": 63,
-        "triangles": 25384,
-        "textures": 1,
-        "geometries": 30,
+        "familyVisual": {
+          "moment": "glade-young-play",
+          "adults": 2,
+          "young": 3,
+          "branchAngle": 0.08,
+          "roles": [
+            "graze",
+            "branch-pull",
+            "young-play",
+            "young-play",
+            "stay-close"
+          ]
+        },
+        "brookResponseVisual": {
+          "state": null,
+          "position": {
+            "x": -10.5,
+            "y": -0.77,
+            "z": 47
+          }
+        },
+        "assets": {
+          "fieldCamera": {
+            "version": "bellows-camera",
+            "visibleParts": 13
+          },
+          "pterodactyl": {
+            "silhouette": "membrane-wing",
+            "visibleParts": 5
+          },
+          "cover": {
+            "archCount": 5,
+            "visibleParts": 25
+          },
+          "family": {
+            "adults": 2,
+            "young": 3,
+            "behaviors": [
+              "graze",
+              "branch-pull",
+              "young-play"
+            ],
+            "branchPresent": true,
+            "visibleParts": 57
+          },
+          "gladeComposition": {
+            "sightlineHalfWidth": 22,
+            "sunLanePresent": true,
+            "shadowCastingSubjects": 5,
+            "familyWidth": 15
+          }
+        },
+        "audio": {
+          "status": "running",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "captionsEnabled": true,
+          "threatState": "search",
+          "recentCues": [
+            {
+              "cue": "field-start",
+              "caption": "[brook water and insects under the canopy]",
+              "at": 0
+            },
+            {
+              "cue": "watch",
+              "caption": "[one wing call answers at a distance]",
+              "at": 0.24
+            },
+            {
+              "cue": "search",
+              "caption": "[a near call circles overhead]",
+              "at": 3.797
+            }
+          ]
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v1"
+        },
+        "ui": {
+          "prompt": "Read the family [E]",
+          "cameraOverlay": false,
+          "rifleOverlay": false,
+          "plateRail": false,
+          "platePreview": null,
+          "capturedPlateImages": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "fieldNote": null,
+          "contactNote": null,
+          "cartridgesVisible": false,
+          "caption": "[a near call circles overhead]",
+          "lightWatch": null,
+          "terminal": null
+        },
+        "sceneChildren": 30,
+        "calls": 244,
+        "triangles": 49238,
+        "textures": 3,
+        "geometries": 94,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 232.90000009536743,
+        "firstRenderedAt": 209.79999995231628,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s2/03-glade-search.jpg"
@@ -226,36 +718,35 @@
     {
       "id": "creek-attack",
       "state": {
-        "stage": "s2-topology",
+        "stage": "s10-glade-clarity",
         "mode": "field",
         "cameraMode": "field",
         "runActive": true,
         "renderer": "WebGL2",
         "player": {
           "position": {
-            "x": 7,
-            "z": 10.117
+            "x": 0,
+            "z": -10
           },
           "lastStablePosition": {
-            "x": 7,
-            "z": 10.117
+            "x": 0,
+            "z": -10
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 7.109,
-          "distanceTravelled": 7.883,
+          "elapsedSeconds": 7.086,
+          "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
           "collisions": 0,
-          "lastEvent": "idle",
-          "zone": "exposed-creek",
+          "lastEvent": "plate:1:exposed",
+          "zone": "iguanodon-glade",
           "zoneHistory": [
             "fort",
             "canopy-overlook",
-            "iguanodon-glade",
-            "exposed-creek"
+            "iguanodon-glade"
           ],
           "reachedGlade": true,
           "inCover": false,
@@ -264,26 +755,221 @@
           "sprintEscalationCharged": false,
           "threatAwareness": 3,
           "threatState": "attack",
-          "lastThreatEvent": "exposed-sprint"
+          "lastThreatEvent": "plate-exposure:+2",
+          "attackSeconds": 0.8837999999523163,
+          "examinedTrack": false,
+          "observedBehavior": false,
+          "lastObservation": null,
+          "cameraRaised": false,
+          "plateRailRevealed": true,
+          "pendingExposure": null,
+          "previewSeconds": 3.1250999999046334,
+          "lastProofEvent": {
+            "plateIndex": 0,
+            "frameKey": "glade-form",
+            "points": 1,
+            "label": "FORM \u2014 the family stands clear.",
+            "zone": "iguanodon-glade"
+          },
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "FORM \u2014 the family stands clear.",
+              "frameKey": "glade-form"
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "cartridges": 2,
+          "rifleRaised": false,
+          "rifleRevealed": false,
+          "gunshotFired": false,
+          "brookResponse": null,
+          "shotCount": 0,
+          "bodyMargin": 1,
+          "failed": false,
+          "failureCause": null,
+          "contactCount": 0,
+          "remainingLight": 172.914,
+          "returnRoute": null,
+          "returnCostSeconds": 0,
+          "returnStrike": false,
+          "runStatus": "active",
+          "result": null
         },
         "threatVisual": {
           "state": "attack",
+          "response": "orbit",
           "position": {
-            "x": 2.01,
-            "y": 9.91,
-            "z": -1.53
+            "x": -5,
+            "y": 8.62,
+            "z": -24.48
           }
         },
-        "sceneChildren": 23,
-        "calls": 63,
-        "triangles": 25384,
-        "textures": 1,
-        "geometries": 30,
+        "familyVisual": {
+          "moment": "glade-branch-pull",
+          "adults": 2,
+          "young": 3,
+          "branchAngle": 0.544,
+          "roles": [
+            "graze",
+            "branch-pull",
+            "young-play",
+            "young-play",
+            "stay-close"
+          ]
+        },
+        "brookResponseVisual": {
+          "state": null,
+          "position": {
+            "x": -10.5,
+            "y": -0.77,
+            "z": 47
+          }
+        },
+        "assets": {
+          "fieldCamera": {
+            "version": "bellows-camera",
+            "visibleParts": 13
+          },
+          "pterodactyl": {
+            "silhouette": "membrane-wing",
+            "visibleParts": 5
+          },
+          "cover": {
+            "archCount": 5,
+            "visibleParts": 25
+          },
+          "family": {
+            "adults": 2,
+            "young": 3,
+            "behaviors": [
+              "graze",
+              "branch-pull",
+              "young-play"
+            ],
+            "branchPresent": true,
+            "visibleParts": 57
+          },
+          "gladeComposition": {
+            "sightlineHalfWidth": 22,
+            "sunLanePresent": true,
+            "shadowCastingSubjects": 5,
+            "familyWidth": 15
+          }
+        },
+        "audio": {
+          "status": "running",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "captionsEnabled": true,
+          "threatState": "attack",
+          "recentCues": [
+            {
+              "cue": "field-start",
+              "caption": "[brook water and insects under the canopy]",
+              "at": 0
+            },
+            {
+              "cue": "watch",
+              "caption": "[one wing call answers at a distance]",
+              "at": 0.24
+            },
+            {
+              "cue": "search",
+              "caption": "[a near call circles overhead]",
+              "at": 3.797
+            },
+            {
+              "cue": "camera-raise",
+              "caption": "[wood frame lifts; bellows opens]",
+              "at": 4.059
+            },
+            {
+              "cue": "shutter",
+              "caption": "[shutter releases]",
+              "at": 4.123
+            },
+            {
+              "cue": "attack",
+              "caption": "[wingbeats tighten into a dive]",
+              "at": 6.107
+            },
+            {
+              "cue": "plate-slide",
+              "caption": "[glass plate seats in its case]",
+              "at": 6.107
+            }
+          ]
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v1"
+        },
+        "ui": {
+          "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+          "cameraOverlay": false,
+          "rifleOverlay": false,
+          "plateRail": true,
+          "platePreview": "FORM \u2014 the family stands clear.",
+          "capturedPlateImages": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "fieldNote": null,
+          "contactNote": null,
+          "cartridgesVisible": true,
+          "caption": "[glass plate seats in its case]",
+          "lightWatch": 173,
+          "terminal": null
+        },
+        "sceneChildren": 30,
+        "calls": 246,
+        "triangles": 49254,
+        "textures": 3,
+        "geometries": 95,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 232.90000009536743,
+        "firstRenderedAt": 209.79999995231628,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s2/04-creek-attack.jpg"
@@ -291,7 +977,7 @@
     {
       "id": "covered-deescalation",
       "state": {
-        "stage": "s2-topology",
+        "stage": "s10-glade-clarity",
         "mode": "field",
         "cameraMode": "field",
         "runActive": true,
@@ -308,48 +994,252 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 13.392,
-          "distanceTravelled": 7.883,
+          "elapsedSeconds": 13.368,
+          "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
           "collisions": 0,
-          "lastEvent": "idle",
+          "lastEvent": "return:covered:committed",
           "zone": "covered-return",
           "zoneHistory": [
             "fort",
             "canopy-overlook",
             "iguanodon-glade",
-            "exposed-creek",
             "covered-return"
           ],
           "reachedGlade": true,
           "inCover": true,
-          "coverSeconds": 0.25099999999999884,
+          "coverSeconds": 0.2500999999046362,
           "sprintExposureSeconds": 0,
           "sprintEscalationCharged": false,
           "threatAwareness": 2,
           "threatState": "search",
-          "lastThreatEvent": "cover-deescalation"
+          "lastThreatEvent": "cover-deescalation",
+          "attackSeconds": 0,
+          "examinedTrack": false,
+          "observedBehavior": false,
+          "lastObservation": null,
+          "cameraRaised": false,
+          "plateRailRevealed": true,
+          "pendingExposure": null,
+          "previewSeconds": 0,
+          "lastProofEvent": {
+            "plateIndex": 0,
+            "frameKey": "glade-form",
+            "points": 1,
+            "label": "FORM \u2014 the family stands clear.",
+            "zone": "iguanodon-glade"
+          },
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "FORM \u2014 the family stands clear.",
+              "frameKey": "glade-form"
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "cartridges": 2,
+          "rifleRaised": false,
+          "rifleRevealed": false,
+          "gunshotFired": false,
+          "brookResponse": null,
+          "shotCount": 0,
+          "bodyMargin": 1,
+          "failed": false,
+          "failureCause": null,
+          "contactCount": 0,
+          "remainingLight": 138.632,
+          "returnRoute": "covered",
+          "returnCostSeconds": 28,
+          "returnStrike": false,
+          "runStatus": "active",
+          "result": null
         },
         "threatVisual": {
           "state": "search",
+          "response": "orbit",
           "position": {
-            "x": -0.68,
+            "x": -0.7,
             "y": 10.1,
-            "z": -12.95
+            "z": -12.94
           }
         },
-        "sceneChildren": 23,
-        "calls": 62,
-        "triangles": 25381,
-        "textures": 1,
-        "geometries": 30,
+        "familyVisual": {
+          "moment": "glade-young-play",
+          "adults": 2,
+          "young": 3,
+          "branchAngle": 0.08,
+          "roles": [
+            "graze",
+            "branch-pull",
+            "young-play",
+            "young-play",
+            "stay-close"
+          ]
+        },
+        "brookResponseVisual": {
+          "state": null,
+          "position": {
+            "x": -10.5,
+            "y": -0.77,
+            "z": 47
+          }
+        },
+        "assets": {
+          "fieldCamera": {
+            "version": "bellows-camera",
+            "visibleParts": 13
+          },
+          "pterodactyl": {
+            "silhouette": "membrane-wing",
+            "visibleParts": 5
+          },
+          "cover": {
+            "archCount": 5,
+            "visibleParts": 25
+          },
+          "family": {
+            "adults": 2,
+            "young": 3,
+            "behaviors": [
+              "graze",
+              "branch-pull",
+              "young-play"
+            ],
+            "branchPresent": true,
+            "visibleParts": 57
+          },
+          "gladeComposition": {
+            "sightlineHalfWidth": 22,
+            "sunLanePresent": true,
+            "shadowCastingSubjects": 5,
+            "familyWidth": 15
+          }
+        },
+        "audio": {
+          "status": "running",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "captionsEnabled": true,
+          "threatState": "search",
+          "recentCues": [
+            {
+              "cue": "field-start",
+              "caption": "[brook water and insects under the canopy]",
+              "at": 0
+            },
+            {
+              "cue": "watch",
+              "caption": "[one wing call answers at a distance]",
+              "at": 0.24
+            },
+            {
+              "cue": "search",
+              "caption": "[a near call circles overhead]",
+              "at": 3.797
+            },
+            {
+              "cue": "camera-raise",
+              "caption": "[wood frame lifts; bellows opens]",
+              "at": 4.059
+            },
+            {
+              "cue": "shutter",
+              "caption": "[shutter releases]",
+              "at": 4.123
+            },
+            {
+              "cue": "attack",
+              "caption": "[wingbeats tighten into a dive]",
+              "at": 6.107
+            },
+            {
+              "cue": "plate-slide",
+              "caption": "[glass plate seats in its case]",
+              "at": 6.107
+            },
+            {
+              "cue": "cover",
+              "caption": "[branches scrape the camera; wingbeats widen]",
+              "at": 7.024
+            },
+            {
+              "cue": "search",
+              "caption": "[a near call circles overhead]",
+              "at": 13.013
+            }
+          ]
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v1"
+        },
+        "ui": {
+          "prompt": "Follow the Fort smoke through the gate.",
+          "cameraOverlay": false,
+          "rifleOverlay": false,
+          "plateRail": true,
+          "platePreview": null,
+          "capturedPlateImages": [
+            true,
+            false,
+            false,
+            false
+          ],
+          "fieldNote": null,
+          "contactNote": null,
+          "cartridgesVisible": false,
+          "caption": "[a near call circles overhead]",
+          "lightWatch": 139,
+          "terminal": null
+        },
+        "sceneChildren": 30,
+        "calls": 260,
+        "triangles": 50076,
+        "textures": 3,
+        "geometries": 95,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 232.90000009536743,
+        "firstRenderedAt": 209.79999995231628,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s2/05-covered-deescalation.jpg"

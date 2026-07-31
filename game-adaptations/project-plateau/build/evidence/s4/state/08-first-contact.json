@@ -1,5 +1,5 @@
 {
-  "stage": "s4-complete-loop",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 5.233,
+    "elapsedSeconds": 5.229,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.007900000095375,
+    "previewSeconds": 1.004500000000005,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "basalt-scale",
@@ -89,12 +89,13 @@
     "rifleRaised": false,
     "rifleRevealed": false,
     "gunshotFired": false,
+    "brookResponse": null,
     "shotCount": 0,
     "bodyMargin": 0,
     "failed": false,
     "failureCause": null,
     "contactCount": 1,
-    "remainingLight": 414.767,
+    "remainingLight": 174.771,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -103,33 +104,156 @@
   },
   "threatVisual": {
     "state": "watch",
+    "response": "orbit",
     "position": {
-      "x": 26.36,
+      "x": 26.79,
       "y": 10.8,
-      "z": -13.44
+      "z": -13.29
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.441,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 15.403
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 15.477
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 15.557
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 15.632
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 17.616
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 17.616
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 20.608
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 20.608
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise camera [Right Mouse]",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": true,
-    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "platePreview": null,
+    "capturedPlateImages": [
+      true,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": "CASE STRIKE \u2014 PLATE I CRACKED.",
     "cartridgesVisible": false,
-    "lightWatch": 415,
+    "caption": "[case strike; glass cracks]",
+    "lightWatch": 175,
     "terminal": null
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 30,
+  "sceneChildren": 30,
+  "calls": 255,
+  "triangles": 49754,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 254.80000019073486,
+  "firstRenderedAt": 176.29999995231628,
   "recentMedianFrameMs": 8.3
 }

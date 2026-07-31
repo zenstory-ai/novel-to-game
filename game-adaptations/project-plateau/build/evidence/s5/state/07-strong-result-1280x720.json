@@ -1,5 +1,5 @@
 {
-  "stage": "s5-route-outcomes",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 14.785,
+    "elapsedSeconds": 14.768,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -47,7 +47,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9745,
+    "previewSeconds": 3.983,
     "lastProofEvent": {
       "plateIndex": 3,
       "frameKey": "return-occluded",
@@ -78,7 +78,7 @@
         "points": 2,
         "lostPoints": 0,
         "label": "BEHAVIOR \u2014 young play beside the adults.",
-        "frameKey": "glade-behavior"
+        "frameKey": "glade-young-play"
       },
       {
         "index": 3,
@@ -99,7 +99,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 377.215,
+    "remainingLight": 137.232,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -113,17 +113,31 @@
       "survivingPlates": 4,
       "route": "covered",
       "brookResponse": null,
-      "remainingLight": 377.2,
+      "remainingLight": 137.2,
       "gunshotCallback": null
     }
   },
   "threatVisual": {
     "state": "attack",
+    "response": "orbit",
     "position": {
-      "x": 4.41,
-      "y": 8.85,
-      "z": 54.18
+      "x": 2.15,
+      "y": 6.88,
+      "z": 54.4
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.506,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -133,33 +147,174 @@
       "z": 47
     }
   },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 17.531
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 17.632
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 17.701
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 19.685
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 19.685
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 19.755
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 19.765
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 19.835
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 21.819
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 21.829
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 27.819
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 28.037
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 28.107
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 30.085
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 30.085
+      },
+      {
+        "cue": "result",
+        "caption": "[glass plates settle on the light board]",
+        "at": 30.107
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
   "ui": {
     "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "PARTIAL \u2014 thorn hides the body.",
+    "capturedPlateImages": [
+      true,
+      true,
+      true,
+      true
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": true,
-    "lightWatch": 378,
+    "caption": "[glass plates settle on the light board]",
+    "lightWatch": 138,
     "terminal": {
       "kind": "alive",
       "title": "Strong field record",
       "copy": "Scale. Living form. Behavior. The field record holds.",
-      "detail": "6 evidence cues \u00b7 4 recorded plates \u00b7 covered return \u00b7 378s light",
+      "detail": "6 evidence cues \u00b7 4 recorded plates \u00b7 covered return \u00b7 138s light",
       "callback": null
     }
   },
-  "sceneChildren": 24,
-  "calls": 68,
-  "triangles": 25424,
-  "textures": 1,
-  "geometries": 38,
+  "sceneChildren": 30,
+  "calls": 275,
+  "triangles": 50500,
+  "textures": 3,
+  "geometries": 98,
   "viewport": [
     1280,
     720
   ],
-  "firstRenderedAt": 213.20000004768372,
+  "firstRenderedAt": 217.69999980926514,
   "recentMedianFrameMs": 8.3
 }

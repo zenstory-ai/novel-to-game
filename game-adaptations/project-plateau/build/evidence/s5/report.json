@@ -2,7 +2,7 @@
   "stage": "s5-route-outcomes",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "bd3edb90f0a40171291ada6faf015905d347d7a85ba7478dc879c5bb059a2cdd"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -64,8 +64,8 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 97.1,
-    "worstFrameMs": 10.3
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "checkpoints": [
     {

@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "565e2f6c20f1aafe99fc098a73c09f2e5432a720",
+  "sourceFingerprint": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d",
+  "environment": {
+    "runtime": "Node.js",
+    "runtimeVersion": "v25.9.0",
+    "packageManager": "npm@11.12.1",
+    "pythonVersion": "3.14.5",
+    "browser": "Google Chrome 150.0.7871.187",
+    "targetViewport": [
+      1440,
+      900
+    ],
+    "minimumViewport": [
+      1280,
+      720
+    ]
+  },
+  "verify": {
+    "command": "npm run verify",
+    "log": "qa/evidence/verify.log",
+    "exitCode": 0,
+    "durationMs": 462634,
+    "suites": [
+      {
+        "id": "unit:simulation",
+        "locations": [
+          "test/audio.test.js",
+          "test/foundation.test.js",
+          "test/settings.test.js",
+          "test/simulation.test.js"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "npm test",
+            "exitCode": 0,
+            "durationMs": 406
+          }
+        ]
+      },
+      {
+        "id": "build:production",
+        "locations": [
+          "index.html",
+          "src/",
+          "public/"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "npm run build",
+            "exitCode": 0,
+            "durationMs": 2769
+          }
+        ]
+      },
+      {
+        "id": "browser:checkpoint-history",
+        "locations": [
+          "test/qa_s0.py",
+          "test/qa_s1.py",
+          "test/qa_s2.py",
+          "test/qa_s3.py",
+          "test/qa_s4.py",
+          "test/qa_s5.py",
+          "test/qa_s6.py",
+          "test/qa_s7.py",
+          "test/qa_s9.py"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "python3 test/qa_s0.py",
+            "exitCode": 0,
+            "durationMs": 10219
+          },
+          {
+            "command": "python3 test/qa_s1.py",
+            "exitCode": 0,
+            "durationMs": 71657
+          },
+          {
+            "command": "python3 test/qa_s2.py",
+            "exitCode": 0,
+            "durationMs": 19241
+          },
+          {
+            "command": "python3 test/qa_s3.py",
+            "exitCode": 0,
+            "durationMs": 15392
+          },
+          {
+            "command": "python3 test/qa_s4.py",
+            "exitCode": 0,
+            "durationMs": 40879
+          },
+          {
+            "command": "python3 test/qa_s5.py",
+            "exitCode": 0,
+            "durationMs": 47153
+          },
+          {
+            "command": "python3 test/qa_s6.py",
+            "exitCode": 0,
+            "durationMs": 15255
+          },
+          {
+            "command": "python3 test/qa_s7.py",
+            "exitCode": 0,
+            "durationMs": 38163
+          },
+          {
+            "command": "python3 test/qa_s9.py",
+            "exitCode": 0,
+            "durationMs": 39579
+          }
+        ]
+      },
+      {
+        "id": "browser:complete-run",
+        "locations": [
+          "test/qa_s8.py"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "python3 test/qa_s8.py",
+            "exitCode": 0,
+            "durationMs": 123435
+          }
+        ]
+      },
+      {
+        "id": "browser:current-visual",
+        "locations": [
+          "test/qa_s10.py"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "python3 test/qa_s10.py",
+            "exitCode": 0,
+            "durationMs": 37555
+          }
+        ]
+      },
+      {
+        "id": "qa:design-invariants",
+        "locations": [
+          "qa/check_design_invariants.py"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "python3 qa/check_design_invariants.py",
+            "exitCode": 0,
+            "durationMs": 43
+          }
+        ]
+      },
+      {
+        "id": "repo:contract",
+        "locations": [
+          "scripts/validate_repo.py",
+          "tests/"
+        ],
+        "executed": true,
+        "passed": true,
+        "commands": [
+          {
+            "command": "python3 scripts/validate_repo.py",
+            "exitCode": 0,
+            "durationMs": 203
+          },
+          {
+            "command": "python3 -m unittest discover -s tests -v",
+            "exitCode": 0,
+            "durationMs": 374
+          }
+        ]
+      }
+    ],
+    "registry": {
+      "discovered": [
+        "test/audio.test.js",
+        "test/capture_demo_clip.py",
+        "test/foundation.test.js",
+        "test/qa_s0.py",
+        "test/qa_s1.py",
+        "test/qa_s10.py",
+        "test/qa_s2.py",
+        "test/qa_s3.py",
+        "test/qa_s4.py",
+        "test/qa_s5.py",
+        "test/qa_s6.py",
+        "test/qa_s7.py",
+        "test/qa_s8.py",
+        "test/qa_s9.py",
+        "test/settings.test.js",
+        "test/simulation.test.js",
+        "test/verify.py"
+      ],
+      "registered": [
+        "test/audio.test.js",
+        "test/foundation.test.js",
+        "test/qa_s0.py",
+        "test/qa_s1.py",
+        "test/qa_s10.py",
+        "test/qa_s2.py",
+        "test/qa_s3.py",
+        "test/qa_s4.py",
+        "test/qa_s5.py",
+        "test/qa_s6.py",
+        "test/qa_s7.py",
+        "test/qa_s8.py",
+        "test/qa_s9.py",
+        "test/settings.test.js",
+        "test/simulation.test.js"
+      ],
+      "excluded": {
+        "test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite",
+        "test/verify.py": "authoritative suite orchestrator; registering it would recurse"
+      },
+      "packageScripts": {
+        "test": "node --test test/*.test.js",
+        "test:browser": "python3 test/qa_s0.py",
+        "test:s1": "python3 test/qa_s1.py",
+        "test:s10": "python3 test/qa_s10.py",
+        "test:s2": "python3 test/qa_s2.py",
+        "test:s3": "python3 test/qa_s3.py",
+        "test:s4": "python3 test/qa_s4.py",
+        "test:s5": "python3 test/qa_s5.py",
+        "test:s6": "python3 test/qa_s6.py",
+        "test:s7": "python3 test/qa_s7.py",
+        "test:s8": "python3 test/qa_s8.py",
+        "test:s9": "python3 test/qa_s9.py"
+      },
+      "problems": []
+    }
+  },
+  "completeRun": {
+    "id": "s8-strong-input-only",
+    "cleanContext": true,
+    "speed": "normal",
+    "steps": [
+      {
+        "id": "step_01",
+        "input": "Enter the basin",
+        "expected": "clean 180-second field order",
+        "checkpoint": "s8:00-clean-field-order"
+      },
+      {
+        "id": "step_02",
+        "input": "W, E, raise camera and expose the brook plate",
+        "expected": "traversal and first physical proof",
+        "checkpoint": "s8:01-strong-brook-frame"
+      },
+      {
+        "id": "step_03",
+        "input": "use cover, reach the glade and expose both behavior plates",
+        "expected": "seven evidence points across four plates",
+        "checkpoint": "s8:03-strong-glade-frames"
+      },
+      {
+        "id": "step_04",
+        "input": "retreat under cover until the dive widens",
+        "expected": "covered return route and retained body margin",
+        "checkpoint": "s8:04-strong-covered-return"
+      },
+      {
+        "id": "step_05",
+        "input": "follow the covered return to Fort",
+        "expected": "Strong field record with all captured views",
+        "checkpoint": "s8:05-strong-input-result"
+      },
+      {
+        "id": "step_06",
+        "input": "Take the route again",
+        "expected": "clean field order with no spent resource or travelled distance",
+        "checkpoint": "s8:06-strong-clean-restart"
+      }
+    ],
+    "terminal": "strong-field-record",
+    "restart": "clean-field-order"
+  },
+  "checkpoints": [
+    {
+      "id": "s8:00-clean-field-order",
+      "state": "build/evidence/s8/state/00-clean-field-order.json",
+      "browser": "build/evidence/s8/browser/00-clean-field-order.json",
+      "visual": "build/evidence/s8/00-clean-field-order.jpg"
+    },
+    {
+      "id": "s8:01-strong-brook-frame",
+      "state": "build/evidence/s8/state/01-strong-brook-frame.json",
+      "browser": "build/evidence/s8/browser/01-strong-brook-frame.json",
+      "visual": "build/evidence/s8/01-strong-brook-frame.jpg"
+    },
+    {
+      "id": "s8:02-strong-basalt-frame",
+      "state": "build/evidence/s8/state/02-strong-basalt-frame.json",
+      "browser": "build/evidence/s8/browser/02-strong-basalt-frame.json",
+      "visual": "build/evidence/s8/02-strong-basalt-frame.jpg"
+    },
+    {
+      "id": "s8:03-strong-glade-frames",
+      "state": "build/evidence/s8/state/03-strong-glade-frames.json",
+      "browser": "build/evidence/s8/browser/03-strong-glade-frames.json",
+      "visual": "build/evidence/s8/03-strong-glade-frames.jpg"
+    },
+    {
+      "id": "s8:04-strong-covered-return",
+      "state": "build/evidence/s8/state/04-strong-covered-return.json",
+      "browser": "build/evidence/s8/browser/04-strong-covered-return.json",
+      "visual": "build/evidence/s8/04-strong-covered-return.jpg"
+    },
+    {
+      "id": "s8:05-strong-input-result",
+      "state": "build/evidence/s8/state/05-strong-input-result.json",
+      "browser": "build/evidence/s8/browser/05-strong-input-result.json",
+      "visual": "build/evidence/s8/05-strong-input-result.jpg"
+    },
+    {
+      "id": "s8:06-strong-clean-restart",
+      "state": "build/evidence/s8/state/06-strong-clean-restart.json",
+      "browser": "build/evidence/s8/browser/06-strong-clean-restart.json",
+      "visual": "build/evidence/s8/06-strong-clean-restart.jpg"
+    },
+    {
+      "id": "s8:07-mixed-return-attack",
+      "state": "build/evidence/s8/state/07-mixed-return-attack.json",
+      "browser": "build/evidence/s8/browser/07-mixed-return-attack.json",
+      "visual": "build/evidence/s8/07-mixed-return-attack.jpg"
+    },
+    {
+      "id": "s8:08-mixed-rifle-brook",
+      "state": "build/evidence/s8/state/08-mixed-rifle-brook.json",
+      "browser": "build/evidence/s8/browser/08-mixed-rifle-brook.json",
+      "visual": "build/evidence/s8/08-mixed-rifle-brook.jpg"
+    },
+    {
+      "id": "s8:09-mixed-input-result",
+      "state": "build/evidence/s8/state/09-mixed-input-result.json",
+      "browser": "build/evidence/s8/browser/09-mixed-input-result.json",
+      "visual": "build/evidence/s8/09-mixed-input-result.jpg"
+    },
+    {
+      "id": "s8:10-mixed-clean-restart",
+      "state": "build/evidence/s8/state/10-mixed-clean-restart.json",
+      "browser": "build/evidence/s8/browser/10-mixed-clean-restart.json",
+      "visual": "build/evidence/s8/10-mixed-clean-restart.jpg"
+    },
+    {
+      "id": "s8:11-panic-first-contact",
+      "state": "build/evidence/s8/state/11-panic-first-contact.json",
+      "browser": "build/evidence/s8/browser/11-panic-first-contact.json",
+      "visual": "build/evidence/s8/11-panic-first-contact.jpg"
+    },
+    {
+      "id": "s8:12-panic-input-failure",
+      "state": "build/evidence/s8/state/12-panic-input-failure.json",
+      "browser": "build/evidence/s8/browser/12-panic-input-failure.json",
+      "visual": "build/evidence/s8/12-panic-input-failure.jpg"
+    },
+    {
+      "id": "s8:13-panic-clean-restart",
+      "state": "build/evidence/s8/state/13-panic-clean-restart.json",
+      "browser": "build/evidence/s8/browser/13-panic-clean-restart.json",
+      "visual": "build/evidence/s8/13-panic-clean-restart.jpg"
+    },
+    {
+      "id": "s7:02-settings-150-minimum",
+      "state": "build/evidence/s7/state/02-settings-150-minimum.json",
+      "browser": "build/evidence/s7/browser/02-settings-150-minimum.json",
+      "visual": "build/evidence/s7/02-settings-150-minimum.jpg"
+    },
+    {
+      "id": "s7:10-heavy-state-target",
+      "state": "build/evidence/s7/state/10-heavy-state-target.json",
+      "browser": "build/evidence/s7/browser/10-heavy-state-target.json",
+      "visual": "build/evidence/s7/10-heavy-state-target.jpg"
+    },
+    {
+      "id": "s10:01-clear-family-sightline",
+      "state": "build/evidence/s10/state/01-clear-family-sightline.json",
+      "browser": "build/evidence/s10/browser/01-clear-family-sightline.json",
+      "visual": "build/evidence/s10/01-clear-family-sightline.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "s10:02-young-play-silver-frame",
+      "state": "build/evidence/s10/state/02-young-play-silver-frame.json",
+      "browser": "build/evidence/s10/browser/02-young-play-silver-frame.json",
+      "visual": "build/evidence/s10/02-young-play-silver-frame.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "s10:03-branch-pull-silver-frame",
+      "state": "build/evidence/s10/state/03-branch-pull-silver-frame.json",
+      "browser": "build/evidence/s10/browser/03-branch-pull-silver-frame.json",
+      "visual": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "s10:04-achromatopsia-attack",
+      "state": "build/evidence/s10/state/04-achromatopsia-attack.json",
+      "browser": "build/evidence/s10/browser/04-achromatopsia-attack.json",
+      "visual": "build/evidence/s10/04-achromatopsia-attack.jpg",
+      "visionMode": "achromatopsia"
+    },
+    {
+      "id": "s10:05-strong-plate-board",
+      "state": "build/evidence/s10/state/05-strong-plate-board.json",
+      "browser": "build/evidence/s10/browser/05-strong-plate-board.json",
+      "visual": "build/evidence/s10/05-strong-plate-board.jpg",
+      "visionMode": "full-colour"
+    },
+    {
+      "id": "s10:06-clean-restart",
+      "state": "build/evidence/s10/state/06-clean-restart.json",
+      "browser": "build/evidence/s10/browser/06-clean-restart.json",
+      "visual": "build/evidence/s10/06-clean-restart.jpg",
+      "visionMode": "full-colour"
+    }
+  ],
+  "claimBoundaries": [
+    "Automated paths are not first-time human navigation or premise-comprehension evidence.",
+    "Pixel and state checks do not prove subjective composition, anatomy, motion, fun or balance.",
+    "Local 25 Mbps throttling is not public-host cold-loading evidence.",
+    "One achromatopsia attack frame is not a complete colour-vision route matrix."
+  ]
+}

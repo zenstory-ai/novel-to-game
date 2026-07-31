@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 3,
-      "z": 44.976
+      "z": 44.974
     },
     "lastStablePosition": {
       "x": 3,
-      "z": 44.976
+      "z": 44.974
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 8.411,
-    "distanceTravelled": 25.024,
+    "elapsedSeconds": 8.395,
+    "distanceTravelled": 25.026,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9182999999523167,
+    "previewSeconds": 3.9240999999046333,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "brook-partial",
@@ -95,7 +95,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 171.588,
+    "remainingLight": 171.605,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -106,9 +106,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": -15.03,
+      "x": -15.12,
       "y": 10.8,
-      "z": 26.53
+      "z": 26.5
     }
   },
   "familyVisual": {
@@ -181,12 +181,12 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 6.144
+        "at": 6.155
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 6.155
+        "at": 6.16
       },
       {
         "cue": "shutter",
@@ -196,12 +196,12 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.219
+        "at": 8.213
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.219
+        "at": 8.213
       }
     ]
   },
@@ -244,6 +244,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 241.60000014305115,
+  "firstRenderedAt": 188.90000009536743,
   "recentMedianFrameMs": 8.3
 }

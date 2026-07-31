@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 2.562,
+    "elapsedSeconds": 2.604,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -95,7 +95,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 417.437,
+    "remainingLight": 177.396,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -106,10 +106,23 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 16.96,
-      "y": 13.19,
-      "z": 26.9
+      "x": 16.37,
+      "y": 13.17,
+      "z": 27.07
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -131,6 +144,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -151,29 +181,40 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.229
+        "at": 0.245
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.331
+        "at": 0.357
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.469
+        "at": 0.517
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.469
+        "at": 2.496
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.469
+        "at": 2.496
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise camera [Right Mouse]",
@@ -181,22 +222,28 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "PARTIAL \u2014 foliage hides the flank.",
-    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "capturedPlateImages": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
     "caption": "[glass plate seats in its case]",
-    "lightWatch": 418,
+    "lightWatch": 178,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 106,
-  "triangles": 27010,
-  "textures": 1,
-  "geometries": 58,
+  "sceneChildren": 30,
+  "calls": 272,
+  "triangles": 50486,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

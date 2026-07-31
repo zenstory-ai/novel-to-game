@@ -1,5 +1,5 @@
 {
-  "stage": "s3-exposed-proof",
+  "stage": "s10-glade-clarity",
   "mode": "paused",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 1.442,
+    "elapsedSeconds": 1.374,
     "distanceTravelled": 0,
     "paused": true,
     "pauseReason": "manual",
@@ -48,7 +48,7 @@
       "label": "PARTIAL \u2014 foliage hides the flank.",
       "exposure": 1,
       "plateIndex": 0,
-      "remainingSeconds": 1.3414999999999992,
+      "remainingSeconds": 1.3498999998569483,
       "zone": "brook-blind"
     },
     "previewSeconds": 0,
@@ -91,19 +91,122 @@
     "rifleRaised": false,
     "rifleRevealed": false,
     "gunshotFired": false,
+    "brookResponse": null,
     "shotCount": 0,
     "bodyMargin": 1,
     "failed": false,
     "failureCause": null,
-    "contactCount": 0
+    "contactCount": 0,
+    "remainingLight": 178.626,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
   },
   "threatVisual": {
     "state": "distant",
+    "response": "orbit",
     "position": {
-      "x": 28.54,
-      "y": 23.42,
-      "z": 21.8
+      "x": 28.6,
+      "y": 23.39,
+      "z": 21.68
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "suspended",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "distant",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.368
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.496
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.645
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Hold steady.",
@@ -111,19 +214,28 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": null,
-    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "capturedPlateImages": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "fieldNote": null,
     "contactNote": null,
-    "cartridgesVisible": false
+    "cartridgesVisible": false,
+    "caption": "[shutter releases]",
+    "lightWatch": 179,
+    "terminal": null
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 29,
+  "sceneChildren": 30,
+  "calls": 266,
+  "triangles": 50422,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 315.40000009536743,
+  "firstRenderedAt": 188.59999990463257,
   "recentMedianFrameMs": 8.3
 }

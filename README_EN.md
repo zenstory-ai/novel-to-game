@@ -28,7 +28,7 @@ The next English reference build takes the same pipeline into a real-time **firs
 | [![Iguanodon family through the field camera](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![Four recovered field plates](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
 | Two adults, three young, a moving aerial threat, and a live period camera | Four renderer-derived views preserved through the final field record |
 
-**[Run locally](game-adaptations/project-plateau/build/app/RUN.md)** · [Playable source](game-adaptations/project-plateau/build/app/) · [Planning artifacts](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Browser evidence](game-adaptations/project-plateau/build/evidence/s10/report.json) · [Media pack](game-adaptations/project-plateau/build/media/)
+**[Run locally](game-adaptations/project-plateau/build/app/RUN.md)** · [Playable source](game-adaptations/project-plateau/build/app/) · [Planning artifacts](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Authoritative verification](game-adaptations/project-plateau/qa/verification.json) · [Browser evidence](game-adaptations/project-plateau/build/evidence/s10/report.json) · [Media pack](game-adaptations/project-plateau/build/media/)
 
 This is a repository checkpoint rather than a hosted release. Independent first-time review and public-host verification remain open.
 

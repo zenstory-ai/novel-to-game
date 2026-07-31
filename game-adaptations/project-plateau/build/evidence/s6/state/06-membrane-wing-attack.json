@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 4.871,
+    "elapsedSeconds": 4.928,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -37,14 +37,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.11540000009536745,
+    "attackSeconds": 0.11570000004768372,
     "examinedTrack": true,
     "observedBehavior": false,
     "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.8932999999523163,
+    "previewSeconds": 3.8925999999046335,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -96,7 +96,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 415.129,
+    "remainingLight": 175.072,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -107,10 +107,23 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 5.48,
-      "y": 7.65,
-      "z": 5.66
+      "x": 4.66,
+      "y": 8.38,
+      "z": 5.42
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -132,6 +145,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -152,49 +182,60 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.229
+        "at": 0.245
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.331
+        "at": 0.357
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.469
+        "at": 0.517
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.469
+        "at": 2.496
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.469
+        "at": 2.496
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.597
+        "at": 2.64
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.672
+        "at": 2.731
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.672
+        "at": 4.715
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.672
+        "at": 4.715
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
@@ -202,22 +243,28 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "capturedPlateImages": [
+      true,
+      true,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": true,
     "caption": "[glass plate seats in its case]",
-    "lightWatch": 416,
+    "lightWatch": 176,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 92,
-  "triangles": 26306,
-  "textures": 1,
-  "geometries": 63,
+  "sceneChildren": 30,
+  "calls": 259,
+  "triangles": 49792,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 420.083,
+    "elapsedSeconds": 180.091,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -103,13 +103,26 @@
     }
   },
   "threatVisual": {
-    "state": "search",
+    "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 5.14,
-      "y": 10.69,
-      "z": -29.33
+      "x": 2.93,
+      "y": 22.99,
+      "z": 55.15
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.489,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -131,6 +144,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -146,14 +176,25 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 7.637
+        "at": 7.696
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 7.712
+        "at": 7.771
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": null,
@@ -161,6 +202,12 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
@@ -174,15 +221,15 @@
       "callback": null
     }
   },
-  "sceneChildren": 25,
-  "calls": 76,
-  "triangles": 25750,
-  "textures": 1,
-  "geometries": 63,
+  "sceneChildren": 30,
+  "calls": 266,
+  "triangles": 50422,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

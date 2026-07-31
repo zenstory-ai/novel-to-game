@@ -1,8 +1,9 @@
 {
   "inputs": [
-    "fourth open frame",
-    "exposed creek",
-    "continue after body margin is gone"
+    "sprint",
+    "three open frames",
+    "both rifle rounds",
+    "wait for contact"
   ],
   "viewport": [
     1440,
@@ -13,5 +14,5 @@
   "requestHostsAtCheckpoint": [
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785532656485
+  "capturedAtUnixMs": 1785536955290
 }

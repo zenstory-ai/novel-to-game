@@ -1,5 +1,5 @@
 {
-  "stage": "s5-route-outcomes",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -16,8 +16,8 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.633,
-    "distanceTravelled": 1.539,
+    "elapsedSeconds": 0.741,
+    "distanceTravelled": 1.541,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -91,7 +91,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 391.366,
+    "remainingLight": 151.259,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -105,17 +105,31 @@
       "survivingPlates": 0,
       "route": "covered",
       "brookResponse": null,
-      "remainingLight": 391.4,
+      "remainingLight": 151.3,
       "gunshotCallback": null
     }
   },
   "threatVisual": {
     "state": "search",
+    "response": "orbit",
     "position": {
-      "x": 16.66,
-      "y": 10.47,
-      "z": 46.18
+      "x": 16.61,
+      "y": 10.5,
+      "z": 46.27
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -125,33 +139,114 @@
       "z": 47
     }
   },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "search",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 0.507
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 0.565
+      },
+      {
+        "cue": "result",
+        "caption": "[glass plates settle on the light board]",
+        "at": 0.629
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
   "ui": {
     "prompt": "Follow the Fort smoke through the gate.",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
+    "caption": "[glass plates settle on the light board]",
     "lightWatch": null,
     "terminal": {
       "kind": "alive",
       "title": "Returned without a record",
       "copy": "You returned with a story. Stories are what they came to dispute.",
-      "detail": "0 evidence cues \u00b7 0 recorded plates \u00b7 covered return \u00b7 392s light",
+      "detail": "0 evidence cues \u00b7 0 recorded plates \u00b7 covered return \u00b7 152s light",
       "callback": null
     }
   },
-  "sceneChildren": 24,
-  "calls": 68,
-  "triangles": 25424,
-  "textures": 1,
-  "geometries": 34,
+  "sceneChildren": 30,
+  "calls": 275,
+  "triangles": 50500,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 213.20000004768372,
+  "firstRenderedAt": 217.69999980926514,
   "recentMedianFrameMs": 8.3
 }

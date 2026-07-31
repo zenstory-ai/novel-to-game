@@ -2,7 +2,7 @@
   "stage": "s9-living-plates",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -29,26 +29,26 @@
   "plateImages": [
     {
       "plate": 1,
-      "bytesInCssValue": 75862,
-      "sha256": "8a323d0509bcff8a6ed9219a0c67c7c64fb64399f984bf6827fb030c4b038e47",
+      "bytesInCssValue": 75886,
+      "sha256": "700376e95b6e83c29fec4408263cf5706bae74321d833c127fe68531cbed5a45",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 2,
-      "bytesInCssValue": 76586,
-      "sha256": "41880ab89367f3e44166f3cd46a75f1584fbdf53d8f8bbb32286081e2c99e4c9",
+      "bytesInCssValue": 76574,
+      "sha256": "5374369e4d246fee1ce962394992505324031da59283481e2212103a81a67bc9",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 3,
-      "bytesInCssValue": 75506,
-      "sha256": "ab273aaebbf3286ad670dac8329afd4b275baf29a805e6acd272537632cc7a90",
+      "bytesInCssValue": 75518,
+      "sha256": "dbf88eb219b264ef64df4c04dfd825adcd5b3c27b4e8d3493e3bdb3e3436ea3a",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 4,
-      "bytesInCssValue": 79510,
-      "sha256": "4e6ddb46122c7ce774aa2cb7c278c426d8fb26424724b0d8539126dedec4032c",
+      "bytesInCssValue": 79394,
+      "sha256": "8c7343881d93e08fc7eb238149118e1544ea19dd566ab4a758e6cfeeee63589f",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     }
   ],
@@ -56,8 +56,8 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 98,
-    "worstFrameMs": 10.2
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.3
   },
   "checkpoints": [
     {

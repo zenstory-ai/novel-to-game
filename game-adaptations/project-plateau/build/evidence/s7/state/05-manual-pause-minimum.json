@@ -1,5 +1,5 @@
 {
-  "stage": "s7-lifecycle",
+  "stage": "s10-glade-clarity",
   "mode": "paused",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.22,
+    "elapsedSeconds": 0.236,
     "distanceTravelled": 0,
     "paused": true,
     "pauseReason": "manual",
@@ -88,7 +88,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 419.78,
+    "remainingLight": 179.764,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -99,10 +99,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 31.88,
-      "y": 23.21,
-      "z": 45.9
+      "x": 31.86,
+      "y": 23.24,
+      "z": 46.01
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -124,6 +137,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -160,6 +190,12 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
@@ -167,15 +203,15 @@
     "lightWatch": null,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 103,
-  "triangles": 26974,
-  "textures": 1,
-  "geometries": 58,
+  "sceneChildren": 30,
+  "calls": 267,
+  "triangles": 50424,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1280,
     720
   ],
-  "firstRenderedAt": 2174.4000000953674,
+  "firstRenderedAt": 2322.2000000476837,
   "recentMedianFrameMs": 8.3
 }

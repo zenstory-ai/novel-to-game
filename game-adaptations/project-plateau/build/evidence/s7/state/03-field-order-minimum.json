@@ -1,5 +1,5 @@
 {
-  "stage": "s7-lifecycle",
+  "stage": "s10-glade-clarity",
   "mode": "order",
   "cameraMode": "order",
   "runActive": false,
@@ -88,7 +88,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 420,
+    "remainingLight": 180,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -99,10 +99,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 31.93,
-      "y": 23.16,
-      "z": 45.69
+      "x": 31.92,
+      "y": 23.18,
+      "z": 45.76
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -124,6 +137,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -154,6 +184,12 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
@@ -161,15 +197,15 @@
     "lightWatch": null,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 98,
-  "triangles": 26370,
-  "textures": 1,
-  "geometries": 46,
+  "sceneChildren": 30,
+  "calls": 250,
+  "triangles": 49364,
+  "textures": 3,
+  "geometries": 81,
   "viewport": [
     1280,
     720
   ],
-  "firstRenderedAt": 2174.4000000953674,
+  "firstRenderedAt": 2322.2000000476837,
   "recentMedianFrameMs": 8.3
 }

@@ -1,5 +1,5 @@
 {
-  "stage": "s3-exposed-proof",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 7,
-      "z": 11.144
+      "z": 11.2
     },
     "lastStablePosition": {
       "x": 7,
-      "z": 11.144
+      "z": 11.2
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 1.438,
-    "distanceTravelled": 6.856,
+    "elapsedSeconds": 1.426,
+    "distanceTravelled": 6.8,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -84,39 +84,156 @@
     "rifleRaised": false,
     "rifleRevealed": true,
     "gunshotFired": true,
+    "brookResponse": "answering-call",
     "shotCount": 1,
     "bodyMargin": 1,
     "failed": false,
     "failureCause": null,
-    "contactCount": 0
+    "contactCount": 0,
+    "remainingLight": 166.574,
+    "returnRoute": "exposed",
+    "returnCostSeconds": 12,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
   },
   "threatVisual": {
     "state": "watch",
+    "response": "orbit",
     "position": {
-      "x": -16.67,
-      "y": 11.1,
-      "z": -10.09
+      "x": -16.13,
+      "y": 11.03,
+      "z": -9.65
     }
   },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.447,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": "answering-call",
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 8.197
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 8.357
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 9.472
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 9.541
+      },
+      {
+        "cue": "rifle",
+        "caption": "[rifle report; echo runs toward the brook]",
+        "at": 9.541
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
   "ui": {
-    "prompt": "Raise camera [Right Mouse]",
+    "prompt": "Follow the Fort smoke through the gate.",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
-    "cartridgesVisible": true
+    "cartridgesVisible": true,
+    "caption": "[rifle report; echo runs toward the brook]",
+    "lightWatch": null,
+    "terminal": null
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 33,
+  "sceneChildren": 30,
+  "calls": 253,
+  "triangles": 49520,
+  "textures": 3,
+  "geometries": 98,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 315.40000009536743,
+  "firstRenderedAt": 188.59999990463257,
   "recentMedianFrameMs": 8.3
 }

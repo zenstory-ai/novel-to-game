@@ -1,7 +1,6 @@
 {
   "inputs": [
-    "three input-only frames",
-    "attack begins"
+    "Take the route again"
   ],
   "viewport": [
     1440,
@@ -12,5 +11,5 @@
   "requestHostsAtCheckpoint": [
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785532614826
+  "capturedAtUnixMs": 1785536964500
 }

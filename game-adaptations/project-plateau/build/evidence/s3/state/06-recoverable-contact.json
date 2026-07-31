@@ -1,5 +1,5 @@
 {
-  "stage": "s3-exposed-proof",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 8.356,
+    "elapsedSeconds": 8.266,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -44,7 +44,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.0005999999046395,
+    "previewSeconds": 1.0000000000000087,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -90,39 +90,191 @@
     "rifleRaised": false,
     "rifleRevealed": false,
     "gunshotFired": false,
+    "brookResponse": null,
     "shotCount": 0,
     "bodyMargin": 0,
     "failed": false,
     "failureCause": null,
-    "contactCount": 1
+    "contactCount": 1,
+    "remainingLight": 171.734,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
   },
   "threatVisual": {
     "state": "watch",
+    "response": "orbit",
     "position": {
-      "x": -10.05,
-      "y": 10.8,
-      "z": -0.45
+      "x": -9.18,
+      "y": 10.81,
+      "z": -0.17
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.474,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "watch",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.368
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.496
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.645
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 2.624
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.624
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 3.083
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 3.168
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 5.157
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 5.157
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 8.155
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 8.155
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise camera [Right Mouse]",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": true,
-    "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "platePreview": null,
+    "capturedPlateImages": [
+      true,
+      true,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": "CASE STRIKE \u2014 PLATE II CRACKED.",
-    "cartridgesVisible": false
+    "cartridgesVisible": false,
+    "caption": "[case strike; glass cracks]",
+    "lightWatch": 172,
+    "terminal": null
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 30,
+  "sceneChildren": 30,
+  "calls": 259,
+  "triangles": 49792,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 315.40000009536743,
+  "firstRenderedAt": 188.59999990463257,
   "recentMedianFrameMs": 8.3
 }

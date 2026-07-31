@@ -6,18 +6,18 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.681,
-      "z": 3.216
+      "x": 2.689,
+      "z": 3.201
     },
     "lastStablePosition": {
-      "x": 2.681,
-      "z": 3.216
+      "x": 2.689,
+      "z": 3.201
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 37.605,
-    "distanceTravelled": 69.556,
+    "elapsedSeconds": 37.611,
+    "distanceTravelled": 69.56,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -34,7 +34,7 @@
     ],
     "reachedGlade": true,
     "inCover": true,
-    "coverSeconds": 0.008099999904632504,
+    "coverSeconds": 0.0030999999046441573,
     "sprintExposureSeconds": 0,
     "sprintEscalationCharged": false,
     "threatAwareness": 2,
@@ -99,7 +99,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 114.395,
+    "remainingLight": 114.389,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -110,9 +110,9 @@
     "state": "search",
     "response": "orbit",
     "position": {
-      "x": 19.54,
-      "y": 10.31,
-      "z": -21.01
+      "x": 19.51,
+      "y": 10.34,
+      "z": -20.94
     }
   },
   "familyVisual": {
@@ -180,82 +180,82 @@
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.219
+        "at": 8.213
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.848
+        "at": 14.832
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.923
+        "at": 14.912
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.912
+        "at": 16.891
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.912
+        "at": 16.891
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.029
+        "at": 23.013
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 26.928
+        "at": 26.912
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 26.928
+        "at": 26.923
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 27.008
+        "at": 26.997
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 28.992
+        "at": 28.987
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 28.992
+        "at": 28.987
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.077
+        "at": 29.072
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.152
+        "at": 29.141
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 31.136
+        "at": 31.131
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 31.493
+        "at": 31.509
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 37.493
+        "at": 37.509
       }
     ]
   },
@@ -298,6 +298,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 241.60000014305115,
+  "firstRenderedAt": 188.90000009536743,
   "recentMedianFrameMs": 8.3
 }

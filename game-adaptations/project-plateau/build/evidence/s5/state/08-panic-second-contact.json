@@ -1,5 +1,5 @@
 {
-  "stage": "s5-route-outcomes",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 10.29,
+    "elapsedSeconds": 10.275,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.0100999999046354,
+    "previewSeconds": 1.0001000001430604,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -95,7 +95,7 @@
     "failed": true,
     "failureCause": "second-unblocked-strike",
     "contactCount": 2,
-    "remainingLight": 409.71,
+    "remainingLight": 169.725,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -110,11 +110,25 @@
   },
   "threatVisual": {
     "state": "attack",
+    "response": "orbit",
     "position": {
-      "x": 10.27,
-      "y": 11.07,
-      "z": 5.53
+      "x": 10.7,
+      "y": 10.47,
+      "z": 5.57
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -124,16 +138,147 @@
       "z": 47
     }
   },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 30.341
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 30.416
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 30.475
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 30.539
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 32.528
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 32.533
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 35.531
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 35.531
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 35.541
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 35.605
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 37.6
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 37.6
+      },
+      {
+        "cue": "contact",
+        "caption": "[case strike; glass cracks]",
+        "at": 40.597
+      },
+      {
+        "cue": "failure",
+        "caption": "[the field sound narrows to wind and brook]",
+        "at": 40.597
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
   "ui": {
     "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "CONTEXT \u2014 basalt gives scale.",
+    "capturedPlateImages": [
+      true,
+      true,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": true,
-    "lightWatch": 410,
+    "caption": null,
+    "lightWatch": 170,
     "terminal": {
       "kind": "failure",
       "title": "The second pass",
@@ -142,15 +287,15 @@
       "callback": null
     }
   },
-  "sceneChildren": 24,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 38,
+  "sceneChildren": 30,
+  "calls": 257,
+  "triangles": 49770,
+  "textures": 3,
+  "geometries": 98,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 213.20000004768372,
+  "firstRenderedAt": 217.69999980926514,
   "recentMedianFrameMs": 8.3
 }

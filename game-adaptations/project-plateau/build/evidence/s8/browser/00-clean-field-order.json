@@ -1,9 +1,6 @@
 {
   "inputs": [
-    "sprint",
-    "three open frames",
-    "both rifle rounds",
-    "wait for contact"
+    "Enter the basin"
   ],
   "viewport": [
     1440,
@@ -14,5 +11,5 @@
   "requestHostsAtCheckpoint": [
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785532647415
+  "capturedAtUnixMs": 1785536847351
 }

@@ -6,18 +6,18 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.681,
-      "z": 1.984
+      "x": 2.686,
+      "z": 1.987
     },
     "lastStablePosition": {
-      "x": 2.681,
-      "z": 1.984
+      "x": 2.686,
+      "z": 1.987
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 23.125,
-    "distanceTravelled": 68.336,
+    "elapsedSeconds": 23.132,
+    "distanceTravelled": 68.326,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -38,14 +38,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.0837999999523163,
+    "attackSeconds": 0.08660000014305114,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.926099999904633,
+    "previewSeconds": 3.9225999999046324,
     "lastProofEvent": {
       "plateIndex": 2,
       "frameKey": "glade-young-play",
@@ -97,7 +97,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 156.875,
+    "remainingLight": 156.868,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -108,9 +108,9 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 5.36,
-      "y": 7.39,
-      "z": -13.7
+      "x": 5.23,
+      "y": 7.18,
+      "z": -13.58
     }
   },
   "familyVisual": {
@@ -178,82 +178,82 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 57.813
+        "at": 57.824
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 57.819
+        "at": 57.829
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 57.893
+        "at": 57.899
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 59.877
+        "at": 59.888
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 59.877
+        "at": 59.888
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 66.619
+        "at": 66.64
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 66.699
+        "at": 66.715
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 68.677
+        "at": 68.704
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 68.677
+        "at": 68.704
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 68.72
+        "at": 68.736
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 72.336
+        "at": 72.352
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 72.651
+        "at": 72.667
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 72.656
+        "at": 72.672
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 72.731
+        "at": 72.747
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 74.72
+        "at": 74.741
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 74.72
+        "at": 74.741
       }
     ]
   },
@@ -296,6 +296,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 241.60000014305115,
-  "recentMedianFrameMs": 8.3
+  "firstRenderedAt": 188.90000009536743,
+  "recentMedianFrameMs": 8.4
 }

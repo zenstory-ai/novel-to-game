@@ -296,7 +296,11 @@ commands:
 verification:
   suites:
     - unit:simulation
+    - build:production
+    - browser:checkpoint-history
     - browser:complete-run
+    - browser:current-visual
+    - qa:design-invariants
     - repo:contract
   completeRun: ../qa/verification.json#completeRun
   evidenceIndex: ../qa/verification.json#checkpoints
@@ -337,5 +341,34 @@ are not claimed by automated verification.
 
 ## Final scope reconciliation
 
-`NOT_RUN: implementation has not yet begun. This section is updated only from
-the completed authoritative build and evidence set.`
+Reconciled on 2026-07-31 against source commit
+`565e2f6c20f1aafe99fc098a73c09f2e5432a720` and authoritative command
+`npm run verify`. The 462.634-second run executed all seven registered suites
+and sixteen underlying commands; its log and 22-checkpoint handoff are
+`../qa/evidence/verify.log` and `../qa/verification.json`.
+
+| Approved scope | Delivery | Evidence or deliberate boundary |
+|---|---|---|
+| Free anonymous desktop WebGL2 slice at `1440×900`, minimum `1280×720` | Delivered locally | S0/S7 browser evidence; public HTTPS and anonymous-host smoke remain NOT_RUN |
+| Continuous first-person connected zone, collision, pause, focus recovery and restart | Delivered | S1/S2/S7 plus the S8 input-only complete run |
+| Five same-play verbs performed by input | Delivered | `../qa/evidence/design-invariants.md#same-play-verbs`; S8 input trace and checkpoints |
+| Four physical plates with view-dependent proof and persistent recovered views | Delivered | S3/S9/S10 state, browser and renderer-derived visual evidence |
+| Four readable threat states, cover, one recoverable contact and limited defensive shot | Delivered | S2/S3/S5/S6; one achromatopsia pressure frame in S10 |
+| Covered and exposed returns with different time, plate and callback consequences | Delivered | S5 and input-only Strong/Mixed/Panic paths in S8 |
+| Strong, partial and failure outcomes followed by a clean restart | Delivered | S4/S5 plus per-terminal S8 restart checkpoints |
+| Local audio/captions, HUD, sensitivity, motion reduction and text scaling | Delivered | S6/S7; subjective mix and comfort remain outside automated proof |
+| Payload, loading, lifecycle and heaviest-state performance budgets | Delivered locally | 154,906 gzip bytes; 2,217.3 ms local 25 Mbps first frame; 120.5/106.4 target median/1%-low FPS in S7 |
+| First-time premise, genre and route comprehension | Not delivered as evidence | Three independent raw player records remain NOT_RUN; automation cannot substitute |
+| Independent anatomy, motion and composition approval | Not delivered as evidence | Current numeric/image floors detect gross failures only |
+| Public deployment | Not delivered | Public-host cold load, anonymous play and restart smoke remain a release gate |
+
+The earlier paper target of 5–8 minutes and 420 seconds was deliberately revised
+on 2026-07-31 to the measured 1–3 minute / 180-second contract in
+`PRODUCT_BRIEF.md` and `GAME_DESIGN.md`; no traversal padding was added. All
+explicit non-goals remain excluded: this is not a full open world, arena
+shooter, crafting/survival progression game, multiplayer service, mobile build,
+chapter retelling or modern licensed adaptation.
+
+Automated verification passes the local build handoff only. Release remains
+NO-GO until the independent player/perception records and public-host checks in
+`../qa/QA_REPORT.md` are complete.

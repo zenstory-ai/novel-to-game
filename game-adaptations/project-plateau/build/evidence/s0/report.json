@@ -2,7 +2,7 @@
   "stage": "s0-renderer",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "46e28d1029ca457e53b297ab6549490d5d42fd004dba7e6e99eb04a77a87cdc5"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "node": "v25.9.0",
@@ -29,46 +29,448 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 98,
-    "worstFrameMs": 10.3
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 13.1
   },
   "loading": {
-    "observedTtiMs": 874.4,
+    "observedTtiMs": 945.8,
     "budgetTtiMs": 8000,
-    "distRawBytes": 548896,
-    "distGzipBytes": 138574,
+    "distRawBytes": 602904,
+    "distGzipBytes": 154906,
     "initialCompressedBudgetBytes": 20971520
   },
   "render": {
-    "stage": "s0-renderer",
+    "stage": "s10-glade-clarity",
     "mode": "field",
+    "cameraMode": "glade",
+    "runActive": true,
     "renderer": "WebGL2",
-    "sceneChildren": 21,
-    "calls": 55,
-    "triangles": 25001,
-    "textures": 1,
-    "geometries": 25,
+    "player": {
+      "position": {
+        "x": 3,
+        "z": 70
+      },
+      "lastStablePosition": {
+        "x": 3,
+        "z": 70
+      },
+      "heading": 0,
+      "pitch": 0,
+      "stance": "walk",
+      "elapsedSeconds": 1.023,
+      "distanceTravelled": 0,
+      "paused": false,
+      "pauseReason": null,
+      "boundaryRecoveries": 0,
+      "collisions": 0,
+      "lastEvent": "idle",
+      "zone": "fort",
+      "zoneHistory": [
+        "fort"
+      ],
+      "reachedGlade": false,
+      "inCover": false,
+      "coverSeconds": 0,
+      "sprintExposureSeconds": 0,
+      "sprintEscalationCharged": false,
+      "threatAwareness": 0,
+      "threatState": "distant",
+      "lastThreatEvent": "distant",
+      "attackSeconds": 0,
+      "examinedTrack": false,
+      "observedBehavior": false,
+      "lastObservation": null,
+      "cameraRaised": false,
+      "plateRailRevealed": false,
+      "pendingExposure": null,
+      "previewSeconds": 0,
+      "lastProofEvent": null,
+      "plates": [
+        {
+          "index": 0,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 1,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 2,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 3,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        }
+      ],
+      "cartridges": 2,
+      "rifleRaised": false,
+      "rifleRevealed": false,
+      "gunshotFired": false,
+      "brookResponse": null,
+      "shotCount": 0,
+      "bodyMargin": 1,
+      "failed": false,
+      "failureCause": null,
+      "contactCount": 0,
+      "remainingLight": 178.977,
+      "returnRoute": null,
+      "returnCostSeconds": 0,
+      "returnStrike": false,
+      "runStatus": "active",
+      "result": null
+    },
+    "threatVisual": {
+      "state": "distant",
+      "response": "orbit",
+      "position": {
+        "x": 30.44,
+        "y": 23.73,
+        "z": 48.28
+      }
+    },
+    "familyVisual": {
+      "moment": "glade-young-play",
+      "adults": 2,
+      "young": 3,
+      "branchAngle": 0.08,
+      "roles": [
+        "graze",
+        "branch-pull",
+        "young-play",
+        "young-play",
+        "stay-close"
+      ]
+    },
+    "brookResponseVisual": {
+      "state": null,
+      "position": {
+        "x": -10.5,
+        "y": -0.77,
+        "z": 47
+      }
+    },
+    "assets": {
+      "fieldCamera": {
+        "version": "bellows-camera",
+        "visibleParts": 13
+      },
+      "pterodactyl": {
+        "silhouette": "membrane-wing",
+        "visibleParts": 5
+      },
+      "cover": {
+        "archCount": 5,
+        "visibleParts": 25
+      },
+      "family": {
+        "adults": 2,
+        "young": 3,
+        "behaviors": [
+          "graze",
+          "branch-pull",
+          "young-play"
+        ],
+        "branchPresent": true,
+        "visibleParts": 57
+      },
+      "gladeComposition": {
+        "sightlineHalfWidth": 22,
+        "sunLanePresent": true,
+        "shadowCastingSubjects": 5,
+        "familyWidth": 15
+      }
+    },
+    "audio": {
+      "status": "running",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "captionsEnabled": true,
+      "threatState": "distant",
+      "recentCues": [
+        {
+          "cue": "field-start",
+          "caption": "[brook water and insects under the canopy]",
+          "at": 0
+        }
+      ]
+    },
+    "presentationSettings": {
+      "reducedMotion": false,
+      "captionsEnabled": true,
+      "textScale": "1",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "storageKey": "project-plateau:presentation:v1"
+    },
+    "ui": {
+      "prompt": null,
+      "cameraOverlay": false,
+      "rifleOverlay": false,
+      "plateRail": false,
+      "platePreview": null,
+      "capturedPlateImages": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "fieldNote": null,
+      "contactNote": null,
+      "cartridgesVisible": false,
+      "caption": "[brook water and insects under the canopy]",
+      "lightWatch": null,
+      "terminal": null
+    },
+    "sceneChildren": 30,
+    "calls": 268,
+    "triangles": 50438,
+    "textures": 3,
+    "geometries": 93,
     "viewport": [
       1440,
       900
     ],
-    "firstRenderedAt": 299.2000000476837,
+    "firstRenderedAt": 243.79999995231628,
     "recentMedianFrameMs": 8.3
   },
   "minimumRender": {
-    "stage": "s0-renderer",
+    "stage": "s10-glade-clarity",
     "mode": "field",
+    "cameraMode": "glade",
+    "runActive": true,
     "renderer": "WebGL2",
-    "sceneChildren": 21,
-    "calls": 56,
-    "triangles": 25004,
-    "textures": 1,
-    "geometries": 25,
+    "player": {
+      "position": {
+        "x": 3,
+        "z": 70
+      },
+      "lastStablePosition": {
+        "x": 3,
+        "z": 70
+      },
+      "heading": 0,
+      "pitch": 0,
+      "stance": "walk",
+      "elapsedSeconds": 3.835,
+      "distanceTravelled": 0,
+      "paused": false,
+      "pauseReason": null,
+      "boundaryRecoveries": 0,
+      "collisions": 0,
+      "lastEvent": "idle",
+      "zone": "fort",
+      "zoneHistory": [
+        "fort"
+      ],
+      "reachedGlade": false,
+      "inCover": false,
+      "coverSeconds": 0,
+      "sprintExposureSeconds": 0,
+      "sprintEscalationCharged": false,
+      "threatAwareness": 0,
+      "threatState": "distant",
+      "lastThreatEvent": "distant",
+      "attackSeconds": 0,
+      "examinedTrack": false,
+      "observedBehavior": false,
+      "lastObservation": null,
+      "cameraRaised": false,
+      "plateRailRevealed": false,
+      "pendingExposure": null,
+      "previewSeconds": 0,
+      "lastProofEvent": null,
+      "plates": [
+        {
+          "index": 0,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 1,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 2,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 3,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        }
+      ],
+      "cartridges": 2,
+      "rifleRaised": false,
+      "rifleRevealed": false,
+      "gunshotFired": false,
+      "brookResponse": null,
+      "shotCount": 0,
+      "bodyMargin": 1,
+      "failed": false,
+      "failureCause": null,
+      "contactCount": 0,
+      "remainingLight": 176.165,
+      "returnRoute": null,
+      "returnCostSeconds": 0,
+      "returnStrike": false,
+      "runStatus": "active",
+      "result": null
+    },
+    "threatVisual": {
+      "state": "distant",
+      "response": "orbit",
+      "position": {
+        "x": 22.45,
+        "y": 24.19,
+        "z": 52.53
+      }
+    },
+    "familyVisual": {
+      "moment": "glade-young-play",
+      "adults": 2,
+      "young": 3,
+      "branchAngle": 0.08,
+      "roles": [
+        "graze",
+        "branch-pull",
+        "young-play",
+        "young-play",
+        "stay-close"
+      ]
+    },
+    "brookResponseVisual": {
+      "state": null,
+      "position": {
+        "x": -10.5,
+        "y": -0.77,
+        "z": 47
+      }
+    },
+    "assets": {
+      "fieldCamera": {
+        "version": "bellows-camera",
+        "visibleParts": 13
+      },
+      "pterodactyl": {
+        "silhouette": "membrane-wing",
+        "visibleParts": 5
+      },
+      "cover": {
+        "archCount": 5,
+        "visibleParts": 25
+      },
+      "family": {
+        "adults": 2,
+        "young": 3,
+        "behaviors": [
+          "graze",
+          "branch-pull",
+          "young-play"
+        ],
+        "branchPresent": true,
+        "visibleParts": 57
+      },
+      "gladeComposition": {
+        "sightlineHalfWidth": 22,
+        "sunLanePresent": true,
+        "shadowCastingSubjects": 5,
+        "familyWidth": 15
+      }
+    },
+    "audio": {
+      "status": "running",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "captionsEnabled": true,
+      "threatState": "distant",
+      "recentCues": [
+        {
+          "cue": "field-start",
+          "caption": "[brook water and insects under the canopy]",
+          "at": 0
+        }
+      ]
+    },
+    "presentationSettings": {
+      "reducedMotion": false,
+      "captionsEnabled": true,
+      "textScale": "1",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "storageKey": "project-plateau:presentation:v1"
+    },
+    "ui": {
+      "prompt": null,
+      "cameraOverlay": false,
+      "rifleOverlay": false,
+      "plateRail": false,
+      "platePreview": null,
+      "capturedPlateImages": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "fieldNote": null,
+      "contactNote": null,
+      "cartridgesVisible": false,
+      "caption": "[brook water and insects under the canopy]",
+      "lightWatch": null,
+      "terminal": null
+    },
+    "sceneChildren": 30,
+    "calls": 238,
+    "triangles": 49196,
+    "textures": 3,
+    "geometries": 93,
     "viewport": [
       1280,
       720
     ],
-    "firstRenderedAt": 299.2000000476837,
+    "firstRenderedAt": 243.79999995231628,
     "recentMedianFrameMs": 8.3
   },
   "screenshots": [

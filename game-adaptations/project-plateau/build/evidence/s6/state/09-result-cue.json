@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -45,10 +45,10 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.6331000001430542,
+    "previewSeconds": 3.6247000000476834,
     "lastProofEvent": {
       "plateIndex": 0,
-      "frameKey": "glade-behavior",
+      "frameKey": "glade-young-play",
       "points": 2,
       "label": "BEHAVIOR \u2014 young play beside the adults.",
       "zone": "iguanodon-glade"
@@ -60,7 +60,7 @@
         "points": 2,
         "lostPoints": 0,
         "label": "BEHAVIOR \u2014 young play beside the adults.",
-        "frameKey": "glade-behavior"
+        "frameKey": "glade-young-play"
       },
       {
         "index": 1,
@@ -97,7 +97,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 399.45,
+    "remainingLight": 159.45,
     "returnRoute": "exposed",
     "returnCostSeconds": 18,
     "returnStrike": false,
@@ -111,7 +111,7 @@
       "survivingPlates": 1,
       "route": "exposed",
       "brookResponse": "brush-moving",
-      "remainingLight": 399.4,
+      "remainingLight": 159.4,
       "gunshotCallback": "The report carried. Something answered by the brook."
     }
   },
@@ -119,10 +119,23 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 14.83,
-      "y": 13.12,
-      "z": 52.47
+      "x": 14.49,
+      "y": 13.11,
+      "z": 52.56
     }
+  },
+  "familyVisual": {
+    "moment": "glade-branch-pull",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.499,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": "brush-moving",
@@ -144,6 +157,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -159,59 +189,70 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 5.04
+        "at": 5.099
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 5.051
+        "at": 5.104
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 5.131
+        "at": 5.184
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 5.141
+        "at": 5.189
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 5.211
+        "at": 5.275
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 7.221
+        "at": 7.264
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 7.221
+        "at": 7.264
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 7.312
+        "at": 7.36
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 7.312
+        "at": 7.36
       },
       {
         "cue": "brook-response",
         "caption": "[brush thrashes beside the brook]",
-        "at": 7.403
+        "at": 7.445
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 7.589
+        "at": 7.637
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Follow the Fort smoke through the gate.",
@@ -219,28 +260,34 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": "BEHAVIOR \u2014 young play beside the adults.",
-    "fieldNote": "The young keep close while the adults feed.",
+    "capturedPlateImages": [
+      true,
+      false,
+      false,
+      false
+    ],
+    "fieldNote": null,
     "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
     "cartridgesVisible": true,
     "caption": "[glass plates settle on the light board]",
-    "lightWatch": 400,
+    "lightWatch": 160,
     "terminal": {
       "kind": "alive",
       "title": "Insufficient record",
       "copy": "The plates survived. The animal never stands clear.",
-      "detail": "2 evidence cues \u00b7 1 recorded plates \u00b7 exposed return \u00b7 400s light",
+      "detail": "2 evidence cues \u00b7 1 recorded plates \u00b7 exposed return \u00b7 160s light",
       "callback": "The report carried. Something answered by the brook."
     }
   },
-  "sceneChildren": 25,
-  "calls": 109,
-  "triangles": 27028,
-  "textures": 1,
-  "geometries": 63,
+  "sceneChildren": 30,
+  "calls": 276,
+  "triangles": 50514,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

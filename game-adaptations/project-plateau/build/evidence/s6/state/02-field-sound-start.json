@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.206,
+    "elapsedSeconds": 0.229,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -88,7 +88,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 419.794,
+    "remainingLight": 179.771,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -99,10 +99,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 31.52,
-      "y": 23.43,
-      "z": 46.83
+      "x": 31.43,
+      "y": 23.47,
+      "z": 47.01
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -124,6 +137,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -143,12 +173,29 @@
       }
     ]
   },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
   "ui": {
     "prompt": null,
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
@@ -156,15 +203,15 @@
     "lightWatch": null,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 104,
-  "triangles": 26976,
-  "textures": 1,
-  "geometries": 58,
+  "sceneChildren": 30,
+  "calls": 268,
+  "triangles": 50426,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

@@ -1,83 +1,73 @@
 {
   "stage": "s10-glade-clarity",
-  "mode": "field",
-  "cameraMode": "field",
-  "runActive": true,
+  "mode": "order",
+  "cameraMode": "order",
+  "runActive": false,
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 3.418,
-      "z": 3.208
+      "x": 3,
+      "z": 70
     },
     "lastStablePosition": {
-      "x": 3.418,
-      "z": 3.208
+      "x": 3,
+      "z": 70
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 23.949,
-    "distanceTravelled": 70.298,
+    "elapsedSeconds": 0,
+    "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
     "collisions": 0,
-    "lastEvent": "movement",
-    "zone": "exposed-creek",
+    "lastEvent": "clean-start",
+    "zone": "fort",
     "zoneHistory": [
-      "fort",
-      "brook-blind",
-      "canopy-overlook",
-      "iguanodon-glade",
-      "exposed-creek"
+      "fort"
     ],
-    "reachedGlade": true,
+    "reachedGlade": false,
     "inCover": false,
     "coverSeconds": 0,
     "sprintExposureSeconds": 0,
     "sprintEscalationCharged": false,
-    "threatAwareness": 1,
-    "threatState": "watch",
-    "lastThreatEvent": "defensive-shot-interrupt",
+    "threatAwareness": 0,
+    "threatState": "distant",
+    "lastThreatEvent": "distant",
     "attackSeconds": 0,
-    "examinedTrack": true,
-    "observedBehavior": true,
-    "lastObservation": "The young keep close while the adults feed.",
+    "examinedTrack": false,
+    "observedBehavior": false,
+    "lastObservation": null,
     "cameraRaised": false,
-    "plateRailRevealed": true,
+    "plateRailRevealed": false,
     "pendingExposure": null,
-    "previewSeconds": 3.101599999904638,
-    "lastProofEvent": {
-      "plateIndex": 2,
-      "frameKey": "glade-young-play",
-      "points": 2,
-      "label": "BEHAVIOR \u2014 young play beside the adults.",
-      "zone": "iguanodon-glade"
-    },
+    "previewSeconds": 0,
+    "lastProofEvent": null,
     "plates": [
       {
         "index": 0,
-        "status": "exposed",
-        "points": 1,
+        "status": "unexposed",
+        "points": 0,
         "lostPoints": 0,
-        "label": "PARTIAL \u2014 foliage hides the flank.",
-        "frameKey": "brook-partial"
+        "label": null,
+        "frameKey": null
       },
       {
         "index": 1,
-        "status": "exposed",
-        "points": 1,
+        "status": "unexposed",
+        "points": 0,
         "lostPoints": 0,
-        "label": "FORM \u2014 a full flank clears the fern.",
-        "frameKey": "canopy-flank"
+        "label": null,
+        "frameKey": null
       },
       {
         "index": 2,
-        "status": "exposed",
-        "points": 2,
+        "status": "unexposed",
+        "points": 0,
         "lostPoints": 0,
-        "label": "BEHAVIOR \u2014 young play beside the adults.",
-        "frameKey": "glade-young-play"
+        "label": null,
+        "frameKey": null
       },
       {
         "index": 3,
@@ -88,30 +78,30 @@
         "frameKey": null
       }
     ],
-    "cartridges": 1,
+    "cartridges": 2,
     "rifleRaised": false,
-    "rifleRevealed": true,
-    "gunshotFired": true,
-    "brookResponse": "brush-moving",
-    "shotCount": 1,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
     "bodyMargin": 1,
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 138.051,
-    "returnRoute": "exposed",
-    "returnCostSeconds": 18,
+    "remainingLight": 180,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
     "returnStrike": false,
     "runStatus": "active",
     "result": null
   },
   "threatVisual": {
-    "state": "watch",
+    "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 23.62,
-      "y": 13.17,
-      "z": -16.06
+      "x": -25.99,
+      "y": 23.06,
+      "z": 44.76
     }
   },
   "familyVisual": {
@@ -128,7 +118,7 @@
     ]
   },
   "brookResponseVisual": {
-    "state": "brush-moving",
+    "state": null,
     "position": {
       "x": -10.5,
       "y": -0.77,
@@ -167,7 +157,7 @@
     }
   },
   "audio": {
-    "status": "running",
+    "status": "suspended",
     "volumes": {
       "ambience": 0.34,
       "effects": 0.72,
@@ -177,84 +167,84 @@
     "threatState": "watch",
     "recentCues": [
       {
-        "cue": "watch",
-        "caption": "[one wing call answers at a distance]",
-        "at": 59.877
-      },
-      {
-        "cue": "plate-slide",
-        "caption": "[glass plate seats in its case]",
-        "at": 59.877
-      },
-      {
-        "cue": "camera-raise",
-        "caption": "[wood frame lifts; bellows opens]",
-        "at": 66.619
-      },
-      {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 66.699
-      },
-      {
-        "cue": "search",
-        "caption": "[a near call circles overhead]",
-        "at": 68.677
-      },
-      {
-        "cue": "plate-slide",
-        "caption": "[glass plate seats in its case]",
-        "at": 68.677
-      },
-      {
-        "cue": "watch",
-        "caption": "[one wing call answers at a distance]",
-        "at": 68.72
-      },
-      {
-        "cue": "search",
-        "caption": "[a near call circles overhead]",
-        "at": 72.336
-      },
-      {
-        "cue": "examine",
-        "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 72.651
-      },
-      {
-        "cue": "camera-raise",
-        "caption": "[wood frame lifts; bellows opens]",
-        "at": 72.656
-      },
-      {
-        "cue": "shutter",
-        "caption": "[shutter releases]",
-        "at": 72.731
+        "at": 14.912
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 74.72
+        "at": 16.891
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 74.72
+        "at": 16.891
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 23.013
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 26.912
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 26.923
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 26.997
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 28.987
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 28.987
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 29.072
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 29.141
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 31.131
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 31.509
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 37.509
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 74.901
+        "at": 43.509
       },
       {
-        "cue": "rifle",
-        "caption": "[rifle report; echo runs toward the brook]",
-        "at": 74.901
-      },
-      {
-        "cue": "brook-response",
-        "caption": "[brush thrashes beside the brook]",
-        "at": 75.504
+        "cue": "result",
+        "caption": "[glass plates settle on the light board]",
+        "at": 51.557
       }
     ]
   },
@@ -270,33 +260,33 @@
     "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
-    "prompt": "Follow the Fort smoke through the gate.",
+    "prompt": null,
     "cameraOverlay": false,
     "rifleOverlay": false,
-    "plateRail": true,
-    "platePreview": "BEHAVIOR \u2014 young play beside the adults.",
+    "plateRail": false,
+    "platePreview": null,
     "capturedPlateImages": [
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
       false
     ],
     "fieldNote": null,
-    "contactNote": "RIFLE REPORT \u2014 THE DIVE SHEARS AWAY.",
-    "cartridgesVisible": true,
-    "caption": "[brush thrashes beside the brook]",
-    "lightWatch": 139,
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "caption": "[glass plates settle on the light board]",
+    "lightWatch": null,
     "terminal": null
   },
   "sceneChildren": 30,
-  "calls": 251,
-  "triangles": 49412,
+  "calls": 243,
+  "triangles": 49302,
   "textures": 3,
-  "geometries": 98,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 241.60000014305115,
-  "recentMedianFrameMs": 8.3
+  "firstRenderedAt": 188.90000009536743,
+  "recentMedianFrameMs": 8.4
 }

@@ -1,7 +1,7 @@
 {
   "inputs": [
     "Begin field work",
-    "QA time compression: 421 seconds outside Fort"
+    "QA time compression: 181 seconds outside Fort"
   ],
   "viewport": [
     1440,
@@ -12,5 +12,5 @@
   "requestHostsAtCheckpoint": [
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785525623024
+  "capturedAtUnixMs": 1785536683472
 }

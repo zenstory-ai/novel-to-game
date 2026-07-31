@@ -1,15 +1,15 @@
 {
-  "sourceFingerprint": "424514d687dd247eb1229f95ff9eef1df6a127bc573e5530c52775fa8f5fd268",
+  "sourceFingerprint": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d",
   "capture": "one continuous input-only Strong run",
   "edit": "uniform time compression only; no state cuts or splices",
-  "rawSha256": "f59316610ae4f7ecb7f845c5ba8720d5444ff9d98fe80afd68830530d9342a5a",
+  "rawSha256": "5f3b3766db627c25debe94c8e0bcc98933bdefb56fa9fb25b6e783d4149f8d34",
   "encodes": [
     {
       "path": "media/clip/project-plateau-30s.mp4",
       "targetSeconds": 30,
-      "speed": 1.78517,
-      "bytes": 6436492,
-      "sha256": "5d1563ce784eb8c2152f8f89a0b8d42cb99e8a5d7c6091b5116ba26a6623dde5",
+      "speed": 1.78437,
+      "bytes": 6455492,
+      "sha256": "c55d5befb5a552b70352184ce0c04e17d86e01b9dc656870a00fa86678833d1d",
       "probe": {
         "streams": [
           {
@@ -44,7 +44,7 @@
             "start_time": "0.000000",
             "duration_ts": 460800,
             "duration": "30.000000",
-            "bit_rate": "1713331",
+            "bit_rate": "1718389",
             "bits_per_raw_sample": "8",
             "nb_frames": "900",
             "extradata_size": 51,
@@ -85,8 +85,8 @@
           "format_long_name": "QuickTime / MOV",
           "start_time": "0.000000",
           "duration": "30.000000",
-          "size": "6436492",
-          "bit_rate": "1716397",
+          "size": "6455492",
+          "bit_rate": "1721464",
           "probe_score": 100,
           "tags": {
             "major_brand": "isom",
@@ -107,9 +107,9 @@
         "  PASS  \u753b\u5e45\u6bd4: 1.600:1",
         "  PASS  \u5e27\u7387: 30.000",
         "  PASS  \u65f6\u957f: 30.000s",
-        "  PASS  \u6587\u4ef6\u5927\u5c0f: 6.44MB",
+        "  PASS  \u6587\u4ef6\u5927\u5c0f: 6.46MB",
         "  PASS  \u97f3\u8f68: \u65e0(\u9759\u97f3\u7247)",
-        "  PASS  \u9996\u5e27\u975e\u9ed1: YAVG=110.6",
+        "  PASS  \u9996\u5e27\u975e\u9ed1: YAVG=110.8",
         "  PASS  faststart: moov \u5728\u524d",
         "",
         "14/14 \u901a\u8fc7"
@@ -118,9 +118,9 @@
     {
       "path": "media/clip/project-plateau-15s.mp4",
       "targetSeconds": 15,
-      "speed": 3.57033,
-      "bytes": 3526120,
-      "sha256": "1635d7f4b34291b3c166ee5378072cdefb2943009df31fa6e136e7160d730a8a",
+      "speed": 3.56873,
+      "bytes": 3655216,
+      "sha256": "592095c8fbeb3add2bfe8014c27f25c722b459a6217a3eed266e23b486a49b28",
       "probe": {
         "streams": [
           {
@@ -155,7 +155,7 @@
             "start_time": "0.000000",
             "duration_ts": 230400,
             "duration": "15.000000",
-            "bit_rate": "1877309",
+            "bit_rate": "1946131",
             "bits_per_raw_sample": "8",
             "nb_frames": "450",
             "extradata_size": 51,
@@ -196,8 +196,8 @@
           "format_long_name": "QuickTime / MOV",
           "start_time": "0.000000",
           "duration": "15.000000",
-          "size": "3526120",
-          "bit_rate": "1880597",
+          "size": "3655216",
+          "bit_rate": "1949448",
           "probe_score": 100,
           "tags": {
             "major_brand": "isom",
@@ -218,9 +218,9 @@
         "  PASS  \u753b\u5e45\u6bd4: 1.600:1",
         "  PASS  \u5e27\u7387: 30.000",
         "  PASS  \u65f6\u957f: 15.000s",
-        "  PASS  \u6587\u4ef6\u5927\u5c0f: 3.53MB",
+        "  PASS  \u6587\u4ef6\u5927\u5c0f: 3.66MB",
         "  PASS  \u97f3\u8f68: \u65e0(\u9759\u97f3\u7247)",
-        "  PASS  \u9996\u5e27\u975e\u9ed1: YAVG=111.2",
+        "  PASS  \u9996\u5e27\u975e\u9ed1: YAVG=112.7",
         "  PASS  faststart: moov \u5728\u524d",
         "",
         "14/14 \u901a\u8fc7"
@@ -229,14 +229,14 @@
   ],
   "contactSheet": {
     "path": "media/clip/contact-sheet.jpg",
-    "bytes": 100599,
-    "sha256": "2b745448357757c94267a68f91c703d91998bef9c4c4a6ffdd3e88ca956dce5b",
+    "bytes": 100618,
+    "sha256": "cb1ccf4db85191993a15e76da206c850c82225e05f2c1955fb0414e7d15204ff",
     "sampling": "one frame every three seconds from the 30-second encode"
   },
   "shareCard": {
     "path": "media/project-plateau-github.jpg",
-    "bytes": 64865,
-    "sha256": "17e12feffe405a9db8d9f80a41b173788ee247cf5bfa635817f7f0989074aa55",
+    "bytes": 64850,
+    "sha256": "a9fa3cd1c5d0a6b95af32fef1bf38c0446869cc324ac49d85de8253dc9a8a72c",
     "source": "evidence/s10/02-young-play-silver-frame.jpg",
     "transform": "crop and resize only; no added text or generated imagery"
   },

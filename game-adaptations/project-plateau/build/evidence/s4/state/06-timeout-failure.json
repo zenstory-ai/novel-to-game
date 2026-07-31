@@ -1,5 +1,5 @@
 {
-  "stage": "s4-complete-loop",
+  "stage": "s10-glade-clarity",
   "mode": "terminal",
   "cameraMode": "terminal",
   "runActive": false,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 420.134,
+    "elapsedSeconds": 180.141,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -83,6 +83,7 @@
     "rifleRaised": false,
     "rifleRevealed": false,
     "gunshotFired": false,
+    "brookResponse": null,
     "shotCount": 0,
     "bodyMargin": 1,
     "failed": true,
@@ -103,11 +104,97 @@
   },
   "threatVisual": {
     "state": "distant",
+    "response": "orbit",
     "position": {
-      "x": 8.03,
-      "y": 23.64,
-      "z": 29.75
+      "x": -28.3,
+      "y": 22.49,
+      "z": 22.22
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "distant",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 15.211
+      },
+      {
+        "cue": "failure",
+        "caption": "[the field sound narrows to wind and brook]",
+        "at": 15.344
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Examine the track [E]",
@@ -115,9 +202,16 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": null,
     "contactNote": null,
     "cartridgesVisible": false,
+    "caption": "[the field sound narrows to wind and brook]",
     "lightWatch": null,
     "terminal": {
       "kind": "failure",
@@ -127,15 +221,15 @@
       "callback": null
     }
   },
-  "sceneChildren": 23,
-  "calls": 63,
-  "triangles": 25384,
-  "textures": 1,
-  "geometries": 30,
+  "sceneChildren": 30,
+  "calls": 269,
+  "triangles": 50458,
+  "textures": 3,
+  "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 254.80000019073486,
+  "firstRenderedAt": 176.29999995231628,
   "recentMedianFrameMs": 8.3
 }

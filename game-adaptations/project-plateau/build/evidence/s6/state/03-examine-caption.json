@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.388,
+    "elapsedSeconds": 0.412,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -89,7 +89,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 419.612,
+    "remainingLight": 179.588,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -100,10 +100,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 28.34,
-      "y": 23.5,
-      "z": 22.16
+      "x": 28.22,
+      "y": 23.54,
+      "z": 22.33
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -125,6 +138,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -145,9 +175,20 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.229
+        "at": 0.245
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Raise camera [Right Mouse]",
@@ -155,6 +196,12 @@
     "rifleOverlay": false,
     "plateRail": false,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
     "contactNote": null,
     "cartridgesVisible": false,
@@ -162,15 +209,15 @@
     "lightWatch": null,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 99,
-  "triangles": 26936,
-  "textures": 1,
-  "geometries": 58,
+  "sceneChildren": 30,
+  "calls": 266,
+  "triangles": 50422,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

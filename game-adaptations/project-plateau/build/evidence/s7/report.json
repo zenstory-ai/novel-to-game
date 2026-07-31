@@ -2,7 +2,7 @@
   "stage": "s7-lifecycle",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "855c98f6b28c23a150cfd2952083bde4dfcb82569f7dd3adf605cb869d4f49cf"
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -41,15 +41,15 @@
   },
   "loading": {
     "firstNoCacheNavigation": {
-      "timeToFirstFrameMs": 2157.9,
-      "domInteractiveMs": 48.7,
-      "loadEventMs": 2211.7,
+      "timeToFirstFrameMs": 2217.3,
+      "domInteractiveMs": 71.6,
+      "loadEventMs": 2315.4,
       "resourceCount": 11
     },
     "finalNavigation": {
-      "timeToFirstFrameMs": 2169.9,
-      "domInteractiveMs": 72.5,
-      "loadEventMs": 2210.7,
+      "timeToFirstFrameMs": 2272.9,
+      "domInteractiveMs": 92.3,
+      "loadEventMs": 2347,
       "resourceCount": 12
     },
     "budgetMs": 8000
@@ -57,14 +57,14 @@
   "payload": {
     "files": [
       {
-        "path": "assets/index-CzI1HL2n.css",
-        "rawBytes": 12705,
-        "gzipBytes": 4027
+        "path": "assets/index-BtoLHCaQ.css",
+        "rawBytes": 13357,
+        "gzipBytes": 4179
       },
       {
-        "path": "assets/index-Dk00LmBg.js",
-        "rawBytes": 576457,
-        "gzipBytes": 146475
+        "path": "assets/index-CWtQHXh1.js",
+        "rawBytes": 582588,
+        "gzipBytes": 148450
       },
       {
         "path": "favicon.svg",
@@ -77,8 +77,8 @@
         "gzipBytes": 2119
       }
     ],
-    "rawBytes": 596121,
-    "gzipBytes": 152779,
+    "rawBytes": 602904,
+    "gzipBytes": 154906,
     "initialCompressedBudgetBytes": 20971520,
     "totalBudgetBytes": 52428800
   },
@@ -87,15 +87,15 @@
       "samples": 120,
       "medianFrameMs": 8.3,
       "medianFps": 120.5,
-      "onePercentLowFps": 98,
-      "worstFrameMs": 10.3
+      "onePercentLowFps": 107.5,
+      "worstFrameMs": 9.3
     },
     "targetViewport": {
       "samples": 240,
       "medianFrameMs": 8.3,
       "medianFps": 120.5,
-      "onePercentLowFps": 97.1,
-      "worstFrameMs": 10.4
+      "onePercentLowFps": 106.4,
+      "worstFrameMs": 17.4
     }
   },
   "checkpoints": [

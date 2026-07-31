@@ -1,0 +1,1143 @@
+command=npm run verify
+sourceCommit=565e2f6c20f1aafe99fc098a73c09f2e5432a720
+sourceFingerprint=e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d
+runtime=Node.js
+runtimeVersion=v25.9.0
+packageManager=npm@11.12.1
+pythonVersion=3.14.5
+browser=Google Chrome 150.0.7871.187
+registered=test/audio.test.js,test/foundation.test.js,test/qa_s0.py,test/qa_s1.py,test/qa_s10.py,test/qa_s2.py,test/qa_s3.py,test/qa_s4.py,test/qa_s5.py,test/qa_s6.py,test/qa_s7.py,test/qa_s8.py,test/qa_s9.py,test/settings.test.js,test/simulation.test.js
+excluded={"test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite", "test/verify.py": "authoritative suite orchestrator; registering it would recurse"}
+suite=unit:simulation
+cwd=game-adaptations/project-plateau/build/app
+command=npm test
+
+> project-plateau-proof-before-dark@0.1.0 test
+> node --test test/*.test.js
+
+✔ every core field cue has a concise sound caption (1.926375ms)
+✔ audio settings clamp channel volumes and expose caption state (0.164041ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.248542ms)
+✔ cue history remains bounded during a long field session (0.122125ms)
+✔ foundation exposes the locked viewport and performance budgets (1.443333ms)
+✔ procedural placement is deterministic for a recorded seed (0.095292ms)
+✔ representative scene contains all declared subject and pressure groups (0.0885ms)
+✔ the family asset exposes two adults, three young and both authored behaviors (15.973875ms)
+✔ the glade composition protects a lit family-and-basalt sightline (5.006875ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.116959ms)
+✔ runtime sources contain no remote asset or CDN request (4.832208ms)
+✔ presentation settings normalize invalid persisted values (1.53925ms)
+✔ settings round-trip through versioned storage and can be reset (0.180166ms)
+✔ blocked or malformed storage falls back without disabling controls (0.180208ms)
+✔ the measured compact route starts with a 180-second light budget (1.760208ms)
+✔ fresh and restarted player states are clean copies (0.964041ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.711292ms)
+✔ pause freezes both world time and movement (0.126917ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.176709ms)
+✔ leaving the navigable world recovers the last stable position (1.052583ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.082959ms)
+✔ territory, glade, open proof and cover produce four readable threat states (0.566417ms)
+✔ examining the brook makes context eligible without awarding evidence (0.188792ms)
+✔ successive observed glade plates record young play and branch pull separately (0.242167ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.203042ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (0.21125ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.073334ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.141125ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.067833ms)
+✔ restart clears observation, proof, damage and action history (0.074375ms)
+✔ intact evidence and all four result thresholds are deterministic (0.099625ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.200042ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.098667ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.085667ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.09875ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 171.818167
+exitCode=0
+durationMs=406
+suite=build:production
+cwd=game-adaptations/project-plateau/build/app
+command=npm run build
+
+> project-plateau-proof-before-dark@0.1.0 build
+> vite build
+
+vite v8.2.0 building client environment for production...
+[2K
+transforming...✓ 12 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.78 kB │ gzip:   2.09 kB
+dist/assets/index-BtoLHCaQ.css   13.35 kB │ gzip:   4.21 kB
+dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
+
+✓ built in 554ms
+
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+exitCode=0
+durationMs=2769
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s0.py
+{
+  "stage": "s0-renderer",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  },
+  "environment": {
+    "node": "v25.9.0",
+    "npm": "11.12.1",
+    "vite": "8.2.0",
+    "three": "0.185.1",
+    "python": "3.14.5",
+    "browser": "Google Chrome 150.0.7871.187",
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "webgl2": true,
+    "titleMenu": true,
+    "fieldOrder": true,
+    "representativeHeavyFrame": true,
+    "minimumViewport": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 13.1
+  },
+  "loading": {
+    "observedTtiMs": 945.8,
+    "budgetTtiMs": 8000,
+    "distRawBytes": 602904,
+    "distGzipBytes": 154906,
+    "initialCompressedBudgetBytes": 20971520
+  },
+  "render": {
+    "stage": "s10-glade-clarity",
+    "mode": "field",
+    "cameraMode": "glade",
+    "runActive": true,
+    "renderer": "WebGL2",
+    "player": {
+      "position": {
+        "x": 3,
+        "z": 70
+      },
+      "lastStablePosition": {
+        "x": 3,
+        "z": 70
+      },
+      "heading": 0,
+      "pitch": 0,
+      "stance": "walk",
+      "elapsedSeconds": 1.023,
+      "distanceTravelled": 0,
+      "paused": false,
+      "pauseReason": null,
+      "boundaryRecoveries": 0,
+      "collisions": 0,
+      "lastEvent": "idle",
+      "zone": "fort",
+      "zoneHistory": [
+        "fort"
+      ],
+      "reachedGlade": false,
+      "inCover": false,
+      "coverSeconds": 0,
+      "sprintExposureSeconds": 0,
+      "sprintEscalationCharged": false,
+      "threatAwareness": 0,
+      "threatState": "distant",
+      "lastThreatEvent": "distant",
+      "attackSeconds": 0,
+      "examinedTrack": false,
+      "observedBehavior": false,
+      "lastObservation": null,
+      "cameraRaised": false,
+      "plateRailRevealed": false,
+      "pendingExposure": null,
+      "previewSeconds": 0,
+      "lastProofEvent": null,
+      "plates": [
+        {
+          "index": 0,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 1,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 2,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 3,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        }
+      ],
+      "cartridges": 2,
+      "rifleRaised": false,
+      "rifleRevealed": false,
+      "gunshotFired": false,
+      "brookResponse": null,
+      "shotCount": 0,
+      "bodyMargin": 1,
+      "failed": false,
+      "failureCause": null,
+      "contactCount": 0,
+      "remainingLight": 178.977,
+      "returnRoute": null,
+      "returnCostSeconds": 0,
+      "returnStrike": false,
+      "runStatus": "active",
+      "result": null
+    },
+    "threatVisual": {
+      "state": "distant",
+      "response": "orbit",
+      "position": {
+        "x": 30.44,
+        "y": 23.73,
+        "z": 48.28
+      }
+    },
+    "familyVisual": {
+      "moment": "glade-young-play",
+      "adults": 2,
+      "young": 3,
+      "branchAngle": 0.08,
+      "roles": [
+        "graze",
+        "branch-pull",
+        "young-play",
+        "young-play",
+        "stay-close"
+      ]
+    },
+    "brookResponseVisual": {
+      "state": null,
+      "position": {
+        "x": -10.5,
+        "y": -0.77,
+        "z": 47
+      }
+    },
+    "assets": {
+      "fieldCamera": {
+        "version": "bellows-camera",
+        "visibleParts": 13
+      },
+      "pterodactyl": {
+        "silhouette": "membrane-wing",
+        "visibleParts": 5
+      },
+      "cover": {
+        "archCount": 5,
+        "visibleParts": 25
+      },
+      "family": {
+        "adults": 2,
+        "young": 3,
+        "behaviors": [
+          "graze",
+          "branch-pull",
+          "young-play"
+        ],
+        "branchPresent": true,
+        "visibleParts": 57
+      },
+      "gladeComposition": {
+        "sightlineHalfWidth": 22,
+        "sunLanePresent": true,
+        "shadowCastingSubjects": 5,
+        "familyWidth": 15
+      }
+    },
+    "audio": {
+      "status": "running",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "captionsEnabled": true,
+      "threatState": "distant",
+      "recentCues": [
+        {
+          "cue": "field-start",
+          "caption": "[brook water and insects under the canopy]",
+          "at": 0
+        }
+      ]
+    },
+    "presentationSettings": {
+      "reducedMotion": false,
+      "captionsEnabled": true,
+      "textScale": "1",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "storageKey": "project-plateau:presentation:v1"
+    },
+    "ui": {
+      "prompt": null,
+      "cameraOverlay": false,
+      "rifleOverlay": false,
+      "plateRail": false,
+      "platePreview": null,
+      "capturedPlateImages": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "fieldNote": null,
+      "contactNote": null,
+      "cartridgesVisible": false,
+      "caption": "[brook water and insects under the canopy]",
+      "lightWatch": null,
+      "terminal": null
+    },
+    "sceneChildren": 30,
+    "calls": 268,
+    "triangles": 50438,
+    "textures": 3,
+    "geometries": 93,
+    "viewport": [
+      1440,
+      900
+    ],
+    "firstRenderedAt": 243.79999995231628,
+    "recentMedianFrameMs": 8.3
+  },
+  "minimumRender": {
+    "stage": "s10-glade-clarity",
+    "mode": "field",
+    "cameraMode": "glade",
+    "runActive": true,
+    "renderer": "WebGL2",
+    "player": {
+      "position": {
+        "x": 3,
+        "z": 70
+      },
+      "lastStablePosition": {
+        "x": 3,
+        "z": 70
+      },
+      "heading": 0,
+      "pitch": 0,
+      "stance": "walk",
+      "elapsedSeconds": 3.835,
+      "distanceTravelled": 0,
+      "paused": false,
+      "pauseReason": null,
+      "boundaryRecoveries": 0,
+      "collisions": 0,
+      "lastEvent": "idle",
+      "zone": "fort",
+      "zoneHistory": [
+        "fort"
+      ],
+      "reachedGlade": false,
+      "inCover": false,
+      "coverSeconds": 0,
+      "sprintExposureSeconds": 0,
+      "sprintEscalationCharged": false,
+      "threatAwareness": 0,
+      "threatState": "distant",
+      "lastThreatEvent": "distant",
+      "attackSeconds": 0,
+      "examinedTrack": false,
+      "observedBehavior": false,
+      "lastObservation": null,
+      "cameraRaised": false,
+      "plateRailRevealed": false,
+      "pendingExposure": null,
+      "previewSeconds": 0,
+      "lastProofEvent": null,
+      "plates": [
+        {
+          "index": 0,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 1,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 2,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        },
+        {
+          "index": 3,
+          "status": "unexposed",
+          "points": 0,
+          "lostPoints": 0,
+          "label": null,
+          "frameKey": null
+        }
+      ],
+      "cartridges": 2,
+      "rifleRaised": false,
+      "rifleRevealed": false,
+      "gunshotFired": false,
+      "brookResponse": null,
+      "shotCount": 0,
+      "bodyMargin": 1,
+      "failed": false,
+      "failureCause": null,
+      "contactCount": 0,
+      "remainingLight": 176.165,
+      "returnRoute": null,
+      "returnCostSeconds": 0,
+      "returnStrike": false,
+      "runStatus": "active",
+      "result": null
+    },
+    "threatVisual": {
+      "state": "distant",
+      "response": "orbit",
+      "position": {
+        "x": 22.45,
+        "y": 24.19,
+        "z": 52.53
+      }
+    },
+    "familyVisual": {
+      "moment": "glade-young-play",
+      "adults": 2,
+      "young": 3,
+      "branchAngle": 0.08,
+      "roles": [
+        "graze",
+        "branch-pull",
+        "young-play",
+        "young-play",
+        "stay-close"
+      ]
+    },
+    "brookResponseVisual": {
+      "state": null,
+      "position": {
+        "x": -10.5,
+        "y": -0.77,
+        "z": 47
+      }
+    },
+    "assets": {
+      "fieldCamera": {
+        "version": "bellows-camera",
+        "visibleParts": 13
+      },
+      "pterodactyl": {
+        "silhouette": "membrane-wing",
+        "visibleParts": 5
+      },
+      "cover": {
+        "archCount": 5,
+        "visibleParts": 25
+      },
+      "family": {
+        "adults": 2,
+        "young": 3,
+        "behaviors": [
+          "graze",
+          "branch-pull",
+          "young-play"
+        ],
+        "branchPresent": true,
+        "visibleParts": 57
+      },
+      "gladeComposition": {
+        "sightlineHalfWidth": 22,
+        "sunLanePresent": true,
+        "shadowCastingSubjects": 5,
+        "familyWidth": 15
+      }
+    },
+    "audio": {
+      "status": "running",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "captionsEnabled": true,
+      "threatState": "distant",
+      "recentCues": [
+        {
+          "cue": "field-start",
+          "caption": "[brook water and insects under the canopy]",
+          "at": 0
+        }
+      ]
+    },
+    "presentationSettings": {
+      "reducedMotion": false,
+      "captionsEnabled": true,
+      "textScale": "1",
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "storageKey": "project-plateau:presentation:v1"
+    },
+    "ui": {
+      "prompt": null,
+      "cameraOverlay": false,
+      "rifleOverlay": false,
+      "plateRail": false,
+      "platePreview": null,
+      "capturedPlateImages": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "fieldNote": null,
+      "contactNote": null,
+      "cartridgesVisible": false,
+      "caption": "[brook water and insects under the canopy]",
+      "lightWatch": null,
+      "terminal": null
+    },
+    "sceneChildren": 30,
+    "calls": 238,
+    "triangles": 49196,
+    "textures": 3,
+    "geometries": 93,
+    "viewport": [
+      1280,
+      720
+    ],
+    "firstRenderedAt": 243.79999995231628,
+    "recentMedianFrameMs": 8.3
+  },
+  "screenshots": [
+    "build/evidence/s0/01-title.jpg",
+    "build/evidence/s0/02-field-order.jpg",
+    "build/evidence/s0/03-glade-heavy.jpg",
+    "build/evidence/s0/04-minimum-viewport.jpg"
+  ],
+  "limitations": [
+    "S0 proves the renderer, representative scene density, loading and viewport baseline only.",
+    "Player locomotion, collision, gameplay state, audio and complete-run evidence remain later gates.",
+    "Performance was sampled headlessly on one development machine and is not a target-device matrix."
+  ]
+}
+S0 PASS: build/evidence/s0/report.json
+exitCode=0
+durationMs=10219
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s1.py
+{
+  "stage": "s1-controller",
+  "checks": {
+    "walk": true,
+    "sprint": true,
+    "crouch": true,
+    "collisionSlide": true,
+    "boundaryRecovery": true,
+    "manualPauseFreeze": true,
+    "focusLossFreeze": true,
+    "cleanRestart": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "continuousSmoke": {
+    "requestedSeconds": 60.0,
+    "wallSeconds": 60.01,
+    "simulatedElapsedGain": 60.012,
+    "inputSegments": 30,
+    "lifecycleRestarts": 0,
+    "memory": {
+      "used": 20991359,
+      "total": 32663527
+    }
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.4
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S1 PASS: build/evidence/s1/report.json
+exitCode=0
+durationMs=71657
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s2.py
+{
+  "stage": "s2-topology",
+  "checks": {
+    "connectedZoneHistory": true,
+    "distant": true,
+    "watch": true,
+    "search": true,
+    "attack": true,
+    "coverDeescalation": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.4
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S2 PASS: build/evidence/s2/report.json
+exitCode=0
+durationMs=19241
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s3.py
+{
+  "stage": "s3-exposed-proof",
+  "checks": {
+    "observationChangesEligibilityWithoutPoints": true,
+    "cameraRaiseAndTwoSecondCommitment": true,
+    "pauseFreezesCommitment": true,
+    "coveredPartialPlate": true,
+    "openPlateEscalatesThreat": true,
+    "highestValuePlateCracksOnRecoverableContact": true,
+    "timelyShotInterruptsAttack": true,
+    "persistentGunshotFlag": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S3 PASS: build/evidence/s3/report.json
+exitCode=0
+durationMs=15392
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s4.py
+{
+  "stage": "s4-complete-loop",
+  "checks": {
+    "sameRunObserveProofCoveredReturnStrongResult": true,
+    "fourPhysicalPlatesResolved": true,
+    "coveredReturnCostAppliedOnce": true,
+    "resultRestartReturnsCleanFieldOrder": true,
+    "timeoutFailureCauseAndCue": true,
+    "timeoutRestartReturnsCleanFieldOrder": true,
+    "firstContactRecoverable": true,
+    "secondContactCauseAndCue": true,
+    "failureRestartReturnsCleanFieldOrder": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 11.5
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S4 PASS: build/evidence/s4/report.json
+exitCode=0
+durationMs=40879
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s5.py
+{
+  "stage": "s5-route-outcomes",
+  "checks": {
+    "allFourAliveBands": true,
+    "strongNoShotCoveredReturn": true,
+    "mixedShotCallbackCorroboratingReturn": true,
+    "panicExplicitFailure": true,
+    "exposedAttackCracksBestPlateNotBody": true,
+    "coveredExposedAndNoisyCosts": {
+      "covered": 28,
+      "exposed": 12,
+      "noisyExposed": 18
+    },
+    "pauseFreezesCommittedDive": true,
+    "minimumViewportTerminal": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S5 PASS: build/evidence/s5/report.json
+exitCode=0
+durationMs=47153
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s6.py
+{
+  "stage": "s6-field-feedback",
+  "checks": {
+    "recognizableBellowsCameraStructure": true,
+    "membraneWingThreatStructure": true,
+    "coverArchesAndPullUpResponse": true,
+    "lazyLocalWebAudioRunning": true,
+    "threeChannelVolumeControls": true,
+    "captionsToggleAndCoreCueCaptions": true,
+    "rifleAndBrookResponseCues": true,
+    "distinctResultAndFailureCues": true,
+    "runResetClearsCueHistoryAndPreservesSettings": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.5
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S6 PASS: build/evidence/s6/report.json
+exitCode=0
+durationMs=15255
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s7.py
+{
+  "stage": "s7-lifecycle",
+  "checks": {
+    "settingsPersistAcrossReload": true,
+    "invalidStorageUnitCoverage": true,
+    "restoreDefaultsClearsVersionedRecord": true,
+    "targetAndMinimumViewportLifecycle": true,
+    "textScale150MinimumViewport": true,
+    "manualPause": true,
+    "focusLossFreezesCommitmentAndSuspendsAudio": true,
+    "terminalRestartPreservesSettingsAndResetsRun": true,
+    "cleanReloadReturnsToTitle": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "loading": {
+    "firstNoCacheNavigation": {
+      "timeToFirstFrameMs": 2217.3,
+      "domInteractiveMs": 71.6,
+      "loadEventMs": 2315.4,
+      "resourceCount": 11
+    },
+    "finalNavigation": {
+      "timeToFirstFrameMs": 2272.9,
+      "domInteractiveMs": 92.3,
+      "loadEventMs": 2347,
+      "resourceCount": 12
+    },
+    "budgetMs": 8000
+  },
+  "payload": {
+    "files": [
+      {
+        "path": "assets/index-BtoLHCaQ.css",
+        "rawBytes": 13357,
+        "gzipBytes": 4179
+      },
+      {
+        "path": "assets/index-CWtQHXh1.js",
+        "rawBytes": 582588,
+        "gzipBytes": 148450
+      },
+      {
+        "path": "favicon.svg",
+        "rawBytes": 170,
+        "gzipBytes": 158
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 6789,
+        "gzipBytes": 2119
+      }
+    ],
+    "rawBytes": 602904,
+    "gzipBytes": 154906,
+    "initialCompressedBudgetBytes": 20971520,
+    "totalBudgetBytes": 52428800
+  },
+  "performance": {
+    "minimumViewport": {
+      "samples": 120,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 107.5,
+      "worstFrameMs": 9.3
+    },
+    "targetViewport": {
+      "samples": 240,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 106.4,
+      "worstFrameMs": 17.4
+    }
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S7 PASS: build/evidence/s7/report.json
+exitCode=0
+durationMs=38163
+suite=browser:checkpoint-history
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s9.py
+{
+  "stage": "s9-living-plates",
+  "checks": {
+    "twoAdultsThreeYoung": true,
+    "youngPlayAndBranchPullDistinct": true,
+    "rendererCanvasFeedsEveryPlate": true,
+    "fourCapturedPlatesAreDistinct": true,
+    "plateImagesUseNonColourTreatment": true,
+    "strongRecoveredBoardUsesCapturedViews": true,
+    "restartClearsCapturedViews": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "plateImages": [
+    {
+      "plate": 1,
+      "bytesInCssValue": 75886,
+      "sha256": "700376e95b6e83c29fec4408263cf5706bae74321d833c127fe68531cbed5a45",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 2,
+      "bytesInCssValue": 76574,
+      "sha256": "5374369e4d246fee1ce962394992505324031da59283481e2212103a81a67bc9",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 3,
+      "bytesInCssValue": 75518,
+      "sha256": "dbf88eb219b264ef64df4c04dfd825adcd5b3c27b4e8d3493e3bdb3e3436ea3a",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    },
+    {
+      "plate": 4,
+      "bytesInCssValue": 79394,
+      "sha256": "8c7343881d93e08fc7eb238149118e1544ea19dd566ab4a758e6cfeeee63589f",
+      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 107.5,
+    "worstFrameMs": 9.3
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S9 PASS: build/evidence/s9/report.json
+exitCode=0
+durationMs=39579
+suite=browser:complete-run
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s8.py
+{
+  "stage": "s8-input-paths",
+  "checks": {
+    "noTeleportOrDirectTimeAdvance": true,
+    "strongAllFiveVerbsNoShot": true,
+    "strongEvidenceSevenAndBodyMargin": true,
+    "strongDistinctBehaviorFrames": true,
+    "strongRemainingLightWithinReferenceWindow": true,
+    "mixedOneShotNoisyCreekAndCallback": true,
+    "mixedCorroboratingEvidenceFour": true,
+    "panicBothShotsAllPlatesAndSecondContact": true,
+    "cleanRestartAfterEveryReferenceClass": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "pathMetrics": {
+    "Strong": {
+      "wallSeconds": 51.569,
+      "simulationSeconds": 51.661,
+      "distanceTravelled": 128.388,
+      "remainingLight": 100.339,
+      "returnCostSeconds": 28,
+      "route": "covered",
+      "result": {
+        "kind": "alive",
+        "band": "strong-field-record",
+        "title": "Strong field record",
+        "copy": "Scale. Living form. Behavior. The field record holds.",
+        "evidence": 7,
+        "survivingPlates": 4,
+        "route": "covered",
+        "brookResponse": null,
+        "remainingLight": 100.3,
+        "gunshotCallback": null
+      }
+    },
+    "Mixed": {
+      "wallSeconds": 38.012,
+      "simulationSeconds": 37.995,
+      "distanceTravelled": 129.088,
+      "remainingLight": 124.005,
+      "returnCostSeconds": 18,
+      "route": "exposed",
+      "result": {
+        "kind": "alive",
+        "band": "corroborating-record",
+        "title": "Corroborating record",
+        "copy": "Living form, more than one angle. The argument can begin again.",
+        "evidence": 4,
+        "survivingPlates": 3,
+        "route": "exposed",
+        "brookResponse": "brush-moving",
+        "remainingLight": 124,
+        "gunshotCallback": "The report carried. Something answered by the brook."
+      }
+    },
+    "Panic": {
+      "wallSeconds": 26.543,
+      "simulationSeconds": 26.525,
+      "distanceTravelled": 79.619,
+      "remainingLight": 135.475,
+      "returnCostSeconds": 18,
+      "route": "exposed",
+      "result": {
+        "kind": "failure",
+        "cause": "second-unblocked-strike",
+        "title": "The second pass",
+        "copy": "The second pass found you in open ground.",
+        "cue": "Break the dive under the trees, or fire before contact."
+      }
+    }
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 11.1
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S8 PASS: build/evidence/s8/report.json
+exitCode=0
+durationMs=123435
+suite=browser:current-visual
+cwd=game-adaptations/project-plateau/build/app
+command=python3 test/qa_s10.py
+{
+  "stage": "s10-glade-clarity",
+  "checks": {
+    "protectedGladeSightline": true,
+    "familyAndBasaltShareSunLane": true,
+    "allFiveSubjectsCastShadows": true,
+    "observationNoteClearsBeforeHeroFrame": true,
+    "focusRegionPixelFloor": true,
+    "youngPlayAndBranchPullRemainDistinct": true,
+    "achromatopsiaAttackRetainsShapeAndToolState": true,
+    "strongBoardUsesFourCapturedViews": true,
+    "restartClearsCapturedViews": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "focusRegion": {
+    "width": 777,
+    "height": 504,
+    "darkRatio": 0.1979,
+    "brightRatio": 0.5927,
+    "chromaticRatio": 0.8213
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 95.2,
+    "worstFrameMs": 10.9
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  }
+}
+S10 PASS: build/evidence/s10/report.json
+exitCode=0
+durationMs=37555
+suite=qa:design-invariants
+cwd=game-adaptations/project-plateau
+command=python3 qa/check_design_invariants.py
+design invariants: PASS (9/9)
+exitCode=0
+durationMs=43
+suite=repo:contract
+cwd=.
+command=python3 scripts/validate_repo.py
+Validation passed: 7 skills checked.
+exitCode=0
+durationMs=203
+suite=repo:contract
+cwd=.
+command=python3 -m unittest discover -s tests -v
+test_community_contribution_surface_is_complete (test_validate_repo.RepositoryValidationTests.test_community_contribution_surface_is_complete) ... ok
+test_downstream_skills_restate_the_output_language_rule (test_validate_repo.RepositoryValidationTests.test_downstream_skills_restate_the_output_language_rule) ... ok
+test_every_skill_description_leads_with_english (test_validate_repo.RepositoryValidationTests.test_every_skill_description_leads_with_english) ... ok
+test_example_source_and_citations_are_structurally_valid (test_validate_repo.RepositoryValidationTests.test_example_source_and_citations_are_structurally_valid) ... ok
+test_example_source_bible_accounts_for_every_source_chapter (test_validate_repo.RepositoryValidationTests.test_example_source_bible_accounts_for_every_source_chapter) ... ok
+test_examples_use_compact_planning_artifacts (test_validate_repo.RepositoryValidationTests.test_examples_use_compact_planning_artifacts) ... ok
+test_manifest_validator_rejects_a_bad_manifest (test_validate_repo.RepositoryValidationTests.test_manifest_validator_rejects_a_bad_manifest) ... ok
+test_minimal_evidence_contract_rejects_each_missing_marker (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_contract_rejects_each_missing_marker) ... ok
+test_minimal_evidence_fixture_reports_an_orphaned_suite (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_fixture_reports_an_orphaned_suite) ... ok
+test_minimal_evidence_fixture_runs_one_complete_verification (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_fixture_runs_one_complete_verification) ... ok
+test_native_plugins_expose_one_shared_skill_bundle (test_validate_repo.RepositoryValidationTests.test_native_plugins_expose_one_shared_skill_bundle) ... ok
+test_numeral_parsing_covers_every_declared_kind (test_validate_repo.RepositoryValidationTests.test_numeral_parsing_covers_every_declared_kind) ... ok
+test_plugin_manifest_descriptions_lead_with_english (test_validate_repo.RepositoryValidationTests.test_plugin_manifest_descriptions_lead_with_english) ... ok
+test_repo_local_discovery_resolves_the_same_skill_set (test_validate_repo.RepositoryValidationTests.test_repo_local_discovery_resolves_the_same_skill_set) ... ok
+test_repository_contract_is_valid (test_validate_repo.RepositoryValidationTests.test_repository_contract_is_valid) ... ok
+test_repository_json_scan_skips_generated_dependency_trees (test_validate_repo.RepositoryValidationTests.test_repository_json_scan_skips_generated_dependency_trees) ... ok
+test_runtime_markdown_headings_match_the_declared_language (test_validate_repo.RepositoryValidationTests.test_runtime_markdown_headings_match_the_declared_language)
+技能与 references 恒为简体中文；示例按自己 manifest 声明的语言判。 ... ok
+test_skill_validator_rejects_chinese_first_description (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_chinese_first_description) ... ok
+test_skill_validator_rejects_cross_skill_link (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_cross_skill_link) ... ok
+test_skill_validator_rejects_missing_output_language_rule (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_missing_output_language_rule) ... ok
+test_skill_validator_rejects_todo_and_broken_link (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_todo_and_broken_link) ... ok
+test_visible_directories_skips_agent_state_dirs (test_validate_repo.RepositoryValidationTests.test_visible_directories_skips_agent_state_dirs) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.302s
+
+OK
+exitCode=0
+durationMs=374
+authoritativeExitCode=0
+authoritativeDurationMs=462633

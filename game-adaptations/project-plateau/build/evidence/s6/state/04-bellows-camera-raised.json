@@ -1,5 +1,5 @@
 {
-  "stage": "s6-field-feedback",
+  "stage": "s10-glade-clarity",
   "mode": "field",
   "cameraMode": "field",
   "runActive": true,
@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.521,
+    "elapsedSeconds": 0.562,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -89,7 +89,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 419.479,
+    "remainingLight": 179.438,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -100,10 +100,23 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 28.18,
-      "y": 23.55,
-      "z": 22.4
+      "x": 28.03,
+      "y": 23.59,
+      "z": 22.6
     }
+  },
+  "familyVisual": {
+    "moment": "glade-young-play",
+    "adults": 2,
+    "young": 3,
+    "branchAngle": 0.08,
+    "roles": [
+      "graze",
+      "branch-pull",
+      "young-play",
+      "young-play",
+      "stay-close"
+    ]
   },
   "brookResponseVisual": {
     "state": null,
@@ -125,6 +138,23 @@
     "cover": {
       "archCount": 5,
       "visibleParts": 25
+    },
+    "family": {
+      "adults": 2,
+      "young": 3,
+      "behaviors": [
+        "graze",
+        "branch-pull",
+        "young-play"
+      ],
+      "branchPresent": true,
+      "visibleParts": 57
+    },
+    "gladeComposition": {
+      "sightlineHalfWidth": 22,
+      "sunLanePresent": true,
+      "shadowCastingSubjects": 5,
+      "familyWidth": 15
     }
   },
   "audio": {
@@ -145,14 +175,25 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.229
+        "at": 0.245
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.331
+        "at": 0.357
       }
     ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.25,
+      "effects": 0.45,
+      "music": 0.15
+    },
+    "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
     "prompt": "Hold steady. Release the shutter [Left Mouse]",
@@ -160,22 +201,28 @@
     "rifleOverlay": false,
     "plateRail": true,
     "platePreview": null,
+    "capturedPlateImages": [
+      false,
+      false,
+      false,
+      false
+    ],
     "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
     "contactNote": null,
     "cartridgesVisible": false,
     "caption": "[wood frame lifts; bellows opens]",
-    "lightWatch": 420,
+    "lightWatch": 180,
     "terminal": null
   },
-  "sceneChildren": 25,
-  "calls": 99,
-  "triangles": 26936,
-  "textures": 1,
-  "geometries": 58,
+  "sceneChildren": 30,
+  "calls": 266,
+  "triangles": 50422,
+  "textures": 3,
+  "geometries": 93,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 171.20000004768372,
+  "firstRenderedAt": 271.2999999523163,
   "recentMedianFrameMs": 8.3
 }

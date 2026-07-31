@@ -28,7 +28,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 | [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
 | 两只成年、三只幼体、动态空中威胁与真实运作的时代相机 | 四个渲染器实拍视野被完整保留到最终野外记录 |
 
-**[本地运行](game-adaptations/project-plateau/build/app/RUN.md)** · [可玩源码](game-adaptations/project-plateau/build/app/) · [完整策划工件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [浏览器证据](game-adaptations/project-plateau/build/evidence/s10/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
+**[本地运行](game-adaptations/project-plateau/build/app/RUN.md)** · [可玩源码](game-adaptations/project-plateau/build/app/) · [完整策划工件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [浏览器证据](game-adaptations/project-plateau/build/evidence/s10/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
 
 这里展示的是仓库内检查点，而不是已托管发布；独立首次体验审查和公网环境验证仍未完成。
 
