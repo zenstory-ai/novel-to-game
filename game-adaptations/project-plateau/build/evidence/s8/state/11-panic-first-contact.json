@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 3,
-      "z": 17.947
+      "z": 17.99
     },
     "lastStablePosition": {
       "x": 3,
-      "z": 17.947
+      "z": 17.99
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 17.536,
-    "distanceTravelled": 52.053,
+    "elapsedSeconds": 17.517,
+    "distanceTravelled": 52.01,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -44,7 +44,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.0016000001430538,
+    "previewSeconds": 1.000100000143059,
     "lastProofEvent": {
       "plateIndex": 2,
       "frameKey": "basalt-scale",
@@ -96,7 +96,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 1,
-    "remainingLight": 162.464,
+    "remainingLight": 162.483,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -107,9 +107,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": -18.19,
-      "y": 10.87,
-      "z": -1.78
+      "x": -19.3,
+      "y": 10.94,
+      "z": -2.33
     }
   },
   "familyVisual": {
@@ -177,82 +177,82 @@
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 99.723
+        "at": 100.027
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 99.728
+        "at": 100.027
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 99.867
+        "at": 100.176
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 99.867
+        "at": 100.176
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 99.968
+        "at": 100.277
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 100.043
+        "at": 100.352
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 102.032
+        "at": 102.336
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 102.032
+        "at": 102.336
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 102.181
+        "at": 102.48
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 102.181
+        "at": 102.48
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 102.277
+        "at": 102.576
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 102.357
+        "at": 102.651
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 104.347
+        "at": 104.645
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 104.352
+        "at": 104.645
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 107.349
+        "at": 107.643
       },
       {
         "cue": "contact",
         "caption": "[case strike; glass cracks]",
-        "at": 107.349
+        "at": 107.643
       }
     ]
   },
@@ -295,6 +295,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.90000009536743,
-  "recentMedianFrameMs": 8.4
+  "firstRenderedAt": 192,
+  "recentMedianFrameMs": 8.3
 }

@@ -29,11 +29,11 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 13.1
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "loading": {
-    "observedTtiMs": 945.8,
+    "observedTtiMs": 840.3,
     "budgetTtiMs": 8000,
     "distRawBytes": 602904,
     "distGzipBytes": 154906,
@@ -57,7 +57,7 @@
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 1.023,
+      "elapsedSeconds": 1.006,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -129,7 +129,7 @@
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 178.977,
+      "remainingLight": 178.994,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -140,9 +140,9 @@
       "state": "distant",
       "response": "orbit",
       "position": {
-        "x": 30.44,
-        "y": 23.73,
-        "z": 48.28
+        "x": 30.54,
+        "y": 23.71,
+        "z": 48.18
       }
     },
     "familyVisual": {
@@ -253,7 +253,7 @@
       1440,
       900
     ],
-    "firstRenderedAt": 243.79999995231628,
+    "firstRenderedAt": 184.70000004768372,
     "recentMedianFrameMs": 8.3
   },
   "minimumRender": {
@@ -274,7 +274,7 @@
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 3.835,
+      "elapsedSeconds": 3.805,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -346,7 +346,7 @@
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 176.165,
+      "remainingLight": 176.194,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -357,9 +357,9 @@
       "state": "distant",
       "response": "orbit",
       "position": {
-        "x": 22.45,
-        "y": 24.19,
-        "z": 52.53
+        "x": 22.72,
+        "y": 24.2,
+        "z": 52.44
       }
     },
     "familyVisual": {
@@ -470,7 +470,7 @@
       1280,
       720
     ],
-    "firstRenderedAt": 243.79999995231628,
+    "firstRenderedAt": 184.70000004768372,
     "recentMedianFrameMs": 8.3
   },
   "screenshots": [

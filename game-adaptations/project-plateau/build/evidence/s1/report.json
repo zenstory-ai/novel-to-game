@@ -34,12 +34,12 @@
   "continuousSmoke": {
     "requestedSeconds": 60.0,
     "wallSeconds": 60.01,
-    "simulatedElapsedGain": 60.012,
+    "simulatedElapsedGain": 59.933,
     "inputSegments": 30,
     "lifecycleRestarts": 0,
     "memory": {
-      "used": 20991359,
-      "total": 32663527
+      "used": 20748579,
+      "total": 29255659
     }
   },
   "performance": {
@@ -47,7 +47,7 @@
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
     "onePercentLowFps": 107.5,
-    "worstFrameMs": 9.4
+    "worstFrameMs": 9.3
   },
   "checkpoints": [
     {
@@ -70,7 +70,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 0.304,
+          "elapsedSeconds": 0.307,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -142,7 +142,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 179.696,
+          "remainingLight": 179.693,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -266,7 +266,7 @@
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.4
       },
       "visual": "build/evidence/s1/01-clean-start.jpg"
@@ -282,17 +282,17 @@
         "player": {
           "position": {
             "x": 3,
-            "z": 66.416
+            "z": 66.413
           },
           "lastStablePosition": {
             "x": 3,
-            "z": 66.416
+            "z": 66.413
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 1.278,
-          "distanceTravelled": 3.584,
+          "elapsedSeconds": 1.294,
+          "distanceTravelled": 3.587,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
@@ -363,7 +363,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 178.722,
+          "remainingLight": 178.706,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -374,9 +374,9 @@
           "state": "distant",
           "response": "orbit",
           "position": {
-            "x": 30.17,
+            "x": 30.14,
             "y": 23.79,
-            "z": 44.97
+            "z": 44.99
           }
         },
         "familyVisual": {
@@ -487,8 +487,8 @@
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
-        "recentMedianFrameMs": 8.4
+        "firstRenderedAt": 175.39999985694885,
+        "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/02-walk.jpg"
     },
@@ -502,23 +502,23 @@
         "renderer": "WebGL2",
         "player": {
           "position": {
-            "x": -6.692,
-            "z": 78.425
+            "x": -6.705,
+            "z": 78.442
           },
           "lastStablePosition": {
-            "x": -6.692,
-            "z": 78.425
+            "x": -6.705,
+            "z": 78.442
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 2.784,
-          "distanceTravelled": 8.812,
+          "elapsedSeconds": 2.802,
+          "distanceTravelled": 8.795,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
-          "collisions": 50,
-          "lastEvent": "movement",
+          "collisions": 51,
+          "lastEvent": "collision:fort-tent-west",
           "zone": "fort",
           "zoneHistory": [
             "fort"
@@ -584,7 +584,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 177.216,
+          "remainingLight": 177.198,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -595,9 +595,9 @@
           "state": "distant",
           "response": "orbit",
           "position": {
-            "x": 16.77,
+            "x": 16.7,
             "y": 24.14,
-            "z": 59.39
+            "z": 59.43
           }
         },
         "familyVisual": {
@@ -700,15 +700,15 @@
           "terminal": null
         },
         "sceneChildren": 30,
-        "calls": 275,
-        "triangles": 50584,
+        "calls": 276,
+        "triangles": 50664,
         "textures": 3,
         "geometries": 95,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/03-collision-slide.jpg"
@@ -724,21 +724,21 @@
         "player": {
           "position": {
             "x": 0,
-            "z": -89.389
+            "z": -89.377
           },
           "lastStablePosition": {
             "x": 0,
-            "z": -89.389
+            "z": -89.377
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 3.267,
-          "distanceTravelled": 9.001,
+          "elapsedSeconds": 3.285,
+          "distanceTravelled": 8.972,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 39,
-          "collisions": 50,
+          "collisions": 51,
           "lastEvent": "boundary-recovery",
           "zone": "iguanodon-glade",
           "zoneHistory": [
@@ -806,7 +806,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 176.733,
+          "remainingLight": 176.715,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -817,9 +817,9 @@
           "state": "search",
           "response": "orbit",
           "position": {
-            "x": 4.28,
-            "y": 10.58,
-            "z": -108.63
+            "x": 4.19,
+            "y": 10.57,
+            "z": -108.61
           }
         },
         "familyVisual": {
@@ -892,7 +892,7 @@
             {
               "cue": "search",
               "caption": "[a near call circles overhead]",
-              "at": 2.704
+              "at": 2.747
             }
           ]
         },
@@ -935,7 +935,7 @@
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/04-boundary-recovery.jpg"
@@ -960,12 +960,12 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 4.845,
-          "distanceTravelled": 9.001,
+          "elapsedSeconds": 4.877,
+          "distanceTravelled": 8.972,
           "paused": true,
           "pauseReason": "manual",
           "boundaryRecoveries": 39,
-          "collisions": 50,
+          "collisions": 51,
           "lastEvent": "paused:manual",
           "zone": "fort",
           "zoneHistory": [
@@ -1034,7 +1034,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 175.155,
+          "remainingLight": 175.123,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1045,9 +1045,9 @@
           "state": "search",
           "response": "orbit",
           "position": {
-            "x": 14.63,
+            "x": 14.58,
             "y": 11.2,
-            "z": 49.34
+            "z": 49.36
           }
         },
         "familyVisual": {
@@ -1120,7 +1120,7 @@
             {
               "cue": "search",
               "caption": "[a near call circles overhead]",
-              "at": 2.704
+              "at": 2.747
             }
           ]
         },
@@ -1163,7 +1163,7 @@
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/05-manual-pause.jpg"
@@ -1188,7 +1188,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 0.101,
+          "elapsedSeconds": 0.104,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -1260,7 +1260,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 179.899,
+          "remainingLight": 179.896,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1271,16 +1271,16 @@
           "state": "distant",
           "response": "orbit",
           "position": {
-            "x": 14.95,
-            "y": 23.9,
-            "z": 54.25
+            "x": 14.79,
+            "y": 23.89,
+            "z": 54.27
           }
         },
         "familyVisual": {
           "moment": "glade-branch-pull",
           "adults": 2,
           "young": 3,
-          "branchAngle": 0.54,
+          "branchAngle": 0.541,
           "roles": [
             "graze",
             "branch-pull",
@@ -1341,7 +1341,7 @@
             {
               "cue": "field-start",
               "caption": "[brook water and insects under the canopy]",
-              "at": 5.435
+              "at": 5.488
             }
           ]
         },
@@ -1384,7 +1384,7 @@
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/06-clean-restart.jpg"
@@ -1399,18 +1399,18 @@
         "renderer": "WebGL2",
         "player": {
           "position": {
-            "x": 10.437,
-            "z": 61.54
+            "x": -0.188,
+            "z": 61.559
           },
           "lastStablePosition": {
-            "x": 10.437,
-            "z": 61.54
+            "x": -0.188,
+            "z": 61.559
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 60.147,
-          "distanceTravelled": 251.592,
+          "elapsedSeconds": 60.071,
+          "distanceTravelled": 250.843,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
@@ -1496,7 +1496,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 119.853,
+          "remainingLight": 119.929,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1507,16 +1507,16 @@
           "state": "distant",
           "response": "orbit",
           "position": {
-            "x": 34.17,
-            "y": 21.87,
-            "z": 30.71
+            "x": 23.41,
+            "y": 21.86,
+            "z": 30.66
           }
         },
         "familyVisual": {
           "moment": "glade-branch-pull",
           "adults": 2,
           "young": 3,
-          "branchAngle": 0.457,
+          "branchAngle": 0.459,
           "roles": [
             "graze",
             "branch-pull",
@@ -1577,7 +1577,7 @@
             {
               "cue": "field-start",
               "caption": "[brook water and insects under the canopy]",
-              "at": 5.435
+              "at": 5.488
             }
           ]
         },
@@ -1612,15 +1612,15 @@
           "terminal": null
         },
         "sceneChildren": 30,
-        "calls": 271,
-        "triangles": 50474,
+        "calls": 275,
+        "triangles": 50500,
         "textures": 3,
         "geometries": 97,
         "viewport": [
           1440,
           900
         ],
-        "firstRenderedAt": 235.20000004768372,
+        "firstRenderedAt": 175.39999985694885,
         "recentMedianFrameMs": 8.3
       },
       "visual": "build/evidence/s1/07-smoke-end.jpg"

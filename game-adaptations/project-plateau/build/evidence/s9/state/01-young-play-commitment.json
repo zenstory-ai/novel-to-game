@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 11.068,
+    "elapsedSeconds": 10.931,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -51,7 +51,7 @@
       "label": "BEHAVIOR \u2014 young play beside the adults.",
       "exposure": 2,
       "plateIndex": 2,
-      "remainingSeconds": 1.8754000000953672,
+      "remainingSeconds": 1.9827999999523163,
       "zone": "iguanodon-glade"
     },
     "previewSeconds": 0,
@@ -106,7 +106,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 168.932,
+    "remainingLight": 169.069,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -117,9 +117,9 @@
     "state": "search",
     "response": "orbit",
     "position": {
-      "x": -12.19,
-      "y": 11.2,
-      "z": -27.15
+      "x": -12.9,
+      "y": 11.19,
+      "z": -26.88
     }
   },
   "familyVisual": {
@@ -192,32 +192,32 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.208
+        "at": 0.203
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.219
+        "at": 0.213
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.309
+        "at": 0.304
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.469
+        "at": 2.464
       },
       {
         "cue": "shutter",
@@ -237,22 +237,22 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.651
+        "at": 10.64
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.752
+        "at": 10.725
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.763
+        "at": 10.731
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.869
+        "at": 10.816
       }
     ]
   },
@@ -283,7 +283,7 @@
     "contactNote": null,
     "cartridgesVisible": false,
     "caption": "[shutter releases]",
-    "lightWatch": 169,
+    "lightWatch": 170,
     "terminal": null
   },
   "sceneChildren": 30,
@@ -295,6 +295,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 375.2999999523163,
+  "firstRenderedAt": 182.19999980926514,
   "recentMedianFrameMs": 8.3
 }

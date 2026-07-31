@@ -100,8 +100,8 @@
     "response": "orbit",
     "position": {
       "x": 31.96,
-      "y": 23.13,
-      "z": 45.55
+      "y": 23.12,
+      "z": 45.52
     }
   },
   "familyVisual": {
@@ -206,6 +206,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 2322.2000000476837,
+  "firstRenderedAt": 2215,
   "recentMedianFrameMs": 8.3
 }

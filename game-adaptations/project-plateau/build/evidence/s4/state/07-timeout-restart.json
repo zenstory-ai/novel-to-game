@@ -99,9 +99,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": -25.39,
-      "y": 22.52,
-      "z": 47.07
+      "x": -25.5,
+      "y": 22.56,
+      "z": 46.88
     }
   },
   "familyVisual": {
@@ -169,12 +169,12 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 15.211
+        "at": 15.291
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 15.344
+        "at": 15.419
       }
     ]
   },
@@ -217,6 +217,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 176.29999995231628,
+  "firstRenderedAt": 188.79999995231628,
   "recentMedianFrameMs": 8.3
 }

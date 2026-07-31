@@ -67,9 +67,9 @@ terminal restart and heavy-state performance with:
 npm run verify:s7
 ```
 
-Run the input-only Strong/Mixed/Panic reference paths with real keyboard and
-mouse traversal, no teleport or direct-time shortcuts, exact outcomes and a
-clean restart with:
+Run the input-only Strong/Mixed/Panic reference paths plus a complete
+achromatopsia Strong route with real keyboard and mouse traversal, no teleport
+or direct-time shortcuts, exact outcomes and clean restarts with:
 
 ```bash
 npm run verify:s8
@@ -85,7 +85,8 @@ npm run verify:s9
 
 Run the protected-glade checkpoint with its unobstructed family sightline,
 both live camera behaviors, Chromium achromatopsia attack state, Strong plate
-board, clean restart and focus-region pixel floor with:
+board, clean restart, focus-region pixel floor and order/glade/defense/result
+checkpoints for three additional vision deficiencies with:
 
 ```bash
 npm run verify:s10
@@ -159,9 +160,11 @@ travels 128.3 world units, preserves seven cues and returns with about 100.3 sec
 of the revised 180-second light budget. Mixed reaches the four-cue result with
 one shot and its creek callback; Panic reaches the second-contact failure after
 spending both rounds. All three use keyboard/mouse movement without teleport or
-direct-time hooks. This establishes repeatable reference paths, but automated
-state evidence does not replace independent first-time perception, three
-external tester records, final family animation review or public-host loading.
+direct-time hooks. The same runner repeats the complete Strong route under
+Chromium achromatopsia and returns to a clean order. This establishes repeatable
+reference paths, but automated state evidence does not replace independent
+first-time perception, three external tester records, final family animation
+review or public-host loading.
 S9 gives the two-adult/three-young
 family distinct graze, young-play and branch-pull roles, and records the two
 behavior windows under separate frame keys. Every shutter now preserves the
@@ -173,12 +176,14 @@ It uses QA placement to isolate those states and therefore does not replace S8
 traversal evidence or independent anatomy, composition and first-time premise
 review. S10 protects a 44-unit glade corridor, moves dense vegetation to the
 frame edges and adds warm/cool subject separation, faceted animal planes and
-visible eyes. Its six-checkpoint matrix clears the observation prose before
-the hero frame, preserves both behavior commitments, exercises one real
-Chromium achromatopsia attack state and retains the Strong board/reset. The
-focus region records about 19.8% dark / 59.3% bright / 82.1% chromatic pixels at
-120.5/98.0 FPS. These numeric floors detect gross occlusion and flat exposure;
-they do not replace independent composition, anatomy, motion or premise review.
+visible eyes. Its matrix clears the observation prose before the hero frame,
+preserves both behavior commitments, exercises a Chromium achromatopsia attack
+state, retains the Strong board/reset, and adds order, glade, attack/defense and
+result checkpoints under protanopia, deuteranopia and tritanopia. The focus
+region records about 19.8% dark / 59.3% bright / 82.1% chromatic pixels at
+120.5/106.4 FPS. These numeric and state floors catch gross omissions; they do
+not replace independent composition, anatomy, motion, colour-cue or premise
+review.
 
 The media capture replays the S8 Strong class without teleport or direct-time
 hooks. Its 30-second and 15-second versions uniformly compress the same uncut
@@ -187,10 +192,10 @@ duration/size/audio/first-frame/fast-start checks. Because their playback is
 time-compressed, S8—not the delivery clips—remains the timing authority.
 
 The latest clean-install `npm run verify` handoff passed seven suites and all
-sixteen commands, indexed 22 direct checkpoints and produced a separate 9/9
+sixteen commands, indexed 41 direct checkpoints and produced a separate 10/10
 design-invariant audit. See [`../../qa/QA_REPORT.md`](../../qa/QA_REPORT.md) and
 [`../../qa/verification.json`](../../qa/verification.json). Independent
-first-time sessions, perception review and colour-vision routes now have
+first-time sessions and perception review now have
 executable protocols in [`../../qa/PLAYTEST_PROTOCOL.md`](../../qa/PLAYTEST_PROTOCOL.md)
 and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md);
 their raw records and the public-host smoke remain open.

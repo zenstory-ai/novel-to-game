@@ -6,18 +6,18 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.689,
-      "z": 1.976
+      "x": 2.685,
+      "z": 1.988
     },
     "lastStablePosition": {
-      "x": 2.689,
-      "z": 1.976
+      "x": 2.685,
+      "z": 1.988
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 31.307,
-    "distanceTravelled": 68.335,
+    "elapsedSeconds": 31.626,
+    "distanceTravelled": 68.327,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -39,14 +39,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 2.2245000000000004,
+    "attackSeconds": 2.3082000000476817,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9260000000000006,
+    "previewSeconds": 3.8835000000000006,
     "lastProofEvent": {
       "plateIndex": 3,
       "frameKey": "glade-branch-pull",
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 148.693,
+    "remainingLight": 148.374,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -109,16 +109,16 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 10.48,
-      "y": 11.54,
-      "z": -11.83
+      "x": 9.08,
+      "y": 10.81,
+      "z": -11.38
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.46,
+    "branchAngle": 0.447,
     "roles": [
       "graze",
       "branch-pull",
@@ -179,82 +179,82 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 6.235
+        "at": 6.288
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.213
+        "at": 8.277
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.213
+        "at": 8.277
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.832
+        "at": 14.907
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.912
+        "at": 14.976
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.891
+        "at": 16.971
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.891
+        "at": 16.971
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.013
+        "at": 23.147
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 26.912
+        "at": 27.051
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 26.923
+        "at": 27.067
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 26.997
+        "at": 27.232
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 28.987
+        "at": 29.216
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 28.987
+        "at": 29.216
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.072
+        "at": 29.323
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.141
+        "at": 29.413
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 31.131
+        "at": 31.403
       }
     ]
   },
@@ -297,6 +297,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.90000009536743,
-  "recentMedianFrameMs": 8.4
+  "firstRenderedAt": 192,
+  "recentMedianFrameMs": 8.3
 }

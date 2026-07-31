@@ -99,9 +99,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 31.93,
-      "y": 23.17,
-      "z": 45.7
+      "x": 31.94,
+      "y": 23.15,
+      "z": 45.64
     }
   },
   "familyVisual": {
@@ -206,6 +206,6 @@
     1280,
     720
   ],
-  "firstRenderedAt": 2322.2000000476837,
+  "firstRenderedAt": 2215,
   "recentMedianFrameMs": 8.3
 }

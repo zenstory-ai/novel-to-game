@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.741,
+    "elapsedSeconds": 0.779,
     "distanceTravelled": 1.541,
     "paused": false,
     "pauseReason": null,
@@ -91,7 +91,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 151.259,
+    "remainingLight": 151.221,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -105,7 +105,7 @@
       "survivingPlates": 0,
       "route": "covered",
       "brookResponse": null,
-      "remainingLight": 151.3,
+      "remainingLight": 151.2,
       "gunshotCallback": null
     }
   },
@@ -113,9 +113,9 @@
     "state": "search",
     "response": "orbit",
     "position": {
-      "x": 16.61,
-      "y": 10.5,
-      "z": 46.27
+      "x": 16.55,
+      "y": 10.53,
+      "z": 46.36
     }
   },
   "familyVisual": {
@@ -188,17 +188,17 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 0.507
+        "at": 0.533
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 0.565
+        "at": 0.592
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 0.629
+        "at": 0.667
       }
     ]
   },
@@ -247,6 +247,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 217.69999980926514,
+  "firstRenderedAt": 231.40000009536743,
   "recentMedianFrameMs": 8.3
 }

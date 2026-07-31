@@ -7,17 +7,17 @@
   "player": {
     "position": {
       "x": 3,
-      "z": 44.974
+      "z": 44.975
     },
     "lastStablePosition": {
       "x": 3,
-      "z": 44.974
+      "z": 44.975
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 8.395,
-    "distanceTravelled": 25.026,
+    "elapsedSeconds": 8.463,
+    "distanceTravelled": 25.025,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.9240999999046333,
+    "previewSeconds": 3.9252999999523164,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "brook-partial",
@@ -95,7 +95,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 171.605,
+    "remainingLight": 171.537,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -106,16 +106,16 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": -15.12,
+      "x": -15.52,
       "y": 10.8,
-      "z": 26.5
+      "z": 26.36
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.464,
+    "branchAngle": 0.459,
     "roles": [
       "graze",
       "branch-pull",
@@ -181,27 +181,27 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 6.155
+        "at": 6.208
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 6.16
+        "at": 6.213
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 6.235
+        "at": 6.288
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.213
+        "at": 8.277
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.213
+        "at": 8.277
       }
     ]
   },
@@ -244,6 +244,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.90000009536743,
+  "firstRenderedAt": 192,
   "recentMedianFrameMs": 8.3
 }

@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 3.024,
+    "elapsedSeconds": 3.009,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -43,7 +43,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.708299999952317,
+    "previewSeconds": 3.7000000000000033,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "brook-partial",
@@ -95,7 +95,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 176.976,
+    "remainingLight": 176.991,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -106,9 +106,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 15.06,
-      "y": 13.13,
-      "z": 27.42
+      "x": 15.11,
+      "y": 13.14,
+      "z": 27.4
     }
   },
   "familyVisual": {
@@ -181,27 +181,27 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.368
+        "at": 0.357
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.496
+        "at": 0.48
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.645
+        "at": 0.624
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.624
+        "at": 2.608
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.624
+        "at": 2.608
       }
     ]
   },
@@ -244,6 +244,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.59999990463257,
+  "firstRenderedAt": 179.70000004768372,
   "recentMedianFrameMs": 8.3
 }

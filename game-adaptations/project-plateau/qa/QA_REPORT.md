@@ -5,26 +5,25 @@
 **Local automated build handoff: PASS. Public release: NO-GO.**
 
 The authoritative run completed every registered suite, a same-run input-only
-Strong path from clean field order through result and restart, and 22 direct
-state/browser/visual checkpoints. No local blocker, uncaught browser error,
-external runtime host, failed deterministic outcome or budget regression was
-observed.
+Strong path from clean field order through result and restart, a second complete
+Strong path under Chromium achromatopsia, and 41 direct state/browser/visual
+checkpoints. No local blocker, uncaught browser error, external runtime host,
+failed deterministic outcome or budget regression was observed.
 
-Release remains closed because first-time player/perception records, independent
-anatomy/motion/composition review, a complete non-colour route pass, and public
-anonymous-host loading have not run. These are evidence gaps, not inferred
-passes.
+Release remains closed because first-time player records, independent
+anatomy/motion/composition and colour-cue review, and public anonymous-host
+loading have not run. These are evidence gaps, not inferred passes.
 
 ## Authoritative run
 
 | Field | Observed |
 |---|---|
-| Source commit | `565e2f6c20f1aafe99fc098a73c09f2e5432a720` |
+| Source commit | `8793fb904ca6ac1aedf62f296febff6c68a9bb3d` |
 | App fingerprint | `e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d` |
 | Install | [`npm ci`](evidence/install.log) — 24 packages, 0 vulnerabilities |
 | Verify | `npm run verify` |
 | Result | exit `0`; 7/7 suites; 16/16 commands |
-| Duration | `462634 ms` |
+| Duration | `509894 ms` |
 | Log | [`evidence/verify.log`](evidence/verify.log) |
 | Structured handoff | [`verification.json`](verification.json) |
 | Suite discovery | 15 registered pass/fail files; 2 explicit non-suite tools; 0 orphan |
@@ -45,7 +44,7 @@ major`.
 | Target heaviest state | median `120.5 FPS`; 1% low `106.4 FPS` | PASS vs `45/30` |
 | Minimum heaviest state | median `120.5 FPS`; 1% low `107.5 FPS` | PASS vs `45/30` |
 | Built payload | `602904` raw bytes; `154906` gzip bytes | PASS vs `50/20 MiB` |
-| First local no-cache frame | `2217.3 ms` at simulated 25 Mbps | PASS vs `8000 ms` locally |
+| First local no-cache frame | `2198.3 ms` at simulated 25 Mbps | PASS vs `8000 ms` locally |
 | Runtime requests | only `127.0.0.1:4173`; no external host | PASS |
 
 The loading measurement uses Chrome DevTools throttling against local Vite. It
@@ -58,10 +57,10 @@ does not prove public-host DNS, TLS, CDN or cold-cache behavior.
 | `unit:simulation` | four `test/*.test.js` files, 35 assertions | PASS |
 | `build:production` | `index.html`, `src/`, `public/` | PASS; Vite production build |
 | `browser:checkpoint-history` | `qa_s0.py`–`qa_s7.py`, `qa_s9.py` | PASS; 9/9 commands |
-| `browser:complete-run` | `qa_s8.py` | PASS; Strong/Mixed/Panic by keyboard/mouse |
-| `browser:current-visual` | `qa_s10.py` | PASS; current glade/plates/non-colour frame |
-| `qa:design-invariants` | `qa/check_design_invariants.py` | PASS; 9/9 design-derived checks |
-| `repo:contract` | validator and repository unit discovery | PASS; 7 skills, 22 tests |
+| `browser:complete-run` | `qa_s8.py` | PASS; Strong/Mixed/Panic plus achromatopsia Strong by keyboard/mouse |
+| `browser:current-visual` | `qa_s10.py` | PASS; glade/plates plus four-state checkpoints for three additional vision deficiencies |
+| `qa:design-invariants` | `qa/check_design_invariants.py` | PASS; 10/10 design-derived checks |
+| `repo:contract` | validator and repository unit discovery | PASS; 7 skills, 25 tests |
 
 ## Complete run
 
@@ -78,18 +77,26 @@ invoke `teleportForTest` or `advanceTimeForTest`.
 | Restart | Choose “Take the route again”; restore unexposed plates and zero travel | [`06`](../build/evidence/s8/state/06-strong-clean-restart.json) | [`06`](../build/evidence/s8/browser/06-strong-clean-restart.json) | [`06`](../build/evidence/s8/06-strong-clean-restart.jpg) |
 
 Observed Strong result: 7 evidence, 4 surviving plates, covered return, no shot,
-body margin retained, 100.339 seconds remaining. Mixed reached corroborating
+body margin retained, 100.004 seconds remaining. Mixed reached corroborating
 evidence 4 with three plates, one shot and the brook callback. Panic spent both
 rounds and failed on the second unblocked strike. Each terminal state has its
 own clean restart checkpoint.
 
+The runner then repeated the complete Strong input path under Chromium
+achromatopsia: field order, first proof, glade proof, covered defense, Strong
+result and clean restart. S10 separately records order, glade, attack/defense
+and Strong-result checkpoints under protanopia, deuteranopia and tritanopia.
+These records prove input and UI-state continuity under the emulator. They leave
+human cue readability to the independent review.
+
 ## Independent design checks
 
-[`evidence/design-invariants.md`](evidence/design-invariants.md) derives nine
+[`evidence/design-invariants.md`](evidence/design-invariants.md) derives ten
 expectations from `PRODUCT_BRIEF.md` and `GAME_DESIGN.md` rather than importing
 runtime constants. It independently checks the common source fingerprint, five
 verbs, Strong/Mixed/Panic bands, three terminal restarts, the input/network
-boundary, both viewport budgets, and current visual floors: **9/9 PASS**.
+boundary, both viewport budgets, current visual floors and the colour-vision
+evidence matrix: **10/10 PASS**.
 
 This establishes deterministic agreement with the approved thresholds. It does
 not make the implementation author independent, and it cannot answer first-time
@@ -103,13 +110,13 @@ comprehension or subjective visual questions.
 | First meaningful interaction within 90 seconds and result within 15 minutes | NOT_RUN | major | Timestamped, uncoached player records using the same protocol |
 | Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Verbatim post-run answers linked to each raw session |
 | Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), reviewer context, frame-level findings and disposition |
-| Complete route under non-colour/colour-vision modes | NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets; one isolated attack screenshot is insufficient |
+| Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
 | Anonymous public HTTPS load, play, result and restart | NOT_RUN | release-blocking | Public URL, cold-load/browser log and clean-context smoke |
 | Platform upload/transcode for short media | NOT_RUN | release-blocking for that attachment | Uploaded file hash and playback check |
 
-No subjective fun, balance, audio-mix, anatomy, motion or composition claim is
-marked PASS. Numeric image floors only catch gross occlusion, flat exposure or
-missing state.
+No subjective fun, balance, audio-mix, anatomy, motion, composition or
+colour-cue readability claim is marked PASS. Numeric image floors only catch
+gross occlusion, flat exposure or missing state.
 
 ## Reproduce
 

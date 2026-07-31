@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.229,
+    "elapsedSeconds": 0.199,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -88,7 +88,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.771,
+    "remainingLight": 179.801,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -99,9 +99,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 31.43,
-      "y": 23.47,
-      "z": 47.01
+      "x": 31.47,
+      "y": 23.45,
+      "z": 46.93
     }
   },
   "familyVisual": {
@@ -212,6 +212,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 271.2999999523163,
+  "firstRenderedAt": 208.89999985694885,
   "recentMedianFrameMs": 8.3
 }

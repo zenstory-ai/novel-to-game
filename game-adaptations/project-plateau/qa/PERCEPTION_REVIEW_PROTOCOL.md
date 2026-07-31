@@ -17,11 +17,16 @@ produced these tracked frames:
 - [`03-branch-pull-silver-frame`](../build/evidence/s10/03-branch-pull-silver-frame.jpg)
 - [`04-achromatopsia-attack`](../build/evidence/s10/04-achromatopsia-attack.jpg)
 - [`05-strong-plate-board`](../build/evidence/s10/05-strong-plate-board.jpg)
+- the two complete technical vision routes indexed by
+  [`../build/evidence/s8/report.json`](../build/evidence/s8/report.json)
+- the twelve additional review checkpoints indexed by
+  [`../build/evidence/s10/report.json`](../build/evidence/s10/report.json)
 - the continuous Strong delivery take described by
   [`../build/media/clip/manifest.json`](../build/media/clip/manifest.json)
 
 Tracked images are navigation aids. Final findings must cite a live run or a
-new reviewer capture from the same commit.
+new reviewer capture from the same commit. The existing Chromium-emulated route
+and checkpoint matrix prepares the review and does not supply its verdict.
 
 ## Review passes
 

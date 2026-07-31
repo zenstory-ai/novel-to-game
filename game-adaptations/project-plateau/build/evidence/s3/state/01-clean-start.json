@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.291,
+    "elapsedSeconds": 0.284,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -88,7 +88,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.709,
+    "remainingLight": 179.716,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -101,7 +101,7 @@
     "position": {
       "x": 31.54,
       "y": 23.42,
-      "z": 46.81
+      "z": 46.8
     }
   },
   "familyVisual": {
@@ -212,6 +212,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.59999990463257,
+  "firstRenderedAt": 179.70000004768372,
   "recentMedianFrameMs": 8.3
 }

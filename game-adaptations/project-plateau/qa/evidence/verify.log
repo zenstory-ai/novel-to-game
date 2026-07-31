@@ -1,5 +1,5 @@
 command=npm run verify
-sourceCommit=565e2f6c20f1aafe99fc098a73c09f2e5432a720
+sourceCommit=8793fb904ca6ac1aedf62f296febff6c68a9bb3d
 sourceFingerprint=e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d
 runtime=Node.js
 runtimeVersion=v25.9.0
@@ -15,41 +15,41 @@ command=npm test
 > project-plateau-proof-before-dark@0.1.0 test
 > node --test test/*.test.js
 
-✔ every core field cue has a concise sound caption (1.926375ms)
-✔ audio settings clamp channel volumes and expose caption state (0.164041ms)
-✔ cue history and threat transitions stay observable without Web Audio (0.248542ms)
-✔ cue history remains bounded during a long field session (0.122125ms)
-✔ foundation exposes the locked viewport and performance budgets (1.443333ms)
-✔ procedural placement is deterministic for a recorded seed (0.095292ms)
-✔ representative scene contains all declared subject and pressure groups (0.0885ms)
-✔ the family asset exposes two adults, three young and both authored behaviors (15.973875ms)
-✔ the glade composition protects a lit family-and-basalt sightline (5.006875ms)
-✔ frame percentile is stable and keeps the slow tail visible (0.116959ms)
-✔ runtime sources contain no remote asset or CDN request (4.832208ms)
-✔ presentation settings normalize invalid persisted values (1.53925ms)
-✔ settings round-trip through versioned storage and can be reset (0.180166ms)
-✔ blocked or malformed storage falls back without disabling controls (0.180208ms)
-✔ the measured compact route starts with a 180-second light budget (1.760208ms)
-✔ fresh and restarted player states are clean copies (0.964041ms)
-✔ walking, sprinting and crouching have ordered deterministic speeds (0.711292ms)
-✔ pause freezes both world time and movement (0.126917ms)
-✔ a solid obstacle blocks penetration and permits axis sliding (0.176709ms)
-✔ leaving the navigable world recovers the last stable position (1.052583ms)
-✔ zone topology distinguishes the observation fork and both return routes (0.082959ms)
-✔ territory, glade, open proof and cover produce four readable threat states (0.566417ms)
-✔ examining the brook makes context eligible without awarding evidence (0.188792ms)
-✔ successive observed glade plates record young play and branch pull separately (0.242167ms)
-✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.203042ms)
-✔ open proof adds two awareness states and contact cracks the best intact plate (0.21125ms)
-✔ a later contact without body margin fails while the first contact remains recoverable (0.073334ms)
-✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.141125ms)
-✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.067833ms)
-✔ restart clears observation, proof, damage and action history (0.074375ms)
-✔ intact evidence and all four result thresholds are deterministic (0.099625ms)
-✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.200042ms)
-✔ an attack-state exposed return cracks the best plate without spending body margin (0.098667ms)
-✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.085667ms)
-✔ remaining light expires outside Fort with exact cause and actionable cue (0.09875ms)
+✔ every core field cue has a concise sound caption (1.617833ms)
+✔ audio settings clamp channel volumes and expose caption state (0.150041ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.242792ms)
+✔ cue history remains bounded during a long field session (0.12175ms)
+✔ foundation exposes the locked viewport and performance budgets (1.570833ms)
+✔ procedural placement is deterministic for a recorded seed (0.109833ms)
+✔ representative scene contains all declared subject and pressure groups (0.087041ms)
+✔ the family asset exposes two adults, three young and both authored behaviors (15.028167ms)
+✔ the glade composition protects a lit family-and-basalt sightline (5.202042ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.132542ms)
+✔ runtime sources contain no remote asset or CDN request (5.000959ms)
+✔ presentation settings normalize invalid persisted values (1.54275ms)
+✔ settings round-trip through versioned storage and can be reset (0.173542ms)
+✔ blocked or malformed storage falls back without disabling controls (0.1695ms)
+✔ the measured compact route starts with a 180-second light budget (1.068208ms)
+✔ fresh and restarted player states are clean copies (0.868958ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.553917ms)
+✔ pause freezes both world time and movement (0.22ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.220291ms)
+✔ leaving the navigable world recovers the last stable position (0.128667ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.082916ms)
+✔ territory, glade, open proof and cover produce four readable threat states (0.443208ms)
+✔ examining the brook makes context eligible without awarding evidence (0.13225ms)
+✔ successive observed glade plates record young play and branch pull separately (0.212417ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.172416ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (0.182792ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.06275ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.154084ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.086333ms)
+✔ restart clears observation, proof, damage and action history (0.0785ms)
+✔ intact evidence and all four result thresholds are deterministic (0.086084ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.166208ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.099667ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.078333ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.06975ms)
 ℹ tests 35
 ℹ suites 0
 ℹ pass 35
@@ -57,9 +57,9 @@ command=npm test
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 171.818167
+ℹ duration_ms 156.785417
 exitCode=0
-durationMs=406
+durationMs=386
 suite=build:production
 cwd=game-adaptations/project-plateau/build/app
 command=npm run build
@@ -76,7 +76,7 @@ dist/index.html                   6.78 kB │ gzip:   2.09 kB
 dist/assets/index-BtoLHCaQ.css   13.35 kB │ gzip:   4.21 kB
 dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
 
-✓ built in 554ms
+✓ built in 167ms
 
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
@@ -84,7 +84,7 @@ dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
 exitCode=0
-durationMs=2769
+durationMs=514
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s0.py
@@ -119,11 +119,11 @@ command=python3 test/qa_s0.py
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 13.1
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "loading": {
-    "observedTtiMs": 945.8,
+    "observedTtiMs": 840.3,
     "budgetTtiMs": 8000,
     "distRawBytes": 602904,
     "distGzipBytes": 154906,
@@ -147,7 +147,7 @@ command=python3 test/qa_s0.py
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 1.023,
+      "elapsedSeconds": 1.006,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -219,7 +219,7 @@ command=python3 test/qa_s0.py
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 178.977,
+      "remainingLight": 178.994,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -230,9 +230,9 @@ command=python3 test/qa_s0.py
       "state": "distant",
       "response": "orbit",
       "position": {
-        "x": 30.44,
-        "y": 23.73,
-        "z": 48.28
+        "x": 30.54,
+        "y": 23.71,
+        "z": 48.18
       }
     },
     "familyVisual": {
@@ -343,7 +343,7 @@ command=python3 test/qa_s0.py
       1440,
       900
     ],
-    "firstRenderedAt": 243.79999995231628,
+    "firstRenderedAt": 184.70000004768372,
     "recentMedianFrameMs": 8.3
   },
   "minimumRender": {
@@ -364,7 +364,7 @@ command=python3 test/qa_s0.py
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 3.835,
+      "elapsedSeconds": 3.805,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -436,7 +436,7 @@ command=python3 test/qa_s0.py
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 176.165,
+      "remainingLight": 176.194,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -447,9 +447,9 @@ command=python3 test/qa_s0.py
       "state": "distant",
       "response": "orbit",
       "position": {
-        "x": 22.45,
-        "y": 24.19,
-        "z": 52.53
+        "x": 22.72,
+        "y": 24.2,
+        "z": 52.44
       }
     },
     "familyVisual": {
@@ -560,7 +560,7 @@ command=python3 test/qa_s0.py
       1280,
       720
     ],
-    "firstRenderedAt": 243.79999995231628,
+    "firstRenderedAt": 184.70000004768372,
     "recentMedianFrameMs": 8.3
   },
   "screenshots": [
@@ -577,7 +577,7 @@ command=python3 test/qa_s0.py
 }
 S0 PASS: build/evidence/s0/report.json
 exitCode=0
-durationMs=10219
+durationMs=6968
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s1.py
@@ -601,12 +601,12 @@ command=python3 test/qa_s1.py
   "continuousSmoke": {
     "requestedSeconds": 60.0,
     "wallSeconds": 60.01,
-    "simulatedElapsedGain": 60.012,
+    "simulatedElapsedGain": 59.933,
     "inputSegments": 30,
     "lifecycleRestarts": 0,
     "memory": {
-      "used": 20991359,
-      "total": 32663527
+      "used": 20748579,
+      "total": 29255659
     }
   },
   "performance": {
@@ -614,7 +614,7 @@ command=python3 test/qa_s1.py
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
     "onePercentLowFps": 107.5,
-    "worstFrameMs": 9.4
+    "worstFrameMs": 9.3
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -623,7 +623,7 @@ command=python3 test/qa_s1.py
 }
 S1 PASS: build/evidence/s1/report.json
 exitCode=0
-durationMs=71657
+durationMs=71474
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s2.py
@@ -647,7 +647,7 @@ command=python3 test/qa_s2.py
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 107.5,
+    "onePercentLowFps": 106.4,
     "worstFrameMs": 9.4
   },
   "source": {
@@ -657,7 +657,7 @@ command=python3 test/qa_s2.py
 }
 S2 PASS: build/evidence/s2/report.json
 exitCode=0
-durationMs=19241
+durationMs=19538
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s3.py
@@ -693,7 +693,7 @@ command=python3 test/qa_s3.py
 }
 S3 PASS: build/evidence/s3/report.json
 exitCode=0
-durationMs=15392
+durationMs=15471
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s4.py
@@ -720,8 +720,8 @@ command=python3 test/qa_s4.py
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 11.5
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -730,7 +730,7 @@ command=python3 test/qa_s4.py
 }
 S4 PASS: build/evidence/s4/report.json
 exitCode=0
-durationMs=40879
+durationMs=39276
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s5.py
@@ -770,7 +770,7 @@ command=python3 test/qa_s5.py
 }
 S5 PASS: build/evidence/s5/report.json
 exitCode=0
-durationMs=47153
+durationMs=48372
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s6.py
@@ -797,8 +797,8 @@ command=python3 test/qa_s6.py
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 107.5,
-    "worstFrameMs": 9.5
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -807,7 +807,7 @@ command=python3 test/qa_s6.py
 }
 S6 PASS: build/evidence/s6/report.json
 exitCode=0
-durationMs=15255
+durationMs=14008
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s7.py
@@ -832,15 +832,15 @@ command=python3 test/qa_s7.py
   },
   "loading": {
     "firstNoCacheNavigation": {
-      "timeToFirstFrameMs": 2217.3,
-      "domInteractiveMs": 71.6,
-      "loadEventMs": 2315.4,
+      "timeToFirstFrameMs": 2198.3,
+      "domInteractiveMs": 54.3,
+      "loadEventMs": 2281.9,
       "resourceCount": 11
     },
     "finalNavigation": {
-      "timeToFirstFrameMs": 2272.9,
-      "domInteractiveMs": 92.3,
-      "loadEventMs": 2347,
+      "timeToFirstFrameMs": 2196,
+      "domInteractiveMs": 79.3,
+      "loadEventMs": 2262.2,
       "resourceCount": 12
     },
     "budgetMs": 8000
@@ -879,14 +879,14 @@ command=python3 test/qa_s7.py
       "medianFrameMs": 8.3,
       "medianFps": 120.5,
       "onePercentLowFps": 107.5,
-      "worstFrameMs": 9.3
+      "worstFrameMs": 9.4
     },
     "targetViewport": {
       "samples": 240,
       "medianFrameMs": 8.3,
       "medianFps": 120.5,
       "onePercentLowFps": 106.4,
-      "worstFrameMs": 17.4
+      "worstFrameMs": 9.4
     }
   },
   "source": {
@@ -896,7 +896,7 @@ command=python3 test/qa_s7.py
 }
 S7 PASS: build/evidence/s7/report.json
 exitCode=0
-durationMs=38163
+durationMs=37938
 suite=browser:checkpoint-history
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s9.py
@@ -919,26 +919,26 @@ command=python3 test/qa_s9.py
   "plateImages": [
     {
       "plate": 1,
-      "bytesInCssValue": 75886,
-      "sha256": "700376e95b6e83c29fec4408263cf5706bae74321d833c127fe68531cbed5a45",
+      "bytesInCssValue": 75858,
+      "sha256": "da1dede28d4d38e25c9b7536a354c438faad3151ccc1974cff077750d84078d0",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 2,
-      "bytesInCssValue": 76574,
-      "sha256": "5374369e4d246fee1ce962394992505324031da59283481e2212103a81a67bc9",
+      "bytesInCssValue": 76566,
+      "sha256": "6bab45577bf37277078b3ca495d6c6caec7eda013236ca1ae393c1611290e9f9",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 3,
-      "bytesInCssValue": 75518,
-      "sha256": "dbf88eb219b264ef64df4c04dfd825adcd5b3c27b4e8d3493e3bdb3e3436ea3a",
+      "bytesInCssValue": 75454,
+      "sha256": "1af332940e68dcf43646b1bcc4856a67c36d7cf722fd750b0350111997ace859",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     },
     {
       "plate": 4,
-      "bytesInCssValue": 79394,
-      "sha256": "8c7343881d93e08fc7eb238149118e1544ea19dd566ab4a758e6cfeeee63589f",
+      "bytesInCssValue": 79514,
+      "sha256": "4daa4e01a7034255265d3ab80c64f00ed6e33b68e2e9ea0742d933d6c6624cc1",
       "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
     }
   ],
@@ -946,8 +946,8 @@ command=python3 test/qa_s9.py
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 107.5,
-    "worstFrameMs": 9.3
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -956,7 +956,7 @@ command=python3 test/qa_s9.py
 }
 S9 PASS: build/evidence/s9/report.json
 exitCode=0
-durationMs=39579
+durationMs=37994
 suite=browser:complete-run
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s8.py
@@ -972,6 +972,8 @@ command=python3 test/qa_s8.py
     "mixedCorroboratingEvidenceFour": true,
     "panicBothShotsAllPlatesAndSecondContact": true,
     "cleanRestartAfterEveryReferenceClass": true,
+    "achromatopsiaStrongInputRoute": true,
+    "achromatopsiaStrongCleanRestart": true,
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
@@ -981,10 +983,10 @@ command=python3 test/qa_s8.py
   },
   "pathMetrics": {
     "Strong": {
-      "wallSeconds": 51.569,
-      "simulationSeconds": 51.661,
-      "distanceTravelled": 128.388,
-      "remainingLight": 100.339,
+      "wallSeconds": 51.865,
+      "simulationSeconds": 51.996,
+      "distanceTravelled": 128.35,
+      "remainingLight": 100.004,
       "returnCostSeconds": 28,
       "route": "covered",
       "result": {
@@ -996,15 +998,16 @@ command=python3 test/qa_s8.py
         "survivingPlates": 4,
         "route": "covered",
         "brookResponse": null,
-        "remainingLight": 100.3,
+        "remainingLight": 100,
         "gunshotCallback": null
-      }
+      },
+      "visionMode": "full-colour"
     },
     "Mixed": {
-      "wallSeconds": 38.012,
-      "simulationSeconds": 37.995,
-      "distanceTravelled": 129.088,
-      "remainingLight": 124.005,
+      "wallSeconds": 37.995,
+      "simulationSeconds": 37.983,
+      "distanceTravelled": 129.089,
+      "remainingLight": 124.017,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -1018,13 +1021,14 @@ command=python3 test/qa_s8.py
         "brookResponse": "brush-moving",
         "remainingLight": 124,
         "gunshotCallback": "The report carried. Something answered by the brook."
-      }
+      },
+      "visionMode": "full-colour"
     },
     "Panic": {
-      "wallSeconds": 26.543,
-      "simulationSeconds": 26.525,
-      "distanceTravelled": 79.619,
-      "remainingLight": 135.475,
+      "wallSeconds": 26.524,
+      "simulationSeconds": 26.508,
+      "distanceTravelled": 79.597,
+      "remainingLight": 135.492,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -1033,15 +1037,37 @@ command=python3 test/qa_s8.py
         "title": "The second pass",
         "copy": "The second pass found you in open ground.",
         "cue": "Break the dive under the trees, or fire before contact."
-      }
+      },
+      "visionMode": "full-colour"
+    },
+    "Achromatopsia Strong": {
+      "wallSeconds": 51.667,
+      "simulationSeconds": 51.633,
+      "distanceTravelled": 128.354,
+      "remainingLight": 100.367,
+      "returnCostSeconds": 28,
+      "route": "covered",
+      "result": {
+        "kind": "alive",
+        "band": "strong-field-record",
+        "title": "Strong field record",
+        "copy": "Scale. Living form. Behavior. The field record holds.",
+        "evidence": 7,
+        "survivingPlates": 4,
+        "route": "covered",
+        "brookResponse": null,
+        "remainingLight": 100.4,
+        "gunshotCallback": null
+      },
+      "visionMode": "achromatopsia"
     }
   },
   "performance": {
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 11.1
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -1050,7 +1076,7 @@ command=python3 test/qa_s8.py
 }
 S8 PASS: build/evidence/s8/report.json
 exitCode=0
-durationMs=123435
+durationMs=175390
 suite=browser:current-visual
 cwd=game-adaptations/project-plateau/build/app
 command=python3 test/qa_s10.py
@@ -1064,6 +1090,7 @@ command=python3 test/qa_s10.py
     "focusRegionPixelFloor": true,
     "youngPlayAndBranchPullRemainDistinct": true,
     "achromatopsiaAttackRetainsShapeAndToolState": true,
+    "colourVisionCheckpointMatrixComplete": true,
     "strongBoardUsesFourCapturedViews": true,
     "restartClearsCapturedViews": true,
     "consoleErrors": [],
@@ -1075,16 +1102,16 @@ command=python3 test/qa_s10.py
   "focusRegion": {
     "width": 777,
     "height": 504,
-    "darkRatio": 0.1979,
-    "brightRatio": 0.5927,
-    "chromaticRatio": 0.8213
+    "darkRatio": 0.1981,
+    "brightRatio": 0.5926,
+    "chromaticRatio": 0.8211
   },
   "performance": {
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 10.9
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
@@ -1093,22 +1120,23 @@ command=python3 test/qa_s10.py
 }
 S10 PASS: build/evidence/s10/report.json
 exitCode=0
-durationMs=37555
+durationMs=39597
 suite=qa:design-invariants
 cwd=game-adaptations/project-plateau
 command=python3 qa/check_design_invariants.py
-design invariants: PASS (9/9)
+design invariants: PASS (10/10)
 exitCode=0
-durationMs=43
+durationMs=58
 suite=repo:contract
 cwd=.
 command=python3 scripts/validate_repo.py
 Validation passed: 7 skills checked.
 exitCode=0
-durationMs=203
+durationMs=713
 suite=repo:contract
 cwd=.
 command=python3 -m unittest discover -s tests -v
+test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy (test_validate_repo.RepositoryValidationTests.test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy) ... ok
 test_community_contribution_surface_is_complete (test_validate_repo.RepositoryValidationTests.test_community_contribution_surface_is_complete) ... ok
 test_downstream_skills_restate_the_output_language_rule (test_validate_repo.RepositoryValidationTests.test_downstream_skills_restate_the_output_language_rule) ... ok
 test_every_skill_description_leads_with_english (test_validate_repo.RepositoryValidationTests.test_every_skill_description_leads_with_english) ... ok
@@ -1122,11 +1150,13 @@ test_minimal_evidence_fixture_runs_one_complete_verification (test_validate_repo
 test_native_plugins_expose_one_shared_skill_bundle (test_validate_repo.RepositoryValidationTests.test_native_plugins_expose_one_shared_skill_bundle) ... ok
 test_numeral_parsing_covers_every_declared_kind (test_validate_repo.RepositoryValidationTests.test_numeral_parsing_covers_every_declared_kind) ... ok
 test_plugin_manifest_descriptions_lead_with_english (test_validate_repo.RepositoryValidationTests.test_plugin_manifest_descriptions_lead_with_english) ... ok
+test_public_product_copy_does_not_limit_the_pipeline_to_web_games (test_validate_repo.RepositoryValidationTests.test_public_product_copy_does_not_limit_the_pipeline_to_web_games) ... ok
 test_repo_local_discovery_resolves_the_same_skill_set (test_validate_repo.RepositoryValidationTests.test_repo_local_discovery_resolves_the_same_skill_set) ... ok
 test_repository_contract_is_valid (test_validate_repo.RepositoryValidationTests.test_repository_contract_is_valid) ... ok
 test_repository_json_scan_skips_generated_dependency_trees (test_validate_repo.RepositoryValidationTests.test_repository_json_scan_skips_generated_dependency_trees) ... ok
 test_runtime_markdown_headings_match_the_declared_language (test_validate_repo.RepositoryValidationTests.test_runtime_markdown_headings_match_the_declared_language)
 技能与 references 恒为简体中文；示例按自己 manifest 声明的语言判。 ... ok
+test_runtime_pipeline_follows_the_selected_target_platform (test_validate_repo.RepositoryValidationTests.test_runtime_pipeline_follows_the_selected_target_platform) ... ok
 test_skill_validator_rejects_chinese_first_description (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_chinese_first_description) ... ok
 test_skill_validator_rejects_cross_skill_link (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_cross_skill_link) ... ok
 test_skill_validator_rejects_missing_output_language_rule (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_missing_output_language_rule) ... ok
@@ -1134,10 +1164,10 @@ test_skill_validator_rejects_todo_and_broken_link (test_validate_repo.Repository
 test_visible_directories_skips_agent_state_dirs (test_validate_repo.RepositoryValidationTests.test_visible_directories_skips_agent_state_dirs) ... ok
 
 ----------------------------------------------------------------------
-Ran 22 tests in 0.302s
+Ran 25 tests in 0.814s
 
 OK
 exitCode=0
-durationMs=374
+durationMs=1077
 authoritativeExitCode=0
-authoritativeDurationMs=462633
+authoritativeDurationMs=509894

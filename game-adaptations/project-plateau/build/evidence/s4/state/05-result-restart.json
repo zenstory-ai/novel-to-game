@@ -99,9 +99,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": -25.06,
-      "y": 22.41,
-      "z": 47.56
+      "x": -25.18,
+      "y": 22.45,
+      "z": 47.4
     }
   },
   "familyVisual": {
@@ -169,82 +169,82 @@
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.352
+        "at": 2.379
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.459
+        "at": 2.496
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.533
+        "at": 2.565
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.523
+        "at": 4.56
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.523
+        "at": 4.56
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 4.592
+        "at": 4.629
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 4.597
+        "at": 4.635
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 4.672
+        "at": 4.709
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 6.656
+        "at": 6.704
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 6.667
+        "at": 6.709
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 12.656
+        "at": 12.704
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 13.035
+        "at": 13.083
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 13.109
+        "at": 13.163
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 15.104
+        "at": 15.157
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 15.104
+        "at": 15.157
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 15.147
+        "at": 15.216
       }
     ]
   },
@@ -287,6 +287,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 176.29999995231628,
+  "firstRenderedAt": 188.79999995231628,
   "recentMedianFrameMs": 8.3
 }

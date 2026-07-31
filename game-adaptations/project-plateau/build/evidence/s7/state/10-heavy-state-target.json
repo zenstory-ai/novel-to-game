@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 4.325,
+    "elapsedSeconds": 4.308,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -36,14 +36,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 2.009100000143052,
+    "attackSeconds": 2.008799999952318,
     "examinedTrack": false,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.9992999999523222,
+    "previewSeconds": 1.9996000001430618,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "glade-young-play",
@@ -95,7 +95,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 175.675,
+    "remainingLight": 175.692,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -107,7 +107,7 @@
     "response": "orbit",
     "position": {
       "x": -1.76,
-      "y": 7.52,
+      "y": 7.51,
       "z": -21.99
     }
   },
@@ -181,32 +181,32 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 0.133
+        "at": 0.117
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.192
+        "at": 0.181
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.203
+        "at": 0.187
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.293
+        "at": 0.277
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 2.283
+        "at": 2.272
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.288
+        "at": 2.272
       }
     ]
   },
@@ -249,6 +249,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 2272.9000000953674,
+  "firstRenderedAt": 2196,
   "recentMedianFrameMs": 8.3
 }

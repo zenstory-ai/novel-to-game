@@ -6,18 +6,18 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 3.425,
-      "z": 3.201
+      "x": 3.413,
+      "z": 3.214
     },
     "lastStablePosition": {
-      "x": 3.425,
-      "z": 3.201
+      "x": 3.413,
+      "z": 3.214
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 23.949,
-    "distanceTravelled": 70.279,
+    "elapsedSeconds": 23.941,
+    "distanceTravelled": 70.289,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -46,7 +46,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.1055,
+    "previewSeconds": 3.108000000000006,
     "lastProofEvent": {
       "plateIndex": 2,
       "frameKey": "glade-young-play",
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 138.051,
+    "remainingLight": 138.059,
     "returnRoute": "exposed",
     "returnCostSeconds": 18,
     "returnStrike": false,
@@ -109,9 +109,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 23.25,
-      "y": 13.18,
-      "z": -15.91
+      "x": 21.71,
+      "y": 13.2,
+      "z": -15.32
     }
   },
   "familyVisual": {
@@ -179,82 +179,82 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 59.888
+        "at": 60.224
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 59.888
+        "at": 60.224
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 66.64
+        "at": 66.965
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 66.715
+        "at": 67.045
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 68.704
+        "at": 69.029
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 68.704
+        "at": 69.029
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 68.736
+        "at": 69.067
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 72.352
+        "at": 72.683
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 72.667
+        "at": 72.992
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 72.672
+        "at": 72.997
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 72.747
+        "at": 73.072
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 74.741
+        "at": 75.067
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 74.741
+        "at": 75.067
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 74.923
+        "at": 75.243
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 74.923
+        "at": 75.243
       },
       {
         "cue": "brook-response",
         "caption": "[brush thrashes beside the brook]",
-        "at": 75.515
+        "at": 75.84
       }
     ]
   },
@@ -297,6 +297,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.90000009536743,
-  "recentMedianFrameMs": 8.4
+  "firstRenderedAt": 192,
+  "recentMedianFrameMs": 8.3
 }

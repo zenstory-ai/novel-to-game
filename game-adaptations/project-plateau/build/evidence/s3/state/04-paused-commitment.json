@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 1.374,
+    "elapsedSeconds": 1.35,
     "distanceTravelled": 0,
     "paused": true,
     "pauseReason": "manual",
@@ -48,7 +48,7 @@
       "label": "PARTIAL \u2014 foliage hides the flank.",
       "exposure": 1,
       "plateIndex": 0,
-      "remainingSeconds": 1.3498999998569483,
+      "remainingSeconds": 1.3592000000476832,
       "zone": "brook-blind"
     },
     "previewSeconds": 0,
@@ -97,7 +97,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 178.626,
+    "remainingLight": 178.65,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -108,9 +108,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 28.6,
+      "x": 28.61,
       "y": 23.39,
-      "z": 21.68
+      "z": 21.66
     }
   },
   "familyVisual": {
@@ -183,17 +183,17 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.368
+        "at": 0.357
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.496
+        "at": 0.48
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.645
+        "at": 0.624
       }
     ]
   },
@@ -236,6 +236,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.59999990463257,
+  "firstRenderedAt": 179.70000004768372,
   "recentMedianFrameMs": 8.3
 }

@@ -99,16 +99,16 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": -16.64,
+      "x": -17.32,
       "y": 24.2,
-      "z": 37.53
+      "z": 37.76
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.454,
+    "branchAngle": 0.447,
     "roles": [
       "graze",
       "branch-pull",
@@ -169,7 +169,7 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.469
+        "at": 2.464
       },
       {
         "cue": "shutter",
@@ -189,62 +189,62 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.651
+        "at": 10.64
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.752
+        "at": 10.725
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.763
+        "at": 10.731
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.869
+        "at": 10.816
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 12.992
+        "at": 12.848
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 13.083
+        "at": 12.933
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 15.072
+        "at": 14.928
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 15.125
+        "at": 14.971
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 21.115
+        "at": 20.971
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 21.125
+        "at": 20.981
       }
     ]
   },
@@ -287,6 +287,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 375.2999999523163,
+  "firstRenderedAt": 182.19999980926514,
   "recentMedianFrameMs": 8.3
 }

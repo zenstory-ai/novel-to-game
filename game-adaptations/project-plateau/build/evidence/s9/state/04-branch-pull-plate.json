@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 15.168,
+    "elapsedSeconds": 15.039,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -39,7 +39,7 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 2.225800000190734,
+    "attackSeconds": 2.13290000009537,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 164.832,
+    "remainingLight": 164.961,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -109,9 +109,9 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 8.22,
-      "y": 11.22,
-      "z": -12.43
+      "x": 7.04,
+      "y": 10.22,
+      "z": -12.41
     }
   },
   "familyVisual": {
@@ -179,22 +179,22 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.309
+        "at": 0.304
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.469
+        "at": 2.464
       },
       {
         "cue": "shutter",
@@ -214,47 +214,47 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.651
+        "at": 10.64
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.752
+        "at": 10.725
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.763
+        "at": 10.731
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.869
+        "at": 10.816
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 12.992
+        "at": 12.848
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 13.083
+        "at": 12.933
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 15.072
+        "at": 14.928
       }
     ]
   },
@@ -289,14 +289,14 @@
     "terminal": null
   },
   "sceneChildren": 30,
-  "calls": 250,
-  "triangles": 49484,
+  "calls": 251,
+  "triangles": 49498,
   "textures": 3,
   "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 375.2999999523163,
+  "firstRenderedAt": 182.19999980926514,
   "recentMedianFrameMs": 8.3
 }

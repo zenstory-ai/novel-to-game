@@ -99,16 +99,16 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 27.93,
-      "y": 24.05,
-      "z": 50.18
+      "x": 28.07,
+      "y": 24.04,
+      "z": 50.1
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.513,
+    "branchAngle": 0.512,
     "roles": [
       "graze",
       "branch-pull",
@@ -174,67 +174,67 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.261
+        "at": 0.235
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.272
+        "at": 0.24
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.283
+        "at": 0.251
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.267
+        "at": 2.245
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.267
+        "at": 2.245
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 2.277
+        "at": 2.256
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 2.336
+        "at": 2.315
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.341
+        "at": 2.32
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.432
+        "at": 2.405
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.416
+        "at": 4.395
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.416
+        "at": 4.395
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 5.435
+        "at": 5.413
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 5.515
+        "at": 5.493
       }
     ]
   },
@@ -277,6 +277,6 @@
     1280,
     720
   ],
-  "firstRenderedAt": 2322.2000000476837,
+  "firstRenderedAt": 2215,
   "recentMedianFrameMs": 8.3
 }

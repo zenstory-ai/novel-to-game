@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.562,
+    "elapsedSeconds": 0.517,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -89,7 +89,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.438,
+    "remainingLight": 179.483,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -100,9 +100,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": 28.03,
-      "y": 23.59,
-      "z": 22.6
+      "x": 28.11,
+      "y": 23.57,
+      "z": 22.5
     }
   },
   "familyVisual": {
@@ -175,12 +175,12 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.245
+        "at": 0.219
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.357
+        "at": 0.32
       }
     ]
   },
@@ -223,6 +223,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 271.2999999523163,
+  "firstRenderedAt": 208.89999985694885,
   "recentMedianFrameMs": 8.3
 }

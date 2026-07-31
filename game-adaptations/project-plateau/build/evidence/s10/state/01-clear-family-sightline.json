@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 12.338,
+    "elapsedSeconds": 12.367,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -98,7 +98,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 167.662,
+    "remainingLight": 167.632,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -109,9 +109,9 @@
     "state": "search",
     "response": "orbit",
     "position": {
-      "x": -6.52,
-      "y": 10.85,
-      "z": -28.5
+      "x": -5.6,
+      "y": 10.75,
+      "z": -28.62
     }
   },
   "familyVisual": {
@@ -184,57 +184,57 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.203
+        "at": 0.197
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.213
+        "at": 0.208
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.304
+        "at": 0.293
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.288
+        "at": 2.277
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.288
+        "at": 2.277
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.459
+        "at": 2.448
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.549
+        "at": 2.533
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.533
+        "at": 4.523
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.533
+        "at": 4.523
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.603
+        "at": 10.597
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.693
+        "at": 10.699
       }
     ]
   },
@@ -277,6 +277,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 189.20000004768372,
+  "firstRenderedAt": 220,
   "recentMedianFrameMs": 8.3
 }

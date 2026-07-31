@@ -6,18 +6,18 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.689,
-      "z": 62.028
+      "x": 2.685,
+      "z": 62.011
     },
     "lastStablePosition": {
-      "x": 2.689,
-      "z": 62.028
+      "x": 2.685,
+      "z": 62.011
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 51.661,
-    "distanceTravelled": 128.388,
+    "elapsedSeconds": 51.996,
+    "distanceTravelled": 128.35,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -101,7 +101,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 100.339,
+    "remainingLight": 100.004,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -115,7 +115,7 @@
       "survivingPlates": 4,
       "route": "covered",
       "brookResponse": null,
-      "remainingLight": 100.3,
+      "remainingLight": 100,
       "gunshotCallback": null
     }
   },
@@ -123,9 +123,9 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 27.31,
-      "y": 11.27,
-      "z": 34.1
+      "x": 27.62,
+      "y": 11.35,
+      "z": 34.43
     }
   },
   "familyVisual": {
@@ -193,82 +193,82 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.912
+        "at": 14.976
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.891
+        "at": 16.971
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.891
+        "at": 16.971
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.013
+        "at": 23.147
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 26.912
+        "at": 27.051
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 26.923
+        "at": 27.067
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 26.997
+        "at": 27.232
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 28.987
+        "at": 29.216
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 28.987
+        "at": 29.216
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.072
+        "at": 29.323
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.141
+        "at": 29.413
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 31.131
+        "at": 31.403
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 31.509
+        "at": 31.84
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 37.509
+        "at": 37.84
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 43.509
+        "at": 43.84
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 51.557
+        "at": 51.888
       }
     ]
   },
@@ -304,7 +304,7 @@
       "kind": "alive",
       "title": "Strong field record",
       "copy": "Scale. Living form. Behavior. The field record holds.",
-      "detail": "7 evidence cues \u00b7 4 recorded plates \u00b7 covered return \u00b7 101s light",
+      "detail": "7 evidence cues \u00b7 4 recorded plates \u00b7 covered return \u00b7 100s light",
       "callback": null
     }
   },
@@ -317,6 +317,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 188.90000009536743,
-  "recentMedianFrameMs": 8.4
+  "firstRenderedAt": 192,
+  "recentMedianFrameMs": 8.3
 }

@@ -16,7 +16,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 13.201,
+    "elapsedSeconds": 13.047,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -39,7 +39,7 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.25849999999999995,
+    "attackSeconds": 0.14090000009536743,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
@@ -51,7 +51,7 @@
       "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
       "exposure": 2,
       "plateIndex": 3,
-      "remainingSeconds": 1.959100000143051,
+      "remainingSeconds": 1.983399999856949,
       "zone": "iguanodon-glade"
     },
     "previewSeconds": 0,
@@ -106,7 +106,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 166.799,
+    "remainingLight": 166.953,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -117,16 +117,16 @@
     "state": "attack",
     "response": "orbit",
     "position": {
-      "x": 4.74,
-      "y": 9.21,
-      "z": -13.93
+      "x": 4.89,
+      "y": 9.65,
+      "z": -14.19
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.522,
+    "branchAngle": 0.533,
     "roles": [
       "graze",
       "branch-pull",
@@ -187,27 +187,27 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.219
+        "at": 0.213
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 0.309
+        "at": 0.304
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.299
+        "at": 2.288
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.469
+        "at": 2.464
       },
       {
         "cue": "shutter",
@@ -227,42 +227,42 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.651
+        "at": 10.64
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.752
+        "at": 10.725
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.763
+        "at": 10.731
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.869
+        "at": 10.816
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 12.859
+        "at": 12.805
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 12.992
+        "at": 12.848
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 13.083
+        "at": 12.933
       }
     ]
   },
@@ -297,14 +297,14 @@
     "terminal": null
   },
   "sceneChildren": 30,
-  "calls": 250,
-  "triangles": 49484,
+  "calls": 249,
+  "triangles": 49482,
   "textures": 3,
   "geometries": 95,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 375.2999999523163,
+  "firstRenderedAt": 182.19999980926514,
   "recentMedianFrameMs": 8.3
 }

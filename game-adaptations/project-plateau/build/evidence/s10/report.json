@@ -20,6 +20,7 @@
     "focusRegionPixelFloor": true,
     "youngPlayAndBranchPullRemainDistinct": true,
     "achromatopsiaAttackRetainsShapeAndToolState": true,
+    "colourVisionCheckpointMatrixComplete": true,
     "strongBoardUsesFourCapturedViews": true,
     "restartClearsCapturedViews": true,
     "consoleErrors": [],
@@ -31,45 +32,137 @@
   "focusRegion": {
     "width": 777,
     "height": 504,
-    "darkRatio": 0.1979,
-    "brightRatio": 0.5927,
-    "chromaticRatio": 0.8213
+    "darkRatio": 0.1981,
+    "brightRatio": 0.5926,
+    "chromaticRatio": 0.8211
+  },
+  "colourVisionMatrix": {
+    "protanopia": {
+      "order": "00a-protanopia-field-order",
+      "glade": "07-protanopia-glade",
+      "attackDefense": "10-protanopia-attack-defense",
+      "result": "13-protanopia-strong-result"
+    },
+    "deuteranopia": {
+      "order": "00b-deuteranopia-field-order",
+      "glade": "08-deuteranopia-glade",
+      "attackDefense": "11-deuteranopia-attack-defense",
+      "result": "14-deuteranopia-strong-result"
+    },
+    "tritanopia": {
+      "order": "00c-tritanopia-field-order",
+      "glade": "09-tritanopia-glade",
+      "attackDefense": "12-tritanopia-attack-defense",
+      "result": "15-tritanopia-strong-result"
+    }
   },
   "visuals": [
     {
+      "path": "build/evidence/s10/00a-protanopia-field-order.jpg",
+      "bytes": 69707,
+      "sha256": "527643047fb8a4f25fbb02de46ab36681c3b48e294048a3beb8406455bccb1c9",
+      "visionMode": "protanopia"
+    },
+    {
+      "path": "build/evidence/s10/00b-deuteranopia-field-order.jpg",
+      "bytes": 69939,
+      "sha256": "2b27061daf883f08c351b1c26b924572e7f412127f0f957fbd83fef862423498",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "path": "build/evidence/s10/00c-tritanopia-field-order.jpg",
+      "bytes": 73239,
+      "sha256": "9bffd13716665a77a945eec8017aed0f5aa031f08e2f84804df360d87fcd535e",
+      "visionMode": "tritanopia"
+    },
+    {
       "path": "build/evidence/s10/01-clear-family-sightline.jpg",
-      "bytes": 105966,
-      "sha256": "e673f781eabed72c6398b32ce9c7f58f9b0158704918cd8182ba46b028fe3bcc",
+      "bytes": 106178,
+      "sha256": "89156a66ae5b1e09068e79ea8b3279c9f025f36267604cfb57f0b907420fdd77",
       "visionMode": "full-colour"
     },
     {
+      "path": "build/evidence/s10/07-protanopia-glade.jpg",
+      "bytes": 101953,
+      "sha256": "2cea908605cc5c7c8c086acf2c6892aa5f346c625d0bb3b8eccc5d352cef7f95",
+      "visionMode": "protanopia"
+    },
+    {
+      "path": "build/evidence/s10/08-deuteranopia-glade.jpg",
+      "bytes": 102639,
+      "sha256": "d9688cfa00798bc44b6d100fff85eb14693cd74dd5433ee0e451db8192362799",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "path": "build/evidence/s10/09-tritanopia-glade.jpg",
+      "bytes": 105261,
+      "sha256": "5b1e350c7d32c249bd7fa9741386eab2988d880940d3d75418e202253c95c429",
+      "visionMode": "tritanopia"
+    },
+    {
       "path": "build/evidence/s10/02-young-play-silver-frame.jpg",
-      "bytes": 111933,
-      "sha256": "353cd6d7979973191a262c4743c9af45ea6897a0ec0e9ca1c0b18342167ac691",
+      "bytes": 112205,
+      "sha256": "463906ed89d00f84755a284a9eb706068d97c1196f7530a8df54eb35f1e79d65",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
-      "bytes": 114904,
-      "sha256": "2286516462861d48fb87597e1fda0ada7b47377f2b132187b2b0cbc069418935",
+      "bytes": 112908,
+      "sha256": "8852c1ee3cbe28029faf47d41c088bb8d49bd35329bd3d772e7fbce2dc5f9b26",
       "visionMode": "full-colour"
     },
     {
       "path": "build/evidence/s10/04-achromatopsia-attack.jpg",
-      "bytes": 106633,
-      "sha256": "74ae8ebf0118d7987c1389474663a877111432e1d3e25652055f99f85f249e4b",
+      "bytes": 107208,
+      "sha256": "748bfad07b8712799bcdcfe31413f96a51349acaab96f1a98fad895b67054b7f",
       "visionMode": "achromatopsia"
     },
     {
+      "path": "build/evidence/s10/10-protanopia-attack-defense.jpg",
+      "bytes": 118988,
+      "sha256": "e6d73cdcd0035a306d37e2ea69c4b6d04750ae7221e7cf1c248251052f4cd4ea",
+      "visionMode": "protanopia"
+    },
+    {
+      "path": "build/evidence/s10/11-deuteranopia-attack-defense.jpg",
+      "bytes": 119837,
+      "sha256": "639a3b8a7b4e72d58939aaeccec903af332336996b5b72980a9291e1eb954200",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "path": "build/evidence/s10/12-tritanopia-attack-defense.jpg",
+      "bytes": 121991,
+      "sha256": "b3d45c75f2aeb02eedf87580259efebd664710bd4e86574e096248064940dbef",
+      "visionMode": "tritanopia"
+    },
+    {
       "path": "build/evidence/s10/05-strong-plate-board.jpg",
-      "bytes": 93405,
-      "sha256": "03ea2b141485216f1c53c38dfa0dcbfae81636bf21a0e7e616f9b4c51a198af9",
+      "bytes": 93579,
+      "sha256": "b5041bed119e8ce1564092efdd7fe37566b70707c75cd256de16256021dba2da",
       "visionMode": "full-colour"
     },
     {
+      "path": "build/evidence/s10/13-protanopia-strong-result.jpg",
+      "bytes": 91746,
+      "sha256": "c8ad6426bfee53e17649616540c6140f22e4c06e46a899219d96b5a87c3dbbab",
+      "visionMode": "protanopia"
+    },
+    {
+      "path": "build/evidence/s10/14-deuteranopia-strong-result.jpg",
+      "bytes": 92694,
+      "sha256": "68c901a4f631ce6d6e56e70c840552053eb2790aadfceae69224d0b09eb418d0",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "path": "build/evidence/s10/15-tritanopia-strong-result.jpg",
+      "bytes": 93592,
+      "sha256": "ebe2f552071befea280432ba3e07d90b270e92b3218895492b57ca33fb49e508",
+      "visionMode": "tritanopia"
+    },
+    {
       "path": "build/evidence/s10/06-clean-restart.jpg",
-      "bytes": 74886,
-      "sha256": "3465fb3c67dfac5e43f117f496c34da3077ae1f70759442c111e9a9c246910a3",
+      "bytes": 74741,
+      "sha256": "9b1690c61388ff457c667222bc1f0d7fcc26f126c1190e45d48fa1690da43e80",
       "visionMode": "full-colour"
     }
   ],
@@ -77,16 +170,58 @@
     "samples": 240,
     "medianFrameMs": 8.3,
     "medianFps": 120.5,
-    "onePercentLowFps": 95.2,
-    "worstFrameMs": 10.9
+    "onePercentLowFps": 106.4,
+    "worstFrameMs": 9.4
   },
   "checkpoints": [
+    {
+      "id": "00a-protanopia-field-order",
+      "state": "build/evidence/s10/state/00a-protanopia-field-order.json",
+      "browser": "build/evidence/s10/browser/00a-protanopia-field-order.json",
+      "visual": "build/evidence/s10/00a-protanopia-field-order.jpg",
+      "visionMode": "protanopia"
+    },
+    {
+      "id": "00b-deuteranopia-field-order",
+      "state": "build/evidence/s10/state/00b-deuteranopia-field-order.json",
+      "browser": "build/evidence/s10/browser/00b-deuteranopia-field-order.json",
+      "visual": "build/evidence/s10/00b-deuteranopia-field-order.jpg",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "id": "00c-tritanopia-field-order",
+      "state": "build/evidence/s10/state/00c-tritanopia-field-order.json",
+      "browser": "build/evidence/s10/browser/00c-tritanopia-field-order.json",
+      "visual": "build/evidence/s10/00c-tritanopia-field-order.jpg",
+      "visionMode": "tritanopia"
+    },
     {
       "id": "01-clear-family-sightline",
       "state": "build/evidence/s10/state/01-clear-family-sightline.json",
       "browser": "build/evidence/s10/browser/01-clear-family-sightline.json",
       "visual": "build/evidence/s10/01-clear-family-sightline.jpg",
       "visionMode": "full-colour"
+    },
+    {
+      "id": "07-protanopia-glade",
+      "state": "build/evidence/s10/state/07-protanopia-glade.json",
+      "browser": "build/evidence/s10/browser/07-protanopia-glade.json",
+      "visual": "build/evidence/s10/07-protanopia-glade.jpg",
+      "visionMode": "protanopia"
+    },
+    {
+      "id": "08-deuteranopia-glade",
+      "state": "build/evidence/s10/state/08-deuteranopia-glade.json",
+      "browser": "build/evidence/s10/browser/08-deuteranopia-glade.json",
+      "visual": "build/evidence/s10/08-deuteranopia-glade.jpg",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "id": "09-tritanopia-glade",
+      "state": "build/evidence/s10/state/09-tritanopia-glade.json",
+      "browser": "build/evidence/s10/browser/09-tritanopia-glade.json",
+      "visual": "build/evidence/s10/09-tritanopia-glade.jpg",
+      "visionMode": "tritanopia"
     },
     {
       "id": "02-young-play-silver-frame",
@@ -110,11 +245,53 @@
       "visionMode": "achromatopsia"
     },
     {
+      "id": "10-protanopia-attack-defense",
+      "state": "build/evidence/s10/state/10-protanopia-attack-defense.json",
+      "browser": "build/evidence/s10/browser/10-protanopia-attack-defense.json",
+      "visual": "build/evidence/s10/10-protanopia-attack-defense.jpg",
+      "visionMode": "protanopia"
+    },
+    {
+      "id": "11-deuteranopia-attack-defense",
+      "state": "build/evidence/s10/state/11-deuteranopia-attack-defense.json",
+      "browser": "build/evidence/s10/browser/11-deuteranopia-attack-defense.json",
+      "visual": "build/evidence/s10/11-deuteranopia-attack-defense.jpg",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "id": "12-tritanopia-attack-defense",
+      "state": "build/evidence/s10/state/12-tritanopia-attack-defense.json",
+      "browser": "build/evidence/s10/browser/12-tritanopia-attack-defense.json",
+      "visual": "build/evidence/s10/12-tritanopia-attack-defense.jpg",
+      "visionMode": "tritanopia"
+    },
+    {
       "id": "05-strong-plate-board",
       "state": "build/evidence/s10/state/05-strong-plate-board.json",
       "browser": "build/evidence/s10/browser/05-strong-plate-board.json",
       "visual": "build/evidence/s10/05-strong-plate-board.jpg",
       "visionMode": "full-colour"
+    },
+    {
+      "id": "13-protanopia-strong-result",
+      "state": "build/evidence/s10/state/13-protanopia-strong-result.json",
+      "browser": "build/evidence/s10/browser/13-protanopia-strong-result.json",
+      "visual": "build/evidence/s10/13-protanopia-strong-result.jpg",
+      "visionMode": "protanopia"
+    },
+    {
+      "id": "14-deuteranopia-strong-result",
+      "state": "build/evidence/s10/state/14-deuteranopia-strong-result.json",
+      "browser": "build/evidence/s10/browser/14-deuteranopia-strong-result.json",
+      "visual": "build/evidence/s10/14-deuteranopia-strong-result.jpg",
+      "visionMode": "deuteranopia"
+    },
+    {
+      "id": "15-tritanopia-strong-result",
+      "state": "build/evidence/s10/state/15-tritanopia-strong-result.json",
+      "browser": "build/evidence/s10/browser/15-tritanopia-strong-result.json",
+      "visual": "build/evidence/s10/15-tritanopia-strong-result.jpg",
+      "visionMode": "tritanopia"
     },
     {
       "id": "06-clean-restart",
@@ -127,7 +304,8 @@
   "limitations": [
     "S10 uses QA placement to isolate visual states; S8 remains the input-only traversal and timing evidence.",
     "The focus-region pixel floor detects gross occlusion and flat exposure, not subjective composition quality.",
-    "The achromatopsia checkpoint proves one busy attack frame retains silhouette, rifle and cartridge channels; it is not the complete route accessibility matrix.",
+    "S8 provides the complete full-colour and achromatopsia input routes; S10 adds the required protanopia, deuteranopia and tritanopia review checkpoints.",
+    "Chromium emulation and state assertions prepare a reproducible matrix, but an independent reviewer must still judge cue readability.",
     "Automated state and image checks do not replace independent anatomy, motion, premise or first-time player review."
   ]
 }

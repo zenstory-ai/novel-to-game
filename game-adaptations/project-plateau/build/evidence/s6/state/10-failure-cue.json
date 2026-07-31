@@ -103,19 +103,19 @@
     }
   },
   "threatVisual": {
-    "state": "distant",
+    "state": "search",
     "response": "orbit",
     "position": {
-      "x": 2.93,
-      "y": 22.99,
-      "z": 55.15
+      "x": -16.37,
+      "y": 9.38,
+      "z": -33.4
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.489,
+    "branchAngle": 0.494,
     "roles": [
       "graze",
       "branch-pull",
@@ -171,17 +171,22 @@
       "music": 0.15
     },
     "captionsEnabled": true,
-    "threatState": "distant",
+    "threatState": "search",
     "recentCues": [
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 7.696
+        "at": 7.643
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 7.717
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 7.771
+        "at": 7.717
       }
     ]
   },
@@ -197,7 +202,7 @@
     "storageKey": "project-plateau:presentation:v1"
   },
   "ui": {
-    "prompt": null,
+    "prompt": "Read the family [E]",
     "cameraOverlay": false,
     "rifleOverlay": false,
     "plateRail": false,
@@ -222,14 +227,14 @@
     }
   },
   "sceneChildren": 30,
-  "calls": 266,
-  "triangles": 50422,
+  "calls": 248,
+  "triangles": 49276,
   "textures": 3,
-  "geometries": 95,
+  "geometries": 98,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 271.2999999523163,
+  "firstRenderedAt": 208.89999985694885,
   "recentMedianFrameMs": 8.3
 }

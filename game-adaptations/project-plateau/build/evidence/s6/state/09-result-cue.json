@@ -45,7 +45,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.6247000000476834,
+    "previewSeconds": 3.6330999999046325,
     "lastProofEvent": {
       "plateIndex": 0,
       "frameKey": "glade-young-play",
@@ -119,16 +119,16 @@
     "state": "watch",
     "response": "orbit",
     "position": {
-      "x": 14.49,
-      "y": 13.11,
-      "z": 52.56
+      "x": 14.68,
+      "y": 13.12,
+      "z": 52.51
     }
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.499,
+    "branchAngle": 0.5,
     "roles": [
       "graze",
       "branch-pull",
@@ -189,57 +189,57 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 5.099
+        "at": 5.04
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 5.104
+        "at": 5.051
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 5.184
+        "at": 5.125
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 5.189
+        "at": 5.136
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 5.275
+        "at": 5.221
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 7.264
+        "at": 7.216
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 7.264
+        "at": 7.216
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 7.36
+        "at": 7.312
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 7.36
+        "at": 7.312
       },
       {
         "cue": "brook-response",
         "caption": "[brush thrashes beside the brook]",
-        "at": 7.445
+        "at": 7.403
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 7.637
+        "at": 7.584
       }
     ]
   },
@@ -283,11 +283,11 @@
   "calls": 276,
   "triangles": 50514,
   "textures": 3,
-  "geometries": 95,
+  "geometries": 98,
   "viewport": [
     1440,
     900
   ],
-  "firstRenderedAt": 271.2999999523163,
+  "firstRenderedAt": 208.89999985694885,
   "recentMedianFrameMs": 8.3
 }
