@@ -196,6 +196,18 @@ class RepositoryValidationTests(unittest.TestCase):
                 (project / "qa/verification.json").read_text(encoding="utf-8")
             )
             self.assertEqual(verification["sourceCommit"], environment["SOURCE_COMMIT"])
+            recorded_environment = verification["environment"]
+            self.assertEqual(
+                recorded_environment["targetPlatform"], "desktop command line"
+            )
+            self.assertEqual(
+                recorded_environment["targetRuntime"],
+                "CPython command-line process",
+            )
+            self.assertEqual(
+                recorded_environment["testedRuntime"],
+                recorded_environment["targetRuntime"],
+            )
             self.assertEqual(verification["verify"]["exitCode"], 0)
             self.assertTrue(
                 all(suite["executed"] for suite in verification["verify"]["suites"])
@@ -215,7 +227,8 @@ class RepositoryValidationTests(unittest.TestCase):
             )
 
             for checkpoint in verification["checkpoints"]:
-                for channel in ("state", "browser", "visual"):
+                self.assertNotIn("browser", checkpoint)
+                for channel in ("state", "runtime", "visual"):
                     evidence = checkpoint[channel]
                     if evidence.startswith("NOT_RUN: "):
                         self.assertGreater(len(evidence.removeprefix("NOT_RUN: ")), 0)

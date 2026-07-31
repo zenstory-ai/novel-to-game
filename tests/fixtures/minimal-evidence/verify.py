@@ -34,6 +34,20 @@ def write_state(checkpoint: str, state: dict[str, object]) -> str:
     return relative
 
 
+def write_runtime(checkpoint: str, state: dict[str, object]) -> str:
+    relative = f"qa/evidence/runtime/{checkpoint}.json"
+    path = ROOT / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "runner": "CPython command-line process",
+        "checkpoint": checkpoint,
+        "stateObserved": state,
+        "errors": [],
+    }
+    path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    return relative
+
+
 def main() -> int:
     discovered = discover_test_files()
     registered = {
@@ -57,7 +71,12 @@ def main() -> int:
 
     EVIDENCE.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    log_lines = [f"runtime={sys.executable}", f"runtimeVersion={platform.python_version()}"]
+    log_lines = [
+        "targetRuntime=CPython command-line process",
+        "testedRuntime=CPython command-line process",
+        f"runtime={sys.executable}",
+        f"runtimeVersion={platform.python_version()}",
+    ]
     suite_results: list[dict[str, object]] = []
     exit_code = 0
     for suite_id, locations in REGISTERED_SUITES.items():
@@ -115,7 +134,7 @@ def main() -> int:
         {
             "id": checkpoint,
             "state": write_state(checkpoint, state),
-            "browser": "NOT_RUN: contract fixture has no browser renderer",
+            "runtime": write_runtime(checkpoint, state),
             "visual": "NOT_RUN: contract fixture has no visual renderer",
         }
         for checkpoint, state in checkpoints
@@ -137,11 +156,16 @@ def main() -> int:
             "SOURCE_COMMIT", "NOT_AVAILABLE: SOURCE_COMMIT was not provided"
         ),
         "environment": {
+            "targetPlatform": "desktop command line",
+            "targetRuntime": "CPython command-line process",
+            "testedRuntime": "CPython command-line process",
+            "engine": "Python standard library",
+            "engineVersion": platform.python_version(),
             "runtime": sys.executable,
             "runtimeVersion": platform.python_version(),
             "packageManager": "none",
-            "browser": "NOT_AVAILABLE: contract fixture has no browser renderer",
-            "viewport": "NOT_AVAILABLE: contract fixture has no viewport",
+            "browser": "N/A: target runtime does not use a browser",
+            "viewport": "N/A: target runtime has no graphical viewport",
         },
         "verify": {
             "command": "python3 verify.py",
