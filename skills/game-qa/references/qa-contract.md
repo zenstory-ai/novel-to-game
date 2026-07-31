@@ -22,6 +22,30 @@
 系统规则的验证用状态和结果断言；内容理解与可读性用无提示试玩和真实画面。测试文件
 中出现某句策划文案，只能证明文字没变，不能证明规则正确或游戏可玩。
 
+## 最小证据闭环
+
+QA 先发现而不是相信测试入口。按 manifest scripts → CI workflow → 测试目录/文件 →
+BUILD_BRIEF runner → `verify.log` 的顺序形成下表：
+
+`suite | discovered from | files | runner | observed in verify | result`
+
+required suite 已发现、却没有出现在同一次权威 verify 的实际 log 中，必须报
+`ORPHANED_TEST_SUITE`，严重度 `major`。vendored/build output/明确 archived fixture 可排除，
+但 QA_REPORT 要写具体路径与理由，不能按目录名猜。
+
+最小工件为 `qa/verification.json`，必须记录实际工具链、权威命令、exit code、duration、log、
+suite 执行状态，以及一条 `clean start → 核心动作 → 设计结果 → restart` 的 complete run。
+所有项属于同一个 source commit；checkpoint 必须属于同一个 complete-run step，并分别登记：
+
+- `state`：证明规则、数值或状态转移，不证明玩家看见了什么；
+- `browser`：证明 DOM/accessibility、输入锁、文本、请求与浏览器事件，不证明 3D 构图；
+- `visual`：截图或视频证明可见画面，不证明隐藏状态、输入因果或完整可达性。
+
+每个通道写工作区内真实相对路径；无法取得时写 `NOT_RUN: reason`。`NOT_RUN` 是诚实缺口，
+不是另一通道的替代品；它涉及加载、核心动作、主要结果或重开时，对应 P0 不得判通过。路径若
+来自系统临时目录、另一个 commit 或另一个 scenario step，同样按无证据处理。等价项目结构可以
+替代 JSON 文件，但 BUILD_BRIEF 和 QA_REPORT 必须提供这些稳定字段的一一映射。
+
 对画布游戏至少比较加载后与输入/时间推进后的真实帧，排除空白、零尺寸、遮挡和只有
 背景动画的假运行。截图检查玩家、目标、威胁、界面、反馈和招牌画面是否符合
 `ART_DIRECTION.md`。每张招牌画面必须在**真实触发时刻**截一张**干净证据帧、不得含渲染

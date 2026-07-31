@@ -12,24 +12,35 @@ description: "Verify a web game with evidence. Launch the game and check the bui
 
 ## 执行
 
-1. 从项目脚本和 `BUILD_BRIEF.md` 发现运行方式，使用现有浏览器测试能力。提取不变量以
+1. 先做 suite discovery：依次查 package/build manifest scripts、CI workflow 实际命令、测试
+   目录/文件、`BUILD_BRIEF.md` 声明的 runner，再对照 `qa/evidence/verify.log`。把结果写成
+   `suite | discovered from | files | runner | observed in verify | result`；发现 required suite 存在
+   却未被权威命令执行，报告 `ORPHANED_TEST_SUITE`，严重度 `major`。vendored/build output/
+   明确 archived fixture 不算 suite，但例外必须写理由。
+2. 从项目脚本和 `BUILD_BRIEF.md` 发现运行方式，使用现有浏览器测试能力。独立运行 brief 声明的
+   权威 verify，记录实际 command、exit code、duration、environment 和 source commit；不能只
+   接受实现方贴出的绿色摘要。提取不变量以
    `BUILD_BRIEF.md` 回写后的「# 范围」与「最终范围对照」为依据；发现 brief 范围与代码
    不一致（如 brief 三战、代码六战）先记 `major` 要求回写再验。
-2. 启动真实页面，记录构建失败、页面异常、控制台错误和关键资源失败。
-3. 证明画面非空且会变化；画布元素存在本身不算渲染成功。
-4. 从 `GAME_DESIGN.md` 提取会改变结果的关键不变量：把每个数值门槛、结局条件、破裂/冷却
+3. 审计 `qa/verification.json`：环境、verify、suites、completeRun、checkpoints 必须属于同一
+   source commit。复跑一条 `clean start → 核心动作 → 设计结果 → restart`，逐步核对 checkpoint；
+   缺字段、路径不存在或只有临时目录路径时不得通过。等价结构只有在 BUILD_BRIEF 与 QA_REPORT
+   给出稳定映射时接受。
+4. 启动真实页面，记录构建失败、页面异常、控制台错误和关键资源失败。
+5. 证明画面非空且会变化；画布元素存在本身不算渲染成功。
+6. 从 `GAME_DESIGN.md` 提取会改变结果的关键不变量：把每个数值门槛、结局条件、破裂/冷却
    条件，以及「三段弧」每期的结束标记与新增动词 / 可达空间、BUILD_BRIEF 的「同玩法动词
    清单」，抄成期望表落盘 `qa/evidence/design-invariants.md`，逐项对照引擎常量或运行态
    取值，记录一致或漂移及证据。后两项要跑实测取证，核对文档写没写不算数。
-5. 使用真实输入走核心动作、进程变化、设计要求的结果和重开；确定性系统至少复现一次
+7. 使用真实输入走核心动作、进程变化、设计要求的结果和重开；确定性系统至少复现一次
    相同状态与输入得到相同结果。
-6. 在目标视口检查遮挡、溢出、文字和控件可操作性；逐一切换策划要求的界面语言，
+8. 在目标视口检查遮挡、溢出、文字和控件可操作性；逐一切换策划要求的界面语言，
    检查缺字、截断、阅读顺序、术语一致性和关键玩法信息。
    视口、界面语言、控制方式与内容尺度按 `PRODUCT_BRIEF.md` 的目标平台与分级核对：
    竖屏/横屏、单局结构、交互约束是否兑现，内容是否落在批准的分级内（未逾越，也未被下游
    悄悄收回到更保守）。
-7. 对文化关键名称、符号和提示抽查原作语义，避免翻译或本地化改变规则与角色关系。
-8. 走一遍首次上手：**先跑前提传达门**——起一名不给任何策划 / 构建文档的干净上下文子代理
+9. 对文化关键名称、符号和提示抽查原作语义，避免翻译或本地化改变规则与角色关系。
+10. 走一遍首次上手：**先跑前提传达门**——起一名不给任何策划 / 构建文档的干净上下文子代理
    （两分钟理解度沿用同一名），只喂常速冷启动第一分钟按序截取的画面，四问一并作答（我是
    什么 / 我要什么 / 什么会终结这一局 / 这是哪一类游戏——我主要在反复做什么、像我玩过的
    哪款游戏），判据见 qa-contract 的「前提传达门」，逐字落盘 `qa/evidence/premise-gate.md`；
@@ -39,7 +50,7 @@ description: "Verify a web game with evidence. Launch the game and check the bui
    无该能力时理解度记 `NOT_RUN`，首次上手不得判 `PASS`。再逐条对照 `CONCEPT.md`/`GAME_DESIGN.md`
    的体验支柱与其"可观察试玩证据"，确认承诺的卖点在真实游玩里被演成了场面而非只剩数字，
    并检查设计写明的失败现象有没有发生。判据与协议见 [qa-contract.md](references/qa-contract.md)。
-9. 每条 `blocker`/`major` 按 qa-contract 的归属定义标注 `build`/`design`/`product` 并写入
+11. 每条 `blocker`/`major` 按 qa-contract 的归属定义标注 `build`/`design`/`product` 并写入
    发现与回流表；标 `design` 的本轮不得 `PASS`；回流路由由总入口执行。
 
 BUILD_BRIEF 含动态媒体台账（视频 / 关键帧驱动演出 / 实时 3D）时，**强制启用**生成媒体

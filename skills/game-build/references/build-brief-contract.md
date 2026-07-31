@@ -41,13 +41,30 @@
 一律走仓库内相对路径，不引 CDN 或任何远程资源（Phaser / Three / inkjs 这类零构建写法要把库
 文件落进仓库，不挂 CDN 标签或 unpkg importmap）。
 
+# 工具链与权威验证
+toolchain:
+  runtime: [实际 runtime；不可取得时写 NOT_AVAILABLE: 原因]
+  runtimeVersion: [实际版本；不可取得时写 NOT_AVAILABLE: 原因]
+  packageManager: [name@version；无包管理器写 none]
+  browser: [实际测试的浏览器与版本]
+commands:
+  install: [实际命令；无需安装写 NONE]
+  start: [实际命令]
+  verify: [一条权威验证命令]
+verification:
+  suites: [稳定 suite id 列表]
+  completeRun: qa/verification.json#completeRun
+  evidenceIndex: qa/verification.json#checkpoints
+
 # 完成证据
 [如何运行；必须走通的动作、结果、重开；在目标视口 / 朝向 / 最小分辨率下实测；核对性能预算
-（首屏 / 包体 / 帧率）未超]
+（首屏 / 包体 / 帧率）未超；权威验证的实际 command、exit code、duration、environment、log，
+以及每个 required suite 是否在该次 log 中被调用]
 ```
 
 不要粘贴完整小说，也不要规定模型可以从环境正确决定的框架、类、着色器或资产
 管线；但存储键、测试脚本名等对外可见实现符号由本 brief 统一命名，GAME_DESIGN 不含
 实现符号。构建完成后在同一文件记录真实运行命令、已执行验证和当前限制，并附「最终范围
 对照」：逐条回写实际交付相对 # 范围 与 GAME_DESIGN 的增删差异；范围变化同步更新
-# 范围 并注明日期，后续质量验证以回写后的范围为准。
+# 范围 并注明日期，后续质量验证以回写后的范围为准。`verify` 可以组合现有脚本，但必须一次
+真实运行覆盖声明的 required suites；不能把多个从未一起运行过的绿色结果拼成一次通过。

@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from validate_repo import (  # noqa: E402
     EXAMPLE_MANIFEST,
     EXAMPLE_PLANNING_FILES,
+    MINIMAL_EVIDENCE_REQUIREMENTS,
     OPTIONAL_PLANNING_FILES,
     EXPECTED_SKILLS,
     ORCHESTRATOR_SKILL,
@@ -27,6 +28,7 @@ from validate_repo import (  # noqa: E402
     parse_numeral,
     read_manifest,
     validate_example,
+    validate_minimal_evidence_contract,
     validate_repository,
     validate_skill,
     visible_directories,
@@ -71,6 +73,45 @@ class RepositoryValidationTests(unittest.TestCase):
             self.assertTrue(
                 any("link leaves skill" in issue for issue in validate_skill(skill))
             )
+
+    def test_minimal_evidence_contract_rejects_each_missing_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for relative_path, markers in MINIMAL_EVIDENCE_REQUIREMENTS.items():
+                path = root / relative_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("\n".join(markers), encoding="utf-8")
+
+            self.assertEqual(validate_minimal_evidence_contract(root), [])
+
+            cases = {
+                "runtime version": (
+                    "skills/game-build/references/build-brief-contract.md",
+                    "runtimeVersion:",
+                ),
+                "authoritative verify": (
+                    "skills/game-build/references/build-brief-contract.md",
+                    "verify:",
+                ),
+                "orphaned suite severity": (
+                    "skills/game-qa/SKILL.md",
+                    "ORPHANED_TEST_SUITE",
+                ),
+                "evidence channel boundary": (
+                    "skills/game-qa/references/qa-contract.md",
+                    "NOT_RUN: reason",
+                ),
+            }
+            for label, (relative_path, marker) in cases.items():
+                path = root / relative_path
+                original = path.read_text(encoding="utf-8")
+                path.write_text(original.replace(marker, ""), encoding="utf-8")
+                with self.subTest(requirement=label):
+                    issues = validate_minimal_evidence_contract(root)
+                    self.assertTrue(
+                        any(marker in issue for issue in issues), issues
+                    )
+                path.write_text(original, encoding="utf-8")
 
     def test_native_plugins_expose_one_shared_skill_bundle(self) -> None:
         for relative_path in PLUGIN_MANIFESTS:

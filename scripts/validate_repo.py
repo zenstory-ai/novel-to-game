@@ -36,6 +36,35 @@ PLUGIN_MANIFESTS = {
     ".codex-plugin/plugin.json",
     "kimi.plugin.json",
 }
+# These markers protect the small handoff contract between game-build and game-qa.
+# The repository validator checks only its own skill prose; it does not impose a
+# framework, schema package, or runtime dependency on generated projects.
+MINIMAL_EVIDENCE_REQUIREMENTS = {
+    "skills/game-build/references/build-brief-contract.md": (
+        "runtimeVersion:",
+        "verify:",
+        "completeRun: qa/verification.json#completeRun",
+        "evidenceIndex: qa/verification.json#checkpoints",
+    ),
+    "skills/game-build/SKILL.md": (
+        "权威验证命令",
+        "verify.log",
+        "executed: true",
+        "clean start",
+    ),
+    "skills/game-qa/SKILL.md": (
+        "ORPHANED_TEST_SUITE",
+        "qa/verification.json",
+        "discovered from",
+        "clean start",
+    ),
+    "skills/game-qa/references/qa-contract.md": (
+        "suite | discovered from | files | runner | observed in verify | result",
+        "NOT_RUN: reason",
+        "同一个 complete-run step",
+        "同一个 source commit",
+    ),
+}
 EXAMPLE_PLANNING_FILES = {
     "analysis/SOURCE_BIBLE.md",
     "concepts/CONCEPT.md",
@@ -450,6 +479,23 @@ def validate_agent_adapters(root: Path, version: str) -> list[str]:
     return issues
 
 
+def validate_minimal_evidence_contract(root: Path) -> list[str]:
+    """Guard the build/QA evidence handoff without parsing generated projects."""
+    issues: list[str] = []
+    for relative_path, markers in MINIMAL_EVIDENCE_REQUIREMENTS.items():
+        path = root / relative_path
+        if not path.is_file():
+            issues.append(f"repository: missing evidence contract file {relative_path}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in text:
+                issues.append(
+                    f"{relative_path}: missing minimal evidence marker {marker!r}"
+                )
+    return issues
+
+
 def validate_repository(root: Path) -> list[str]:
     issues: list[str] = []
     for required in ("README.md", "README_EN.md", "LICENSE", "AGENTS.md", "VERSION"):
@@ -481,6 +527,7 @@ def validate_repository(root: Path) -> list[str]:
 
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     issues.extend(validate_agent_adapters(root, version))
+    issues.extend(validate_minimal_evidence_contract(root))
     return issues
 
 
