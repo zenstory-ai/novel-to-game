@@ -152,7 +152,12 @@ def main() -> int:
         state["mode"] == "order"
         and state["player"]["remainingLight"] == 180
         and state["player"]["distanceTravelled"] == 0
-        and all(plate["status"] == "clean" for plate in state["player"]["plates"])
+        and all(
+            plate["status"] == "unexposed"
+            and plate["points"] == 0
+            and plate["frameKey"] is None
+            for plate in state["player"]["plates"]
+        )
         for state in restart_states
     )
     check(
@@ -163,6 +168,7 @@ def main() -> int:
                 "mode": state["mode"],
                 "remainingLight": state["player"]["remainingLight"],
                 "distanceTravelled": state["player"]["distanceTravelled"],
+                "plateStatuses": [plate["status"] for plate in state["player"]["plates"]],
             }
             for state in restart_states
         ],
