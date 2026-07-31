@@ -111,6 +111,27 @@ def command_output(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:
     return result.returncode, output.rstrip()
 
 
+def display_command(command: tuple[str, ...], cwd: Path) -> str:
+    parts = []
+    for part in command:
+        if part == sys.executable:
+            parts.append("python3")
+            continue
+        path = Path(part)
+        if path.is_absolute():
+            try:
+                parts.append(path.relative_to(cwd).as_posix())
+            except ValueError:
+                parts.append(path.name)
+            continue
+        parts.append(part)
+    return " ".join(parts)
+
+
+def display_cwd(cwd: Path) -> str:
+    return "." if cwd == REPO else cwd.relative_to(REPO).as_posix()
+
+
 def git_head() -> str:
     return subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=REPO, check=True, capture_output=True, text=True
@@ -334,12 +355,12 @@ def main() -> int:
             command_started = time.monotonic()
             code, output = command_output(command, suite.cwd)
             elapsed_ms = round((time.monotonic() - command_started) * 1000)
-            command_text = " ".join(command)
+            command_text = display_command(command, suite.cwd)
             print(f"[{suite.identifier}] {command_text}: exit {code} ({elapsed_ms}ms)")
             log_lines.extend(
                 [
                     f"suite={suite.identifier}",
-                    f"cwd={suite.cwd}",
+                    f"cwd={display_cwd(suite.cwd)}",
                     f"command={command_text}",
                     output,
                     f"exitCode={code}",
