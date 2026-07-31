@@ -91,6 +91,20 @@ board, clean restart and focus-region pixel floor with:
 npm run verify:s10
 ```
 
+Run the final authoritative handoff from one command after a clean install:
+
+```bash
+npm ci
+npm run verify
+```
+
+The authoritative runner discovers every JavaScript and Python test file in
+`test/`, rejects unregistered suites, runs the production build, all S0–S10
+browser checkpoints, the QA-side design invariants, and the repository
+contracts in one invocation. It writes `../../qa/verification.json` and
+`../../qa/evidence/verify.log`; the media recorder and the runner itself are
+listed there as explicit non-suite tools rather than silently skipped tests.
+
 Record one continuous input-only Strong run and derive the local 30-second and
 15-second delivery encodes, tracked marks, manifest, contact sheet and share
 card with:

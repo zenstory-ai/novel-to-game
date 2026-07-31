@@ -71,6 +71,9 @@ def snapshot(page: Page) -> dict[str, object]:
 def run() -> dict[str, object]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     BROWSER_DIR.mkdir(parents=True, exist_ok=True)
+    for pattern, directory in (("*.json", STATE_DIR), ("*.json", BROWSER_DIR), ("*.jpg", EVIDENCE)):
+        for stale in directory.glob(pattern):
+            stale.unlink()
     errors: list[str] = []
     hosts: set[str] = set()
     checkpoints: list[dict[str, str]] = []
@@ -216,16 +219,19 @@ def run() -> dict[str, object]:
 
         def begin_first_path() -> float:
             page.get_by_role("button", name="Enter the basin").click()
+            page.wait_for_timeout(60)
+            clean = capture("00-clean-field-order", ["Enter the basin"])
+            assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
             page.get_by_role("button", name="Begin field work").click()
             page.wait_for_timeout(100)
             state = snapshot(page)
             assert state["player"]["remainingLight"] <= 180, state
             return time.monotonic()
 
-        def restart_path() -> float:
+        def restart_path(checkpoint: str) -> float:
             page.get_by_role("button", name="Take the route again").click()
             page.wait_for_timeout(60)
-            clean = snapshot(page)
+            clean = capture(checkpoint, ["Take the route again"])
             assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
             page.get_by_role("button", name="Begin field work").click()
             page.wait_for_timeout(100)
@@ -280,7 +286,7 @@ def run() -> dict[str, object]:
         finish_metrics("Strong", strong_started, strong)
 
         # Mixed: weaker covered view, one strong behavior frame, one shot and noisy creek.
-        mixed_started = restart_path()
+        mixed_started = restart_path("06-strong-clean-restart")
         move_until("Mixed", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 45", "Fort to brook")
         page.keyboard.press("KeyE")
         expose_plate("Mixed", 0, "partial tutorial frame")
@@ -290,18 +296,18 @@ def run() -> dict[str, object]:
         move_until("Mixed", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 2", "canopy to glade")
         page.keyboard.press("KeyE")
         expose_plate("Mixed", 2, "single behavior frame")
-        attack = capture("06-mixed-return-attack", ["three input-only frames", "attack begins"])
+        attack = capture("07-mixed-return-attack", ["three input-only frames", "attack begins"])
         assert attack["player"]["threatState"] == "attack", attack
         fire("Mixed")
         move_until("Mixed", "KeyD", "window.__projectPlateau.snapshot().player.position.x > 3.4", "line up exposed creek")
         move_until("Mixed", "KeyS", "window.__projectPlateau.snapshot().player.position.z > 3.2", "commit exposed return")
-        brook = capture("07-mixed-rifle-brook", ["F", "Left Mouse", "D to creek", "S into exposed return"])
+        brook = capture("08-mixed-rifle-brook", ["F", "Left Mouse", "D to creek", "S into exposed return"])
         assert brook["player"]["returnRoute"] == "exposed", brook
         assert brook["player"]["returnCostSeconds"] == 18, brook
         assert brook["player"]["brookResponse"] == "brush-moving", brook
         move_until("Mixed", "KeyS", "window.__projectPlateau.snapshot().player.position.z >= 62", "creek return to Fort")
         page.wait_for_function("window.__projectPlateau.snapshot().player.runStatus === 'result'", timeout=1000)
-        mixed = capture("08-mixed-input-result", ["S along the complete creek return to Fort"])
+        mixed = capture("09-mixed-input-result", ["S along the complete creek return to Fort"])
         assert mixed["player"]["result"]["band"] == "corroborating-record", mixed
         assert mixed["player"]["result"]["evidence"] == 4, mixed
         assert mixed["player"]["result"]["gunshotCallback"], mixed
@@ -309,7 +315,7 @@ def run() -> dict[str, object]:
         finish_metrics("Mixed", mixed_started, mixed)
 
         # Panic: sprint, spend both rounds, expose all plates, take two contacts.
-        panic_started = restart_path()
+        panic_started = restart_path("10-mixed-clean-restart")
         page.keyboard.down("ShiftLeft")
         move_until("Panic", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 18", "sprint Fort to shelf")
         page.keyboard.up("ShiftLeft")
@@ -319,7 +325,7 @@ def run() -> dict[str, object]:
         fire("Panic")
         expose_plate("Panic", 2, "third immediate open frame")
         page.wait_for_function("window.__projectPlateau.snapshot().player.bodyMargin === 0", timeout=5000)
-        first_contact = capture("09-panic-first-contact", ["sprint", "three open frames", "both rifle rounds", "wait for contact"])
+        first_contact = capture("11-panic-first-contact", ["sprint", "three open frames", "both rifle rounds", "wait for contact"])
         assert first_contact["player"]["contactCount"] == 1, first_contact
         assert first_contact["player"]["cartridges"] == 0, first_contact
         move_until("Panic", "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 2", "continue to glade")
@@ -333,7 +339,7 @@ def run() -> dict[str, object]:
             "continue without cover discipline",
             timeout=8000,
         )
-        panic = capture("10-panic-input-failure", ["fourth open frame", "exposed creek", "continue after body margin is gone"])
+        panic = capture("12-panic-input-failure", ["fourth open frame", "exposed creek", "continue after body margin is gone"])
         assert panic["player"]["runStatus"] == "failure", panic
         assert panic["player"]["failureCause"] == "second-unblocked-strike", panic
         assert panic["player"]["contactCount"] == 2 and panic["player"]["shotCount"] == 2, panic
@@ -341,7 +347,7 @@ def run() -> dict[str, object]:
 
         page.get_by_role("button", name="Take the route again").click()
         page.wait_for_timeout(80)
-        clean = capture("11-clean-order-after-paths", ["Take the route again"])
+        clean = capture("13-panic-clean-restart", ["Take the route again"])
         assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
         assert clean["player"]["distanceTravelled"] == 0, clean
         page.get_by_role("button", name="Begin field work").click()
