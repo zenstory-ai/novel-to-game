@@ -51,16 +51,24 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .panel h2 { margin: .2rem 0 1.2rem; font-size: 2rem; }
 .panel label { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: .8rem 0; }
 .panel-close { position: absolute; min-width: auto !important; right: .8rem; top: .7rem; border: 0 !important; font-size: 1.6rem !important; padding: .2rem .6rem !important; }
+.pause-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+.pause-actions button { min-width: 11rem; }
+.pause-actions .secondary { background: transparent; border-color: #617067; }
 
 #field-hud { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
-#control-hint { position: absolute; left: 3vw; bottom: 3vh; margin: 0; min-font-size: 11px; padding: .55rem .75rem; color: var(--ivory); background: rgba(23, 32, 29, .82); border-left: 2px solid var(--brass); }
+#reticle { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); border: 1px solid rgba(241,232,208,.82); border-radius: 50%; box-shadow: 0 0 0 2px rgba(23,32,29,.4); }
+#boundary-note { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); margin: 0; padding: .6rem .8rem; color: var(--ivory); background: rgba(75,37,36,.94); border: 1px solid #c24b34; }
+#control-hint { position: absolute; left: 3vw; bottom: 3vh; margin: 0; font-size: max(11px, .86rem); padding: .55rem .75rem; color: var(--ivory); background: rgba(23, 32, 29, .82); border-left: 2px solid var(--brass); }
 #plate-rail { position: absolute; right: 3vw; bottom: 3vh; display: flex; gap: .45rem; }
 #plate-rail span { width: 2.2rem; height: .58rem; border: 1px solid var(--ivory); background: rgba(23,32,29,.7); }
 #s0-badge { position: absolute; z-index: 6; top: 1rem; left: 1rem; padding: .35rem .55rem; color: #c4c8bf; background: rgba(23,32,29,.72); border: 1px solid rgba(196,200,191,.35); font-size: max(11px, .68rem); letter-spacing: .12em; text-transform: uppercase; }
 
 body[data-mode="field"] #title-screen,
-body[data-mode="order"] #title-screen { display: none; }
-body[data-mode="field"] #field-hud { display: block; }
+body[data-mode="order"] #title-screen,
+body[data-mode="paused"] #title-screen { display: none; }
+body[data-mode="field"] #field-hud,
+body[data-mode="paused"] #field-hud { display: block; }
+body[data-mode="paused"] #reticle { display: none; }
 body[data-mode="field"] #s0-badge { opacity: .72; }
 
 @keyframes plateWing { 0%, 30% { transform: translate(-12%, -4%); opacity: 0; } 42%, 65% { opacity: .85; } 85%, 100% { transform: translate(28%, 9%); opacity: 0; } }

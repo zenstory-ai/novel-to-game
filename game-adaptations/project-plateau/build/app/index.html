@@ -44,6 +44,16 @@
         <button id="dismiss-order" type="button">Begin field work</button>
       </section>
 
+      <section id="pause-panel" class="card pause-card" hidden aria-labelledby="pause-title">
+        <p id="pause-label" class="eyebrow">PAUSED</p>
+        <h2 id="pause-title">The route is held.</h2>
+        <p>Movement, remaining light and wildlife are frozen.</p>
+        <div class="pause-actions">
+          <button id="resume-button" type="button">Resume field work</button>
+          <button id="restart-button" type="button" class="secondary">Restart run</button>
+        </div>
+      </section>
+
       <section id="settings-panel" class="card panel" hidden aria-labelledby="settings-title">
         <button class="panel-close" type="button" aria-label="Close settings">×</button>
         <p class="eyebrow">Field settings</p>
@@ -71,7 +81,9 @@
       </section>
 
       <div id="field-hud" hidden aria-live="polite">
-        <p id="control-hint">Move [WASD] · Look [Mouse]</p>
+        <span id="reticle" aria-hidden="true"></span>
+        <p id="boundary-note" hidden>The red cliff gives no path here.</p>
+        <p id="control-hint">Move [WASD] · Look [Mouse] · Pause [P]</p>
         <div id="plate-rail" aria-label="Four unexposed glass plates">
           <span></span><span></span><span></span><span></span>
         </div>

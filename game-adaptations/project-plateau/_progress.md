@@ -23,6 +23,8 @@
 
 `checkpoint:S0 pass` — the local Three.js `0.185.1` / Vite `8.2.0` foundation renders a real WebGL2 title, field-order handoff and representative 25,001-triangle glade at both locked viewports with no console errors or external request hosts. The recorded 240-frame headless sample measured 120.5 median FPS / 98.0 one-percent-low FPS, 874.4 ms observed navigation-to-ready and 138,574 gzip bytes. This checkpoint does not claim locomotion, collision, gameplay state, audio or a complete run; those remain open gates in `build/evidence/s0/report.json` and `build/asset-ledger.json`.
 
+`checkpoint:S1 pass` — the deterministic controller now supplies mouse look, walk, sprint, crouch, foundation collision/slide, actionable boundary recovery, manual pause, focus-loss freeze and a clean restart. `build/evidence/s1/report.json` records the real Chrome path and a continuous 600.01-second / 299-input-segment smoke with zero console errors or external request hosts; its final 240-frame sample measured 120.5 median FPS / 97.1 one-percent-low FPS. Route topology, observation, threat, proof, defense, audio and extraction remain later gates.
+
 ## Notes
 
 - The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.

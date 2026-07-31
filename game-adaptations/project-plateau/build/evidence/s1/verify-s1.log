@@ -1,0 +1,89 @@
+
+> project-plateau-proof-before-dark@0.1.0 verify:s1
+> npm test && npm run build && npm run test:s1
+
+
+> project-plateau-proof-before-dark@0.1.0 test
+> node --test test/*.test.js
+
+✔ foundation exposes the locked viewport and performance budgets (1.752125ms)
+✔ procedural placement is deterministic for a recorded seed (0.128041ms)
+✔ representative scene contains all declared subject and pressure groups (0.088917ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.090333ms)
+✔ runtime sources contain no remote asset or CDN request (5.742625ms)
+✔ fresh and restarted player states are clean copies (1.605791ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.319167ms)
+✔ pause freezes both world time and movement (0.092833ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.117708ms)
+✔ leaving the navigable world recovers the last stable position (0.107583ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112.49775
+
+> project-plateau-proof-before-dark@0.1.0 build
+> vite build
+
+vite v8.2.0 building client environment for production...
+
+transforming...✓ 10 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   4.39 kB │ gzip:   1.56 kB
+dist/assets/index-hXjCmMyk.css    5.07 kB │ gzip:   2.01 kB
+dist/assets/index-BedEof6t.js   546.35 kB │ gzip: 139.34 kB
+
+✓ built in 185ms
+[plugin builtin:vite-reporter]
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+
+> project-plateau-proof-before-dark@0.1.0 test:s1
+> python3 test/qa_s1.py
+
+{
+  "stage": "s1-controller",
+  "checks": {
+    "walk": true,
+    "sprint": true,
+    "crouch": true,
+    "collisionSlide": true,
+    "boundaryRecovery": true,
+    "manualPauseFreeze": true,
+    "focusLossFreeze": true,
+    "cleanRestart": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "continuousSmoke": {
+    "requestedSeconds": 600.0,
+    "wallSeconds": 600.01,
+    "simulatedElapsedGain": 600.004,
+    "inputSegments": 299,
+    "memory": {
+      "used": 18487872,
+      "total": 31636308
+    }
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 97.1,
+    "worstFrameMs": 10.4
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "42b13266b1635acfbc0fb53689a8c77a2de33ad190efdf10172f09f429fd71d9"
+  }
+}
+S1 PASS: build/evidence/s1/report.json

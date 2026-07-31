@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT",
+  "updated": "2026-07-31 PT \u00b7 S1",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -11,8 +11,14 @@
       "source": "app/src/world.js",
       "provenance": "Original deterministic procedural geometry",
       "rights": "Original project code and geometry",
-      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/03-glade-heavy.jpg"],
-      "remaining": "Collision, final route topology, cover and all landmarks must pass real-play evidence."
+      "evidence": [
+        "evidence/s0/01-title.jpg",
+        "evidence/s0/03-glade-heavy.jpg",
+        "evidence/s1/01-clean-start.jpg",
+        "evidence/s1/03-collision-slide.jpg",
+        "evidence/s1/04-boundary-recovery.jpg"
+      ],
+      "remaining": "Final node topology, cover volumes, sight lines and gameplay-route evidence remain."
     },
     {
       "key": "tool.field_camera",
@@ -22,8 +28,11 @@
       "source": "app/src/world.js",
       "provenance": "Original primitive model informed by generic period camera construction",
       "rights": "Original project geometry; no maker marks or copied product mesh",
-      "evidence": ["evidence/s0/01-title.jpg"],
-      "remaining": "Player-held folded/raised states, plate insertion and shutter commitment are not implemented."
+      "evidence": [
+        "evidence/s0/01-title.jpg",
+        "evidence/s1/01-clean-start.jpg"
+      ],
+      "remaining": "The player-held folded graybox exists; recognizable bellows/lens, raised state, plate insertion and shutter commitment remain."
     },
     {
       "key": "tool.plate_case",
@@ -55,7 +64,9 @@
       "source": "app/src/world.js",
       "provenance": "Original low-poly procedural family blockout",
       "rights": "Original project geometry; museum pages inform facts only",
-      "evidence": ["evidence/s0/03-glade-heavy.jpg"],
+      "evidence": [
+        "evidence/s0/03-glade-heavy.jpg"
+      ],
       "remaining": "Distinct anatomy, family readability and graze/play/branch-pull/withdraw states need production and evidence."
     },
     {
@@ -66,7 +77,10 @@
       "source": "app/src/world.js",
       "provenance": "Original membrane-wing silhouette and deterministic orbit",
       "rights": "Original project geometry; museum pages inform facts only",
-      "evidence": ["evidence/s0/02-field-order.jpg", "evidence/s0/03-glade-heavy.jpg"],
+      "evidence": [
+        "evidence/s0/02-field-order.jpg",
+        "evidence/s0/03-glade-heavy.jpg"
+      ],
       "remaining": "Watch/search/attack, shadow, cover pull-up and shot response are not implemented."
     },
     {
@@ -77,8 +91,14 @@
       "source": "app/index.html; app/src/styles.css",
       "provenance": "Original HTML/CSS interface using system fonts",
       "rights": "Original project layout and icons",
-      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/02-field-order.jpg", "evidence/s0/04-minimum-viewport.jpg"],
-      "remaining": "Gameplay prompts, watch, chambers, plate previews, pause, result and failure states remain."
+      "evidence": [
+        "evidence/s0/01-title.jpg",
+        "evidence/s0/02-field-order.jpg",
+        "evidence/s0/04-minimum-viewport.jpg",
+        "evidence/s1/04-boundary-recovery.jpg",
+        "evidence/s1/05-manual-pause.jpg"
+      ],
+      "remaining": "Watch, chambers, camera overlay, plate previews, result and failure states remain."
     },
     {
       "key": "light.functional_arc",
@@ -88,7 +108,10 @@
       "source": "app/src/main.js; app/src/config.js",
       "provenance": "Original real-time lighting and approved functional palette",
       "rights": "Original project code; no third-party sky",
-      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/03-glade-heavy.jpg"],
+      "evidence": [
+        "evidence/s0/01-title.jpg",
+        "evidence/s0/03-glade-heavy.jpg"
+      ],
       "remaining": "Deadline arc and decision-state legibility are not implemented."
     },
     {
@@ -110,8 +133,12 @@
       "source": "app/index.html; app/src/main.js; app/src/styles.css",
       "provenance": "Original reduced-motion and text-scale controls",
       "rights": "Original project UI",
-      "evidence": ["evidence/s0/01-title.jpg", "evidence/s0/04-minimum-viewport.jpg"],
-      "remaining": "Captions, channel volume controls, gameplay non-colour redundancy and saved settings remain."
+      "evidence": [
+        "evidence/s0/01-title.jpg",
+        "evidence/s0/04-minimum-viewport.jpg",
+        "evidence/s1/05-manual-pause.jpg"
+      ],
+      "remaining": "Pause/focus freeze and text/reduced-motion controls exist; captions, channel volumes, gameplay non-colour redundancy and persistence remain."
     }
   ]
 }

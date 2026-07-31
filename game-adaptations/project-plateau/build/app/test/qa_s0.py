@@ -111,6 +111,7 @@ def run() -> dict[str, object]:
         page.screenshot(path=EVIDENCE / "02-field-order.jpg", type="jpeg", quality=88)
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(900)
+        page.evaluate("window.__projectPlateau.setView('glade')")
         field_snapshot = page.evaluate("window.__projectPlateau.snapshot()")
         assert field_snapshot["mode"] == "field", field_snapshot
         page.screenshot(path=EVIDENCE / "03-glade-heavy.jpg", type="jpeg", quality=88)

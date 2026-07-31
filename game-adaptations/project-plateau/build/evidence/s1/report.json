@@ -1,0 +1,352 @@
+{
+  "stage": "s1-controller",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "42b13266b1635acfbc0fb53689a8c77a2de33ad190efdf10172f09f429fd71d9"
+  },
+  "environment": {
+    "node": "v25.9.0",
+    "npm": "11.12.1",
+    "vite": "8.2.0",
+    "three": "0.185.1",
+    "browser": "Google Chrome 150.0.7871.187",
+    "baseUrl": "http://127.0.0.1:4173",
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  "checks": {
+    "walk": true,
+    "sprint": true,
+    "crouch": true,
+    "collisionSlide": true,
+    "boundaryRecovery": true,
+    "manualPauseFreeze": true,
+    "focusLossFreeze": true,
+    "cleanRestart": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "continuousSmoke": {
+    "requestedSeconds": 600.0,
+    "wallSeconds": 600.01,
+    "simulatedElapsedGain": 600.004,
+    "inputSegments": 299,
+    "memory": {
+      "used": 18487872,
+      "total": 31636308
+    }
+  },
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 8.3,
+    "medianFps": 120.5,
+    "onePercentLowFps": 97.1,
+    "worstFrameMs": 10.4
+  },
+  "checkpoints": [
+    {
+      "id": "clean-start",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "lastStablePosition": {
+            "x": 3,
+            "z": 70
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 0.208,
+          "distanceTravelled": 0,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle"
+        },
+        "sceneChildren": 21,
+        "calls": 60,
+        "triangles": 25355,
+        "textures": 1,
+        "geometries": 28,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/01-clean-start.jpg"
+    },
+    {
+      "id": "walk",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 66.428
+          },
+          "lastStablePosition": {
+            "x": 3,
+            "z": 66.428
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 1.191,
+          "distanceTravelled": 3.572,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle"
+        },
+        "sceneChildren": 21,
+        "calls": 60,
+        "triangles": 25355,
+        "textures": 1,
+        "geometries": 28,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/02-walk.jpg"
+    },
+    {
+      "id": "collision-slide",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": -6.705,
+            "z": 78.442
+          },
+          "lastStablePosition": {
+            "x": -6.705,
+            "z": 78.442
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 2.7,
+          "distanceTravelled": 8.738,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 51,
+          "lastEvent": "idle"
+        },
+        "sceneChildren": 21,
+        "calls": 63,
+        "triangles": 25523,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/03-collision-slide.jpg"
+    },
+    {
+      "id": "boundary-recovery",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 0,
+            "z": -89.378
+          },
+          "lastStablePosition": {
+            "x": 0,
+            "z": -89.378
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 3.183,
+          "distanceTravelled": 8.916,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 39,
+          "collisions": 51,
+          "lastEvent": "idle"
+        },
+        "sceneChildren": 21,
+        "calls": 8,
+        "triangles": 23132,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/04-boundary-recovery.jpg"
+    },
+    {
+      "id": "manual-pause",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "paused",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "lastStablePosition": {
+            "x": 3,
+            "z": 70
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 4.783,
+          "distanceTravelled": 8.916,
+          "paused": true,
+          "pauseReason": "manual",
+          "boundaryRecoveries": 39,
+          "collisions": 51,
+          "lastEvent": "paused:manual"
+        },
+        "sceneChildren": 21,
+        "calls": 60,
+        "triangles": 25355,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/05-manual-pause.jpg"
+    },
+    {
+      "id": "clean-restart",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "lastStablePosition": {
+            "x": 3,
+            "z": 70
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 0.1,
+          "distanceTravelled": 0,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "idle"
+        },
+        "sceneChildren": 21,
+        "calls": 60,
+        "triangles": 25355,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/06-clean-restart.jpg"
+    },
+    {
+      "id": "continuous-smoke",
+      "state": {
+        "stage": "s1-controller",
+        "mode": "field",
+        "cameraMode": "field",
+        "runActive": true,
+        "renderer": "WebGL2",
+        "player": {
+          "position": {
+            "x": 11.502,
+            "z": 68.265
+          },
+          "lastStablePosition": {
+            "x": 11.502,
+            "z": 68.265
+          },
+          "heading": 0,
+          "pitch": 0,
+          "stance": "walk",
+          "elapsedSeconds": 600.146,
+          "distanceTravelled": 2515.85,
+          "paused": false,
+          "pauseReason": null,
+          "boundaryRecoveries": 0,
+          "collisions": 0,
+          "lastEvent": "movement"
+        },
+        "sceneChildren": 21,
+        "calls": 60,
+        "triangles": 25355,
+        "textures": 1,
+        "geometries": 30,
+        "viewport": [
+          1440,
+          900
+        ],
+        "firstRenderedAt": 204.89999985694885,
+        "recentMedianFrameMs": 8.3
+      },
+      "visual": "build/evidence/s1/07-smoke-end.jpg"
+    }
+  ],
+  "limitations": [
+    "S1 proves controller, foundation collision and lifecycle behavior, not final route topology.",
+    "Observe, camera, threat, defense, evidence and extraction verbs remain later gates.",
+    "The browser smoke is one headless development-machine run, not independent QA."
+  ]
+}

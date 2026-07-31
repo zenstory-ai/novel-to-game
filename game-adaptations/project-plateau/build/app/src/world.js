@@ -10,7 +10,7 @@ const shared = {
   fernMaterial: new THREE.MeshStandardMaterial({ color: PALETTE.fern, roughness: 0.92 }),
 };
 
-function terrainHeight(x, z) {
+export function terrainHeight(x, z) {
   const broad = Math.sin(x * 0.045) * 0.7 + Math.cos(z * 0.052) * 0.45;
   const basin = -Math.exp(-(x * x + (z + 8) * (z + 8)) / 1200) * 1.4;
   return broad + basin;
