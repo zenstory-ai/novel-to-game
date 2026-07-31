@@ -1,0 +1,148 @@
+
+> project-plateau-proof-before-dark@0.1.0 verify:s7
+> npm test && npm run build && npm run test:s7
+
+
+> project-plateau-proof-before-dark@0.1.0 test
+> node --test test/*.test.js
+
+✔ every core field cue has a concise sound caption (1.73125ms)
+✔ audio settings clamp channel volumes and expose caption state (0.1665ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.25325ms)
+✔ cue history remains bounded during a long field session (0.127ms)
+✔ foundation exposes the locked viewport and performance budgets (1.569125ms)
+✔ procedural placement is deterministic for a recorded seed (0.118375ms)
+✔ representative scene contains all declared subject and pressure groups (0.097125ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.090042ms)
+✔ runtime sources contain no remote asset or CDN request (6.082292ms)
+✔ presentation settings normalize invalid persisted values (1.734ms)
+✔ settings round-trip through versioned storage and can be reset (0.19275ms)
+✔ blocked or malformed storage falls back without disabling controls (0.191709ms)
+✔ fresh and restarted player states are clean copies (1.928125ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (0.568458ms)
+✔ pause freezes both world time and movement (0.104042ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (0.165833ms)
+✔ leaving the navigable world recovers the last stable position (0.096917ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.088959ms)
+✔ territory, glade, open proof and cover produce four readable threat states (0.409541ms)
+✔ examining the brook makes context eligible without awarding evidence (0.115417ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.15025ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (0.249708ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.083ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.144125ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.069ms)
+✔ restart clears observation, proof, damage and action history (0.070375ms)
+✔ intact evidence and all four result thresholds are deterministic (0.104ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.174334ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.107916ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.105667ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.077625ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.020875
+
+> project-plateau-proof-before-dark@0.1.0 build
+> vite build
+
+vite v8.2.0 building client environment for production...
+[2Ktransforming...✓ 12 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   6.78 kB │ gzip:   2.09 kB
+dist/assets/index-CzI1HL2n.css   12.70 kB │ gzip:   4.05 kB
+dist/assets/index-Dk00LmBg.js   576.45 kB │ gzip: 148.84 kB
+
+✓ built in 163ms
+
+> project-plateau-proof-before-dark@0.1.0 test:s7
+> python3 test/qa_s7.py
+
+{
+  "stage": "s7-lifecycle",
+  "checks": {
+    "settingsPersistAcrossReload": true,
+    "invalidStorageUnitCoverage": true,
+    "restoreDefaultsClearsVersionedRecord": true,
+    "targetAndMinimumViewportLifecycle": true,
+    "textScale150MinimumViewport": true,
+    "manualPause": true,
+    "focusLossFreezesCommitmentAndSuspendsAudio": true,
+    "terminalRestartPreservesSettingsAndResetsRun": true,
+    "cleanReloadReturnsToTitle": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "loading": {
+    "firstNoCacheNavigation": {
+      "timeToFirstFrameMs": 2157.9,
+      "domInteractiveMs": 48.7,
+      "loadEventMs": 2211.7,
+      "resourceCount": 11
+    },
+    "finalNavigation": {
+      "timeToFirstFrameMs": 2169.9,
+      "domInteractiveMs": 72.5,
+      "loadEventMs": 2210.7,
+      "resourceCount": 12
+    },
+    "budgetMs": 8000
+  },
+  "payload": {
+    "files": [
+      {
+        "path": "assets/index-CzI1HL2n.css",
+        "rawBytes": 12705,
+        "gzipBytes": 4027
+      },
+      {
+        "path": "assets/index-Dk00LmBg.js",
+        "rawBytes": 576457,
+        "gzipBytes": 146475
+      },
+      {
+        "path": "favicon.svg",
+        "rawBytes": 170,
+        "gzipBytes": 158
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 6789,
+        "gzipBytes": 2119
+      }
+    ],
+    "rawBytes": 596121,
+    "gzipBytes": 152779,
+    "initialCompressedBudgetBytes": 20971520,
+    "totalBudgetBytes": 52428800
+  },
+  "performance": {
+    "minimumViewport": {
+      "samples": 120,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 98,
+      "worstFrameMs": 10.3
+    },
+    "targetViewport": {
+      "samples": 240,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 97.1,
+      "worstFrameMs": 10.4
+    }
+  },
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "855c98f6b28c23a150cfd2952083bde4dfcb82569f7dd3adf605cb869d4f49cf"
+  }
+}
+S7 PASS: build/evidence/s7/report.json

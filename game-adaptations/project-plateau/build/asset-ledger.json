@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-07-31 PT \u00b7 S6",
+  "updated": "2026-07-31 PT \u00b7 S7",
   "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
   "entries": [
     {
@@ -127,7 +127,7 @@
       "tier": "release-gate",
       "status": "functional-prototype",
       "releaseGatePassed": false,
-      "source": "app/index.html; app/src/styles.css",
+      "source": "app/index.html; app/src/main.js; app/src/settings.js; app/src/styles.css",
       "provenance": "Original HTML/CSS interface using system fonts",
       "rights": "Original project layout and icons",
       "evidence": [
@@ -152,9 +152,12 @@
         "evidence/s5/07-strong-result-1280x720.jpg",
         "evidence/s6/01-audio-settings.jpg",
         "evidence/s6/04-bellows-camera-raised.jpg",
-        "evidence/s6/10-failure-cue.jpg"
+        "evidence/s6/10-failure-cue.jpg",
+        "evidence/s7/02-settings-150-minimum.jpg",
+        "evidence/s7/05-manual-pause-minimum.jpg",
+        "evidence/s7/07-result-minimum.jpg"
       ],
-      "remaining": "Context prompts, camera/plate/chamber edges, watch, all alive bands, sound captions, three channel controls and failure/restart states exist; persisted settings and full minimum-viewport regression remain."
+      "remaining": "Context prompts, camera/plate/chamber edges, watch, all alive bands, captions, persisted channel controls and target/minimum lifecycle states exist; final non-colour and authored-plate review remain."
     },
     {
       "key": "light.functional_arc",
@@ -187,7 +190,8 @@
         "evidence/s6/05-plate-slide-caption.jpg",
         "evidence/s6/08-rifle-brook-response.jpg",
         "evidence/s6/09-result-cue.jpg",
-        "evidence/s6/10-failure-cue.jpg"
+        "evidence/s6/10-failure-cue.jpg",
+        "evidence/s7/06-focus-pause-commitment-minimum.jpg"
       ],
       "remaining": "Browser audio state, cue scheduling, all core action/threat/outcome layers and captions are verified; production mix, richer ambience and subjective listening review remain."
     },
@@ -196,7 +200,7 @@
       "tier": "release-gate",
       "status": "functional-prototype",
       "releaseGatePassed": false,
-      "source": "app/index.html; app/src/main.js; app/src/styles.css",
+      "source": "app/index.html; app/src/main.js; app/src/settings.js; app/src/styles.css",
       "provenance": "Original reduced-motion and text-scale controls",
       "rights": "Original project UI",
       "evidence": [
@@ -205,9 +209,13 @@
         "evidence/s1/05-manual-pause.jpg",
         "evidence/s6/01-audio-settings.jpg",
         "evidence/s6/03-examine-caption.jpg",
-        "evidence/s6/10-failure-cue.jpg"
+        "evidence/s6/10-failure-cue.jpg",
+        "evidence/s7/01-persisted-settings-target.jpg",
+        "evidence/s7/02-settings-150-minimum.jpg",
+        "evidence/s7/06-focus-pause-commitment-minimum.jpg",
+        "evidence/s7/09-restored-defaults-target.jpg"
       ],
-      "remaining": "Pause/focus freeze, text/reduced-motion controls, captions and three channel volumes exist; settings persistence and complete non-colour regression remain."
+      "remaining": "Pause/focus freeze, validated persisted text/reduced-motion/caption/channel controls, 150% minimum-viewport layout and defaults reset exist; complete grayscale/non-colour regression remains."
     }
   ]
 }

@@ -3,6 +3,13 @@ import './styles.css';
 import { FieldAudio, captionForCue } from './audio.js';
 import { PALETTE, PRODUCT_BUDGET, SCENE_BUDGET, percentile } from './config.js';
 import {
+  SETTINGS_STORAGE_KEY,
+  clearSettings,
+  loadSettings,
+  normalizeSettings,
+  saveSettings,
+} from './settings.js';
+import {
   EXPOSURE_SECONDS,
   createPlayerState,
   examine,
@@ -47,7 +54,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S6 · field feedback';
+document.querySelector('#s0-badge').textContent = 'S7 · lifecycle proof';
 const query = new URLSearchParams(window.location.search);
 const explicitContext = canvas.getContext('webgl2', {
   antialias: true,
@@ -102,7 +109,9 @@ const pressed = new Set();
 let player = createPlayerState();
 let runActive = false;
 let cameraMode = 'title';
-let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let presentationSettings = loadSettings(window.localStorage, systemReducedMotion);
+let reducedMotion = presentationSettings.reducedMotion;
 let frameSamples = [];
 let lastFrame = performance.now();
 let firstRenderedAt = null;
@@ -114,6 +123,29 @@ let contactNoticeUntil = 0;
 let captionNoticeUntil = 0;
 
 const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
+
+function syncSettingsControls() {
+  document.querySelector('#reduced-motion').checked = presentationSettings.reducedMotion;
+  document.querySelector('#captions-enabled').checked = presentationSettings.captionsEnabled;
+  document.querySelector('#text-scale').value = presentationSettings.textScale;
+  for (const channel of ['ambience', 'effects', 'music']) {
+    document.querySelector(`#${channel}-volume`).value = presentationSettings.volumes[channel];
+  }
+}
+
+function applyPresentationSettings(settings, persist = true) {
+  presentationSettings = normalizeSettings(settings, systemReducedMotion);
+  reducedMotion = presentationSettings.reducedMotion;
+  document.body.classList.toggle('reduced-motion', reducedMotion);
+  document.documentElement.style.setProperty('--text-scale', presentationSettings.textScale);
+  fieldAudio.setCaptionsEnabled(presentationSettings.captionsEnabled);
+  for (const channel of ['ambience', 'effects', 'music']) {
+    fieldAudio.setVolume(channel, presentationSettings.volumes[channel]);
+  }
+  if (!fieldAudio.captionsEnabled) captionLine.hidden = true;
+  if (persist) presentationSettings = saveSettings(window.localStorage, presentationSettings);
+  syncSettingsControls();
+}
 
 function showCaption(cue, duration = 2400) {
   const copy = captionForCue(cue);
@@ -473,23 +505,29 @@ document.querySelector('#credits-button').addEventListener('click', () => {
   document.querySelector('#credits-panel').hidden = false;
 });
 document.querySelectorAll('.panel-close').forEach((button) => button.addEventListener('click', closePanels));
-document.querySelector('#reduced-motion').checked = reducedMotion;
 document.querySelector('#reduced-motion').addEventListener('change', (event) => {
-  reducedMotion = event.currentTarget.checked;
-  document.body.classList.toggle('reduced-motion', reducedMotion);
+  applyPresentationSettings({ ...presentationSettings, reducedMotion: event.currentTarget.checked });
 });
 document.querySelector('#captions-enabled').addEventListener('change', (event) => {
-  fieldAudio.setCaptionsEnabled(event.currentTarget.checked);
-  if (!fieldAudio.captionsEnabled) captionLine.hidden = true;
+  applyPresentationSettings({ ...presentationSettings, captionsEnabled: event.currentTarget.checked });
 });
 for (const channel of ['ambience', 'effects', 'music']) {
   document.querySelector(`#${channel}-volume`).addEventListener('input', (event) => {
-    fieldAudio.setVolume(channel, event.currentTarget.value);
+    applyPresentationSettings({
+      ...presentationSettings,
+      volumes: { ...presentationSettings.volumes, [channel]: event.currentTarget.value },
+    });
   });
 }
 document.querySelector('#text-scale').addEventListener('change', (event) => {
-  document.documentElement.style.setProperty('--text-scale', event.currentTarget.value);
+  applyPresentationSettings({ ...presentationSettings, textScale: event.currentTarget.value });
 });
+document.querySelector('#settings-reset').addEventListener('click', () => {
+  clearSettings(window.localStorage);
+  applyPresentationSettings(normalizeSettings({}, systemReducedMotion), false);
+});
+
+applyPresentationSettings(presentationSettings, false);
 
 document.addEventListener('keydown', (event) => {
   if (event.code === 'KeyP' && !event.repeat && runActive) {
@@ -609,13 +647,22 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's6-field-feedback',
+  stage: 's7-lifecycle',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,
   sceneBudget: SCENE_BUDGET,
   setView,
   sampleFrames,
+  loadingSnapshot() {
+    const navigation = performance.getEntriesByType('navigation')[0];
+    return {
+      timeToFirstFrameMs: firstRenderedAt === null ? null : Number(firstRenderedAt.toFixed(2)),
+      domInteractiveMs: navigation ? Number(navigation.domInteractive.toFixed(2)) : null,
+      loadEventMs: navigation ? Number(navigation.loadEventEnd.toFixed(2)) : null,
+      resourceCount: performance.getEntriesByType('resource').length,
+    };
+  },
   pause: pauseRun,
   resume: resumeRun,
   restart: beginRun,
@@ -650,6 +697,11 @@ window.__projectPlateau = {
       brookResponseVisual: world.brookResponseSnapshot(),
       assets: world.assetSnapshot(),
       audio: fieldAudio.snapshot(),
+      presentationSettings: {
+        ...presentationSettings,
+        volumes: { ...presentationSettings.volumes },
+        storageKey: SETTINGS_STORAGE_KEY,
+      },
       ui: {
         prompt: contextPrompt.hidden ? null : contextPrompt.textContent,
         cameraOverlay: !cameraOverlay.hidden,

@@ -51,6 +51,7 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .panel h2 { margin: .2rem 0 1.2rem; font-size: 2rem; }
 .panel label { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: .8rem 0; }
 .panel input[type="range"] { width: 9rem; accent-color: var(--brass); }
+.panel #settings-reset { min-width: 0; margin-top: .45rem; padding: .55rem .8rem; }
 .panel-close { position: absolute; min-width: auto !important; right: .8rem; top: .7rem; border: 0 !important; font-size: 1.6rem !important; padding: .2rem .6rem !important; }
 .pause-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .pause-actions button { min-width: 11rem; }

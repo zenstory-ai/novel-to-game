@@ -88,7 +88,7 @@ def run() -> dict[str, object]:
         assert response and response.ok
         assert page.evaluate("window.__projectPlateau.stage") in {
             "s1-controller", "s2-topology", "s3-exposed-proof", "s4-complete-loop",
-            "s5-route-outcomes", "s6-field-feedback"
+            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
         }
 
         def snapshot() -> dict[str, object]:

@@ -1,0 +1,15 @@
+{
+  "inputs": [
+    "resize to 1280x720"
+  ],
+  "viewport": [
+    1280,
+    720
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s7",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785528233244
+}

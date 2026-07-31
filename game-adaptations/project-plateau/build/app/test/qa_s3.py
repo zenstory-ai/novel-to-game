@@ -87,7 +87,7 @@ def run() -> dict[str, object]:
         page.goto(f"{BASE_URL}/?qa=s3", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") in {
-            "s3-exposed-proof", "s4-complete-loop", "s5-route-outcomes", "s6-field-feedback"
+            "s3-exposed-proof", "s4-complete-loop", "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
         }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()

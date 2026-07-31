@@ -1,0 +1,17 @@
+{
+  "inputs": [
+    "shutter",
+    "window blur",
+    "wait 520ms"
+  ],
+  "viewport": [
+    1280,
+    720
+  ],
+  "url": "http://127.0.0.1:4173/?qa=s7",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "127.0.0.1:4173"
+  ],
+  "capturedAtUnixMs": 1785528234923
+}

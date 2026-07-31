@@ -1,0 +1,273 @@
+{
+  "stage": "s7-lifecycle",
+  "mode": "terminal",
+  "cameraMode": "terminal",
+  "runActive": false,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 70
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 70
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 5.612,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "result:insufficient-record",
+    "zone": "fort",
+    "zoneHistory": [
+      "fort",
+      "brook-blind",
+      "iguanodon-glade",
+      "covered-return",
+      "fort"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 3,
+    "threatState": "attack",
+    "lastThreatEvent": "plate-exposure:+2",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 2.908099999904637,
+    "lastProofEvent": {
+      "plateIndex": 1,
+      "frameKey": "glade-behavior",
+      "points": 2,
+      "label": "BEHAVIOR \u2014 young play beside the adults.",
+      "zone": "iguanodon-glade"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 1,
+        "lostPoints": 0,
+        "label": "PARTIAL \u2014 foliage hides the flank.",
+        "frameKey": "brook-partial"
+      },
+      {
+        "index": 1,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 386.388,
+    "returnRoute": "covered",
+    "returnCostSeconds": 28,
+    "returnStrike": false,
+    "runStatus": "result",
+    "result": {
+      "kind": "alive",
+      "band": "insufficient-record",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "evidence": 3,
+      "survivingPlates": 2,
+      "route": "covered",
+      "brookResponse": null,
+      "remainingLight": 386.4,
+      "gunshotCallback": null
+    }
+  },
+  "threatVisual": {
+    "state": "attack",
+    "response": "orbit",
+    "position": {
+      "x": 3.34,
+      "y": 11.47,
+      "z": 57.35
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.22,
+      "effects": 0.44,
+      "music": 0.11
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.256
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.267
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.267
+      },
+      {
+        "cue": "watch",
+        "caption": "[one wing call answers at a distance]",
+        "at": 2.261
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.261
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 2.272
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 2.325
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 2.336
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 2.411
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 4.411
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 4.411
+      },
+      {
+        "cue": "cover",
+        "caption": "[branches scrape the camera; wingbeats widen]",
+        "at": 5.419
+      },
+      {
+        "cue": "result",
+        "caption": "[glass plates settle on the light board]",
+        "at": 5.504
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": true,
+    "captionsEnabled": true,
+    "textScale": "1.5",
+    "volumes": {
+      "ambience": 0.22,
+      "effects": 0.44,
+      "music": 0.11
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "BEHAVIOR \u2014 young play beside the adults.",
+    "fieldNote": "The young keep close while the adults feed.",
+    "contactNote": null,
+    "cartridgesVisible": true,
+    "caption": "[glass plates settle on the light board]",
+    "lightWatch": 387,
+    "terminal": {
+      "kind": "alive",
+      "title": "Insufficient record",
+      "copy": "The plates survived. The animal never stands clear.",
+      "detail": "3 evidence cues \u00b7 2 recorded plates \u00b7 covered return \u00b7 387s light",
+      "callback": null
+    }
+  },
+  "sceneChildren": 25,
+  "calls": 108,
+  "triangles": 27014,
+  "textures": 1,
+  "geometries": 58,
+  "viewport": [
+    1280,
+    720
+  ],
+  "firstRenderedAt": 2174.4000000953674,
+  "recentMedianFrameMs": 8.3
+}

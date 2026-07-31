@@ -1,0 +1,169 @@
+{
+  "stage": "s7-lifecycle",
+  "source": {
+    "scope": "index.html, package manifests, public assets and src",
+    "sha256": "855c98f6b28c23a150cfd2952083bde4dfcb82569f7dd3adf605cb869d4f49cf"
+  },
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "targetViewport": [
+      1440,
+      900
+    ],
+    "minimumViewport": [
+      1280,
+      720
+    ],
+    "network": {
+      "cacheDisabled": true,
+      "downlinkMbit": 25,
+      "uplinkMbit": 25,
+      "latencyMs": 20
+    },
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "settingsPersistAcrossReload": true,
+    "invalidStorageUnitCoverage": true,
+    "restoreDefaultsClearsVersionedRecord": true,
+    "targetAndMinimumViewportLifecycle": true,
+    "textScale150MinimumViewport": true,
+    "manualPause": true,
+    "focusLossFreezesCommitmentAndSuspendsAudio": true,
+    "terminalRestartPreservesSettingsAndResetsRun": true,
+    "cleanReloadReturnsToTitle": true,
+    "noThreatMeter": true,
+    "consoleErrors": [],
+    "requestHosts": [
+      "127.0.0.1:4173"
+    ],
+    "externalHosts": []
+  },
+  "loading": {
+    "firstNoCacheNavigation": {
+      "timeToFirstFrameMs": 2157.9,
+      "domInteractiveMs": 48.7,
+      "loadEventMs": 2211.7,
+      "resourceCount": 11
+    },
+    "finalNavigation": {
+      "timeToFirstFrameMs": 2169.9,
+      "domInteractiveMs": 72.5,
+      "loadEventMs": 2210.7,
+      "resourceCount": 12
+    },
+    "budgetMs": 8000
+  },
+  "payload": {
+    "files": [
+      {
+        "path": "assets/index-CzI1HL2n.css",
+        "rawBytes": 12705,
+        "gzipBytes": 4027
+      },
+      {
+        "path": "assets/index-Dk00LmBg.js",
+        "rawBytes": 576457,
+        "gzipBytes": 146475
+      },
+      {
+        "path": "favicon.svg",
+        "rawBytes": 170,
+        "gzipBytes": 158
+      },
+      {
+        "path": "index.html",
+        "rawBytes": 6789,
+        "gzipBytes": 2119
+      }
+    ],
+    "rawBytes": 596121,
+    "gzipBytes": 152779,
+    "initialCompressedBudgetBytes": 20971520,
+    "totalBudgetBytes": 52428800
+  },
+  "performance": {
+    "minimumViewport": {
+      "samples": 120,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 98,
+      "worstFrameMs": 10.3
+    },
+    "targetViewport": {
+      "samples": 240,
+      "medianFrameMs": 8.3,
+      "medianFps": 120.5,
+      "onePercentLowFps": 97.1,
+      "worstFrameMs": 10.4
+    }
+  },
+  "checkpoints": [
+    {
+      "id": "01-persisted-settings-target",
+      "state": "build/evidence/s7/state/01-persisted-settings-target.json",
+      "browser": "build/evidence/s7/browser/01-persisted-settings-target.json",
+      "visual": "build/evidence/s7/01-persisted-settings-target.jpg"
+    },
+    {
+      "id": "02-settings-150-minimum",
+      "state": "build/evidence/s7/state/02-settings-150-minimum.json",
+      "browser": "build/evidence/s7/browser/02-settings-150-minimum.json",
+      "visual": "build/evidence/s7/02-settings-150-minimum.jpg"
+    },
+    {
+      "id": "03-field-order-minimum",
+      "state": "build/evidence/s7/state/03-field-order-minimum.json",
+      "browser": "build/evidence/s7/browser/03-field-order-minimum.json",
+      "visual": "build/evidence/s7/03-field-order-minimum.jpg"
+    },
+    {
+      "id": "04-field-minimum",
+      "state": "build/evidence/s7/state/04-field-minimum.json",
+      "browser": "build/evidence/s7/browser/04-field-minimum.json",
+      "visual": "build/evidence/s7/04-field-minimum.jpg"
+    },
+    {
+      "id": "05-manual-pause-minimum",
+      "state": "build/evidence/s7/state/05-manual-pause-minimum.json",
+      "browser": "build/evidence/s7/browser/05-manual-pause-minimum.json",
+      "visual": "build/evidence/s7/05-manual-pause-minimum.jpg"
+    },
+    {
+      "id": "06-focus-pause-commitment-minimum",
+      "state": "build/evidence/s7/state/06-focus-pause-commitment-minimum.json",
+      "browser": "build/evidence/s7/browser/06-focus-pause-commitment-minimum.json",
+      "visual": "build/evidence/s7/06-focus-pause-commitment-minimum.jpg"
+    },
+    {
+      "id": "07-result-minimum",
+      "state": "build/evidence/s7/state/07-result-minimum.json",
+      "browser": "build/evidence/s7/browser/07-result-minimum.json",
+      "visual": "build/evidence/s7/07-result-minimum.jpg"
+    },
+    {
+      "id": "08-restart-order-minimum",
+      "state": "build/evidence/s7/state/08-restart-order-minimum.json",
+      "browser": "build/evidence/s7/browser/08-restart-order-minimum.json",
+      "visual": "build/evidence/s7/08-restart-order-minimum.jpg"
+    },
+    {
+      "id": "09-restored-defaults-target",
+      "state": "build/evidence/s7/state/09-restored-defaults-target.json",
+      "browser": "build/evidence/s7/browser/09-restored-defaults-target.json",
+      "visual": "build/evidence/s7/09-restored-defaults-target.jpg"
+    },
+    {
+      "id": "10-heavy-state-target",
+      "state": "build/evidence/s7/state/10-heavy-state-target.json",
+      "browser": "build/evidence/s7/browser/10-heavy-state-target.json",
+      "visual": "build/evidence/s7/10-heavy-state-target.jpg"
+    }
+  ],
+  "limitations": [
+    "The 25 Mbps no-cache loading check uses Chrome DevTools throttling against the local Vite server; public-host cold loading remains a deployment gate.",
+    "Presentation settings use one versioned localStorage record and intentionally do not migrate an earlier schema because none has shipped.",
+    "S7 verifies lifecycle layout and state at both supported viewports but does not replace uncompressed Strong/Mixed/Panic reference runs.",
+    "Automated screenshots prove panel bounds and state correspondence, not subjective comfort at 150% text."
+  ]
+}

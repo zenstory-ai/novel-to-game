@@ -1,0 +1,218 @@
+{
+  "stage": "s7-lifecycle",
+  "mode": "field",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": -10
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": -10
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 4.283,
+    "distanceTravelled": 0,
+    "paused": false,
+    "pauseReason": null,
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "plate:1:exposed",
+    "zone": "iguanodon-glade",
+    "zoneHistory": [
+      "fort",
+      "iguanodon-glade"
+    ],
+    "reachedGlade": true,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 3,
+    "threatState": "attack",
+    "lastThreatEvent": "plate-exposure:+2",
+    "attackSeconds": 2.0099000000953695,
+    "examinedTrack": false,
+    "observedBehavior": true,
+    "lastObservation": "The young keep close while the adults feed.",
+    "cameraRaised": false,
+    "plateRailRevealed": true,
+    "pendingExposure": null,
+    "previewSeconds": 1.9988999998569603,
+    "lastProofEvent": {
+      "plateIndex": 0,
+      "frameKey": "glade-behavior",
+      "points": 2,
+      "label": "BEHAVIOR \u2014 young play beside the adults.",
+      "zone": "iguanodon-glade"
+    },
+    "plates": [
+      {
+        "index": 0,
+        "status": "exposed",
+        "points": 2,
+        "lostPoints": 0,
+        "label": "BEHAVIOR \u2014 young play beside the adults.",
+        "frameKey": "glade-behavior"
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 415.717,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "attack",
+    "response": "orbit",
+    "position": {
+      "x": -1.76,
+      "y": 7.82,
+      "z": -21.98
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "running",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "captionsEnabled": true,
+    "threatState": "attack",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "search",
+        "caption": "[a near call circles overhead]",
+        "at": 0.117
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.176
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.181
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.256
+      },
+      {
+        "cue": "attack",
+        "caption": "[wingbeats tighten into a dive]",
+        "at": 2.256
+      },
+      {
+        "cue": "plate-slide",
+        "caption": "[glass plate seats in its case]",
+        "at": 2.256
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": false,
+    "captionsEnabled": true,
+    "textScale": "1",
+    "volumes": {
+      "ambience": 0.34,
+      "effects": 0.72,
+      "music": 0.2
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Raise rifle [F] \u00b7 Fire before contact [Left Mouse]",
+    "cameraOverlay": false,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": "BEHAVIOR \u2014 young play beside the adults.",
+    "fieldNote": "The young keep close while the adults feed.",
+    "contactNote": null,
+    "cartridgesVisible": true,
+    "caption": "[glass plate seats in its case]",
+    "lightWatch": 416,
+    "terminal": null
+  },
+  "sceneChildren": 25,
+  "calls": 81,
+  "triangles": 25790,
+  "textures": 1,
+  "geometries": 63,
+  "viewport": [
+    1440,
+    900
+  ],
+  "firstRenderedAt": 2169.9000000953674,
+  "recentMedianFrameMs": 8.3
+}

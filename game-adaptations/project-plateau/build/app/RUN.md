@@ -59,12 +59,20 @@ distinct result/failure sound states with:
 npm run verify:s6
 ```
 
+Run the persisted-settings and lifecycle checkpoint with no-cache loading,
+payload accounting, 150% text, both supported viewports, pause/focus freeze,
+terminal restart and heavy-state performance with:
+
+```bash
+npm run verify:s7
+```
+
 The browser check uses Python Playwright and the locally installed Google Chrome
 when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S6 write separate
+the corresponding `../evidence/s*/` directory. S3 through S7 write separate
 state and browser JSON records for every visual checkpoint.
 
-This is an S6 foundation, not the completed game. It proves the approved local
+This is an S7 foundation, not the completed game. It proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -87,5 +95,11 @@ route with physical arches and a visible pull-up response, and adds lazy local
 Web Audio, captions, three independent volume controls, cue-state inspection
 and clean per-run audio reset. Its browser evidence proves that audio nodes and
 cues run without console or remote-host errors; it does not claim subjective
-mix quality. Final asset polish, persisted settings and uncompressed reference
+mix quality. Final asset polish and uncompressed reference runs remain open.
+S7 persists one validated, versioned presentation record,
+offers a visible defaults reset and exercises title, settings, order, field,
+manual pause, focus-loss pause, result and restart at `1440×900` and
+`1280×720`, including 150% text. Its no-cache 25 Mbps run reached the first
+frame in 2.16 seconds; the built app measured 596,121 raw / 152,779 gzip bytes.
+Public-host cold loading, final non-colour review and uncompressed reference
 runs remain open.

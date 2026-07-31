@@ -1,0 +1,205 @@
+{
+  "stage": "s7-lifecycle",
+  "mode": "paused",
+  "cameraMode": "field",
+  "runActive": true,
+  "renderer": "WebGL2",
+  "player": {
+    "position": {
+      "x": 0,
+      "z": 45
+    },
+    "lastStablePosition": {
+      "x": 0,
+      "z": 45
+    },
+    "heading": 0,
+    "pitch": 0,
+    "stance": "walk",
+    "elapsedSeconds": 0.754,
+    "distanceTravelled": 0,
+    "paused": true,
+    "pauseReason": "window-inactive",
+    "boundaryRecoveries": 0,
+    "collisions": 0,
+    "lastEvent": "paused:window-inactive",
+    "zone": "brook-blind",
+    "zoneHistory": [
+      "fort",
+      "brook-blind"
+    ],
+    "reachedGlade": false,
+    "inCover": false,
+    "coverSeconds": 0,
+    "sprintExposureSeconds": 0,
+    "sprintEscalationCharged": false,
+    "threatAwareness": 0,
+    "threatState": "distant",
+    "lastThreatEvent": "distant",
+    "attackSeconds": 0,
+    "examinedTrack": true,
+    "observedBehavior": false,
+    "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
+    "cameraRaised": true,
+    "plateRailRevealed": true,
+    "pendingExposure": {
+      "key": "brook-partial",
+      "points": 1,
+      "label": "PARTIAL \u2014 foliage hides the flank.",
+      "exposure": 1,
+      "plateIndex": 0,
+      "remainingSeconds": 1.6097000000476833,
+      "zone": "brook-blind"
+    },
+    "previewSeconds": 0,
+    "lastProofEvent": null,
+    "plates": [
+      {
+        "index": 0,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 1,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 2,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      },
+      {
+        "index": 3,
+        "status": "unexposed",
+        "points": 0,
+        "lostPoints": 0,
+        "label": null,
+        "frameKey": null
+      }
+    ],
+    "cartridges": 2,
+    "rifleRaised": false,
+    "rifleRevealed": false,
+    "gunshotFired": false,
+    "brookResponse": null,
+    "shotCount": 0,
+    "bodyMargin": 1,
+    "failed": false,
+    "failureCause": null,
+    "contactCount": 0,
+    "remainingLight": 419.246,
+    "returnRoute": null,
+    "returnCostSeconds": 0,
+    "returnStrike": false,
+    "runStatus": "active",
+    "result": null
+  },
+  "threatVisual": {
+    "state": "distant",
+    "response": "orbit",
+    "position": {
+      "x": 28.75,
+      "y": 23.31,
+      "z": 21.33
+    }
+  },
+  "brookResponseVisual": {
+    "state": null,
+    "position": {
+      "x": -10.5,
+      "y": -0.77,
+      "z": 47
+    }
+  },
+  "assets": {
+    "fieldCamera": {
+      "version": "bellows-camera",
+      "visibleParts": 13
+    },
+    "pterodactyl": {
+      "silhouette": "membrane-wing",
+      "visibleParts": 5
+    },
+    "cover": {
+      "archCount": 5,
+      "visibleParts": 25
+    }
+  },
+  "audio": {
+    "status": "suspended",
+    "volumes": {
+      "ambience": 0.22,
+      "effects": 0.44,
+      "music": 0.11
+    },
+    "captionsEnabled": true,
+    "threatState": "distant",
+    "recentCues": [
+      {
+        "cue": "field-start",
+        "caption": "[brook water and insects under the canopy]",
+        "at": 0
+      },
+      {
+        "cue": "examine",
+        "caption": "[fern brushes aside; pencil marks the field card]",
+        "at": 0.256
+      },
+      {
+        "cue": "camera-raise",
+        "caption": "[wood frame lifts; bellows opens]",
+        "at": 0.267
+      },
+      {
+        "cue": "shutter",
+        "caption": "[shutter releases]",
+        "at": 0.267
+      }
+    ]
+  },
+  "presentationSettings": {
+    "reducedMotion": true,
+    "captionsEnabled": true,
+    "textScale": "1.5",
+    "volumes": {
+      "ambience": 0.22,
+      "effects": 0.44,
+      "music": 0.11
+    },
+    "storageKey": "project-plateau:presentation:v1"
+  },
+  "ui": {
+    "prompt": "Hold steady.",
+    "cameraOverlay": true,
+    "rifleOverlay": false,
+    "plateRail": true,
+    "platePreview": null,
+    "fieldNote": "Three toes. Fresh. The brook runs back to camp.",
+    "contactNote": null,
+    "cartridgesVisible": false,
+    "caption": "[shutter releases]",
+    "lightWatch": 420,
+    "terminal": null
+  },
+  "sceneChildren": 25,
+  "calls": 98,
+  "triangles": 26934,
+  "textures": 1,
+  "geometries": 58,
+  "viewport": [
+    1280,
+    720
+  ],
+  "firstRenderedAt": 2174.4000000953674,
+  "recentMedianFrameMs": 8.3
+}

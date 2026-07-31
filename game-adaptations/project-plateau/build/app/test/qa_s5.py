@@ -86,7 +86,9 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s5", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") in {"s5-route-outcomes", "s6-field-feedback"}
+        assert page.evaluate("window.__projectPlateau.stage") in {
+            "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle"
+        }
         page.get_by_role("button", name="Enter the basin").click()
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(120)
