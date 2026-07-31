@@ -34,6 +34,7 @@ from validate_repo import (  # noqa: E402
     validate_minimal_evidence_contract,
     validate_repository,
     validate_skill,
+    validation_json_files,
     visible_directories,
 )
 
@@ -338,6 +339,29 @@ class RepositoryValidationTests(unittest.TestCase):
             (root / ".omc").mkdir()
             (root / "notes.md").write_text("", encoding="utf-8")
             self.assertEqual(visible_directories(root), {"journey-to-the-west"})
+
+    def test_repository_json_scan_skips_generated_dependency_trees(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "build").mkdir()
+            (root / "build/asset-ledger.json").write_text("{}", encoding="utf-8")
+            (root / "build/app/node_modules/package/dist").mkdir(parents=True)
+            (root / "build/app/node_modules/package/dist/metadata.json").write_text(
+                "not repository json", encoding="utf-8"
+            )
+            (root / "build/app/dist").mkdir(parents=True)
+            (root / "build/app/dist/chunk.json").write_text(
+                "generated output", encoding="utf-8"
+            )
+            (root / ".omx/state").mkdir(parents=True)
+            (root / ".omx/state/runtime.json").write_text(
+                "operator state", encoding="utf-8"
+            )
+
+            self.assertEqual(
+                [path.relative_to(root).as_posix() for path in validation_json_files(root)],
+                ["build/asset-ledger.json"],
+            )
 
     def test_every_skill_description_leads_with_english(self) -> None:
         for name in sorted(EXPECTED_SKILLS):

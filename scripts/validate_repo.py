@@ -96,6 +96,12 @@ CHINESE_DIGITS = {
     "八": 8,
     "九": 9,
 }
+VALIDATION_IGNORED_DIRECTORIES = {
+    "node_modules",
+    "dist",
+    "coverage",
+    "__pycache__",
+}
 
 
 def visible_directories(parent: Path) -> set[str]:
@@ -110,6 +116,18 @@ def visible_directories(parent: Path) -> set[str]:
         for path in parent.iterdir()
         if path.is_dir() and not path.name.startswith(".")
     }
+
+
+def validation_json_files(root: Path) -> list[Path]:
+    """Return authored JSON while excluding local state and generated trees."""
+    return sorted(
+        path
+        for path in root.rglob("*.json")
+        if not any(
+            part.startswith(".") or part in VALIDATION_IGNORED_DIRECTORIES
+            for part in path.relative_to(root).parts[:-1]
+        )
+    )
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -519,7 +537,7 @@ def validate_repository(root: Path) -> list[str]:
     for name in sorted(actual_examples):
         issues.extend(validate_example(examples_root / name))
 
-    for json_file in root.rglob("*.json"):
+    for json_file in validation_json_files(root):
         try:
             json.loads(json_file.read_text(encoding="utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
