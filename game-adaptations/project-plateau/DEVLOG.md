@@ -118,6 +118,12 @@ The compact [public-host record](qa/evidence/public-host/report.json) preserves
 the deployment, source fingerprint, full input trace, route metrics, console and
 request-host checks, plus clean-start/result/restart frames.
 
+First-time observations are now collected in the
+[public playtest discussion](https://github.com/worldwonderer/novel-to-game/discussions/7).
+A reply is treated as candidate evidence until it contains the environment,
+timestamps, observed path, result, and uncoached post-run answers required by
+the playtest protocol.
+
 The public release remains closed until the repository contains:
 
 - three raw first-time sessions using the

@@ -108,6 +108,11 @@ comprehension or subjective visual questions.
 
 ## Evidence boundaries and open gates
 
+First-time players can join through the
+[public playtest discussion](https://github.com/worldwonderer/novel-to-game/discussions/7).
+Discussion replies do not clear a gate until they satisfy the raw-record fields
+and decision rule in `PLAYTEST_PROTOCOL.md`.
+
 | Gate | Status | Severity before public release | Required next evidence |
 |---|---|---|---|
 | Three first-time players recognize 3D action/exploration and not a text/VN presentation | NOT_RUN | major | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |

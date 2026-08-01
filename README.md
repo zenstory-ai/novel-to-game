@@ -22,7 +22,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 | [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://project-plateau.vercel.app) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://project-plateau.vercel.app) |
 | 两只成年禽龙、三只幼体、会移动的空中威胁，以及可以实际操作的老式相机 | 途中拍到的四个画面会保存在玻璃底片上，并出现在最终记录中 |
 
-**[在线试玩](https://project-plateau.vercel.app)** · [本地运行](game-adaptations/project-plateau/build/app/RUN.md) · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [公网验证](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
+**[在线试玩](https://project-plateau.vercel.app)** · **[反馈首次体验](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [本地运行](game-adaptations/project-plateau/build/app/RUN.md) · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [公网验证](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
 
 公开预览已经通过匿名 HTTPS 加载、完整游玩、结局和重开验证。独立首次体验与画面审查仍在进行，因此当前保留“开发中”标记。
 
