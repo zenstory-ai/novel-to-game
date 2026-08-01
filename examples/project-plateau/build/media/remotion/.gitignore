@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+out/
+public/gameplay.mp4
+public/result.jpg
+public/soundtrack.wav
+public/voiceover-source.mp3
+public/voiceover-source.json
+public/voiceover.wav

@@ -75,9 +75,11 @@ EXAMPLE_PLANNING_FILES = {
     "design/ART_DIRECTION.md",
     "build/BUILD_BRIEF.md",
 }
-# Allowed but not required — see the note at the comparison site.
+# Allowed but not required — legacy examples may predate coverage tracking, while
+# richer examples may keep a build asset ledger beside the frozen build brief.
 OPTIONAL_PLANNING_FILES = {
     "analysis/_coverage.md",
+    "build/asset-ledger.json",
 }
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")
@@ -333,10 +335,9 @@ def validate_example(example_dir: Path) -> list[str]:
         for path in (example_dir / directory).iterdir()
         if path.is_file()
     }
-    # `analysis/_coverage.md` is required by the pipeline contract (minimal workspace,
-    # and "batch state lives in a self-contained analysis/_coverage.md"), but the two
-    # older examples predate that rule. Allow it without demanding it, so a compliant
-    # example is not rejected and a legacy one is not retroactively failed.
+    # Coverage state and an asset ledger are valid supporting artifacts, but neither is
+    # universal across the legacy examples. Ignore them when grading the five compact
+    # planning handoffs instead of rejecting a richer, otherwise compliant example.
     graded_planning_files = actual_planning_files - OPTIONAL_PLANNING_FILES
     if graded_planning_files != EXAMPLE_PLANNING_FILES:
         issues.append(
@@ -519,7 +520,7 @@ def validate_minimal_evidence_contract(root: Path) -> list[str]:
 
 def validate_repository(root: Path) -> list[str]:
     issues: list[str] = []
-    for required in ("README.md", "README_EN.md", "LICENSE", "AGENTS.md", "VERSION"):
+    for required in ("README.md", "README_ZH.md", "LICENSE", "AGENTS.md", "VERSION"):
         if not (root / required).is_file():
             issues.append(f"repository: missing {required}")
 

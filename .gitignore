@@ -33,6 +33,6 @@ examples/*/screenshots/clip/*.mp4
 # Project Plateau media follows the same evidence boundary: keep the reproducible
 # capture script, marks, manifest and share card; do not make Git history carry
 # the raw browser stream or derived delivery encodes.
-game-adaptations/*/build/media/clip/raw_take.webm
-game-adaptations/*/build/media/clip/raw/
-game-adaptations/*/build/media/clip/*.mp4
+examples/project-plateau/build/media/clip/raw_take.webm
+examples/project-plateau/build/media/clip/raw/
+examples/project-plateau/build/media/clip/*.mp4

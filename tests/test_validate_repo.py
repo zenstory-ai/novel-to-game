@@ -74,7 +74,7 @@ class RepositoryValidationTests(unittest.TestCase):
             ".github/pull_request_template.md": [
                 "Source and asset provenance",
                 "Risks and untested scope",
-                "README.md` and `README_EN.md",
+                "README.md` and `README_ZH.md",
             ],
         }
         for relative_path, markers in required_markers.items():
@@ -303,8 +303,8 @@ class RepositoryValidationTests(unittest.TestCase):
                     for path in (example / directory).iterdir()
                     if path.is_file()
                 }
-                # `analysis/_coverage.md` is contract-required but the two older
-                # examples predate the rule: allowed, not demanded.
+                # Coverage state and a build asset ledger are valid supporting
+                # artifacts, but legacy examples may not contain either one.
                 self.assertEqual(actual - OPTIONAL_PLANNING_FILES, EXAMPLE_PLANNING_FILES)
 
     def test_example_source_and_citations_are_structurally_valid(self) -> None:
@@ -462,7 +462,7 @@ class RepositoryValidationTests(unittest.TestCase):
     def test_public_product_copy_does_not_limit_the_pipeline_to_web_games(self) -> None:
         surfaces = {
             "README.md": (ROOT / "README.md").read_text(encoding="utf-8"),
-            "README_EN.md": (ROOT / "README_EN.md").read_text(encoding="utf-8"),
+            "README_ZH.md": (ROOT / "README_ZH.md").read_text(encoding="utf-8"),
         }
         for relative_path in sorted(PLUGIN_MANIFESTS):
             manifest = json.loads((ROOT / relative_path).read_text(encoding="utf-8"))
@@ -488,10 +488,12 @@ class RepositoryValidationTests(unittest.TestCase):
                 for phrase in web_only_phrases:
                     self.assertNotIn(phrase, lowered)
 
-    def test_in_development_asset_ledgers_reference_existing_evidence(self) -> None:
+    def test_asset_ledgers_reference_existing_evidence(self) -> None:
         missing_evidence = []
         ledgers = sorted(
-            (ROOT / "game-adaptations").glob("*/build/asset-ledger.json")
+            ledger
+            for parent in (ROOT / "game-adaptations", ROOT / "examples")
+            for ledger in parent.glob("*/build/asset-ledger.json")
         )
         for ledger in ledgers:
             data = json.loads(ledger.read_text(encoding="utf-8"))
@@ -518,8 +520,21 @@ class RepositoryValidationTests(unittest.TestCase):
                 content = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertIn(marker, content)
 
+    def test_readme_defaults_to_english_with_a_chinese_counterpart(self) -> None:
+        english = (ROOT / "README.md").read_text(encoding="utf-8")
+        chinese = (ROOT / "README_ZH.md").read_text(encoding="utf-8")
+
+        self.assertIn(
+            "> Turn a novel in any language into a source-grounded, fully playable game.",
+            english,
+        )
+        self.assertIn("[中文](README_ZH.md)", english)
+        self.assertIn("> 把任何语言的小说，改编成有原著依据、可完整游玩的游戏。", chinese)
+        self.assertIn("[English](README.md)", chinese)
+        self.assertFalse((ROOT / "README_EN.md").exists())
+
     def test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy(self) -> None:
-        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        readme = (ROOT / "README_ZH.md").read_text(encoding="utf-8")
         self.assertIsNone(re.search(r"不是[^。\n]{0,80}[，,]?\s*而是", readme))
         self.assertNotIn("活体家庭取景", readme)
         self.assertIn("## 在线试玩", readme)
@@ -527,13 +542,13 @@ class RepositoryValidationTests(unittest.TestCase):
 
         canonical_demo = "https://plateau.vibecoco.ai"
         public_preview_docs = {
-            "README.md": readme,
-            "README_EN.md": (ROOT / "README_EN.md").read_text(encoding="utf-8"),
+            "README_ZH.md": readme,
+            "README.md": (ROOT / "README.md").read_text(encoding="utf-8"),
             "RUN.md": (
-                ROOT / "game-adaptations/project-plateau/build/app/RUN.md"
+                ROOT / "examples/project-plateau/build/app/RUN.md"
             ).read_text(encoding="utf-8"),
             "QA_REPORT.md": (
-                ROOT / "game-adaptations/project-plateau/qa/QA_REPORT.md"
+                ROOT / "examples/project-plateau/qa/QA_REPORT.md"
             ).read_text(encoding="utf-8"),
         }
         for name, content in public_preview_docs.items():

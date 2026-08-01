@@ -99,20 +99,20 @@ The [QA report](qa/QA_REPORT.md),
 [design-invariant audit](qa/evidence/design-invariants.md) preserve the exact
 source commit, environment, measurements, paths, and claim boundaries.
 
-Reproduce it from `game-adaptations/project-plateau/build/app/`:
+Reproduce it from `examples/project-plateau/build/app/`:
 
 ```bash
 npm ci
 npm run verify
 ```
 
-## 6. Keep the release boundary honest
+## 6. Keep the publication boundary honest
 
 Automation establishes deterministic state, input, lifecycle, performance, and
 gross visual floors. It cannot establish first-time comprehension, subjective
 comfort, anatomy quality, composition quality, or colour-cue readability.
 
-The public preview now loads over anonymous HTTPS and completes the same
+The published build loads over anonymous HTTPS and completes the same
 keyboard/mouse Strong, Mixed, Panic, achromatopsia, result, and restart paths.
 The compact [public-host record](qa/evidence/public-host/report.json) preserves
 the deployment, source fingerprint, full input trace, route metrics, console and
@@ -129,13 +129,19 @@ The separate
 keeps reviewer recruitment away from first-time participants, who must not read
 the anatomy, motion, composition, or colour-cue checklist before their run.
 
-The public release remains closed until the repository contains:
+On 2026-08-01 the maintainer reported three successful informal first-time
+sessions and accepted the project for publication as a repository example.
+Those sessions did not retain the raw environment, timestamps, observed path,
+result, and uncoached answers required by the protocol, so the report does not
+retroactively mark the first-time criteria as verified.
+
+The following evidence-qualified gates therefore remain open after publication:
 
 - three raw first-time sessions using the
   [playtest protocol](qa/PLAYTEST_PROTOCOL.md);
 - an independent frame-level review using the
   [perception protocol](qa/PERCEPTION_REVIEW_PROTOCOL.md);
 
-Those human-review gates remain `NOT_RUN` in the [QA report](qa/QA_REPORT.md).
-The current files are a reviewable public development build, not a claim that
-the release has passed.
+Those human-review gates remain explicit in the [QA report](qa/QA_REPORT.md).
+Publication is a maintainer product decision with disclosed evidence gaps, not
+a claim that the missing subjective reviews passed.

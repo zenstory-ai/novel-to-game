@@ -31,9 +31,11 @@ planning artifacts and browser evidence: <REPOSITORY_URL>
 
 ## Video caption
 
-One continuous input-only Strong run, uniformly compressed to fit the clip. No
-teleport, state splice or generated substitute footage. Full traversal timing
-and browser evidence are in the repository.
+The center 30 seconds are one continuous input-only Strong run, uniformly
+compressed to fit the clip. The premise/CTA cards, captions, original procedural
+sound bed and Fish Audio synthetic English narration were added in Remotion. No
+teleport, state splice, cloned real-person voice or generated substitute
+gameplay. Full traversal timing and browser evidence are in the repository.
 
 ## Accessible alt text
 
@@ -45,7 +47,11 @@ camp light board marked “Strong field record.”
 
 ## Publication checks
 
-- The attached video hash matches `clip/manifest.json`.
+- The source gameplay hash matches `clip/manifest.json`; the captioned launch
+  render passes `remotion/npm run verify`; the sub-10 MB upload additionally
+  passes `remotion/npm run verify:github` before publication.
+- The narration configuration names its provider/model and selected public
+  voice; the credential and generated audio remain outside Git.
 - The public URL loads anonymously and reaches the field order.
 - Repository and source-provenance links resolve without authentication.
 - Copy does not claim independent review until its raw record exists.

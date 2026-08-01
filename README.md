@@ -1,88 +1,92 @@
 # NovelToGame
 
-> 把任何语言的小说，改编成有原著依据、可完整游玩的游戏。
+> Turn a novel in any language into a source-grounded, fully playable game.
 
 [![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
 
-NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它帮助创作者从小说中提炼规则、空间、势力和冲突，再把这些内容设计成玩家动作、系统、关卡与可验证的完整流程。
+NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It extracts the source's own rules, spaces, factions, and conflicts, then turns them into player verbs, systems, levels, and a verifiable complete run.
 
-目标平台由项目需求决定。可玩版本可以是 PC 客户端、移动 App、小程序、网页，也可以直接运行在选定的游戏引擎中；构建和质量验证始终以选定的运行环境为准，替代验证会单独标明范围。
+The project requirements choose the target platform. A playable build may be a PC client, mobile app, mini game, web build, or a project running in the selected game engine. Build and QA use that target runtime; any substitute runtime is scoped separately.
 
-[English](README_EN.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出) · [参与贡献](CONTRIBUTING.md)
+[中文](README_ZH.md) · [Install](#install) · [Quick Start](#quick-start) · [See the Output](#output) · [Contributing](CONTRIBUTING.md)
 
-## 在线试玩
+## Play Online
 
-### 3D 开发预览 · Project Plateau: Proof Before Dark
+### Featured 3D example · Project Plateau: Proof Before Dark
 
-这份英文参考项目用同一套流程制作了一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察一群共同生活的禽龙，躲避空中威胁，用四张玻璃底片拍下证据，再把完好的底片带回营地。
+This English example uses the same pipeline to build a real-time **first-person 3D field-photography game**. Cross a connected plateau, observe a family of Iguanodon, avoid an aerial threat, capture evidence on four glass plates, and bring the surviving plates back to camp.
 
-| 观察恐龙一家 | 带回营地的玻璃底片 |
+#### Watch the 36-second launch video
+
+https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
+
+| Observe the dinosaur family | Bring the glass plates home |
 |---|---|
-| [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://plateau.vibecoco.ai) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://plateau.vibecoco.ai) |
-| 两只成年禽龙、三只幼体、会移动的空中威胁，以及可以实际操作的老式相机 | 途中拍到的四个画面会保存在玻璃底片上，并出现在最终记录中 |
+| [![Iguanodon family through the field camera](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://plateau.vibecoco.ai) | [![Four recovered field plates](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://plateau.vibecoco.ai) |
+| Two adults, three young, a moving aerial threat, and an operable period camera | Four views captured along the route remain on the plates and appear in the final record |
 
-**[在线试玩](https://plateau.vibecoco.ai)** · **[反馈首次体验](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [本地运行](game-adaptations/project-plateau/build/app/RUN.md) · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [公网验证](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
+**[Play online](https://plateau.vibecoco.ai)** · **[Share first-time feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [Run locally](examples/project-plateau/build/app/RUN.md) · [Playable source](examples/project-plateau/build/app/) · [Build devlog](examples/project-plateau/DEVLOG.md) · [Complete planning files](examples/project-plateau/) · [Source provenance](examples/project-plateau/source/SOURCE.md) · [Authoritative verification](examples/project-plateau/qa/verification.json) · [Public-host evidence](examples/project-plateau/qa/evidence/public-host/report.json) · [Media pack](examples/project-plateau/build/media/)
 
-公开预览已经通过匿名 HTTPS 加载、完整游玩、结局和重开验证。独立首次体验与[画面审查](https://github.com/worldwonderer/novel-to-game/discussions/8)仍在进行，因此当前保留“开发中”标记。
+The published build has passed anonymous HTTPS load, complete play, result, and restart checks. The maintainer also reports three successful first-time sessions. Those sessions were informal and left no raw records, so they support publication but are not counted as repository-verifiable QA; independent [visual and colour-cue review](https://github.com/worldwonderer/novel-to-game/discussions/8) remains open.
 
-### 已发布示例
+### Other released examples
 
-| 《西游记》· 三借芭蕉扇 | 《金瓶梅》· 风月总账 |
+| Journey to the West · Three Borrowings of the Banana Fan | Jin Ping Mei · Ledger of Desire |
 |---|---|
-| [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
-| 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 关系策略游戏：六日日程、角色意志、资源与人情债、三种结局 |
-| **[在线试玩](https://xiyouji.vibecoco.ai)** · [完整项目文件](examples/journey-to-the-west/) · [原著出处](examples/journey-to-the-west/source/SOURCE.md) | **[在线试玩](https://jinpingmei.vibecoco.ai)** · [完整项目文件](examples/jin-ping-mei/) · [原著出处](examples/jin-ping-mei/source/SOURCE.md) |
+| [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
+| Turn-based systems RPG: elements, formations, transformations, companion, and multi-stage boss | 18+ relationship strategy game: six-day schedule, character agency, resource and social debts, and three endings |
+| **[Play online](https://xiyouji.vibecoco.ai)** · [Complete project](examples/journey-to-the-west/) · [Source provenance](examples/journey-to-the-west/source/SOURCE.md) | **[Play online](https://jinpingmei.vibecoco.ai)** · [Complete project](examples/jin-ping-mei/) · [Source provenance](examples/jin-ping-mei/source/SOURCE.md) |
 
-两份已发布示例都包含原著来源、产品约束、游戏化拆解、方案选择、世界与美术设计、构建说明以及可运行源码。
+All three released examples include source provenance, product constraints, adaptation analysis, concept selection, world and art direction, a build brief, and runnable source.
 
-## 快速开始
+## Quick Start
 
-安装后，把小说文件、目录或链接交给 Agent：
+After installation, give the agent a novel file, directory, or link:
 
 ```text
-用 novel-to-game quick 把这本小说改编成一款可完整游玩的游戏。
-请根据题材推荐目标平台、类型和引擎，并把首个版本控制在 15 分钟左右。
-玩家以原创身份进入世界，不要逐段复演原作剧情。
+Use novel-to-game quick to adapt this novel into a fully playable game.
+Recommend the target platform, genre, and engine from the source, and keep the first build to about 15 minutes.
+Let the player enter the world as an original character with a new playable route through its conflict.
 ```
 
-`quick` 会自动选择最有原著依据、也最适合做成完整游戏的方向；想在世界设计之前从三个方案里亲自选择，就使用 `director`。
+`quick` automatically selects the direction with the strongest source evidence and the clearest path to a complete game. Use `director` when you want to choose between three concepts before world design begins.
 
-## 它解决什么
+## What It Solves
 
-直接让模型“把这本书做成游戏”，经常只会得到换皮玩法或可点击的剧情摘要。NovelToGame 把最需要判断力的工作拆成几个明确阶段：
+Ask a model to “make this book into a game” and the result is often a generic reskin or a clickable plot summary. NovelToGame separates the work that requires real adaptation judgment:
 
-- **先锁产品边界**：平台、类型、目标体验、画风、分级、引擎和不可改写的要求；
-- **再找可玩的原著证据**：规则、动作、空间、角色意志、系统与关键视觉元素；
-- **让概念、关卡和美术各自负责**：实现阶段不能静默重做策划；
-- **以真实运行收尾**：启动、输入、状态变化、完整流程、结果、重开和目标分辨率或设备都必须留下证据。
+- **Lock product boundaries first:** platform, genre, target experience, art, rating, engine, and non-negotiable requirements;
+- **Find playable evidence in the source:** rules, verbs, spaces, character agency, systems, and key visual elements;
+- **Give concept, level design, and art separate ownership:** implementation may not silently redesign them;
+- **Finish with real execution evidence:** startup, input, state changes, complete run, outcome, restart, and target display or device.
 
-输入小说可以是任意语言；生成文件默认使用用户指定的语言，未指定时跟随对话语言，并保留必要的原文引证与术语表。
+Input novels may use any language. Generated files use the requested language, or the conversation language when unspecified, while preserving necessary quotations and one terminology table.
 
-## 安装
+## Install
 
 ### Agent Skills
 
-为你使用的 CLI 安装全部七个技能：
+Install all seven skills for the CLI you use:
 
-| Agent CLI | 安装命令 | 调用方式 |
+| Agent CLI | Install command | Invoke |
 |---|---|---|
 | Claude Code | `npx skills add worldwonderer/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
 | Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
-同时安装三端：
+Install all three adapters at once:
 
 ```bash
 npx skills add worldwonderer/novel-to-game -g -y -s '*' \
   -a claude-code -a codex -a kimi-code-cli
 ```
 
-克隆仓库后，三端也能发现项目内的七个技能。
+Cloning the repository also enables project-local discovery in all three CLIs.
 
-### 原生插件
+### Native Plugins
 
-Claude Code：
+Claude Code:
 
 ```text
 /plugin marketplace add worldwonderer/novel-to-game
@@ -90,14 +94,14 @@ Claude Code：
 /novel-to-game:novel-to-game quick
 ```
 
-Codex：
+Codex:
 
 ```bash
 codex plugin marketplace add worldwonderer/novel-to-game
 codex plugin add novel-to-game@novel-to-game-skills
 ```
 
-Kimi Code 0.27 或更高版本：
+Kimi Code 0.27 or newer:
 
 ```text
 /plugins install https://github.com/worldwonderer/novel-to-game
@@ -105,37 +109,37 @@ Kimi Code 0.27 或更高版本：
 /skill:novel-to-game quick
 ```
 
-## 流程
+## Pipeline
 
-总入口先确认 `PRODUCT_BRIEF.md`，再串起六个职责分离的阶段；验证失败后会回到构建阶段继续修复，直到证据满足门槛。
+The orchestrator confirms `PRODUCT_BRIEF.md`, then runs six stages with separate ownership. Failed QA returns to the build for another repair pass until the evidence clears the gate.
 
 ```mermaid
 flowchart LR
     classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
     classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
 
-    novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
-    orch --> 需求 --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
-    验证 -.->|未通过| 构建
+    novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
+    orch --> intake --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
+    qa -.->|fails| build
 ```
 
-需求阶段会锁定平台、实际交付方式、游戏类型与对标、美术方向、内容分级、核心幻想和引擎。下游必须遵守这些边界，不能在实现时悄悄换成更容易做的游戏。
+Requirements lock the platform, delivery runtime, genre and verified benchmarks, art direction, content rating, core fantasy, and engine. Downstream stages must honor those boundaries instead of switching to an easier game during implementation.
 
-## 七个技能
+## Seven Skills
 
-| 技能 | 职责 |
+| Skill | Purpose |
 |---|---|
-| `novel-to-game` | 总入口：需求确认、模式选择、阶段编排与进度恢复 |
-| `novel-game-analyze` | 提取规则、动作、空间、角色、系统与名场面，形成有引证的设定集 |
-| `game-concept` | 生成三个真正不同的方向，排除不合格方案后选出一个 |
-| `game-world-design` | 定义玩家体验目标、核心循环、世界响应、系统、关卡、失败与结果 |
-| `game-art-direction` | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
-| `game-build` | 压缩构建说明，驱动编码智能体实现可完整游玩的原型 |
-| `game-qa` | 用命令、状态、截图与实际游玩路径验证构建，不伪装主观结论 |
+| `novel-to-game` | Orchestrate requirements, mode selection, stage handoffs, and progress recovery |
+| `novel-game-analyze` | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
+| `game-concept` | Generate three materially different directions, reject invalid options, and choose one |
+| `game-world-design` | Define the target player experience, core loop, world response, systems, levels, failure, and outcomes |
+| `game-art-direction` | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
+| `game-build` | Compress a build brief and drive a coding agent to a fully playable implementation |
+| `game-qa` | Verify with commands, states, screenshots, and real play paths without pretending subjective certainty |
 
-## 产出
+## Output
 
-每次运行创建一个紧凑、自包含的改编工作区：
+Each run creates a compact, self-contained adaptation workspace:
 
 ```text
 game-adaptations/<project>/
@@ -150,37 +154,48 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-核心设计文档不绑定某个模型、平台或游戏引擎；构建阶段会按照已批准的目标平台选择合适实现。
+Core design documents do not depend on one model, platform, or game engine. The build stage selects an implementation for the approved target platform.
 
-## 示例项目
+## Example Projects
 
-### 《西游记》· 三借芭蕉扇
+### The Lost World · Project Plateau: Proof Before Dark
 
-这款回合制指令 RPG 从完整公版百回本中提炼五行、阵型、携宠和变化等玩法，让玩家用新的行动路线解决原作中的核心冲突，并完成一场多阶段 Boss 战。
+A first-person 3D field-photography game adapted from the complete public-domain novel. Observe a living Iguanodon family, capture distinct evidence on four glass plates, react to an aerial threat, and return to Fort Challenger with a defensible record.
 
-**[在线试玩](https://xiyouji.vibecoco.ai)** · [运行源码](examples/journey-to-the-west/build/app/) · [构建说明](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA 报告](examples/journey-to-the-west/qa/QA_REPORT.md)
+**[Play online](https://plateau.vibecoco.ai)** · [Runnable source](examples/project-plateau/build/app/) · [Build brief](examples/project-plateau/build/BUILD_BRIEF.md) · [QA report](examples/project-plateau/qa/QA_REPORT.md)
 
-| 战斗 | 碧波潭 | 主角面板 |
+| Dinosaur family | Recovered glass plates |
+|---|---|
+| ![](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | ![](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
+
+### Journey to the West · Three Borrowings of the Banana Fan
+
+A turn-based command RPG distilled from the complete 100-chapter public-domain text. The player uses elements, formations, a companion, and transformations to take a new playable route through the source conflict and complete a multi-stage boss encounter.
+
+**[Play online](https://xiyouji.vibecoco.ai)** · [Runnable source](examples/journey-to-the-west/build/app/) · [Build brief](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA report](examples/journey-to-the-west/qa/QA_REPORT.md)
+
+| Battle | Emerald Wave Pool | Hero panel |
 |---|---|---|
 | ![](examples/journey-to-the-west/screenshots/battle.jpg) | ![](examples/journey-to-the-west/screenshots/bibotan.jpg) | ![](examples/journey-to-the-west/screenshots/hero-panel.jpg) |
 
-### 《金瓶梅》· 风月总账
+### Jin Ping Mei · Ledger of Desire
 
-这款六日男性第一人称关系策略游戏改编自公版崇祯本。玩家白日经营钱、势与秘密，夜里推进三条独立关系线，次日面对人物和宅院对前一日选择的回应。
+A six-day, male-POV relationship strategy game adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day, pursue three independent relationships by night, and face how the household responds the following morning.
 
-**18+；亲密内容只有在关系选择与双方明确同意后才会出现。** **[在线试玩](https://jinpingmei.vibecoco.ai)** · [运行源码](examples/jin-ping-mei/build/app/) · [构建说明](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA 报告](examples/jin-ping-mei/qa/QA_REPORT.md)
+**18+; intimate content appears only after relationship choices and explicit consent from both parties.** **[Play online](https://jinpingmei.vibecoco.ai)** · [Runnable source](examples/jin-ping-mei/build/app/) · [Build brief](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA report](examples/jin-ping-mei/qa/QA_REPORT.md)
 
-| 宅院事件 | 次日清晨 | 中秋冲突 | 专一路线结局 |
+| Household event | The next morning | Banquet conflict | Exclusive-route ending |
 |---|---|---|---|
 | ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
 
-> 公开 README 只展示安全截图；年龄确认后的 18+ 路线 CG 不嵌入此页。
+> The public README embeds safe screenshots only. 18+ route CGs remain behind the in-game age gate.
 
-## 参与贡献
+## Contributing
 
-欢迎提交可复现的 Bug、有证据的 Skill 能力缺口和具有新改编价值的示例提案。
-请先阅读 [贡献指南](CONTRIBUTING.md)，并使用仓库的结构化 Issue 与 PR 模板。
+Reproducible bugs, evidenced skill gaps, and example proposals with a distinct
+adaptation lesson are welcome. Read the [contribution guide](CONTRIBUTING.md)
+and use the repository's structured issue and pull request templates.
 
-## 致谢
+## Acknowledgments
 
 [linux.do](https://linux.do)

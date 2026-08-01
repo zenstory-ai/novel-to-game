@@ -1,0 +1,27 @@
+{
+  "name": "project-plateau-promo-video",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Reproducible Remotion project for the Project Plateau launch video.",
+  "scripts": {
+    "assets": "node scripts/prepare-assets.mjs",
+    "voiceover": "node scripts/generate-voiceover.mjs",
+    "voiceover:remix": "node scripts/generate-voiceover.mjs --reuse-source",
+    "studio": "npm run assets && remotion studio src/index.jsx",
+    "render": "npm run assets && remotion render src/index.jsx ProjectPlateauPromo out/project-plateau-promo-36s-remotion.mp4 --codec=h264 --crf=18 --audio-codec=aac && node scripts/finalize-output.mjs",
+    "compress:github": "node scripts/compress-github-output.mjs",
+    "render:frames": "npm run assets && node scripts/render-review-frames.mjs",
+    "verify": "node scripts/verify-output.mjs",
+    "verify:github": "node scripts/verify-output.mjs --github"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.503",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "remotion": "4.0.503"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -33,4 +33,4 @@ python3 -m unittest discover -s tests -v
 - [ ] No dependency was added without an explicit product need.
 - [ ] Repository validation and unit tests pass, or every missing check is marked `NOT_RUN: <reason>`.
 - [ ] Runtime claims include direct evidence; subjective claims remain clearly subjective.
-- [ ] `README.md` and `README_EN.md` remain structurally aligned when either changes.
+- [ ] `README.md` and `README_ZH.md` remain structurally aligned when either changes.

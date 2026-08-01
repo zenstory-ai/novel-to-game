@@ -2,7 +2,7 @@
 
 Requirements: Node.js `>=22.12.0`, npm and a desktop browser with WebGL2.
 
-Play the public preview at <https://plateau.vibecoco.ai>.
+Play the published example at <https://plateau.vibecoco.ai>.
 
 ```bash
 npm ci
@@ -134,7 +134,7 @@ when available. It saves JPEGs, timings, render counters and a JSON report under
 the corresponding `../evidence/s*/` directory. S3 through S10 write separate
 state and browser JSON records for every visual checkpoint.
 
-This repository checkpoint is playable locally and on the public preview, and
+This repository checkpoint is playable locally and in the published example, and
 passes the automated build handoff. The staged evidence proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
@@ -173,7 +173,7 @@ one shot and its creek callback; Panic reaches the second-contact failure after
 spending both rounds. All three use keyboard/mouse movement without teleport or
 direct-time hooks. The same runner repeats the complete Strong route under
 Chromium achromatopsia and returns to a clean order. This establishes repeatable
-reference paths. The same paths also pass against the anonymous HTTPS preview,
+reference paths. The same paths also pass against the anonymous HTTPS build,
 but automated state evidence does not replace independent first-time perception,
 three external tester records or final family animation review.
 S9 gives the two-adult/three-young
@@ -209,5 +209,6 @@ design-invariant audit. See [`../../qa/QA_REPORT.md`](../../qa/QA_REPORT.md) and
 first-time sessions and perception review now have
 executable protocols in [`../../qa/PLAYTEST_PROTOCOL.md`](../../qa/PLAYTEST_PROTOCOL.md)
 and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md).
-Their raw records remain open; the public-host smoke is recorded in
+The maintainer reports three successful informal first-time sessions, but their
+protocol-level raw records remain open; the public-host smoke is recorded in
 [`../../qa/evidence/public-host/report.json`](../../qa/evidence/public-host/report.json).

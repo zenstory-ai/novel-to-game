@@ -53,7 +53,7 @@ ideas belong in [GitHub Discussions](https://github.com/worldwonderer/novel-to-g
 - Preserve source-language quotations and culturally specific terms. When the
   output language differs, maintain one terminology table instead of replacing
   concepts with generic genre tropes.
-- Keep `README.md` and `README_EN.md` structurally aligned.
+- Keep `README.md` and `README_ZH.md` structurally aligned.
 - Do not describe subjective fun, balance, visual quality, or adaptation quality
   as deterministically verified.
 

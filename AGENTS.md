@@ -28,7 +28,7 @@ and reusable workflow knowledge, not a bundled game engine.
     `example.json`, and its planning artifacts, source provenance and in-game UI text
     follow that declaration. `tests/test_validate_repo.py` only requires Chinese
     headings for examples that declare a `zh*` language.
-  - **README**: `README.md` Chinese (the default), `README_EN.md` English, both kept
+  - **README**: `README.md` English (the default), `README_ZH.md` Chinese, both kept
     structurally identical.
 - Treat repository language and generated-project language separately. Accept
   novels in any language; generated artifacts follow the user's requested

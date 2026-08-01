@@ -11,7 +11,7 @@ on:
     paths:
       - 'examples/jin-ping-mei/build/app/**'
       - 'examples/journey-to-the-west/build/app/**'
-      - 'game-adaptations/project-plateau/build/app/**'
+      - 'examples/project-plateau/build/app/**'
 
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
             jttw:
               - 'examples/journey-to-the-west/build/app/**'
             plateau:
-              - 'game-adaptations/project-plateau/build/app/**'
+              - 'examples/project-plateau/build/app/**'
 
   jinpingmei:
     needs: changes
@@ -78,6 +78,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: npm i -g vercel@56.4.0
-      - name: Deploy Project Plateau preview to production
-        working-directory: game-adaptations/project-plateau/build/app
+      - name: Deploy Project Plateau to production
+        working-directory: examples/project-plateau/build/app
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"

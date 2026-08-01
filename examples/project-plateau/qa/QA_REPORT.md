@@ -2,7 +2,7 @@
 
 ## Verdict
 
-**Local automated build handoff: PASS. Public-host smoke: PASS. Public release: NO-GO.**
+**Local automated build handoff: PASS. Public-host smoke: PASS. Example publication: MAINTAINER-GO.**
 
 The authoritative run completed every registered suite, a same-run input-only
 Strong path from clean field order through result and restart, a second complete
@@ -10,10 +10,13 @@ Strong path under Chromium achromatopsia, and 41 direct state/browser/visual
 checkpoints. No local blocker, uncaught browser error, external runtime host,
 failed deterministic outcome or budget regression was observed.
 
-Release remains closed because first-time player records and independent
-anatomy/motion/composition and colour-cue review have not run. The anonymous
-public-host path has passed. The remaining items are evidence gaps, not inferred
-passes.
+On 2026-08-01 the maintainer reported three successful informal first-time
+sessions and explicitly accepted the project for publication under `examples/`.
+The sessions did not retain the protocol's raw environment, timestamps, paths,
+results or verbatim answers, so the specific first-time criteria remain
+unverified in this repository. Independent anatomy/motion/composition and
+colour-cue review also remains `NOT_RUN`. Publication is a product decision
+with disclosed evidence gaps, not an inferred QA pass.
 
 ## Authoritative run
 
@@ -110,22 +113,23 @@ comprehension or subjective visual questions.
 
 First-time players can join through the
 [public playtest discussion](https://github.com/worldwonderer/novel-to-game/discussions/7).
-Discussion replies do not clear a gate until they satisfy the raw-record fields
-and decision rule in `PLAYTEST_PROTOCOL.md`.
+Informal play reports and discussion replies do not clear an evidence-qualified
+gate until they satisfy the raw-record fields and decision rule in
+`PLAYTEST_PROTOCOL.md`.
 Independent 3D, animation, illustration, or game-art reviewers can use the
 [visual-review discussion](https://github.com/worldwonderer/novel-to-game/discussions/8);
 their findings still require the live-run evidence and disposition defined by
 `PERCEPTION_REVIEW_PROTOCOL.md`.
 
-| Gate | Status | Severity before public release | Required next evidence |
+| Gate | Status | Publication disposition | Required next evidence |
 |---|---|---|---|
-| Three first-time players recognize 3D action/exploration and not a text/VN presentation | NOT_RUN | major | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |
-| First meaningful interaction within 90 seconds and result within 15 minutes | NOT_RUN | major | Timestamped, uncoached player records using the same protocol |
-| Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Verbatim post-run answers linked to each raw session |
-| Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), [reviewer intake](https://github.com/worldwonderer/novel-to-game/discussions/8), reviewer context, frame-level findings and disposition |
-| Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
+| Three first-time players recognize 3D action/exploration and not a text/VN presentation | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |
+| First meaningful interaction within 90 seconds and result within 15 minutes | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Timestamped, uncoached player records using the same protocol |
+| Players can restate scout/proof/extract rather than “shoot dinosaurs” | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Verbatim post-run answers linked to each raw session |
+| Independent anatomy, motion and composition review | NOT_RUN | accepted risk for example publication | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), [reviewer intake](https://github.com/worldwonderer/novel-to-game/discussions/8), reviewer context, frame-level findings and disposition |
+| Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | accepted risk for example publication | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
 | Anonymous public HTTPS load, play, result and restart | PASS | cleared | [`evidence/public-host/report.json`](evidence/public-host/report.json): clean Chrome context, source fingerprint, 46 real-input steps, Strong/Mixed/Panic plus achromatopsia Strong, result and restart; zero console errors or third-party runtime hosts |
-| Platform upload/transcode for short media | NOT_RUN | release-blocking for that attachment | Uploaded file hash and playback check |
+| Platform upload/transcode for short media | NOT_RUN | not required for the hosted example; still blocks claiming an uploaded attachment | Uploaded file hash and playback check |
 
 No subjective fun, balance, audio-mix, anatomy, motion, composition or
 colour-cue readability claim is marked PASS. Numeric image floors only catch
@@ -133,7 +137,7 @@ gross occlusion, flat exposure or missing state.
 
 ## Reproduce
 
-From `game-adaptations/project-plateau/build/app/`:
+From `examples/project-plateau/build/app/`:
 
 ```bash
 npm ci

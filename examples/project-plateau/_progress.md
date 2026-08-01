@@ -2,11 +2,11 @@
 
 - Source: Project Gutenberg eBook #139, exact local bytes recorded in `source/SOURCE.md`
 - Mode: `quick`
-- Current stage: `build`
-- Completed stages: `intake`, `analyze`, `concept`, `world-design`, `art-direction`
+- Current stage: `complete`
+- Completed stages: `intake`, `analyze`, `concept`, `world-design`, `art-direction`, `build`, `qa`
 - Selected concept: `Proof Before Dark` in `concepts/CONCEPT.md`
 - Frozen build contract: `build/BUILD_BRIEF.md`
-- Updated: 2026-07-31 PT
+- Updated: 2026-08-01 PT
 - Analysis coverage: `analysis/_coverage.md`; source 16 / success 16 / failed 0
 
 `gate:intake pass` — all eleven product dimensions have values; user-confirmed 3D/English/genre intent and the bounded plan are separated from recorded implementation assumptions.
@@ -45,14 +45,18 @@
 
 `media:strong-run pass` — `build/app/test/capture_demo_clip.py` records one continuous input-only Strong route at `1280×800`, then uniformly time-compresses that uncut window into exact 30-second and 15-second delivery versions. Both local MP4s pass 14/14 container, H.264 High Profile, `yuv420p`, scan, size, aspect, 30 FPS, duration, file-size, silent-track, non-black-first-frame and fast-start checks. The raw/derived videos stay out of Git; `build/media/clip/marks.json` and `manifest.json` retain their hashes, source fingerprint, every capture mark and full probe results, while a ten-frame contact sheet and crop-only 1280×640 share card remain reviewable in the repository. These accelerated delivery files do not replace S8 timing evidence.
 
-`verification:authoritative pass` — source commit `8793fb9` adds the colour-vision evidence contract to the declared `npm run verify` handoff. The 509.894-second clean invocation discovered 15 pass/fail files, classified two non-suite tools, ran seven stable suites and sixteen commands, regenerated S0–S10 against fingerprint `e99883ce…`, and wrote `qa/verification.json`, `qa/evidence/verify.log` and a 10/10 design-invariant audit. The full-colour and achromatopsia Strong routes each bind clean order, proof, glade, covered return, result and restart; the other three emulated modes bind every protocol checkpoint. Local automation is green; independent first-time/perception records and public-host smoke remain NOT_RUN, so release stays closed.
+`media:launch-video pass` — `build/media/remotion/` wraps the complete 30-second Strong delivery capture with a source-grounded English premise, five observable-action captions and a play/repository CTA. V3 keeps the V2 quotation, transitions and caption hierarchy, but replaces the slow default narration with Fish Audio `s2.1-pro-free` plus the public young `Energetic Male` model at 1.14 prosody speed. The generator now preserves short takes instead of stretching them to fill the timeline, uses a 30.8-second overrun ceiling, and ducks the procedural sound bed under speech. The credential remained environment-only; the revised 30.81-second WAV hash is `e44e4c2571de1f37c4ea8933b337d7e6d2bd8d71a86276c654a4069e98c75a94`. The finalized 36.000-second 1920×1080 H.264 High Profile, 30 FPS, `yuv420p`, BT.709 limited-range, AAC stereo, fast-start MP4 is 19.31 MB with SHA-256 `f8431dc6b9ea3399151e966078a08b354a4fef14dba8a218cb2bb40e47775714`; its mix measures -19.9 dB mean / -4.6 dB peak. A separate slow two-pass H.264 GitHub delivery preserves 1080p at 9.37 MB with SHA-256 `baaa1be4e9306dc6a9b5935b36124074db9a911b04d1bb414f7d1123a92e6fbc`; against the master it measures SSIM 0.993883 and average PSNR 46.98 dB. The ignored delivery artifacts remain understandable muted and do not claim independent visual or subjective voice approval.
+
+`verification:authoritative pass` — source commit `8793fb9` adds the colour-vision evidence contract to the declared `npm run verify` handoff. The 509.894-second clean invocation discovered 15 pass/fail files, classified two non-suite tools, ran seven stable suites and sixteen commands, regenerated S0–S10 against fingerprint `e99883ce…`, and wrote `qa/verification.json`, `qa/evidence/verify.log` and a 10/10 design-invariant audit. The full-colour and achromatopsia Strong routes each bind clean order, proof, glade, covered return, result and restart; the other three emulated modes bind every protocol checkpoint. Local automation and the later public-host smoke are green; independent evidence-qualified first-time and perception records remain open.
 
 `qa:colour-vision-technical-matrix pass` — S8 supplies full-colour and achromatopsia complete input routes; S10 supplies order, glade, attack/defense and result checkpoints for protanopia, deuteranopia and tritanopia. All browser records name the emulation mode, retain state/visual pairs and preserve the no-external-host boundary. This closes the deterministic evidence gap only; an independent reviewer still has to judge whether every cue is readable.
 
 `qa:independent-protocols ready` — `qa/PLAYTEST_PROTOCOL.md` freezes the three-participant clean-context script, observer boundaries, raw-record schema and falsifiable first-time thresholds. `qa/PERCEPTION_REVIEW_PROTOCOL.md` freezes an independent anatomy/motion/composition review, full-colour plus achromatopsia routes and the three additional colour-vision checkpoint sets. No result is inferred from writing the protocols: participant files and the independent review remain NOT_RUN.
 
+`release:example maintainer-go` — on 2026-08-01 the maintainer reported that three friends had played the published build with good results and explicitly accepted promotion into `examples/`. Those informal sessions did not retain the protocol's timestamps, paths or verbatim answers, so they support the publication decision but are not relabelled as repository-verifiable QA. Independent perception and colour-cue review remains open and is disclosed in `qa/QA_REPORT.md`.
+
 ## Notes
 
-- The work-in-progress stays under `game-adaptations/` until the complete example contract is satisfied; it must not be listed as a shipped example before build and QA gates pass.
+- The published reference project lives under `examples/project-plateau/`; promotion records a maintainer product decision, not a fabricated pass for evidence that was not retained.
 - S0 technical work may establish renderer/input/performance feasibility in parallel, but it may not invent creature appearance, final topology, or encounter rules before concept/world/art ownership completes.
 - No downstream stage may use modern *The Lost World* adaptation imagery or audio as source material.
