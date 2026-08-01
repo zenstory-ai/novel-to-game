@@ -99,9 +99,9 @@
     "state": "distant",
     "response": "orbit",
     "position": {
-      "x": -25.96,
-      "y": 23.13,
-      "z": 44.46
+      "x": -25.92,
+      "y": 23.18,
+      "z": 44.24
     }
   },
   "familyVisual": {
@@ -169,17 +169,17 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.933
+        "at": 14.917
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 16.917
+        "at": 16.907
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.917
+        "at": 16.907
       },
       {
         "cue": "search",
@@ -194,57 +194,57 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 26.933
+        "at": 26.939
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 27.008
+        "at": 27.013
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 28.992
+        "at": 28.997
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 28.992
+        "at": 28.997
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 29.077
+        "at": 29.083
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 29.152
+        "at": 29.157
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 31.136
+        "at": 31.152
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 31.493
+        "at": 31.509
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 37.493
+        "at": 37.509
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 43.493
+        "at": 43.499
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 51.536
+        "at": 51.552
       }
     ]
   },
@@ -287,6 +287,6 @@
     1440,
     900
   ],
-  "firstRenderedAt": 1897.0999999046326,
+  "firstRenderedAt": 1621.7000000476837,
   "recentMedianFrameMs": 8.3
 }

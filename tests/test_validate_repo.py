@@ -522,6 +522,24 @@ class RepositoryValidationTests(unittest.TestCase):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIsNone(re.search(r"不是[^。\n]{0,80}[，,]?\s*而是", readme))
         self.assertNotIn("活体家庭取景", readme)
+        self.assertIn("## 在线试玩", readme)
+        self.assertNotIn("## 先玩游戏", readme)
+
+        canonical_demo = "https://plateau.vibecoco.ai"
+        public_preview_docs = {
+            "README.md": readme,
+            "README_EN.md": (ROOT / "README_EN.md").read_text(encoding="utf-8"),
+            "RUN.md": (
+                ROOT / "game-adaptations/project-plateau/build/app/RUN.md"
+            ).read_text(encoding="utf-8"),
+            "QA_REPORT.md": (
+                ROOT / "game-adaptations/project-plateau/qa/QA_REPORT.md"
+            ).read_text(encoding="utf-8"),
+        }
+        for name, content in public_preview_docs.items():
+            with self.subTest(public_preview_doc=name):
+                self.assertIn(canonical_demo, content)
+                self.assertNotIn("https://project-plateau.vercel.app", content)
 
     def test_skill_validator_rejects_chinese_first_description(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

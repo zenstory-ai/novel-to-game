@@ -47,7 +47,7 @@ major`.
 | Built payload | `602904` raw bytes; `154906` gzip bytes | PASS vs `50/20 MiB` |
 | First local no-cache frame | `2198.3 ms` at simulated 25 Mbps | PASS vs `8000 ms` locally |
 | Runtime requests | only `127.0.0.1:4173`; no external host | PASS |
-| Public preview | `https://project-plateau.vercel.app`; Google Chrome `150.0.7871.187` | PASS; anonymous HTTPS load, full input routes, result and restart; no console error or third-party runtime host |
+| Public preview | `https://plateau.vibecoco.ai`; Google Chrome `150.0.7871.187` | PASS; anonymous HTTPS load, full input routes, result and restart; no console error or third-party runtime host |
 
 The loading measurement uses Chrome DevTools throttling against local Vite. It
 does not measure public-host cold-cache timing. The separate

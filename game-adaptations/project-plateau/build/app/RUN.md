@@ -2,7 +2,7 @@
 
 Requirements: Node.js `>=22.12.0`, npm and a desktop browser with WebGL2.
 
-Play the public preview at <https://project-plateau.vercel.app>.
+Play the public preview at <https://plateau.vibecoco.ai>.
 
 ```bash
 npm ci
@@ -81,7 +81,7 @@ Run the same paths against the anonymous HTTPS deployment while keeping its
 evidence separate from the authoritative local record:
 
 ```bash
-BASE_URL=https://project-plateau.vercel.app \
+BASE_URL=https://plateau.vibecoco.ai \
 PLATEAU_EVIDENCE_DIR=../../qa/evidence/public-host \
 python3 test/qa_s8.py
 ```
