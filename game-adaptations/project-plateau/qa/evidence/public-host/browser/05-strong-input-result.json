@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    "S along the complete return to Fort"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "visionMode": "full-colour",
+  "url": "https://project-plateau.vercel.app/?qa=s8",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "project-plateau.vercel.app"
+  ],
+  "capturedAtUnixMs": 1785542482430
+}

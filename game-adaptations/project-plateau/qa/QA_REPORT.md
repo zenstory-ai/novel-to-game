@@ -2,7 +2,7 @@
 
 ## Verdict
 
-**Local automated build handoff: PASS. Public release: NO-GO.**
+**Local automated build handoff: PASS. Public-host smoke: PASS. Public release: NO-GO.**
 
 The authoritative run completed every registered suite, a same-run input-only
 Strong path from clean field order through result and restart, a second complete
@@ -10,9 +10,10 @@ Strong path under Chromium achromatopsia, and 41 direct state/browser/visual
 checkpoints. No local blocker, uncaught browser error, external runtime host,
 failed deterministic outcome or budget regression was observed.
 
-Release remains closed because first-time player records, independent
-anatomy/motion/composition and colour-cue review, and public anonymous-host
-loading have not run. These are evidence gaps, not inferred passes.
+Release remains closed because first-time player records and independent
+anatomy/motion/composition and colour-cue review have not run. The anonymous
+public-host path has passed. The remaining items are evidence gaps, not inferred
+passes.
 
 ## Authoritative run
 
@@ -46,9 +47,12 @@ major`.
 | Built payload | `602904` raw bytes; `154906` gzip bytes | PASS vs `50/20 MiB` |
 | First local no-cache frame | `2198.3 ms` at simulated 25 Mbps | PASS vs `8000 ms` locally |
 | Runtime requests | only `127.0.0.1:4173`; no external host | PASS |
+| Public preview | `https://project-plateau.vercel.app`; Google Chrome `150.0.7871.187` | PASS; anonymous HTTPS load, full input routes, result and restart; no console error or third-party runtime host |
 
 The loading measurement uses Chrome DevTools throttling against local Vite. It
-does not prove public-host DNS, TLS, CDN or cold-cache behavior.
+does not measure public-host cold-cache timing. The separate
+[`public-host`](evidence/public-host/report.json) run proves DNS/TLS reachability,
+clean-context loading and complete play against the deployed assets.
 
 ## Suite discovery and execution
 
@@ -111,7 +115,7 @@ comprehension or subjective visual questions.
 | Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Verbatim post-run answers linked to each raw session |
 | Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), reviewer context, frame-level findings and disposition |
 | Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
-| Anonymous public HTTPS load, play, result and restart | NOT_RUN | release-blocking | Public URL, cold-load/browser log and clean-context smoke |
+| Anonymous public HTTPS load, play, result and restart | PASS | cleared | [`evidence/public-host/report.json`](evidence/public-host/report.json): clean Chrome context, source fingerprint, 46 real-input steps, Strong/Mixed/Panic plus achromatopsia Strong, result and restart; zero console errors or third-party runtime hosts |
 | Platform upload/transcode for short media | NOT_RUN | release-blocking for that attachment | Uploaded file hash and playback check |
 
 No subjective fun, balance, audio-mix, anatomy, motion, composition or

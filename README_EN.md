@@ -13,6 +13,21 @@ The project requirements choose the target platform. A playable build may be a P
 
 ## Play the Games
 
+### 3D development preview · Project Plateau: Proof Before Dark
+
+This English reference project uses the same pipeline to build a real-time **first-person 3D field-photography game**. Cross a connected plateau, observe a family of Iguanodon, avoid an aerial threat, capture evidence on four glass plates, and bring the surviving plates back to camp.
+
+| Observe the dinosaur family | Bring the glass plates home |
+|---|---|
+| [![Iguanodon family through the field camera](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://project-plateau.vercel.app) | [![Four recovered field plates](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://project-plateau.vercel.app) |
+| Two adults, three young, a moving aerial threat, and an operable period camera | Four views captured along the route remain on the plates and appear in the final record |
+
+**[Play online](https://project-plateau.vercel.app)** · [Run locally](game-adaptations/project-plateau/build/app/RUN.md) · [Playable source](game-adaptations/project-plateau/build/app/) · [Build devlog](game-adaptations/project-plateau/DEVLOG.md) · [Complete planning files](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Authoritative verification](game-adaptations/project-plateau/qa/verification.json) · [Public-host evidence](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [Media pack](game-adaptations/project-plateau/build/media/)
+
+The public preview has passed anonymous HTTPS load, complete play, result, and restart checks. Independent first-time and visual reviews remain open, so the project keeps its “in development” label.
+
+### Released examples
+
 | Journey to the West · Three Borrowings of the Banana Fan | Jin Ping Mei · Ledger of Desire |
 |---|---|
 | [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
@@ -20,19 +35,6 @@ The project requirements choose the target platform. A playable build may be a P
 | **[Play online](https://xiyouji.vibecoco.ai)** · [Complete project](examples/journey-to-the-west/) · [Source provenance](examples/journey-to-the-west/source/SOURCE.md) | **[Play online](https://jinpingmei.vibecoco.ai)** · [Complete project](examples/jin-ping-mei/) · [Source provenance](examples/jin-ping-mei/source/SOURCE.md) |
 
 Both released examples include source provenance, product constraints, adaptation analysis, concept selection, world and art direction, a build brief, and runnable source.
-
-### In development · Project Plateau: Proof Before Dark
-
-The next English reference project uses the same pipeline to build a real-time **first-person 3D field-photography game**. Cross a connected plateau, observe a family of Iguanodon, avoid an aerial threat, capture evidence on four glass plates, and bring the surviving plates back to camp.
-
-| Observe the dinosaur family | Bring the glass plates home |
-|---|---|
-| [![Iguanodon family through the field camera](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![Four recovered field plates](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
-| Two adults, three young, a moving aerial threat, and an operable period camera | Four views captured along the route remain on the plates and appear in the final record |
-
-**[Run locally](game-adaptations/project-plateau/build/app/RUN.md)** · [Playable source](game-adaptations/project-plateau/build/app/) · [Build devlog](game-adaptations/project-plateau/DEVLOG.md) · [Complete planning files](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Authoritative verification](game-adaptations/project-plateau/qa/verification.json) · [Browser evidence](game-adaptations/project-plateau/build/evidence/s10/report.json) · [Media pack](game-adaptations/project-plateau/build/media/)
-
-This repository contains the current development build. Independent first-time review and public-host verification remain open before a hosted release.
 
 ## Quick Start
 

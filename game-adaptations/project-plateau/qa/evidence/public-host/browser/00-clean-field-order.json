@@ -1,0 +1,16 @@
+{
+  "inputs": [
+    "Enter the basin"
+  ],
+  "viewport": [
+    1440,
+    900
+  ],
+  "visionMode": "full-colour",
+  "url": "https://project-plateau.vercel.app/?qa=s8",
+  "consoleErrorsAtCheckpoint": [],
+  "requestHostsAtCheckpoint": [
+    "project-plateau.vercel.app"
+  ],
+  "capturedAtUnixMs": 1785542430470
+}

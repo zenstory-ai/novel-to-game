@@ -2,6 +2,8 @@
 
 Requirements: Node.js `>=22.12.0`, npm and a desktop browser with WebGL2.
 
+Play the public preview at <https://project-plateau.vercel.app>.
+
 ```bash
 npm ci
 npm run start -- --host 127.0.0.1
@@ -75,6 +77,15 @@ or direct-time shortcuts, exact outcomes and clean restarts with:
 npm run verify:s8
 ```
 
+Run the same paths against the anonymous HTTPS deployment while keeping its
+evidence separate from the authoritative local record:
+
+```bash
+BASE_URL=https://project-plateau.vercel.app \
+PLATEAU_EVIDENCE_DIR=../../qa/evidence/public-host \
+python3 test/qa_s8.py
+```
+
 Run the living-family and physical-proof checkpoint with distinct young-play
 and branch-pull frames, renderer-derived monochrome plates, a four-view result
 board and clean image reset with:
@@ -123,8 +134,8 @@ when available. It saves JPEGs, timings, render counters and a JSON report under
 the corresponding `../evidence/s*/` directory. S3 through S10 write separate
 state and browser JSON records for every visual checkpoint.
 
-This repository checkpoint is locally playable and passes the automated build
-handoff; it is not a hosted release. The staged evidence proves the approved local
+This repository checkpoint is playable locally and on the public preview, and
+passes the automated build handoff. The staged evidence proves the approved local
 Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
 viewport support, player controller, foundation collision, lifecycle and
 performance baseline, plus connected zone history and four primitive threat
@@ -162,9 +173,9 @@ one shot and its creek callback; Panic reaches the second-contact failure after
 spending both rounds. All three use keyboard/mouse movement without teleport or
 direct-time hooks. The same runner repeats the complete Strong route under
 Chromium achromatopsia and returns to a clean order. This establishes repeatable
-reference paths, but automated state evidence does not replace independent
-first-time perception, three external tester records, final family animation
-review or public-host loading.
+reference paths. The same paths also pass against the anonymous HTTPS preview,
+but automated state evidence does not replace independent first-time perception,
+three external tester records or final family animation review.
 S9 gives the two-adult/three-young
 family distinct graze, young-play and branch-pull roles, and records the two
 behavior windows under separate frame keys. Every shutter now preserves the
@@ -197,5 +208,6 @@ design-invariant audit. See [`../../qa/QA_REPORT.md`](../../qa/QA_REPORT.md) and
 [`../../qa/verification.json`](../../qa/verification.json). Independent
 first-time sessions and perception review now have
 executable protocols in [`../../qa/PLAYTEST_PROTOCOL.md`](../../qa/PLAYTEST_PROTOCOL.md)
-and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md);
-their raw records and the public-host smoke remain open.
+and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md).
+Their raw records remain open; the public-host smoke is recorded in
+[`../../qa/evidence/public-host/report.json`](../../qa/evidence/public-host/report.json).

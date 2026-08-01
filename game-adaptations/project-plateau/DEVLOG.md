@@ -5,8 +5,8 @@ Project Plateau is an English reference adaptation of Arthur Conan Doyle's
 a connected plateau, collect photographic proof on four glass plates, survive
 the return route, and bring the surviving record back to Fort Challenger.
 
-It remains under `game-adaptations/` while independent playtests, perception
-review, and public-host checks are open. Released projects move into
+It remains under `game-adaptations/` while independent playtests and perception
+review are open. The anonymous public-host check has passed. Released projects move into
 `examples/` only with their runnable source, provenance, planning artifacts,
 and completed release evidence.
 
@@ -112,15 +112,19 @@ Automation establishes deterministic state, input, lifecycle, performance, and
 gross visual floors. It cannot establish first-time comprehension, subjective
 comfort, anatomy quality, composition quality, or colour-cue readability.
 
+The public preview now loads over anonymous HTTPS and completes the same
+keyboard/mouse Strong, Mixed, Panic, achromatopsia, result, and restart paths.
+The compact [public-host record](qa/evidence/public-host/report.json) preserves
+the deployment, source fingerprint, full input trace, route metrics, console and
+request-host checks, plus clean-start/result/restart frames.
+
 The public release remains closed until the repository contains:
 
 - three raw first-time sessions using the
   [playtest protocol](qa/PLAYTEST_PROTOCOL.md);
 - an independent frame-level review using the
   [perception protocol](qa/PERCEPTION_REVIEW_PROTOCOL.md);
-- an anonymous public-host cold load, complete play path, result, and restart
-  smoke record.
 
-Those open gates are recorded as `NOT_RUN` in the
-[QA report](qa/QA_REPORT.md). The current files are a reviewable development
-build, not a claim that the release has passed.
+Those human-review gates remain `NOT_RUN` in the [QA report](qa/QA_REPORT.md).
+The current files are a reviewable public development build, not a claim that
+the release has passed.

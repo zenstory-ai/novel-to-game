@@ -11,7 +11,22 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 [English](README_EN.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出) · [参与贡献](CONTRIBUTING.md)
 
-## 先玩成品
+## 先玩游戏
+
+### 3D 开发预览 · Project Plateau: Proof Before Dark
+
+这份英文参考项目用同一套流程制作了一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察一群共同生活的禽龙，躲避空中威胁，用四张玻璃底片拍下证据，再把完好的底片带回营地。
+
+| 观察恐龙一家 | 带回营地的玻璃底片 |
+|---|---|
+| [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://project-plateau.vercel.app) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://project-plateau.vercel.app) |
+| 两只成年禽龙、三只幼体、会移动的空中威胁，以及可以实际操作的老式相机 | 途中拍到的四个画面会保存在玻璃底片上，并出现在最终记录中 |
+
+**[在线试玩](https://project-plateau.vercel.app)** · [本地运行](game-adaptations/project-plateau/build/app/RUN.md) · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [公网验证](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
+
+公开预览已经通过匿名 HTTPS 加载、完整游玩、结局和重开验证。独立首次体验与画面审查仍在进行，因此当前保留“开发中”标记。
+
+### 已发布示例
 
 | 《西游记》· 三借芭蕉扇 | 《金瓶梅》· 风月总账 |
 |---|---|
@@ -20,19 +35,6 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 | **[在线试玩](https://xiyouji.vibecoco.ai)** · [完整项目文件](examples/journey-to-the-west/) · [原著出处](examples/journey-to-the-west/source/SOURCE.md) | **[在线试玩](https://jinpingmei.vibecoco.ai)** · [完整项目文件](examples/jin-ping-mei/) · [原著出处](examples/jin-ping-mei/source/SOURCE.md) |
 
 两份已发布示例都包含原著来源、产品约束、游戏化拆解、方案选择、世界与美术设计、构建说明以及可运行源码。
-
-### 开发中 · Project Plateau: Proof Before Dark
-
-下一份英文参考项目正在用同一流程制作一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察一群共同生活的禽龙，躲避空中威胁，用四张玻璃底片拍下证据，再把完好的底片带回营地。
-
-| 观察恐龙一家 | 带回营地的玻璃底片 |
-|---|---|
-| [![通过野外相机观察禽龙家庭](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](game-adaptations/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | [![四张带回营地的野外底片](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](game-adaptations/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
-| 两只成年禽龙、三只幼体、会移动的空中威胁，以及可以实际操作的老式相机 | 途中拍到的四个画面会保存在玻璃底片上，并出现在最终记录中 |
-
-**[本地运行](game-adaptations/project-plateau/build/app/RUN.md)** · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [浏览器证据](game-adaptations/project-plateau/build/evidence/s10/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
-
-当前展示的是仓库中的开发版本，尚未公开托管；独立首次体验审查和公网环境验证仍待完成。
 
 ## 快速开始
 

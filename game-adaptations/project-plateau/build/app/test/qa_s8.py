@@ -16,7 +16,9 @@ from playwright.sync_api import Page, sync_playwright
 
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
-EVIDENCE = BUILD / "evidence" / "s8"
+EVIDENCE = Path(
+    os.environ.get("PLATEAU_EVIDENCE_DIR", BUILD / "evidence" / "s8")
+).expanduser().resolve()
 STATE_DIR = EVIDENCE / "state"
 BROWSER_DIR = EVIDENCE / "browser"
 BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
@@ -27,7 +29,8 @@ def start_server() -> subprocess.Popen[str] | None:
     parsed = urlparse(BASE_URL)
     with socket.socket() as probe:
         try:
-            probe.connect((parsed.hostname or "127.0.0.1", parsed.port or 4173))
+            default_port = 443 if parsed.scheme == "https" else 4173
+            probe.connect((parsed.hostname or "127.0.0.1", parsed.port or default_port))
             return None
         except OSError:
             pass
@@ -68,6 +71,13 @@ def snapshot(page: Page) -> dict[str, object]:
     return page.evaluate("window.__projectPlateau.snapshot()")
 
 
+def evidence_reference(path: Path) -> str:
+    try:
+        return path.relative_to(BUILD.parent).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def run() -> dict[str, object]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     BROWSER_DIR.mkdir(parents=True, exist_ok=True)
@@ -102,10 +112,10 @@ def run() -> dict[str, object]:
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
-            state_relative = f"build/evidence/s8/state/{identifier}.json"
-            browser_relative = f"build/evidence/s8/browser/{identifier}.json"
-            visual_relative = f"build/evidence/s8/{identifier}.jpg"
-            (STATE_DIR / f"{identifier}.json").write_text(
+            state_path = STATE_DIR / f"{identifier}.json"
+            browser_path = BROWSER_DIR / f"{identifier}.json"
+            visual_path = EVIDENCE / f"{identifier}.jpg"
+            state_path.write_text(
                 json.dumps(state, indent=2) + "\n", encoding="utf-8"
             )
             viewport = page.viewport_size or {"width": 0, "height": 0}
@@ -118,12 +128,17 @@ def run() -> dict[str, object]:
                 "requestHostsAtCheckpoint": sorted(hosts),
                 "capturedAtUnixMs": int(time.time() * 1000),
             }
-            (BROWSER_DIR / f"{identifier}.json").write_text(
+            browser_path.write_text(
                 json.dumps(browser_record, indent=2) + "\n", encoding="utf-8"
             )
-            page.screenshot(path=EVIDENCE / f"{identifier}.jpg", type="jpeg", quality=86)
+            page.screenshot(path=visual_path, type="jpeg", quality=86)
             checkpoints.append(
-                {"id": identifier, "state": state_relative, "browser": browser_relative, "visual": visual_relative}
+                {
+                    "id": identifier,
+                    "state": evidence_reference(state_path),
+                    "browser": evidence_reference(browser_path),
+                    "visual": evidence_reference(visual_path),
+                }
             )
             return state
 
@@ -505,7 +520,7 @@ def main() -> None:
             indent=2,
         )
     )
-    print(f"S8 PASS: {output.relative_to(BUILD.parent)}")
+    print(f"S8 PASS: {evidence_reference(output)}")
 
 
 if __name__ == "__main__":
