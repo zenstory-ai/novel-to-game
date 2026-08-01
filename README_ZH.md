@@ -2,63 +2,48 @@
 
 > 把任何语言的小说，改编成有原著依据、可完整游玩的游戏。
 
-[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
+[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/worldwonderer/novel-to-game?display_name=tag&sort=semver)](https://github.com/worldwonderer/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/worldwonderer/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/worldwonderer/novel-to-game?style=flat&logo=github)](https://github.com/worldwonderer/novel-to-game/stargazers)
 
-NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它把小说中的规则、空间、人物与冲突，转成玩家动作、系统、关卡和可验证的完整流程。
+NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它把小说游戏化改编拆成一条职责清晰的流程：拆解原著、选择概念、设计世界与美术、完成构建，并在目标运行环境中实际验证。
 
-它接受任何语言的小说，按用户指定的语言生成产物，并严格针对选定的网页、原生端、移动端或游戏引擎进行构建和验证，不会为了实现方便偷换运行环境。
+小说可以使用任何语言，生成内容使用用户指定的语言。构建和 QA 始终以选定的平台或引擎为准，不会为了实现方便换成更容易的替代环境。
 
-[English](README.md) · [在线试玩](#在线试玩) · [快速开始](#快速开始) · [安装](#安装) · [查看产出](#产出) · [参与贡献](CONTRIBUTING.md)
+[English](README.md) · [在线试玩](#在线试玩) · [快速开始](#快速开始) · [工作流](#工作流) · [Skills](#skills) · [产物](#产物) · [参与贡献](#参与贡献)
 
 ## 在线试玩
 
-### 主展示例 · Project Plateau: Proof Before Dark
+### Project Plateau · 精选 3D 案例
 
-《失落的世界》被改编成一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
+这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。玩家穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
 
-#### 36 秒发布视频
+#### 36 秒演示
 
 https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · **[看它如何从小说改编而来](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
+**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · **[查看完整改编案例](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
 
 ### 更多可玩改编
 
-| 《西游记》· 三借芭蕉扇 | 《金瓶梅》· 风月总账 |
+| [《西游记》· 三借芭蕉扇](examples/journey-to-the-west/) | [《金瓶梅》· 风月总账](examples/jin-ping-mei/) |
 |---|---|
 | [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
-| 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 关系策略游戏：六日日程、角色意志、资源与人情债、三种结局 |
-| **[试玩](https://xiyouji.vibecoco.ai)** · [完整案例](examples/journey-to-the-west/) | **[试玩](https://jinpingmei.vibecoco.ai)** · [完整案例](examples/jin-ping-mei/) |
+| 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 六日关系策略游戏：角色意志、资源与人情债，以及三种结局 |
+| **[浏览器试玩](https://xiyouji.vibecoco.ai)** | **[浏览器试玩](https://jinpingmei.vibecoco.ai)** |
 
-三份已发布示例都包含原著来源、产品约束、游戏化拆解、方案选择、世界与美术设计、构建说明以及可运行源码。
+每个完整案例都包含原文依据、产品约束、游戏化拆解、概念与设计决策、可运行源码和 QA 证据。
+
+## 为什么用 NovelToGame
+
+只给模型一句“把这本书做成游戏”，很容易得到通用玩法换皮或可点击的剧情摘要。NovelToGame 让关键决策各有负责人，并保留从原著到成品的判断依据：
+
+- **基于原著做改编**：从文本中提取有原文依据的规则、空间、角色意志、冲突和视觉锚点；
+- **真正完成游戏设计**：把原著证据转成玩家动作、系统、关卡、反馈、失败与结果；
+- **面向目标环境构建**：严格按照批准的平台或引擎实现，避免实现阶段悄悄重做策划；
+- **用运行证据做 QA**：验证启动、输入、状态变化、完整流程、结果、重开和目标设备或显示模式。
 
 ## 快速开始
 
-安装后，把小说文件、目录或链接交给 Agent：
-
-```text
-用 novel-to-game quick 把这本小说改编成一款可完整游玩的游戏。
-请根据题材推荐目标平台、类型和引擎，并把首个版本控制在 15 分钟左右。
-玩家以原创身份进入世界，不要逐段复演原作剧情。
-```
-
-`quick` 会自动选择最有原著依据、也最适合做成完整游戏的方向；想在世界设计之前从三个方案里亲自选择，就使用 `director`。
-
-## 它解决什么
-
-直接让模型“把这本书做成游戏”，经常只会得到换皮玩法或可点击的剧情摘要。NovelToGame 把最需要判断力的工作拆成几个明确阶段：
-
-- **先锁产品边界**：平台、类型、目标体验、画风、分级、引擎和不可改写的要求；
-- **再找可玩的原著证据**：规则、动作、空间、角色意志、系统与关键视觉元素；
-- **让概念、关卡和美术各自负责**：实现阶段不能静默重做策划；
-- **以真实运行收尾**：启动、输入、状态变化、完整流程、结果、重开和目标分辨率或设备都必须留下证据。
-
-## 安装
-
-### Agent Skills
-
-为你使用的 CLI 安装全部七个技能：
+### 1. 安装七个 Skills
 
 | Agent CLI | 安装命令 | 调用方式 |
 |---|---|---|
@@ -66,18 +51,31 @@ https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 | Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
-同时安装三端：
+在同一台机器上为三个 CLI 安装适配器：
 
 ```bash
 npx skills add worldwonderer/novel-to-game -g -y -s '*' \
   -a claude-code -a codex -a kimi-code-cli
 ```
 
-克隆仓库后，三端也能发现项目内的七个技能。
+克隆仓库后，三种 CLI 均可直接发现项目内的 Skills。
 
-### 原生插件
+### 2. 开始一次改编
 
-Claude Code：
+把小说文件、目录或链接交给 Agent：
+
+```text
+用 novel-to-game quick 把这本小说改编成一款可完整游玩的游戏。
+请根据题材推荐目标平台、类型和引擎，并把首个版本控制在 15 分钟左右。
+玩家以原创角色的身份进入世界，不要逐段复演原作剧情。
+```
+
+`quick` 会选择原著依据最充分、也最适合做成完整游戏的方向。想在世界设计之前亲自比较三个概念，可以使用 `director`。
+
+<details>
+<summary><strong>使用原生插件安装</strong></summary>
+
+#### Claude Code
 
 ```text
 /plugin marketplace add worldwonderer/novel-to-game
@@ -85,14 +83,14 @@ Claude Code：
 /novel-to-game:novel-to-game quick
 ```
 
-Codex：
+#### Codex
 
 ```bash
 codex plugin marketplace add worldwonderer/novel-to-game
 codex plugin add novel-to-game@novel-to-game-skills
 ```
 
-Kimi Code 0.27 或更高版本：
+#### Kimi Code 0.27 或更高版本
 
 ```text
 /plugins install https://github.com/worldwonderer/novel-to-game
@@ -100,9 +98,11 @@ Kimi Code 0.27 或更高版本：
 /skill:novel-to-game quick
 ```
 
-## 流程
+</details>
 
-总入口先确认 `PRODUCT_BRIEF.md`，再串起六个职责分离的阶段；验证失败后会回到构建阶段继续修复，直到证据满足门槛。
+## 工作流
+
+总入口先锁定 `PRODUCT_BRIEF.md`，再让改编任务依次进入六个职责独立的阶段。QA 未通过时返回构建阶段继续修复，直到运行证据满足门槛。
 
 ```mermaid
 flowchart LR
@@ -110,27 +110,27 @@ flowchart LR
     classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
 
     novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
-    orch --> 需求 --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
+    orch --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
     验证 -.->|未通过| 构建
 ```
 
-需求阶段会锁定平台、实际交付方式、游戏类型与对标、美术方向、内容分级、核心幻想和引擎。下游必须遵守这些边界，不能在实现时悄悄换成更容易做的游戏。
+游戏概念、体验与关卡设计、美术方向分别接受独立评审。构建面向选定的运行环境，QA 也在同一环境中用实际运行证据完成验证。
 
-## 七个技能
+## Skills
 
-| 技能 | 职责 |
+| Skill | 职责 |
 |---|---|
-| `novel-to-game` | 总入口：需求确认、模式选择、阶段编排与进度恢复 |
-| `novel-game-analyze` | 提取规则、动作、空间、角色、系统与名场面，形成有引证的设定集 |
-| `game-concept` | 生成三个真正不同的方向，排除不合格方案后选出一个 |
-| `game-world-design` | 定义玩家体验目标、核心循环、世界响应、系统、关卡、失败与结果 |
-| `game-art-direction` | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
-| `game-build` | 压缩构建说明，驱动编码智能体实现可完整游玩的原型 |
-| `game-qa` | 用命令、状态、截图与实际游玩路径验证构建，不伪装主观结论 |
+| [`novel-to-game`](skills/novel-to-game/) | 确认需求、选择模式、编排阶段并恢复中断进度 |
+| [`novel-game-analyze`](skills/novel-game-analyze/) | 提取有引证的规则、动作、空间、角色、系统和名场面 |
+| [`game-concept`](skills/game-concept/) | 生成三个真正不同的方向，排除不合格方案后选出一个 |
+| [`game-world-design`](skills/game-world-design/) | 定义玩家承诺、核心循环、世界响应、系统、关卡、失败与结果 |
+| [`game-art-direction`](skills/game-art-direction/) | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
+| [`game-build`](skills/game-build/) | 压缩批准后的构建说明，驱动实现直到游戏可以完整游玩 |
+| [`game-qa`](skills/game-qa/) | 用命令、状态、截图和实际游玩路径验证构建，不夸大主观结论 |
 
-## 产出
+## 产物
 
-每次运行创建一个紧凑、自包含的改编工作区：
+每次运行都会创建一个紧凑、自包含的改编工作区：
 
 ```text
 game-adaptations/<project>/
@@ -145,13 +145,16 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-核心设计文档不绑定某个模型、平台或游戏引擎；构建阶段会按照已批准的目标平台选择合适实现。
+核心设计文档不绑定某个模型或游戏引擎；批准后的目标运行环境决定实际实现与 QA 环境。
 
 ## 参与贡献
 
-欢迎提交可复现的 Bug、有证据的 Skill 能力缺口和具有新改编价值的示例提案。
-请先阅读 [贡献指南](CONTRIBUTING.md)，并使用仓库的结构化 Issue 与 PR 模板。
+欢迎提交可复现的 Bug、有证据支持的 Skill 能力缺口，以及能展示独特改编方法的示例提案。请阅读 [贡献指南](CONTRIBUTING.md)，并使用仓库提供的 Issue 与 PR 模板。
+
+## 许可证
+
+NovelToGame 使用 [MIT License](LICENSE)。
 
 ## 致谢
 
-[linux.do](https://linux.do)
+感谢 [linux.do](https://linux.do) 社区提供早期反馈与支持。

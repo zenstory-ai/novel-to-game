@@ -2,40 +2,67 @@
 
 > Turn a novel in any language into a source-grounded, fully playable game.
 
-[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
+[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/worldwonderer/novel-to-game?display_name=tag&sort=semver)](https://github.com/worldwonderer/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/worldwonderer/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/worldwonderer/novel-to-game?style=flat&logo=github)](https://github.com/worldwonderer/novel-to-game/stargazers)
 
-NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It turns a source's rules, spaces, characters, and conflicts into player verbs, systems, levels, and a verifiable complete run.
+NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It turns novel adaptation into a staged workflow: source analysis, concept selection, world and art direction, implementation, and runtime QA.
 
-It accepts novels in any language, writes artifacts in the requested language, and builds for the chosen runtime—web, native, mobile, or a selected game engine—without silently switching to an easier substitute.
+Bring a novel in any language and choose the target runtime. Generated artifacts follow the requested language; build and QA stay on the chosen platform instead of silently falling back to an easier substitute.
 
-[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Install](#install) · [Artifacts](#output) · [Contributing](CONTRIBUTING.md)
+[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Workflow](#workflow) · [Skills](#skills) · [Artifacts](#artifacts) · [Contributing](#contributing)
 
 ## Play Online
 
-### Featured · Project Plateau: Proof Before Dark
+### Project Plateau · Featured 3D adaptation
 
-*The Lost World* becomes a real-time **first-person 3D field-photography game**: cross a connected plateau, observe a living Iguanodon family, expose four glass plates under aerial pressure, and return with the views that survived.
+A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Cross a connected plateau, observe a living Iguanodon family, expose four glass plates under aerial pressure, and return with the views that survived.
 
-#### 36-second launch video
+#### 36-second trailer
 
 https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 
-**[Play in your browser — no install](https://plateau.vibecoco.ai)** · **[See how it was adapted](examples/project-plateau/)** · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)
+**[Play in your browser — no install](https://plateau.vibecoco.ai)** · **[Explore the complete case study](examples/project-plateau/)** · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)
 
 ### More playable adaptations
 
-| Journey to the West · Three Borrowings of the Banana Fan | Jin Ping Mei · Ledger of Desire |
+| [Journey to the West · Three Borrowings of the Banana Fan](examples/journey-to-the-west/) | [Jin Ping Mei · Ledger of Desire](examples/jin-ping-mei/) |
 |---|---|
 | [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
-| Turn-based systems RPG: elements, formations, transformations, companion, and multi-stage boss | 18+ relationship strategy game: six-day schedule, character agency, resource and social debts, and three endings |
-| **[Play](https://xiyouji.vibecoco.ai)** · [Case study](examples/journey-to-the-west/) | **[Play](https://jinpingmei.vibecoco.ai)** · [Case study](examples/jin-ping-mei/) |
+| Turn-based systems RPG with elements, formations, transformations, a companion, and a multi-stage boss | 18+ six-day relationship strategy game built around character agency, resources, social debts, and three endings |
+| **[Play in browser](https://xiyouji.vibecoco.ai)** | **[Play in browser](https://jinpingmei.vibecoco.ai)** |
 
-All three released examples include source provenance, product constraints, adaptation analysis, concept selection, world and art direction, a build brief, and runnable source.
+Each case study includes source provenance, product constraints, adaptation analysis, concept and design decisions, runnable source, and QA evidence.
+
+## Why NovelToGame
+
+A one-line “turn this book into a game” prompt often produces a generic reskin or a clickable plot summary. NovelToGame keeps the adaptation traceable and gives each major decision a clear owner:
+
+- **Source-grounded adaptation:** extract rules, spaces, character agency, conflicts, and visual anchors with citations;
+- **Real game design:** turn source evidence into player verbs, systems, levels, feedback, failure, and outcomes;
+- **Target-runtime delivery:** build for the approved platform or engine without implementation silently redesigning the game;
+- **Evidence-based QA:** verify startup, input, state changes, complete runs, outcomes, restart, and target display modes and devices.
 
 ## Quick Start
 
-After installation, give the agent a novel file, directory, or link:
+### 1. Install the seven skills
+
+| Agent CLI | Install | Invoke |
+|---|---|---|
+| Claude Code | `npx skills add worldwonderer/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
+| Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
+| Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
+
+Install adapters for all three CLIs on the same machine:
+
+```bash
+npx skills add worldwonderer/novel-to-game -g -y -s '*' \
+  -a claude-code -a codex -a kimi-code-cli
+```
+
+Cloning the repository also enables project-local skill discovery in all three CLIs.
+
+### 2. Start an adaptation
+
+Give the agent a novel file, directory, or link:
 
 ```text
 Use novel-to-game quick to adapt this novel into a fully playable game.
@@ -43,41 +70,12 @@ Recommend the target platform, genre, and engine from the source, and keep the f
 Let the player enter the world as an original character with a new playable route through its conflict.
 ```
 
-`quick` automatically selects the direction with the strongest source evidence and the clearest path to a complete game. Use `director` when you want to choose between three concepts before world design begins.
+`quick` selects the direction with the strongest source evidence and the clearest path to a complete game. Use `director` when you want to choose between three concepts before world design begins.
 
-## What It Solves
+<details>
+<summary><strong>Native plugin installation</strong></summary>
 
-Ask a model to “make this book into a game” and the result is often a generic reskin or a clickable plot summary. NovelToGame separates the work that requires real adaptation judgment:
-
-- **Lock product boundaries first:** platform, genre, target experience, art, rating, engine, and non-negotiable requirements;
-- **Find playable evidence in the source:** rules, verbs, spaces, character agency, systems, and key visual elements;
-- **Give concept, level design, and art separate ownership:** implementation may not silently redesign them;
-- **Finish with real execution evidence:** startup, input, state changes, complete run, outcome, restart, and target display or device.
-
-## Install
-
-### Agent Skills
-
-Install all seven skills for the CLI you use:
-
-| Agent CLI | Install command | Invoke |
-|---|---|---|
-| Claude Code | `npx skills add worldwonderer/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
-| Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
-| Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
-
-Install all three adapters at once:
-
-```bash
-npx skills add worldwonderer/novel-to-game -g -y -s '*' \
-  -a claude-code -a codex -a kimi-code-cli
-```
-
-Cloning the repository also enables project-local discovery in all three CLIs.
-
-### Native Plugins
-
-Claude Code:
+#### Claude Code
 
 ```text
 /plugin marketplace add worldwonderer/novel-to-game
@@ -85,14 +83,14 @@ Claude Code:
 /novel-to-game:novel-to-game quick
 ```
 
-Codex:
+#### Codex
 
 ```bash
 codex plugin marketplace add worldwonderer/novel-to-game
 codex plugin add novel-to-game@novel-to-game-skills
 ```
 
-Kimi Code 0.27 or newer:
+#### Kimi Code 0.27 or newer
 
 ```text
 /plugins install https://github.com/worldwonderer/novel-to-game
@@ -100,9 +98,11 @@ Kimi Code 0.27 or newer:
 /skill:novel-to-game quick
 ```
 
-## Pipeline
+</details>
 
-The orchestrator confirms `PRODUCT_BRIEF.md`, then runs six stages with separate ownership. Failed QA returns to the build for another repair pass until the evidence clears the gate.
+## Workflow
+
+The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Failed QA returns to the build for another repair pass until the evidence clears the gate.
 
 ```mermaid
 flowchart LR
@@ -110,25 +110,25 @@ flowchart LR
     classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
 
     novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
-    orch --> intake --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
+    orch --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
     qa -.->|fails| build
 ```
 
-Requirements lock the platform, delivery runtime, genre and verified benchmarks, art direction, content rating, core fantasy, and engine. Downstream stages must honor those boundaries instead of switching to an easier game during implementation.
+Concept selection, experience and level design, and art direction remain separately reviewable. Build targets the chosen runtime; QA verifies that same runtime with real execution evidence.
 
-## Seven Skills
+## Skills
 
-| Skill | Purpose |
+| Skill | Responsibility |
 |---|---|
-| `novel-to-game` | Orchestrate requirements, mode selection, stage handoffs, and progress recovery |
-| `novel-game-analyze` | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
-| `game-concept` | Generate three materially different directions, reject invalid options, and choose one |
-| `game-world-design` | Define the target player experience, core loop, world response, systems, levels, failure, and outcomes |
-| `game-art-direction` | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
-| `game-build` | Compress a build brief and drive a coding agent to a fully playable implementation |
-| `game-qa` | Verify with commands, states, screenshots, and real play paths without pretending subjective certainty |
+| [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
+| [`novel-game-analyze`](skills/novel-game-analyze/) | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
+| [`game-concept`](skills/game-concept/) | Generate three materially different directions, reject invalid options, and choose one |
+| [`game-world-design`](skills/game-world-design/) | Define the player promise, core loop, world response, systems, levels, failure, and outcomes |
+| [`game-art-direction`](skills/game-art-direction/) | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
+| [`game-build`](skills/game-build/) | Compress an approved build brief and drive implementation to a fully playable build |
+| [`game-qa`](skills/game-qa/) | Verify commands, states, screenshots, and real play paths without overstating subjective results |
 
-## Output
+## Artifacts
 
 Each run creates a compact, self-contained adaptation workspace:
 
@@ -145,14 +145,16 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-Core design documents do not depend on one model, platform, or game engine. The build stage selects an implementation for the approved target platform.
+Core design documents remain independent of any single model or game engine. The approved target runtime determines the implementation and QA environment.
 
 ## Contributing
 
-Reproducible bugs, evidenced skill gaps, and example proposals with a distinct
-adaptation lesson are welcome. Read the [contribution guide](CONTRIBUTING.md)
-and use the repository's structured issue and pull request templates.
+Reproducible bugs, skill gaps backed by evidence, and example proposals that demonstrate a distinct adaptation lesson are welcome. Read the [contribution guide](CONTRIBUTING.md) and use the repository's structured issue and pull request templates.
+
+## License
+
+NovelToGame is released under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
-[linux.do](https://linux.do)
+Thanks to the [linux.do](https://linux.do) community for early feedback and support.
