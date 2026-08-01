@@ -24,7 +24,7 @@ This English reference project uses the same pipeline to build a real-time **fir
 
 **[Play online](https://project-plateau.vercel.app)** · **[Share first-time feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [Run locally](game-adaptations/project-plateau/build/app/RUN.md) · [Playable source](game-adaptations/project-plateau/build/app/) · [Build devlog](game-adaptations/project-plateau/DEVLOG.md) · [Complete planning files](game-adaptations/project-plateau/) · [Source provenance](game-adaptations/project-plateau/source/SOURCE.md) · [Authoritative verification](game-adaptations/project-plateau/qa/verification.json) · [Public-host evidence](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [Media pack](game-adaptations/project-plateau/build/media/)
 
-The public preview has passed anonymous HTTPS load, complete play, result, and restart checks. Independent first-time and visual reviews remain open, so the project keeps its “in development” label.
+The public preview has passed anonymous HTTPS load, complete play, result, and restart checks. Independent first-time and [visual reviews](https://github.com/worldwonderer/novel-to-game/discussions/8) remain open, so the project keeps its “in development” label.
 
 ### Released examples
 

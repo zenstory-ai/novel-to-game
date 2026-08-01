@@ -124,6 +124,11 @@ A reply is treated as candidate evidence until it contains the environment,
 timestamps, observed path, result, and uncoached post-run answers required by
 the playtest protocol.
 
+The separate
+[independent visual-review discussion](https://github.com/worldwonderer/novel-to-game/discussions/8)
+keeps reviewer recruitment away from first-time participants, who must not read
+the anatomy, motion, composition, or colour-cue checklist before their run.
+
 The public release remains closed until the repository contains:
 
 - three raw first-time sessions using the

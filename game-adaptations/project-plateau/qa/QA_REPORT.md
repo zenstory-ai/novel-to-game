@@ -112,13 +112,17 @@ First-time players can join through the
 [public playtest discussion](https://github.com/worldwonderer/novel-to-game/discussions/7).
 Discussion replies do not clear a gate until they satisfy the raw-record fields
 and decision rule in `PLAYTEST_PROTOCOL.md`.
+Independent 3D, animation, illustration, or game-art reviewers can use the
+[visual-review discussion](https://github.com/worldwonderer/novel-to-game/discussions/8);
+their findings still require the live-run evidence and disposition defined by
+`PERCEPTION_REVIEW_PROTOCOL.md`.
 
 | Gate | Status | Severity before public release | Required next evidence |
 |---|---|---|---|
 | Three first-time players recognize 3D action/exploration and not a text/VN presentation | NOT_RUN | major | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |
 | First meaningful interaction within 90 seconds and result within 15 minutes | NOT_RUN | major | Timestamped, uncoached player records using the same protocol |
 | Players can restate scout/proof/extract rather than “shoot dinosaurs” | NOT_RUN | major | Verbatim post-run answers linked to each raw session |
-| Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), reviewer context, frame-level findings and disposition |
+| Independent anatomy, motion and composition review | NOT_RUN | major | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), [reviewer intake](https://github.com/worldwonderer/novel-to-game/discussions/8), reviewer context, frame-level findings and disposition |
 | Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | major | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
 | Anonymous public HTTPS load, play, result and restart | PASS | cleared | [`evidence/public-host/report.json`](evidence/public-host/report.json): clean Chrome context, source fingerprint, 46 real-input steps, Strong/Mixed/Panic plus achromatopsia Strong, result and restart; zero console errors or third-party runtime hosts |
 | Platform upload/transcode for short media | NOT_RUN | release-blocking for that attachment | Uploaded file hash and playback check |

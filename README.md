@@ -24,7 +24,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 **[在线试玩](https://project-plateau.vercel.app)** · **[反馈首次体验](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [本地运行](game-adaptations/project-plateau/build/app/RUN.md) · [可玩源码](game-adaptations/project-plateau/build/app/) · [开发记录](game-adaptations/project-plateau/DEVLOG.md) · [完整策划文件](game-adaptations/project-plateau/) · [原著出处](game-adaptations/project-plateau/source/SOURCE.md) · [权威验证](game-adaptations/project-plateau/qa/verification.json) · [公网验证](game-adaptations/project-plateau/qa/evidence/public-host/report.json) · [媒体包](game-adaptations/project-plateau/build/media/)
 
-公开预览已经通过匿名 HTTPS 加载、完整游玩、结局和重开验证。独立首次体验与画面审查仍在进行，因此当前保留“开发中”标记。
+公开预览已经通过匿名 HTTPS 加载、完整游玩、结局和重开验证。独立首次体验与[画面审查](https://github.com/worldwonderer/novel-to-game/discussions/8)仍在进行，因此当前保留“开发中”标记。
 
 ### 已发布示例
 
