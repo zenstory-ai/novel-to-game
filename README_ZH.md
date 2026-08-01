@@ -104,14 +104,8 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 总入口先锁定 `PRODUCT_BRIEF.md`，再让改编任务依次进入六个职责独立的阶段。QA 未通过时返回构建阶段继续修复，直到运行证据满足门槛。
 
-```mermaid
-flowchart LR
-    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
-    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
-
-    novel["📖 小说"]:::io --> orch["novel-to-game"]:::orch
-    orch --> 分析 --> 概念 --> 世界设计 --> 美术 --> 构建 --> 验证 --> game["🎮 可玩游戏"]:::io
-    验证 -.->|未通过| 构建
+```text
+小说 → 游戏化拆解 → 游戏概念 → 世界设计 → 美术方向 → 构建 ⇄ QA → 可玩游戏
 ```
 
 游戏概念、体验与关卡设计、美术方向分别接受独立评审。构建面向选定的运行环境，QA 也在同一环境中用实际运行证据完成验证。

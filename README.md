@@ -104,14 +104,8 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Failed QA returns to the build for another repair pass until the evidence clears the gate.
 
-```mermaid
-flowchart LR
-    classDef io fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
-    classDef orch fill:#eef2ff,color:#1e1b4b,stroke:#6366f1,stroke-width:1px
-
-    novel["📖 novel"]:::io --> orch["novel-to-game"]:::orch
-    orch --> analyze --> concept --> world --> art --> build --> qa --> game["🎮 playable game"]:::io
-    qa -.->|fails| build
+```text
+Novel → Source analysis → Concept → World design → Art direction → Build ⇄ QA → Playable game
 ```
 
 Concept selection, experience and level design, and art direction remain separately reviewable. Build targets the chosen runtime; QA verifies that same runtime with real execution evidence.
