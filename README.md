@@ -5,38 +5,31 @@
 [![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
 
-NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It extracts the source's own rules, spaces, factions, and conflicts, then turns them into player verbs, systems, levels, and a verifiable complete run.
+NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It turns a source's rules, spaces, characters, and conflicts into player verbs, systems, levels, and a verifiable complete run.
 
-The project requirements choose the target platform. A playable build may be a PC client, mobile app, mini game, web build, or a project running in the selected game engine. Build and QA use that target runtime; any substitute runtime is scoped separately.
+It accepts novels in any language, writes artifacts in the requested language, and builds for the chosen runtime—web, native, mobile, or a selected game engine—without silently switching to an easier substitute.
 
-[中文](README_ZH.md) · [Install](#install) · [Quick Start](#quick-start) · [See the Output](#output) · [Contributing](CONTRIBUTING.md)
+[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Install](#install) · [Artifacts](#output) · [Contributing](CONTRIBUTING.md)
 
 ## Play Online
 
-### Featured 3D example · Project Plateau: Proof Before Dark
+### Featured · Project Plateau: Proof Before Dark
 
-This English example uses the same pipeline to build a real-time **first-person 3D field-photography game**. Cross a connected plateau, observe a family of Iguanodon, avoid an aerial threat, capture evidence on four glass plates, and bring the surviving plates back to camp.
+*The Lost World* becomes a real-time **first-person 3D field-photography game**: cross a connected plateau, observe a living Iguanodon family, expose four glass plates under aerial pressure, and return with the views that survived.
 
-#### Watch the 36-second launch video
+#### 36-second launch video
 
 https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 
-| Observe the dinosaur family | Bring the glass plates home |
-|---|---|
-| [![Iguanodon family through the field camera](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://plateau.vibecoco.ai) | [![Four recovered field plates](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://plateau.vibecoco.ai) |
-| Two adults, three young, a moving aerial threat, and an operable period camera | Four views captured along the route remain on the plates and appear in the final record |
+**[Play in your browser — no install](https://plateau.vibecoco.ai)** · **[See how it was adapted](examples/project-plateau/)** · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)
 
-**[Play online](https://plateau.vibecoco.ai)** · **[Share first-time feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [Run locally](examples/project-plateau/build/app/RUN.md) · [Playable source](examples/project-plateau/build/app/) · [Build devlog](examples/project-plateau/DEVLOG.md) · [Complete planning files](examples/project-plateau/) · [Source provenance](examples/project-plateau/source/SOURCE.md) · [Authoritative verification](examples/project-plateau/qa/verification.json) · [Public-host evidence](examples/project-plateau/qa/evidence/public-host/report.json) · [Media pack](examples/project-plateau/build/media/)
-
-The published build has passed anonymous HTTPS load, complete play, result, and restart checks. The maintainer also reports three successful first-time sessions. Those sessions were informal and left no raw records, so they support publication but are not counted as repository-verifiable QA; independent [visual and colour-cue review](https://github.com/worldwonderer/novel-to-game/discussions/8) remains open.
-
-### Other released examples
+### More playable adaptations
 
 | Journey to the West · Three Borrowings of the Banana Fan | Jin Ping Mei · Ledger of Desire |
 |---|---|
 | [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
 | Turn-based systems RPG: elements, formations, transformations, companion, and multi-stage boss | 18+ relationship strategy game: six-day schedule, character agency, resource and social debts, and three endings |
-| **[Play online](https://xiyouji.vibecoco.ai)** · [Complete project](examples/journey-to-the-west/) · [Source provenance](examples/journey-to-the-west/source/SOURCE.md) | **[Play online](https://jinpingmei.vibecoco.ai)** · [Complete project](examples/jin-ping-mei/) · [Source provenance](examples/jin-ping-mei/source/SOURCE.md) |
+| **[Play](https://xiyouji.vibecoco.ai)** · [Case study](examples/journey-to-the-west/) | **[Play](https://jinpingmei.vibecoco.ai)** · [Case study](examples/jin-ping-mei/) |
 
 All three released examples include source provenance, product constraints, adaptation analysis, concept selection, world and art direction, a build brief, and runnable source.
 
@@ -60,8 +53,6 @@ Ask a model to “make this book into a game” and the result is often a generi
 - **Find playable evidence in the source:** rules, verbs, spaces, character agency, systems, and key visual elements;
 - **Give concept, level design, and art separate ownership:** implementation may not silently redesign them;
 - **Finish with real execution evidence:** startup, input, state changes, complete run, outcome, restart, and target display or device.
-
-Input novels may use any language. Generated files use the requested language, or the conversation language when unspecified, while preserving necessary quotations and one terminology table.
 
 ## Install
 
@@ -155,40 +146,6 @@ game-adaptations/<project>/
 ```
 
 Core design documents do not depend on one model, platform, or game engine. The build stage selects an implementation for the approved target platform.
-
-## Example Projects
-
-### The Lost World · Project Plateau: Proof Before Dark
-
-A first-person 3D field-photography game adapted from the complete public-domain novel. Observe a living Iguanodon family, capture distinct evidence on four glass plates, react to an aerial threat, and return to Fort Challenger with a defensible record.
-
-**[Play online](https://plateau.vibecoco.ai)** · [Runnable source](examples/project-plateau/build/app/) · [Build brief](examples/project-plateau/build/BUILD_BRIEF.md) · [QA report](examples/project-plateau/qa/QA_REPORT.md)
-
-| Dinosaur family | Recovered glass plates |
-|---|---|
-| ![](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | ![](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
-
-### Journey to the West · Three Borrowings of the Banana Fan
-
-A turn-based command RPG distilled from the complete 100-chapter public-domain text. The player uses elements, formations, a companion, and transformations to take a new playable route through the source conflict and complete a multi-stage boss encounter.
-
-**[Play online](https://xiyouji.vibecoco.ai)** · [Runnable source](examples/journey-to-the-west/build/app/) · [Build brief](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA report](examples/journey-to-the-west/qa/QA_REPORT.md)
-
-| Battle | Emerald Wave Pool | Hero panel |
-|---|---|---|
-| ![](examples/journey-to-the-west/screenshots/battle.jpg) | ![](examples/journey-to-the-west/screenshots/bibotan.jpg) | ![](examples/journey-to-the-west/screenshots/hero-panel.jpg) |
-
-### Jin Ping Mei · Ledger of Desire
-
-A six-day, male-POV relationship strategy game adapted from the public-domain 崇祯本. Manage money, influence, and secrets by day, pursue three independent relationships by night, and face how the household responds the following morning.
-
-**18+; intimate content appears only after relationship choices and explicit consent from both parties.** **[Play online](https://jinpingmei.vibecoco.ai)** · [Runnable source](examples/jin-ping-mei/build/app/) · [Build brief](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA report](examples/jin-ping-mei/qa/QA_REPORT.md)
-
-| Household event | The next morning | Banquet conflict | Exclusive-route ending |
-|---|---|---|---|
-| ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
-
-> The public README embeds safe screenshots only. 18+ route CGs remain behind the in-game age gate.
 
 ## Contributing
 

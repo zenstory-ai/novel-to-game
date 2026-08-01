@@ -5,38 +5,31 @@
 [![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
 
-NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它帮助创作者从小说中提炼规则、空间、势力和冲突，再把这些内容设计成玩家动作、系统、关卡与可验证的完整流程。
+NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它把小说中的规则、空间、人物与冲突，转成玩家动作、系统、关卡和可验证的完整流程。
 
-目标平台由项目需求决定。可玩版本可以是 PC 客户端、移动 App、小程序、网页，也可以直接运行在选定的游戏引擎中；构建和质量验证始终以选定的运行环境为准，替代验证会单独标明范围。
+它接受任何语言的小说，按用户指定的语言生成产物，并严格针对选定的网页、原生端、移动端或游戏引擎进行构建和验证，不会为了实现方便偷换运行环境。
 
-[English](README.md) · [立即安装](#安装) · [快速开始](#快速开始) · [查看产出结构](#产出) · [参与贡献](CONTRIBUTING.md)
+[English](README.md) · [在线试玩](#在线试玩) · [快速开始](#快速开始) · [安装](#安装) · [查看产出](#产出) · [参与贡献](CONTRIBUTING.md)
 
 ## 在线试玩
 
-### 3D 主展示例 · Project Plateau: Proof Before Dark
+### 主展示例 · Project Plateau: Proof Before Dark
 
-这份英文示例用同一套流程制作了一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察一群共同生活的禽龙，躲避空中威胁，用四张玻璃底片拍下证据，再把完好的底片带回营地。
+《失落的世界》被改编成一款实时**第一人称 3D 野外摄影游戏**：穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
 
-#### 观看 36 秒发布视频
+#### 36 秒发布视频
 
 https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 
-| 观察恐龙一家 | 带回营地的玻璃底片 |
-|---|---|
-| [![通过野外相机观察禽龙家庭](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg)](https://plateau.vibecoco.ai) | [![四张带回营地的野外底片](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg)](https://plateau.vibecoco.ai) |
-| 两只成年禽龙、三只幼体、会移动的空中威胁，以及可以实际操作的老式相机 | 途中拍到的四个画面会保存在玻璃底片上，并出现在最终记录中 |
+**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · **[看它如何从小说改编而来](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
 
-**[在线试玩](https://plateau.vibecoco.ai)** · **[反馈首次体验](https://github.com/worldwonderer/novel-to-game/discussions/7)** · [本地运行](examples/project-plateau/build/app/RUN.md) · [可玩源码](examples/project-plateau/build/app/) · [开发记录](examples/project-plateau/DEVLOG.md) · [完整策划文件](examples/project-plateau/) · [原著出处](examples/project-plateau/source/SOURCE.md) · [权威验证](examples/project-plateau/qa/verification.json) · [公网验证](examples/project-plateau/qa/evidence/public-host/report.json) · [媒体包](examples/project-plateau/build/media/)
-
-已发布版本通过了匿名 HTTPS 加载、完整游玩、结局和重开验证。维护者另报告三名首次玩家顺利完成体验；由于这三次为非正式试玩且未保留原始记录，它们支持发布决定，但不计作仓库内可复核的 QA 证据。独立[画面与色觉提示审查](https://github.com/worldwonderer/novel-to-game/discussions/8)仍未完成。
-
-### 其他已发布示例
+### 更多可玩改编
 
 | 《西游记》· 三借芭蕉扇 | 《金瓶梅》· 风月总账 |
 |---|---|
 | [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
 | 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 关系策略游戏：六日日程、角色意志、资源与人情债、三种结局 |
-| **[在线试玩](https://xiyouji.vibecoco.ai)** · [完整项目文件](examples/journey-to-the-west/) · [原著出处](examples/journey-to-the-west/source/SOURCE.md) | **[在线试玩](https://jinpingmei.vibecoco.ai)** · [完整项目文件](examples/jin-ping-mei/) · [原著出处](examples/jin-ping-mei/source/SOURCE.md) |
+| **[试玩](https://xiyouji.vibecoco.ai)** · [完整案例](examples/journey-to-the-west/) | **[试玩](https://jinpingmei.vibecoco.ai)** · [完整案例](examples/jin-ping-mei/) |
 
 三份已发布示例都包含原著来源、产品约束、游戏化拆解、方案选择、世界与美术设计、构建说明以及可运行源码。
 
@@ -60,8 +53,6 @@ https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
 - **再找可玩的原著证据**：规则、动作、空间、角色意志、系统与关键视觉元素；
 - **让概念、关卡和美术各自负责**：实现阶段不能静默重做策划；
 - **以真实运行收尾**：启动、输入、状态变化、完整流程、结果、重开和目标分辨率或设备都必须留下证据。
-
-输入小说可以是任意语言；生成文件默认使用用户指定的语言，未指定时跟随对话语言，并保留必要的原文引证与术语表。
 
 ## 安装
 
@@ -155,40 +146,6 @@ game-adaptations/<project>/
 ```
 
 核心设计文档不绑定某个模型、平台或游戏引擎；构建阶段会按照已批准的目标平台选择合适实现。
-
-## 示例项目
-
-### 《失落的世界》· Project Plateau: Proof Before Dark
-
-这款第一人称 3D 野外摄影游戏改编自完整公版小说。玩家观察共同生活的禽龙家庭，用四张玻璃底片记录不同证据，应对空中威胁，再带着可辩护的记录返回挑战者堡。
-
-**[在线试玩](https://plateau.vibecoco.ai)** · [运行源码](examples/project-plateau/build/app/) · [构建说明](examples/project-plateau/build/BUILD_BRIEF.md) · [QA 报告](examples/project-plateau/qa/QA_REPORT.md)
-
-| 禽龙家庭 | 带回营地的玻璃底片 |
-|---|---|
-| ![](examples/project-plateau/build/evidence/s10/02-young-play-silver-frame.jpg) | ![](examples/project-plateau/build/evidence/s10/05-strong-plate-board.jpg) |
-
-### 《西游记》· 三借芭蕉扇
-
-这款回合制指令 RPG 从完整公版百回本中提炼五行、阵型、携宠和变化等玩法，让玩家用新的行动路线解决原作中的核心冲突，并完成一场多阶段 Boss 战。
-
-**[在线试玩](https://xiyouji.vibecoco.ai)** · [运行源码](examples/journey-to-the-west/build/app/) · [构建说明](examples/journey-to-the-west/build/BUILD_BRIEF.md) · [QA 报告](examples/journey-to-the-west/qa/QA_REPORT.md)
-
-| 战斗 | 碧波潭 | 主角面板 |
-|---|---|---|
-| ![](examples/journey-to-the-west/screenshots/battle.jpg) | ![](examples/journey-to-the-west/screenshots/bibotan.jpg) | ![](examples/journey-to-the-west/screenshots/hero-panel.jpg) |
-
-### 《金瓶梅》· 风月总账
-
-这款六日男性第一人称关系策略游戏改编自公版崇祯本。玩家白日经营钱、势与秘密，夜里推进三条独立关系线，次日面对人物和宅院对前一日选择的回应。
-
-**18+；亲密内容只有在关系选择与双方明确同意后才会出现。** **[在线试玩](https://jinpingmei.vibecoco.ai)** · [运行源码](examples/jin-ping-mei/build/app/) · [构建说明](examples/jin-ping-mei/build/BUILD_BRIEF.md) · [QA 报告](examples/jin-ping-mei/qa/QA_REPORT.md)
-
-| 宅院事件 | 次日清晨 | 中秋冲突 | 专一路线结局 |
-|---|---|---|---|
-| ![](examples/jin-ping-mei/screenshots/household.jpg) | ![](examples/jin-ping-mei/screenshots/morning.jpg) | ![](examples/jin-ping-mei/screenshots/banquet.jpg) | ![](examples/jin-ping-mei/screenshots/ending.jpg) |
-
-> 公开 README 只展示安全截图；年龄确认后的 18+ 路线 CG 不嵌入此页。
 
 ## 参与贡献
 
