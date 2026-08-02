@@ -70,7 +70,7 @@ npx skills add worldwonderer/novel-to-game -g -y -s '*' \
 玩家以原创角色的身份进入世界，不要逐段复演原作剧情。
 ```
 
-`quick` 会选择原著依据最充分、也最适合做成完整游戏的方向。想在世界设计之前亲自比较三个概念，可以使用 `director`。
+`quick` 适合直接交给 Agent 完成：确认需求后，它会比较三种把小说做成游戏的方案，选出最值得实现的一种，再继续完成设计、构建和 QA。想先看过这三种方案并亲自决定做哪一种，就用 `director`。
 
 <details>
 <summary><strong>使用原生插件安装</strong></summary>

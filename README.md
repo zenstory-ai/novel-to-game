@@ -70,7 +70,7 @@ Recommend the target platform, genre, and engine from the source, and keep the f
 Let the player enter the world as an original character with a new playable route through its conflict.
 ```
 
-`quick` selects the direction with the strongest source evidence and the clearest path to a complete game. Use `director` when you want to choose between three concepts before world design begins.
+`quick` is the hands-off option: after confirming your requirements, the agent compares three ways to turn the novel into a game, chooses the most promising one, and continues through design, build, and QA. Choose `director` if you want to review those three proposals and decide which one should be built.
 
 <details>
 <summary><strong>Native plugin installation</strong></summary>
