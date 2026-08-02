@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "AUDITION_APPROVED_NOT_RUNTIME_ADOPTED",
+  "runtimeVoiceStrategy": "none",
+  "candidate": {
+    "id": "jin-ping-mei-yueniang-boundary",
+    "project": "jin-ping-mei",
+    "language": "zh-Hans",
+    "speaker": "吴月娘",
+    "voice_profile": {
+      "casting_id": "jin-ping-mei-wu-yueniang-zh",
+      "role": "character",
+      "gender_presentation": "女性",
+      "age_presentation": "成熟成年女性",
+      "delivery": "中低音区、语速从容，以克制的持家权威和时代用语说话",
+      "must_not_sound_like": "娇俏少女、客服旁白或男性声线"
+    },
+    "text": "[calm, firm, restrained] 官人，白日欠的话，先在这里说清。",
+    "source_ref": "examples/jin-ping-mei/build/app/js/data.js#HEROINES.wu_yueniang.voice",
+    "player_action": "玩家已经选择进入月娘路线并完成一次关系回应",
+    "incremental_value": "试听人物边界、持家权威与时代声口是否比纯文字更可辨",
+    "trigger_window": "玩家输入后的独立回应窗口，不抢下一次选择",
+    "expected_repeats": "试听一次",
+    "muted_result": "字幕完整保留，游戏规则与结果不依赖语音",
+    "rights_status": "试听音色须另行声明权利；当前不进入发布包",
+    "reason": "只试听一句输入后回应，用来判断时代用语、克制与关系压力，不为整段场景配音。"
+  }
+}

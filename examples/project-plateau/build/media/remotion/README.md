@@ -34,25 +34,89 @@ tempo; only an overlong take is accelerated enough to meet the 30.8-second
 ceiling. This avoids the slow, artificially aged sound caused by stretching a
 short take across the timeline. The API key is read only from the process
 environment. The ignored source MP3 and normalized WAV must never be committed.
-An ignored metadata sidecar records the model, script hash, source hash and a
-hash of the selected reference—never the API key—so `voiceover:remix` cannot
-silently reuse stale audio.
+An ignored metadata sidecar records the complete request fingerprint, source
+hash and a hash of the selected reference—never the API key—so
+`voiceover:remix` cannot silently reuse stale audio. Calls have a bounded
+timeout and bounded retry for rate limits and recoverable service errors. A
+successful response is accepted only when its media type and file signature
+match the requested audio format.
 
 ```bash
-FISH_API_KEY=... npm run voiceover
+FISH_API_KEY=... \
+FISH_VOICE_RIGHTS_ATTESTED=1 \
+npm run voiceover
 ```
 
 To test a different voice model you have the rights to, override the configured
-public voice with `FISH_REFERENCE_ID`. If only the local timing or mix
+public voice with `FISH_REFERENCE_ID` and set
+`FISH_VOICE_RIGHTS_ATTESTED=1`. If only the local timing or mix
 configuration changes, reuse the ignored response without another API request:
 
 ```bash
-npm run voiceover:remix
+FISH_VOICE_RIGHTS_ATTESTED=1 npm run voiceover:remix
 ```
+
+Generation writes a schema-4 ignored sidecar that binds the provider request,
+source MP3, normalization plan and final WAV hashes. `npm run
+verify:voiceover` returns `AUTOMATED_PASS` only when those links and the audio
+measurements agree. It does not mean the take may be released.
 
 Fish Audio model behavior and service terms can change independently of this
 repository. Review <https://docs.fish.audio/features/text-to-speech> and
 <https://fish.audio/terms> before a new public render.
+
+## Restrained three-project voice trial
+
+`tts-review-scenarios.json` deliberately selects only one high-value voice
+moment per game. Project Plateau reuses its existing launch narration;
+*Jin Ping Mei* tests one post-input Wu Yueniang boundary line, and *Journey to
+the West* tests the first Luosha confrontation. These are ignored review
+samples, not approved runtime assets. The tool sends only the selected
+line—never the novel, source bible or design documents—and requires an
+explicitly rights-attested voice reference.
+
+```bash
+FISH_API_KEY=... \
+FISH_REFERENCE_ID_JPM_YUENIANG=... \
+FISH_REFERENCE_ID_XIYOU_LUOSHA=... \
+FISH_VOICE_RIGHTS_ATTESTED=1 \
+npm run tts:trials
+npm run verify:voiceover
+npm run verify:tts-trials
+```
+
+The two character candidates are owned by their respective
+`design/VOICE_AUDITION.json` files. Both keep runtime adoption at `none`; the
+Project Plateau tool supplies provider bindings but cannot silently redesign
+either game.
+
+Run `npm run tts:matrix` only for a deliberate QA pass. It adds short and long
+speech, English and Chinese, emotion transitions, pause/laughter, names and
+numbers. It does not add those lines to any game. Generated files and their
+private manifest stay under ignored `out/tts-review-scenarios/`.
+
+```bash
+FISH_API_KEY=... \
+FISH_REFERENCE_ID=... \
+FISH_REFERENCE_ID_ZH=... \
+FISH_VOICE_RIGHTS_ATTESTED=1 \
+npm run tts:matrix
+npm run verify:tts-matrix
+```
+
+`npm run verify:voiceover` and `npm run verify:tts-trials` prove file decode,
+format, bitrate, duration, audible signal, clipping, true peak and edge silence;
+the normalized release narration also has a project loudness target. They cannot
+prove pronunciation, intelligibility, acting or creative fit. Automated reports
+use `AUTOMATED_PASS`, while release remains `BLOCKED` until
+`voiceover-review.json` records hash-bound rights and human listening approval.
+After review, copy the exact reference, source and normalized hashes from local
+`out/voiceover-qa.json` into the approval fields, retain the rights evidence
+locator and reviewer identity, set `releaseStatus` to `APPROVED`, then run
+`npm run verify:voiceover:release`.
+Run `npm run test:tts` to exercise request fingerprints, bounded retries,
+timeouts, response validation, secret redaction, disclosure/response-size
+limits, and the audio-analysis failure gates without making a provider call.
 
 ## Render
 
@@ -61,13 +125,20 @@ it does not, regenerate it using the parent media-pack instructions.
 
 ```bash
 npm install
-FISH_API_KEY=... npm run voiceover
+FISH_API_KEY=... FISH_VOICE_RIGHTS_ATTESTED=1 npm run voiceover
+npm run verify:voiceover
 npm run render:frames
 npm run render
 npm run verify
 npm run compress:github
 npm run verify:github
 ```
+
+`npm run render` starts with `verify:voiceover:release` and refuses to render
+while `voiceover-review.json` is `BLOCKED`, either review is `NOT_RUN`, the
+approval refers to different audio hashes or rights evidence is absent. Preview
+frames remain available for review without
+claiming release approval.
 
 The final delivery file is
 `out/project-plateau-promo-36s.mp4`. Review stills are written to `out/review/`.

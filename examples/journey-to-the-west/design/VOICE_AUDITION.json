@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "AUDITION_APPROVED_NOT_RUNTIME_ADOPTED",
+  "runtimeVoiceStrategy": "none",
+  "candidate": {
+    "id": "journey-to-the-west-first-confrontation",
+    "project": "journey-to-the-west",
+    "language": "zh-Hans",
+    "speaker": "铁扇公主（罗刹女）",
+    "voice_profile": {
+      "casting_id": "journey-to-the-west-princess-iron-fan-zh",
+      "role": "character",
+      "gender_presentation": "女性",
+      "age_presentation": "成熟成年女性",
+      "delivery": "偏低音区、短促有威势，带武人敌意但怒意受控",
+      "must_not_sound_like": "吴月娘的克制持家声线、甜美动漫少女、温和旁白或男性声线"
+    },
+    "text": "[angry, controlled] 孙悟空!你还有脸上我这翠云山?",
+    "source_ref": "examples/journey-to-the-west/build/app/js/text.js#TEXT.story.luoshaPre1[0]",
+    "player_action": "玩家完成土地问讯并首次正面求扇",
+    "incremental_value": "试听罗刹女的威势、旧怨和武人式克制是否能被听辨",
+    "trigger_window": "首次对峙的独立开场，不与战斗输入重叠",
+    "expected_repeats": "试听一次",
+    "muted_result": "原字幕与战斗提示完整保留",
+    "rights_status": "试听音色须另行声明权利；当前不进入发布包",
+    "reason": "只试听一句关键对峙，用来判断人物在场感，不把每个对话框都变成语音。"
+  }
+}

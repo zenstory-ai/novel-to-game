@@ -40,6 +40,20 @@ PLUGIN_MANIFESTS = {
 # The repository validator checks only its own skill prose; it does not impose a
 # framework, schema package, or runtime dependency on generated projects.
 MINIMAL_EVIDENCE_REQUIREMENTS = {
+    "skills/game-art-direction/SKILL.md": (
+        "语音策略",
+        "采用门禁",
+        "静音 / 缺音降级",
+        "音色权利",
+    ),
+    "skills/game-art-direction/references/art-direction-method.md": (
+        "硬否决",
+        "增量价值",
+        "触发窗口",
+        "最小覆盖原则",
+        "角色级选角",
+        "宣传资产不自动变成游戏内资产",
+    ),
     "skills/game-build/references/build-brief-contract.md": (
         "targetRuntime:",
         "testedRuntime:",
@@ -47,18 +61,34 @@ MINIMAL_EVIDENCE_REQUIREMENTS = {
         "verify:",
         "completeRun: qa/verification.json#completeRun",
         "evidenceIndex: qa/verification.json#checkpoints",
+        "语音资产台账",
+        "request_sha256",
     ),
     "skills/game-build/SKILL.md": (
         "权威验证命令",
         "verify.log",
         "executed: true",
         "clean start",
+        "tts-production-contract.md",
+        "服务端",
+    ),
+    "skills/game-build/references/tts-production-contract.md": (
+        "采用决策交接",
+        "决定=采用",
+        "构建期优先",
+        "最小发送",
+        "Retry-After",
+        "请求指纹",
+        "NOT_RUN: 原因",
+        "人工试听",
+        "不得只按语言选一个",
     ),
     "skills/game-qa/SKILL.md": (
         "ORPHANED_TEST_SUITE",
         "qa/verification.json",
         "discovered from",
         "clean start",
+        "语音与 TTS",
     ),
     "skills/game-qa/references/qa-contract.md": (
         "目标运行环境",
@@ -66,6 +96,12 @@ MINIMAL_EVIDENCE_REQUIREMENTS = {
         "NOT_RUN: reason",
         "同一个 complete-run step",
         "同一个 source commit",
+        "API 密钥",
+        "人工试听",
+        "说话人与选角",
+        "损坏文件",
+        "采用范围",
+        "scope drift",
     ),
 }
 EXAMPLE_PLANNING_FILES = {
@@ -80,6 +116,7 @@ EXAMPLE_PLANNING_FILES = {
 OPTIONAL_PLANNING_FILES = {
     "analysis/_coverage.md",
     "build/asset-ledger.json",
+    "design/VOICE_AUDITION.json",
 }
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")

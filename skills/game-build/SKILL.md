@@ -38,6 +38,11 @@ description: "Build the game for its approved target runtime. Compress GAME_DESI
 不可用时只交付完整构建说明，不声称游戏已经生成。不要发送与原型无关的完整受版权
 保护原文。
 
+`ART_DIRECTION.md` 的语音策略不是 `none` 时，再读取
+[tts-production-contract.md](references/tts-production-contract.md)。TTS 默认在构建期生成、验证后
+作为本地资产随包交付；核心合同只锁台词、权利、证据与降级，不锁供应商。运行时远程合成只有在
+`PRODUCT_BRIEF.md` 已批准联网与外部文本处理时才可采用，且密钥只能留在受信服务端。
+
 可复用技法见 [production-techniques.md](references/production-techniques.md)：灰盒先行 +
 皮肤层（资产可替换）、可复现的种子随机、把实现模型当导演对象驱动、多视角试玩 → 设计期
 品类保真门、手感打磨(juice) 清单（按类型取用、动效可关）、批量资产受管子流程（视觉键

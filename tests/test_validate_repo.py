@@ -520,6 +520,202 @@ class RepositoryValidationTests(unittest.TestCase):
                 content = (ROOT / relative_path).read_text(encoding="utf-8")
                 self.assertIn(marker, content)
 
+    def test_tts_contract_stays_provider_neutral_and_minimizes_source_disclosure(self) -> None:
+        contract = (
+            ROOT / "skills/game-build/references/tts-production-contract.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("Fish Audio", contract)
+        self.assertNotIn("s2.1", contract)
+        self.assertIn("不上传完整小说", contract)
+        self.assertIn("运行时不需要网络或密钥", contract)
+        self.assertIn("人工试听", contract)
+
+        decision_method = (
+            ROOT / "skills/game-art-direction/references/art-direction-method.md"
+        ).read_text(encoding="utf-8")
+        for marker in (
+            "硬否决",
+            "增量价值",
+            "触发窗口",
+            "最小覆盖原则",
+            "宣传资产不自动变成游戏内资产",
+            "运行时动态",
+            "角色级选角",
+            "性别呈现",
+        ):
+            self.assertIn(marker, decision_method)
+        self.assertNotIn("Fish Audio", decision_method)
+
+    def test_fish_audio_trials_are_sparse_and_never_release_assets_by_default(self) -> None:
+        config = json.loads(
+            (
+                ROOT
+                / "examples/project-plateau/build/media/remotion/tts-review-scenarios.json"
+            ).read_text(encoding="utf-8")
+        )
+        policy = config["policy"]
+        self.assertEqual(policy["maximumSelectedLinesPerGame"], 1)
+        self.assertFalse(policy["generatedFilesAreReleaseAssets"])
+        self.assertTrue(policy["humanListeningRequiredBeforeIntegration"])
+
+        trials = []
+        for configured in config["scenarios"]:
+            if configured["scope"] != "project-trial":
+                continue
+            trial = dict(configured)
+            if candidate_ref := trial.get("candidate_ref"):
+                for owned_field in (
+                    "language",
+                    "speaker",
+                    "voice_profile",
+                    "text",
+                    "source_ref",
+                    "player_action",
+                    "incremental_value",
+                    "trigger_window",
+                    "expected_repeats",
+                    "muted_result",
+                    "rights_status",
+                    "reason",
+                ):
+                    self.assertNotIn(owned_field, configured)
+                candidate_document = json.loads(
+                    (ROOT / candidate_ref).read_text(encoding="utf-8")
+                )
+                self.assertEqual(
+                    candidate_document["status"],
+                    "AUDITION_APPROVED_NOT_RUNTIME_ADOPTED",
+                )
+                self.assertEqual(candidate_document["runtimeVoiceStrategy"], "none")
+                # The ownership fence runs both ways: an audition document must not be able to
+                # rescope, recast or re-bound the trial the provider config declared.
+                for provider_field in (
+                    "scope",
+                    "source",
+                    "reference_env",
+                    "file",
+                    "metadata_file",
+                    "minimum_seconds",
+                    "maximum_seconds",
+                    "candidate_ref",
+                ):
+                    self.assertNotIn(provider_field, candidate_document["candidate"])
+                art_direction = (
+                    ROOT / candidate_ref
+                ).with_name("ART_DIRECTION.md").read_text(encoding="utf-8")
+                self.assertIn("VOICE_AUDITION.json", art_direction)
+                self.assertIn("不等于", art_direction)
+                trial.update(candidate_document["candidate"])
+            trials.append(trial)
+        self.assertEqual(
+            {item["project"] for item in trials},
+            {"project-plateau", "jin-ping-mei", "journey-to-the-west"},
+        )
+        counts: dict[str, int] = {}
+        for trial in trials:
+            counts[trial["project"]] = counts.get(trial["project"], 0) + 1
+            self.assertNotIn("source/", str(trial))
+            self.assertIn("source_ref", trial)
+            self.assertIn("speaker", trial)
+            profile = trial["voice_profile"]
+            for field in (
+                "casting_id",
+                "role",
+                "gender_presentation",
+                "age_presentation",
+                "delivery",
+                "must_not_sound_like",
+            ):
+                self.assertTrue(profile[field])
+            source_path = ROOT / trial["source_ref"].split("#", 1)[0]
+            self.assertTrue(source_path.is_file(), source_path)
+            if trial["source"] == "generate":
+                self.assertRegex(trial["reference_env"], r"^FISH_REFERENCE_ID_[A-Z0-9_]+$")
+                spoken_text = re.sub(r"^\[[^]]+\]\s*", "", trial["text"])
+                self.assertIn(spoken_text, source_path.read_text(encoding="utf-8"))
+            elif source_path.suffix == ".json":
+                source_voice = json.loads(source_path.read_text(encoding="utf-8"))["voice"]
+                self.assertEqual(trial["speaker"], source_voice["speaker"])
+                for field in ("casting_id", "role", "gender_presentation", "age_presentation"):
+                    self.assertEqual(profile[field], source_voice[field])
+        self.assertTrue(all(count == 1 for count in counts.values()))
+        generated = [trial for trial in trials if trial["source"] == "generate"]
+        self.assertEqual(len(generated), len({trial["reference_env"] for trial in generated}))
+        self.assertEqual(len(trials), len({trial["voice_profile"]["casting_id"] for trial in trials}))
+        gender_presentations = {
+            trial["voice_profile"]["gender_presentation"] for trial in trials
+        }
+        self.assertTrue({"male", "女性"}.issubset(gender_presentations))
+
+        jin_ping_mei = next(
+            item for item in trials if item["project"] == "jin-ping-mei"
+        )
+        self.assertIn("yueniang", jin_ping_mei["id"])
+        self.assertNotIn("title", jin_ping_mei["id"])
+
+        matrix_ids = {
+            item["id"] for item in config["scenarios"] if item["scope"] == "qa-matrix"
+        }
+        self.assertTrue(
+            {
+                "qa-en-short-bark",
+                "qa-zh-short-bark",
+                "qa-emotion-transition",
+                "qa-pause-and-laughter",
+                "qa-names-and-numbers",
+                "qa-long-continuity",
+            }.issubset(matrix_ids)
+        )
+
+    def test_review_scenario_generator_attests_rights_and_records_requests(self) -> None:
+        # The adapter's own guards (timeout, bounded retry, Retry-After, redirect refusal, response
+        # validation, streaming size limit, secret redaction) are asserted behaviourally in
+        # scripts/fish-tts-client.test.mjs, which runs in the same CI job. Only this generator has no
+        # JS test of its own, so its two runtime gates are checked here.
+        generator = (
+            ROOT
+            / "examples/project-plateau/build/media/remotion/scripts/generate-tts-review-scenarios.mjs"
+        ).read_text(encoding="utf-8")
+        self.assertIn("FISH_VOICE_RIGHTS_ATTESTED", generator)
+        self.assertIn("requestSha256", generator)
+
+    def test_voiceover_release_is_hash_bound_and_fail_closed(self) -> None:
+        remotion = ROOT / "examples/project-plateau/build/media/remotion"
+        package = json.loads((remotion / "package.json").read_text(encoding="utf-8"))
+        self.assertTrue(
+            package["scripts"]["render"].startswith("npm run verify:voiceover:release")
+        )
+        for suite in (
+            "fish-tts-client.test.mjs",
+            "audio-qa.test.mjs",
+            "tts-casting.test.mjs",
+            "voiceover-contract.test.mjs",
+        ):
+            self.assertIn(suite, package["scripts"]["test:tts"])
+
+        review = json.loads(
+            (remotion / "voiceover-review.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(review["releaseStatus"], "BLOCKED")
+        self.assertEqual(review["rights"]["status"], "NOT_RUN")
+        self.assertEqual(review["listening"]["status"], "NOT_RUN")
+
+        verifier = (remotion / "scripts/verify-voiceover.mjs").read_text(
+            encoding="utf-8"
+        )
+        for marker in (
+            "normalizedSha256",
+            "normalizationSha256",
+            "evaluateVoiceoverRelease",
+            "releaseMode",
+        ):
+            self.assertIn(marker, verifier)
+
+        workflow = (ROOT / ".github/workflows/validate.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("npm run test:tts", workflow)
+
     def test_readme_defaults_to_english_with_a_chinese_counterpart(self) -> None:
         english = (ROOT / "README.md").read_text(encoding="utf-8")
         chinese = (ROOT / "README_ZH.md").read_text(encoding="utf-8")

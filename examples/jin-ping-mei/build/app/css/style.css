@@ -68,6 +68,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 
 /* 年龄门 */
 .age-gate {
+  --age-safe-inline: min(36rem, 64vw);
   width: 100%;
   height: 100%;
   display: flex;
@@ -84,17 +85,36 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .age-gate::before {
   content: "";
   position: absolute;
-  width: min(50vw, 620px);
-  height: min(68vh, 620px);
+  top: 50%;
+  left: 50%;
+  width: min(82vw, 72rem);
+  height: min(84vh, 44rem);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
   border: 1px solid rgba(215,181,113,.28);
   box-shadow: inset 0 0 0 10px rgba(16,12,10,.55), inset 0 0 0 11px rgba(215,181,113,.16);
 }
-.age-gate > * { position: relative; z-index: 1; }
+.age-gate > * {
+  position: relative;
+  z-index: 1;
+  max-inline-size: var(--age-safe-inline);
+}
 .age-gate h1 { margin: .4rem 0 .8rem; font-size: clamp(2rem, 4vw, 4rem); letter-spacing: .15em; }
-.age-gate p:not(.eyebrow) { max-width: 36rem; margin: 0 0 1.6rem; font-family: var(--sans); line-height: 1.9; color: #cdbfa8; }
+.age-gate p:not(.eyebrow) {
+  inline-size: var(--age-safe-inline);
+  min-inline-size: 0;
+  margin: 0 0 1.6rem;
+  font-family: var(--sans);
+  line-height: 1.9;
+  color: #cdbfa8;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
 .age-seal {
   width: 78px;
   height: 78px;
+  /* 唯一可压缩的 flex 子项：不锁死会在 200% 文字缩放下被压扁成矩形来换取"不溢出"。 */
+  flex: none;
   display: grid;
   place-content: center;
   margin-bottom: 1.4rem;

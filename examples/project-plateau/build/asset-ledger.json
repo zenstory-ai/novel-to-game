@@ -289,12 +289,13 @@
       "releaseGatePassed": false,
       "source": "media/remotion/voiceover.json; media/remotion/scripts/generate-voiceover.mjs",
       "provenance": "Fish Audio s2.1-pro-free synthesis of the repository-authored English script using the public Energetic Male voice model 802e3bc2b27e49c2995d23ef70e6ac89; generated at 1.14 prosody speed and locally loudness-normalized",
-      "rights": "Generated through the Fish Audio API and subject to Fish Audio terms; the selected public voice is not a private clone and no real-person identity is claimed",
+      "rights": "NOT_APPROVED: generated through the Fish Audio API; the reference is hash-recorded, but retained evidence for voice eligibility and applicable account terms is still required",
       "evidence": [
         "media/remotion/voiceover.json",
+        "media/remotion/voiceover-review.json",
         "media/remotion/README.md"
       ],
-      "remaining": "Generated audio stays outside Git. The revised 30.81-second normalized WAV hash is e44e4c2571de1f37c4ea8933b337d7e6d2bd8d71a86276c654a4069e98c75a94. The 9.37 MB GitHub delivery hash is baaa1be4e9306dc6a9b5935b36124074db9a911b04d1bb414f7d1123a92e6fbc; subjective human listening and account-level terms review remain publication checks."
+      "remaining": "Generated audio stays outside Git. The ignored schema-4 sidecar binds request, source and normalized hashes, but voiceover-review.json remains BLOCKED until rights evidence and a hash-bound human listening approval are recorded. No newly generated take or render may be described as release-approved before that gate passes."
     }
   ]
 }

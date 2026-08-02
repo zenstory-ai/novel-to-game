@@ -1,6 +1,12 @@
 {
   "model": "s2.1-pro-free",
+  "language": "en-US",
   "voice": {
+    "speaker": "Project Plateau narrator",
+    "casting_id": "plateau-narrator-en",
+    "role": "narrator",
+    "gender_presentation": "male",
+    "age_presentation": "young adult",
     "reference_id": "802e3bc2b27e49c2995d23ef70e6ac89",
     "name": "Energetic Male",
     "source": "https://fish.audio/m/802e3bc2b27e49c2995d23ef70e6ac89/",
@@ -14,6 +20,10 @@
     "speed": 1.14,
     "temperature": 0.7,
     "top_p": 0.7
+  },
+  "request": {
+    "timeout_ms": 60000,
+    "max_attempts": 3
   },
   "mix": {
     "target_lufs": -16,

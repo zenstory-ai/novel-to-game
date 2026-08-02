@@ -20,7 +20,7 @@
 | 没有一个白天动作通吃全部路线 | `PROVED` | 四种白天动作路线亲和矩阵；`ledger/office/listen/banquet` 解锁集合不同 |
 | 白天所得能改变当夜选项 | `PROVED` | 金莲终段要求当日 `listen`；月娘和瓶儿有不同白天动作门槛 |
 | 人物秘密能解决后续经营压力 | `PROVED` | `shop_fraud`／`merchant_route` 等由人物线写入，`office` 消费并改变势、银、暴露 |
-| 至少一个选择延迟两回合后兑现 | `PROVED` | 第 1 日尊重月娘，第 3 日 `yue_delayed`；截图 `04_delayed_yue_morning.png` |
+| 至少一个选择延迟两回合后兑现 | `PROVED` | 第 1 日尊重月娘，第 3 日 `yue_delayed`；截图 `qa/evidence/browser/safe/04_delayed_yue_morning.jpg` |
 | 嫉妒只来自可见行为 | `PROVED` | 历史写入公开院门，事件明确说“花园角门”；状态与截图双证据 |
 
 ## 三名女主路线最低合同

@@ -94,6 +94,67 @@ def shot(page, folder: Path, name: str) -> None:
     page.screenshot(path=str(folder / f"{name}.jpg"), type="jpeg", quality=80)
 
 
+def check_scaled_age_gate(page, label: str) -> None:
+    viewport_width = page.evaluate("innerWidth")
+    viewport_height = page.evaluate("innerHeight")
+    frame = page.locator("#age-gate").evaluate(
+        """e => {
+          const style = getComputedStyle(e, '::before');
+          return {width: parseFloat(style.width), height: parseFloat(style.height)};
+        }"""
+    )
+    frame_left = (viewport_width - frame["width"]) / 2
+    frame_top = (viewport_height - frame["height"]) / 2
+    selectors = [
+        ".age-gate .age-seal",
+        ".age-gate .eyebrow",
+        ".age-gate h1",
+        ".age-gate p:not(.eyebrow)",
+        ".age-gate .button-row",
+        "#btn-age-yes",
+        "#btn-age-no",
+    ]
+    for selector in selectors:
+        box = page.locator(selector).bounding_box()
+        in_viewport = bool(
+            box
+            and box["x"] >= 0
+            and box["x"] + box["width"] <= viewport_width
+            and box["y"] >= 0
+            and box["y"] + box["height"] <= viewport_height
+        )
+        in_frame = bool(
+            box
+            and box["x"] >= frame_left
+            and box["x"] + box["width"] <= frame_left + frame["width"]
+            and box["y"] >= frame_top
+            and box["y"] + box["height"] <= frame_top + frame["height"]
+        )
+        check(in_viewport, f"{label} 200% 文字缩放时 {selector} 不越出视口")
+        check(in_frame, f"{label} 200% 文字缩放时 {selector} 不越出装饰框")
+    body_copy = page.locator(".age-gate p:not(.eyebrow)")
+    body_box = body_copy.bounding_box()
+    check(
+        bool(
+            body_box
+            and body_box["x"] >= viewport_width * 0.15
+            and body_box["x"] + body_box["width"] <= viewport_width * 0.85
+        ),
+        f"{label} 200% 文字缩放时年龄说明仍留在安全边距内",
+    )
+    check(
+        body_copy.evaluate("e => e.scrollWidth <= e.clientWidth"),
+        f"{label} 200% 文字缩放时年龄说明内部无横向溢出",
+    )
+    # 印章是年龄门里唯一可压缩的 flex 子项。只断言 bounding box 不越界的话，"不溢出"可以靠把
+    # 印章压成矩形买到——那不是修好了布局，是把失败挪到了看不见的地方。
+    seal = page.locator(".age-gate .age-seal").bounding_box()
+    check(
+        bool(seal and abs(seal["width"] - seal["height"]) <= max(2.0, seal["width"] * 0.06)),
+        f"{label} 200% 文字缩放时 18+ 印章未被压扁（{seal['width']:.1f}×{seal['height']:.1f}）" if seal else f"{label} 200% 文字缩放时 18+ 印章可测量",
+    )
+
+
 # 本作是纯 DOM/CSS 视觉小说：全项目零 requestAnimationFrame、零 canvas，没有逐帧渲染循环。
 # 采 rAF 间隔只会量到浏览器空闲垂直同步节拍（headless 恒为 ~8.3 ms），无论画面轻重都一样，
 # 因此帧率数字对本作**不构成**性能结论。真正会被玩家感知的是一次转场里主线程被阻塞多久，
@@ -246,6 +307,16 @@ def main() -> int:
             check("明确成人" in page.locator("#age-gate").inner_text(), "年龄门说明明确成人内容")
             check(page.locator("#scene-image,.title-art").count() == 0, "确认成年前不把 CG 放进 DOM")
             shot(page, SAFE, "01_age_gate")
+            page.evaluate("document.documentElement.style.fontSize = '200%'")
+            page.wait_for_timeout(80)
+            check_scaled_age_gate(page, "1280×800")
+            shot(page, SAFE, "01_age_gate_200pct_text")
+            page.set_viewport_size({"width": 1920, "height": 1080})
+            page.wait_for_timeout(80)
+            check_scaled_age_gate(page, "1920×1080")
+            page.set_viewport_size({"width": 1280, "height": 800})
+            page.evaluate("document.documentElement.style.fontSize = ''")
+            page.wait_for_timeout(80)
             click(page, "#btn-age-yes")
             check(page.locator(".title-screen").count() == 1, "确认后进入标题")
             check("你是西门庆" in page.locator(".identity-line").inner_text(), "标题明确玩家是西门庆")
@@ -430,14 +501,15 @@ def main() -> int:
     )
     check(worst_transition <= TRANSITION_BUDGET_MS,
           f"最重转场 点击→绘制 {worst_transition} ms ≤ {TRANSITION_BUDGET_MS} ms")
-    # 长任务按归因分档：启动期（首屏资产解码，已由 local_load_ms 门单独裁决）与
-    # 游戏中（玩家正在操作时的主线程阻塞，才是真卡顿）。
-    boot = [t for t in longtasks if t["at"] <= 1500]
-    ingame = [t for t in longtasks if t["at"] > 1500]
+    # 长任务按归因分档：启动期（年龄门/首屏，玩家还没进入游戏）与游戏中（玩家正在操作时的
+    # 主线程阻塞，才是真卡顿）。用观察器已记录的 phase 归因，不用挂钟时间——挂钟阈值会随
+    # 测试自身新增的步骤漂移，把真实的游戏中卡顿挪进"启动期"豁免里。
+    boot = [t for t in longtasks if t["phase"] == "?"]
+    ingame = [t for t in longtasks if t["phase"] != "?"]
     worst_boot = max((t["ms"] for t in boot), default=0)
     worst_ingame = max((t["ms"] for t in ingame), default=0)
     if boot:
-        print(f"  启动期长任务: {sorted((t['ms'] for t in boot), reverse=True)}（首屏资产解码，见 local_load_ms 门）")
+        print(f"  启动期长任务: {sorted((t['ms'] for t in boot), reverse=True)}（年龄门/首屏，玩家尚未进入游戏）")
     check(worst_ingame < STALL_MS,
           f"游戏中无 >{STALL_MS:.0f} ms 主线程长任务（最坏 {worst_ingame} ms，共 {len(ingame)} 次 >50 ms）")
 
@@ -448,7 +520,8 @@ def main() -> int:
     evidence = {
         "url": URL,
         "normal_speed_run": SLOW,
-        "viewport": "1280x800",
+        "viewports": ["1280x800", "1920x1080"],
+        "scaled_age_gate_viewports": ["1280x800@200%-text", "1920x1080@200%-text"],
         "passed": passed,
         "failed": failed,
         "console_errors": errors,
@@ -468,7 +541,8 @@ def main() -> int:
         "safe_screenshots": sorted(p.name for p in SAFE.glob("*.jpg")),
         "adult_screenshots": sorted(p.name for p in ADULT.glob("*.jpg")),
     }
-    (SHOTS / "evidence.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8")
+    run_evidence = SHOTS / ("evidence-normal.json" if SLOW else "evidence-fast.json")
+    run_evidence.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"\n控制台错误: {len(errors)}；资源失败: {len(network_errors)}")
     print(f"包体: {size_bytes/1048576:.2f} MB；外部域: {external or '无'}")
     print(f"结果: {passed} 通过, {failed} 失败；证据 → {SHOTS}")

@@ -76,11 +76,11 @@ QA_SLOW=1 python3 test/qa_browser.py  # 正常速度完整路径，时序证据�
 当前证据基线：
 
 - 纯引擎：52 项通过，0 项失败；
-- 真实 Chromium：133 项通过，0 项失败（加速与正常速度两轮各一次）；
+- 真实 Chromium：167 项通过，0 项失败（加速与正常速度两轮各一次）；
 - 控制台错误 0，关键资源失败 0，外部请求域 0；
-- 最重转场（群体冲突场景册关闭）点击→绘制 6.4 ms（加速）/ 18.3 ms（正常速度）；
-- 主线程长任务：仅启动期一次 172–217 ms（首屏资产解码，由 `local_load_ms` 门单独裁决），游戏中 0 次；
-- 浏览器证据：`qa/evidence/browser/evidence.json`；
+- 最重转场（群体冲突场景册关闭）点击→绘制 12.3 ms（加速）/ 38.2 ms（正常速度）；
+- 主线程长任务：按观察器记录的 `phase` 归因，仅年龄门/首屏一次 171 ms（加速）/ 181 ms（正常速度），玩家进入游戏后 0 次；
+- 浏览器证据：`qa/evidence/browser/evidence-fast.json`（加速）与 `evidence-normal.json`（正常速度）；
 - 安全截图：`qa/evidence/browser/safe/`；
 - 18+ 内部验收截图：`qa/evidence/browser/adult/`（已 gitignore，不随仓库发布），不得用于 README 或公开商店页。
 

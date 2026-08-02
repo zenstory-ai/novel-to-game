@@ -1,25 +1,40 @@
 {
-  "date": "2026-07-25",
+  "date": "2026-08-01",
   "status": "PASS",
   "scope": "playable_slice_with_household_short_arcs",
   "engine": {
     "command": "node test/ledger.mjs",
-    "passed": 46,
+    "passed": 52,
     "failed": 0
   },
   "browser": {
-    "command": "python3 test/qa_browser.py",
-    "passed": 130,
-    "failed": 0,
+    "commands": [
+      "python3 test/qa_browser.py",
+      "QA_SLOW=1 python3 test/qa_browser.py"
+    ],
+    "runs": {
+      "fast": "qa/evidence/browser/evidence-fast.json",
+      "normal": "qa/evidence/browser/evidence-normal.json"
+    },
+    "passed_per_run": 167,
+    "failed_per_run": 0,
     "console_errors": 0,
     "network_errors": 0,
     "http_errors": 0,
     "viewports": [
       "1280x800",
-      "1920x1080"
+      "1920x1080",
+      "1280x800@200%-text",
+      "1920x1080@200%-text"
     ],
-    "local_load_ms": 99.3,
-    "average_frame_interval_ms": 8.3,
+    "local_load_ms": {
+      "fast": 40.1,
+      "normal": 30.9
+    },
+    "worst_transition_to_paint_ms": {
+      "fast": 14.1,
+      "normal": 8.1
+    },
     "minimum_text_px": {
       "control": 13,
       "body": 14,
@@ -28,10 +43,8 @@
   },
   "app_size_mb": 6.0,
   "visual_verdict": {
-    "iteration": 6,
-    "score": 94,
-    "threshold": 90,
-    "verdict": "pass"
+    "status": "NOT_RUN",
+    "reason": "The prior aggregate score is not backed by a retained frame-by-frame verdict artifact."
   },
   "public_screenshots": [
     "screenshots/title.jpg",
@@ -40,7 +53,10 @@
     "screenshots/banquet.jpg",
     "screenshots/ending.jpg"
   ],
-  "runtime_evidence": "/tmp/jpm_qa",
+  "runtime_evidence": [
+    "qa/evidence/browser/evidence-fast.json",
+    "qa/evidence/browser/evidence-normal.json"
+  ],
   "human_target_player_gate": "NOT_RUN",
   "claim_limit": "可运行垂直切片；未证明好玩、性感、长期平衡或扩展可行性",
   "copy_review": {

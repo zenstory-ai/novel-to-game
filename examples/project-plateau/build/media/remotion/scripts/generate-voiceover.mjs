@@ -1,8 +1,16 @@
-import {createHash} from 'node:crypto';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+
+import {requestFishTts} from './fish-tts-client.mjs';
+import {
+  VOICEOVER_METADATA_SCHEMA,
+  buildNormalizationPlan,
+  buildVoiceoverRequestContract,
+  resolveVoiceoverReference,
+  sha256,
+} from './voiceover-contract.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
@@ -13,84 +21,63 @@ const reuseSource = process.argv.includes('--reuse-source');
 const source = path.join(publicDir, 'voiceover-source.mp3');
 const sourceMetadataPath = path.join(publicDir, 'voiceover-source.json');
 const output = path.join(publicDir, 'voiceover.wav');
-const textSha256 = createHash('sha256').update(config.text).digest('hex');
-const configuredReferenceId = config.voice?.reference_id;
-const referenceId = process.env.FISH_REFERENCE_ID || configuredReferenceId;
-const referenceSha256 = referenceId
-  ? createHash('sha256').update(referenceId).digest('hex')
-  : null;
+const {referenceId, referenceSha256, referenceSource} = resolveVoiceoverReference(config);
+const requestContract = buildVoiceoverRequestContract(config, referenceId);
 
 if (!reuseSource && !apiKey) {
   throw new Error('FISH_API_KEY is required. Pass it through the environment; never add it to this repository.');
 }
+if (referenceId && process.env.FISH_VOICE_RIGHTS_ATTESTED !== '1') {
+  throw new Error('Set FISH_VOICE_RIGHTS_ATTESTED=1 to attest that the selected voice reference may be used.');
+}
 
 await mkdir(publicDir, {recursive: true});
 
-const body = {
-  text: config.text,
-  format: config.delivery.format,
-  sample_rate: config.delivery.sample_rate,
-  mp3_bitrate: config.delivery.mp3_bitrate,
-  temperature: config.delivery.temperature,
-  top_p: config.delivery.top_p,
-  latency: 'normal',
-  normalize: true,
-  prosody: {
-    speed: config.delivery.speed,
-    volume: 0,
-    normalize_loudness: true,
-  },
-};
-
-if (referenceId) body.reference_id = referenceId;
-
 let sourceMetadata;
 if (!reuseSource) {
-  const response = await fetch('https://api.fish.audio/v1/tts', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      model: config.model,
-    },
-    body: JSON.stringify(body),
+  const result = await requestFishTts({
+    apiKey,
+    endpoint: requestContract.endpoint,
+    model: config.model,
+    body: requestContract.body,
+    timeoutMs: config.request?.timeout_ms ?? 60_000,
+    maxAttempts: config.request?.max_attempts ?? 3,
   });
-
-  if (!response.ok) {
-    const error = (await response.text()).slice(0, 500);
-    throw new Error(`Fish Audio TTS failed with HTTP ${response.status}: ${error}`);
-  }
-
-  const audio = Buffer.from(await response.arrayBuffer());
-  if (audio.length < 1024) throw new Error('Fish Audio returned an unexpectedly small response.');
+  const {audio} = result;
   await writeFile(source, audio, {mode: 0o600});
   sourceMetadata = {
-    schemaVersion: 2,
+    schemaVersion: VOICEOVER_METADATA_SCHEMA,
+    provider: 'fish-audio',
+    endpoint: requestContract.endpoint,
     model: config.model,
-    textSha256,
-    sourceSha256: createHash('sha256').update(audio).digest('hex'),
+    textSha256: requestContract.textSha256,
+    requestSha256: requestContract.requestSha256,
+    sourceSha256: sha256(audio),
     referenceSha256,
-    reference: process.env.FISH_REFERENCE_ID
-      ? 'environment-provided-reference'
-      : configuredReferenceId
-        ? 'configured-public-reference'
-        : 'provider-default',
+    attempts: result.attempts,
+    contentType: result.contentType,
+    reference: referenceSource,
   };
-  await writeFile(sourceMetadataPath, `${JSON.stringify(sourceMetadata, null, 2)}\n`, {mode: 0o600});
 } else {
   const [sourceAudio, rawMetadata] = await Promise.all([
     readFile(source),
     readFile(sourceMetadataPath, 'utf8'),
   ]);
   sourceMetadata = JSON.parse(rawMetadata);
-  const sourceSha256 = createHash('sha256').update(sourceAudio).digest('hex');
+  const sourceSha256 = sha256(sourceAudio);
   if (
+    sourceMetadata.schemaVersion !== VOICEOVER_METADATA_SCHEMA ||
+    sourceMetadata.provider !== 'fish-audio' ||
+    sourceMetadata.endpoint !== requestContract.endpoint ||
     sourceMetadata.model !== config.model ||
-    sourceMetadata.textSha256 !== textSha256 ||
+    sourceMetadata.textSha256 !== requestContract.textSha256 ||
+    sourceMetadata.requestSha256 !== requestContract.requestSha256 ||
     sourceMetadata.sourceSha256 !== sourceSha256 ||
     sourceMetadata.referenceSha256 !== referenceSha256
   ) {
-    throw new Error('The ignored Fish Audio source does not match the current model, script, or recorded hash.');
+    throw new Error(
+      'The ignored Fish Audio source does not match the current request contract. Regenerate it with a safe rotated environment credential; legacy sidecars are not silently trusted.',
+    );
   }
   console.log('Reusing the existing ignored Fish Audio source file.');
 }
@@ -102,25 +89,11 @@ const probe = spawnSync(
 );
 if (probe.status !== 0) throw new Error(`Could not probe generated voiceover: ${probe.stderr}`);
 
-const sourceDuration = Number(probe.stdout.trim());
-if (!Number.isFinite(sourceDuration) || sourceDuration <= 0) {
-  throw new Error(`Invalid generated voiceover duration: ${probe.stdout.trim()}`);
-}
-
 // Preserve the model's requested prosody. Only accelerate as a safety valve when
 // a generated take would overrun the visual CTA; never stretch a short take to
 // fill the timeline, which makes speech sound slow and artificially aged.
-const speed = Math.max(1, sourceDuration / config.mix.maximum_seconds);
-if (speed > 2) {
-  throw new Error(
-    `Generated voiceover cannot be fit cleanly: ${sourceDuration.toFixed(2)}s → ${config.mix.maximum_seconds.toFixed(2)}s`,
-  );
-}
-
-const filters = [];
-if (Math.abs(speed - 1) > 0.001) filters.push(`atempo=${speed.toFixed(6)}`);
-filters.push('highpass=f=70');
-filters.push(`loudnorm=I=${config.mix.target_lufs}:TP=${config.mix.true_peak_db}:LRA=7`);
+const sourceDuration = Number(probe.stdout.trim());
+const normalizationPlan = buildNormalizationPlan(config, sourceDuration, sourceMetadata.sourceSha256);
 
 const transcode = spawnSync(
   'ffmpeg',
@@ -132,7 +105,7 @@ const transcode = spawnSync(
     '-i',
     source,
     '-af',
-    filters.join(','),
+    normalizationPlan.filters.join(','),
     '-ar',
     '48000',
     '-ac',
@@ -153,6 +126,15 @@ const finalProbe = spawnSync(
 );
 if (finalProbe.status !== 0) throw new Error(`Could not probe normalized voiceover: ${finalProbe.stderr}`);
 
+sourceMetadata = {
+  ...sourceMetadata,
+  schemaVersion: VOICEOVER_METADATA_SCHEMA,
+  normalizedSha256: sha256(normalized),
+  normalizationSha256: normalizationPlan.normalizationSha256,
+  normalizedDurationSeconds: Number(Number(finalProbe.stdout).toFixed(4)),
+};
+await writeFile(sourceMetadataPath, `${JSON.stringify(sourceMetadata, null, 2)}\n`, {mode: 0o600});
+
 console.log(`Generated voiceover.wav (${Number(finalProbe.stdout).toFixed(2)}s, ${normalized.length} bytes)`);
-console.log(`Voiceover sha256 ${createHash('sha256').update(normalized).digest('hex')}`);
+console.log(`Voiceover sha256 ${sourceMetadata.normalizedSha256}`);
 console.log(`Voice model ${config.voice?.name || sourceMetadata.reference}`);

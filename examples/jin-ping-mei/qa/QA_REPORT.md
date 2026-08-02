@@ -4,6 +4,8 @@
 
 - 自动化工程验收：**`PASS`**（2026-07-28 复审：F1、F2 两条 `major` 已修复并加断言，
   证据路径由 `/tmp` 改落工作区内 `qa/evidence/`，零 `blocker`、零 `major`）
+- 2026-08-01 可读性复审：年龄门新增 200% 文字缩放与装饰框边界门禁；加速和正常速度路径均
+  **167 通过 / 0 失败**，覆盖 `1280×800` 与 `1920×1080` 两个视口，控制台与资源错误均为 0。
 - 裁决沿革：2026-07-25 记 `PASS 0/0/0`（已作废）→ 2026-07-26 复审记 `FAIL`
   （`/tmp` 证据失效 + 2 `major`）→ 2026-07-28 修复后记 `PASS`
 - `blocker`：0
@@ -22,8 +24,8 @@
 
 | 项 | 值 |
 |---|---|
-| 日期 | 2026-07-25 |
-| 页面 | `http://127.0.0.1:5173/?seed=42&fast=1` |
+| 日期 | 2026-08-01 |
+| 页面 | `http://127.0.0.1:5173/?seed=42`；加速复跑另用 `&fast=1` |
 | 运行形态 | 原生 ES Module + DOM，无构建步骤 |
 | 浏览器 | Playwright Chromium |
 | 目标视口 | `1280×800`、`1920×1080` |
@@ -38,7 +40,8 @@ node test/ledger.mjs
 # 结果：52 通过，0 失败
 
 python3 test/qa_browser.py
-# 结果：133 通过，0 失败
+QA_SLOW=1 python3 test/qa_browser.py
+# 两次结果均为：167 通过，0 失败
 # 控制台错误：0；关键资源失败：0
 ```
 
@@ -49,6 +52,8 @@ python3 test/qa_browser.py
 `qa/evidence/`，安全截图落 `qa/evidence/browser/safe/`，18+ 内部截图落受限子目录
 `qa/evidence/browser/adult/`（已 gitignore，不随仓库发布）。加速与正常速度（`QA_SLOW=1`）
 各复跑一轮，均 133 通过 / 0 失败，下表截图证据已重新生成、恢复有效。
+2026-08-01 布局修复后再次以加速和正常速度各复跑一轮，最新均为 167 通过 / 0 失败；
+两轮原始摘要分别落在 `evidence-fast.json` 与 `evidence-normal.json`，各自独立留存，不再另写合并副本。
 
 ## 关键不变量
 
@@ -57,9 +62,10 @@ python3 test/qa_browser.py
 
 | 检查 | 结果 | 证据 |
 |---|---|---|
-| 确认成年前无 CG 进入 DOM | 通过 | `safe/01_age_gate.png`、浏览器断言 |
-| 开场明确“你是西门庆” | 通过 | `safe/02_title.png` |
-| 首个有意义选择写入公开历史 | 通过 | `safe/03_opening_choice_done.png`、状态断言 |
+| 确认成年前无 CG 进入 DOM | 通过 | `safe/01_age_gate.jpg`、浏览器断言 |
+| 年龄门在 200% 文字缩放时不越出视口或装饰框 | 通过 | `safe/01_age_gate_200pct_text.jpg`、横纵 bounding box 与 scrollWidth 断言 |
+| 开场明确“你是西门庆” | 通过 | `safe/02_title.jpg` |
+| 首个有意义选择写入公开历史 | 通过 | `safe/03_opening_choice_done.jpg`、状态断言 |
 | 白天资源能改变当夜可用选择 | 通过 | 纯引擎前置测试、三条浏览器路线 |
 | 女主秘密能反哺后续经营 | 通过 | `merchant_route` 的写入与消费断言 |
 | 每名女主路线、拒绝和人物结果可达 | 通过 | 月娘／金莲／瓶儿完整路径断言 |
@@ -72,9 +78,9 @@ python3 test/qa_browser.py
 | 玩家可见文案不露策划术语 | 通过 | AI 高危句式、UI 术语与六人声口静态门禁 |
 | 真实拒绝路径可继续且不误解锁 | 通过 | 瓶儿只取钱 → 锁定原因 → `leave` → 次晨 |
 | 亲密后至少两项状态改变且有次晨回响 | 通过 | 场景效果、`morning` 状态与关系边界测试 |
-| 嫉妒来自可见痕迹 | 通过 | `safe/09_jealousy_chain.png`；文本点名“花园角门” |
-| 两回合延迟后果可见 | 通过 | `safe/04_delayed_yue_morning.png` |
-| 中秋三人群体冲突真实触发 | 通过 | `safe/06_banquet_conflict.png` |
+| 嫉妒来自可见痕迹 | 通过 | `safe/09_jealousy_chain.jpg`；文本点名“花园角门” |
+| 两回合延迟后果可见 | 通过 | `safe/04_delayed_yue_morning.jpg` |
+| 中秋三人群体冲突真实触发 | 通过 | `safe/06_banquet_conflict.jpg` |
 | 3 种策略各有不同收束 | 通过 | 纯引擎极端策略测试 |
 | 7 个唯一 `scene_id` 全可达、全入册 | 通过 | schema、资产、浏览器图库断言 |
 | 重开清周目但保留场景册 | 通过 | 浏览器重开与 `localStorage` 断言 |
@@ -83,9 +89,9 @@ python3 test/qa_browser.py
 | 缺关键 CG 失败而非灰盒回退 | 通过 | 资产加载器与缺失资产测试 |
 | 同 seed + 同选择可复现 | 通过 | 纯引擎快照比较 |
 | 目标视口无关键遮挡或溢出 | 通过 | 双视口 bounding box 断言 |
-| 首屏、转场延迟、包体达到预算 | 通过 | 33.2 ms 首屏、最重转场 18.3 ms（正常速度）、6.0 MB |
+| 首屏、转场延迟、包体达到预算 | 通过 | 25.5 ms 首屏、最重转场 38.2 ms（正常速度）、6.0 MB |
 | 无外部请求域（切片自包含） | 通过 | 全程请求域仅 `127.0.0.1:5173` |
-| 游戏中无主线程长任务 | 通过 | longtask 观测：游戏中 0 次 >50 ms；启动期 1 次 172 ms（首屏解码） |
+| 游戏中无主线程长任务 | 通过 | longtask 按观察器 `phase` 归因（非挂钟时间）：玩家进入游戏后 0 次 >50 ms；年龄门/首屏各 1 次，加速 171 ms、正常速度 181 ms，均低于 200 ms 门 |
 | 最小视口文字达到可读地板 | 通过 | 功能标签 13px、正文 14px、人物原因 12px |
 | 键盘与降运动路径 | 通过 | Tab 聚焦、`prefers-reduced-motion` 断言 |
 | 静音持久化 | 通过 | UI 切换后新页面仍读取 `jpm_mute` |
@@ -125,8 +131,9 @@ python3 test/qa_browser.py
 - `screenshots/ending.jpg`
 - `qa/evidence/automated.json`
 - `qa/evidence/design-invariants.md`（2026-07-26 复审静态对照）
-- `qa/evidence/browser/evidence.json`（2026-07-28 复跑：请求域、转场延迟、长任务、包体）
-- `qa/evidence/browser/safe/` 共 11 张：01_age_gate、02_title、03_opening_choice_done、
+- `qa/evidence/browser/evidence-fast.json`（2026-08-01 加速复跑）
+- `qa/evidence/browser/evidence-normal.json`（2026-08-01 正常速度复跑）
+- `qa/evidence/browser/safe/` 共 12 张：01_age_gate、01_age_gate_200pct_text、02_title、03_opening_choice_done、
   04_delayed_yue_morning、06_banquet_conflict、07_exclusive_ending、08_gallery_after_yue、
   09_jealousy_chain，以及 household_meng_yulou / household_sun_xuee / household_li_jiaoer
 

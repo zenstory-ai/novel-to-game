@@ -39,6 +39,7 @@ A one-line “turn this book into a game” prompt often produces a generic resk
 - **Source-grounded adaptation:** extract rules, spaces, character agency, conflicts, and visual anchors with citations;
 - **Real game design:** turn source evidence into player verbs, systems, levels, feedback, failure, and outcomes;
 - **Target-runtime delivery:** build for the approved platform or engine without implementation silently redesigning the game;
+- **Optional, restrained voice:** synthesize only approved high-value lines at build time, keep subtitles and mute fallbacks, and never send the whole novel to a TTS provider by default;
 - **Evidence-based QA:** verify startup, input, state changes, complete runs, outcomes, restart, and target display modes and devices.
 
 ## Quick Start
@@ -108,7 +109,7 @@ The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six
 Novel → Source analysis → Concept → World design → Art direction → Build ⇄ QA → Playable game
 ```
 
-Concept selection, experience and level design, and art direction remain separately reviewable. Build targets the chosen runtime; QA verifies that same runtime with real execution evidence.
+Concept selection, experience and level design, and art direction remain separately reviewable. Build targets the chosen runtime; QA verifies that same runtime with real execution evidence. If art direction selects voice, build-time TTS is optional and provider-neutral: line-level rights, request fingerprints, local audio, subtitles, failure fallback, decode and loudness evidence, and human listening review are required before release.
 
 ## Skills
 
