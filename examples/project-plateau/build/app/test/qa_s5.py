@@ -90,6 +90,7 @@ def run() -> dict[str, object]:
             "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle", "s8-input-paths", "s9-living-plates", "s10-glade-clarity"
         }
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(120)
 
@@ -261,6 +262,9 @@ def run() -> dict[str, object]:
         page.evaluate("window.__projectPlateau.teleportForTest({x: 8, z: 18})")
         page.wait_for_timeout(60)
         expose_plate(1)
+        page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: 18})")
+        page.wait_for_timeout(6200)
+        assert snapshot(page)["player"]["threatState"] == "search"
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: -10})")
         page.wait_for_timeout(50)
         page.keyboard.press("KeyE")
@@ -313,7 +317,7 @@ def run() -> dict[str, object]:
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {

@@ -1,5 +1,11 @@
 # 成品目标
 
+`targetFinish: playable-prototype`
+`publicationTier: graybox`
+`demonstratedTier: graybox`
+`grayboxReady: PASS`
+`visualPromotion: NOT_RUN`
+
 构建《金瓶梅·风月总账》桌面网页垂直切片：成年中文玩家以西门庆的主观视角，在 6 天／6 回合内经营银钱、官势与家宅，推进吴月娘、潘金莲、李瓶儿三条关系深线，并处理孟玉楼、孙雪娥、李娇儿三段宅中短线；经历黄昏拜访、夜间亲密、次晨嫉妒／索取和公开宴席，最终得到专一、平衡或权谋三种可观察收束。
 
 目标横屏视口为 1280×800 与 1920×1080；简体中文；即开即玩；本地首屏 ≤2 秒，包体 ≤25 MB，交互保持 30 FPS 以上。内容为 18+ explicit，页面加载后先显示年龄与内容提示，未确认前不得展示成人资产。

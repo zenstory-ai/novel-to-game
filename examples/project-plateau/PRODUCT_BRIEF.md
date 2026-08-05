@@ -1,5 +1,7 @@
 # PRODUCT BRIEF · Project Plateau
 
+`targetFinish: playable-prototype`
+
 > Intake artifact. These product boundaries are protected upstream facts; downstream stages may not silently rewrite them.
 
 ## Eleven locked dimensions
@@ -9,7 +11,7 @@
 | 1 | Platform, viewport, performance | Free desktop web vertical slice; landscape; target `1440×900`, minimum `1280×720`; keyboard and mouse. At the heaviest real state: median `>=45 FPS`, 1% low `>=30`; initial compressed payload `<=20 MB`, full on-demand payload `<=50 MB`, no-cache TTI `<=8 s` at 25 Mbps. Mobile and touch are not P0. |
 | 2 | Target market and interface language | International English-speaking release; planning artifacts and launch UI are English. The source is also English, so no parallel translation layer is needed. |
 | 3 | Genre, precedents, spatial form | Real-time first-person 3D connected-zone survival adventure with limited defensive action—not an arena shooter or walking simulator. It borrows mature verbs from the precedent matrix below. |
-| 4 | Product-level art style | Stylized expedition naturalism: readable 1890s field equipment, monumental basalt and vegetation silhouettes, humid atmospheric depth, restrained danger rather than gore. Exact camera, palette, materials, creature grammar, and signature frames remain owned by ART_DIRECTION. |
+| 4 | Product-level art style and finish | Stylized expedition naturalism: readable 1890s field equipment, monumental basalt and vegetation silhouettes, humid atmospheric depth, restrained danger rather than gore. Exact camera, palette, materials, creature grammar, and signature frames remain owned by ART_DIRECTION. `targetFinish: playable-prototype`; public promotion must remain at that tier until the visual target package, release assets and independent perception review all pass. |
 | 5 | Rating / NSFW | Teen-equivalent: peril and creature attacks, no gore, dismemberment, sexual content, or modern franchise imagery. |
 | 6 | Core fantasy | **You are the expedition's forward scout: cross an impossible plateau, document a living prehistoric world, survive its threats, and extract with proof.** The player must perform scout / document / survive / extract rather than receive them as narration. |
 | 7 | Session length and structure | One compact 1–3 minute complete run: enter → read the space → obtain proof → survive route pressure → extract or fail → restart. The light budget is 180 seconds; a learned Strong path should finish in 45–120 seconds and leave 30–120 seconds. Expansion is allowed only after first-time play evidence shows that more space improves the adaptation decision rather than adding travel. |
@@ -42,6 +44,13 @@ Shared core verbs and loop structure: **traverse → observe/document → read t
 The adaptation uses Arthur Conan Doyle's 1912 novel as distributed in Project Gutenberg eBook #139. The catalog marks it public domain in the USA; users and distributors outside the USA must check local law. Project Gutenberg's license and trademark terms remain in the downloaded source file. Only the plain text and facts evidenced from it may inform the adaptation.
 
 ## Confirmed decisions and recorded assumptions
+
+### Visual finish lock
+
+- **Target finish:** `playable-prototype`. The current production budget is one representative-scene upgrade and evidence pass inside the existing Three.js runtime; no paid/modelled asset pack and no new dependency are authorised.
+- **Comparison dimensions:** public-domain field-camera construction may inform tool materials; museum anatomy pages listed in `design/ART_DIRECTION.md` may inform joint and silhouette guardrails; the approved field-plate naturalism itself controls terrain layering, atmosphere and restrained HUD. These sources are research-only and grant no right to copy their imagery or meshes.
+- **Vetoes:** toy-like repeated primitive diorama; bird/bat pterodactyl silhouette; tail-dragging or kangaroo-posture iguanodon; flat terrain/canopy bands without near-mid-far separation; HUD panels carrying route or danger instead of world cues.
+- **Stop rule:** implementation may stop when automated behavior/performance checks are green and a reproducible contact sheet exists, but publication cannot advance beyond `playable-prototype` while independent review is `NOT_RUN` or any release-gate asset remains false.
 
 The user explicitly requested an English 3D example in an FPS, racing, or open-world shape to counter the impression of a text-only toolkit. The accepted execution plan selected the bounded first-person connected-zone direction, English UI and real 3D.
 

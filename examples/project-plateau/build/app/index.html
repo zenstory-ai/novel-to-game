@@ -9,14 +9,53 @@
     />
     <link rel="icon" href="/favicon.svg" />
     <title>Project Plateau · Proof Before Dark</title>
+    <style id="boot-critical">
+      #loading-screen { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; color: #f1e8d0; background: #17201d; }
+      #loading-screen[hidden] { display: none; }
+      #loading-screen .loading-case { width: min(31rem, calc(100vw - 3rem)); padding: 1.5rem; border: 1px solid #b08b4f; background: #1d2824; }
+    </style>
   </head>
   <body>
     <main id="app">
+      <section id="loading-screen" data-phase="runtime" aria-live="polite" aria-busy="true" aria-labelledby="loading-title">
+        <div class="loading-case">
+          <p class="eyebrow">Forward scout · field case</p>
+          <h1 id="loading-title">Preparing the expedition</h1>
+          <p id="loading-status">Opening the plateau…</p>
+          <div class="loading-track" aria-hidden="true"><span></span></div>
+        </div>
+      </section>
       <canvas id="game-canvas" aria-label="A live three-dimensional plateau at late afternoon"></canvas>
-      <section id="unsupported" class="card" hidden>
-        <p class="eyebrow">Renderer unavailable</p>
-        <h1>WebGL2 is required.</h1>
-        <p>This desktop prototype needs a browser with WebGL2 enabled.</p>
+      <section id="preview-gateway" hidden aria-labelledby="preview-title">
+        <video
+          id="preview-video"
+          muted
+          loop
+          playsinline
+          controls
+          preload="none"
+          data-poster="/media/project-plateau-preview-poster.jpg"
+          aria-label="Fifteen seconds of real Project Plateau gameplay"
+        >
+          <source data-src="/media/project-plateau-preview-15s.mp4" type="video/mp4" />
+        </video>
+        <div class="preview-copy">
+          <p class="eyebrow">Project Plateau preview</p>
+          <h1 id="preview-title">A 15-second glimpse of the plateau.</h1>
+          <p class="preview-detail"></p>
+          <div class="preview-actions" aria-label="Continue exploring NovelToGame">
+            <a class="preview-primary" href="https://xiyouji.vibecoco.ai">Play a mobile-ready 2D game</a>
+            <a href="https://jinpingmei.vibecoco.ai">Try the second 2D demo</a>
+            <a href="https://github.com/worldwonderer/novel-to-game/tree/main/examples/project-plateau">Explore the 3D case study</a>
+          </div>
+          <p class="preview-footnote">Full 3D controls: desktop WebGL2 · mouse · WASD</p>
+        </div>
+      </section>
+      <section id="required-assets-error" class="card" hidden aria-labelledby="required-assets-title">
+        <p class="eyebrow">Required field equipment unavailable</p>
+        <h1 id="required-assets-title">The expedition cannot begin.</h1>
+        <p id="required-assets-copy">A required local 3D asset could not be loaded.</p>
+        <button id="retry-assets" type="button">Retry equipment load</button>
       </section>
 
       <section id="title-screen" aria-labelledby="game-title">
@@ -41,6 +80,7 @@
         <p id="order-title" class="eyebrow">FIELD ORDER // FORWARD SCOUT</p>
         <p>Photograph living proof. Return to Fort Challenger before sundown.</p>
         <p class="order-condition">A sighting without the plate will not survive London.</p>
+        <p class="order-controls">Hold Right Mouse for the camera · Hold F for the rifle · Left Mouse uses the raised tool</p>
         <button id="dismiss-order" type="button">Begin field work</button>
       </section>
 
@@ -82,6 +122,15 @@
             <option value="1.5">150%</option>
           </select>
         </label>
+        <label>
+          Visual quality
+          <select id="visual-quality">
+            <option value="low">Low — quieter</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+        <label>Mouse sensitivity <input id="look-sensitivity" type="range" min="0.5" max="2" step="0.05" value="1" /></label>
         <label>Ambience <input id="ambience-volume" type="range" min="0" max="1" step="0.01" value="0.34" /></label>
         <label>Effects <input id="effects-volume" type="range" min="0" max="1" step="0.01" value="0.72" /></label>
         <label>Music <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.2" /></label>
@@ -96,7 +145,6 @@
           Adapted from Arthur Conan Doyle's 1912 novel <cite>The Lost World</cite>,
           using the public-domain Project Gutenberg text in the repository.
         </p>
-        <p>Original real-time scene and interface. No modern adaptation assets.</p>
       </section>
 
       <div id="field-hud" hidden aria-live="polite">
@@ -109,10 +157,6 @@
           <p id="frame-condition">FOLIAGE // SUBJECT PARTLY OCCLUDED</p>
           <div id="commit-line"><span></span></div>
         </div>
-        <div id="rifle-overlay" hidden aria-hidden="true">
-          <span class="rifle-barrel"></span>
-          <span class="rifle-sight"></span>
-        </div>
         <p id="context-prompt"></p>
         <p id="field-note" hidden></p>
         <section id="plate-preview" hidden aria-label="Latest exposed plate">
@@ -124,7 +168,7 @@
         <p id="caption-line" hidden></p>
         <p id="boundary-note" hidden>The red cliff gives no path here.</p>
         <p id="light-watch" hidden><span id="light-seconds">180</span>s light</p>
-        <p id="control-hint">Move [WASD] · Sprint [Shift] · Crouch [C] · Pause [P]</p>
+        <p id="control-hint">Move [WASD] · Look [Mouse] · Camera [Hold Right Mouse] · Rifle [Hold F] · Use tool [Left Mouse] · Jump [Space] · Pause [P]</p>
         <div id="cartridge-display" hidden aria-label="Two rifle cartridges">
           <span></span><span></span>
         </div>
@@ -135,6 +179,6 @@
 
       <aside id="s0-badge" aria-label="Development build">S0 · renderer proof</aside>
     </main>
-    <script type="module" src="/src/main.js"></script>
+    <script type="module" src="/src/entry.js"></script>
   </body>
 </html>

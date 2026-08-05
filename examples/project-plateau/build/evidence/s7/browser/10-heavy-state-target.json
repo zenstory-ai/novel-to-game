@@ -2,7 +2,7 @@
   "inputs": [
     "glade observation",
     "open proof",
-    "240-frame sample"
+    "120-frame sample"
   ],
   "viewport": [
     1440,
@@ -11,7 +11,8 @@
   "url": "http://127.0.0.1:4173/?qa=s7",
   "consoleErrorsAtCheckpoint": [],
   "requestHostsAtCheckpoint": [
+    "",
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785539975832
+  "capturedAtUnixMs": 1785861604836
 }

@@ -214,6 +214,7 @@ def run() -> dict[str, object]:
         assert_within_viewport(page.locator("#settings-panel"))
         page.locator("#settings-panel .panel-close").click()
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         order = capture("03-field-order-minimum", ["Enter the basin"])
         assert order["mode"] == "order", order
         assert_within_viewport(page.locator("#field-order"))
@@ -305,16 +306,19 @@ def run() -> dict[str, object]:
 
         # Repeat the heavy state at the target viewport for the final performance record.
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(80)
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: -10})")
         page.wait_for_timeout(60)
         page.keyboard.press("KeyE")
         expose_plate(0)
-        target_performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
+        # Two seconds at the release 60 FPS cap is long enough to expose missed
+        # frames while keeping this checkpoint inside the authored attack window.
+        target_performance = page.evaluate("window.__projectPlateau.sampleFrames(120)")
         assert target_performance["medianFps"] >= 45, target_performance
         assert target_performance["onePercentLowFps"] >= 30, target_performance
-        heavy = capture("10-heavy-state-target", ["glade observation", "open proof", "240-frame sample"])
+        heavy = capture("10-heavy-state-target", ["glade observation", "open proof", "120-frame sample"])
         assert heavy["player"]["threatState"] == "attack", heavy
 
         final_loading = page.evaluate("window.__projectPlateau.loadingSnapshot()")
@@ -325,7 +329,7 @@ def run() -> dict[str, object]:
     assert payload["gzipBytes"] <= 20 * 1024 * 1024, payload
     assert payload["rawBytes"] <= 50 * 1024 * 1024, payload
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {

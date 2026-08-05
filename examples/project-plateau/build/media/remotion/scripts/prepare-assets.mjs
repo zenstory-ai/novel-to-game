@@ -12,7 +12,7 @@ const inputs = [
   {
     source: path.join(media, 'clip', 'project-plateau-30s.mp4'),
     target: path.join(publicDir, 'gameplay.mp4'),
-    label: 'continuous 30-second Strong route',
+    label: 'curated 30-second same-take core-loop demo',
   },
   {
     source: path.resolve(media, '..', 'evidence', 's8', '05-strong-input-result.jpg'),

@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 2,
+  "purpose": "mobile, social in-app browser and WebGL2-unavailable conversion preview",
+  "capture": "one continuous input-only Strong-result browser run with two defensive shots",
+  "edit": "disclosed same-take editorial cuts and per-segment speed changes; no teleport, state fabrication or substitute render",
+  "interactiveSourceCommit": "e82c916f02614535ef1f8c3af9b09d7b57f5b223",
+  "interactiveSourceFingerprint": "3ae12c22cd5926f3985773f41aae525e86f96a5135aa910053cc29dd420afcc1",
+  "interactiveSourceFingerprintScope": "interactive inputs: index/package manifests, src and public assets; generated conversion-preview outputs excluded",
+  "source": {
+    "path": "../media/clip/project-plateau-15s.mp4",
+    "sha256": "5f453d1bcafcd1387b30ce232897dfd93870eb0da213c7cc41ad5b7ad8010034",
+    "bytes": 2932946
+  },
+  "video": {
+    "path": "public/media/project-plateau-preview-15s.mp4",
+    "sha256": "26042d338dd5d0c3280dbb61cfdfd8849500d4719de1b993c72324c67d2f3847",
+    "bytes": 1319426,
+    "probe": {
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+          "profile": "High",
+          "codec_type": "video",
+          "codec_tag_string": "avc1",
+          "codec_tag": "0x31637661",
+          "mime_codec_string": "avc1.64001f",
+          "width": 960,
+          "height": 600,
+          "coded_width": 960,
+          "coded_height": 600,
+          "has_b_frames": 2,
+          "sample_aspect_ratio": "1:1",
+          "display_aspect_ratio": "8:5",
+          "pix_fmt": "yuv420p",
+          "level": 31,
+          "color_range": "tv",
+          "color_space": "bt470bg",
+          "chroma_location": "left",
+          "field_order": "progressive",
+          "is_avc": "true",
+          "nal_length_size": "4",
+          "id": "0x1",
+          "r_frame_rate": "30/1",
+          "avg_frame_rate": "30/1",
+          "time_base": "1/15360",
+          "start_pts": 0,
+          "start_time": "0.000000",
+          "duration_ts": 230400,
+          "duration": "15.000000",
+          "bit_rate": "700382",
+          "bits_per_raw_sample": "8",
+          "nb_frames": "450",
+          "extradata_size": 51,
+          "disposition": {
+            "default": 1,
+            "dub": 0,
+            "original": 0,
+            "comment": 0,
+            "lyrics": 0,
+            "karaoke": 0,
+            "forced": 0,
+            "hearing_impaired": 0,
+            "visual_impaired": 0,
+            "clean_effects": 0,
+            "attached_pic": 0,
+            "timed_thumbnails": 0,
+            "non_diegetic": 0,
+            "captions": 0,
+            "descriptions": 0,
+            "metadata": 0,
+            "dependent": 0,
+            "still_image": 0,
+            "multilayer": 0
+          },
+          "tags": {
+            "language": "und",
+            "handler_name": "VideoHandler",
+            "encoder": "Lavc62.28.101 libx264"
+          }
+        }
+      ],
+      "format": {
+        "filename": "public/media/project-plateau-preview-15s.mp4",
+        "nb_streams": 1,
+        "nb_programs": 0,
+        "nb_stream_groups": 0,
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "format_long_name": "QuickTime / MOV",
+        "start_time": "0.000000",
+        "duration": "15.000000",
+        "size": "1319426",
+        "bit_rate": "703693",
+        "probe_score": 100,
+        "tags": {
+          "major_brand": "isom",
+          "minor_version": "512",
+          "compatible_brands": "isomiso2avc1mp41",
+          "encoder": "Lavf62.12.101"
+        }
+      }
+    }
+  },
+  "poster": {
+    "path": "public/media/project-plateau-preview-poster.jpg",
+    "sha256": "ed063082c4b4a5f003b7ae2848e8ae9f81fbebe077da566a0fd35c71b13cbdf8",
+    "bytes": 48411,
+    "sourceSecond": 4.8
+  },
+  "storyBeats": [
+    {
+      "name": "field-order",
+      "coreVerb": "accept the field order",
+      "sourceStartLabel": "field_order:start",
+      "sourceEndLabel": "field_order:end",
+      "sourceStartSeconds": 2.605,
+      "sourceEndSeconds": 4.215,
+      "sourceDurationSeconds": 1.61,
+      "outputStartSeconds": 0.0,
+      "outputEndSeconds": 1.2,
+      "outputDurationSeconds": 1.2,
+      "playbackRate": 1.34167
+    },
+    {
+      "name": "brook-camera",
+      "coreVerb": "commit a brook plate",
+      "sourceStartLabel": "brook_plate:start",
+      "sourceEndLabel": "brook_plate:end",
+      "sourceStartSeconds": 11.083,
+      "sourceEndSeconds": 13.236,
+      "sourceDurationSeconds": 2.153,
+      "outputStartSeconds": 1.2,
+      "outputEndSeconds": 3.0,
+      "outputDurationSeconds": 1.8,
+      "playbackRate": 1.19611
+    },
+    {
+      "name": "young-camera",
+      "coreVerb": "record young behavior",
+      "sourceStartLabel": "young_play_plate:start",
+      "sourceEndLabel": "young_play_plate:end",
+      "sourceStartSeconds": 31.913,
+      "sourceEndSeconds": 34.043,
+      "sourceDurationSeconds": 2.13,
+      "outputStartSeconds": 3.0,
+      "outputEndSeconds": 4.8,
+      "outputDurationSeconds": 1.8,
+      "playbackRate": 1.18333
+    },
+    {
+      "name": "dive-defense",
+      "coreVerb": "interrupt one dive",
+      "sourceStartLabel": "attack_ready",
+      "sourceEndLabel": "rifle_response",
+      "sourceStartSeconds": 34.081,
+      "sourceEndSeconds": 35.819,
+      "sourceDurationSeconds": 1.738,
+      "outputStartSeconds": 4.8,
+      "outputEndSeconds": 7.8,
+      "outputDurationSeconds": 3.0,
+      "playbackRate": 0.57933
+    },
+    {
+      "name": "branch-camera",
+      "coreVerb": "record branch pulling",
+      "sourceStartLabel": "branch_pull_plate:start",
+      "sourceEndLabel": "branch_pull_plate:end",
+      "sourceStartSeconds": 35.84,
+      "sourceEndSeconds": 38.0,
+      "sourceDurationSeconds": 2.16,
+      "outputStartSeconds": 7.8,
+      "outputEndSeconds": 9.6,
+      "outputDurationSeconds": 1.8,
+      "playbackRate": 1.2
+    },
+    {
+      "name": "exposed-return",
+      "coreVerb": "extract by the exposed creek",
+      "sourceStartLabel": "exposed_return:start",
+      "sourceEndLabel": "exposed_return:end",
+      "sourceStartSeconds": 40.836,
+      "sourceEndSeconds": 54.857,
+      "sourceDurationSeconds": 14.021,
+      "outputStartSeconds": 9.6,
+      "outputEndSeconds": 11.6,
+      "outputDurationSeconds": 2.0,
+      "playbackRate": 7.0105
+    },
+    {
+      "name": "strong-result",
+      "coreVerb": "deliver a Strong field record",
+      "sourceStartLabel": "result:start",
+      "sourceEndLabel": "demo_end",
+      "sourceStartSeconds": 54.862,
+      "sourceEndSeconds": 58.665,
+      "sourceDurationSeconds": 3.803,
+      "outputStartSeconds": 11.6,
+      "outputEndSeconds": 15.0,
+      "outputDurationSeconds": 3.4,
+      "playbackRate": 1.11853
+    }
+  ],
+  "delivery": {
+    "preload": "none until preview routing",
+    "autoplay": "muted playsinline; controls remain available",
+    "interactiveRuntimeLoadedInPreviewMode": false
+  },
+  "limitations": [
+    "The edited preview is not gameplay-timing evidence; S8 remains authoritative.",
+    "The preview is a conversion fallback, not a substitute for desktop WebGL2 QA."
+  ]
+}

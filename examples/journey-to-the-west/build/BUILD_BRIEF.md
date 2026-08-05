@@ -1,5 +1,11 @@
 # 成品目标
 
+`targetFinish: playable-prototype`
+`publicationTier: graybox`
+`demonstratedTier: graybox`
+`grayboxReady: PASS`
+`visualPromotion: NOT_RUN`
+
 构建《西游记 · 三借芭蕉扇》：一段约 45-90 分钟、桌面浏览器可玩的单人**回合制指令 RPG 完整战役**，
 《梦幻西游》《问道》那样一眼就认出的回合制西游——指令出招、速度行动顺序、五行相克、
 法术与法力、携宠协战、阵型、七十二变——跟着原著第五十九至六十一回从火焰山脚走到

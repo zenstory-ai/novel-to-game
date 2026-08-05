@@ -2,7 +2,7 @@
   "stage": "s6-field-feedback",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -22,19 +22,21 @@
     "rifleAndBrookResponseCues": true,
     "distinctResultAndFailureCues": true,
     "runResetClearsCueHistoryAndPreservesSettings": true,
+    "requiredFocalAssetFailureBlocksRun": true,
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.1,
+    "worstFrameMs": 25.6
   },
   "checkpoints": [
     {
@@ -56,10 +58,10 @@
       "visual": "build/evidence/s6/03-examine-caption.jpg"
     },
     {
-      "id": "04-bellows-camera-raised",
-      "state": "build/evidence/s6/state/04-bellows-camera-raised.json",
-      "browser": "build/evidence/s6/browser/04-bellows-camera-raised.json",
-      "visual": "build/evidence/s6/04-bellows-camera-raised.jpg"
+      "id": "04-hy3d-field-camera-raised",
+      "state": "build/evidence/s6/state/04-hy3d-field-camera-raised.json",
+      "browser": "build/evidence/s6/browser/04-hy3d-field-camera-raised.json",
+      "visual": "build/evidence/s6/04-hy3d-field-camera-raised.jpg"
     },
     {
       "id": "05-plate-slide-caption",
@@ -96,12 +98,18 @@
       "state": "build/evidence/s6/state/10-failure-cue.json",
       "browser": "build/evidence/s6/browser/10-failure-cue.json",
       "visual": "build/evidence/s6/10-failure-cue.jpg"
+    },
+    {
+      "id": "11-required-field-camera-failure",
+      "state": "build/evidence/s6/state/11-required-field-camera-failure.json",
+      "browser": "build/evidence/s6/browser/11-required-field-camera-failure.json",
+      "visual": "build/evidence/s6/11-required-field-camera-failure.jpg"
     }
   ],
   "limitations": [
     "The audio evidence proves browser audio-node state, cue scheduling, settings and captions; it does not claim subjective mix or sound quality.",
     "Core sound is original Web Audio synthesis rather than final recorded or authored production sound.",
-    "The camera, pterodactyl and cover volumes are improved procedural assets, but the remaining release-gate assets and final animation polish are still open.",
+    "The required camera-and-hands and rifle-and-hands viewmodels are local HY3D assets with no procedural tool fallback; subjective hand contact, creature anatomy and animation polish remain independent-review questions.",
     "S6 retains QA-only route compression; uncompressed reference runs remain a later authoritative gate."
   ]
 }

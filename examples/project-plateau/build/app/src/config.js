@@ -26,7 +26,7 @@ export const PALETTE = Object.freeze({
 
 export const SCENE_BUDGET = Object.freeze({
   trees: 128,
-  ferns: 320,
+  ferns: 120,
   basaltPillars: 18,
   adultIguanodons: 2,
   youngIguanodons: 3,
@@ -46,4 +46,12 @@ export function percentile(values, fraction) {
   const sorted = [...values].sort((a, b) => a - b);
   const index = Math.min(sorted.length - 1, Math.floor(sorted.length * fraction));
   return sorted[index];
+}
+
+export function onePercentLowFps(frameTimes) {
+  if (!frameTimes.length) return 0;
+  const slowFrameCount = Math.max(1, Math.ceil(frameTimes.length * 0.01));
+  const slowest = [...frameTimes].sort((a, b) => b - a).slice(0, slowFrameCount);
+  const averageSlowFrameMs = slowest.reduce((sum, value) => sum + value, 0) / slowest.length;
+  return averageSlowFrameMs > 0 ? 1000 / averageSlowFrameMs : 0;
 }

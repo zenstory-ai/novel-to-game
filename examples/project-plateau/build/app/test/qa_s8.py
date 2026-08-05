@@ -237,6 +237,7 @@ def run() -> dict[str, object]:
 
         def begin_first_path() -> float:
             page.get_by_role("button", name="Enter the basin").click()
+            page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
             page.wait_for_timeout(60)
             clean = capture("00-clean-field-order", ["Enter the basin"])
             assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
@@ -288,6 +289,19 @@ def run() -> dict[str, object]:
             move_until(path, "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 2", "canopy to glade")
             page.keyboard.press("KeyE")
             expose_plate(path, 2, "young-at-play frame")
+            move_until(
+                path,
+                "KeyS",
+                "window.__projectPlateau.snapshot().player.position.z > 3.2",
+                "protect first behavior plate",
+            )
+            wait_for_cover(path, "break the dive between behavior frames")
+            move_until(
+                path,
+                "KeyW",
+                "window.__projectPlateau.snapshot().player.position.z <= 2",
+                "return for second behavior frame",
+            )
             expose_plate(path, 3, "branch-pull frame")
             glade = capture(glade_id, ["W to glade", "E", "two camera commitments"])
             assert sum(plate["points"] for plate in glade["player"]["plates"]) == 7, glade
@@ -431,7 +445,7 @@ def run() -> dict[str, object]:
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {

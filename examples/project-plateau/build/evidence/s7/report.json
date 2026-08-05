@@ -2,7 +2,7 @@
   "stage": "s7-lifecycle",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -35,36 +35,82 @@
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "loading": {
     "firstNoCacheNavigation": {
-      "timeToFirstFrameMs": 2198.3,
-      "domInteractiveMs": 54.3,
-      "loadEventMs": 2281.9,
-      "resourceCount": 11
+      "timeToFirstFrameMs": 2944.6,
+      "domInteractiveMs": 46.5,
+      "loadEventMs": 201.6,
+      "resourceCount": 43,
+      "ui": {
+        "visible": false,
+        "phase": "runtime",
+        "status": "Opening the plateau\u2026"
+      }
     },
     "finalNavigation": {
-      "timeToFirstFrameMs": 2196,
-      "domInteractiveMs": 79.3,
-      "loadEventMs": 2262.2,
-      "resourceCount": 12
+      "timeToFirstFrameMs": 2966.7,
+      "domInteractiveMs": 88.3,
+      "loadEventMs": 235.4,
+      "resourceCount": 44,
+      "ui": {
+        "visible": false,
+        "phase": "assets",
+        "status": "Preparing field camera, rifle and wildlife\u2026"
+      }
     },
     "budgetMs": 8000
   },
   "payload": {
     "files": [
       {
-        "path": "assets/index-BtoLHCaQ.css",
-        "rawBytes": 13357,
-        "gzipBytes": 4179
+        "path": "assets/BufferGeometryUtils-qQM6QJN6.js",
+        "rawBytes": 253244,
+        "gzipBytes": 66789
       },
       {
-        "path": "assets/index-CWtQHXh1.js",
-        "rawBytes": 582588,
-        "gzipBytes": 148450
+        "path": "assets/GLTFLoader-DB8oIB9H.js",
+        "rawBytes": 43285,
+        "gzipBytes": 12764
+      },
+      {
+        "path": "assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb",
+        "rawBytes": 1000112,
+        "gzipBytes": 737112
+      },
+      {
+        "path": "assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
+        "rawBytes": 1108408,
+        "gzipBytes": 801534
+      },
+      {
+        "path": "assets/iguanodon-hy3d-v35-stylized.glb",
+        "rawBytes": 1089008,
+        "gzipBytes": 818165
+      },
+      {
+        "path": "assets/index-Daq1iLjK.js",
+        "rawBytes": 6124,
+        "gzipBytes": 2612
+      },
+      {
+        "path": "assets/index-NJZTe-wq.css",
+        "rawBytes": 18625,
+        "gzipBytes": 5585
+      },
+      {
+        "path": "assets/main-BfWn2Mkr.js",
+        "rawBytes": 612121,
+        "gzipBytes": 185953
+      },
+      {
+        "path": "assets/pterodactyl-hy3d-v35-stylized.glb",
+        "rawBytes": 1327456,
+        "gzipBytes": 974909
       },
       {
         "path": "favicon.svg",
@@ -73,29 +119,44 @@
       },
       {
         "path": "index.html",
-        "rawBytes": 6789,
-        "gzipBytes": 2119
+        "rawBytes": 9398,
+        "gzipBytes": 2980
+      },
+      {
+        "path": "media/project-plateau-preview-15s.mp4",
+        "rawBytes": 1319426,
+        "gzipBytes": 1314414
+      },
+      {
+        "path": "media/project-plateau-preview-poster.jpg",
+        "rawBytes": 48411,
+        "gzipBytes": 47947
+      },
+      {
+        "path": "media/project-plateau-preview.json",
+        "rawBytes": 7141,
+        "gzipBytes": 2269
       }
     ],
-    "rawBytes": 602904,
-    "gzipBytes": 154906,
+    "rawBytes": 6842929,
+    "gzipBytes": 4973191,
     "initialCompressedBudgetBytes": 20971520,
     "totalBudgetBytes": 52428800
   },
   "performance": {
     "minimumViewport": {
       "samples": 120,
-      "medianFrameMs": 8.3,
-      "medianFps": 120.5,
-      "onePercentLowFps": 107.5,
-      "worstFrameMs": 9.4
+      "medianFrameMs": 16.6,
+      "medianFps": 60.2,
+      "onePercentLowFps": 38.9,
+      "worstFrameMs": 25.7
     },
     "targetViewport": {
-      "samples": 240,
-      "medianFrameMs": 8.3,
-      "medianFps": 120.5,
-      "onePercentLowFps": 106.4,
-      "worstFrameMs": 9.4
+      "samples": 120,
+      "medianFrameMs": 16.7,
+      "medianFps": 59.9,
+      "onePercentLowFps": 53.6,
+      "worstFrameMs": 18.7
     }
   },
   "checkpoints": [

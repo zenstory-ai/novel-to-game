@@ -31,6 +31,17 @@
     "verify:s9": "npm test && npm run build && npm run test:s9",
     "test:s10": "python3 test/qa_s10.py",
     "verify:s10": "npm test && npm run build && npm run test:s10",
+    "test:controller": "python3 test/qa_controller.py",
+    "verify:controller": "npm test && npm run build && npm run test:controller",
+    "test:motion": "python3 test/qa_motion.py",
+    "verify:motion": "npm test && npm run build && npm run test:motion",
+    "test:collision": "python3 test/qa_collision.py",
+    "verify:collision": "npm test && npm run build && npm run test:collision",
+    "test:entry": "python3 test/qa_entry.py",
+    "verify:entry": "npm test && npm run build && npm run test:entry",
+    "test:loading": "python3 test/qa_loading.py",
+    "verify:loading": "npm test && npm run build && npm run test:loading",
+    "capture:visual": "python3 test/capture_visual_upgrade.py",
     "verify": "python3 test/verify.py"
   },
   "dependencies": {

@@ -1,5 +1,7 @@
 # Art Direction · Project Plateau
 
+`targetFinish: playable-prototype`
+
 ## Creative position
 
 **Field-plate naturalism** is a stylized first-person 3D world built from broad,

@@ -1,0 +1,13 @@
+{
+  "inputs": [
+    "abort required local camera GLB",
+    "Enter the basin"
+  ],
+  "viewport": [
+    1280,
+    720
+  ],
+  "url": "http://127.0.0.1:4173/",
+  "expectedFailure": true,
+  "capturedAtUnixMs": 1785861569610
+}

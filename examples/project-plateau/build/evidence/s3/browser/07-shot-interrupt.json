@@ -13,7 +13,8 @@
   "url": "http://127.0.0.1:4173/?qa=s3",
   "consoleErrorsAtCheckpoint": [],
   "requestHostsAtCheckpoint": [
+    "",
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785539846921
+  "capturedAtUnixMs": 1785861453491
 }

@@ -1,5 +1,7 @@
 # 质量验证报告 · 西游记《三借芭蕉扇》
 
+`targetFinish: playable-prototype`
+
 - 验证日期：2026-07-28
 - 本轮性质：**首次独立 QA**。此前 `_progress.md` 记 `gate:qa fail(game-qa 未运行，无 QA_REPORT)`，
   所有判据仅有实现方自测覆盖。

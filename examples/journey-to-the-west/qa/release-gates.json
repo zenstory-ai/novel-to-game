@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": null,
+  "evidenceCommit": null,
+  "targetFinish": "playable-prototype",
+  "publicationTier": "graybox",
+  "pipelineGates": {
+    "intake": "NOT_RUN",
+    "analyze": "PASS",
+    "concept": "PASS",
+    "design": "PASS",
+    "art": "NOT_RUN",
+    "build": "PASS",
+    "qa": "FAIL"
+  },
+  "visualReview": {
+    "required": true,
+    "status": "FAIL",
+    "reviewer": "Independent QA review; personal identity was not retained",
+    "independence": "The second review re-judged 47 captured frames rather than accepting the implementation self-test.",
+    "evidence": "qa/evidence/signature-frames.md"
+  },
+  "unresolvedDefects": [
+    {
+      "id": "F10",
+      "severity": "major",
+      "status": "OPEN",
+      "summary": "None of five signature frames fully meets the approved direction."
+    },
+    {
+      "id": "F11",
+      "severity": "major",
+      "status": "OPEN",
+      "summary": "The designed fire-resistance companion path is unreachable in the shipped flow."
+    }
+  ],
+  "notes": "The build gate is retained, but QA is FAIL and visual majors remain open. The public tier is downgraded rather than treating runnable code as release approval.",
+  "demonstratedTier": "graybox",
+  "visualPromotion": {
+    "status": "NOT_RUN",
+    "evidence": []
+  },
+  "visualFrames": [
+    {
+      "id": "signature-frame-review",
+      "status": "FAIL",
+      "evidence": [
+        "qa/evidence/signature-frames.md"
+      ],
+      "operationPath": "Follow qa/evidence/signature-frames.md through the retained 47-frame path.",
+      "rubric": {
+        "focus": "NOT_RUN",
+        "silhouette": "NOT_RUN",
+        "depth": "NOT_RUN",
+        "materialLine": "NOT_RUN",
+        "lightColor": "NOT_RUN",
+        "hud": "NOT_RUN",
+        "motionFeedback": "NOT_RUN",
+        "artifacts": "NOT_RUN",
+        "failureExamples": "NOT_RUN"
+      }
+    }
+  ],
+  "focalReleaseAssets": [],
+  "grayboxReady": {
+    "status": "PASS",
+    "evidence": [
+      "qa/evidence/automated.json"
+    ]
+  },
+  "degradableReleaseAssets": [],
+  "sourceFingerprint": null,
+  "visualEvidenceManifests": []
+}

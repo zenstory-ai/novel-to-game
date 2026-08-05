@@ -119,3 +119,9 @@ technical_findings: <IDs or none>
 
 After all three files exist, add a threshold table to `QA_REPORT.md` that links
 each decision to the raw records. A summary without those files is not evidence.
+
+## 动态威胁节奏复核
+
+自动采集的 `build/evidence/visual-upgrade/generated/manifest.json` 应包含一个未剪辑的真实浏览器 WebM，以及 `watch`、`bank`、`dive`、`pull-up` 四个确定性 JPEG 相位样本。每项记录时间或渲染器时刻、观察到的威胁状态、相对路径、SHA-256 和字节数。WebM 至少覆盖一次完整的 3.2 秒攻击周期；相位样本用于稳定定位画面，不冒充真实游玩计时。
+
+首次玩家测试仍需让观察者在连续录屏中标记玩家第一次说出或以行动响应这四个阶段的时间。自动化只能证明浏览器实际渲染了连续运动和状态转换，不能代替玩家是否读懂节奏的感知证据。若录屏与 manifest 哈希不一致、任何阶段缺失或状态顺序倒置，本轮动态证据为 `FAIL`，必须重新采集，不能挑选旧截图补齐。

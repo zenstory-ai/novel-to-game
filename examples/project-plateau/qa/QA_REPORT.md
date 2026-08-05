@@ -1,149 +1,87 @@
 # Project Plateau QA report
 
-## Verdict
+`targetFinish: playable-prototype`
 
-**Local automated build handoff: PASS. Public-host smoke: PASS. Example publication: MAINTAINER-GO.**
+## Release status
 
-The authoritative run completed every registered suite, a same-run input-only
-Strong path from clean field order through result and restart, a second complete
-Strong path under Chromium achromatopsia, and 41 direct state/browser/visual
-checkpoints. No local blocker, uncaught browser error, external runtime host,
-failed deterministic outcome or budget regression was observed.
+- Authoritative runtime QA: **PASS**
+- Independent visual review: **PASS**
+- Visual promotion: **PASS**
+- Demonstrated/publication tier: `playable-prototype`
+- Current public-host proof: **HISTORICAL / NOT_CURRENT**
 
-On 2026-08-01 the maintainer reported three successful informal first-time
-sessions and explicitly accepted the project for publication under `examples/`.
-The sessions did not retain the protocol's raw environment, timestamps, paths,
-results or verbatim answers, so the specific first-time criteria remain
-unverified in this repository. Independent anatomy/motion/composition and
-colour-cue review also remains `NOT_RUN`. Publication is a product decision
-with disclosed evidence gaps, not an inferred QA pass.
+Historical published preview: <https://plateau.vibecoco.ai>. It is not bound to
+the current candidate.
+
+The current local candidate is bound to app fingerprint
+`578d03cbfbcbe66ac192ac1bcb808d3e215b14d1d6759d63d2b3012bbc22ee6f`.
+The independent read-only review recorded 0 blockers and 0 majors and is bound
+to release manifest SHA256
+`1c30ba33aec7d5a48cb1aa7a7b3570b2460806eab5d6a282ba66a140ce56475d`.
+See [`evidence/independent-visual-review-2026-08-04.md`](evidence/independent-visual-review-2026-08-04.md).
 
 ## Authoritative run
 
-| Field | Observed |
+| Field | Result |
 |---|---|
-| Source commit | `8793fb904ca6ac1aedf62f296febff6c68a9bb3d` |
-| App fingerprint | `e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d` |
-| Install | [`npm ci`](evidence/install.log) — 24 packages, 0 vulnerabilities |
-| Verify | `npm run verify` |
-| Result | exit `0`; 7/7 suites; 16/16 commands |
-| Duration | `509894 ms` |
-| Log | [`evidence/verify.log`](evidence/verify.log) |
-| Structured handoff | [`verification.json`](verification.json) |
-| Suite discovery | 15 registered pass/fail files; 2 explicit non-suite tools; 0 orphan |
+| Command | `cd build/app && npm run verify` |
+| Exit | `0` |
+| Suites | `12/12` PASS |
+| Commands | `23/23` PASS |
+| Registry | 33 pass/fail files; 2 explicit non-suite tools; 0 orphan |
+| Duration | `605109 ms` |
+| Direct checkpoints | 41 |
+| Complete run | `s8-strong-input-only` |
+| Structured record | [`verification.json`](verification.json) |
+| Content-bound log | [`evidence/verify.log`](evidence/verify.log) |
 
-`capture_demo_clip.py` is recorded as a delivery-media tool rather than a test;
-`verify.py` is the orchestrator and would recurse if registered as its own
-suite. Any new Python or JavaScript file under `build/app/test/` that is neither
-registered nor explicitly classified now fails with `ORPHANED_TEST_SUITE
-major`.
+The same invocation ran unit tests, production build, S0–S10 browser paths,
+controller, motion, collision, entry conversion, loading, current visual QA,
+design invariants, repository validation and all repository unit tests.
 
-## Environment and budgets
+## Current release evidence
 
-| Surface | Environment | Result |
-|---|---|---|
-| Runtime | Node.js `v25.9.0`; npm `11.12.1`; Python `3.14.5` | PASS |
-| Browser | Google Chrome `150.0.7871.187` | PASS |
-| Viewports | target `1440×900`; minimum `1280×720` | PASS |
-| Target heaviest state | median `120.5 FPS`; 1% low `106.4 FPS` | PASS vs `45/30` |
-| Minimum heaviest state | median `120.5 FPS`; 1% low `107.5 FPS` | PASS vs `45/30` |
-| Built payload | `602904` raw bytes; `154906` gzip bytes | PASS vs `50/20 MiB` |
-| First local no-cache frame | `2198.3 ms` at simulated 25 Mbps | PASS vs `8000 ms` locally |
-| Runtime requests | only `127.0.0.1:4173`; no external host | PASS |
-| Public preview | `https://plateau.vibecoco.ai`; Google Chrome `150.0.7871.187` | PASS; anonymous HTTPS load, full input routes, result and restart; no console error or third-party runtime host |
+| Surface | Evidence-backed result |
+|---|---|
+| Controller | Camera-relative WASD, mouse look signs/clamps, acceleration, lifecycle hold release and pointer-lock denial state PASS. Browser controller QA uses a deterministic pointer-lock shim. Native OS/browser pointer-lock acquisition remains `NOT_RUN` in automation. |
+| Jump | Space-bar ballistic jump, landing on the shared heightfield, action restrictions and airborne collision PASS. |
+| Collision | Shared visual/collider layout, fixed substeps, no tunnelling, sliding, depenetration, tall-solid airborne contact and browser route matrix PASS. |
+| Loading | Boot loader and required HY3D asset loader remain visible until the first ready field state; black-screen entry regression PASS. |
+| Entry conversion | Desktop WebGL2 enters the interactive build. Touch, small viewport, social in-app browser or missing WebGL2 receives a local 15-second gameplay preview instead of a renderer dead end. |
+| HY3D tools | One integrated camera-and-hands asset and one integrated rifle-and-hands asset; missing required assets fail closed rather than showing procedural tool substitutes. |
+| Creatures | Shared HY3D Iguanodon family and pterodactyl flock retain morph-driven action. The attack uses a continuous dive/pull-up path, stable up reference, bilateral wing motion and a moving ground shadow. |
+| Terrain | Shared multi-scale heightfield, grounded trees, sparse dark root-cluster ferns, no repeated marker-like ground-cover layer. |
+| Visual review | VT01–VT06, dual viewports, title/family/dive frames and continuous watch→bank→dive→pull-up evidence PASS with 0 blocker / 0 major. |
 
-The loading measurement uses Chrome DevTools throttling against local Vite. It
-does not measure public-host cold-cache timing. The separate
-[`public-host`](evidence/public-host/report.json) run proves DNS/TLS reachability,
-clean-context loading and complete play against the deployed assets.
+## Budgets
 
-## Suite discovery and execution
+| Measurement | Result |
+|---|---|
+| Built payload | `6,660,269` raw / `4,792,819` gzip bytes; PASS vs 50/20 MiB budgets |
+| Local 25 Mbps first no-cache frame | `3397.9 ms`; PASS vs `8000 ms` |
+| S7 `1440×900` | `59.9` median / `39.5` 1% low FPS |
+| S7 `1280×720` | `59.9` median / `38.6` 1% low FPS |
+| Visual suite `1440×900` | `59.9` median / `37.9` 1% low FPS |
+| Visual suite `1280×720` | `59.9` median / `38.2` 1% low FPS |
+| Render policy | DPR ≤ `1.25`; active/title/paused/hidden caps `60/30/15/4 FPS`; FXAA; four-sample GTAO; no persistent drawing buffer |
+| Runtime hosts | local origin only; zero external runtime requests |
 
-| Suite | Discovered files or surfaces | Same-run result |
-|---|---|---|
-| `unit:simulation` | four `test/*.test.js` files, 35 assertions | PASS |
-| `build:production` | `index.html`, `src/`, `public/` | PASS; Vite production build |
-| `browser:checkpoint-history` | `qa_s0.py`–`qa_s7.py`, `qa_s9.py` | PASS; 9/9 commands |
-| `browser:complete-run` | `qa_s8.py` | PASS; Strong/Mixed/Panic plus achromatopsia Strong by keyboard/mouse |
-| `browser:current-visual` | `qa_s10.py` | PASS; glade/plates plus four-state checkpoints for three additional vision deficiencies |
-| `qa:design-invariants` | `qa/check_design_invariants.py` | PASS; 10/10 design-derived checks |
-| `repo:contract` | validator and repository unit discovery | PASS; 7 skills, 25 tests |
+## Evidence boundaries
 
-## Complete run
-
-The `s8-strong-input-only` record is one normal-speed browser path. It does not
-invoke `teleportForTest` or `advanceTimeForTest`.
-
-| Step | Input and expected change | State | Browser | Visual |
-|---|---|---|---|---|
-| Clean start | Enter the basin; receive a fresh 180-second field order | [`00`](../build/evidence/s8/state/00-clean-field-order.json) | [`00`](../build/evidence/s8/browser/00-clean-field-order.json) | [`00`](../build/evidence/s8/00-clean-field-order.jpg) |
-| First proof | Walk to brook, examine, raise camera, expose plate | [`01`](../build/evidence/s8/state/01-strong-brook-frame.json) | [`01`](../build/evidence/s8/browser/01-strong-brook-frame.json) | [`01`](../build/evidence/s8/01-strong-brook-frame.jpg) |
-| Full proof | Use cover, reach glade, expose young-play and branch-pull plates | [`03`](../build/evidence/s8/state/03-strong-glade-frames.json) | [`03`](../build/evidence/s8/browser/03-strong-glade-frames.json) | [`03`](../build/evidence/s8/03-strong-glade-frames.jpg) |
-| Threat response | Retreat under cover until the final dive widens | [`04`](../build/evidence/s8/state/04-strong-covered-return.json) | [`04`](../build/evidence/s8/browser/04-strong-covered-return.json) | [`04`](../build/evidence/s8/04-strong-covered-return.jpg) |
-| Result | Follow the covered return to Fort with four surviving views | [`05`](../build/evidence/s8/state/05-strong-input-result.json) | [`05`](../build/evidence/s8/browser/05-strong-input-result.json) | [`05`](../build/evidence/s8/05-strong-input-result.jpg) |
-| Restart | Choose “Take the route again”; restore unexposed plates and zero travel | [`06`](../build/evidence/s8/state/06-strong-clean-restart.json) | [`06`](../build/evidence/s8/browser/06-strong-clean-restart.json) | [`06`](../build/evidence/s8/06-strong-clean-restart.jpg) |
-
-Observed Strong result: 7 evidence, 4 surviving plates, covered return, no shot,
-body margin retained, 100.004 seconds remaining. Mixed reached corroborating
-evidence 4 with three plates, one shot and the brook callback. Panic spent both
-rounds and failed on the second unblocked strike. Each terminal state has its
-own clean restart checkpoint.
-
-The runner then repeated the complete Strong input path under Chromium
-achromatopsia: field order, first proof, glade proof, covered defense, Strong
-result and clean restart. S10 separately records order, glade, attack/defense
-and Strong-result checkpoints under protanopia, deuteranopia and tritanopia.
-These records prove input and UI-state continuity under the emulator. They leave
-human cue readability to the independent review.
-
-## Independent design checks
-
-[`evidence/design-invariants.md`](evidence/design-invariants.md) derives ten
-expectations from `PRODUCT_BRIEF.md` and `GAME_DESIGN.md` rather than importing
-runtime constants. It independently checks the common source fingerprint, five
-verbs, Strong/Mixed/Panic bands, three terminal restarts, the input/network
-boundary, both viewport budgets, current visual floors and the colour-vision
-evidence matrix: **10/10 PASS**.
-
-This establishes deterministic agreement with the approved thresholds. It does
-not make the implementation author independent, and it cannot answer first-time
-comprehension or subjective visual questions.
-
-## Evidence boundaries and open gates
-
-First-time players can join through the
-[public playtest discussion](https://github.com/worldwonderer/novel-to-game/discussions/7).
-Informal play reports and discussion replies do not clear an evidence-qualified
-gate until they satisfy the raw-record fields and decision rule in
-`PLAYTEST_PROTOCOL.md`.
-Independent 3D, animation, illustration, or game-art reviewers can use the
-[visual-review discussion](https://github.com/worldwonderer/novel-to-game/discussions/8);
-their findings still require the live-run evidence and disposition defined by
-`PERCEPTION_REVIEW_PROTOCOL.md`.
-
-| Gate | Status | Publication disposition | Required next evidence |
-|---|---|---|---|
-| Three first-time players recognize 3D action/exploration and not a text/VN presentation | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Three raw sessions using [`PLAYTEST_PROTOCOL.md`](PLAYTEST_PROTOCOL.md); at least two meet the stated threshold |
-| First meaningful interaction within 90 seconds and result within 15 minutes | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Timestamped, uncoached player records using the same protocol |
-| Players can restate scout/proof/extract rather than “shoot dinosaurs” | INFORMAL_PLAY_REPORTED / CRITERION_NOT_RECORDED | accepted for example publication; evidence-qualified PASS remains open | Verbatim post-run answers linked to each raw session |
-| Independent anatomy, motion and composition review | NOT_RUN | accepted risk for example publication | [`PERCEPTION_REVIEW_PROTOCOL.md`](PERCEPTION_REVIEW_PROTOCOL.md), [reviewer intake](https://github.com/worldwonderer/novel-to-game/discussions/8), reviewer context, frame-level findings and disposition |
-| Input routes and checkpoints under colour-vision modes | AUTOMATED_PASS / HUMAN_REVIEW_NOT_RUN | accepted risk for example publication | Full-colour + achromatopsia routes and the three specified checkpoint sets exist; an independent reviewer must still judge cue readability |
-| Anonymous public HTTPS load, play, result and restart | PASS | cleared | [`evidence/public-host/report.json`](evidence/public-host/report.json): clean Chrome context, source fingerprint, 46 real-input steps, Strong/Mixed/Panic plus achromatopsia Strong, result and restart; zero console errors or third-party runtime hosts |
-| Platform upload/transcode for short media | NOT_RUN | not required for the hosted example; still blocks claiming an uploaded attachment | Uploaded file hash and playback check |
-
-No subjective fun, balance, audio-mix, anatomy, motion, composition or
-colour-cue readability claim is marked PASS. Numeric image floors only catch
-gross occlusion, flat exposure or missing state.
+- Automated checks do not prove subjective fun, balance, scientific
+  reconstruction, audio mix or first-time premise comprehension.
+- The retained public-host run is bound to an older source fingerprint and does
+  not prove deployment of this candidate.
+- Chrome automation proves the controller contract through the deterministic
+  browser shim; native pointer-lock acquisition remains an explicit gap.
+- Local throttling is not public-host cold-cache evidence.
+- Three protocol-complete first-time player records and independent live
+  colour-cue route review remain open evidence requests, not hidden PASS claims.
 
 ## Reproduce
 
-From `examples/project-plateau/build/app/`:
-
 ```bash
+cd examples/project-plateau/build/app
 npm ci
 npm run verify
 ```
-
-The command rewrites the stage evidence, design-invariant audit, authoritative
-log and structured handoff. A passing run requires every suite and command to
-execute in that invocation.

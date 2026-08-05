@@ -216,11 +216,11 @@ const Opener = () => {
 };
 
 const storyBeats = [
-  {start: 0, end: 135, kicker: '01 · EXPLORE', title: 'Cross a connected plateau.'},
-  {start: 135, end: 300, kicker: '02 · COMMIT', title: 'Expose four physical glass plates.'},
-  {start: 300, end: 510, kicker: '03 · OBSERVE', title: 'Read a living dinosaur family.'},
-  {start: 510, end: 780, kicker: '04 · RETURN', title: 'Survive the open sky.'},
-  {start: 780, end: 900, kicker: '05 · PROVE', title: 'Bring home what survived.'},
+  {start: 0, end: 165, kicker: '01 · EXPLORE', title: 'Enter the connected plateau.'},
+  {start: 165, end: 360, kicker: '02 · RECORD', title: 'Expose evidence on glass.'},
+  {start: 360, end: 465, kicker: '03 · OBSERVE', title: 'Read a living dinosaur family.'},
+  {start: 465, end: 705, kicker: '04 · DEFEND', title: 'Break the dive. Keep the plates.'},
+  {start: 705, end: 900, kicker: '05 · RETURN', title: 'Bring home what survived.'},
 ];
 
 const BeatCaption = ({beat, frame}) => {
@@ -357,7 +357,7 @@ const Gameplay = () => {
           color: palette.amber,
         }}
       >
-        REAL GAMEPLAY · CONTINUOUS INPUT-ONLY RUN
+        REAL GAMEPLAY · SAME-TAKE INPUT-ONLY ROUTE
       </div>
 
       {storyBeats.map((beat) => (
@@ -458,9 +458,9 @@ const Closing = () => {
           }}
         >
           <span style={{padding: '14px 20px', background: palette.ivory, color: palette.ink}}>
-            ▶ PLAY
+            ▶ PLAYABLE BUILD
           </span>
-          <span style={{color: palette.ivory, fontSize: 29}}>plateau.vibecoco.ai</span>
+          <span style={{color: palette.ivory, fontSize: 29}}>examples/project-plateau</span>
           <span
             style={{padding: '14px 20px', border: `1px solid ${palette.brass}`, color: palette.amber}}
           >
@@ -480,7 +480,7 @@ const Closing = () => {
           color: palette.silver,
         }}
       >
-        EXPLORE THE OPEN WORKFLOW · STAR THE REPOSITORY
+        PLAY THE BUILD · EXPLORE THE OPEN WORKFLOW · STAR THE REPOSITORY
       </div>
       <Grain />
     </AbsoluteFill>

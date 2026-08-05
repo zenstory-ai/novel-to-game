@@ -2,7 +2,7 @@
   "stage": "s9-living-plates",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   },
   "environment": {
     "browser": "Google Chrome 150.0.7871.187",
@@ -22,6 +22,7 @@
     "restartClearsCapturedViews": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
@@ -29,35 +30,35 @@
   "plateImages": [
     {
       "plate": 1,
-      "bytesInCssValue": 75858,
-      "sha256": "da1dede28d4d38e25c9b7536a354c438faad3151ccc1974cff077750d84078d0",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 109702,
+      "sha256": "3c3c1605d165e1fc1e8f2909472dceff9da5be08595c1e36e0a0602fca162e9e",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 2,
-      "bytesInCssValue": 76566,
-      "sha256": "6bab45577bf37277078b3ca495d6c6caec7eda013236ca1ae393c1611290e9f9",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 97586,
+      "sha256": "7982f403bc6fdab49bd662b5f02710f88f35416f8daca26580da496edbb4abc7",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 3,
-      "bytesInCssValue": 75454,
-      "sha256": "1af332940e68dcf43646b1bcc4856a67c36d7cf722fd750b0350111997ace859",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 100138,
+      "sha256": "e2de9b080f40450eab6b609bce2274a50b019274537ebda332fa1cee9f93aff2",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 4,
-      "bytesInCssValue": 79514,
-      "sha256": "4daa4e01a7034255265d3ab80c64f00ed6e33b68e2e9ea0742d933d6c6624cc1",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 103054,
+      "sha256": "60fb3a367879b5346fd92e4e9c081d44786a814b0d33329c2b643474362f4382",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     }
   ],
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.3,
+    "worstFrameMs": 25.5
   },
   "checkpoints": [
     {

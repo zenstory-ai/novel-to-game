@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "b933827751f18adb2bbf9a83d6e8604a4eca8266",
+  "evidenceCommit": null,
+  "targetFinish": "playable-prototype",
+  "demonstratedTier": "playable-prototype",
+  "publicationTier": "playable-prototype",
+  "pipelineGates": {
+    "intake": "PASS",
+    "analyze": "PASS",
+    "concept": "PASS",
+    "design": "PASS",
+    "art": "PASS",
+    "build": "PASS",
+    "qa": "PASS"
+  },
+  "grayboxReady": {
+    "status": "PASS",
+    "evidence": [
+      "qa/verification.json"
+    ]
+  },
+  "visualPromotion": {
+    "status": "PASS",
+    "evidence": [
+      "qa/verification.json",
+      "build/evidence/visual-targets/manifest.json",
+      "build/evidence/visual-upgrade/generated/manifest.json",
+      "qa/evidence/independent-visual-review-2026-08-04-world-space.md",
+      "qa/evidence/independent-visual-review-2026-08-04-freeze-fix.md",
+      "qa/evidence/final-code-review-2026-08-04.md"
+    ]
+  },
+  "visualFrames": [
+    {
+      "id": "title-route",
+      "status": "PASS",
+      "operationPath": "cd build/app && npm run capture:visual; inspect title at both supported viewports",
+      "evidence": [
+        "build/evidence/visual-upgrade/generated/title-1440x900.jpg",
+        "build/evidence/visual-upgrade/generated/title-1280x720.jpg"
+      ],
+      "rubric": {
+        "focus": "PASS",
+        "silhouette": "PASS",
+        "depth": "PASS",
+        "materialLine": "PASS",
+        "lightColor": "PASS",
+        "hud": "PASS",
+        "motionFeedback": "PASS",
+        "artifacts": "PASS",
+        "failureExamples": "PASS"
+      }
+    },
+    {
+      "id": "glade-family",
+      "status": "PASS",
+      "operationPath": "cd build/app && npm run capture:visual; inspect the fixed glade family state at both supported viewports",
+      "evidence": [
+        "build/evidence/visual-upgrade/generated/family-1440x900.jpg",
+        "build/evidence/visual-upgrade/generated/family-1280x720.jpg"
+      ],
+      "rubric": {
+        "focus": "PASS",
+        "silhouette": "PASS",
+        "depth": "PASS",
+        "materialLine": "PASS",
+        "lightColor": "PASS",
+        "hud": "PASS",
+        "motionFeedback": "PASS",
+        "artifacts": "PASS",
+        "failureExamples": "PASS"
+      }
+    },
+    {
+      "id": "aerial-pressure",
+      "status": "PASS",
+      "operationPath": "cd build/app && npm run capture:visual; inspect the fixed dive at both viewports and the bound watch \u2192 bank \u2192 dive \u2192 pull-up cadence",
+      "evidence": [
+        "build/evidence/visual-upgrade/generated/dive-1440x900.jpg",
+        "build/evidence/visual-upgrade/generated/dive-1280x720.jpg",
+        "build/evidence/visual-upgrade/generated/motion/watch-bank-dive-pull-up.webm"
+      ],
+      "rubric": {
+        "focus": "PASS",
+        "silhouette": "PASS",
+        "depth": "PASS",
+        "materialLine": "PASS",
+        "lightColor": "PASS",
+        "hud": "PASS",
+        "motionFeedback": "PASS",
+        "artifacts": "PASS",
+        "failureExamples": "PASS"
+      }
+    }
+  ],
+  "visualReview": {
+    "required": true,
+    "status": "PASS",
+    "reviewer": "/root/final_arch_review (read-only independent Architect, 2026-08-04)",
+    "independence": "The reviewer made no implementation, capture, manifest, or QA edits and judged only the source-bound browser and media evidence.",
+    "evidence": "qa/evidence/independent-visual-review-2026-08-04-freeze-fix.md",
+    "reviewedSourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+    "reviewedManifestSha256": "6d4f1a16bcb6eecc8e3a5607ddb00e016eb73327186047a9d60d4f6a05a0882e"
+  },
+  "focalReleaseAssets": [
+    "world.connected_route",
+    "tool.field_camera",
+    "tool.plate_case",
+    "tool.period_rifle",
+    "subject.iguanodon_family",
+    "threat.pterodactyl",
+    "ui.field_system",
+    "light.functional_arc",
+    "accessibility.presentation"
+  ],
+  "unresolvedDefects": [
+    {
+      "id": "VIS-REVIEW-001",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "Latest source-bound independent review completed with zero blockers and zero majors.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-04.md"
+      ]
+    },
+    {
+      "id": "VIS-PROMOTION-002",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "Folded diagonal dive corridor and directly visible material responses passed independent re-review.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/contact-sheet-supported-viewports.jpg"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-01",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "Iguanodon eyes, muzzle, hands, fingers and thumb accents now meet playable-prototype readability.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-02",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "The representative dive now retains safe upper-edge clearance at both supported viewports.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-03",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "World-space low cover and the foreground rifle now provide the approved defensive choice without a HUD label.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-04",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "Creature and world material separation now meets the approved playable-prototype target finish.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-05",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "The title canopy and menu no longer form an independent heavy dark block.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-MINOR-06",
+      "severity": "minor",
+      "status": "CLOSED",
+      "summary": "An uncut hash-bound WebM and ordered phase samples now prove watch \u2192 bank \u2192 dive \u2192 pull-up cadence.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-03.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-PTERO-WING-007",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "Bilateral wing evidence and the corrected stable-up attack sequence pass independent review without clipping or orientation flips.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-04.md",
+        "build/evidence/visual-targets/contact-sheet-motion.jpg"
+      ]
+    },
+    {
+      "id": "VIS-TERRAIN-COVER-008",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "Removed the repeated marker-like ground-cover layer and reduced remaining ferns to sparse, darker tree-root clusters.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-04.md",
+        "build/evidence/visual-targets/contact-sheet-targets.jpg"
+      ]
+    },
+    {
+      "id": "VIS-WORLD-SPACE-009",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "Grounded branch contact and fixed-world pterodactyl motion pass independent review across ordinary, reduced-motion and the 4.4-second cycle boundary.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-04-world-space.md",
+        "build/evidence/visual-upgrade/generated/manifest.json"
+      ]
+    },
+    {
+      "id": "VIS-DEMO-010",
+      "severity": "major",
+      "status": "CLOSED",
+      "summary": "The continuous input-only demo now visibly proves search, dive defense, rifle response, exposed return and the Strong result without timestamp drift.",
+      "owner": "build",
+      "evidence": [
+        "qa/evidence/independent-visual-review-2026-08-04-world-space.md",
+        "qa/evidence/final-code-review-2026-08-04.md",
+        "build/media/clip/manifest.json"
+      ]
+    }
+  ],
+  "notes": "Independent read-only review passes with zero blockers, majors, or minors. Branch contact stays grounded, pterodactyl motion remains fixed in authored world space and continuous through the closed 4.4-second attack cycle, and the continuous demo shows the complete evidence-and-survival loop. Active play is capped near 60 FPS.",
+  "degradableReleaseAssets": [
+    "audio.core_world"
+  ],
+  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "visualEvidenceManifests": [
+    {
+      "path": "build/evidence/visual-upgrade/generated/manifest.json",
+      "sha256": "6d4f1a16bcb6eecc8e3a5607ddb00e016eb73327186047a9d60d4f6a05a0882e"
+    }
+  ],
+  "publicHost": {
+    "status": "HISTORICAL",
+    "evidence": "qa/evidence/public-host/report.json",
+    "sourceFingerprint": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+  },
+  "sourceInputManifest": {
+    "path": "build/source-inputs.json",
+    "sha256": "9b48ec2db396a5e56a076b2f117aad465c9475acf4886f2419ef17b15a34ea41"
+  }
+}

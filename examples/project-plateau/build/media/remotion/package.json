@@ -16,6 +16,7 @@
     "verify:tts-trials": "node scripts/verify-tts-review-scenarios.mjs",
     "verify:tts-matrix": "node scripts/verify-tts-review-scenarios.mjs --matrix",
     "studio": "npm run assets && remotion studio src/index.jsx",
+    "render:review": "npm run verify:voiceover && npm run assets && remotion render src/index.jsx ProjectPlateauPromo out/project-plateau-promo-36s-review.mp4 --codec=h264 --crf=22 --audio-codec=aac",
     "render": "npm run verify:voiceover:release && npm run assets && remotion render src/index.jsx ProjectPlateauPromo out/project-plateau-promo-36s-remotion.mp4 --codec=h264 --crf=18 --audio-codec=aac && node scripts/finalize-output.mjs",
     "compress:github": "node scripts/compress-github-output.mjs",
     "render:frames": "npm run assets && node scripts/render-review-frames.mjs",

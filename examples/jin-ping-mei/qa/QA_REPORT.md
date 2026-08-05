@@ -1,5 +1,7 @@
 # 《金瓶梅·风月总账》质量验证报告
 
+`targetFinish: playable-prototype`
+
 ## 裁决
 
 - 自动化工程验收：**`PASS`**（2026-07-28 复审：F1、F2 两条 `major` 已修复并加断言，

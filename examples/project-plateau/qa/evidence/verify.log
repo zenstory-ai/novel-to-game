@@ -1,67 +1,149 @@
 command=npm run verify
-sourceCommit=8793fb904ca6ac1aedf62f296febff6c68a9bb3d
-sourceFingerprint=e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d
+sourceCommit=b933827751f18adb2bbf9a83d6e8604a4eca8266
+sourceFingerprint=a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22
 runtime=Node.js
 runtimeVersion=v25.9.0
 packageManager=npm@11.12.1
 pythonVersion=3.14.5
 browser=Google Chrome 150.0.7871.187
-registered=test/audio.test.js,test/foundation.test.js,test/qa_s0.py,test/qa_s1.py,test/qa_s10.py,test/qa_s2.py,test/qa_s3.py,test/qa_s4.py,test/qa_s5.py,test/qa_s6.py,test/qa_s7.py,test/qa_s8.py,test/qa_s9.py,test/settings.test.js,test/simulation.test.js
+registered=test/audio.test.js,test/capture_visual_upgrade.py,test/collision.test.js,test/controller.test.js,test/entry-mode.test.js,test/foundation.test.js,test/hy3d-field-camera.test.js,test/hy3d-iguanodon.test.js,test/hy3d-pterodactyl.test.js,test/hy3d-rifle.test.js,test/iguanodon.test.js,test/pterodactyl.test.js,test/qa_collision.py,test/qa_controller.py,test/qa_entry.py,test/qa_loading.py,test/qa_motion.py,test/qa_s0.py,test/qa_s1.py,test/qa_s10.py,test/qa_s2.py,test/qa_s3.py,test/qa_s4.py,test/qa_s5.py,test/qa_s6.py,test/qa_s7.py,test/qa_s8.py,test/qa_s9.py,test/qa_visual_targets.py,test/render-budget.test.js,test/settings.test.js,test/simulation.test.js,test/terrain.test.js
 excluded={"test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite", "test/verify.py": "authoritative suite orchestrator; registering it would recurse"}
 suite=unit:simulation
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=npm test
 
 > project-plateau-proof-before-dark@0.1.0 test
 > node --test test/*.test.js
 
-✔ every core field cue has a concise sound caption (1.617833ms)
-✔ audio settings clamp channel volumes and expose caption state (0.150041ms)
-✔ cue history and threat transitions stay observable without Web Audio (0.242792ms)
-✔ cue history remains bounded during a long field session (0.12175ms)
-✔ foundation exposes the locked viewport and performance budgets (1.570833ms)
-✔ procedural placement is deterministic for a recorded seed (0.109833ms)
-✔ representative scene contains all declared subject and pressure groups (0.087041ms)
-✔ the family asset exposes two adults, three young and both authored behaviors (15.028167ms)
-✔ the glade composition protects a lit family-and-basalt sightline (5.202042ms)
-✔ frame percentile is stable and keeps the slow tail visible (0.132542ms)
-✔ runtime sources contain no remote asset or CDN request (5.000959ms)
-✔ presentation settings normalize invalid persisted values (1.54275ms)
-✔ settings round-trip through versioned storage and can be reset (0.173542ms)
-✔ blocked or malformed storage falls back without disabling controls (0.1695ms)
-✔ the measured compact route starts with a 180-second light budget (1.068208ms)
-✔ fresh and restarted player states are clean copies (0.868958ms)
-✔ walking, sprinting and crouching have ordered deterministic speeds (0.553917ms)
-✔ pause freezes both world time and movement (0.22ms)
-✔ a solid obstacle blocks penetration and permits axis sliding (0.220291ms)
-✔ leaving the navigable world recovers the last stable position (0.128667ms)
-✔ zone topology distinguishes the observation fork and both return routes (0.082916ms)
-✔ territory, glade, open proof and cover produce four readable threat states (0.443208ms)
-✔ examining the brook makes context eligible without awarding evidence (0.13225ms)
-✔ successive observed glade plates record young play and branch pull separately (0.212417ms)
-✔ camera raise slows movement and shutter commits one physical plate for two live seconds (0.172416ms)
-✔ open proof adds two awareness states and contact cracks the best intact plate (0.182792ms)
-✔ a later contact without body margin fails while the first contact remains recoverable (0.06275ms)
-✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.154084ms)
-✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.086333ms)
-✔ restart clears observation, proof, damage and action history (0.0785ms)
-✔ intact evidence and all four result thresholds are deterministic (0.086084ms)
-✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.166208ms)
-✔ an attack-state exposed return cracks the best plate without spending body margin (0.099667ms)
-✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.078333ms)
-✔ remaining light expires outside Fort with exact cause and actionable cue (0.06975ms)
-ℹ tests 35
+✔ every core field cue has a concise sound caption (2.237334ms)
+✔ audio settings clamp channel volumes and expose caption state (0.166125ms)
+✔ cue history and threat transitions stay observable without Web Audio (0.259709ms)
+✔ cue history remains bounded during a long field session (0.119958ms)
+✔ collision contract is a jumping 3D capsule with authored solid/non-solid policy (1.706125ms)
+✔ every solid collider is finite, uniquely identified and tied to a visible anchor (0.156208ms)
+✔ spawn and authored route checkpoints are outside all solid geometry (5.969334ms)
+✔ circle contact follows the curved surface instead of axis-sticking (0.818416ms)
+✔ rotated tent collider preserves tangential movement along its authored canvas wall (0.56975ms)
+✔ an invalid overlap is deterministically depenetrated before movement resumes (0.522125ms)
+✔ simulation ground height follows the same heightfield used by rendering (2.685584ms)
+✔ an airborne capsule still collides with tall authored solids (0.134458ms)
+✔ gameplay keys are accepted only by an active unpaused field view (0.831625ms)
+✔ mouse deltas update heading and pitch with explicit signs and clamps (0.129958ms)
+✔ camera-relative planar axes stay orthogonal for arbitrary headings (0.094083ms)
+✔ supported desktop environments enter the interactive WebGL2 build (17.4965ms)
+✔ missing WebGL2 always routes to the local preview (0.092208ms)
+✔ touch-only and undersized devices route to the conversion preview (0.164792ms)
+✔ known social in-app browsers route to preview even at a desktop viewport (0.06675ms)
+✔ explicit preview is deterministic while interactive override still requires WebGL2 (0.065917ms)
+✔ foundation exposes the locked viewport and performance budgets (20.212917ms)
+✔ procedural placement is deterministic for a recorded seed (0.09075ms)
+✔ representative scene contains all declared subject and pressure groups (0.088333ms)
+✔ every authored solid collider stays registered to the rendered object position (200.491333ms)
+✔ the family asset exposes two adults, three young and both authored behaviors (81.129166ms)
+✔ family actions remain planted while anatomical pivots and branch contact carry motion (60.088875ms)
+✔ pterodactyl attack reads as search, fold-dive and close attack from simulation time (178.537333ms)
+✔ pterodactyl flight uses a visible asymmetric flap cycle instead of a static glide (54.305625ms)
+✔ pterodactyl body forward follows the actual orbit and attack travel tangent (53.425208ms)
+✔ atmosphere exposes layered humid depth rather than a flat sky backdrop (1.334041ms)
+✔ the glade composition protects a lit family-and-basalt sightline (54.311708ms)
+✔ environment landmarks use authored organic and fractured silhouettes instead of stretched primitives (54.929541ms)
+✔ basalt seams inherit each tilted pillar frame instead of floating in world space (52.771333ms)
+✔ route and brook ribbons conform every feathered edge vertex to local terrain (51.086ms)
+✔ every instanced tree keeps its authored root plane in contact with terrain (50.103208ms)
+✔ every instanced fern stays upright with its root plane touching terrain (48.051084ms)
+✔ Fort Plateau reads as pitched canvas shelters with soft camp smoke (49.958291ms)
+✔ frame percentile is stable and keeps the slow tail visible (0.109542ms)
+✔ one percent low FPS averages the slowest one percent of frame times (0.085333ms)
+✔ runtime sources contain no remote asset or CDN request while navigation links may leave the app (6.694792ms)
+✔ the central helper prompt clears the protected silver-frame exposure area (0.739834ms)
+✔ evidence retention never removes a release-bound resource (53.583417ms)
+✔ evidence retention defaults to a non-destructive dry run (51.588833ms)
+✔ evidence retention blocks apply when an authoritative root is missing or malformed (100.501541ms)
+✔ evidence retention blocks malformed transitive manifests (51.481667ms)
+✔ evidence retention rejects symlinks without touching their targets (50.52975ms)
+✔ authoritative verification stages recovery outside the authoritative record (51.923666ms)
+✔ HY3D camera-and-hands viewmodel is the only production camera asset and stays within budget (2.719666ms)
+✔ field-camera loader caches one matte local template (1.901583ms)
+✔ camera mount receives one integrated HY3D held-camera visual without procedural hands (0.458042ms)
+✔ standalone held camera keeps the wide hand-and-forearm silhouette from the reference (0.311042ms)
+✔ held camera points its lens away from the player instead of presenting the front element (1.359584ms)
+✔ HY3D production asset stays within the approved shared package and render budget (2.09475ms)
+✔ cached loader fetches once and reuses a prepared template (2.504834ms)
+✔ shared morph targets restore behavioral posing without duplicating the source mesh (56.214834ms)
+✔ young family members reuse the adult mesh with a persistent juvenile proportion morph (29.723833ms)
+✔ HY3D instances share heavy geometry and material resources (0.4695ms)
+✔ play and reach poses move anatomy while keeping a diagonal support pair planted (0.383834ms)
+✔ adult HY3D swap hides the fallback without changing family roles or young assets (58.067041ms)
+✔ production family mode can reuse the same HY3D resource for adults and young (20.595416ms)
+✔ attaching twice is idempotent and preserves the procedural fallback meshes (9.835ms)
+✔ HY3D pterodactyl asset stays within the approved shared delivery budget (7.873041ms)
+✔ pterodactyl loader caches one matte template with shared flight morphs (6.832875ms)
+✔ flight instances share geometry and accept independent morph poses (44.97025ms)
+✔ flock upgrade hides procedural meshes once and reuses the HY3D template (33.785875ms)
+✔ standalone visual uses the expected scale, orientation and centered source (0.224375ms)
+✔ HY3D rifle-and-hands viewmodel is the only production gun asset and stays within budget (2.687833ms)
+✔ rifle loader caches one matte local template (1.951208ms)
+✔ rifle mount receives one integrated HY3D held-rifle visual without procedural hands (0.470666ms)
+✔ standalone held-rifle instance preserves the long local-Z silhouette plus hand width (0.26775ms)
+✔ adult Iguanodon is a grounded articulated loft model rather than a primitive blob (35.359084ms)
+✔ young Iguanodon keeps the same action rig with distinct proportions and palette (7.150375ms)
+✔ pterodactyl is an articulated thick-membrane creature rather than a paper triangle (34.015667ms)
+✔ pterodactyl exposes multi-joint wings and readable anatomical anchors (12.704125ms)
+✔ pterodactyl membrane has clay skin, darker veins and restrained translucency (32.3325ms)
+✔ pterodactyl wrists carry three grasping free digits distinct from the long wing finger (9.0555ms)
+✔ pterodactyl rear feet have connected soles, pads and three tapered clawed toes (10.672041ms)
+✔ render scale caps Retina fill-rate without degrading standard displays (0.805834ms)
+✔ quality profiles expose bounded fill-rate and active cadence budgets (0.809208ms)
+✔ render cadence saves power on title and pause while preserving active play (0.089125ms)
+✔ active rendering remains near 60 FPS across standard and high-refresh displays (10.994542ms)
+✔ idle cadence remains stable on a 120 Hz display (1.078792ms)
+✔ presentation settings normalize invalid persisted values (1.627042ms)
+✔ settings round-trip through versioned storage and can be reset (0.206333ms)
+✔ blocked or malformed storage falls back without disabling controls (0.190875ms)
+✔ the measured compact route starts with a 180-second light budget (1.070833ms)
+✔ fresh and restarted player states are clean copies (0.898416ms)
+✔ walking, sprinting and crouching have ordered deterministic speeds (10.0615ms)
+✔ movement accelerates, coasts briefly, and settles instead of snapping between speeds (1.642834ms)
+✔ a fast reversal must shed forward velocity before building speed backward (1.009167ms)
+✔ rotated view keeps WASD aligned with the camera horizontal axes (0.772ms)
+✔ pause freezes both world time and movement (0.110292ms)
+✔ jump has deterministic takeoff, apex and landing without double-jump (2.000708ms)
+✔ jump is rejected while crouching, holding a tool, exposing or paused (0.662708ms)
+✔ one large delta and fixed slices produce the same ballistic landing (3.103417ms)
+✔ focus loss releases held tools while preserving an exposure already in flight (0.2125ms)
+✔ a solid obstacle blocks penetration and permits axis sliding (2.371959ms)
+✔ a long simulation step cannot tunnel through a circular obstacle (1.860708ms)
+✔ leaving the navigable world recovers the last stable position (0.111375ms)
+✔ zone topology distinguishes the observation fork and both return routes (0.052958ms)
+✔ territory, glade, open proof and cover produce four readable threat states (7.432292ms)
+✔ examining the brook makes context eligible without awarding evidence (0.356ms)
+✔ successive observed glade plates record young play and branch pull separately (0.184458ms)
+✔ camera raise slows movement and shutter commits one physical plate for two live seconds (3.853458ms)
+✔ open proof adds two awareness states and contact cracks the best intact plate (4.777125ms)
+✔ a later contact without body margin fails while the first contact remains recoverable (0.094959ms)
+✔ a timely raised-rifle shot spends one cartridge and interrupts attack (0.1205ms)
+✔ pause freezes a raised camera and live shutter commitment without spending a plate (0.068667ms)
+✔ restart clears observation, proof, damage and action history (0.0665ms)
+✔ intact evidence and all four result thresholds are deterministic (0.089417ms)
+✔ covered return commits its deterministic cost once and submits intact proof at Fort (0.441208ms)
+✔ an attack-state exposed return cracks the best plate without spending body margin (0.174208ms)
+✔ a fired-shot exposed return costs eighteen seconds and preserves its best plate (0.256708ms)
+✔ remaining light expires outside Fort with exact cause and actionable cue (0.184416ms)
+✔ terrain field is deterministic, finite and visibly multi-scale (3.529541ms)
+✔ terrain derivatives stay gentle on the playable route while preserving rolling relief (0.338291ms)
+✔ terrain renders as a bounded low-cost layer without a repeated marker-like ground-cover field (105.138ms)
+ℹ tests 117
 ℹ suites 0
-ℹ pass 35
+ℹ pass 117
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 156.785417
+ℹ duration_ms 1664.224292
 exitCode=0
-durationMs=386
+durationMs=1897
 suite=build:production
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=npm run build
 
 > project-plateau-proof-before-dark@0.1.0 build
@@ -69,14 +151,17 @@ command=npm run build
 
 vite v8.2.0 building client environment for production...
 [2K
-transforming...✓ 12 modules transformed.
+transforming...✓ 48 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   6.78 kB │ gzip:   2.09 kB
-dist/assets/index-BtoLHCaQ.css   13.35 kB │ gzip:   4.21 kB
-dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
+dist/index.html                                9.39 kB │ gzip:   2.96 kB
+dist/assets/index-NJZTe-wq.css                18.62 kB │ gzip:   5.63 kB
+dist/assets/index-Daq1iLjK.js                  6.12 kB │ gzip:   2.58 kB
+dist/assets/GLTFLoader-DB8oIB9H.js            43.28 kB │ gzip:  12.86 kB
+dist/assets/BufferGeometryUtils-qQM6QJN6.js  253.24 kB │ gzip:  67.91 kB
+dist/assets/main-BfWn2Mkr.js                 612.12 kB │ gzip: 187.63 kB
 
-✓ built in 167ms
+✓ built in 217ms
 
 [plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
@@ -84,15 +169,15 @@ dist/assets/index-CWtQHXh1.js   582.58 kB │ gzip: 150.82 kB
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
 exitCode=0
-durationMs=514
+durationMs=564
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s0.py
 {
   "stage": "s0-renderer",
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   },
   "environment": {
     "node": "v25.9.0",
@@ -111,29 +196,41 @@ command=python3 test/qa_s0.py
     "minimumViewport": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 38.8,
+    "worstFrameMs": 25.8
   },
   "loading": {
-    "observedTtiMs": 840.3,
+    "observedTtiMs": 1238.9,
     "budgetTtiMs": 8000,
-    "distRawBytes": 602904,
-    "distGzipBytes": 154906,
+    "distRawBytes": 6842929,
+    "distGzipBytes": 4973191,
     "initialCompressedBudgetBytes": 20971520
   },
   "render": {
     "stage": "s10-glade-clarity",
     "mode": "field",
     "cameraMode": "glade",
+    "visualReviewOrbit": null,
     "runActive": true,
+    "pointerLock": {
+      "active": false,
+      "status": "unavailable",
+      "error": "The browser denied pointer lock. Click Resume field work to retry.",
+      "cameraForward": {
+        "x": -0.2649,
+        "y": -0.0433,
+        "z": -0.9633
+      }
+    },
     "renderer": "WebGL2",
     "player": {
       "position": {
@@ -144,10 +241,18 @@ command=python3 test/qa_s0.py
         "x": 3,
         "z": 70
       },
+      "groundY": 0.23,
+      "verticalOffset": 0,
+      "verticalVelocity": 0,
+      "grounded": true,
+      "velocity": {
+        "x": 0,
+        "z": 0
+      },
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 1.006,
+      "elapsedSeconds": 1.012,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -219,7 +324,7 @@ command=python3 test/qa_s0.py
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 178.994,
+      "remainingLight": 178.988,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -229,17 +334,60 @@ command=python3 test/qa_s0.py
     "threatVisual": {
       "state": "distant",
       "response": "orbit",
+      "attackStage": "orbit",
+      "attackProgress": 0,
+      "flightPose": {
+        "wingBeat": 0.2787,
+        "wingFold": 0,
+        "mode": "upstroke",
+        "bank": 0.1129,
+        "direction": [
+          -0.6882,
+          0.1411,
+          0.7116
+        ]
+      },
       "position": {
-        "x": 30.54,
-        "y": 23.71,
-        "z": 48.18
-      }
+        "x": 27.47,
+        "y": 23.73,
+        "z": -5.75
+      },
+      "scale": 0.88,
+      "anchorModel": "fixed-world-orbit-latched-attack-origin"
     },
     "familyVisual": {
       "moment": "glade-young-play",
       "adults": 2,
       "young": 3,
-      "branchAngle": 0.08,
+      "branchAngle": 0.03,
+      "branchContactDistance": 0.907,
+      "positions": [
+        {
+          "x": -8,
+          "y": -0.595,
+          "z": -31
+        },
+        {
+          "x": 10.5,
+          "y": -0.278,
+          "z": -39
+        },
+        {
+          "x": -2.2,
+          "y": -1.059,
+          "z": -24.8
+        },
+        {
+          "x": 3.4,
+          "y": -0.731,
+          "z": -27.2
+        },
+        {
+          "x": 2.5,
+          "y": -0.322,
+          "z": -35
+        }
+      ],
       "roles": [
         "graze",
         "branch-pull",
@@ -252,22 +400,80 @@ command=python3 test/qa_s0.py
       "state": null,
       "position": {
         "x": -10.5,
-        "y": -0.77,
+        "y": -0.6,
         "z": 47
       }
     },
     "assets": {
+      "terrain": {
+        "profile": "warped-multiscale-heightfield",
+        "vertices": 10961,
+        "surface": "slope-wetness-exposure-vertex-palette"
+      },
       "fieldCamera": {
-        "version": "bellows-camera",
-        "visibleParts": 13
+        "version": "hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k",
+        "visualStatus": "hy3d-field-camera-ready",
+        "visualError": null,
+        "loaded": true,
+        "singleAssetPath": true,
+        "bytes": 1108408,
+        "triangles": 50000,
+        "visibleParts": 1,
+        "hands": {
+          "loaded": true,
+          "styleVersion": "hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k",
+          "hands": 2,
+          "gripRoles": [
+            "camera-left-grip",
+            "camera-right-grip"
+          ],
+          "drawCalls": 1,
+          "integratedWithTool": true
+        }
+      },
+      "rifle": {
+        "version": "hy3d-v3.1-expedition-rifle-hands-v1-50k-1k",
+        "visualStatus": "hy3d-rifle-ready",
+        "visualError": null,
+        "loaded": true,
+        "singleAssetPath": true,
+        "bytes": 1000112,
+        "triangles": 50000,
+        "visibleParts": 2,
+        "hands": {
+          "loaded": true,
+          "styleVersion": "hy3d-v3.1-expedition-rifle-hands-v1-50k-1k",
+          "hands": 2,
+          "gripRoles": [
+            "fore-end-support",
+            "trigger-grip"
+          ],
+          "drawCalls": 1,
+          "integratedWithTool": true
+        }
       },
       "pterodactyl": {
-        "silhouette": "membrane-wing",
-        "visibleParts": 5
+        "silhouette": "continuous-skinned-membrane-wing",
+        "projectedShadow": "moving-winged-ground-shadow",
+        "visibleParts": 13,
+        "visualStatus": "hy3d-flock-ready",
+        "visualError": null,
+        "hy3d": {
+          "version": "hy3d-v3.5-stylized-30k-1k",
+          "bytes": 1327456,
+          "loaded": 3,
+          "sharedResource": true,
+          "runtimeMorphPose": true,
+          "poseTargets": [
+            "wingUp",
+            "wingDown",
+            "diveFold"
+          ]
+        }
       },
       "cover": {
         "archCount": 5,
-        "visibleParts": 25
+        "visibleParts": 35
       },
       "family": {
         "adults": 2,
@@ -278,13 +484,71 @@ command=python3 test/qa_s0.py
           "young-play"
         ],
         "branchPresent": true,
-        "visibleParts": 57
+        "visualStatus": "hy3d-family-ready",
+        "visualError": null,
+        "hy3d": {
+          "version": "hy3d-v3.5-stylized-25k-1k",
+          "bytes": 1089008,
+          "loadedAdults": 2,
+          "loadedYoung": 3,
+          "sharedResource": true,
+          "staticSourceMesh": true,
+          "runtimeMorphPose": true,
+          "poseTargets": [
+            "graze",
+            "reach",
+            "play",
+            "tailLeft",
+            "tailRight",
+            "juvenile"
+          ]
+        },
+        "visibleParts": 52
       },
       "gladeComposition": {
         "sightlineHalfWidth": 22,
         "sunLanePresent": true,
         "shadowCastingSubjects": 5,
-        "familyWidth": 15
+        "familyWidth": 18.5
+      }
+    },
+    "collision": {
+      "model": "vertical-capsule-on-heightfield-with-ballistic-jump",
+      "broadPhase": "authored-static-collider-list",
+      "resolution": "iterative-depenetration-with-surface-slide",
+      "fixedMovementStepSeconds": 0.016666666666666666,
+      "jump": {
+        "speed": 5.8,
+        "gravity": 15,
+        "restrictedByTools": true
+      },
+      "capsule": {
+        "radius": 0.6,
+        "height": 1.78,
+        "eyeHeight": 1.62,
+        "maximumGroundStep": 0.42
+      },
+      "colliderCount": 59,
+      "categories": {
+        "shelter": 2,
+        "hazard": 1,
+        "boulder": 1,
+        "tree-trunk": 50,
+        "living-subject": 5
+      },
+      "nonSolidPolicy": {
+        "lowDecor": [
+          "ferns",
+          "ground-stones",
+          "driftwood",
+          "basalt-rubble"
+        ],
+        "traversableSurface": [
+          "brook-water",
+          "route-ribbons"
+        ],
+        "airborneThreat": "state-driven-contact; no ground capsule",
+        "canopy": "visual cover only; trunks remain solid"
       }
     },
     "audio": {
@@ -308,12 +572,14 @@ command=python3 test/qa_s0.py
       "reducedMotion": false,
       "captionsEnabled": true,
       "textScale": "1",
+      "quality": "balanced",
+      "lookSensitivity": 1,
       "volumes": {
         "ambience": 0.34,
         "effects": 0.72,
         "music": 0.2
       },
-      "storageKey": "project-plateau:presentation:v1"
+      "storageKey": "project-plateau:presentation:v2"
     },
     "ui": {
       "prompt": null,
@@ -334,23 +600,55 @@ command=python3 test/qa_s0.py
       "lightWatch": null,
       "terminal": null
     },
-    "sceneChildren": 30,
-    "calls": 268,
-    "triangles": 50438,
-    "textures": 3,
-    "geometries": 93,
+    "plateCapture": {
+      "status": "idle",
+      "durationMs": null,
+      "error": null
+    },
+    "sceneChildren": 62,
+    "calls": 1,
+    "triangles": 1,
+    "textures": 35,
+    "geometries": 615,
     "viewport": [
       1440,
       900
     ],
-    "firstRenderedAt": 184.70000004768372,
-    "recentMedianFrameMs": 8.3
+    "renderBudget": {
+      "pixelRatio": 1,
+      "maxPixelRatio": 1.25,
+      "quality": "balanced",
+      "activeFpsCap": 60,
+      "renderedFrames": 85,
+      "skippedFrames": 109,
+      "activeFpsPolicy": "60fps-cap-across-refresh-rates",
+      "idleFpsCap": 30,
+      "pausedFpsCap": 15,
+      "hiddenFpsCap": 4,
+      "powerPreference": "default",
+      "preserveDrawingBuffer": false,
+      "gtaoSamples": 4,
+      "antialiasing": "single-pass-fxaa"
+    },
+    "firstRenderedAt": 291.5,
+    "recentMedianFrameMs": 16.7
   },
   "minimumRender": {
     "stage": "s10-glade-clarity",
     "mode": "field",
     "cameraMode": "glade",
+    "visualReviewOrbit": null,
     "runActive": true,
+    "pointerLock": {
+      "active": false,
+      "status": "unavailable",
+      "error": "The browser denied pointer lock. Click Resume field work to retry.",
+      "cameraForward": {
+        "x": -0.2649,
+        "y": -0.0433,
+        "z": -0.9633
+      }
+    },
     "renderer": "WebGL2",
     "player": {
       "position": {
@@ -361,10 +659,18 @@ command=python3 test/qa_s0.py
         "x": 3,
         "z": 70
       },
+      "groundY": 0.23,
+      "verticalOffset": 0,
+      "verticalVelocity": 0,
+      "grounded": true,
+      "velocity": {
+        "x": 0,
+        "z": 0
+      },
       "heading": 0,
       "pitch": 0,
       "stance": "walk",
-      "elapsedSeconds": 3.805,
+      "elapsedSeconds": 5.81,
       "distanceTravelled": 0,
       "paused": false,
       "pauseReason": null,
@@ -436,7 +742,7 @@ command=python3 test/qa_s0.py
       "failed": false,
       "failureCause": null,
       "contactCount": 0,
-      "remainingLight": 176.194,
+      "remainingLight": 174.19,
       "returnRoute": null,
       "returnCostSeconds": 0,
       "returnStrike": false,
@@ -446,17 +752,60 @@ command=python3 test/qa_s0.py
     "threatVisual": {
       "state": "distant",
       "response": "orbit",
+      "attackStage": "orbit",
+      "attackProgress": 0,
+      "flightPose": {
+        "wingBeat": 0.2339,
+        "wingFold": 0,
+        "mode": "upstroke",
+        "bank": 0.045,
+        "direction": [
+          -0.9883,
+          -0.0638,
+          0.1384
+        ]
+      },
       "position": {
-        "x": 22.72,
-        "y": 24.2,
-        "z": 52.44
-      }
+        "x": 10.78,
+        "y": 23.83,
+        "z": 0.42
+      },
+      "scale": 0.88,
+      "anchorModel": "fixed-world-orbit-latched-attack-origin"
     },
     "familyVisual": {
-      "moment": "glade-young-play",
+      "moment": "glade-branch-pull",
       "adults": 2,
       "young": 3,
-      "branchAngle": 0.08,
+      "branchAngle": 0.062,
+      "branchContactDistance": 0.704,
+      "positions": [
+        {
+          "x": -8,
+          "y": -0.598,
+          "z": -31
+        },
+        {
+          "x": 10.5,
+          "y": -0.3,
+          "z": -39
+        },
+        {
+          "x": -2.2,
+          "y": -1.028,
+          "z": -24.8
+        },
+        {
+          "x": 3.4,
+          "y": -0.78,
+          "z": -27.2
+        },
+        {
+          "x": 2.5,
+          "y": -0.323,
+          "z": -35
+        }
+      ],
       "roles": [
         "graze",
         "branch-pull",
@@ -469,22 +818,80 @@ command=python3 test/qa_s0.py
       "state": null,
       "position": {
         "x": -10.5,
-        "y": -0.77,
+        "y": -0.6,
         "z": 47
       }
     },
     "assets": {
+      "terrain": {
+        "profile": "warped-multiscale-heightfield",
+        "vertices": 10961,
+        "surface": "slope-wetness-exposure-vertex-palette"
+      },
       "fieldCamera": {
-        "version": "bellows-camera",
-        "visibleParts": 13
+        "version": "hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k",
+        "visualStatus": "hy3d-field-camera-ready",
+        "visualError": null,
+        "loaded": true,
+        "singleAssetPath": true,
+        "bytes": 1108408,
+        "triangles": 50000,
+        "visibleParts": 1,
+        "hands": {
+          "loaded": true,
+          "styleVersion": "hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k",
+          "hands": 2,
+          "gripRoles": [
+            "camera-left-grip",
+            "camera-right-grip"
+          ],
+          "drawCalls": 1,
+          "integratedWithTool": true
+        }
+      },
+      "rifle": {
+        "version": "hy3d-v3.1-expedition-rifle-hands-v1-50k-1k",
+        "visualStatus": "hy3d-rifle-ready",
+        "visualError": null,
+        "loaded": true,
+        "singleAssetPath": true,
+        "bytes": 1000112,
+        "triangles": 50000,
+        "visibleParts": 2,
+        "hands": {
+          "loaded": true,
+          "styleVersion": "hy3d-v3.1-expedition-rifle-hands-v1-50k-1k",
+          "hands": 2,
+          "gripRoles": [
+            "fore-end-support",
+            "trigger-grip"
+          ],
+          "drawCalls": 1,
+          "integratedWithTool": true
+        }
       },
       "pterodactyl": {
-        "silhouette": "membrane-wing",
-        "visibleParts": 5
+        "silhouette": "continuous-skinned-membrane-wing",
+        "projectedShadow": "moving-winged-ground-shadow",
+        "visibleParts": 13,
+        "visualStatus": "hy3d-flock-ready",
+        "visualError": null,
+        "hy3d": {
+          "version": "hy3d-v3.5-stylized-30k-1k",
+          "bytes": 1327456,
+          "loaded": 3,
+          "sharedResource": true,
+          "runtimeMorphPose": true,
+          "poseTargets": [
+            "wingUp",
+            "wingDown",
+            "diveFold"
+          ]
+        }
       },
       "cover": {
         "archCount": 5,
-        "visibleParts": 25
+        "visibleParts": 35
       },
       "family": {
         "adults": 2,
@@ -495,13 +902,71 @@ command=python3 test/qa_s0.py
           "young-play"
         ],
         "branchPresent": true,
-        "visibleParts": 57
+        "visualStatus": "hy3d-family-ready",
+        "visualError": null,
+        "hy3d": {
+          "version": "hy3d-v3.5-stylized-25k-1k",
+          "bytes": 1089008,
+          "loadedAdults": 2,
+          "loadedYoung": 3,
+          "sharedResource": true,
+          "staticSourceMesh": true,
+          "runtimeMorphPose": true,
+          "poseTargets": [
+            "graze",
+            "reach",
+            "play",
+            "tailLeft",
+            "tailRight",
+            "juvenile"
+          ]
+        },
+        "visibleParts": 52
       },
       "gladeComposition": {
         "sightlineHalfWidth": 22,
         "sunLanePresent": true,
         "shadowCastingSubjects": 5,
-        "familyWidth": 15
+        "familyWidth": 18.5
+      }
+    },
+    "collision": {
+      "model": "vertical-capsule-on-heightfield-with-ballistic-jump",
+      "broadPhase": "authored-static-collider-list",
+      "resolution": "iterative-depenetration-with-surface-slide",
+      "fixedMovementStepSeconds": 0.016666666666666666,
+      "jump": {
+        "speed": 5.8,
+        "gravity": 15,
+        "restrictedByTools": true
+      },
+      "capsule": {
+        "radius": 0.6,
+        "height": 1.78,
+        "eyeHeight": 1.62,
+        "maximumGroundStep": 0.42
+      },
+      "colliderCount": 59,
+      "categories": {
+        "shelter": 2,
+        "hazard": 1,
+        "boulder": 1,
+        "tree-trunk": 50,
+        "living-subject": 5
+      },
+      "nonSolidPolicy": {
+        "lowDecor": [
+          "ferns",
+          "ground-stones",
+          "driftwood",
+          "basalt-rubble"
+        ],
+        "traversableSurface": [
+          "brook-water",
+          "route-ribbons"
+        ],
+        "airborneThreat": "state-driven-contact; no ground capsule",
+        "canopy": "visual cover only; trunks remain solid"
       }
     },
     "audio": {
@@ -525,12 +990,14 @@ command=python3 test/qa_s0.py
       "reducedMotion": false,
       "captionsEnabled": true,
       "textScale": "1",
+      "quality": "balanced",
+      "lookSensitivity": 1,
       "volumes": {
         "ambience": 0.34,
         "effects": 0.72,
         "music": 0.2
       },
-      "storageKey": "project-plateau:presentation:v1"
+      "storageKey": "project-plateau:presentation:v2"
     },
     "ui": {
       "prompt": null,
@@ -551,17 +1018,38 @@ command=python3 test/qa_s0.py
       "lightWatch": null,
       "terminal": null
     },
-    "sceneChildren": 30,
-    "calls": 238,
-    "triangles": 49196,
-    "textures": 3,
-    "geometries": 93,
+    "plateCapture": {
+      "status": "idle",
+      "durationMs": null,
+      "error": null
+    },
+    "sceneChildren": 62,
+    "calls": 1,
+    "triangles": 1,
+    "textures": 35,
+    "geometries": 615,
     "viewport": [
       1280,
       720
     ],
-    "firstRenderedAt": 184.70000004768372,
-    "recentMedianFrameMs": 8.3
+    "renderBudget": {
+      "pixelRatio": 1,
+      "maxPixelRatio": 1.25,
+      "quality": "balanced",
+      "activeFpsCap": 60,
+      "renderedFrames": 373,
+      "skippedFrames": 397,
+      "activeFpsPolicy": "60fps-cap-across-refresh-rates",
+      "idleFpsCap": 30,
+      "pausedFpsCap": 15,
+      "hiddenFpsCap": 4,
+      "powerPreference": "default",
+      "preserveDrawingBuffer": false,
+      "gtaoSamples": 4,
+      "antialiasing": "single-pass-fxaa"
+    },
+    "firstRenderedAt": 291.5,
+    "recentMedianFrameMs": 16.7
   },
   "screenshots": [
     "build/evidence/s0/01-title.jpg",
@@ -577,9 +1065,9 @@ command=python3 test/qa_s0.py
 }
 S0 PASS: build/evidence/s0/report.json
 exitCode=0
-durationMs=6968
+durationMs=9083
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s1.py
 {
   "stage": "s1-controller",
@@ -587,6 +1075,7 @@ command=python3 test/qa_s1.py
     "walk": true,
     "sprint": true,
     "crouch": true,
+    "viewRelativeMovement": true,
     "collisionSlide": true,
     "boundaryRecovery": true,
     "manualPauseFreeze": true,
@@ -594,6 +1083,7 @@ command=python3 test/qa_s1.py
     "cleanRestart": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
@@ -601,31 +1091,31 @@ command=python3 test/qa_s1.py
   "continuousSmoke": {
     "requestedSeconds": 60.0,
     "wallSeconds": 60.01,
-    "simulatedElapsedGain": 59.933,
+    "simulatedElapsedGain": 60.017,
     "inputSegments": 30,
     "lifecycleRestarts": 0,
     "memory": {
-      "used": 20748579,
-      "total": 29255659
+      "used": 68197602,
+      "total": 99192170
     }
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 107.5,
-    "worstFrameMs": 9.3
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 54.2,
+    "worstFrameMs": 18.6
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S1 PASS: build/evidence/s1/report.json
 exitCode=0
-durationMs=71474
+durationMs=73628
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s2.py
 {
   "stage": "s2-topology",
@@ -639,27 +1129,28 @@ command=python3 test/qa_s2.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.3,
+    "worstFrameMs": 25.6
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S2 PASS: build/evidence/s2/report.json
 exitCode=0
-durationMs=19538
+durationMs=17493
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s3.py
 {
   "stage": "s3-exposed-proof",
@@ -675,27 +1166,28 @@ command=python3 test/qa_s3.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 53.7,
+    "worstFrameMs": 18.7
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S3 PASS: build/evidence/s3/report.json
 exitCode=0
-durationMs=15471
+durationMs=17340
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s4.py
 {
   "stage": "s4-complete-loop",
@@ -712,27 +1204,28 @@ command=python3 test/qa_s4.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.3,
+    "worstFrameMs": 25.5
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S4 PASS: build/evidence/s4/report.json
 exitCode=0
-durationMs=39276
+durationMs=39676
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s5.py
 {
   "stage": "s5-route-outcomes",
@@ -752,27 +1245,28 @@ command=python3 test/qa_s5.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.4,
+    "worstFrameMs": 25.4
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S5 PASS: build/evidence/s5/report.json
 exitCode=0
-durationMs=48372
+durationMs=55436
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s6.py
 {
   "stage": "s6-field-feedback",
@@ -786,30 +1280,32 @@ command=python3 test/qa_s6.py
     "rifleAndBrookResponseCues": true,
     "distinctResultAndFailureCues": true,
     "runResetClearsCueHistoryAndPreservesSettings": true,
+    "requiredFocalAssetFailureBlocksRun": true,
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.1,
+    "worstFrameMs": 25.6
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S6 PASS: build/evidence/s6/report.json
 exitCode=0
-durationMs=14008
+durationMs=17179
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s7.py
 {
   "stage": "s7-lifecycle",
@@ -826,36 +1322,82 @@ command=python3 test/qa_s7.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "loading": {
     "firstNoCacheNavigation": {
-      "timeToFirstFrameMs": 2198.3,
-      "domInteractiveMs": 54.3,
-      "loadEventMs": 2281.9,
-      "resourceCount": 11
+      "timeToFirstFrameMs": 2944.6,
+      "domInteractiveMs": 46.5,
+      "loadEventMs": 201.6,
+      "resourceCount": 43,
+      "ui": {
+        "visible": false,
+        "phase": "runtime",
+        "status": "Opening the plateau\u2026"
+      }
     },
     "finalNavigation": {
-      "timeToFirstFrameMs": 2196,
-      "domInteractiveMs": 79.3,
-      "loadEventMs": 2262.2,
-      "resourceCount": 12
+      "timeToFirstFrameMs": 2966.7,
+      "domInteractiveMs": 88.3,
+      "loadEventMs": 235.4,
+      "resourceCount": 44,
+      "ui": {
+        "visible": false,
+        "phase": "assets",
+        "status": "Preparing field camera, rifle and wildlife\u2026"
+      }
     },
     "budgetMs": 8000
   },
   "payload": {
     "files": [
       {
-        "path": "assets/index-BtoLHCaQ.css",
-        "rawBytes": 13357,
-        "gzipBytes": 4179
+        "path": "assets/BufferGeometryUtils-qQM6QJN6.js",
+        "rawBytes": 253244,
+        "gzipBytes": 66789
       },
       {
-        "path": "assets/index-CWtQHXh1.js",
-        "rawBytes": 582588,
-        "gzipBytes": 148450
+        "path": "assets/GLTFLoader-DB8oIB9H.js",
+        "rawBytes": 43285,
+        "gzipBytes": 12764
+      },
+      {
+        "path": "assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb",
+        "rawBytes": 1000112,
+        "gzipBytes": 737112
+      },
+      {
+        "path": "assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
+        "rawBytes": 1108408,
+        "gzipBytes": 801534
+      },
+      {
+        "path": "assets/iguanodon-hy3d-v35-stylized.glb",
+        "rawBytes": 1089008,
+        "gzipBytes": 818165
+      },
+      {
+        "path": "assets/index-Daq1iLjK.js",
+        "rawBytes": 6124,
+        "gzipBytes": 2612
+      },
+      {
+        "path": "assets/index-NJZTe-wq.css",
+        "rawBytes": 18625,
+        "gzipBytes": 5585
+      },
+      {
+        "path": "assets/main-BfWn2Mkr.js",
+        "rawBytes": 612121,
+        "gzipBytes": 185953
+      },
+      {
+        "path": "assets/pterodactyl-hy3d-v35-stylized.glb",
+        "rawBytes": 1327456,
+        "gzipBytes": 974909
       },
       {
         "path": "favicon.svg",
@@ -864,41 +1406,56 @@ command=python3 test/qa_s7.py
       },
       {
         "path": "index.html",
-        "rawBytes": 6789,
-        "gzipBytes": 2119
+        "rawBytes": 9398,
+        "gzipBytes": 2980
+      },
+      {
+        "path": "media/project-plateau-preview-15s.mp4",
+        "rawBytes": 1319426,
+        "gzipBytes": 1314414
+      },
+      {
+        "path": "media/project-plateau-preview-poster.jpg",
+        "rawBytes": 48411,
+        "gzipBytes": 47947
+      },
+      {
+        "path": "media/project-plateau-preview.json",
+        "rawBytes": 7141,
+        "gzipBytes": 2269
       }
     ],
-    "rawBytes": 602904,
-    "gzipBytes": 154906,
+    "rawBytes": 6842929,
+    "gzipBytes": 4973191,
     "initialCompressedBudgetBytes": 20971520,
     "totalBudgetBytes": 52428800
   },
   "performance": {
     "minimumViewport": {
       "samples": 120,
-      "medianFrameMs": 8.3,
-      "medianFps": 120.5,
-      "onePercentLowFps": 107.5,
-      "worstFrameMs": 9.4
+      "medianFrameMs": 16.6,
+      "medianFps": 60.2,
+      "onePercentLowFps": 38.9,
+      "worstFrameMs": 25.7
     },
     "targetViewport": {
-      "samples": 240,
-      "medianFrameMs": 8.3,
-      "medianFps": 120.5,
-      "onePercentLowFps": 106.4,
-      "worstFrameMs": 9.4
+      "samples": 120,
+      "medianFrameMs": 16.7,
+      "medianFps": 59.9,
+      "onePercentLowFps": 53.6,
+      "worstFrameMs": 18.7
     }
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S7 PASS: build/evidence/s7/report.json
 exitCode=0
-durationMs=37938
+durationMs=37768
 suite=browser:checkpoint-history
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s9.py
 {
   "stage": "s9-living-plates",
@@ -912,6 +1469,7 @@ command=python3 test/qa_s9.py
     "restartClearsCapturedViews": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
@@ -919,46 +1477,46 @@ command=python3 test/qa_s9.py
   "plateImages": [
     {
       "plate": 1,
-      "bytesInCssValue": 75858,
-      "sha256": "da1dede28d4d38e25c9b7536a354c438faad3151ccc1974cff077750d84078d0",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 109702,
+      "sha256": "3c3c1605d165e1fc1e8f2909472dceff9da5be08595c1e36e0a0602fca162e9e",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 2,
-      "bytesInCssValue": 76566,
-      "sha256": "6bab45577bf37277078b3ca495d6c6caec7eda013236ca1ae393c1611290e9f9",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 97586,
+      "sha256": "7982f403bc6fdab49bd662b5f02710f88f35416f8daca26580da496edbb4abc7",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 3,
-      "bytesInCssValue": 75454,
-      "sha256": "1af332940e68dcf43646b1bcc4856a67c36d7cf722fd750b0350111997ace859",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 100138,
+      "sha256": "e2de9b080f40450eab6b609bce2274a50b019274537ebda332fa1cee9f93aff2",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 4,
-      "bytesInCssValue": 79514,
-      "sha256": "4daa4e01a7034255265d3ab80c64f00ed6e33b68e2e9ea0742d933d6c6624cc1",
-      "filter": "grayscale(1) contrast(1.14) brightness(0.86)"
+      "bytesInCssValue": 103054,
+      "sha256": "60fb3a367879b5346fd92e4e9c081d44786a814b0d33329c2b643474362f4382",
+      "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     }
   ],
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.3,
+    "worstFrameMs": 25.5
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S9 PASS: build/evidence/s9/report.json
 exitCode=0
-durationMs=37994
+durationMs=38170
 suite=browser:complete-run
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s8.py
 {
   "stage": "s8-input-paths",
@@ -977,16 +1535,17 @@ command=python3 test/qa_s8.py
     "noThreatMeter": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
   },
   "pathMetrics": {
     "Strong": {
-      "wallSeconds": 51.865,
-      "simulationSeconds": 51.996,
-      "distanceTravelled": 128.35,
-      "remainingLight": 100.004,
+      "wallSeconds": 58.994,
+      "simulationSeconds": 59.097,
+      "distanceTravelled": 133.779,
+      "remainingLight": 92.903,
       "returnCostSeconds": 28,
       "route": "covered",
       "result": {
@@ -998,16 +1557,16 @@ command=python3 test/qa_s8.py
         "survivingPlates": 4,
         "route": "covered",
         "brookResponse": null,
-        "remainingLight": 100,
+        "remainingLight": 92.9,
         "gunshotCallback": null
       },
       "visionMode": "full-colour"
     },
     "Mixed": {
-      "wallSeconds": 37.995,
-      "simulationSeconds": 37.983,
-      "distanceTravelled": 129.089,
-      "remainingLight": 124.017,
+      "wallSeconds": 38.665,
+      "simulationSeconds": 38.667,
+      "distanceTravelled": 131.277,
+      "remainingLight": 123.333,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -1019,16 +1578,16 @@ command=python3 test/qa_s8.py
         "survivingPlates": 3,
         "route": "exposed",
         "brookResponse": "brush-moving",
-        "remainingLight": 124,
+        "remainingLight": 123.3,
         "gunshotCallback": "The report carried. Something answered by the brook."
       },
       "visionMode": "full-colour"
     },
     "Panic": {
-      "wallSeconds": 26.524,
-      "simulationSeconds": 26.508,
-      "distanceTravelled": 79.597,
-      "remainingLight": 135.492,
+      "wallSeconds": 26.611,
+      "simulationSeconds": 26.617,
+      "distanceTravelled": 79.578,
+      "remainingLight": 135.383,
       "returnCostSeconds": 18,
       "route": "exposed",
       "result": {
@@ -1041,10 +1600,10 @@ command=python3 test/qa_s8.py
       "visionMode": "full-colour"
     },
     "Achromatopsia Strong": {
-      "wallSeconds": 51.667,
-      "simulationSeconds": 51.633,
-      "distanceTravelled": 128.354,
-      "remainingLight": 100.367,
+      "wallSeconds": 58.953,
+      "simulationSeconds": 58.949,
+      "distanceTravelled": 133.902,
+      "remainingLight": 93.051,
       "returnCostSeconds": 28,
       "route": "covered",
       "result": {
@@ -1056,7 +1615,7 @@ command=python3 test/qa_s8.py
         "survivingPlates": 4,
         "route": "covered",
         "brookResponse": null,
-        "remainingLight": 100.4,
+        "remainingLight": 93.1,
         "gunshotCallback": null
       },
       "visionMode": "achromatopsia"
@@ -1064,21 +1623,265 @@ command=python3 test/qa_s8.py
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 38.5,
+    "worstFrameMs": 26
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S8 PASS: build/evidence/s8/report.json
 exitCode=0
-durationMs=175390
+durationMs=192120
+suite=browser:controller-contract
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_controller.py
+{
+  "status": "PASS",
+  "pointerLockMode": "deterministic-browser-shim",
+  "nativePointerLock": "NOT_RUN: headed Chrome did not grant pointer lock in the automated desktop session",
+  "checks": [
+    "pre-run held-key isolation",
+    "pointer-lock acquisition boundary",
+    "mouse delta to camera orientation",
+    "camera-relative W projection",
+    "spacebar ballistic jump and grounded landing",
+    "camera raise preserves pterodactyl position, scale and flight state",
+    "player movement preserves world-space pterodactyl and planted family transforms",
+    "compact desktop captions preserve the plate-rail safe area",
+    "focus-loss transient tool reset",
+    "non-blocking shutter capture",
+    "pointer-lock loss pause",
+    "pointer-lock denial failure UI"
+  ],
+  "evidence": [
+    "build/evidence/controller/controller-contract.jpg"
+  ]
+}
+exitCode=0
+durationMs=6727
+suite=browser:motion-visual
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_motion.py
+{
+  "status": "PASS",
+  "pointerLockMode": "deterministic-browser-shim",
+  "staticNormalizedDiffs": [
+    0.0,
+    0.0
+  ],
+  "motionNormalizedDiffs": [
+    0.014227,
+    0.014839,
+    0.015686,
+    0.014236,
+    0.019318,
+    0.01488,
+    0.014803
+  ],
+  "framePacing": {
+    "samples": 120,
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.4,
+    "worstFrameMs": 25.4
+  },
+  "finalHeading": -0.332,
+  "finalPosition": {
+    "x": 8.038,
+    "z": 54.938
+  },
+  "evidence": [
+    "build/evidence/motion/motion-contact-sheet.jpg"
+  ]
+}
+exitCode=0
+durationMs=10086
+suite=browser:collision-contract
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_collision.py
+{
+  "suite": "browser:collision-contract",
+  "status": "pass",
+  "checkpoints": [
+    {
+      "id": "01-visible-brook-boulder",
+      "expectedCollision": "brook-boulder",
+      "visual": "evidence/collision/01-visible-brook-boulder.jpg",
+      "visualSha256": "548141f4ed09aa5b29795af93be1447ea294431c23efe6d353b0a3bd843c48d2",
+      "state": "evidence/collision/state/01-visible-brook-boulder.json",
+      "stateSha256": "f5c56cbd36a75dd48ea09d256ddf6928008ff838b39217da7bf16cbe763f8bdc",
+      "browser": "evidence/collision/browser/01-visible-brook-boulder.json",
+      "browserSha256": "9f0ef25ab9bb13eb516e778978c0ada9995a869665e6aef8e58ce1a35ecabd0e",
+      "finalPosition": {
+        "x": -7.5,
+        "z": 37.45
+      },
+      "groundY": -1.337
+    },
+    {
+      "id": "02-rotated-fort-tent",
+      "expectedCollision": "fort-tent-west",
+      "visual": "evidence/collision/02-rotated-fort-tent.jpg",
+      "visualSha256": "fc9c05f77630c23aed98417ca4f02de01df8221c18a6fe5516053ad80d57e82c",
+      "state": "evidence/collision/state/02-rotated-fort-tent.json",
+      "stateSha256": "b7bc8bbedddb078c098a1f7d22e5054ac259bf737fc0fcd4b1009e30d58df53b",
+      "browser": "evidence/collision/browser/02-rotated-fort-tent.json",
+      "browserSha256": "2f9b8c59d0abe3e6911f3d863e1919adfd0bbdcf135166a8dded5ca3bbabab6e",
+      "finalPosition": {
+        "x": -5.687,
+        "z": 77.313
+      },
+      "groundY": 0.548
+    },
+    {
+      "id": "03-cover-arch-trunk",
+      "expectedCollision": "cover-arch-1-right-trunk",
+      "visual": "evidence/collision/03-cover-arch-trunk.jpg",
+      "visualSha256": "299cbc37aafc4b160b16f07fdf6c10b51c40280f209dadbf14e84464657eb468",
+      "state": "evidence/collision/state/03-cover-arch-trunk.json",
+      "stateSha256": "5c14942847e71d0a653302b65236eeec27ace0c3ae3901a13e0ae23de7ed63fb",
+      "browser": "evidence/collision/browser/03-cover-arch-trunk.json",
+      "browserSha256": "824963b63091aeaf9356532e67ea4c8e564445eba136f26008c9d774bb910d41",
+      "finalPosition": {
+        "x": -4.82,
+        "z": 28
+      },
+      "groundY": -1.858
+    },
+    {
+      "id": "04-living-subject-space",
+      "expectedCollision": "iguanodon-adult-graze",
+      "visual": "evidence/collision/04-living-subject-space.jpg",
+      "visualSha256": "8818850b3e8e9c5faacb1ab8d294a5f820c02f03a8f853190f1f0dfe970e5f3b",
+      "state": "evidence/collision/state/04-living-subject-space.json",
+      "stateSha256": "73ef165db67209fb9587e7f842e864d4485cbb4a078e0d0b8bf44572af89cda5",
+      "browser": "evidence/collision/browser/04-living-subject-space.json",
+      "browserSha256": "e4636aecce5ad5d0b22a3fb27ca546435d6045e139ef63d0c9f1f37351aeb69b",
+      "finalPosition": {
+        "x": -8.504,
+        "z": -29.211
+      },
+      "groundY": -0.789
+    }
+  ],
+  "consoleErrors": [],
+  "requestHosts": [
+    "",
+    "127.0.0.1:4173"
+  ],
+  "limitations": [
+    "Movement uses a vertical capsule on the shared terrain heightfield with fixed-step ballistic jumping and height-aware solid overlap.",
+    "Low decorative objects remain intentionally traversable and are listed in the runtime collision policy."
+  ]
+}
+exitCode=0
+durationMs=7590
+suite=browser:entry-conversion
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_entry.py
+{
+  "suite": "browser:entry-conversion",
+  "status": "PASS",
+  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "checks": {
+    "desktopWebGL2LoadsInteractiveBuild": true,
+    "desktopDoesNotRequestPreviewMedia": true,
+    "mobileLoadsLocal15SecondPreview": true,
+    "mobileDoesNotLoadThreeRuntime": true,
+    "inAppBrowserLoadsPreview": true,
+    "missingWebGL2LoadsPreview": true,
+    "twoMobileDemoLinksVisible": true,
+    "caseStudyLinkVisible": true,
+    "consoleErrors": [],
+    "externalHosts": []
+  },
+  "records": {
+    "desktop": {
+      "entry": {
+        "ready": true,
+        "mode": "interactive",
+        "reason": "desktop-webgl2"
+      },
+      "previewRequested": false
+    },
+    "mobile": {
+      "entry": {
+        "ready": true,
+        "mode": "preview",
+        "reason": "mobile-controls-unavailable",
+        "video": "/media/project-plateau-preview-15s.mp4"
+      },
+      "media": {
+        "paused": false,
+        "muted": true,
+        "readyState": 4,
+        "duration": 15
+      },
+      "screenshot": "01-mobile-preview.jpg",
+      "interactiveRuntimeRequested": false
+    },
+    "inAppBrowser": {
+      "entry": {
+        "ready": true,
+        "mode": "preview",
+        "reason": "in-app-browser",
+        "video": "/media/project-plateau-preview-15s.mp4"
+      },
+      "media": {
+        "paused": false,
+        "muted": true,
+        "readyState": 4,
+        "duration": 15
+      },
+      "screenshot": "02-in-app-browser-preview.jpg"
+    },
+    "withoutWebGL2": {
+      "entry": {
+        "ready": true,
+        "mode": "preview",
+        "reason": "webgl2-unavailable",
+        "video": "/media/project-plateau-preview-15s.mp4"
+      },
+      "media": {
+        "paused": false,
+        "muted": true,
+        "readyState": 4,
+        "duration": 15
+      },
+      "screenshot": "03-without-webgl2-preview.jpg"
+    }
+  }
+}
+exitCode=0
+durationMs=4627
+suite=browser:loading-state
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_loading.py
+{
+  "suite": "browser:loading-state",
+  "status": "PASS",
+  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "checks": {
+    "bootLoaderClearsAfterFirstFrame": true,
+    "requiredAssetLoaderVisible": true,
+    "loadingStatusNamesRequiredAssets": true,
+    "fieldOrderRemainsHiddenUntilReady": true,
+    "loaderClearsAfterSuccess": true,
+    "consoleErrors": []
+  },
+  "evidence": [
+    "01-required-assets-loading.jpg",
+    "02-field-order-ready.jpg"
+  ]
+}
+exitCode=0
+durationMs=3683
 suite=browser:current-visual
-cwd=game-adaptations/project-plateau/build/app
+cwd=examples/project-plateau/build/app
 command=python3 test/qa_s10.py
 {
   "stage": "s10-glade-clarity",
@@ -1087,6 +1890,7 @@ command=python3 test/qa_s10.py
     "familyAndBasaltShareSunLane": true,
     "allFiveSubjectsCastShadows": true,
     "observationNoteClearsBeforeHeroFrame": true,
+    "cameraPromptClearsProtectedFrame": true,
     "focusRegionPixelFloor": true,
     "youngPlayAndBranchPullRemainDistinct": true,
     "achromatopsiaAttackRetainsShapeAndToolState": true,
@@ -1095,6 +1899,7 @@ command=python3 test/qa_s10.py
     "restartClearsCapturedViews": true,
     "consoleErrors": [],
     "requestHosts": [
+      "",
       "127.0.0.1:4173"
     ],
     "externalHosts": []
@@ -1102,72 +1907,338 @@ command=python3 test/qa_s10.py
   "focusRegion": {
     "width": 777,
     "height": 504,
-    "darkRatio": 0.1981,
-    "brightRatio": 0.5926,
-    "chromaticRatio": 0.8211
+    "darkRatio": 0.0142,
+    "brightRatio": 0.6715,
+    "chromaticRatio": 0.807
   },
   "performance": {
     "samples": 240,
-    "medianFrameMs": 8.3,
-    "medianFps": 120.5,
-    "onePercentLowFps": 106.4,
-    "worstFrameMs": 9.4
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.2,
+    "worstFrameMs": 25.7
   },
   "source": {
     "scope": "index.html, package manifests, public assets and src",
-    "sha256": "e99883ce0a14f31782ac0dc6a91bd38f7e9869d86279d11ca04b5171a59af69d"
+    "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   }
 }
 S10 PASS: build/evidence/s10/report.json
 exitCode=0
-durationMs=39597
+durationMs=36519
+suite=browser:current-visual
+cwd=examples/project-plateau/build/app
+command=python3 test/qa_visual_targets.py
+{
+  "sourceSha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "manifestSha256": "702cd61f59163ad944b618d4b34e124f73379338a5be0fa4b0ac0f918922b498",
+  "captureCount": 18,
+  "targetPerformance": {
+    "samples": 240,
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.4,
+    "worstFrameMs": 25.4
+  },
+  "minimumPerformance": {
+    "samples": 240,
+    "medianFrameMs": 16.7,
+    "medianFps": 59.9,
+    "onePercentLowFps": 39.4,
+    "worstFrameMs": 25.5
+  },
+  "evidence": "/Users/pite/makemoney/novel-to-game/examples/project-plateau/build/evidence/visual-targets"
+}
+VISUAL TARGETS PASS: /Users/pite/makemoney/novel-to-game/examples/project-plateau/build/evidence/visual-targets/manifest.json
+exitCode=0
+durationMs=42031
+suite=browser:current-visual
+cwd=examples/project-plateau/build/app
+command=python3 test/capture_visual_upgrade.py
+{
+  "schemaVersion": 2,
+  "command": "npm run capture:visual",
+  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "scene": "glade-family-under-aerial-pressure",
+  "seed": 139,
+  "frozenAnimationSeconds": 4.25,
+  "captures": [
+    {
+      "id": "title-1440x900",
+      "path": "build/evidence/visual-upgrade/generated/title-1440x900.jpg",
+      "viewport": [
+        1440,
+        900
+      ],
+      "sha256": "1e0f5c09ae14456800ce9b9731194c1c2e5fa73371f7d25b29315a39e614e88b",
+      "bytes": 91603,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": null,
+      "threatState": "distant"
+    },
+    {
+      "id": "family-1440x900",
+      "path": "build/evidence/visual-upgrade/generated/family-1440x900.jpg",
+      "viewport": [
+        1440,
+        900
+      ],
+      "sha256": "ba36f7eeea2bf8cabcf08fd501a1fd74a9afa8e507203966e66e5878714db405",
+      "bytes": 108928,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": "glade-young-play",
+      "threatState": "search"
+    },
+    {
+      "id": "dive-1440x900",
+      "path": "build/evidence/visual-upgrade/generated/dive-1440x900.jpg",
+      "viewport": [
+        1440,
+        900
+      ],
+      "sha256": "d0b5b174da371d8ca3fb60a6de6eb0908c46aed0a5ce02569b994724d7639c70",
+      "bytes": 108436,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": "glade-young-play",
+      "threatState": "attack"
+    },
+    {
+      "id": "title-1280x720",
+      "path": "build/evidence/visual-upgrade/generated/title-1280x720.jpg",
+      "viewport": [
+        1280,
+        720
+      ],
+      "sha256": "bc0f1ad7c78d45875ca3c23c5d454680c90aae742edf044dd48042d4a58c8d9a",
+      "bytes": 72393,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": null,
+      "threatState": "distant"
+    },
+    {
+      "id": "family-1280x720",
+      "path": "build/evidence/visual-upgrade/generated/family-1280x720.jpg",
+      "viewport": [
+        1280,
+        720
+      ],
+      "sha256": "aa5aeb4c99751fa25f012039921e3eb38f041a2bf7a24792ce27fe1df627372b",
+      "bytes": 84534,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": "glade-young-play",
+      "threatState": "search"
+    },
+    {
+      "id": "dive-1280x720",
+      "path": "build/evidence/visual-upgrade/generated/dive-1280x720.jpg",
+      "viewport": [
+        1280,
+        720
+      ],
+      "sha256": "cb0baaa7ba8c19722f1adb13dcc422acbedfce12132ff0be49a23cafceff3f29",
+      "bytes": 84150,
+      "frozenAnimationSeconds": 4.25,
+      "familyMoment": "glade-young-play",
+      "threatState": "attack"
+    }
+  ],
+  "contactSheet": {
+    "path": "build/evidence/visual-upgrade/generated/contact-sheet-supported-viewports.jpg",
+    "sha256": "087a963719725564f039a910428334c7cceacf92fdf19bd06f747659e1b1f9a8",
+    "bytes": 127928
+  },
+  "targets": [
+    {
+      "id": "title-route",
+      "path": "design/visual-targets/01-title-route.svg",
+      "sha256": "7a282e7165599ac6020a7abb015b1610e3593b17942989ddb326bbc3cf8cb274",
+      "bytes": 993
+    },
+    {
+      "id": "glade-family",
+      "path": "design/visual-targets/02-glade-family.svg",
+      "sha256": "9d6af8aec91d2874092dda11ea9c109a6552442c7cf26c54a18dccc4f77f9e0a",
+      "bytes": 1151
+    },
+    {
+      "id": "aerial-pressure",
+      "path": "design/visual-targets/03-aerial-pressure.svg",
+      "sha256": "15f57266802978a17751aa0b13f9174188af4fad27278d42d2adc2a17552da6a",
+      "bytes": 903
+    }
+  ],
+  "motionCadence": {
+    "claim": "continuous real-browser watch to attack cycle plus deterministic phase samples",
+    "captureMode": "one continuous real-time Playwright gameplay take after browser preroll removal; QA-clock JPEG samples are phase labels, not gameplay timing",
+    "authoredCycleSeconds": 4.4,
+    "trimmedBrowserPrerollMs": 1193,
+    "transitions": [
+      {
+        "phase": "watch",
+        "atMs": 0,
+        "threatState": "watch",
+        "rendererResponse": "orbit"
+      },
+      {
+        "phase": "bank-dive-pull-up-cycle",
+        "atMs": 904,
+        "threatState": "attack",
+        "rendererResponse": "orbit"
+      },
+      {
+        "phase": "cycle-complete",
+        "atMs": 5805,
+        "threatState": "attack",
+        "rendererResponse": "orbit"
+      }
+    ],
+    "video": {
+      "path": "build/evidence/visual-upgrade/generated/motion/watch-bank-dive-pull-up.webm",
+      "sha256": "1a90c1c21005ca63e0f885abaf865ccc99f2ca171a349f0274d4f492bfa1cb7b",
+      "bytes": 375037
+    },
+    "samples": [
+      {
+        "phase": "watch",
+        "rendererSeconds": 0.0,
+        "threatState": "watch",
+        "rendererResponse": "orbit",
+        "path": "build/evidence/visual-upgrade/generated/motion/watch.jpg",
+        "sha256": "64cee60e618a69c4bb5dcbd2cce85efa967524cc5ca25b1063a85c742b53aa94",
+        "bytes": 75296
+      },
+      {
+        "phase": "bank",
+        "rendererSeconds": 0.72,
+        "threatState": "attack",
+        "rendererResponse": "orbit",
+        "path": "build/evidence/visual-upgrade/generated/motion/bank.jpg",
+        "sha256": "db89d446c3ae7dff59929f7f94632cba17f279d08f1de8ab1c5d978e1a007f5a",
+        "bytes": 75552
+      },
+      {
+        "phase": "dive",
+        "rendererSeconds": 1.35,
+        "threatState": "attack",
+        "rendererResponse": "orbit",
+        "path": "build/evidence/visual-upgrade/generated/motion/dive.jpg",
+        "sha256": "9bfe0f44801bb4a88739e128e3c597d7bd177e8582817efc5f3f17b7344e205f",
+        "bytes": 76056
+      },
+      {
+        "phase": "pull-up",
+        "rendererSeconds": 2.85,
+        "threatState": "attack",
+        "rendererResponse": "orbit",
+        "path": "build/evidence/visual-upgrade/generated/motion/pull-up.jpg",
+        "sha256": "050ef0ddc06059950ee40f75d9322e7df239bc79751cc4f8f4707b103f93467e",
+        "bytes": 77601
+      }
+    ],
+    "consoleErrors": []
+  },
+  "consoleErrors": []
+}
+exitCode=0
+durationMs=157
 suite=qa:design-invariants
-cwd=game-adaptations/project-plateau
+cwd=examples/project-plateau
 command=python3 qa/check_design_invariants.py
 design invariants: PASS (10/10)
 exitCode=0
-durationMs=58
+durationMs=36
 suite=repo:contract
 cwd=.
-command=python3 scripts/validate_repo.py
+command=python3 scripts/validate_repo.py --verification-candidate examples/project-plateau/qa/.verification-candidate.json
 Validation passed: 7 skills checked.
 exitCode=0
-durationMs=713
+durationMs=2480
 suite=repo:contract
 cwd=.
 command=python3 -m unittest discover -s tests -v
+test_asset_ledgers_reference_existing_evidence (test_validate_repo.RepositoryValidationTests.test_asset_ledgers_reference_existing_evidence) ... ok
+test_authoritative_verification_log_is_content_bound (test_validate_repo.RepositoryValidationTests.test_authoritative_verification_log_is_content_bound) ... ok
+test_build_brief_release_states_must_match_manifest (test_validate_repo.RepositoryValidationTests.test_build_brief_release_states_must_match_manifest) ... ok
 test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy (test_validate_repo.RepositoryValidationTests.test_chinese_readme_avoids_stock_contrast_and_awkward_example_copy) ... ok
 test_community_contribution_surface_is_complete (test_validate_repo.RepositoryValidationTests.test_community_contribution_surface_is_complete) ... ok
+test_current_public_host_pass_requires_release_fingerprint (test_validate_repo.RepositoryValidationTests.test_current_public_host_pass_requires_release_fingerprint) ... ok
+test_degradable_asset_requires_structured_fallback_proof (test_validate_repo.RepositoryValidationTests.test_degradable_asset_requires_structured_fallback_proof) ... ok
+test_demonstrated_tier_cannot_claim_playable_proof_under_graybox_publication (test_validate_repo.RepositoryValidationTests.test_demonstrated_tier_cannot_claim_playable_proof_under_graybox_publication) ... ok
 test_downstream_skills_restate_the_output_language_rule (test_validate_repo.RepositoryValidationTests.test_downstream_skills_restate_the_output_language_rule) ... ok
+test_every_publication_tier_requires_graybox_ready_proof (test_validate_repo.RepositoryValidationTests.test_every_publication_tier_requires_graybox_ready_proof) ... ok
 test_every_skill_description_leads_with_english (test_validate_repo.RepositoryValidationTests.test_every_skill_description_leads_with_english) ... ok
 test_example_source_and_citations_are_structurally_valid (test_validate_repo.RepositoryValidationTests.test_example_source_and_citations_are_structurally_valid) ... ok
 test_example_source_bible_accounts_for_every_source_chapter (test_validate_repo.RepositoryValidationTests.test_example_source_bible_accounts_for_every_source_chapter) ... ok
 test_examples_use_compact_planning_artifacts (test_validate_repo.RepositoryValidationTests.test_examples_use_compact_planning_artifacts) ... ok
+test_fish_audio_trials_are_sparse_and_never_release_assets_by_default (test_validate_repo.RepositoryValidationTests.test_fish_audio_trials_are_sparse_and_never_release_assets_by_default) ... ok
+test_graybox_and_playable_prototype_may_record_open_visual_work (test_validate_repo.RepositoryValidationTests.test_graybox_and_playable_prototype_may_record_open_visual_work) ... ok
+test_hidden_verification_candidate_does_not_replace_authoritative_record (test_validate_repo.RepositoryValidationTests.test_hidden_verification_candidate_does_not_replace_authoritative_record) ... ok
 test_manifest_validator_rejects_a_bad_manifest (test_validate_repo.RepositoryValidationTests.test_manifest_validator_rejects_a_bad_manifest) ... ok
 test_minimal_evidence_contract_rejects_each_missing_marker (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_contract_rejects_each_missing_marker) ... ok
 test_minimal_evidence_fixture_reports_an_orphaned_suite (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_fixture_reports_an_orphaned_suite) ... ok
 test_minimal_evidence_fixture_runs_one_complete_verification (test_validate_repo.RepositoryValidationTests.test_minimal_evidence_fixture_runs_one_complete_verification) ... ok
 test_native_plugins_expose_one_shared_skill_bundle (test_validate_repo.RepositoryValidationTests.test_native_plugins_expose_one_shared_skill_bundle) ... ok
+test_non_graybox_recomputes_current_workspace_app_fingerprint (test_validate_repo.RepositoryValidationTests.test_non_graybox_recomputes_current_workspace_app_fingerprint) ... ok
+test_non_graybox_requires_recursive_source_input_manifest (test_validate_repo.RepositoryValidationTests.test_non_graybox_requires_recursive_source_input_manifest) ... ok
+test_non_graybox_requires_structured_successful_verification (test_validate_repo.RepositoryValidationTests.test_non_graybox_requires_structured_successful_verification) ... ok
+test_non_graybox_visual_manifest_requires_non_empty_resources (test_validate_repo.RepositoryValidationTests.test_non_graybox_visual_manifest_requires_non_empty_resources) ... ok
 test_numeral_parsing_covers_every_declared_kind (test_validate_repo.RepositoryValidationTests.test_numeral_parsing_covers_every_declared_kind) ... ok
+test_playable_allows_failed_degradable_asset_with_valid_fallback (test_validate_repo.RepositoryValidationTests.test_playable_allows_failed_degradable_asset_with_valid_fallback) ... ok
+test_playable_prototype_rejects_open_major (test_validate_repo.RepositoryValidationTests.test_playable_prototype_rejects_open_major) ... ok
+test_playable_prototype_rejects_unclassified_release_gate_asset (test_validate_repo.RepositoryValidationTests.test_playable_prototype_rejects_unclassified_release_gate_asset) ... ok
+test_playable_prototype_requires_every_pipeline_gate (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_every_pipeline_gate) ... ok
+test_playable_prototype_requires_focal_release_asset_proof (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_focal_release_asset_proof) ... ok
+test_playable_prototype_requires_review_identity_independence_and_evidence (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_review_identity_independence_and_evidence) ... ok
+test_playable_prototype_requires_review_to_be_required_and_passed (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_review_to_be_required_and_passed) ... ok
+test_playable_prototype_requires_visual_frame_evidence (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_visual_frame_evidence) ... ok
+test_playable_prototype_requires_visual_promotion_proof (test_validate_repo.RepositoryValidationTests.test_playable_prototype_requires_visual_promotion_proof) ... ok
+test_playable_publication_rejects_release_fingerprint_mismatch (test_validate_repo.RepositoryValidationTests.test_playable_publication_rejects_release_fingerprint_mismatch) ... ok
+test_playable_publication_rejects_stale_commit_with_current_fingerprint (test_validate_repo.RepositoryValidationTests.test_playable_publication_rejects_stale_commit_with_current_fingerprint) ... ok
+test_playable_visual_manifest_requires_embedded_source_fingerprint (test_validate_repo.RepositoryValidationTests.test_playable_visual_manifest_requires_embedded_source_fingerprint) ... ok
 test_plugin_manifest_descriptions_lead_with_english (test_validate_repo.RepositoryValidationTests.test_plugin_manifest_descriptions_lead_with_english) ... ok
+test_progress_gate_parser_rejects_conflicting_anchored_statuses (test_validate_repo.RepositoryValidationTests.test_progress_gate_parser_rejects_conflicting_anchored_statuses) ... ok
 test_public_product_copy_does_not_limit_the_pipeline_to_web_games (test_validate_repo.RepositoryValidationTests.test_public_product_copy_does_not_limit_the_pipeline_to_web_games) ... ok
+test_publication_tiers_must_follow_target_and_demonstrated_order (test_validate_repo.RepositoryValidationTests.test_publication_tiers_must_follow_target_and_demonstrated_order) ... ok
+test_qa_report_inherits_target_finish_without_conflicts (test_validate_repo.RepositoryValidationTests.test_qa_report_inherits_target_finish_without_conflicts) ... ok
+test_readme_defaults_to_english_with_a_chinese_counterpart (test_validate_repo.RepositoryValidationTests.test_readme_defaults_to_english_with_a_chinese_counterpart) ... ok
+test_readme_example_link_order_must_match_between_languages (test_validate_repo.RepositoryValidationTests.test_readme_example_link_order_must_match_between_languages) ... ok
+test_readme_featured_claim_must_point_to_showcase (test_validate_repo.RepositoryValidationTests.test_readme_featured_claim_must_point_to_showcase) ... ok
+test_readme_public_listing_must_use_manifest_tier_label (test_validate_repo.RepositoryValidationTests.test_readme_public_listing_must_use_manifest_tier_label) ... ok
+test_release_evidence_cannot_escape_example_workspace (test_validate_repo.RepositoryValidationTests.test_release_evidence_cannot_escape_example_workspace) ... ok
+test_release_gate_ledger_requires_status_remaining_and_existing_evidence (test_validate_repo.RepositoryValidationTests.test_release_gate_ledger_requires_status_remaining_and_existing_evidence) ... ok
 test_repo_local_discovery_resolves_the_same_skill_set (test_validate_repo.RepositoryValidationTests.test_repo_local_discovery_resolves_the_same_skill_set) ... ok
 test_repository_contract_is_valid (test_validate_repo.RepositoryValidationTests.test_repository_contract_is_valid) ... ok
 test_repository_json_scan_skips_generated_dependency_trees (test_validate_repo.RepositoryValidationTests.test_repository_json_scan_skips_generated_dependency_trees) ... ok
+test_review_scenario_generator_attests_rights_and_records_requests (test_validate_repo.RepositoryValidationTests.test_review_scenario_generator_attests_rights_and_records_requests) ... ok
 test_runtime_markdown_headings_match_the_declared_language (test_validate_repo.RepositoryValidationTests.test_runtime_markdown_headings_match_the_declared_language)
 技能与 references 恒为简体中文；示例按自己 manifest 声明的语言判。 ... ok
 test_runtime_pipeline_follows_the_selected_target_platform (test_validate_repo.RepositoryValidationTests.test_runtime_pipeline_follows_the_selected_target_platform) ... ok
+test_showcase_publication_rejects_not_run_required_visual_review (test_validate_repo.RepositoryValidationTests.test_showcase_publication_rejects_not_run_required_visual_review) ... ok
+test_showcase_publication_requires_matching_release_manifest_tier (test_validate_repo.RepositoryValidationTests.test_showcase_publication_requires_matching_release_manifest_tier) ... ok
+test_showcase_publication_requires_progress_gates (test_validate_repo.RepositoryValidationTests.test_showcase_publication_requires_progress_gates) ... ok
+test_showcase_publication_requires_release_gate_assets_to_pass (test_validate_repo.RepositoryValidationTests.test_showcase_publication_requires_release_gate_assets_to_pass) ... ok
 test_skill_validator_rejects_chinese_first_description (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_chinese_first_description) ... ok
 test_skill_validator_rejects_cross_skill_link (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_cross_skill_link) ... ok
 test_skill_validator_rejects_missing_output_language_rule (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_missing_output_language_rule) ... ok
 test_skill_validator_rejects_todo_and_broken_link (test_validate_repo.RepositoryValidationTests.test_skill_validator_rejects_todo_and_broken_link) ... ok
+test_target_finish_must_be_inherited_without_conflicts (test_validate_repo.RepositoryValidationTests.test_target_finish_must_be_inherited_without_conflicts) ... ok
+test_tts_contract_stays_provider_neutral_and_minimizes_source_disclosure (test_validate_repo.RepositoryValidationTests.test_tts_contract_stays_provider_neutral_and_minimizes_source_disclosure) ... ok
+test_verification_source_commit_must_bind_its_app_bytes (test_validate_repo.RepositoryValidationTests.test_verification_source_commit_must_bind_its_app_bytes) ... ok
 test_visible_directories_skips_agent_state_dirs (test_validate_repo.RepositoryValidationTests.test_visible_directories_skips_agent_state_dirs) ... ok
+test_visual_frame_requires_operation_path_and_complete_rubric (test_validate_repo.RepositoryValidationTests.test_visual_frame_requires_operation_path_and_complete_rubric) ... ok
+test_visual_frames_must_bind_verified_runtime_resources_and_target_ids (test_validate_repo.RepositoryValidationTests.test_visual_frames_must_bind_verified_runtime_resources_and_target_ids) ... ok
+test_visual_manifest_binds_ordered_motion_cadence (test_validate_repo.RepositoryValidationTests.test_visual_manifest_binds_ordered_motion_cadence) ... ok
+test_visual_manifest_recursively_binds_referenced_files (test_validate_repo.RepositoryValidationTests.test_visual_manifest_recursively_binds_referenced_files) ... ok
+test_visual_review_must_bind_current_source_and_verified_manifest (test_validate_repo.RepositoryValidationTests.test_visual_review_must_bind_current_source_and_verified_manifest) ... ok
+test_visual_targets_inherits_target_finish_when_present (test_validate_repo.RepositoryValidationTests.test_visual_targets_inherits_target_finish_when_present) ... ok
+test_voiceover_release_is_hash_bound_and_fail_closed (test_validate_repo.RepositoryValidationTests.test_voiceover_release_is_hash_bound_and_fail_closed) ... ok
+test_web_verification_registry_must_match_actual_test_files (test_validate_repo.RepositoryValidationTests.test_web_verification_registry_must_match_actual_test_files) ... ok
 
 ----------------------------------------------------------------------
-Ran 25 tests in 0.814s
+Ran 76 tests in 10.188s
 
 OK
 exitCode=0
-durationMs=1077
+durationMs=10260
 authoritativeExitCode=0
-authoritativeDurationMs=509894
+authoritativeDurationMs=626128

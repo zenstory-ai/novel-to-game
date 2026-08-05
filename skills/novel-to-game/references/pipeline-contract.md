@@ -11,12 +11,15 @@ game-adaptations/{project}/
 ├── concepts/CONCEPT.md
 ├── design/
 │   ├── GAME_DESIGN.md
-│   └── ART_DIRECTION.md
+│   ├── ART_DIRECTION.md
+│   ├── VISUAL_TARGETS.md
+│   └── visual-targets/
 ├── build/
 │   ├── BUILD_BRIEF.md
 │   └── app/
 ├── qa/
 │   ├── QA_REPORT.md
+│   ├── release-gates.json
 │   └── evidence/
 └── _progress.md
 ```
@@ -31,23 +34,44 @@ game-adaptations/{project}/
 `resume` 三步：读 `_progress.md` → 按交接门表逐阶段核对实际产物（含 `gate:` 行）→ 回到
 最早未过门的阶段续跑。
 
+全部阶段状态只取 `NOT_RUN` / `FAIL` / `PASS`。`NOT_RUN` 表示尚无证据，可以结束当前执行，
+但不能满足声明等级；时间、预算或工具耗尽只触发延期、降低 publication tier 或保持未完成，
+不得自动转换为 `PASS`。四级 `targetFinish` 由 `PRODUCT_BRIEF.md` 唯一锁定，严格矩阵如下：
+
+| 等级 | 视觉缺口 | 必需通过项 |
+|---|---|---|
+| `graybox` | 唯一允许视觉 `NOT_RUN`、未关闭视觉 major 和灰盒资产的等级 | `grayboxReady: PASS`；只声明规则、范围和可达性 |
+| `playable-prototype` | 不允许 blocker/major；焦点发布门禁资产不得为灰盒 | `visualPromotion: PASS`；`focalReleaseAssets` 全部通过；`degradableReleaseAssets` 逐项有不丢核心体验的有效 fallback；目标帧证据与必需独立视觉评审 `PASS` |
+| `polished-vertical-slice` | 不允许 blocker/major、发布门禁灰盒或必需项 `NOT_RUN` | playable 全部条件 + 所有 release-gate 资产、全部目标帧、目标视口与性能 `PASS` |
+| `showcase` | 与 polished 相同，且不允许发布事实不一致 | polished 全部条件 + 仓库发布清单和公开文案一致 |
+
+等级顺序固定为 `graybox < playable-prototype < polished-vertical-slice < showcase`。`targetFinish`
+是批准目标上限，`demonstratedTier` 是证据实际证明的等级，`publicationTier` 是对外声明等级，必须
+满足 `publicationTier <= demonstratedTier <= targetFinish`；不得用降低公开措辞反向抬高证据等级。
+
+`sourceFingerprint` 是当前候选的权威身份（对实际发布输入按稳定清单计算的 64 位小写 SHA-256 十六进制串），
+commit 只作历史定位。工作区 / 构建输入已偏离该 commit 时，不得复用 commit ID 把旧 PASS 贴到
+当前候选；公开托管 PASS 也必须记录相同 fingerprint，否则只能标“历史结果 / 非当前候选”。
+
 ## 最小交接门
 
 下表是十一个产品维度的**唯一权威清单**；其他文件一律引用本表，不再另行枚举。
 
 | 阶段 | 交接前必须成立 |
 |---|---|
-| `intake` 需求 | 十一个产品维度——①平台+性能预算+目标/最低分辨率+窗口/朝向+输入设备、②目标市场与界面语言、③游戏类型+对标（含 ≥2 款同玩法先例及共有的核心动词与循环结构）+ 空间形态（2D 界面 / 2D 空间 / 3D 空间；取 2D 界面须有用户显式确认与一句理由）、④美术画风、⑤内容分级/NSFW、⑥核心幻想、⑦单局时长与结构、⑧发行/商业化、⑨游戏引擎+目标交付运行时+可选替代验证运行时、⑩玩家结构+社交形态、⑪受众画像——各有取值；未定维度记 `N/A`，`N/A` 也是锁定值，下游不得自行补默认；用户确认或未确认假设已醒目记录；`PRODUCT_BRIEF.md` 存在 |
+| `intake` 需求 | 十一个产品维度——①平台+性能预算+目标/最低分辨率+窗口/朝向+输入设备、②目标市场与界面语言、③游戏类型+对标（含 ≥2 款同玩法先例及共有的核心动词与循环结构）+ 空间形态（2D 界面 / 2D 空间 / 3D 空间；取 2D 界面须有用户显式确认与一句理由）、④美术画风+`targetFinish`+2–4 个逐项注明借鉴维度/来源/授权边界的视觉参照+3–5 条可否决反例+投入边界+未达目标处置、⑤内容分级/NSFW、⑥核心幻想、⑦单局时长与结构、⑧发行/商业化、⑨游戏引擎+目标交付运行时+可选替代验证运行时、⑩玩家结构+社交形态、⑪受众画像——各有取值；未定维度记 `N/A`，`N/A` 也是锁定值，下游不得自行补默认；用户确认或未确认假设已醒目记录；`PRODUCT_BRIEF.md` 存在 |
 | `analyze` 拆解 | 全书/指定范围覆盖集合完整且无失败缺口；核心原作事实有证据，玩家动作、空间、角色和独特锚点明确；原文语言与策划语言或界面语言不同时，角色/地名/物件/规则四类统一术语表必须已在 SOURCE_BIBLE 产出，否则不过门 |
 | `concept` 概念 | 三个方案真正不同，无硬否决，选择明确；选定方向已写明与哪 ≥2 款已发行游戏**同玩法**并逐条列出共有的核心动词与循环结构（各附一条可核实的“玩过的人很多”凭据），且三段弧三期齐全 |
 | `design` 游戏设计 | 核心循环、世界响应、关卡节奏、范围和结果完整；三段弧逐期列出本期新增的可用动词与可达空间，并各带一个可观察的结束标记，任一格留空即未完成；核心幻想已写成玩家看得到的屏幕文本，不只是 brief 里的一行 |
-| `art` 美术方向 | 视觉语言、可读反馈和每个交互界面 / 模式各有招牌时刻（不固定三张）明确 |
-| `build` 构建 | 可运行路径存在并实际操作过 |
-| `qa` 质量验证 | 零 `blocker`/`major`，核心动作、结果和重开有证据；`QA_REPORT.md` 已落盘（**阻断交付物**，无它不得报完成），记录三项主观-但-可观察裁决：首次上手 / 核心幻想演出 / 招牌帧符合 |
+| `art` 美术方向 | `ART_DIRECTION.md` 与 `VISUAL_TARGETS.md` 都逐字继承 `targetFinish`；视觉语言、可读反馈和每个交互界面 / 模式各有招牌时刻；非 graybox 还须有工作区内 `visual-targets/` 证据，至少覆盖标题/首屏、主要探索或核心循环、最高压力/结果三类目标视图，逐类含原创 style frame / 构图草图 / 批准 paint-over、具名量表、失败例、来源/生成方式/权利/路径及哈希。缺图时非 graybox 的 art 状态只能 `NOT_RUN`/`FAIL` |
+| `build` 构建 | `targetFinish` 与 brief 一致；显式 `grayboxReady: PASS` 的核心循环、输入、结果、重开有证据；声明高于 graybox 时还须 `visualPromotion: PASS`，逐帧零 blocker/major、对应等级要求的 release-gate 资产 `releaseGatePassed: true` 且有真实证据、目标视口与性能预算按等级通过 |
+| `qa` 质量验证 | `QA_REPORT.md` 与 `qa/release-gates.json` 都逐字继承 `targetFinish`；除 graybox 外零 `blocker`/`major`、必需项无 `NOT_RUN`，核心动作、结果、重开、逐帧视觉裁决、独立 reviewer 与发布资产有工作区证据；`focalReleaseAssets` 与 `degradableReleaseAssets` 互斥且并集覆盖 ledger 全部 release-gate 键，可降级项有结构化 fallback 与证据；release / public-host 证据绑定同一 `sourceFingerprint`；满足 `publicationTier <= demonstratedTier <= targetFinish` |
 
 过门留痕由总入口（编排器）执行，不交给刚产出该文档的阶段自查：按上表核对该阶段行——
 涉及名册的按名册逐项比对（见下）——结果一行记入 `_progress.md`：`gate:<阶段> pass` 或
-`gate:<阶段> fail(一句原因)`，阶段取上表词表；未记 pass 不得进入下一阶段，fail 打回产出阶段。
+`gate:<阶段> fail(一句原因)`；`NOT_RUN` 记作 `gate:<阶段> fail(NOT_RUN: 原因)`。阶段取上表词表；
+未记 pass 不得进入下一阶段，fail 打回产出阶段。`grayboxReady: PASS` 不能为 playable 及以上生成
+`gate:build pass`，QA 也不能用自动像素检查、总分或实现方自评替代独立视觉裁决。
 
 多人、持久后端、资产流水线和额外章节，凡未在 `PRODUCT_BRIEF` 的玩家结构 / 社交形态里
 显式确认过的，都属于新的范围决定，不得静默加入；已确认为核心幻想一部分的社交 / 联机，
@@ -63,6 +87,9 @@ QA 的 `blocker`/`major` 按 `QA_REPORT.md` 发现与回流表的归属阶段回
 - 归 `build`：调用 `game-build` 修复实现。
 - 归 `design`：调用 `game-world-design` 修订 `GAME_DESIGN.md`（涉及视觉时连带修订
   `ART_DIRECTION.md`），再重建受影响部分并回归验证。
+- 视觉发现按同一规则归属；若目标包或核心视觉原则本身不足，回 art/design，若实现偏离已批准
+  目标则回 build。除 graybox 外，任一未关闭视觉 blocker/major 或必需独立视觉评审 `NOT_RUN`
+  都阻止 `gate:qa pass`。
 - **「没有可交付的游戏」类发现不进回环上限**：品类认不出、无弧线、前提未上屏——这三类
   说明的不是某处待打磨，而是这一版还不成立。它们不受设计回环一轮上限约束，也不得作为
   「未解决问题」上报了事：**停下来问用户**，带上裁决者的逐字回答与要改的那一层

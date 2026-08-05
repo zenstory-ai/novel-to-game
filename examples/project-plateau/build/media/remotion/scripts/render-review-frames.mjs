@@ -12,11 +12,12 @@ await mkdir(output, {recursive: true});
 const frames = [
   [45, '01-opener.png'],
   [150, '02-explore.png'],
-  [330, '03-commit.png'],
-  [510, '04-observe.png'],
-  [750, '05-return.png'],
-  [930, '06-proof.png'],
-  [1030, '07-closing.png'],
+  [300, '03-record.png'],
+  [460, '04-observe.png'],
+  [600, '05-defend.png'],
+  [800, '06-return.png'],
+  [930, '07-proof.png'],
+  [1030, '08-closing.png'],
 ];
 
 for (const [frame, name] of frames) {

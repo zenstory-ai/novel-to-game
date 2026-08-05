@@ -31,11 +31,14 @@ planning artifacts and browser evidence: <REPOSITORY_URL>
 
 ## Video caption
 
-The center 30 seconds are one continuous input-only Strong run, uniformly
-compressed to fit the clip. The premise/CTA cards, captions, original procedural
-sound bed and Fish Audio synthetic English narration were added in Remotion. No
-teleport, state splice, cloned real-person voice or generated substitute
-gameplay. Full traversal timing and browser evidence are in the repository.
+The gameplay comes from one continuous input-only Strong-result run: cross the
+plateau, commit evidence, read two dives, spend both limited defensive shots, take
+the exposed return and deliver the record. The 30-second delivery uses disclosed
+same-take cuts and speed changes to keep those decisions readable. The
+premise/CTA cards, captions, original procedural sound bed and Fish Audio
+synthetic English narration were added in Remotion. No teleport, fabricated
+state, cloned real-person voice or generated substitute gameplay. Uncut
+traversal timing and browser evidence are in the repository.
 
 ## Accessible alt text
 

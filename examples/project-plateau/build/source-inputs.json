@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "basePath": "build/app",
+  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "inputs": [
+    {
+      "path": "index.html",
+      "sha256": "22b65956f08a7b35094d46eacb498eb2741cf455e8e934b08db21c72e5b9c419",
+      "bytes": 9300
+    },
+    {
+      "path": "package.json",
+      "sha256": "dbf43137cfa89e6cb4f548263b241de350677a18c210a9727685dfece7741ccc",
+      "bytes": 2412
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "dc813de790af81a1b988d4658e8aa651460318102913cc5c1eeb8ddefd8b0fc7",
+      "bytes": 28586
+    },
+    {
+      "path": "public/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb",
+      "sha256": "db4f0a6dc2cab117e913b9179d31882c02c64c1f20de0e8645a06ba1f39c411c",
+      "bytes": 1000112
+    },
+    {
+      "path": "public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
+      "sha256": "b9130671704349c7e287c2edd7fa812e9f95ac04f19596957be6bd69fe1e5193",
+      "bytes": 1108408
+    },
+    {
+      "path": "public/assets/iguanodon-hy3d-v35-stylized.glb",
+      "sha256": "74a46de82a54dcdb25119e24d3db87485ad814a37a5a92d28756b9e9cbb60de5",
+      "bytes": 1089008
+    },
+    {
+      "path": "public/assets/pterodactyl-hy3d-v35-stylized.glb",
+      "sha256": "e55fb8979f4349e8887943395ca58979dc417fd30f7df2fe438062161c620113",
+      "bytes": 1327456
+    },
+    {
+      "path": "public/favicon.svg",
+      "sha256": "b7a11528ee25cc03b147e7969333d2bcd1c8d3a0b7061622bd5319d329425593",
+      "bytes": 170
+    },
+    {
+      "path": "public/media/project-plateau-preview-15s.mp4",
+      "sha256": "26042d338dd5d0c3280dbb61cfdfd8849500d4719de1b993c72324c67d2f3847",
+      "bytes": 1319426
+    },
+    {
+      "path": "public/media/project-plateau-preview-poster.jpg",
+      "sha256": "ed063082c4b4a5f003b7ae2848e8ae9f81fbebe077da566a0fd35c71b13cbdf8",
+      "bytes": 48411
+    },
+    {
+      "path": "public/media/project-plateau-preview.json",
+      "sha256": "60c88948bfe5ca2c1a0219acd83e5808be7c6c50e31ea6f562858a26b8936539",
+      "bytes": 7141
+    },
+    {
+      "path": "src/atmosphere.js",
+      "sha256": "9f8df55bced5049470c88fb648b36e4e01ff531609fc58b10c27fe6d7f01f5a1",
+      "bytes": 6848
+    },
+    {
+      "path": "src/audio.js",
+      "sha256": "d1e02d33e4a50e44abf4eed40dc2ef7272af08a5ebc128011affd9b6f6fa68bd",
+      "bytes": 7483
+    },
+    {
+      "path": "src/collision-layout.js",
+      "sha256": "d2835764716c091d59a8d8427a123e946bd00b2dcc63e5e6d38397308a40562f",
+      "bytes": 4624
+    },
+    {
+      "path": "src/config.js",
+      "sha256": "2b194e9e30524826e77e6542c581c1614d0b47972befda2664c3c3aaa01157a7",
+      "bytes": 1553
+    },
+    {
+      "path": "src/controller.js",
+      "sha256": "c8c7efe4f030dda3a90927d13c6db77828019c42110fde470f30ab23b8f357b4",
+      "bytes": 1100
+    },
+    {
+      "path": "src/entry-mode.js",
+      "sha256": "4eada36005fd74d20f01d4180a933985ebcba7dec0fd3d664246851f135610b3",
+      "bytes": 1843
+    },
+    {
+      "path": "src/entry.js",
+      "sha256": "0f17b5899e7c48b2e13d8be1a2f154dceda5f38341e873fb48ba4ce596fead38",
+      "bytes": 614
+    },
+    {
+      "path": "src/environment-layout.js",
+      "sha256": "fdf0251cebe22324abdc9c6d50a07db0ec634fc8fed8bbc8662ffb9f171ecb31",
+      "bytes": 7032
+    },
+    {
+      "path": "src/hy3d-field-camera.js",
+      "sha256": "713239b5e23967bc010c26c0cd95a8b8afd8be5b7bc1900816ebe6222b683a04",
+      "bytes": 3576
+    },
+    {
+      "path": "src/hy3d-iguanodon.js",
+      "sha256": "f1f6487e02c45e1cd98c7a375fd7b5d40456824ea4a5d4af663722ade9cdfbf5",
+      "bytes": 13612
+    },
+    {
+      "path": "src/hy3d-pterodactyl.js",
+      "sha256": "de588e55c144b56a9a1b35d027d9fc3fc21bafaae68434ee2faeaff0d4bb089a",
+      "bytes": 8695
+    },
+    {
+      "path": "src/hy3d-rifle.js",
+      "sha256": "d10bf6b73fb0fa6d0124e04c66c4063843663ea60a66e3eb4ff05c47309ccebe",
+      "bytes": 3376
+    },
+    {
+      "path": "src/iguanodon.js",
+      "sha256": "e2b08d3678318c3f18f9cfb9d9db99504abf6bb5f0c204a98c1290fe1edd875d",
+      "bytes": 29494
+    },
+    {
+      "path": "src/loading-screen.js",
+      "sha256": "6fcf2cf1c7e5b9233fbf4b7261d9999dac3c839daf844e663632434a1e928d47",
+      "bytes": 818
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "41a581ed687517663c0c40df4df99ac0dd15576a32457d3c971bd8bd773ba366",
+      "bytes": 52345
+    },
+    {
+      "path": "src/preview-gateway.js",
+      "sha256": "7de5a950a2f3f6e611849b7cab0bc38e3e2cac923fed68ccb1afcd832fc87777",
+      "bytes": 2795
+    },
+    {
+      "path": "src/pterodactyl.js",
+      "sha256": "f833928d2007d3fbc83a7ae8585229191283c446fb53d14a5f797b4fee00470d",
+      "bytes": 21435
+    },
+    {
+      "path": "src/render-budget.js",
+      "sha256": "37aaad5b078222caf88e0a7e947dac1cbfb3e57ffd97ec71aa952f5c218e6e3e",
+      "bytes": 1581
+    },
+    {
+      "path": "src/settings.js",
+      "sha256": "07439aa032d2d03659c312518e934dac90110888d602fad3b180359f3a7fb806",
+      "bytes": 2543
+    },
+    {
+      "path": "src/simulation.js",
+      "sha256": "d89ef92ca23e64f312d244cd2805c3b73dce25a4ef2760f80708e820a32e98fe",
+      "bytes": 33109
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "a022c0764e377d9d8d2dc23f8d31e41226b32873d7a5b28e3d362fb60b45431e",
+      "bytes": 22344
+    },
+    {
+      "path": "src/terrain.js",
+      "sha256": "4b38bb84593df6aefcc0390fffcda6dd9228e6a5c31e1d51494845952e0204e5",
+      "bytes": 3282
+    },
+    {
+      "path": "src/world.js",
+      "sha256": "d346c7f0f4c88ef31301e59c5f229f1d80046f5b9193917c8f8222f5d97ef9f2",
+      "bytes": 134436
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import argparse
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import subprocess
@@ -22,6 +23,9 @@ QA = PROJECT / "qa"
 QA_EVIDENCE = QA / "evidence"
 LOG = QA_EVIDENCE / "verify.log"
 VERIFICATION = QA / "verification.json"
+CANDIDATE_VERIFICATION = QA / ".verification-candidate.json"
+CANDIDATE_LOG = QA_EVIDENCE / ".verify-candidate.log"
+VERIFICATION_CANDIDATE_ENV = "NOVEL_TO_GAME_VERIFICATION_CANDIDATE"
 
 
 @dataclass(frozen=True)
@@ -34,13 +38,33 @@ class Suite:
 
 JS_TESTS = (
     "test/audio.test.js",
+    "test/controller.test.js",
+    "test/entry-mode.test.js",
     "test/foundation.test.js",
+    "test/hy3d-field-camera.test.js",
+    "test/collision.test.js",
+    "test/hy3d-iguanodon.test.js",
+    "test/hy3d-pterodactyl.test.js",
+    "test/hy3d-rifle.test.js",
+    "test/iguanodon.test.js",
+    "test/pterodactyl.test.js",
+    "test/render-budget.test.js",
     "test/settings.test.js",
     "test/simulation.test.js",
+    "test/terrain.test.js",
 )
 HISTORY_QA = tuple(f"test/qa_s{stage}.py" for stage in range(8)) + ("test/qa_s9.py",)
 COMPLETE_RUN_QA = ("test/qa_s8.py",)
-CURRENT_VISUAL_QA = ("test/qa_s10.py",)
+CONTROLLER_QA = ("test/qa_controller.py",)
+MOTION_QA = ("test/qa_motion.py",)
+COLLISION_QA = ("test/qa_collision.py",)
+ENTRY_QA = ("test/qa_entry.py",)
+LOADING_QA = ("test/qa_loading.py",)
+CURRENT_VISUAL_QA = (
+    "test/qa_s10.py",
+    "test/qa_visual_targets.py",
+    "test/capture_visual_upgrade.py",
+)
 EXCLUDED_TEST_TOOLS = {
     "test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite",
     "test/verify.py": "authoritative suite orchestrator; registering it would recurse",
@@ -48,6 +72,11 @@ EXCLUDED_TEST_TOOLS = {
 EXPECTED_TEST_SCRIPTS = {
     "test": "test/*.test.js",
     "test:browser": "test/qa_s0.py",
+    "test:controller": "test/qa_controller.py",
+    "test:motion": "test/qa_motion.py",
+    "test:collision": "test/qa_collision.py",
+    "test:entry": "test/qa_entry.py",
+    "test:loading": "test/qa_loading.py",
     **{f"test:s{stage}": f"test/qa_s{stage}.py" for stage in range(1, 11)},
 }
 
@@ -67,9 +96,39 @@ SUITES = (
         APP,
     ),
     Suite(
+        "browser:controller-contract",
+        CONTROLLER_QA,
+        ((sys.executable, CONTROLLER_QA[0]),),
+        APP,
+    ),
+    Suite(
+        "browser:motion-visual",
+        MOTION_QA,
+        ((sys.executable, MOTION_QA[0]),),
+        APP,
+    ),
+    Suite(
+        "browser:collision-contract",
+        COLLISION_QA,
+        ((sys.executable, COLLISION_QA[0]),),
+        APP,
+    ),
+    Suite(
+        "browser:entry-conversion",
+        ENTRY_QA,
+        ((sys.executable, ENTRY_QA[0]),),
+        APP,
+    ),
+    Suite(
+        "browser:loading-state",
+        LOADING_QA,
+        ((sys.executable, LOADING_QA[0]),),
+        APP,
+    ),
+    Suite(
         "browser:current-visual",
         CURRENT_VISUAL_QA,
-        ((sys.executable, CURRENT_VISUAL_QA[0]),),
+        tuple((sys.executable, location) for location in CURRENT_VISUAL_QA),
         APP,
     ),
     Suite(
@@ -82,7 +141,12 @@ SUITES = (
         "repo:contract",
         ("scripts/validate_repo.py", "tests/"),
         (
-            (sys.executable, "scripts/validate_repo.py"),
+            (
+                sys.executable,
+                "scripts/validate_repo.py",
+                "--verification-candidate",
+                str(CANDIDATE_VERIFICATION),
+            ),
             (sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"),
         ),
         REPO,
@@ -111,6 +175,11 @@ def command_output(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:
     return result.returncode, output.rstrip()
 
 
+def normalize_log_text(value: str) -> str:
+    """Remove non-semantic trailing whitespace from every serialized log line."""
+    return "\n".join(line.rstrip() for line in value.splitlines())
+
+
 def display_command(command: tuple[str, ...], cwd: Path) -> str:
     parts = []
     for part in command:
@@ -132,10 +201,79 @@ def display_cwd(cwd: Path) -> str:
     return "." if cwd == REPO else cwd.relative_to(REPO).as_posix()
 
 
+def projected_success_result(suite: Suite) -> dict[str, object]:
+    """Describe the fixed point that the repository contract is about to check.
+
+    The repository validator checks a hidden candidate record for the final
+    self-referential suite.  This projection is never published as authoritative;
+    the measured result and its matching log are atomically written afterward.
+    """
+    return {
+        "id": suite.identifier,
+        "locations": list(suite.locations),
+        "executed": True,
+        "passed": True,
+        "commands": [
+            {
+                "command": display_command(command, suite.cwd),
+                "exitCode": 0,
+                "durationMs": 0,
+            }
+            for command in suite.commands
+        ],
+    }
+
+
 def git_head() -> str:
     return subprocess.run(
         ["git", "rev-parse", "HEAD"], cwd=REPO, check=True, capture_output=True, text=True
     ).stdout.strip()
+
+
+def git_app_fingerprint(commit: str) -> str | None:
+    """Hash the publishable app inputs from one commit using app_fingerprint order."""
+    app_relative = APP.relative_to(REPO).as_posix()
+    listed = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", commit, "--", app_relative],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if listed.returncode != 0:
+        return None
+    selected: dict[str, str] = {}
+    for repository_path in listed.stdout.splitlines():
+        relative = Path(repository_path).relative_to(app_relative).as_posix()
+        if relative in {"index.html", "package.json", "package-lock.json"} or relative.startswith(
+            ("public/", "src/")
+        ):
+            selected[relative] = repository_path
+    ordered = [
+        relative
+        for relative in ("index.html", "package.json", "package-lock.json")
+        if relative in selected
+    ]
+    ordered += sorted(
+        relative for relative in selected if relative.startswith(("public/", "src/"))
+    )
+    if not ordered:
+        return None
+    digest = hashlib.sha256()
+    for relative in ordered:
+        blob = subprocess.run(
+            ["git", "show", f"{commit}:{selected[relative]}"],
+            cwd=REPO,
+            capture_output=True,
+            check=False,
+        )
+        if blob.returncode != 0:
+            return None
+        digest.update(relative.encode())
+        digest.update(b"\0")
+        digest.update(blob.stdout)
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def audit_registry() -> dict[str, object]:
@@ -144,7 +282,10 @@ def audit_registry() -> dict[str, object]:
         for path in (APP / "test").iterdir()
         if path.is_file() and path.suffix in {".py", ".js"}
     }
-    registered = set(JS_TESTS + HISTORY_QA + COMPLETE_RUN_QA + CURRENT_VISUAL_QA)
+    registered = set(
+        JS_TESTS + HISTORY_QA + COMPLETE_RUN_QA + CONTROLLER_QA + MOTION_QA
+        + COLLISION_QA + ENTRY_QA + LOADING_QA + CURRENT_VISUAL_QA
+    )
     excluded = set(EXCLUDED_TEST_TOOLS)
     orphaned = sorted(discovered - registered - excluded)
     missing = sorted((registered | excluded) - discovered)
@@ -221,15 +362,16 @@ def environment() -> dict[str, object]:
 
 def write_verification(
     *,
-    source_commit: str,
+    source_commit: str | None,
     fingerprint: str,
     environment_record: dict[str, object],
-    started: float,
+    duration_ms: int,
     registry: dict[str, object],
     suite_results: list[dict[str, object]],
     exit_code: int,
+    output_path: Path = VERIFICATION,
+    log_path: Path = LOG,
 ) -> None:
-    duration_ms = round((time.monotonic() - started) * 1000)
     verification: dict[str, object] = {
         "schemaVersion": 1,
         "sourceCommit": source_commit,
@@ -237,7 +379,8 @@ def write_verification(
         "environment": environment_record,
         "verify": {
             "command": "npm run verify",
-            "log": "qa/evidence/verify.log",
+            "log": project_path(log_path),
+            "logSha256": hashlib.sha256(log_path.read_bytes()).hexdigest(),
             "exitCode": exit_code,
             "durationMs": duration_ms,
             "suites": suite_results,
@@ -318,8 +461,10 @@ def write_verification(
             "Local 25 Mbps throttling is not public-host cold-loading evidence.",
             "Chromium-emulated routes and checkpoints do not prove independent human cue readability.",
         ]
-    VERIFICATION.parent.mkdir(parents=True, exist_ok=True)
-    VERIFICATION.write_text(json.dumps(verification, indent=2) + "\n", encoding="utf-8")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output_path.with_name(f".{output_path.name}.tmp")
+    temporary.write_text(json.dumps(verification, indent=2) + "\n", encoding="utf-8")
+    temporary.replace(output_path)
 
 
 def main() -> int:
@@ -341,13 +486,16 @@ def main() -> int:
         return 0
 
     QA_EVIDENCE.mkdir(parents=True, exist_ok=True)
+    CANDIDATE_VERIFICATION.unlink(missing_ok=True)
+    CANDIDATE_LOG.unlink(missing_ok=True)
     started = time.monotonic()
-    source_commit = git_head()
     fingerprint = app_fingerprint()
+    head = git_head()
+    source_commit = head if git_app_fingerprint(head) == fingerprint else None
     environment_record = environment()
     log_lines = [
         "command=npm run verify",
-        f"sourceCommit={source_commit}",
+        f"sourceCommit={source_commit or 'null'}",
         f"sourceFingerprint={fingerprint}",
         f"runtime={environment_record['runtime']}",
         f"runtimeVersion={environment_record['runtimeVersion']}",
@@ -360,6 +508,32 @@ def main() -> int:
     suite_results: list[dict[str, object]] = []
     exit_code = 0
     for suite in SUITES:
+        if suite.identifier == "repo:contract":
+            # Bootstrap the self-validating verification record from the actual
+            # successful suites above.  A contract failure is still fail-closed:
+            # the measured failed record replaces this projection below.
+            candidate_log_text = normalize_log_text(
+                "\n".join([*log_lines, "candidateRepoContract=projected-for-validation"])
+            ) + "\n"
+            candidate_log_temporary = CANDIDATE_LOG.with_name(
+                f".{CANDIDATE_LOG.name}.tmp"
+            )
+            candidate_log_temporary.write_text(candidate_log_text, encoding="utf-8")
+            candidate_log_temporary.replace(CANDIDATE_LOG)
+            write_verification(
+                source_commit=source_commit,
+                fingerprint=fingerprint,
+                environment_record=environment_record,
+                duration_ms=round((time.monotonic() - started) * 1000),
+                registry=registry,
+                suite_results=[*suite_results, projected_success_result(suite)],
+                exit_code=0,
+                output_path=CANDIDATE_VERIFICATION,
+                log_path=CANDIDATE_LOG,
+            )
+            os.environ[VERIFICATION_CANDIDATE_ENV] = CANDIDATE_VERIFICATION.relative_to(
+                REPO
+            ).as_posix()
         command_records = []
         suite_passed = True
         for command in suite.commands:
@@ -410,17 +584,24 @@ def main() -> int:
             )
 
     duration_ms = round((time.monotonic() - started) * 1000)
+    os.environ.pop(VERIFICATION_CANDIDATE_ENV, None)
     log_lines.extend([f"authoritativeExitCode={exit_code}", f"authoritativeDurationMs={duration_ms}"])
-    LOG.write_text("\n".join(log_lines) + "\n", encoding="utf-8")
+    log_temporary = LOG.with_name(f".{LOG.name}.tmp")
+    log_temporary.write_text(
+        normalize_log_text("\n".join(log_lines)) + "\n", encoding="utf-8"
+    )
+    log_temporary.replace(LOG)
     write_verification(
         source_commit=source_commit,
         fingerprint=fingerprint,
         environment_record=environment_record,
-        started=started,
+        duration_ms=duration_ms,
         registry=registry,
         suite_results=suite_results,
         exit_code=exit_code,
     )
+    CANDIDATE_VERIFICATION.unlink(missing_ok=True)
+    CANDIDATE_LOG.unlink(missing_ok=True)
     if exit_code:
         print(f"authoritative verification: FAIL ({project_path(LOG)})")
         return exit_code

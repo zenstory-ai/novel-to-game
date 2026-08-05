@@ -12,23 +12,27 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 ## 在线试玩
 
-### Project Plateau · 精选 3D 案例
+### 轻量试玩
 
-这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。玩家穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
-
-#### 36 秒演示
-
-https://github.com/user-attachments/assets/4d0b501e-09be-49b6-9070-c605afce3fae
-
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · **[查看完整改编案例](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
-
-### 更多可玩改编
-
-| [《西游记》· 三借芭蕉扇](examples/journey-to-the-west/) | [《金瓶梅》· 风月总账](examples/jin-ping-mei/) |
+| [《西游记》· 三借芭蕉扇 · 灰盒](examples/journey-to-the-west/) | [《金瓶梅》· 风月总账 · 灰盒](examples/jin-ping-mei/) |
 |---|---|
 | [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
 | 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 六日关系策略游戏：角色意志、资源与人情债，以及三种结局 |
 | **[浏览器试玩](https://xiyouji.vibecoco.ai)** | **[浏览器试玩](https://jinpingmei.vibecoco.ai)** |
+
+### Project Plateau · 可玩原型 · 3D
+
+这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。玩家穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
+
+桌面浏览器可完整试玩，其他设备可直接观看 15 秒实机预览。
+
+#### 36 秒 Remotion 宣发片
+
+当前宣发片采用[已经验证的同场实机路线](examples/project-plateau/qa/evidence/remotion-launch-trailer-2026-08-04.md)与获准使用的 Fish Audio 合成旁白；静音播放时也可通过字幕看完整流程。
+
+https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
+
+**[历史浏览器预览，非当前发布证据](https://plateau.vibecoco.ai)** · **[查看完整改编案例](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
 
 每个完整案例都包含原文依据、产品约束、游戏化拆解、概念与设计决策、可运行源码和 QA 证据。
 

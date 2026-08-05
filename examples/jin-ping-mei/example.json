@@ -1,6 +1,7 @@
 {
   "language": "zh-Hans",
   "title": "金瓶梅 · 风月总账",
+  "publicationTier": "graybox",
   "source": {
     "chapters": 100,
     "headingPattern": "^\\s*第([〇零○一二三四五六七八九十百]+)回\\s+(.+?)\\s*$",

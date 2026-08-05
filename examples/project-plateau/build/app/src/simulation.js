@@ -1,23 +1,31 @@
+import { planarAxesForHeading } from './controller.js';
+import {
+  NAVIGATION_BOUNDS,
+  NON_SOLID_COLLISION_POLICY,
+  PLAYER_CAPSULE,
+  STATIC_COLLIDERS,
+} from './collision-layout.js';
+import { terrainHeight } from './terrain.js';
+
 export const INITIAL_PLAYER = Object.freeze({
   position: Object.freeze({ x: 3, z: 70 }),
+  groundY: terrainHeight(3, 70),
   heading: 0,
   pitch: 0,
 });
 
 export const NAVIGATION = Object.freeze({
-  bounds: Object.freeze({ minX: -43, maxX: 29, minZ: -90, maxZ: 91 }),
-  playerRadius: 0.6,
-  obstacles: Object.freeze([
-    Object.freeze({ id: 'fort-tent-west', type: 'circle', x: -3, z: 80, radius: 3.4 }),
-    Object.freeze({ id: 'fort-tent-east', type: 'circle', x: 5, z: 84, radius: 3.4 }),
-    Object.freeze({ id: 'brook-boulder', type: 'circle', x: -7.5, z: 35, radius: 2.2 }),
-    Object.freeze({ id: 'basalt-wall', type: 'box', minX: 27, maxX: 45, minZ: -85, maxZ: 65 }),
-  ]),
+  bounds: NAVIGATION_BOUNDS,
+  playerRadius: PLAYER_CAPSULE.radius,
+  playerCapsule: PLAYER_CAPSULE,
+  obstacles: STATIC_COLLIDERS,
+  nonSolidPolicy: NON_SOLID_COLLISION_POLICY,
 });
 
 export const EXPOSURE_SECONDS = 2;
 export const CONTACT_SECONDS = 3;
 export const INITIAL_LIGHT_SECONDS = 180;
+export const JUMP = Object.freeze({ speed: 5.8, gravity: 15 });
 
 export const RESULT_BANDS = Object.freeze([
   Object.freeze({
@@ -43,6 +51,10 @@ export const RESULT_BANDS = Object.freeze([
 ]);
 
 const SPEED = Object.freeze({ walk: 4.2, sprint: 6.8, crouch: 2.2 });
+const ACCELERATION = Object.freeze({ walk: 18, sprint: 18, crouch: 16 });
+const DECELERATION = 18;
+const REVERSAL_ACCELERATION = 30;
+const FIXED_MOVEMENT_STEP = 1 / 60;
 const THREAT_STATES = Object.freeze(['distant', 'watch', 'search', 'attack']);
 
 function clonePosition(position) {
@@ -58,6 +70,7 @@ function copyState(state, changes = {}) {
     ...state,
     position: clonePosition(state.position),
     lastStablePosition: clonePosition(state.lastStablePosition),
+    velocity: clonePosition(state.velocity ?? { x: 0, z: 0 }),
     plates: state.plates.map(clonePlate),
     pendingExposure: state.pendingExposure ? { ...state.pendingExposure } : null,
     ...changes,
@@ -79,6 +92,11 @@ export function createPlayerState() {
   return {
     position: clonePosition(INITIAL_PLAYER.position),
     lastStablePosition: clonePosition(INITIAL_PLAYER.position),
+    groundY: INITIAL_PLAYER.groundY,
+    verticalOffset: 0,
+    verticalVelocity: 0,
+    grounded: true,
+    velocity: { x: 0, z: 0 },
     heading: INITIAL_PLAYER.heading,
     pitch: INITIAL_PLAYER.pitch,
     stance: 'walk',
@@ -135,6 +153,7 @@ export function restartPlayer() {
 export function setPaused(state, paused, reason = null) {
   return copyState(state, {
     paused,
+    velocity: paused ? { x: 0, z: 0 } : clonePosition(state.velocity),
     pauseReason: paused ? reason : null,
     lastEvent: paused ? `paused:${reason ?? 'manual'}` : 'resumed',
   });
@@ -239,6 +258,7 @@ export function startExposure(state) {
       zone: state.zone,
     },
     previewSeconds: 0,
+    velocity: { x: 0, z: 0 },
     rifleRaised: false,
     lastEvent: 'camera:shutter-commit',
   });
@@ -253,6 +273,13 @@ export function setRifleRaised(state, raised) {
     rifleRevealed: state.rifleRevealed || rifleRaised,
     cameraRaised: rifleRaised ? false : state.cameraRaised,
     lastEvent: rifleRaised ? 'rifle:raised' : state.lastEvent,
+  });
+}
+
+export function releaseTransientTools(state) {
+  return copyState(state, {
+    rifleRaised: false,
+    cameraRaised: Boolean(state.pendingExposure),
   });
 }
 
@@ -437,19 +464,162 @@ function insideBounds(position) {
   );
 }
 
-function obstacleAt(position) {
-  const radius = NAVIGATION.playerRadius;
-  return NAVIGATION.obstacles.find((obstacle) => {
+function verticalRangesOverlap(position, obstacle, explicitPlayerBottom = null) {
+  const playerBottom = Number.isFinite(explicitPlayerBottom)
+    ? explicitPlayerBottom
+    : terrainHeight(position.x, position.z);
+  const playerTop = playerBottom + PLAYER_CAPSULE.height;
+  const obstacleBottom = terrainHeight(obstacle.x, obstacle.z) + obstacle.baseOffset;
+  const obstacleTop = obstacleBottom + obstacle.height;
+  return playerBottom < obstacleTop && playerTop > obstacleBottom;
+}
+
+function localPoint(position, obstacle) {
+  const cosine = Math.cos(obstacle.rotation);
+  const sine = Math.sin(obstacle.rotation);
+  const dx = position.x - obstacle.x;
+  const dz = position.z - obstacle.z;
+  return {
+    x: cosine * dx - sine * dz,
+    z: sine * dx + cosine * dz,
+  };
+}
+
+function worldPoint(position, obstacle) {
+  const cosine = Math.cos(obstacle.rotation);
+  const sine = Math.sin(obstacle.rotation);
+  return {
+    x: obstacle.x + cosine * position.x + sine * position.z,
+    z: obstacle.z - sine * position.x + cosine * position.z,
+  };
+}
+
+export function collisionAt(position, playerBottom = null) {
+  const radius = PLAYER_CAPSULE.radius;
+  return STATIC_COLLIDERS.find((obstacle) => {
+    if (!verticalRangesOverlap(position, obstacle, playerBottom)) return false;
     if (obstacle.type === 'circle') {
-      return Math.hypot(position.x - obstacle.x, position.z - obstacle.z) < obstacle.radius + radius;
+      return Math.hypot(position.x - obstacle.x, position.z - obstacle.z)
+        < obstacle.radius + radius - 1e-7;
+    }
+    const local = localPoint(position, obstacle);
+    if (obstacle.type === 'horizontal-capsule') {
+      const closestX = Math.max(-obstacle.halfLength, Math.min(obstacle.halfLength, local.x));
+      return Math.hypot(local.x - closestX, local.z) < obstacle.radius + radius - 1e-7;
     }
     return (
-      position.x > obstacle.minX - radius
-      && position.x < obstacle.maxX + radius
-      && position.z > obstacle.minZ - radius
-      && position.z < obstacle.maxZ + radius
+      Math.abs(local.x) < obstacle.halfX + radius - 1e-7
+      && Math.abs(local.z) < obstacle.halfZ + radius - 1e-7
     );
-  });
+  }) ?? null;
+}
+
+function separateCircle(position, previous, obstacle, playerBottom = null) {
+  if (!verticalRangesOverlap(position, obstacle, playerBottom)) return null;
+  const requiredDistance = obstacle.radius + PLAYER_CAPSULE.radius;
+  const dx = position.x - obstacle.x;
+  const dz = position.z - obstacle.z;
+  const distance = Math.hypot(dx, dz);
+  if (distance >= requiredDistance - 1e-7) return null;
+  let normalX = dx;
+  let normalZ = dz;
+  if (distance <= 1e-8) {
+    normalX = previous.x - obstacle.x;
+    normalZ = previous.z - obstacle.z;
+    const previousDistance = Math.hypot(normalX, normalZ);
+    if (previousDistance <= 1e-8) {
+      normalX = 1;
+      normalZ = 0;
+    } else {
+      normalX /= previousDistance;
+      normalZ /= previousDistance;
+    }
+  } else {
+    normalX /= distance;
+    normalZ /= distance;
+  }
+  return {
+    position: {
+      x: obstacle.x + normalX * requiredDistance,
+      z: obstacle.z + normalZ * requiredDistance,
+    },
+    normal: { x: normalX, z: normalZ },
+  };
+}
+
+function separateOrientedBox(position, previous, obstacle, playerBottom = null) {
+  if (!verticalRangesOverlap(position, obstacle, playerBottom)) return null;
+  const local = localPoint(position, obstacle);
+  const previousLocal = localPoint(previous, obstacle);
+  const halfX = obstacle.halfX + PLAYER_CAPSULE.radius;
+  const halfZ = obstacle.halfZ + PLAYER_CAPSULE.radius;
+  if (Math.abs(local.x) >= halfX - 1e-7 || Math.abs(local.z) >= halfZ - 1e-7) return null;
+  const xPenetration = halfX - Math.abs(local.x);
+  const zPenetration = halfZ - Math.abs(local.z);
+  const resolved = { ...local };
+  let localNormal;
+  if (xPenetration <= zPenetration) {
+    const sign = Math.sign(local.x) || Math.sign(previousLocal.x) || 1;
+    resolved.x = sign * halfX;
+    localNormal = { x: sign, z: 0 };
+  } else {
+    const sign = Math.sign(local.z) || Math.sign(previousLocal.z) || 1;
+    resolved.z = sign * halfZ;
+    localNormal = { x: 0, z: sign };
+  }
+  const cosine = Math.cos(obstacle.rotation);
+  const sine = Math.sin(obstacle.rotation);
+  return {
+    position: worldPoint(resolved, obstacle),
+    normal: {
+      x: cosine * localNormal.x + sine * localNormal.z,
+      z: -sine * localNormal.x + cosine * localNormal.z,
+    },
+  };
+}
+
+function separateHorizontalCapsule(position, previous, obstacle, playerBottom = null) {
+  if (!verticalRangesOverlap(position, obstacle, playerBottom)) return null;
+  const local = localPoint(position, obstacle);
+  const previousLocal = localPoint(previous, obstacle);
+  const closestX = Math.max(-obstacle.halfLength, Math.min(obstacle.halfLength, local.x));
+  const requiredDistance = obstacle.radius + PLAYER_CAPSULE.radius;
+  let normalX = local.x - closestX;
+  let normalZ = local.z;
+  const distance = Math.hypot(normalX, normalZ);
+  if (distance >= requiredDistance - 1e-7) return null;
+  if (distance <= 1e-8) {
+    const previousClosestX = Math.max(
+      -obstacle.halfLength,
+      Math.min(obstacle.halfLength, previousLocal.x),
+    );
+    normalX = previousLocal.x - previousClosestX;
+    normalZ = previousLocal.z;
+    const previousDistance = Math.hypot(normalX, normalZ);
+    if (previousDistance <= 1e-8) {
+      normalX = 0;
+      normalZ = 1;
+    } else {
+      normalX /= previousDistance;
+      normalZ /= previousDistance;
+    }
+  } else {
+    normalX /= distance;
+    normalZ /= distance;
+  }
+  const resolvedLocal = {
+    x: closestX + normalX * requiredDistance,
+    z: normalZ * requiredDistance,
+  };
+  const cosine = Math.cos(obstacle.rotation);
+  const sine = Math.sin(obstacle.rotation);
+  return {
+    position: worldPoint(resolvedLocal, obstacle),
+    normal: {
+      x: cosine * normalX + sine * normalZ,
+      z: -sine * normalX + cosine * normalZ,
+    },
+  };
 }
 
 function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
@@ -494,20 +664,183 @@ function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
   };
 }
 
-function resolveObstacleMovement(position, delta) {
-  const full = { x: position.x + delta.x, z: position.z + delta.z };
-  const hit = obstacleAt(full);
-  if (!hit) return { position: full, collision: null };
+export function resolveObstacleStep(position, delta, options = {}) {
+  let resolved = { x: position.x + delta.x, z: position.z + delta.z };
+  const currentGround = terrainHeight(position.x, position.z);
+  const desiredGround = terrainHeight(resolved.x, resolved.z);
+  if (!options.airborne && Math.abs(desiredGround - currentGround) > PLAYER_CAPSULE.maximumGroundStep) {
+    return { position: clonePosition(position), collision: 'terrain-step', normal: null };
+  }
+  const playerBottom = Number.isFinite(options.playerBottom) ? options.playerBottom : null;
 
-  const xOnly = { x: position.x + delta.x, z: position.z };
-  if (Math.abs(delta.x) > 1e-8 && !obstacleAt(xOnly)) {
-    return { position: xOnly, collision: hit.id };
+  let collision = null;
+  let normal = null;
+  for (let iteration = 0; iteration < 8; iteration += 1) {
+    let separated = false;
+    for (const obstacle of STATIC_COLLIDERS) {
+      const result = obstacle.type === 'circle'
+        ? separateCircle(resolved, position, obstacle, playerBottom)
+        : obstacle.type === 'horizontal-capsule'
+          ? separateHorizontalCapsule(resolved, position, obstacle, playerBottom)
+          : separateOrientedBox(resolved, position, obstacle, playerBottom);
+      if (!result) continue;
+      resolved = result.position;
+      collision ??= obstacle.id;
+      normal = result.normal;
+      separated = true;
+    }
+    if (!separated) break;
   }
-  const zOnly = { x: position.x, z: position.z + delta.z };
-  if (Math.abs(delta.z) > 1e-8 && !obstacleAt(zOnly)) {
-    return { position: zOnly, collision: hit.id };
+  return { position: resolved, collision, normal };
+}
+
+function moveTowardsVector(current, target, maximumDelta) {
+  const difference = { x: target.x - current.x, z: target.z - current.z };
+  const distance = Math.hypot(difference.x, difference.z);
+  if (distance <= maximumDelta || distance <= 1e-12) return clonePosition(target);
+  const scale = maximumDelta / distance;
+  return {
+    x: current.x + difference.x * scale,
+    z: current.z + difference.z * scale,
+  };
+}
+
+function integrateMovement(state, targetVelocity, response, deltaSeconds, jumpRequested) {
+  const stepCount = Math.max(1, Math.ceil(deltaSeconds / FIXED_MOVEMENT_STEP));
+  const stepSeconds = deltaSeconds / stepCount;
+  let position = clonePosition(state.position);
+  let velocity = clonePosition(state.velocity ?? { x: 0, z: 0 });
+  let travelled = 0;
+  let collision = null;
+  let boundaryRecovered = false;
+  let groundY = Number.isFinite(state.groundY)
+    ? state.groundY
+    : terrainHeight(position.x, position.z);
+  let verticalOffset = Math.max(0, Number(state.verticalOffset) || 0);
+  let verticalVelocity = Number(state.verticalVelocity) || 0;
+  let grounded = state.grounded ?? verticalOffset <= 1e-8;
+  let worldFootY = groundY + verticalOffset;
+  let jumped = false;
+  let landed = false;
+
+  const initialRecovery = resolveObstacleStep(position, { x: 0, z: 0 }, {
+    playerBottom: worldFootY,
+    airborne: !grounded,
+  });
+  if (initialRecovery.collision) {
+    position = initialRecovery.position;
+    velocity = { x: 0, z: 0 };
+    collision = initialRecovery.collision;
+    groundY = terrainHeight(position.x, position.z);
+    if (grounded) worldFootY = groundY;
   }
-  return { position: clonePosition(position), collision: hit.id };
+
+  for (let step = 0; step < stepCount; step += 1) {
+    if (jumpRequested && grounded) {
+      verticalVelocity = JUMP.speed;
+      grounded = false;
+      jumped = true;
+    }
+    jumpRequested = false;
+
+    let nextFootY = worldFootY;
+    if (!grounded) {
+      nextFootY += verticalVelocity * stepSeconds - 0.5 * JUMP.gravity * stepSeconds ** 2;
+      verticalVelocity -= JUMP.gravity * stepSeconds;
+    }
+    velocity = moveTowardsVector(velocity, targetVelocity, response * stepSeconds);
+    const delta = { x: velocity.x * stepSeconds, z: velocity.z * stepSeconds };
+    const full = { x: position.x + delta.x, z: position.z + delta.z };
+    if (!insideBounds(full)) {
+      position = clonePosition(state.lastStablePosition);
+      velocity = { x: 0, z: 0 };
+      boundaryRecovered = true;
+      groundY = terrainHeight(position.x, position.z);
+      if (grounded || nextFootY <= groundY) {
+        grounded = true;
+        verticalVelocity = 0;
+        worldFootY = groundY;
+      } else {
+        worldFootY = nextFootY;
+      }
+      break;
+    }
+    const desiredGround = terrainHeight(full.x, full.z);
+    const resolved = resolveObstacleStep(position, delta, {
+      playerBottom: grounded ? desiredGround : nextFootY,
+      airborne: !grounded,
+    });
+    const actual = {
+      x: resolved.position.x - position.x,
+      z: resolved.position.z - position.z,
+    };
+    if (resolved.collision) {
+      velocity = {
+        x: actual.x / stepSeconds,
+        z: actual.z / stepSeconds,
+      };
+      const speed = Math.hypot(velocity.x, velocity.z);
+      const requestedSpeed = Math.hypot(targetVelocity.x, targetVelocity.z);
+      if (speed > requestedSpeed && speed > 1e-8) {
+        const scale = requestedSpeed / speed;
+        velocity.x *= scale;
+        velocity.z *= scale;
+      }
+    }
+    travelled += Math.hypot(actual.x, actual.z);
+    position = resolved.position;
+    collision ??= resolved.collision;
+    groundY = terrainHeight(position.x, position.z);
+    if (grounded) {
+      worldFootY = groundY;
+      verticalVelocity = 0;
+    } else if (nextFootY <= groundY) {
+      worldFootY = groundY;
+      verticalVelocity = 0;
+      grounded = true;
+      landed = true;
+    } else {
+      worldFootY = nextFootY;
+    }
+  }
+
+  verticalOffset = grounded ? 0 : Math.max(0, worldFootY - groundY);
+
+  return {
+    position,
+    groundY,
+    verticalOffset,
+    verticalVelocity,
+    grounded,
+    velocity,
+    travelled,
+    collision,
+    boundaryRecovered,
+    jumped,
+    landed,
+  };
+}
+
+export function collisionContractSnapshot() {
+  const categories = {};
+  for (const collider of STATIC_COLLIDERS) {
+    categories[collider.category] = (categories[collider.category] ?? 0) + 1;
+  }
+  return {
+    model: 'vertical-capsule-on-heightfield-with-ballistic-jump',
+    broadPhase: 'authored-static-collider-list',
+    resolution: 'iterative-depenetration-with-surface-slide',
+    fixedMovementStepSeconds: FIXED_MOVEMENT_STEP,
+    jump: {
+      speed: JUMP.speed,
+      gravity: JUMP.gravity,
+      restrictedByTools: true,
+    },
+    capsule: { ...PLAYER_CAPSULE },
+    colliderCount: STATIC_COLLIDERS.length,
+    categories,
+    nonSolidPolicy: NON_SOLID_COLLISION_POLICY,
+  };
 }
 
 function finalizeExposure(state, pending, threat) {
@@ -552,25 +885,32 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const normalizedRight = magnitude > 1 ? right / magnitude : right;
   const stance = input.crouch ? 'crouch' : input.sprint ? 'sprint' : 'walk';
   const toolMultiplier = state.pendingExposure ? 0 : state.cameraRaised ? 0.35 : 1;
-  const distance = SPEED[stance] * toolMultiplier * deltaSeconds;
-  const delta = {
-    x: (Math.sin(heading) * normalizedForward + Math.cos(heading) * normalizedRight) * distance,
-    z: (-Math.cos(heading) * normalizedForward + Math.sin(heading) * normalizedRight) * distance,
+  const axes = planarAxesForHeading(heading);
+  const targetSpeed = SPEED[stance] * toolMultiplier;
+  const targetVelocity = {
+    x: (axes.forward.x * normalizedForward + axes.right.x * normalizedRight) * targetSpeed,
+    z: (axes.forward.z * normalizedForward + axes.right.z * normalizedRight) * targetSpeed,
   };
-  const full = { x: state.position.x + delta.x, z: state.position.z + delta.z };
-
-  let resolved;
-  let boundaryRecovered = false;
-  if (!insideBounds(full)) {
-    resolved = { position: clonePosition(state.lastStablePosition), collision: null };
-    boundaryRecovered = true;
-  } else {
-    resolved = resolveObstacleMovement(state.position, delta);
-  }
-  const travelled = Math.hypot(
-    resolved.position.x - state.position.x,
-    resolved.position.z - state.position.z,
+  const velocity = state.velocity ?? { x: 0, z: 0 };
+  const reversing = (velocity.x * targetVelocity.x + velocity.z * targetVelocity.z) < 0;
+  const response = magnitude <= 1e-8
+    ? DECELERATION
+    : reversing ? REVERSAL_ACCELERATION : ACCELERATION[stance];
+  const resolved = integrateMovement(
+    state,
+    targetVelocity,
+    state.pendingExposure ? Number.POSITIVE_INFINITY : response,
+    deltaSeconds,
+    Boolean(
+      input.jump
+      && state.grounded
+      && !input.crouch
+      && !state.cameraRaised
+      && !state.rifleRaised
+      && !state.pendingExposure
+    ),
   );
+  const travelled = resolved.travelled;
   const reachedGlade = state.reachedGlade || resolved.position.z <= 3;
   const zone = zoneForPosition(resolved.position, reachedGlade);
   const threat = updateThreatState(state, zone, stance, deltaSeconds, travelled);
@@ -581,19 +921,28 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   let next = copyState(state, {
     position: clonePosition(resolved.position),
     lastStablePosition: clonePosition(resolved.position),
+    groundY: resolved.groundY,
+    verticalOffset: resolved.verticalOffset,
+    verticalVelocity: resolved.verticalVelocity,
+    grounded: resolved.grounded,
+    velocity: clonePosition(resolved.velocity),
     heading,
     pitch,
     stance,
     elapsedSeconds: state.elapsedSeconds + deltaSeconds,
     remainingLight: Math.max(0, state.remainingLight - deltaSeconds),
     distanceTravelled: state.distanceTravelled + travelled,
-    boundaryRecoveries: state.boundaryRecoveries + (boundaryRecovered ? 1 : 0),
+    boundaryRecoveries: state.boundaryRecoveries + (resolved.boundaryRecovered ? 1 : 0),
     collisions: state.collisions + (resolved.collision ? 1 : 0),
-    lastEvent: boundaryRecovered
+    lastEvent: resolved.boundaryRecovered
       ? 'boundary-recovery'
       : resolved.collision
         ? `collision:${resolved.collision}`
-        : travelled > 0 ? 'movement' : state.lastEvent === 'clean-start' ? 'idle' : state.lastEvent,
+        : resolved.landed
+          ? 'land'
+          : resolved.jumped
+            ? 'jump'
+            : travelled > 0 ? 'movement' : state.lastEvent === 'clean-start' ? 'idle' : state.lastEvent,
     zone,
     zoneHistory,
     reachedGlade,

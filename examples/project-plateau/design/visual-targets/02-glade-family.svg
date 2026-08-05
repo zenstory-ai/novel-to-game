@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs><linearGradient id="g" x2="0" y2="1"><stop stop-color="#76909a"/><stop offset=".5" stop-color="#d4a762"/><stop offset="1" stop-color="#344635"/></linearGradient></defs><rect width="1440" height="900" fill="url(#g)"/>
+  <path d="M830 210L1020 95 1180 170 1350 80 1440 140V760H780Z" fill="#7a4336"/><path d="M0 0L270 0 180 900H0ZM1440 0H1250L1335 900H1440Z" fill="#153326"/>
+  <g fill="#65766b" stroke="#303c37" stroke-width="9"><path d="M270 610Q390 490 620 555L770 505 1015 550 920 610 665 635 410 680Z"/><path d="M580 690Q645 620 760 660L850 635 935 685 810 720Z"/></g>
+  <g fill="none" stroke="#3b443e" stroke-width="28" stroke-linecap="round"><path d="M400 610L350 760M540 600L530 765M755 585L740 755M885 575L900 750"/></g><path d="M1005 250L1190 200 1065 295 930 250 1040 330Z" fill="#4a4640"/>
+  <path d="M0 760L250 665 395 900H0ZM1440 720L1215 650 1080 900H1440Z" fill="#24442d"/><text x="60" y="80" fill="#f3e6c7" font-family="sans-serif" font-size="24" letter-spacing="5">NEAR FRAME · FAMILY MASS · BASALT SCALE · ENTERING WING</text>
+</svg>

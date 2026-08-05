@@ -9,7 +9,8 @@
   "url": "http://127.0.0.1:4173/?qa=s7",
   "consoleErrorsAtCheckpoint": [],
   "requestHostsAtCheckpoint": [
+    "",
     "127.0.0.1:4173"
   ],
-  "capturedAtUnixMs": 1785539958852
+  "capturedAtUnixMs": 1785861582129
 }

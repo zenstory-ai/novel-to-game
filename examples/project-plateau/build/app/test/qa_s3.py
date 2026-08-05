@@ -91,6 +91,7 @@ def run() -> dict[str, object]:
             "s8-input-paths", "s9-living-plates", "s10-glade-clarity"
         }
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(180)
 
@@ -153,12 +154,13 @@ def run() -> dict[str, object]:
         page.wait_for_timeout(620)
         committing = snapshot(page)
         assert committing["player"]["pendingExposure"], committing
-        remaining_before_pause = committing["player"]["pendingExposure"]["remainingSeconds"]
         page.keyboard.press("KeyP")
+        page.wait_for_function("window.__projectPlateau.snapshot().player.paused === true")
+        remaining_after_pause = snapshot(page)["player"]["pendingExposure"]["remainingSeconds"]
         page.wait_for_timeout(620)
         paused = capture("04-paused-commitment", ["Left Mouse", "Right Mouse up", "P", "wait 620ms"])
         assert paused["player"]["paused"], paused
-        assert abs(paused["player"]["pendingExposure"]["remainingSeconds"] - remaining_before_pause) < 0.08, paused
+        assert abs(paused["player"]["pendingExposure"]["remainingSeconds"] - remaining_after_pause) < 0.02, paused
         assert paused["player"]["plates"][0]["status"] == "unexposed", paused
         page.keyboard.press("KeyP")
         page.wait_for_timeout(1650)
@@ -203,12 +205,15 @@ def run() -> dict[str, object]:
         page.evaluate("window.__projectPlateau.teleportForTest({x: 7, z: 18})")
         page.keyboard.down("ShiftLeft")
         page.keyboard.down("KeyW")
-        page.wait_for_function(
-            "window.__projectPlateau.snapshot().player.threatState === 'attack'",
-            timeout=2500,
-        )
+        attack_ready = False
+        for _ in range(60):
+            page.wait_for_timeout(50)
+            if snapshot(page)["player"]["threatState"] == "attack":
+                attack_ready = True
+                break
         page.keyboard.up("KeyW")
         page.keyboard.up("ShiftLeft")
+        assert attack_ready, snapshot(page)
         page.keyboard.down("KeyF")
         page.wait_for_timeout(60)
         page.mouse.click(720, 450, button="left")
@@ -229,7 +234,7 @@ def run() -> dict[str, object]:
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {

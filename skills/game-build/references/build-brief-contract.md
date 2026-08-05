@@ -7,16 +7,34 @@
 [目标平台、目标交付物、受众、时长和完整体验；逐字抄入 PRODUCT_BRIEF.md 声明的目标视口 / 朝向 /
 最小分辨率，以及首屏加载 / 总包体上限 / 目标帧率的性能预算；性能预算为 N/A 时，回总入口
 把推荐值以未确认假设写入 PRODUCT_BRIEF.md 后再抄入本 brief，不得在本层就地发明]
+targetFinish: [逐字抄 PRODUCT_BRIEF；四级之一，不得在本层升级]
+demonstratedTier: [构建证据当前实际证明的四级之一]
+publicationTier: [当前准备对外声明的四级之一]
+[必须满足 publicationTier <= demonstratedTier <= targetFinish]
+sourceFingerprint: [当前候选实际发布输入稳定清单的 64 位小写 SHA-256 十六进制串；工作区变化后重算，不能沿用旧 commit 的 PASS]
 
 # 必读设计
 [GAME_DESIGN.md, ART_DIRECTION.md]
 
 # 必须保真
 [核心循环、世界规则、视觉风格]
+- 视觉目标帧索引：逐条抄 `VISUAL_TARGETS.md` 的目标视图 ID、相对路径、固定种子 / 状态 / 机位 /
+  视口和具名量表；不存在时写 `NOT_RUN: 原因`，不得用文字概述冒充目标帧
 - 招牌时刻：逐条抄入 ART_DIRECTION 每个界面 / 模式的时刻名 + 一行触发条件
 - 可证伪视觉断言：抄入可被截图直接证伪的规格（底材 / 基色、人物占比、飘字位置）
 - 美术必备资产键清单：逐键抄入 ART_DIRECTION 标注「必须提供」的资产（含表情 / 状态
-  套图），每键注明允许的过渡态与待产登记去向
+  套图），每键注明允许的过渡态与待产登记去向；构建后逐键回写 `status`、
+  `releaseGatePassed`、`evidence`、`remaining`。`status` 是非空生产状态；`releaseGatePassed` 必须是
+  布尔值；`evidence` 是非空相对路径数组，按 ledger 所在目录解析且每条真实存在；`remaining`
+  必须显式填写，passed=true 时只能为空、`none` 或等价无剩余值。任一字段缺失、路径不存在或
+  焦点项 false 均阻止 playable 的 `visualPromotion: PASS`；可降级项 false 只有在已分类且有效
+  fallback 通过时才不阻止 playable，polished/showcase 仍要求全部为 true
+- 3D 碰撞合同：逐类列 `visibleAnchor / colliderShape / sourceOfTruth / solidPolicy`，可见实体与
+  collider 必须共享布局真值或具备可追溯映射；明确 non-solid 物件。记录模拟固定子步 / swept
+  策略、最大 `delta`、滑动与解穿透规则，以及浏览器实触证据，不把渲染帧上限当防穿透保证
+- 必需运行期资产：对每个 focal 异步资产写加载成功可观察量、失败行为和发布裁决；必需资产失败
+  不得静默切程序化 / 灰盒回退后继续宣称同一 playable 候选通过。可降级资产只能采用 ledger 已批准
+  且保持五项合同的 fallback
 - 动态媒体台账（含视频 / 关键帧驱动演出时必填）：风格锁 STYLE_LOCK 去向、每张参考图的
   职责声明（may_control / must_not_control）、每镜 start_boundary / end_boundary、
   请求与响应、任务 ID、本地输出与哈希的落盘路径（默认 `build/media/evidence/<shot_key>/`）
@@ -48,6 +66,17 @@
 并写明离线或服务失效时的行为。网页项目使用 Phaser / Three / inkjs 等库时把依赖锁定并随项目
 交付，不挂未锁版本的 CDN 标签或 import map。
 
+# 视觉晋级
+capabilityGap: [当前渲染、镜头、动画、FX、资产管线逐项能否表达目标；不能时的代表场景 spike]
+grayboxReady: [显式写且只取 NOT_RUN / FAIL / PASS；PASS 附核心循环、输入、结果、重开证据]
+visualPromotion: [显式写且只取 NOT_RUN / FAIL / PASS；PASS 附代表场景批准记录 + 全部签名时刻推广范围]
+beforeAfterIndex: [每轮同种子、状态、机位、视口 contact sheet；问题 ID、处置、复验路径]
+releaseGateAssets: [资产键及 status / releaseGatePassed / evidence / remaining]
+releaseAssetClasses: [互斥的 focalReleaseAssets / degradableReleaseAssets；两者并集必须覆盖
+  asset-ledger 中每个 tier=release-gate 的键。degradable 每项在 ledger 写结构化 fallback：
+  behavior；preserved.coreAction/state/result/readableFeedback/restart 五项布尔值且全为 true；
+  workspace-local evidence 非空数组且路径真实存在]
+
 # 工具链与权威验证
 toolchain:
   targetPlatform: [PRODUCT_BRIEF 锁定的平台]
@@ -65,7 +94,7 @@ commands:
   start: [实际命令]
   verify: [一条权威验证命令]
 verification:
-  suites: [稳定 suite id 列表]
+  suites: [稳定 suite id 列表；连续控制项目必须含独立 controller-contract，实时 3D 必须含 motion-visual]
   completeRun: qa/verification.json#completeRun
   evidenceIndex: qa/verification.json#checkpoints
 
@@ -75,6 +104,13 @@ verification:
 以及每个 required suite 是否在该次 log 中被调用；testedRuntime 与 targetRuntime 不同时，逐项
 列出目标平台仍为 NOT_RUN 的输入、性能、打包、设备和发布门]
 ```
+
+`grayboxReady: PASS` 只证明玩法灰盒成立。只有 `graybox` 可以携带视觉 `NOT_RUN`、未关闭视觉
+major 或灰盒资产。`targetFinish` 高于 `graybox` 时，必须 `visualPromotion: PASS`、焦点发布门禁
+资产通过、逐帧零 blocker/major，才可证明 playable；polished/showcase 再要求全部发布门禁资产、
+全部目标帧、目标视口与性能预算通过。构建阶段不得假装完成 QA 的独立视觉评审，因此最终
+`demonstratedTier` 还受 QA manifest 限制。预算、时间或生成调用用尽只会留下 `NOT_RUN` / `FAIL`，
+不会替代证据。
 
 不要粘贴完整小说，也不要规定模型可以从环境正确决定的框架、类、着色器或资产
 管线；但存储键、测试脚本名等对外可见实现符号由本 brief 统一命名，GAME_DESIGN 不含

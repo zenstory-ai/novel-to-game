@@ -11,7 +11,12 @@ jobs:
   repository:
     runs-on: ubuntu-latest
     steps:
+      # Publication contracts verify that recorded source/evidence commit IDs
+      # exist and reproduce the promoted build fingerprint. A shallow checkout
+      # cannot inspect those earlier commits.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -24,6 +29,19 @@ jobs:
         run: python3 scripts/validate_repo.py
       - name: Run unit tests
         run: python3 -m unittest discover -s tests -v
+      - name: Install Project Plateau dependencies
+        working-directory: examples/project-plateau/build/app
+        run: npm ci
+      - name: Test and build Project Plateau
+        working-directory: examples/project-plateau/build/app
+        run: npm test && npm run build
+      - name: Install browser controller test runtime
+        run: |
+          python3 -m pip install pillow==12.2.0 playwright==1.58.0
+          python3 -m playwright install --with-deps chromium
+      - name: Verify Project Plateau controller contract
+        working-directory: examples/project-plateau/build/app
+        run: python3 test/qa_controller.py && python3 test/qa_motion.py
       - name: Run TTS safety and audio tests
         working-directory: examples/project-plateau/build/media/remotion
         run: npm run test:tts

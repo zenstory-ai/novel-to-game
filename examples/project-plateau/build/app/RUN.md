@@ -1,214 +1,75 @@
-# Run the current build foundation
+# Run Project Plateau
 
-Requirements: Node.js `>=22.12.0`, npm and a desktop browser with WebGL2.
-
-Play the published example at <https://plateau.vibecoco.ai>.
+Requirements: Node.js `>=22.12.0`, npm, and a desktop browser with WebGL2 for
+the interactive 3D build.
 
 ```bash
 npm ci
 npm run start -- --host 127.0.0.1
 ```
 
-Open <http://127.0.0.1:5173>. The local Vite server supplies all runtime code;
-the page does not request a CDN, remote font, image, audio file or analytics
-endpoint.
+Open <http://127.0.0.1:5173>. The app is self-contained: runtime code, HY3D
+assets, preview video, fonts and effects are served locally with no analytics or
+CDN requests.
 
-Run the quick renderer baseline with:
+Historical published preview: <https://plateau.vibecoco.ai>. Its retained QA
+record is not current-fingerprint release evidence.
+
+## Controls
+
+- Move: `WASD`
+- Look: mouse
+- Sprint: `Shift`
+- Crouch: `C`
+- Jump: `Space`
+- Examine: `E`
+- Raise camera: hold right mouse; expose plate: left mouse
+- Raise rifle: hold `F`; fire: left mouse
+- Pause / release pointer lock: `Esc`
+
+Movement follows the current camera heading. Jump is unavailable while
+crouching, paused or holding a tool. Losing focus releases transient movement
+and tool holds without cancelling a shutter exposure already in flight.
+
+## Entry behavior
+
+Supported desktop WebGL2 environments enter the interactive game. Touch-only,
+small-screen, social in-app or WebGL2-unavailable environments receive the
+local 15-second gameplay preview and links to other playable examples rather
+than a renderer error page.
+
+## Verification
+
+Quick checks:
 
 ```bash
-npm run verify:s0
+npm test
+npm run build
+npm run test:controller
+npm run test:collision
+npm run test:entry
+npm run test:loading
+npm run test:motion
 ```
 
-Run controller, collision, pause/focus, restart and a continuous ten-minute
-browser smoke with:
+Authoritative release handoff:
 
 ```bash
-SMOKE_SECONDS=600 npm run verify:s1
-```
-
-Run the connected-zone and four-state primitive threat checkpoint with:
-
-```bash
-npm run verify:s2
-```
-
-Run the observation, exposed-proof, recoverable-contact and limited-defense
-checkpoint with:
-
-```bash
-npm run verify:s3
-```
-
-Run the primitive complete-loop checkpoint—Strong-band covered return, both
-terminal failures and clean restart from every terminal—with:
-
-```bash
-npm run verify:s4
-```
-
-Run the route/outcome matrix with all four alive bands, Strong/Mixed/Panic,
-exposed-case versus noisy-creek consequences and the minimum viewport with:
-
-```bash
-npm run verify:s5
-```
-
-Run the field-feedback checkpoint with the bellows camera, membrane-wing threat,
-covered-route pull-up, local Web Audio cues, captions, channel controls and
-distinct result/failure sound states with:
-
-```bash
-npm run verify:s6
-```
-
-Run the persisted-settings and lifecycle checkpoint with no-cache loading,
-payload accounting, 150% text, both supported viewports, pause/focus freeze,
-terminal restart and heavy-state performance with:
-
-```bash
-npm run verify:s7
-```
-
-Run the input-only Strong/Mixed/Panic reference paths plus a complete
-achromatopsia Strong route with real keyboard and mouse traversal, no teleport
-or direct-time shortcuts, exact outcomes and clean restarts with:
-
-```bash
-npm run verify:s8
-```
-
-Run the same paths against the anonymous HTTPS deployment while keeping its
-evidence separate from the authoritative local record:
-
-```bash
-BASE_URL=https://plateau.vibecoco.ai \
-PLATEAU_EVIDENCE_DIR=../../qa/evidence/public-host \
-python3 test/qa_s8.py
-```
-
-Run the living-family and physical-proof checkpoint with distinct young-play
-and branch-pull frames, renderer-derived monochrome plates, a four-view result
-board and clean image reset with:
-
-```bash
-npm run verify:s9
-```
-
-Run the protected-glade checkpoint with its unobstructed family sightline,
-both live camera behaviors, Chromium achromatopsia attack state, Strong plate
-board, clean restart, focus-region pixel floor and order/glade/defense/result
-checkpoints for three additional vision deficiencies with:
-
-```bash
-npm run verify:s10
-```
-
-Run the final authoritative handoff from one command after a clean install:
-
-```bash
-npm ci
 npm run verify
 ```
 
-The authoritative runner discovers every JavaScript and Python test file in
-`test/`, rejects unregistered suites, runs the production build, all S0–S10
-browser checkpoints, the QA-side design invariants, and the repository
-contracts in one invocation. It writes `../../qa/verification.json` and
-`../../qa/evidence/verify.log`; the media recorder and the runner itself are
-listed there as explicit non-suite tools rather than silently skipped tests.
+The authoritative command discovers every registered JavaScript/Python suite,
+runs 12 suites and 23 commands, and writes:
 
-Record one continuous input-only Strong run and derive the local 30-second and
-15-second delivery encodes, tracked marks, manifest, contact sheet and share
-card with:
+- `../../qa/verification.json`
+- `../../qa/evidence/verify.log`
+- browser screenshots/state under `../evidence/`
 
-```bash
-python3 test/capture_demo_clip.py
-```
+The current successful handoff is bound to source fingerprint
+`578d03cbfbcbe66ac192ac1bcb808d3e215b14d1d6759d63d2b3012bbc22ee6f`.
+It passed unit, build, S0–S10 browser, controller, motion, collision, entry,
+loading, visual, design-invariant and repository-contract suites.
 
-The raw WebM and derived MP4 files are reproducible and ignored by Git; their
-hashes and measured delivery properties live in `../media/clip/manifest.json`.
-Use `--reuse-raw` to repeat only the encoding and media checks.
-
-The browser check uses Python Playwright and the locally installed Google Chrome
-when available. It saves JPEGs, timings, render counters and a JSON report under
-the corresponding `../evidence/s*/` directory. S3 through S10 write separate
-state and browser JSON records for every visual checkpoint.
-
-This repository checkpoint is playable locally and in the published example, and
-passes the automated build handoff. The staged evidence proves the approved local
-Three.js/Vite/WebGL2 stack, real-time scene density, title/order handoff,
-viewport support, player controller, foundation collision, lifecycle and
-performance baseline, plus connected zone history and four primitive threat
-states. It also proves examination without premature scoring, a slowed camera,
-a live two-second shutter commitment, deterministic plate grades, proof-driven
-awareness, one recoverable plate-breaking contact and a timely one-cartridge
-defensive interruption. The same state can now continue through a committed
-covered/exposed return, Fort submission, one of four evidence bands, timeout or
-second-contact failure, and a clean field-order restart. S4 browser evidence
-captures one Strong-band proof → covered return → result → restart path plus
-both terminal failures. It uses QA-only walking/time compression and therefore
-did not replace the later uncompressed reference paths, audio, route consequence
-coverage, production art or authoritative verification. S5 adds
-all four alive result bands, the no-shot Strong line, a shot/callback Mixed
-line, an explicit Panic failure, the 28/12/18-second route-cost matrix, a
-visible brook-brush response and a five-verb evidence index. Those paths still
-use QA-only walking compression. S6 replaces the camera and aerial-threat
-silhouettes with more recognizable procedural structures, frames the covered
-route with physical arches and a visible pull-up response, and adds lazy local
-Web Audio, captions, three independent volume controls, cue-state inspection
-and clean per-run audio reset. Its browser evidence proves that audio nodes and
-cues run without console or remote-host errors; it does not claim subjective
-mix quality. Final asset polish and uncompressed reference runs remain open.
-S7 persists one validated, versioned presentation record,
-offers a visible defaults reset and exercises title, settings, order, field,
-manual pause, focus-loss pause, result and restart at `1440×900` and
-`1280×720`, including 150% text. Its no-cache 25 Mbps run reached the first
-frame in 2.16 seconds; the built app measured 596,121 raw / 152,779 gzip bytes.
-Public-host cold loading, final non-colour review and uncompressed reference
-runs remained open at that checkpoint. S8 replaces the earlier paper timing
-assumption with measured traversal: its Strong path finishes in about 51.6 seconds,
-travels 128.3 world units, preserves seven cues and returns with about 100.3 seconds
-of the revised 180-second light budget. Mixed reaches the four-cue result with
-one shot and its creek callback; Panic reaches the second-contact failure after
-spending both rounds. All three use keyboard/mouse movement without teleport or
-direct-time hooks. The same runner repeats the complete Strong route under
-Chromium achromatopsia and returns to a clean order. This establishes repeatable
-reference paths. The same paths also pass against the anonymous HTTPS build,
-but automated state evidence does not replace independent first-time perception,
-three external tester records or final family animation review.
-S9 gives the two-adult/three-young
-family distinct graze, young-play and branch-pull roles, and records the two
-behavior windows under separate frame keys. Every shutter now preserves the
-actual local renderer view, without the camera body, as that plate's
-monochrome image; the preview and terminal board carry the same image and a
-restart clears it. The six-checkpoint S9 asset matrix verifies four distinct
-captured images, non-colour treatment, exact Strong output and 120.5/98.0 FPS.
-It uses QA placement to isolate those states and therefore does not replace S8
-traversal evidence or independent anatomy, composition and first-time premise
-review. S10 protects a 44-unit glade corridor, moves dense vegetation to the
-frame edges and adds warm/cool subject separation, faceted animal planes and
-visible eyes. Its matrix clears the observation prose before the hero frame,
-preserves both behavior commitments, exercises a Chromium achromatopsia attack
-state, retains the Strong board/reset, and adds order, glade, attack/defense and
-result checkpoints under protanopia, deuteranopia and tritanopia. The focus
-region records about 19.8% dark / 59.3% bright / 82.1% chromatic pixels at
-120.5/106.4 FPS. These numeric and state floors catch gross omissions; they do
-not replace independent composition, anatomy, motion, colour-cue or premise
-review.
-
-The media capture replays the S8 Strong class without teleport or direct-time
-hooks. Its 30-second and 15-second versions uniformly compress the same uncut
-source window and pass all 14 container/codec/profile/pixel/aspect/frame-rate/
-duration/size/audio/first-frame/fast-start checks. Because their playback is
-time-compressed, S8—not the delivery clips—remains the timing authority.
-
-The latest clean-install `npm run verify` handoff passed seven suites and all
-sixteen commands, indexed 41 direct checkpoints and produced a separate 10/10
-design-invariant audit. See [`../../qa/QA_REPORT.md`](../../qa/QA_REPORT.md) and
-[`../../qa/verification.json`](../../qa/verification.json). Independent
-first-time sessions and perception review now have
-executable protocols in [`../../qa/PLAYTEST_PROTOCOL.md`](../../qa/PLAYTEST_PROTOCOL.md)
-and [`../../qa/PERCEPTION_REVIEW_PROTOCOL.md`](../../qa/PERCEPTION_REVIEW_PROTOCOL.md).
-The maintainer reports three successful informal first-time sessions, but their
-protocol-level raw records remain open; the public-host smoke is recorded in
-[`../../qa/evidence/public-host/report.json`](../../qa/evidence/public-host/report.json).
+The browser controller suite uses a deterministic pointer-lock shim so mouse
+look can be proven in automation. Native OS/browser pointer-lock acquisition is
+not claimed by that shim and remains a manual smoke item.

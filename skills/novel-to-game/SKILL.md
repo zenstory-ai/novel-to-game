@@ -25,6 +25,16 @@ description: "Turn a novel into a fully playable game on the selected target pla
 `PRODUCT_BRIEF.md` 已显式批准的替代验证运行时；替代版本只证明它实际覆盖的玩法，不代表目标
 平台已经通过。
 
+第 4 维同时锁定画风与 `targetFinish`（`graybox` / `playable-prototype` /
+`polished-vertical-slice` / `showcase`）、带借鉴维度与权利边界的视觉参照、可否决反例、投入边界
+和未达目标处置。该值由 art、build、QA 逐字继承；全自动默认也只能列作未确认假设，不能由下游
+把灰盒静默升级成 polished 或 showcase。
+
+等级顺序固定为 `graybox < playable-prototype < polished-vertical-slice < showcase`。只有 graybox
+可保留视觉 `NOT_RUN`、visual major 或灰盒资产；从 playable 起必须零 blocker/major、焦点发布
+资产晋级且必需视觉证据与独立评审通过。最终始终满足
+`publicationTier <= demonstratedTier <= targetFinish`。
+
 ## 模式
 
 - `quick`：默认。比较三个概念后自动选择并完成整条流程。
@@ -55,8 +65,9 @@ description: "Turn a novel into a fully playable game on the selected target pla
 4. 调用 `game-concept`，在 `PRODUCT_BRIEF` 框定的平台/类型/画风/分级内生成并选择
    `CONCEPT.md`；`director` 在这里停靠。
 5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`。
-6. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`。
-7. 调用 `game-build` 实现完整原型，再用 `game-qa` 验证；`blocker`/`major` 按
+6. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；非 graybox 还须生成可审的视觉目标包。
+7. 调用 `game-build` 先使 `grayboxReady: PASS`，再按 `targetFinish` 使 `visualPromotion: PASS`
+   状态；用 `game-qa` 独立验证。`blocker`/`major` 按
    `QA_REPORT.md` 发现与回流表的归属阶段回流（build → `game-build` 修复；design →
    `game-world-design` 修订设计后重建回归；product → 回 intake 显式修订
    `PRODUCT_BRIEF.md`），规则见 pipeline-contract 质量回流一节。其中**品类认不出 / 无弧线 /
@@ -81,4 +92,6 @@ description: "Turn a novel into a fully playable game on the selected target pla
 - 完成必须以运行、输入、画面、结果和重开证据为准。
 - AI 不能客观证明趣味、长期平衡或商业价值。
 
-只有 `QA_REPORT.md` 无 `blocker`/`major` 且可运行路径明确时，才报告整条流程完成。
+只有 `QA_REPORT.md` 无 `blocker`/`major`、`qa/release-gates.json` 对目标等级的必需项全部
+`PASS` 且可运行路径明确时，才报告相应等级完成。`NOT_RUN` 可以诚实结束本次执行，但不能满足
+声明等级。

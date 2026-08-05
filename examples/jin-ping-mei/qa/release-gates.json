@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": null,
+  "evidenceCommit": null,
+  "targetFinish": "playable-prototype",
+  "publicationTier": "graybox",
+  "pipelineGates": {
+    "intake": "NOT_RUN",
+    "analyze": "PASS",
+    "concept": "PASS",
+    "design": "PASS",
+    "art": "NOT_RUN",
+    "build": "NOT_RUN",
+    "qa": "PASS"
+  },
+  "visualReview": {
+    "required": true,
+    "status": "NOT_RUN",
+    "reviewer": null,
+    "independence": "No retained independent visual-review record.",
+    "evidence": null
+  },
+  "unresolvedDefects": [
+    {
+      "id": "F3",
+      "severity": "minor",
+      "status": "OPEN",
+      "summary": "Exposure has no negative read point."
+    },
+    {
+      "id": "F4",
+      "severity": "minor",
+      "status": "OPEN",
+      "summary": "The unstable-house copy remains fixed rather than state-specific."
+    }
+  ],
+  "notes": "QA is retained as PASS, but historical art/build gates, evidence commit binding, and independent visual review were not recorded. The example is therefore not showcase-eligible.",
+  "demonstratedTier": "graybox",
+  "visualPromotion": {
+    "status": "NOT_RUN",
+    "evidence": []
+  },
+  "visualFrames": [
+    {
+      "id": "safe-title",
+      "status": "NOT_RUN",
+      "evidence": [
+        "qa/evidence/browser/safe/02_title.jpg"
+      ],
+      "operationPath": "Pass the age gate and open the title screen.",
+      "rubric": {
+        "focus": "NOT_RUN",
+        "silhouette": "NOT_RUN",
+        "depth": "NOT_RUN",
+        "materialLine": "NOT_RUN",
+        "lightColor": "NOT_RUN",
+        "hud": "NOT_RUN",
+        "motionFeedback": "NOT_RUN",
+        "artifacts": "NOT_RUN",
+        "failureExamples": "NOT_RUN"
+      }
+    }
+  ],
+  "focalReleaseAssets": [],
+  "grayboxReady": {
+    "status": "PASS",
+    "evidence": [
+      "qa/evidence/automated.json"
+    ]
+  },
+  "degradableReleaseAssets": [],
+  "sourceFingerprint": null,
+  "visualEvidenceManifests": []
+}

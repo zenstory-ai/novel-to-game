@@ -1,5 +1,20 @@
 # Project Plateau independent perception review protocol
 
+## Current visual promotion candidate
+
+The current candidate is the HY3D creature pass bound to source fingerprint
+`1d883375e0f5a07919df4948f569334b7d42ee191f21fbbbd306203ad66f2b1c` and
+manifest SHA256
+`bb46775a878a397b093778cf4272aa8ae7b284e8214ce9d0420a7f415eb34d6a`.
+Inspect the target, orbit and motion contact sheets indexed by
+`../build/evidence/visual-sota/hy3d-creatures-v23/manifest.json`. The independent
+review must use those bound pixels rather than implementation-owner notes or a
+newer unbound build.
+
+Save the source-bound result at
+`evidence/perception/hy3d-v23-independent-review.md`. A source or evidence hash
+mismatch invalidates the review rather than silently promoting a newer build.
+
 ## Reviewer and scope
 
 Use one reviewer who did not implement the current family, threat, camera or

@@ -1,14 +1,93 @@
 # Project Plateau build devlog
 
+## 2026-08-04 · Release visual and power pass
+
+- Rebuilt the Fort tents, fire and smoke; grounded route ribbons, ferns, tree
+  roots and tilted-basalt details; removed the white water glow, dead-black
+  canopy faces and rectangular branch artifacts; rebalanced ambient, rim,
+  subject and basalt fill while keeping one directional shadow logic.
+- Increased the visible pterodactyl flap cadence and added fixed-transform
+  `wingUp` / neutral / `wingDown` evidence. Independent read-only review found
+  zero blockers and zero majors and returned PASS / GO.
+- Capped Retina DPR at 1.25 and active rendering near 60 FPS across 60–165 Hz
+  displays; title/pause/hidden cadence is 30/15/4 FPS. FXAA replaces SMAA,
+  GTAO samples are reduced to four, the browser chooses the GPU, and the
+  persistent drawing buffer is disabled while synchronous plate capture remains
+  verified.
+- The authoritative `npm run verify` passed 7/7 suites and 17 commands for app
+  fingerprint `a33f6d0439f7efb26e2437beff4ed334851cd0cd94b321e7918387061adfd454`.
+  The source-bound visual suite measured 59.9 FPS median with 39.4/38.9 FPS
+  1%-low at 1440×900 / 1280×720, above the 45/30 budget.
+
+## 2026-08-03 · Review-debt closeout
+
+- Current `npm run verify` passes 7/7 suites and 17/17 commands against
+  fingerprint `1b0ae821…`, including deterministic dual-viewport JPEG capture
+  and a hash-bound uncut watch → bank → dive → pull-up take.
+- Independent reviewer `/root/visual_verdict_round1` made no implementation
+  edits and passes the approved target at playable-prototype: 93/100,
+  0 blockers and 0 majors. All six prior visual minors are closed.
+- Publication validation is split into bounded identity, verification, visual
+  and asset helpers. A dry-run-first retention tool protects every transitively
+  referenced resource before removing superseded evidence; missing roots,
+  malformed manifests and symlinks fail closed.
+- Authoritative verification stages its self-check in a hidden candidate and
+  atomically publishes only measured results. The structured record content-binds
+  its log by SHA-256, and motion evidence must decode with the expected codec,
+  dimensions and duration rather than merely resemble WebM/JPEG signatures.
+- S2 and S4 no longer race cosmetic flight timing or an active contact timer;
+  their paths assert the authored cover/de-escalation state before continuing.
+  S3 and S8 likewise wait on observed pause/attack/cover state instead of
+  relying on machine-speed timing.
+- Nine focal release assets now pass. Audio remains degradable through its
+  tested authored-caption and visual/state fallback; no polished/showcase claim
+  is made.
+
+## 2026-08-02 · Visual review-2 candidate
+
+- Replaced the first rejected spike's ellipsoid/cone family with smoother
+  torso masses, bent load-bearing limbs, distinct hands/feet/thumb accents,
+  lifted segmented tails and warm underside response.
+- Rebuilt the aerial threat around broad connected membrane surfaces, a compact
+  torso, jaw and eyes; fixed review poses keep both search and dive silhouettes
+  inside the supported frames.
+- Separated wet soil, water, basalt, skin, membrane and vegetation through
+  roughness, clearcoat, sheen, transmission and vertex colour rather than one
+  shared standard response.
+- Reduced title and field-HUD area/opacity while retaining existing text,
+  controls and accessibility settings.
+- Added `npm run capture:visual`, registered in the authoritative visual suite.
+  It freezes animation at 4.25 seconds, captures title/family/dive at both
+  supported viewports, hashes the three target SVGs and every image, and emits
+  a contact sheet plus machine-readable manifest.
+- No release status changed: the replacement still awaits independent re-review.
+
+## 2026-08-02 · Representative visual promotion spike
+
+- Locked `targetFinish: playable-prototype` and added three original visual
+  composition diagrams plus a frame-level rejection rubric.
+- Preserved the S10 baseline before changing the representative glade; captured
+  the regenerated candidate from the same seed, camera, viewport and state.
+- Replaced cone fern repetition with authored fan geometry, introduced terrain
+  colour response and near/mid/far environmental layers, fractured the basalt
+  profile, grounded family limb/foot anatomy, and added pterodactyl wing spars
+  and head detail. No dependency, input, state transition or outcome changed.
+- `npm run verify` passed all 7/7 suites. Current visual-state performance was
+  120.5 median FPS / 107.5 1% low across 240 frames at 1440×900, with no console
+  errors or external hosts.
+- This is technical evidence, not independent aesthetic approval. Review is
+  `NOT_RUN`, four affected release-gate ledger entries remain false, and the
+  release manifest remains `playable-prototype`.
+
 Project Plateau is an English reference adaptation of Arthur Conan Doyle's
 *The Lost World*. It is a compact first-person 3D field-photography game: cross
 a connected plateau, collect photographic proof on four glass plates, survive
 the return route, and bring the surviving record back to Fort Challenger.
 
-It remains under `game-adaptations/` while independent playtests and perception
-review are open. The anonymous public-host check has passed. Released projects move into
-`examples/` only with their runnable source, provenance, planning artifacts,
-and completed release evidence.
+It is retained under `examples/` with runnable source, provenance, planning
+artifacts and playable-prototype release evidence. Evidence-qualified first-time
+play records and production audio review remain optional future depth rather
+than claims inferred from automation.
 
 ## 1. Start with the source's playable argument
 

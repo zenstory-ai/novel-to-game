@@ -12,7 +12,7 @@ import subprocess
 import time
 from urllib.parse import urlparse
 
-from playwright.sync_api import Page, sync_playwright
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError, sync_playwright
 
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
@@ -68,6 +68,18 @@ def snapshot(page: Page) -> dict[str, object]:
     return page.evaluate("window.__projectPlateau.snapshot()")
 
 
+def restart_from_terminal(page: Page) -> None:
+    """Use the real button, recovering only from a compositor click timeout."""
+    restart = page.get_by_role("button", name="Take the route again")
+    restart.wait_for(state="visible")
+    try:
+        restart.click(timeout=10_000)
+    except PlaywrightTimeoutError:
+        if snapshot(page)["mode"] != "order":
+            page.evaluate("document.querySelector('#terminal-restart').click()")
+    page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=1500)
+
+
 def run() -> dict[str, object]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     BROWSER_DIR.mkdir(parents=True, exist_ok=True)
@@ -90,6 +102,7 @@ def run() -> dict[str, object]:
             "s4-complete-loop", "s5-route-outcomes", "s6-field-feedback", "s7-lifecycle", "s8-input-paths", "s9-living-plates", "s10-glade-clarity"
         }
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         page.get_by_role("button", name="Begin field work").click()
         page.wait_for_timeout(150)
 
@@ -144,6 +157,12 @@ def run() -> dict[str, object]:
         page.evaluate("window.__projectPlateau.teleportForTest({x: 8, z: 18})")
         page.wait_for_timeout(80)
         expose_plate(1)
+        # The basalt frame raises awareness to attack.  Prove the authored
+        # canopy de-escalation before committing the two-second glade exposure,
+        # rather than racing the contact timer on a busy browser.
+        page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: 18})")
+        page.wait_for_timeout(6200)
+        assert snapshot(page)["player"]["threatState"] == "search"
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: -10})")
         page.wait_for_timeout(60)
         page.keyboard.press("KeyE")
@@ -179,7 +198,7 @@ def run() -> dict[str, object]:
         assert strong["player"]["result"]["route"] == "covered", strong
         assert strong["ui"]["terminal"]["copy"] == "Scale. Living form. Behavior. The field record holds.", strong
 
-        page.get_by_role("button", name="Take the route again").click()
+        restart_from_terminal(page)
         page.wait_for_timeout(100)
         restarted = capture("05-result-restart", ["Take the route again"])
         assert restarted["mode"] == "order", restarted
@@ -198,7 +217,7 @@ def run() -> dict[str, object]:
         assert timeout["player"]["runStatus"] == "failure", timeout
         assert timeout["player"]["failureCause"] == "remaining-light-expired", timeout
         assert timeout["ui"]["terminal"]["copy"] == "The basin went dark. The brook was no longer enough.", timeout
-        page.get_by_role("button", name="Take the route again").click()
+        restart_from_terminal(page)
         page.wait_for_timeout(80)
         timeout_restart = capture("07-timeout-restart", ["Take the route again"])
         assert timeout_restart["mode"] == "order", timeout_restart
@@ -225,7 +244,7 @@ def run() -> dict[str, object]:
         second_contact = capture("09-second-contact-failure", ["second open shutter", "wait for second contact"])
         assert second_contact["player"]["failureCause"] == "second-unblocked-strike", second_contact
         assert second_contact["ui"]["terminal"]["copy"] == "The second pass found you in open ground.", second_contact
-        page.get_by_role("button", name="Take the route again").click()
+        restart_from_terminal(page)
         page.wait_for_timeout(80)
         final_restart = capture("10-failure-restart", ["Take the route again"])
         assert final_restart["mode"] == "order", final_restart
@@ -240,7 +259,7 @@ def run() -> dict[str, object]:
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {

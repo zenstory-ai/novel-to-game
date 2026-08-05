@@ -16,7 +16,13 @@ from playwright.sync_api import Page, sync_playwright
 
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
-EVIDENCE = BUILD / "evidence" / "s10"
+EVIDENCE = Path(
+    os.environ.get("PROJECT_PLATEAU_S10_EVIDENCE", BUILD / "evidence" / "s10")
+).resolve()
+try:
+    EVIDENCE_RELATIVE = EVIDENCE.relative_to(BUILD.parent).as_posix()
+except ValueError as error:
+    raise RuntimeError("S10 evidence must stay inside the Project Plateau workspace") from error
 STATE_DIR = EVIDENCE / "state"
 BROWSER_DIR = EVIDENCE / "browser"
 BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
@@ -71,6 +77,7 @@ def snapshot(page: Page) -> dict[str, object]:
 def focus_metrics(page: Page) -> dict[str, float | int]:
     return page.evaluate(
         """() => {
+          window.__projectPlateau.renderFrameForTest();
           const source = document.querySelector('#game-canvas');
           const copy = document.createElement('canvas');
           copy.width = source.width;
@@ -130,6 +137,22 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s10", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.family.visualStatus === 'hy3d-family-ready'",
+            timeout=15000,
+        )
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.pterodactyl.visualStatus === 'hy3d-flock-ready'",
+            timeout=15000,
+        )
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.fieldCamera.visualStatus === 'hy3d-field-camera-ready'",
+            timeout=15000,
+        )
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.rifle.visualStatus === 'hy3d-rifle-ready'",
+            timeout=15000,
+        )
         assert page.evaluate("window.__projectPlateau.stage") == "s10-glade-clarity"
 
         vision_mode = "full-colour"
@@ -144,9 +167,9 @@ def run() -> dict[str, object]:
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
             state = snapshot(page)
-            state_relative = f"build/evidence/s10/state/{identifier}.json"
-            browser_relative = f"build/evidence/s10/browser/{identifier}.json"
-            visual_relative = f"build/evidence/s10/{identifier}.jpg"
+            state_relative = f"{EVIDENCE_RELATIVE}/state/{identifier}.json"
+            browser_relative = f"{EVIDENCE_RELATIVE}/browser/{identifier}.json"
+            visual_relative = f"{EVIDENCE_RELATIVE}/{identifier}.jpg"
             (STATE_DIR / f"{identifier}.json").write_text(
                 json.dumps(state, indent=2) + "\n", encoding="utf-8"
             )
@@ -212,11 +235,17 @@ def run() -> dict[str, object]:
                 f"window.__projectPlateau.snapshot().player.pendingExposure?.key === '{frame_key}'",
                 timeout=1000,
             )
+            page.wait_for_function(
+                f"window.__projectPlateau.snapshot().ui.capturedPlateImages[{index}] === true",
+                timeout=1000,
+            )
             state = snapshot(page)
             assert state["ui"]["capturedPlateImages"][index], state
+            assert not page.locator("#context-prompt").is_visible(), state
             return state
 
         page.get_by_role("button", name="Enter the basin").click()
+        page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'", timeout=15000)
         for index, mode in enumerate(colour_vision_modes):
             set_vision(mode)
             identifier = f"00{chr(ord('a') + index)}-{mode}-field-order"
@@ -260,7 +289,7 @@ def run() -> dict[str, object]:
             identifier = f"{index:02d}-{mode}-glade"
             glade_mode = capture(identifier, [f"Chromium {mode}", "glade decision checkpoint"])
             assert glade_mode["mode"] == "field", glade_mode
-            assert glade_mode["ui"]["prompt"] == "Raise camera [Right Mouse]", glade_mode
+            assert glade_mode["ui"]["prompt"] == "Hold camera [Right Mouse]", glade_mode
             assert glade_mode["ui"]["plateRail"], glade_mode
             assert glade_mode["ui"]["lightWatch"] is not None, glade_mode
             colour_vision_matrix[mode]["glade"] = identifier
@@ -276,7 +305,15 @@ def run() -> dict[str, object]:
 
         branch_pending = begin_exposure(3, "glade-branch-pull")
         assert branch_pending["familyVisual"]["moment"] == "glade-branch-pull", branch_pending
-        assert branch_pending["familyVisual"]["branchAngle"] > 0.4, branch_pending
+        page.wait_for_function(
+            "() => {"
+            "  const family = window.__projectPlateau.snapshot().familyVisual;"
+            "  return family.branchAngle > 0.12 && family.branchContactDistance < 0.65;"
+            "}",
+            timeout=2000,
+        )
+        branch_pending = snapshot(page)
+        assert branch_pending["familyVisual"]["branchContactDistance"] < 0.65, branch_pending
         branch = capture("03-branch-pull-silver-frame", ["Right Mouse", "Left Mouse", "second live commitment"])
         assert young["player"]["pendingExposure"]["key"] != branch["player"]["pendingExposure"]["key"]
         page.wait_for_function(
@@ -292,16 +329,21 @@ def run() -> dict[str, object]:
         assert non_colour["threatVisual"]["state"] == "attack", non_colour
         assert non_colour["ui"]["rifleOverlay"], non_colour
         assert non_colour["ui"]["cartridgesVisible"], non_colour
-        assert non_colour["assets"]["pterodactyl"]["silhouette"] == "membrane-wing", non_colour
+        assert non_colour["assets"]["pterodactyl"]["silhouette"] == "continuous-skinned-membrane-wing", non_colour
         for index, mode in enumerate(colour_vision_modes, start=10):
             set_vision(mode)
             identifier = f"{index:02d}-{mode}-attack-defense"
             attack_mode = capture(identifier, [f"Chromium {mode}", "F raised rifle"])
             assert attack_mode["player"]["threatState"] == "attack", attack_mode
-            assert attack_mode["ui"]["prompt"].startswith("Raise rifle"), attack_mode
+            assert attack_mode["ui"]["prompt"].startswith("Hold rifle"), attack_mode
             assert attack_mode["ui"]["rifleOverlay"], attack_mode
             assert attack_mode["ui"]["cartridgesVisible"], attack_mode
             colour_vision_matrix[mode]["attackDefense"] = identifier
+        page.mouse.click(720, 450, button="left")
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().player.shotCount === 1",
+            timeout=1200,
+        )
         page.keyboard.up("KeyF")
         set_vision("full-colour")
 
@@ -336,7 +378,7 @@ def run() -> dict[str, object]:
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     assert len({visual["sha256"] for visual in visuals}) == len(visuals), visuals
@@ -353,6 +395,7 @@ def run() -> dict[str, object]:
             "familyAndBasaltShareSunLane": True,
             "allFiveSubjectsCastShadows": True,
             "observationNoteClearsBeforeHeroFrame": True,
+            "cameraPromptClearsProtectedFrame": True,
             "focusRegionPixelFloor": True,
             "youngPlayAndBranchPullRemainDistinct": True,
             "achromatopsiaAttackRetainsShapeAndToolState": True,

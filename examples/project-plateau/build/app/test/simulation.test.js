@@ -13,6 +13,7 @@ import {
   intactEvidence,
   resultBandForEvidence,
   restartPlayer,
+  releaseTransientTools,
   setCameraRaised,
   setPaused,
   setRifleRaised,
@@ -53,6 +54,48 @@ test('walking, sprinting and crouching have ordered deterministic speeds', () =>
   assert.equal(crouch.stance, 'crouch');
 });
 
+test('movement accelerates, coasts briefly, and settles instead of snapping between speeds', () => {
+  const started = stepPlayer(createPlayerState(), { forward: 1 }, 0.1);
+  const startedSpeed = Math.hypot(started.velocity.x, started.velocity.z);
+  assert.ok(startedSpeed > 0 && startedSpeed < 4.2, started.velocity);
+
+  const cruising = stepPlayer(started, { forward: 1 }, 0.6);
+  const cruisingSpeed = Math.hypot(cruising.velocity.x, cruising.velocity.z);
+  assert.ok(cruisingSpeed > startedSpeed, cruising.velocity);
+  assert.ok(cruisingSpeed <= 4.2 + 1e-9, cruising.velocity);
+
+  const released = stepPlayer(cruising, {}, 0.05);
+  const releasedSpeed = Math.hypot(released.velocity.x, released.velocity.z);
+  assert.ok(releasedSpeed < cruisingSpeed && releasedSpeed > 0, released.velocity);
+
+  const settled = stepPlayer(released, {}, 0.5);
+  assert.ok(Math.hypot(settled.velocity.x, settled.velocity.z) < 1e-9, settled.velocity);
+});
+
+test('a fast reversal must shed forward velocity before building speed backward', () => {
+  const forward = stepPlayer(createPlayerState(), { forward: 1, sprint: true }, 0.7);
+  const reversed = stepPlayer(forward, { forward: -1, sprint: true }, 0.1);
+  const headingForward = { x: 0, z: -1 };
+  const forwardComponent = (
+    reversed.velocity.x * headingForward.x + reversed.velocity.z * headingForward.z
+  );
+  assert.ok(forwardComponent < Math.hypot(forward.velocity.x, forward.velocity.z), reversed.velocity);
+  assert.ok(forwardComponent > -6.8, reversed.velocity);
+});
+
+test('rotated view keeps WASD aligned with the camera horizontal axes', () => {
+  const heading = 0.73;
+  const duration = 0.25;
+  const origin = INITIAL_PLAYER.position;
+  const forward = stepPlayer(createPlayerState(), { forward: 1, heading }, duration);
+  const right = stepPlayer(createPlayerState(), { right: 1, heading }, duration);
+
+  assert.ok(Math.abs(forward.position.x - (origin.x - Math.sin(heading) * forward.distanceTravelled)) < 1e-9);
+  assert.ok(Math.abs(forward.position.z - (origin.z - Math.cos(heading) * forward.distanceTravelled)) < 1e-9);
+  assert.ok(Math.abs(right.position.x - (origin.x + Math.cos(heading) * right.distanceTravelled)) < 1e-9);
+  assert.ok(Math.abs(right.position.z - (origin.z - Math.sin(heading) * right.distanceTravelled)) < 1e-9);
+});
+
 test('pause freezes both world time and movement', () => {
   const paused = setPaused(createPlayerState(), true, 'manual');
   const after = stepPlayer(paused, { forward: 1, sprint: true }, 4);
@@ -61,15 +104,99 @@ test('pause freezes both world time and movement', () => {
   assert.equal(after.pauseReason, 'manual');
 });
 
+test('jump has deterministic takeoff, apex and landing without double-jump', () => {
+  const start = createPlayerState();
+  const rising = stepPlayer(start, { jump: true }, 0.1);
+  assert.equal(rising.grounded, false);
+  assert.ok(rising.verticalOffset > 0, rising);
+  assert.ok(rising.verticalVelocity > 0, rising);
+
+  const repeated = stepPlayer(rising, { jump: true }, 0.1);
+  assert.ok(repeated.verticalVelocity < rising.verticalVelocity, repeated);
+
+  let player = rising;
+  let apex = player.verticalOffset;
+  for (let step = 0; step < 120 && !player.grounded; step += 1) {
+    player = stepPlayer(player, {}, 1 / 60);
+    apex = Math.max(apex, player.verticalOffset);
+  }
+  assert.ok(apex > 1 && apex < 1.2, apex);
+  assert.equal(player.grounded, true);
+  assert.equal(player.verticalOffset, 0);
+  assert.equal(player.verticalVelocity, 0);
+});
+
+test('jump is rejected while crouching, holding a tool, exposing or paused', () => {
+  const crouching = stepPlayer(createPlayerState(), { jump: true, crouch: true }, 0.1);
+  assert.equal(crouching.grounded, true);
+
+  const camera = stepPlayer(setCameraRaised(createPlayerState(), true), { jump: true }, 0.1);
+  assert.equal(camera.grounded, true);
+
+  const rifle = stepPlayer(setRifleRaised(createPlayerState(), true), { jump: true }, 0.1);
+  assert.equal(rifle.grounded, true);
+
+  const exposing = createPlayerState();
+  exposing.pendingExposure = { key: 'test', remainingSeconds: 1 };
+  const exposureStep = stepPlayer(exposing, { jump: true }, 0.1);
+  assert.equal(exposureStep.grounded, true);
+
+  const paused = setPaused(createPlayerState(), true, 'manual');
+  const frozen = stepPlayer(paused, { jump: true }, 0.5);
+  assert.equal(frozen.grounded, true);
+  assert.equal(frozen.verticalOffset, 0);
+});
+
+test('one large delta and fixed slices produce the same ballistic landing', () => {
+  const large = stepPlayer(createPlayerState(), { jump: true }, 1);
+  let sliced = stepPlayer(createPlayerState(), { jump: true }, 1 / 60);
+  for (let step = 1; step < 60; step += 1) sliced = stepPlayer(sliced, {}, 1 / 60);
+  assert.equal(large.grounded, true);
+  assert.equal(sliced.grounded, true);
+  assert.ok(Math.abs(large.verticalOffset - sliced.verticalOffset) < 1e-9);
+  assert.ok(Math.abs(large.verticalVelocity - sliced.verticalVelocity) < 1e-9);
+});
+
+test('focus loss releases held tools while preserving an exposure already in flight', () => {
+  const rifleHeld = setRifleRaised(createPlayerState(), true);
+  assert.equal(releaseTransientTools(rifleHeld).rifleRaised, false);
+
+  const cameraHeld = setCameraRaised(createPlayerState(), true);
+  const cameraReleased = releaseTransientTools(cameraHeld);
+  assert.equal(cameraReleased.cameraRaised, false);
+  assert.equal(cameraReleased.rifleRaised, false);
+
+  const exposing = startExposure(cameraHeld);
+  const exposurePreserved = releaseTransientTools(exposing);
+  assert.ok(exposurePreserved.pendingExposure);
+  assert.equal(exposurePreserved.cameraRaised, true);
+  assert.equal(exposurePreserved.rifleRaised, false);
+});
+
 test('a solid obstacle blocks penetration and permits axis sliding', () => {
   const player = createPlayerState();
   player.position = { x: -7, z: 80 };
   player.lastStablePosition = { ...player.position };
   const after = stepPlayer(player, { forward: 1, right: 1 }, 0.5);
-  const distanceFromTent = Math.hypot(after.position.x + 3, after.position.z - 80);
-  assert.ok(distanceFromTent >= 4.0, after.position);
+  const localX = Math.SQRT1_2 * ((after.position.x + 3) - (after.position.z - 80));
+  const localZ = Math.SQRT1_2 * ((after.position.x + 3) + (after.position.z - 80));
+  assert.ok(
+    Math.abs(localX) >= 2.55 + 0.6 - 1e-6
+      || Math.abs(localZ) >= 3.2 + 0.6 - 1e-6,
+    after.position,
+  );
   assert.notDeepEqual(after.position, player.position);
   assert.equal(after.collisions, 1);
+});
+
+test('a long simulation step cannot tunnel through a circular obstacle', () => {
+  const player = createPlayerState();
+  player.position = { x: -7.5, z: 38 };
+  player.lastStablePosition = { ...player.position };
+  const after = stepPlayer(player, { forward: 1, sprint: true }, 1);
+
+  assert.ok(after.position.z >= 37.45 - 1e-6, after.position);
+  assert.ok(after.collisions > 0, after);
 });
 
 test('leaving the navigable world recovers the last stable position', () => {

@@ -86,6 +86,15 @@ def run() -> dict[str, object]:
         page.on("request", lambda request: hosts.add(urlparse(request.url).netloc))
         page.goto(f"{BASE_URL}/?qa=s6", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
+        page.evaluate("window.__projectPlateau.loadHy3dVisualsForTest()")
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.fieldCamera.visualStatus === 'hy3d-field-camera-ready'",
+            timeout=15000,
+        )
+        page.wait_for_function(
+            "window.__projectPlateau.snapshot().assets.rifle.visualStatus === 'hy3d-rifle-ready'",
+            timeout=15000,
+        )
         assert page.evaluate("window.__projectPlateau.stage") in {
             "s6-field-feedback", "s7-lifecycle", "s8-input-paths", "s9-living-plates", "s10-glade-clarity"
         }
@@ -162,8 +171,12 @@ def run() -> dict[str, object]:
         page.mouse.move(720, 450)
         page.mouse.down(button="right")
         page.wait_for_timeout(100)
-        camera_raised = capture("04-bellows-camera-raised", ["Right Mouse down"])
-        assert camera_raised["assets"]["fieldCamera"] == {"version": "bellows-camera", "visibleParts": 13}, camera_raised
+        camera_raised = capture("04-hy3d-field-camera-raised", ["Right Mouse down"])
+        field_camera = camera_raised["assets"]["fieldCamera"]
+        assert field_camera["version"] == "hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k", camera_raised
+        assert field_camera["visualStatus"] == "hy3d-field-camera-ready", camera_raised
+        assert field_camera["loaded"] is True and field_camera["singleAssetPath"] is True, camera_raised
+        assert field_camera["visibleParts"] == 1, camera_raised
         assert camera_raised["ui"]["caption"] == "[wood frame lifts; bellows opens]", camera_raised
         page.mouse.down(button="left")
         page.mouse.up(button="left")
@@ -185,7 +198,13 @@ def run() -> dict[str, object]:
         attack = capture("06-membrane-wing-attack", ["QA route setup: basalt shelf", "second shutter commitment"])
         recent_attack_cues = [event["cue"] for event in attack["audio"]["recentCues"]]
         assert "attack" in recent_attack_cues, attack
-        assert attack["assets"]["pterodactyl"] == {"silhouette": "membrane-wing", "visibleParts": 5}, attack
+        pterodactyl = attack["assets"]["pterodactyl"]
+        assert pterodactyl["silhouette"] == "continuous-skinned-membrane-wing", attack
+        assert pterodactyl["projectedShadow"] == "moving-winged-ground-shadow", attack
+        assert pterodactyl["visibleParts"] >= 9, attack
+        assert pterodactyl["visualStatus"] == "hy3d-flock-ready", attack
+        assert pterodactyl["hy3d"]["loaded"] == 3, attack
+        assert pterodactyl["hy3d"]["runtimeMorphPose"] is True, attack
 
         page.evaluate("window.__projectPlateau.teleportForTest({x: 0, z: -10})")
         page.wait_for_timeout(70)
@@ -195,7 +214,7 @@ def run() -> dict[str, object]:
         assert covered["player"]["returnRoute"] == "covered", covered
         assert covered["player"]["inCover"] is True, covered
         assert covered["threatVisual"]["response"] == "cover-pull-up", covered
-        assert covered["assets"]["cover"] == {"archCount": 5, "visibleParts": 25}, covered
+        assert covered["assets"]["cover"] == {"archCount": 5, "visibleParts": 35}, covered
         assert covered["ui"]["caption"] == "[branches scrape the camera; wingbeats widen]", covered
 
         # A second run demonstrates rifle, noisy-brook and result feedback in one causal chain.
@@ -247,10 +266,57 @@ def run() -> dict[str, object]:
         performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
         assert performance["medianFps"] >= 45 and performance["onePercentLowFps"] >= 30, performance
         no_threat_meter = page.locator("[data-threat-meter]").count() == 0
+
+        # Focal viewmodels are required assets: a missing camera must block the
+        # run visibly rather than silently reviving the removed graybox path.
+        failure_context = browser.new_context(viewport={"width": 1280, "height": 720})
+        failure_page = failure_context.new_page()
+        failure_page.route(
+            "**/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
+            lambda route: route.abort(),
+        )
+        failure_page.goto(BASE_URL, wait_until="networkidle")
+        failure_page.get_by_role("button", name="Enter the basin").click()
+        failure_page.wait_for_function("document.body.dataset.mode === 'asset-error'", timeout=15000)
+        failure_state = failure_page.evaluate(
+            "() => ({"
+            "mode: document.body.dataset.mode,"
+            "message: document.querySelector('#required-assets-copy').textContent,"
+            "fieldOrderHidden: document.querySelector('#field-order').hidden,"
+            "retryVisible: !document.querySelector('#retry-assets').hidden"
+            "})"
+        )
+        assert "Required HY3D field camera failed to load" in failure_state["message"], failure_state
+        assert failure_state["fieldOrderHidden"] is True, failure_state
+        assert failure_state["retryVisible"] is True, failure_state
+        failure_id = "11-required-field-camera-failure"
+        (STATE_DIR / f"{failure_id}.json").write_text(
+            json.dumps(failure_state, indent=2) + "\n", encoding="utf-8"
+        )
+        failure_browser = {
+            "inputs": ["abort required local camera GLB", "Enter the basin"],
+            "viewport": [1280, 720],
+            "url": failure_page.url,
+            "expectedFailure": True,
+            "capturedAtUnixMs": int(time.time() * 1000),
+        }
+        (BROWSER_DIR / f"{failure_id}.json").write_text(
+            json.dumps(failure_browser, indent=2) + "\n", encoding="utf-8"
+        )
+        failure_page.screenshot(path=EVIDENCE / f"{failure_id}.jpg", type="jpeg", quality=86)
+        checkpoints.append(
+            {
+                "id": failure_id,
+                "state": f"build/evidence/s6/state/{failure_id}.json",
+                "browser": f"build/evidence/s6/browser/{failure_id}.json",
+                "visual": f"build/evidence/s6/{failure_id}.jpg",
+            }
+        )
+        failure_context.close()
         browser.close()
 
     allowed = {urlparse(BASE_URL).netloc}
-    external = sorted(hosts - allowed)
+    external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
     assert not external, external
     return {
@@ -271,6 +337,7 @@ def run() -> dict[str, object]:
             "rifleAndBrookResponseCues": True,
             "distinctResultAndFailureCues": True,
             "runResetClearsCueHistoryAndPreservesSettings": True,
+            "requiredFocalAssetFailureBlocksRun": True,
             "noThreatMeter": no_threat_meter,
             "consoleErrors": errors,
             "requestHosts": sorted(hosts),
@@ -281,7 +348,7 @@ def run() -> dict[str, object]:
         "limitations": [
             "The audio evidence proves browser audio-node state, cue scheduling, settings and captions; it does not claim subjective mix or sound quality.",
             "Core sound is original Web Audio synthesis rather than final recorded or authored production sound.",
-            "The camera, pterodactyl and cover volumes are improved procedural assets, but the remaining release-gate assets and final animation polish are still open.",
+            "The required camera-and-hands and rifle-and-hands viewmodels are local HY3D assets with no procedural tool fallback; subjective hand contact, creature anatomy and animation polish remain independent-review questions.",
             "S6 retains QA-only route compression; uncompressed reference runs remain a later authoritative gate.",
         ],
     }

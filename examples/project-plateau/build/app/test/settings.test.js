@@ -23,11 +23,15 @@ test('presentation settings normalize invalid persisted values', () => {
     reducedMotion: 'yes',
     captionsEnabled: 1,
     textScale: '4',
+    quality: 'cinematic',
+    lookSensitivity: 8,
     volumes: { ambience: -4, effects: '0.45', music: 8 },
   }, true), {
     reducedMotion: true,
     captionsEnabled: true,
     textScale: '1',
+    quality: 'balanced',
+    lookSensitivity: 2,
     volumes: { ambience: 0, effects: 0.45, music: 1 },
   });
 });
@@ -38,6 +42,8 @@ test('settings round-trip through versioned storage and can be reset', () => {
     reducedMotion: true,
     captionsEnabled: false,
     textScale: '1.5',
+    quality: 'low',
+    lookSensitivity: 0.7,
     volumes: { ambience: 0.2, effects: 0.4, music: 0.1 },
   });
   assert.deepEqual(loadSettings(storage), saved);
