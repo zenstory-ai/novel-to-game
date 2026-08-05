@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Turn any novel into a source-grounded, fully playable game through adaptation planning, target-platform build, and evidence-based QA. 通过改编策划、目标平台构建和证据化质量验证，把小说转成可完整游玩的游戏。",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "novel-to-game",
       "source": "./",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Turn any novel into a source-grounded, fully playable game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, target-platform build, and evidence-based QA. 把小说转成有原著依据、可在目标平台完整游玩的游戏。"
     }
   ]
