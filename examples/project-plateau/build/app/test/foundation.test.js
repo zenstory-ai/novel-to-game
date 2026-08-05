@@ -238,7 +238,9 @@ test('pterodactyl attack reads as search, fold-dive and close attack from simula
     'the projected shadow must sweep toward the player through the exposed corridor',
   );
   assert.ok(projectedShadow.material.opacity > 0.24);
+  assert.ok(projectedShadow.scale.x > 2.2, 'the close strike shadow must fill the player read zone');
   assert.ok(world.threatSnapshot().attackProgress > 0.9);
+  assert.ok(world.threatSnapshot().scale > 1.2, 'the close strike must read larger than the orbit silhouette');
   assert.ok(
     Math.abs(primary.userData.flightPose.bank) >= 0.08,
     'the strike needs a restrained bank without rolling the animal onto its side',
@@ -368,6 +370,54 @@ test('pterodactyl attack reads as search, fold-dive and close attack from simula
   );
 });
 
+test('pterodactyl shadow crosses awareness 2 to 3 without a one-frame jump', () => {
+  const scene = new THREE.Scene();
+  const world = createWorld(scene);
+  const shadow = scene.getObjectByName('threat.pterodactyl.projected-shadow');
+  const frameSeconds = 1 / 60;
+  const playerPosition = { x: 0, z: 2 };
+
+  world.update(10, false, {
+    threatAwareness: 2,
+    playerPosition,
+    deltaSeconds: frameSeconds,
+  });
+  const awarenessTwoPosition = shadow.position.clone();
+  world.update(10 + frameSeconds, false, {
+    threatAwareness: 3,
+    attackSeconds: 0.38,
+    playerPosition,
+    deltaSeconds: frameSeconds,
+  });
+  const transitionPosition = shadow.position.clone();
+  const transitionTarget = shadow.userData.targetPosition.clone();
+  const transitionDelta = transitionPosition.distanceTo(awarenessTwoPosition);
+  assert.ok(
+    transitionDelta < 0.75,
+    `awareness 2->3 shadow displacement must stay sub-frame-continuous: ${transitionDelta}`,
+  );
+
+  let previousDistance = transitionPosition.distanceTo(transitionTarget);
+  for (let frame = 0; frame < 12; frame += 1) {
+    world.update(10 + frameSeconds, false, {
+      threatAwareness: 3,
+      attackSeconds: 0.38,
+      playerPosition,
+      deltaSeconds: frameSeconds,
+    });
+    assert.ok(
+      shadow.userData.targetPosition.distanceTo(transitionTarget) < 1e-9,
+      'a fixed attack input must keep the projected-shadow target stable',
+    );
+    const distance = shadow.position.distanceTo(transitionTarget);
+    assert.ok(
+      distance < previousDistance,
+      `projected shadow must approach its target monotonically: ${distance} < ${previousDistance}`,
+    );
+    previousDistance = distance;
+  }
+});
+
 test('pterodactyl flight uses a visible asymmetric flap cycle instead of a static glide', () => {
   assert.ok(pterodactylWingBeat(0.35) > 0.26);
   assert.ok(pterodactylWingBeat(1.05) < -0.24);
@@ -475,6 +525,35 @@ test('the glade composition protects a lit family-and-basalt sightline', () => {
   assert.equal(composition.sunLanePresent, true);
   assert.equal(composition.shadowCastingSubjects, 5);
   assert.ok(composition.familyWidth >= 14);
+});
+
+test('degradable ground accents add deterministic depth without changing collision truth', () => {
+  const scene = new THREE.Scene();
+  const world = createWorld(scene);
+  const accents = scene.getObjectByName('world.connected_route.degradable-ground-accents');
+  const wetland = scene.getObjectByName('world.connected_route.degradable-wetland-accents');
+  const margins = scene.getObjectByName('world.connected_route.degradable-margin-accents');
+
+  assert.equal(accents.userData.profile, 'deterministic-non-solid-instanced-accents');
+  assert.equal(accents.children.length, 2);
+  assert.equal(wetland.count, 36);
+  assert.equal(margins.count, 28);
+  assert.equal(wetland.userData.collisionRole, 'non-solid-visual-accent');
+  assert.equal(margins.userData.collisionRole, 'non-solid-visual-accent');
+  assert.deepEqual(world.assetSnapshot().degradableGroundAccents, {
+    profile: 'deterministic-non-solid-instanced-accents',
+    quality: 'balanced',
+    visible: true,
+    instanceCount: 64,
+    drawCalls: 2,
+    collisionRole: 'non-solid-visual-accent',
+  });
+
+  world.update(0, true, { quality: 'low' });
+  assert.equal(accents.visible, false);
+  world.update(0, true, { quality: 'high' });
+  assert.equal(accents.visible, true);
+  assert.equal(world.assetSnapshot().degradableGroundAccents.quality, 'high');
 });
 
 test('environment landmarks use authored organic and fractured silhouettes instead of stretched primitives', () => {
@@ -738,10 +817,11 @@ test('every instanced fern stays upright with its root plane touching terrain', 
 
 test('Fort Plateau reads as pitched canvas shelters with soft camp smoke', () => {
   const scene = new THREE.Scene();
-  createWorld(scene);
+  const world = createWorld(scene);
   const tents = scene.getObjectByName('world.connected_route.fort-tents');
   const smoke = scene.getObjectByName('world.connected_route.fort_smoke');
   const firepit = scene.getObjectByName('world.connected_route.fort-firepit');
+  const signal = scene.getObjectByName('world.connected_route.fort-signal');
 
   assert.equal(tents.children.length, 2);
   assert.ok(tents.children.every((tent) => tent.userData.profile === 'pitched-expedition-a-frame'));
@@ -749,14 +829,23 @@ test('Fort Plateau reads as pitched canvas shelters with soft camp smoke', () =>
   assert.ok(tents.children.every((tent) => tent.getObjectByName('dark-entry')));
   assert.ok(tents.children.every((tent) => tent.getObjectByName('ridge-pole')));
   assert.ok(tents.children.every((tent) => tent.getObjectByName('canvas-seams')));
+  assert.ok(tents.children.every((tent) => tent.getObjectByName('canvas-roof').material.emissiveIntensity >= 0.3));
   assert.equal(smoke.userData.profile, 'layered-billboard-wisps');
   assert.equal(smoke.children.length, 9);
   assert.ok(smoke.children.every((wisp) => wisp.isSprite));
   assert.ok(smoke.children.every((wisp) => wisp.material.type === 'SpriteMaterial'));
   assert.ok(smoke.children.every((wisp) => wisp.material.map?.isDataTexture));
   assert.equal(firepit.userData.profile, 'stone-ring-and-charred-logs');
-  assert.ok(firepit.getObjectByName('ember-glow'));
-  assert.ok(firepit.getObjectByName('camp-flames'));
+  assert.ok(firepit.getObjectByName('ember-glow').intensity >= 6);
+  const flames = firepit.getObjectByName('camp-flames');
+  assert.ok(flames.children.every((flame) => flame.userData.baseScale >= 1.6));
+  assert.ok(flames.children.every((flame) => flame.material.toneMapped === false));
+  const flag = signal.getObjectByName('signal-flag');
+  assert.equal(flag.userData.profile, 'wind-readable-camp-signal');
+  const before = Array.from(flag.geometry.attributes.position.array);
+  world.update(1.4, true, { quality: 'balanced' });
+  const after = Array.from(flag.geometry.attributes.position.array);
+  assert.notDeepEqual(after, before);
 });
 
 test('frame percentile is stable and keeps the slow tail visible', () => {

@@ -1,0 +1,18 @@
+{
+  "pf": "PF-05",
+  "viewport": "1280x720",
+  "timecodeMs": 66201.746,
+  "traceId": "strong-1280x720-1785948727983",
+  "inputs": [
+    "MouseTurn",
+    "KeyW",
+    "KeyA",
+    "KeyD",
+    "covered-return"
+  ],
+  "inputOnly": true,
+  "uncut": true,
+  "diagnostic": false,
+  "cameraMode": "field",
+  "url": "http://127.0.0.1:4173/?qa=promotion"
+}

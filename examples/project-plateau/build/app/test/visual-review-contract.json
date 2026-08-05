@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "dimensions": [
+    "composition-focal-hierarchy",
+    "depth-scale",
+    "subject-separation",
+    "material-light-coherence",
+    "density-repetition",
+    "motion-event-readability"
+  ],
+  "activePf": ["PF-01", "PF-02", "PF-03", "PF-04", "PF-05"],
+  "terminalPf": "PF-06",
+  "framePass": { "minimumTotal": 15, "minimumDimension": 2, "blockers": 0, "majors": 0 },
+  "calibration": {
+    "required": true,
+    "knownFailureMustBeFail": true,
+    "requiredFields": [
+      "status",
+      "knownFailureAnchorId",
+      "anchorDisposition",
+      "identifiedBlocker",
+      "rubricFingerprint",
+      "referenceFingerprint"
+    ],
+    "discussionBeforeSignature": false
+  },
+  "qualityDelta": {
+    "minimumMedianDelta": 1,
+    "minimumImprovedDimensions": 4,
+    "minimumNetDeltaPerPf": 0,
+    "minimumCellDelta": -1,
+    "requiredIndependentPassingReviewers": 2
+  },
+  "beforeMapping": {
+    "comparisonMode": "presentation-maturity-proxy",
+    "sourceArtifact": "contact-sheets/before.jpg",
+    "pfToBaselineScene": {
+      "PF-01": "FAMILY",
+      "PF-02": "FAMILY",
+      "PF-03": "FAMILY",
+      "PF-04": "DIVE",
+      "PF-05": "TITLE/CAMP"
+    },
+    "allowedClaim": "Relative presentation-maturity improvement across composition, depth, separation, material/light, density and event readability.",
+    "prohibitedClaims": [
+      "same-camera before/after comparison",
+      "same-gameplay-state before/after comparison",
+      "pixel-matched visual delta"
+    ]
+  },
+  "reviewProcess": {
+    "mode": "independent-hash-attested-comparison",
+    "requiresUniqueReviewerIds": true,
+    "requiresConflictDisclosure": true,
+    "requiresRecordedViewingOrder": true,
+    "cryptographicIdentityClaimed": false,
+    "sealedPreRevealArtifactClaimed": false,
+    "prohibitedClaims": [
+      "cryptographically authenticated reviewer identity",
+      "sealed two-stage blind review"
+    ]
+  },
+  "attestedFormRequired": [
+    "reviewerId",
+    "signature",
+    "rubricFingerprint",
+    "referenceFingerprint",
+    "calibration",
+    "scores",
+    "disposition",
+    "independence",
+    "blindOrder",
+    "beforeMapping",
+    "reviewProcess"
+  ],
+  "signatureRequired": ["type", "signedBy", "signedAt", "payloadSha256"],
+  "signatureType": "self-declared-payload-sha256"
+}

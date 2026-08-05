@@ -7,10 +7,10 @@ function createSky() {
     depthWrite: false,
     fog: false,
     uniforms: {
-      topColor: { value: new THREE.Color(0x173c4b) },
-      upperColor: { value: new THREE.Color(0x52777a) },
-      horizonColor: { value: new THREE.Color(0xd2ad72) },
-      lowerColor: { value: new THREE.Color(0x304c48) },
+      topColor: { value: new THREE.Color(0x123646) },
+      upperColor: { value: new THREE.Color(0x426d72) },
+      horizonColor: { value: new THREE.Color(0xd6aa68) },
+      lowerColor: { value: new THREE.Color(0x294b48) },
       sunColor: { value: new THREE.Color(0xffdda0) },
       sunDirection: { value: new THREE.Vector3(-0.42, 0.24, -0.88).normalize() },
     },
@@ -54,7 +54,7 @@ function createSky() {
         float disc = smoothstep(0.9981, 0.99915, alignment);
         sky += sunColor * haze;
         sky = mix(sky, sunColor, disc * 0.94);
-        float humidBand = exp(-pow((h - 0.055) * 10.5, 2.0)) * 0.14;
+        float humidBand = exp(-pow((h - 0.055) * 10.5, 2.0)) * 0.1;
         sky = mix(sky, horizonColor, humidBand);
         gl_FragColor = vec4(sky, 1.0);
       }
@@ -171,11 +171,11 @@ export function createAtmosphere(scene) {
   group.name = 'world.atmosphere';
   group.add(
     createSky(),
-    createRidge('world.atmosphere.far-ridge', -166, -17, [12, 27], 0x24434a, 811),
-    createRidge('world.atmosphere.near-ridge', -128, -15, [8, 20], 0x294b43, 419),
-    createMistLayer('world.atmosphere.mist-near', -47, 0.055, 0x92b3ad, 241),
-    createMistLayer('world.atmosphere.mist-mid', -82, 0.078, 0x86aaa8, 517),
-    createMistLayer('world.atmosphere.mist-far', -116, 0.1, 0x789da0, 881),
+    createRidge('world.atmosphere.far-ridge', -166, -17, [12, 27], 0x31515a, 811),
+    createRidge('world.atmosphere.near-ridge', -128, -15, [8, 20], 0x23443e, 419),
+    createMistLayer('world.atmosphere.mist-near', -47, 0.035, 0x77948d, 241),
+    createMistLayer('world.atmosphere.mist-mid', -82, 0.062, 0x759695, 517),
+    createMistLayer('world.atmosphere.mist-far', -116, 0.092, 0x72969b, 881),
   );
   scene.add(group);
   return group;

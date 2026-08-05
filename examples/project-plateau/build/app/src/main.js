@@ -111,22 +111,22 @@ renderer.setPixelRatio(qualityRenderPixelRatio(window.devicePixelRatio, presenta
 renderer.setSize(window.innerWidth, window.innerHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
+renderer.toneMappingExposure = 0.94;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x142d35);
-scene.fog = new THREE.FogExp2(0x41656a, 0.0108);
+scene.background = new THREE.Color(0x122c34);
+scene.fog = new THREE.FogExp2(0x496a69, 0.0086);
 createAtmosphere(scene);
 
 const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 320);
 const titleCameraPosition = new THREE.Vector3(18, 7.6, 55);
 const titleCameraTarget = new THREE.Vector3(-1, 3.2, -34);
 
-const ambient = new THREE.AmbientLight(0x81999a, 0.18);
-const hemisphere = new THREE.HemisphereLight(0x8cb7c2, 0x263c39, 0.7);
-const sun = new THREE.DirectionalLight(0xffc982, 4.65);
+const ambient = new THREE.AmbientLight(0x718889, 0.1);
+const hemisphere = new THREE.HemisphereLight(0x82aab1, 0x20342d, 0.46);
+const sun = new THREE.DirectionalLight(0xffc276, 5.25);
 sun.position.set(-46, 58, 76);
 sun.target.position.set(1, 0, 10);
 sun.castShadow = true;
@@ -139,14 +139,14 @@ sun.shadow.camera.near = 8;
 sun.shadow.camera.far = 230;
 sun.shadow.bias = -0.00045;
 sun.shadow.normalBias = 0.028;
-const gladeFill = new THREE.PointLight(0xf3b975, 3.25, 52, 1.9);
+const gladeFill = new THREE.PointLight(0xe9a85f, 2.25, 48, 2.05);
 gladeFill.position.set(-4, 13, -18);
-const canopyRim = new THREE.DirectionalLight(0x88c5cf, 1.05);
+const canopyRim = new THREE.DirectionalLight(0x82b6bc, 0.62);
 canopyRim.position.set(32, 24, -36);
-const subjectFill = new THREE.DirectionalLight(0xb8d5d8, 0.4);
+const subjectFill = new THREE.DirectionalLight(0xd8c3a0, 0.4);
 subjectFill.position.set(-12, 15, 36);
 subjectFill.target.position.set(1, 2.2, -33);
-const basaltBounce = new THREE.PointLight(0x799d9b, 2.6, 64, 2.05);
+const basaltBounce = new THREE.PointLight(0x8a7770, 1.12, 56, 2.15);
 basaltBounce.position.set(23, 11, -21);
 scene.add(
   ambient,
@@ -249,16 +249,16 @@ const fieldGradePass = new ShaderPass({
     void main() {
       vec4 source = texture2D(tDiffuse, vUv);
       float luma = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-      vec3 color = mix(vec3(luma), source.rgb, 1.055);
+      vec3 color = mix(vec3(luma), source.rgb, 1.035);
       float shadowWeight = 1.0 - smoothstep(0.12, 0.52, luma);
       float highlightWeight = smoothstep(0.46, 0.9, luma);
-      color = mix(color, color * vec3(0.91, 1.01, 1.08), shadowWeight * 0.095);
-      color = mix(color, color * vec3(1.045, 1.0, 0.93), highlightWeight * 0.055);
+      color = mix(color, color * vec3(0.94, 1.0, 1.045), shadowWeight * 0.045);
+      color = mix(color, color * vec3(1.035, 1.0, 0.955), highlightWeight * 0.03);
       vec2 centred = (vUv - 0.5) * vec2(1.0, 0.82);
       float vignette = smoothstep(0.34, 0.76, dot(centred, centred));
-      color *= 1.0 - vignette * 0.085;
+      color *= 1.0 - vignette * 0.055;
       float grain = fieldHash(gl_FragCoord.xy) - 0.5;
-      color += grain * 0.0045;
+      color += grain * 0.002;
       gl_FragColor = vec4(max(color, 0.0), source.a);
     }
   `,
@@ -276,14 +276,14 @@ scene.add(camera);
 camera.add(world.fieldCamera);
 camera.add(world.rifle);
 const FIELD_CAMERA_VIEWMODEL = Object.freeze({
-  position: Object.freeze([0.48, -0.82, -1.45]),
-  rotation: Object.freeze([-0.12, 0.13, -0.06]),
-  scale: 0.48,
+  position: Object.freeze([0.59, -0.91, -1.52]),
+  rotation: Object.freeze([-0.14, 0.16, -0.065]),
+  scale: 0.39,
 });
 const RIFLE_VIEWMODEL = Object.freeze({
-  position: Object.freeze([0.66, -0.84, -1.08]),
-  rotation: Object.freeze([-0.01, 0.12, -0.08]),
-  scale: 0.23,
+  position: Object.freeze([0.72, -0.91, -1.14]),
+  rotation: Object.freeze([-0.025, 0.15, -0.09]),
+  scale: 0.205,
 });
 world.fieldCamera.position.fromArray(FIELD_CAMERA_VIEWMODEL.position);
 world.fieldCamera.rotation.set(...FIELD_CAMERA_VIEWMODEL.rotation);
@@ -813,6 +813,7 @@ function worldRuntime(deltaSeconds = 0) {
       : player.pendingExposure?.key ?? null,
     captureThreatPose: visualThreatPose,
     pterodactylMorphPose: visualPterodactylMorphPose,
+    quality: presentationSettings.quality,
     deltaSeconds,
   };
 }

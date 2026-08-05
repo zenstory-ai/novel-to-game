@@ -15,6 +15,8 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import Locator, Page, sync_playwright
 
+from qa_assertions import DELIVERY
+
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
 EVIDENCE = BUILD / "evidence" / "s7"
@@ -24,7 +26,7 @@ BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
 CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 TARGET_VIEWPORT = {"width": 1440, "height": 900}
 MINIMUM_VIEWPORT = {"width": 1280, "height": 720}
-NETWORK_MBIT = 25
+NETWORK_MBIT = DELIVERY["networkMbps"]
 
 
 def start_server() -> subprocess.Popen[str] | None:
@@ -176,7 +178,7 @@ def run() -> dict[str, object]:
             return snapshot(page)
 
         first_loading = page.evaluate("window.__projectPlateau.loadingSnapshot()")
-        assert first_loading["timeToFirstFrameMs"] <= 8000, first_loading
+        assert first_loading["timeToFirstFrameMs"] <= DELIVERY["firstInteractiveMs"], first_loading
 
         # Customize every setting, reload without cache and prove the same values are restored.
         page.get_by_role("button", name="Settings").click()
@@ -326,8 +328,8 @@ def run() -> dict[str, object]:
         browser.close()
 
     payload = payload_report()
-    assert payload["gzipBytes"] <= 20 * 1024 * 1024, payload
-    assert payload["rawBytes"] <= 50 * 1024 * 1024, payload
+    assert payload["gzipBytes"] <= DELIVERY["initialGzipBytes"], payload
+    assert payload["rawBytes"] <= DELIVERY["totalRawBytes"], payload
     allowed = {urlparse(BASE_URL).netloc}
     external = sorted(host for host in hosts if host and host not in allowed)
     assert not errors, errors
@@ -358,7 +360,7 @@ def run() -> dict[str, object]:
             "externalHosts": external,
         },
         "loading": {"firstNoCacheNavigation": first_loading, "finalNavigation": final_loading, "budgetMs": 8000},
-        "payload": {**payload, "initialCompressedBudgetBytes": 20 * 1024 * 1024, "totalBudgetBytes": 50 * 1024 * 1024},
+        "payload": {**payload, "initialCompressedBudgetBytes": DELIVERY["initialGzipBytes"], "totalBudgetBytes": DELIVERY["totalRawBytes"]},
         "performance": {"minimumViewport": minimum_performance, "targetViewport": target_performance},
         "checkpoints": checkpoints,
         "limitations": [

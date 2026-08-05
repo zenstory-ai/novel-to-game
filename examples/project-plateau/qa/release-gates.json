@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "cd0e163cf859478b4d1c8bea2fd4d8fa665edeee",
+  "sourceCommit": null,
   "evidenceCommit": null,
   "targetFinish": "playable-prototype",
   "demonstratedTier": "playable-prototype",
@@ -28,7 +28,9 @@
       "build/evidence/visual-upgrade/generated/manifest.json",
       "qa/evidence/independent-visual-review-2026-08-04-world-space.md",
       "qa/evidence/independent-visual-review-2026-08-04-freeze-fix.md",
-      "qa/evidence/final-code-review-2026-08-04.md"
+      "qa/evidence/final-code-review-2026-08-04.md",
+      "build/evidence/visual-upgrade/freeze.json",
+      "build/evidence/visual-upgrade/reviews-freeze.json"
     ]
   },
   "visualFrames": [
@@ -97,11 +99,11 @@
   "visualReview": {
     "required": true,
     "status": "PASS",
-    "reviewer": "/root/final_arch_review (read-only independent Architect, 2026-08-04)",
-    "independence": "The reviewer made no implementation, capture, manifest, or QA edits and judged only the source-bound browser and media evidence.",
-    "evidence": "qa/evidence/independent-visual-review-2026-08-04-freeze-fix.md",
-    "reviewedSourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
-    "reviewedManifestSha256": "6d4f1a16bcb6eecc8e3a5607ddb00e016eb73327186047a9d60d4f6a05a0882e"
+    "reviewer": "vision-final-review-20260806-01 and oracle-final-review-20260806-02 (independent hash-attested comparison)",
+    "independence": "Each frozen form records a unique reviewer ID, empty conflict disclosure and three-way viewing order. Reviewer identity is self-declared; no cryptographic identity or sealed pre-reveal artifact is claimed.",
+    "evidence": "build/evidence/visual-upgrade/reviews-freeze.json",
+    "reviewedSourceFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
+    "reviewedManifestSha256": "f1a4e35ef1955cbb57b33f83c4e0a25253d5422436818e6e4556030853019011"
   },
   "focalReleaseAssets": [
     "world.connected_route",
@@ -248,15 +250,15 @@
       ]
     }
   ],
-  "notes": "Independent read-only review passes with zero blockers, majors, or minors. Branch contact stays grounded, pterodactyl motion remains fixed in authored world space and continuous through the closed 4.4-second attack cycle, and the continuous demo shows the complete evidence-and-survival loop. Active play is capped near 60 FPS.",
+  "notes": "Two independent hash-attested reviewers pass the frozen visual candidate with zero blockers or majors. The input-only Strong route, responsive viewports, source-bound evidence, protected spatial anchors and runtime performance gates remain intact. No same-camera/pixel-matched A/B, cryptographic reviewer identity or sealed pre-reveal artifact is claimed. The 50/35 investment guard is armed but not triggered; the narrowest measured 1%-low headroom is 0.7 FPS at 1280x720, so further visual complexity is voluntarily paused.",
   "degradableReleaseAssets": [
     "audio.core_world"
   ],
-  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "sourceFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
   "visualEvidenceManifests": [
     {
       "path": "build/evidence/visual-upgrade/generated/manifest.json",
-      "sha256": "6d4f1a16bcb6eecc8e3a5607ddb00e016eb73327186047a9d60d4f6a05a0882e"
+      "sha256": "f1a4e35ef1955cbb57b33f83c4e0a25253d5422436818e6e4556030853019011"
     }
   ],
   "publicHost": {
@@ -266,6 +268,6 @@
   },
   "sourceInputManifest": {
     "path": "build/source-inputs.json",
-    "sha256": "9b48ec2db396a5e56a076b2f117aad465c9475acf4886f2419ef17b15a34ea41"
+    "sha256": "90f7c45437c804a5ac3f12b1ecff52ac3fe80d99c5fed91986a13b2c26417b84"
   }
 }

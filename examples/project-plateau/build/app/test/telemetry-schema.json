@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "requiredFingerprints": [
+    "appFingerprint",
+    "evidenceMethodFingerprint",
+    "rubricFingerprint",
+    "referenceFingerprint"
+  ],
+  "promotionSampleRequired": [
+    "timestampMs",
+    "inputTransitions",
+    "position",
+    "heading",
+    "pitch",
+    "cameraMode",
+    "linearVelocity",
+    "angularVelocity",
+    "stateKey",
+    "diagnostic",
+    "captureSource",
+    "viewport",
+    "frameSha256",
+    "stateSha256",
+    "browserSha256",
+    "clipTimecodeMs",
+    "traceId",
+    "appFingerprint",
+    "evidenceMethodFingerprint",
+    "rubricFingerprint",
+    "referenceFingerprint"
+  ],
+  "performanceSampleRequired": [
+    "repeat",
+    "index",
+    "timestampMs",
+    "frameTimeMs",
+    "viewport",
+    "profile",
+    "stateSelectorHash",
+    "warmupFrames",
+    "appFingerprint",
+    "evidenceMethodFingerprint"
+  ],
+  "performanceContract": {
+    "defaultWarmupFrames": 300,
+    "defaultRepeats": 3,
+    "defaultFramesPerRepeat": 600,
+    "minimumMeasuredFrames": 1800,
+    "releaseFloor": { "medianFps": 45, "onePercentLowFps": 30 },
+    "investmentStopLoss": { "medianFps": 50, "onePercentLowFps": 35 },
+    "dispositionStatistic": "minimum FPS value across independently summarized repeats",
+    "heaviestStatePredicate": {
+      "fixture": "S7 heavy-state-target",
+      "position": { "x": 0, "z": -10 },
+      "observation": true,
+      "exposure": true,
+      "threatState": "attack",
+      "requiredAssets": "HY3D-ready",
+      "profile": "balanced"
+    }
+  },
+  "routeClockContract": {
+    "baselineSimulationSeconds": 59.071,
+    "productToleranceSeconds": [59.0, 181.0],
+    "maximumBaselineDeltaSeconds": 1.0,
+    "maximumWallSimulationDeltaSeconds": 1.5,
+    "emptyTravelAllowed": false
+  },
+  "deliveryContract": {
+    "totalRawBytes": 52428800,
+    "initialGzipBytes": 20971520,
+    "firstInteractiveMs": 8000,
+    "networkMbps": 25,
+    "requiredConsoleOrResourceErrors": 0
+  },
+  "synchronization": {
+    "clock": "browser performance.now milliseconds",
+    "frameBinding": "nearest telemetry sample at or before the frame timecode",
+    "promotionTrace": "one input-only uncut take from first field control through terminal result"
+  },
+  "profileEquivalence": {
+    "profiles": ["low", "balanced", "high"],
+    "gameplayFieldsEqual": true,
+    "allowedDifferences": ["renderer", "visualCapabilities"]
+  },
+  "pfBundleContract": {
+    "active": ["PF-01", "PF-02", "PF-03", "PF-04", "PF-05"],
+    "terminal": "PF-06",
+    "viewports": ["1440x900", "1280x720"],
+    "requiredKinds": ["frame", "state", "browser", "timecode"]
+  },
+  "pfSemanticContract": {
+    "PF-04": "awareness=3, threatState=attack, attackStage=fold-dive|attack before KeyS cover evasion",
+    "PF-05": "real MouseTurn then camera-relative KeyW toward Fort with bounded KeyA route correction and a final KeyD camp-centering strafe; heading delta from PF-03 >=2.5 radians at 1440x900 and >=2.3 at the pointer-limited 1280x720 viewport"
+  },
+  "freezeBundleContract": {
+    "performanceViewports": ["1440x900", "1280x720"],
+    "performanceProfile": "balanced",
+    "promotionTelemetry": "paths/promotion-telemetry.jsonl",
+    "promotionClip": "paths/promotion.webm",
+    "requiredContactSheets": ["before.jpg", "candidate.jpg", "reference.jpg"],
+    "resourceManifestRequired": true
+  }
+}

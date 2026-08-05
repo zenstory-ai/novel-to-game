@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "basePath": "build/app",
-  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "sourceFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
   "inputs": [
     {
       "path": "index.html",
@@ -60,8 +60,8 @@
     },
     {
       "path": "src/atmosphere.js",
-      "sha256": "9f8df55bced5049470c88fb648b36e4e01ff531609fc58b10c27fe6d7f01f5a1",
-      "bytes": 6848
+      "sha256": "d5eea5c421ac1e4558d54ff1c381cc7bb2870b83e8d7fc524262857b915a4881",
+      "bytes": 6849
     },
     {
       "path": "src/audio.js",
@@ -100,23 +100,23 @@
     },
     {
       "path": "src/hy3d-field-camera.js",
-      "sha256": "713239b5e23967bc010c26c0cd95a8b8afd8be5b7bc1900816ebe6222b683a04",
-      "bytes": 3576
+      "sha256": "05af2f3bbf1a4caf501ff59efcc67ce20f623780dbc2bce3b86cf95549901baf",
+      "bytes": 3575
     },
     {
       "path": "src/hy3d-iguanodon.js",
-      "sha256": "f1f6487e02c45e1cd98c7a375fd7b5d40456824ea4a5d4af663722ade9cdfbf5",
-      "bytes": 13612
+      "sha256": "5dd892d19ab8e33e3109489aa3fe29cf058b253bcc1bbaf3b643dda35c4c0e05",
+      "bytes": 13767
     },
     {
       "path": "src/hy3d-pterodactyl.js",
-      "sha256": "de588e55c144b56a9a1b35d027d9fc3fc21bafaae68434ee2faeaff0d4bb089a",
-      "bytes": 8695
+      "sha256": "6d449df3fe581d11c14787b1a933128695f392fc3a35544614143145f0e86cdb",
+      "bytes": 8849
     },
     {
       "path": "src/hy3d-rifle.js",
-      "sha256": "d10bf6b73fb0fa6d0124e04c66c4063843663ea60a66e3eb4ff05c47309ccebe",
-      "bytes": 3376
+      "sha256": "10ef12e6f346c72265f4912778f47bd906f64027489620dcc6d164639f246f2b",
+      "bytes": 3375
     },
     {
       "path": "src/iguanodon.js",
@@ -130,8 +130,8 @@
     },
     {
       "path": "src/main.js",
-      "sha256": "41a581ed687517663c0c40df4df99ac0dd15576a32457d3c971bd8bd773ba366",
-      "bytes": 52345
+      "sha256": "732172d4fd8e0d34dbee981a5e1940d099e915882ff2b7a1521b1421bc5c6215",
+      "bytes": 52395
     },
     {
       "path": "src/preview-gateway.js",
@@ -160,8 +160,8 @@
     },
     {
       "path": "src/styles.css",
-      "sha256": "a022c0764e377d9d8d2dc23f8d31e41226b32873d7a5b28e3d362fb60b45431e",
-      "bytes": 22344
+      "sha256": "52b8a933f1f6fe1a4a1b10884e1b291a87ce8fbaf08e0a793e967ee67a8fbfbf",
+      "bytes": 22074
     },
     {
       "path": "src/terrain.js",
@@ -170,8 +170,8 @@
     },
     {
       "path": "src/world.js",
-      "sha256": "d346c7f0f4c88ef31301e59c5f229f1d80046f5b9193917c8f8222f5d97ef9f2",
-      "bytes": 134436
+      "sha256": "10eceffad328599995563d79c4cdff74f1a8cceccfb8d5c499725e91f46e19db",
+      "bytes": 144541
     }
   ]
 }

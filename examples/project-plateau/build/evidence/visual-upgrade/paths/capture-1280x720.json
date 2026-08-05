@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "captureSource": "qa_s8-real-browser-input",
+  "captureScript": "test/qa_promotion.py",
+  "captureScriptSha256": "c96a96b759e3fe7696ac5f0a99d9965174666113ceaf023f90ecfcebe9d8b974",
+  "s8AssertionSource": "test/qa_s8.py#run",
+  "s8AssertionSha256": "a7170ff6e891299165f747c3cd324996909ed206bf7c82410c4d131ba2f7666d",
+  "viewport": "1280x720",
+  "traceId": "strong-1280x720-1785948727983",
+  "inputOnly": true,
+  "uncut": true,
+  "diagnostic": false,
+  "telemetry": {
+    "path": "paths/viewport-1280x720-telemetry.jsonl",
+    "sha256": "dbd98b577fd9aff47cc2b4376cc8c518fb97adc6768c55d17b3086d317f4aae7"
+  },
+  "clip": null,
+  "fingerprints": {
+    "appFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
+    "evidenceMethodFingerprint": "1a5edc5e131907e27b02d744084a3ff59e4e11a593f84fc51290a17d546ba68f",
+    "rubricFingerprint": "927e8debdfaee57f9d3143ef56b4b72c816a0a660bedbc66cc208f4888f0c351",
+    "referenceFingerprint": "208417b80b3e944445086650c49c5e19d0af145a1959d07a4f915cf6be6c4c2f"
+  },
+  "semanticAssertions": {
+    "pf04Awareness": 3,
+    "pf04AttackStage": "fold-dive",
+    "pf05HeadingDelta": 2.56,
+    "pf05InputTransitions": [
+      "MouseTurn",
+      "KeyW",
+      "KeyA",
+      "KeyD",
+      "covered-return"
+    ]
+  }
+}

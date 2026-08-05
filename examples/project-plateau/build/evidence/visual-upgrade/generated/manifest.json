@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "command": "npm run capture:visual",
-  "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
+  "sourceFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
   "scene": "glade-family-under-aerial-pressure",
   "seed": 139,
   "frozenAnimationSeconds": 4.25,
@@ -13,8 +13,8 @@
         1440,
         900
       ],
-      "sha256": "1e0f5c09ae14456800ce9b9731194c1c2e5fa73371f7d25b29315a39e614e88b",
-      "bytes": 91603,
+      "sha256": "f08ffcc922465cec2a6a29ec3c0854b4e7467c6d944d4aa570dd352715dcfa1f",
+      "bytes": 90825,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": null,
       "threatState": "distant"
@@ -26,8 +26,8 @@
         1440,
         900
       ],
-      "sha256": "ba36f7eeea2bf8cabcf08fd501a1fd74a9afa8e507203966e66e5878714db405",
-      "bytes": 108928,
+      "sha256": "c6505c818165cbb0d06c9ed7c40a819d4d202f2cd1142f8a8cf92f0fac4f846f",
+      "bytes": 109741,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": "glade-young-play",
       "threatState": "search"
@@ -39,8 +39,8 @@
         1440,
         900
       ],
-      "sha256": "d0b5b174da371d8ca3fb60a6de6eb0908c46aed0a5ce02569b994724d7639c70",
-      "bytes": 108436,
+      "sha256": "6438a53e71c20ae82d4d85cd75f239cee42f7a42459446fc5bf4e891287a2c71",
+      "bytes": 110752,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": "glade-young-play",
       "threatState": "attack"
@@ -52,8 +52,8 @@
         1280,
         720
       ],
-      "sha256": "bc0f1ad7c78d45875ca3c23c5d454680c90aae742edf044dd48042d4a58c8d9a",
-      "bytes": 72393,
+      "sha256": "6499ff95cdb01efb76e4cbb7e469f5a45ffa3408ccca91e617e166bbf9f254dd",
+      "bytes": 72439,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": null,
       "threatState": "distant"
@@ -65,8 +65,8 @@
         1280,
         720
       ],
-      "sha256": "aa5aeb4c99751fa25f012039921e3eb38f041a2bf7a24792ce27fe1df627372b",
-      "bytes": 84534,
+      "sha256": "e01e97763374f2bb11738f46eb7c93e2abff7d59aef1b9012ec23385820099c2",
+      "bytes": 86494,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": "glade-young-play",
       "threatState": "search"
@@ -78,8 +78,8 @@
         1280,
         720
       ],
-      "sha256": "cb0baaa7ba8c19722f1adb13dcc422acbedfce12132ff0be49a23cafceff3f29",
-      "bytes": 84150,
+      "sha256": "679540a8c8d2def366792f60862fad4cdc21734b9d390fc588bb42f0ea68c546",
+      "bytes": 87185,
       "frozenAnimationSeconds": 4.25,
       "familyMoment": "glade-young-play",
       "threatState": "attack"
@@ -87,8 +87,8 @@
   ],
   "contactSheet": {
     "path": "build/evidence/visual-upgrade/generated/contact-sheet-supported-viewports.jpg",
-    "sha256": "087a963719725564f039a910428334c7cceacf92fdf19bd06f747659e1b1f9a8",
-    "bytes": 127928
+    "sha256": "6647477644c770e486bdb047aa8d79ba80242c5f7751a48c3ee0d3877ca01dd0",
+    "bytes": 130100
   },
   "targets": [
     {
@@ -114,7 +114,7 @@
     "claim": "continuous real-browser watch to attack cycle plus deterministic phase samples",
     "captureMode": "one continuous real-time Playwright gameplay take after browser preroll removal; QA-clock JPEG samples are phase labels, not gameplay timing",
     "authoredCycleSeconds": 4.4,
-    "trimmedBrowserPrerollMs": 1193,
+    "trimmedBrowserPrerollMs": 1022,
     "transitions": [
       {
         "phase": "watch",
@@ -124,7 +124,7 @@
       },
       {
         "phase": "bank-dive-pull-up-cycle",
-        "atMs": 904,
+        "atMs": 902,
         "threatState": "attack",
         "rendererResponse": "orbit"
       },
@@ -137,8 +137,8 @@
     ],
     "video": {
       "path": "build/evidence/visual-upgrade/generated/motion/watch-bank-dive-pull-up.webm",
-      "sha256": "1a90c1c21005ca63e0f885abaf865ccc99f2ca171a349f0274d4f492bfa1cb7b",
-      "bytes": 375037
+      "sha256": "acf4697dba5000e6cc145d460f7071b3f83d585d07bc4f7b0549f95c7d11671f",
+      "bytes": 441566
     },
     "samples": [
       {
@@ -147,8 +147,8 @@
         "threatState": "watch",
         "rendererResponse": "orbit",
         "path": "build/evidence/visual-upgrade/generated/motion/watch.jpg",
-        "sha256": "64cee60e618a69c4bb5dcbd2cce85efa967524cc5ca25b1063a85c742b53aa94",
-        "bytes": 75296
+        "sha256": "dd5bbeb8cea8b9cd379b29b85e1a42903a5ad8304e2bd50e862104ed7751dcca",
+        "bytes": 79136
       },
       {
         "phase": "bank",
@@ -156,8 +156,8 @@
         "threatState": "attack",
         "rendererResponse": "orbit",
         "path": "build/evidence/visual-upgrade/generated/motion/bank.jpg",
-        "sha256": "db89d446c3ae7dff59929f7f94632cba17f279d08f1de8ab1c5d978e1a007f5a",
-        "bytes": 75552
+        "sha256": "8a5ea68da6a1b1784941c4108d4f4f7e9ed4f9ccbd5a3d2592e34f95bb025485",
+        "bytes": 79631
       },
       {
         "phase": "dive",
@@ -165,8 +165,8 @@
         "threatState": "attack",
         "rendererResponse": "orbit",
         "path": "build/evidence/visual-upgrade/generated/motion/dive.jpg",
-        "sha256": "9bfe0f44801bb4a88739e128e3c597d7bd177e8582817efc5f3f17b7344e205f",
-        "bytes": 76056
+        "sha256": "25019e07e6db5c8e9466e8fc80fcc5da47e6ae6efc0284186fdc70e85a002718",
+        "bytes": 80158
       },
       {
         "phase": "pull-up",
@@ -174,8 +174,8 @@
         "threatState": "attack",
         "rendererResponse": "orbit",
         "path": "build/evidence/visual-upgrade/generated/motion/pull-up.jpg",
-        "sha256": "050ef0ddc06059950ee40f75d9322e7df239bc79751cc4f8f4707b103f93467e",
-        "bytes": 77601
+        "sha256": "223a513a0a4c8d0a9a5522cd4d49a4ca66e25c1807751d6f9fa6474ccf985855",
+        "bytes": 81538
       }
     ],
     "consoleErrors": []
