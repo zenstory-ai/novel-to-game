@@ -2299,33 +2299,6 @@ def validate_readme_publication_claims(root: Path) -> list[str]:
                         issues.append(
                             f"{filename}: public example {slug} must be labelled {tier}"
                         )
-                    release_path = root / "examples" / slug / "qa/release-gates.json"
-                    if release_path.is_file():
-                        release, release_issues = _read_json_object(
-                            release_path, f"examples/{slug}/qa/release-gates.json"
-                        )
-                        issues.extend(release_issues)
-                        public_host = (
-                            release.get("publicHost")
-                            if isinstance(release, dict)
-                            else None
-                        )
-                        if isinstance(public_host, dict) and public_host.get(
-                            "status"
-                        ) in {"HISTORICAL", "NOT_CURRENT"}:
-                            historical_tokens = (
-                                ("historical", "not current")
-                                if filename == "README.md"
-                                else ("历史", "非当前")
-                            )
-                            if not all(
-                                token in section.lower()
-                                for token in historical_tokens
-                            ):
-                                issues.append(
-                                    f"{filename}: public example {slug} host link must be "
-                                    "labelled HISTORICAL/NOT_CURRENT"
-                                )
             if marker not in heading.lower():
                 continue
             match = re.search(r"examples/([^/)]+)/?", section)

@@ -1108,6 +1108,40 @@ class RepositoryValidationTests(unittest.TestCase):
             issues = validate_publication(example, "playable-prototype")
             self.assertTrue(any("publicHost PASS fingerprint must match release sourceFingerprint" in issue for issue in issues), issues)
 
+    def test_non_current_public_hosts_remain_evidence_bound(self) -> None:
+        for status in ("HISTORICAL", "NOT_CURRENT"):
+            for failure in ("missing_evidence", "fingerprint_mismatch"):
+                with (
+                    self.subTest(public_host_status=status, failure=failure),
+                    tempfile.TemporaryDirectory() as temporary,
+                ):
+                    example = self.make_publication_fixture(
+                        Path(temporary), tier="playable-prototype"
+                    )
+                    evidence = "qa/evidence/public-host.json"
+                    if failure == "fingerprint_mismatch":
+                        (example / evidence).write_text(
+                            json.dumps({"source": {"sha256": "a" * 64}}),
+                            encoding="utf-8",
+                        )
+                    release_path = example / "qa/release-gates.json"
+                    release = json.loads(release_path.read_text(encoding="utf-8"))
+                    release["publicHost"] = {
+                        "status": status,
+                        "evidence": evidence,
+                        "sourceFingerprint": "b" * 64,
+                    }
+                    release_path.write_text(json.dumps(release), encoding="utf-8")
+
+                    issues = validate_publication(example, "playable-prototype")
+
+                    expected = (
+                        "publicHost.evidence does not exist"
+                        if failure == "missing_evidence"
+                        else "publicHost.sourceFingerprint must match deployed report"
+                    )
+                    self.assertTrue(any(expected in issue for issue in issues), issues)
+
     def test_readme_featured_claim_must_point_to_showcase(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -1154,6 +1188,34 @@ class RepositoryValidationTests(unittest.TestCase):
             )
             issues = validate_readme_publication_claims(root)
             self.assertTrue(any("must be labelled graybox" in issue for issue in issues), issues)
+
+    def test_historical_public_host_status_does_not_dictate_readme_copy(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            example = root / "examples/demo"
+            (example / "qa").mkdir(parents=True)
+            (example / "example.json").write_text(
+                json.dumps({"publicationTier": "playable-prototype"}),
+                encoding="utf-8",
+            )
+            (root / "README.md").write_text(
+                "## Play Online\n\n### Demo · Playable prototype\n"
+                "[Play online](https://demo.example) · [Case](examples/demo/)\n",
+                encoding="utf-8",
+            )
+            (root / "README_ZH.md").write_text(
+                "## 在线试玩\n\n### Demo · 可玩原型\n"
+                "[在线试玩](https://demo.example) · [案例](examples/demo/)\n",
+                encoding="utf-8",
+            )
+
+            for status in ("HISTORICAL", "NOT_CURRENT"):
+                with self.subTest(public_host_status=status):
+                    (example / "qa/release-gates.json").write_text(
+                        json.dumps({"publicHost": {"status": status}}),
+                        encoding="utf-8",
+                    )
+                    self.assertEqual(validate_readme_publication_claims(root), [])
 
     def test_repository_contract_is_valid(self) -> None:
         self.assertEqual(validate_repository(ROOT), [])
