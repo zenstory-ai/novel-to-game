@@ -44,7 +44,7 @@
     "medianFrameMs": 16.7,
     "medianFps": 59.9,
     "onePercentLowFps": 39.3,
-    "worstFrameMs": 25.5
+    "worstFrameMs": 25.6
   },
   "checkpoints": [
     {

@@ -65,8 +65,8 @@
     "samples": 240,
     "medianFrameMs": 16.7,
     "medianFps": 59.9,
-    "onePercentLowFps": 39.4,
-    "worstFrameMs": 25.4
+    "onePercentLowFps": 39.7,
+    "worstFrameMs": 25.2
   },
   "checkpoints": [
     {

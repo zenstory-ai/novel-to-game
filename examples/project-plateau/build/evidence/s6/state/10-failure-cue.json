@@ -130,19 +130,19 @@
       "wingBeat": -0.0001,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": -0.2258,
+      "bank": -0.2259,
       "direction": [
-        -0.9818,
-        -0.0715,
-        -0.1758
+        -0.9819,
+        -0.0724,
+        -0.1751
       ]
     },
     "position": {
-      "x": -9.45,
-      "y": 7.64,
-      "z": -2.45
+      "x": -9.07,
+      "y": 7.62,
+      "z": -2.81
     },
-    "scale": 0.722,
+    "scale": 0.7227,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
   },
   "familyVisual": {
@@ -150,7 +150,7 @@
     "adults": 2,
     "young": 3,
     "branchAngle": 0.031,
-    "branchContactDistance": 0.91,
+    "branchContactDistance": 0.909,
     "positions": [
       {
         "x": -8,
@@ -359,7 +359,7 @@
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 7.867
+        "at": 7.861
       }
     ]
   },
@@ -431,6 +431,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 298.10000014305115,
+  "firstRenderedAt": 329.5,
   "recentMedianFrameMs": 16.7
 }

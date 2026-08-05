@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "b933827751f18adb2bbf9a83d6e8604a4eca8266",
+  "sourceCommit": "cd0e163cf859478b4d1c8bea2fd4d8fa665edeee",
   "sourceFingerprint": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22",
   "environment": {
     "runtime": "Node.js",
     "runtimeVersion": "v25.9.0",
     "packageManager": "npm@11.12.1",
     "pythonVersion": "3.14.5",
-    "browser": "Google Chrome 150.0.7871.187",
+    "browser": "Google Chrome 151.0.7922.75",
     "targetViewport": [
       1440,
       900
@@ -20,9 +20,9 @@
   "verify": {
     "command": "npm run verify",
     "log": "qa/evidence/verify.log",
-    "logSha256": "ab79d3764468a9dbadf4e988c52c34be1683c30febfcca1bd9f3e6fa3996f716",
+    "logSha256": "e9ab1283246f1671a7a4a5c8cf1c358870ce46a5740be32e8a19c11896172f4d",
     "exitCode": 0,
-    "durationMs": 626128,
+    "durationMs": 650465,
     "suites": [
       {
         "id": "unit:simulation",
@@ -49,7 +49,7 @@
           {
             "command": "npm test",
             "exitCode": 0,
-            "durationMs": 1897
+            "durationMs": 2237
           }
         ]
       },
@@ -66,7 +66,7 @@
           {
             "command": "npm run build",
             "exitCode": 0,
-            "durationMs": 564
+            "durationMs": 720
           }
         ]
       },
@@ -89,47 +89,47 @@
           {
             "command": "python3 test/qa_s0.py",
             "exitCode": 0,
-            "durationMs": 9083
+            "durationMs": 18748
           },
           {
             "command": "python3 test/qa_s1.py",
             "exitCode": 0,
-            "durationMs": 73628
+            "durationMs": 74274
           },
           {
             "command": "python3 test/qa_s2.py",
             "exitCode": 0,
-            "durationMs": 17493
+            "durationMs": 18922
           },
           {
             "command": "python3 test/qa_s3.py",
             "exitCode": 0,
-            "durationMs": 17340
+            "durationMs": 18143
           },
           {
             "command": "python3 test/qa_s4.py",
             "exitCode": 0,
-            "durationMs": 39676
+            "durationMs": 41113
           },
           {
             "command": "python3 test/qa_s5.py",
             "exitCode": 0,
-            "durationMs": 55436
+            "durationMs": 56699
           },
           {
             "command": "python3 test/qa_s6.py",
             "exitCode": 0,
-            "durationMs": 17179
+            "durationMs": 18152
           },
           {
             "command": "python3 test/qa_s7.py",
             "exitCode": 0,
-            "durationMs": 37768
+            "durationMs": 37077
           },
           {
             "command": "python3 test/qa_s9.py",
             "exitCode": 0,
-            "durationMs": 38170
+            "durationMs": 36863
           }
         ]
       },
@@ -144,7 +144,7 @@
           {
             "command": "python3 test/qa_s8.py",
             "exitCode": 0,
-            "durationMs": 192120
+            "durationMs": 192359
           }
         ]
       },
@@ -159,7 +159,7 @@
           {
             "command": "python3 test/qa_controller.py",
             "exitCode": 0,
-            "durationMs": 6727
+            "durationMs": 8134
           }
         ]
       },
@@ -174,7 +174,7 @@
           {
             "command": "python3 test/qa_motion.py",
             "exitCode": 0,
-            "durationMs": 10086
+            "durationMs": 9765
           }
         ]
       },
@@ -189,7 +189,7 @@
           {
             "command": "python3 test/qa_collision.py",
             "exitCode": 0,
-            "durationMs": 7590
+            "durationMs": 7587
           }
         ]
       },
@@ -204,7 +204,7 @@
           {
             "command": "python3 test/qa_entry.py",
             "exitCode": 0,
-            "durationMs": 4627
+            "durationMs": 5519
           }
         ]
       },
@@ -219,7 +219,7 @@
           {
             "command": "python3 test/qa_loading.py",
             "exitCode": 0,
-            "durationMs": 3683
+            "durationMs": 3777
           }
         ]
       },
@@ -236,17 +236,17 @@
           {
             "command": "python3 test/qa_s10.py",
             "exitCode": 0,
-            "durationMs": 36519
+            "durationMs": 38146
           },
           {
             "command": "python3 test/qa_visual_targets.py",
             "exitCode": 0,
-            "durationMs": 42031
+            "durationMs": 41922
           },
           {
             "command": "python3 test/capture_visual_upgrade.py",
             "exitCode": 0,
-            "durationMs": 157
+            "durationMs": 170
           }
         ]
       },
@@ -277,12 +277,12 @@
           {
             "command": "python3 scripts/validate_repo.py --verification-candidate examples/project-plateau/qa/.verification-candidate.json",
             "exitCode": 0,
-            "durationMs": 2480
+            "durationMs": 2553
           },
           {
             "command": "python3 -m unittest discover -s tests -v",
             "exitCode": 0,
-            "durationMs": 10260
+            "durationMs": 10215
           }
         ]
       }

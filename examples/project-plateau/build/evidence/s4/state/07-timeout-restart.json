@@ -120,39 +120,39 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.1391,
+      "wingBeat": -0.0311,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": -0.0463,
+      "bank": -0.0608,
       "direction": [
-        -0.7479,
-        0.1462,
-        0.6475
+        -0.784,
+        0.126,
+        0.6078
       ]
     },
     "position": {
-      "x": 20.17,
-      "y": 9.4,
-      "z": -6.39
+      "x": 21.15,
+      "y": 9.76,
+      "z": -5.79
     },
-    "scale": 0.7224,
+    "scale": 0.7219,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.148,
-    "branchContactDistance": 0.202,
+    "branchAngle": 0.15,
+    "branchContactDistance": 0.2,
     "positions": [
       {
         "x": -8,
-        "y": -0.593,
+        "y": -0.592,
         "z": -31
       },
       {
         "x": 10.5,
-        "y": -0.296,
+        "y": -0.295,
         "z": -39
       },
       {
@@ -162,12 +162,12 @@
       },
       {
         "x": 3.4,
-        "y": -0.774,
+        "y": -0.773,
         "z": -27.2
       },
       {
         "x": 2.5,
-        "y": -0.327,
+        "y": -0.328,
         "z": -35
       }
     ],
@@ -347,12 +347,12 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 21.419
+        "at": 21.541
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 21.691
+        "at": 21.819
       }
     ]
   },
@@ -407,8 +407,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 1333,
-    "skippedFrames": 1362,
+    "renderedFrames": 1340,
+    "skippedFrames": 1370,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -418,6 +418,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.60000014305115,
+  "firstRenderedAt": 322.90000009536743,
   "recentMedianFrameMs": 16.7
 }

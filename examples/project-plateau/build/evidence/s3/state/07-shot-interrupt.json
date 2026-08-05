@@ -18,25 +18,25 @@
   "player": {
     "position": {
       "x": 7,
-      "z": 11.536
+      "z": 11.469
     },
     "lastStablePosition": {
       "x": 7,
-      "z": 11.536
+      "z": 11.469
     },
-    "groundY": -2,
+    "groundY": -2.003,
     "verticalOffset": 0,
     "verticalVelocity": 0,
     "grounded": true,
     "velocity": {
       "x": 0,
-      "z": -4.1
+      "z": -3.801
     },
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 1.45,
-    "distanceTravelled": 6.464,
+    "elapsedSeconds": 1.458,
+    "distanceTravelled": 6.531,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -109,7 +109,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 166.55,
+    "remainingLight": 166.542,
     "returnRoute": "exposed",
     "returnCostSeconds": 12,
     "returnStrike": false,
@@ -122,54 +122,54 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.0905,
+      "wingBeat": -0.3143,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": -0.0022,
+      "bank": 0.0324,
       "direction": [
-        -0.8526,
-        0.1071,
-        -0.5114
+        -0.804,
+        0.145,
+        -0.5766
       ]
     },
     "position": {
-      "x": -14.18,
-      "y": 7.11,
-      "z": -5.83
+      "x": -14.34,
+      "y": 7.28,
+      "z": -6.33
     },
-    "scale": 0.7266,
+    "scale": 0.729,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
   },
   "familyVisual": {
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.037,
-    "branchContactDistance": 0.862,
+    "branchAngle": 0.04,
+    "branchContactDistance": 0.837,
     "positions": [
       {
         "x": -8,
-        "y": -0.604,
+        "y": -0.607,
         "z": -31
       },
       {
         "x": 10.5,
-        "y": -0.279,
+        "y": -0.281,
         "z": -39
       },
       {
         "x": -2.2,
-        "y": -1.007,
+        "y": -1.006,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.768,
+        "y": -0.771,
         "z": -27.2
       },
       {
         "x": 2.5,
-        "y": -0.312,
+        "y": -0.309,
         "z": -35
       }
     ],
@@ -349,27 +349,27 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 8.171
+        "at": 8.373
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 8.331
+        "at": 8.528
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 9.445
+        "at": 9.648
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 9.531
+        "at": 9.749
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 9.531
+        "at": 9.752
       }
     ]
   },
@@ -424,8 +424,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 616,
-    "skippedFrames": 693,
+    "renderedFrames": 632,
+    "skippedFrames": 711,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -435,6 +435,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.89999985694885,
+  "firstRenderedAt": 336.60000014305115,
   "recentMedianFrameMs": 16.7
 }

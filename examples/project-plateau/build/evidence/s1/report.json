@@ -36,20 +36,20 @@
   "continuousSmoke": {
     "requestedSeconds": 60.0,
     "wallSeconds": 60.01,
-    "simulatedElapsedGain": 60.017,
+    "simulatedElapsedGain": 60.007,
     "inputSegments": 30,
     "lifecycleRestarts": 0,
     "memory": {
-      "used": 68197602,
-      "total": 99192170
+      "used": 55356180,
+      "total": 86344188
     }
   },
   "performance": {
     "samples": 240,
     "medianFrameMs": 16.7,
     "medianFps": 59.9,
-    "onePercentLowFps": 54.2,
-    "worstFrameMs": 18.6
+    "onePercentLowFps": 56.7,
+    "worstFrameMs": 17.7
   },
   "checkpoints": [
     {
@@ -91,7 +91,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 0.298,
+          "elapsedSeconds": 0.309,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -163,7 +163,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 179.702,
+          "remainingLight": 179.691,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -176,20 +176,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": -0.2208,
+            "wingBeat": -0.2515,
             "wingFold": 0,
             "mode": "downstroke",
-            "bank": 0.066,
+            "bank": 0.0685,
             "direction": [
-              -0.4464,
-              0.1967,
-              0.873
+              -0.4611,
+              0.1943,
+              0.8658
             ]
           },
           "position": {
-            "x": 28.55,
-            "y": 23.42,
-            "z": -7.21
+            "x": 28.51,
+            "y": 23.43,
+            "z": -7.14
           },
           "scale": 0.88,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -199,7 +199,7 @@
           "adults": 2,
           "young": 3,
           "branchAngle": 0.03,
-          "branchContactDistance": 0.921,
+          "branchContactDistance": 0.92,
           "positions": [
             {
               "x": -8,
@@ -213,7 +213,7 @@
             },
             {
               "x": -2.2,
-              "y": -0.975,
+              "y": -0.987,
               "z": -24.8
             },
             {
@@ -458,8 +458,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 38,
-          "skippedFrames": 59,
+          "renderedFrames": 40,
+          "skippedFrames": 58,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -469,8 +469,8 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
-        "recentMedianFrameMs": 25.1
+        "firstRenderedAt": 301.5,
+        "recentMedianFrameMs": 21.3
       },
       "visual": "build/evidence/s1/01-clean-start.jpg"
     },
@@ -496,25 +496,25 @@
         "player": {
           "position": {
             "x": 3,
-            "z": 66.576
+            "z": 66.618
           },
           "lastStablePosition": {
             "x": 3,
-            "z": 66.576
+            "z": 66.618
           },
-          "groundY": -0.05,
+          "groundY": -0.046,
           "verticalOffset": 0,
           "verticalVelocity": 0,
           "grounded": true,
           "velocity": {
             "x": 0,
-            "z": -2.702
+            "z": -2.71
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 1.282,
-          "distanceTravelled": 3.424,
+          "elapsedSeconds": 1.275,
+          "distanceTravelled": 3.382,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
@@ -585,7 +585,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 178.718,
+          "remainingLight": 178.725,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -598,20 +598,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": 0.28,
+            "wingBeat": 0.273,
             "wingFold": 0,
             "mode": "upstroke",
-            "bank": 0.1202,
+            "bank": 0.1212,
             "direction": [
-              -0.72,
-              0.1305,
-              0.6816
+              -0.7244,
+              0.129,
+              0.6772
             ]
           },
           "position": {
-            "x": 27.2,
-            "y": 23.78,
-            "z": -5.48
+            "x": 27.16,
+            "y": 23.79,
+            "z": -5.44
           },
           "scale": 0.88,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -635,12 +635,12 @@
             },
             {
               "x": -2.2,
-              "y": -1.052,
+              "y": -1.051,
               "z": -24.8
             },
             {
               "x": 3.4,
-              "y": -0.7,
+              "y": -0.696,
               "z": -27.2
             },
             {
@@ -880,8 +880,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 97,
-          "skippedFrames": 117,
+          "renderedFrames": 98,
+          "skippedFrames": 116,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -891,8 +891,8 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
-        "recentMedianFrameMs": 16.8
+        "firstRenderedAt": 301.5,
+        "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/02-walk.jpg"
     },
@@ -935,12 +935,12 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 2.931,
-          "distanceTravelled": 7.452,
+          "elapsedSeconds": 2.733,
+          "distanceTravelled": 7.433,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
-          "collisions": 31,
+          "collisions": 17,
           "lastEvent": "collision:fort-tent-west",
           "zone": "fort",
           "zoneHistory": [
@@ -1009,7 +1009,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 177.069,
+          "remainingLight": 177.267,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1022,20 +1022,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": 0.2108,
+            "wingBeat": 0.2869,
             "wingFold": 0,
             "mode": "upstroke",
-            "bank": 0.16,
+            "bank": 0.1595,
             "direction": [
-              -0.9082,
-              0.0329,
-              0.4172
+              -0.8974,
+              0.0413,
+              0.4393
             ]
           },
           "position": {
-            "x": 23.07,
-            "y": 24.16,
-            "z": -2.85
+            "x": 23.59,
+            "y": 24.14,
+            "z": -3.1
           },
           "scale": 0.88,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -1045,26 +1045,26 @@
           "adults": 2,
           "young": 3,
           "branchAngle": 0.03,
-          "branchContactDistance": 0.933,
+          "branchContactDistance": 0.928,
           "positions": [
             {
               "x": -8,
-              "y": -0.61,
+              "y": -0.609,
               "z": -31
             },
             {
               "x": 10.5,
-              "y": -0.285,
+              "y": -0.284,
               "z": -39
             },
             {
               "x": -2.2,
-              "y": -0.989,
+              "y": -0.937,
               "z": -24.8
             },
             {
               "x": 3.4,
-              "y": -0.808,
+              "y": -0.805,
               "z": -27.2
             },
             {
@@ -1304,8 +1304,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 196,
-          "skippedFrames": 216,
+          "renderedFrames": 182,
+          "skippedFrames": 199,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -1315,7 +1315,7 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
+        "firstRenderedAt": 301.5,
         "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/03-collision-slide.jpg"
@@ -1359,12 +1359,12 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 3.415,
-          "distanceTravelled": 7.651,
+          "elapsedSeconds": 3.216,
+          "distanceTravelled": 7.657,
           "paused": false,
           "pauseReason": null,
-          "boundaryRecoveries": 12,
-          "collisions": 31,
+          "boundaryRecoveries": 8,
+          "collisions": 17,
           "lastEvent": "boundary-recovery",
           "zone": "iguanodon-glade",
           "zoneHistory": [
@@ -1434,7 +1434,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 176.585,
+          "remainingLight": 176.784,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1447,22 +1447,22 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": 0.3493,
+            "wingBeat": 0.1988,
             "wingFold": 0,
             "mode": "upstroke",
-            "bank": 0.2239,
+            "bank": 0.2271,
             "direction": [
-              -0.9362,
-              0.0085,
-              0.3513
+              -0.9287,
+              0.0163,
+              0.3705
             ]
           },
           "position": {
-            "x": 19.74,
+            "x": 20.3,
             "y": 15.13,
-            "z": -2.55
+            "z": -2.77
           },
-          "scale": 0.7744,
+          "scale": 0.7745,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
         },
         "familyVisual": {
@@ -1470,31 +1470,31 @@
           "adults": 2,
           "young": 3,
           "branchAngle": 0.03,
-          "branchContactDistance": 0.95,
+          "branchContactDistance": 0.944,
           "positions": [
             {
               "x": -8,
-              "y": -0.613,
+              "y": -0.612,
               "z": -31
             },
             {
               "x": 10.5,
-              "y": -0.29,
+              "y": -0.288,
               "z": -39
             },
             {
               "x": -2.2,
-              "y": -1.047,
+              "y": -1.034,
               "z": -24.8
             },
             {
               "x": 3.4,
-              "y": -0.789,
+              "y": -0.799,
               "z": -27.2
             },
             {
               "x": 2.5,
-              "y": -0.305,
+              "y": -0.306,
               "z": -35
             }
           ],
@@ -1679,7 +1679,7 @@
             {
               "cue": "search",
               "caption": "[a near call circles overhead]",
-              "at": 2.864
+              "at": 3.147
             }
           ]
         },
@@ -1734,8 +1734,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 225,
-          "skippedFrames": 244,
+          "renderedFrames": 211,
+          "skippedFrames": 228,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -1745,7 +1745,7 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
+        "firstRenderedAt": 301.5,
         "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/04-boundary-recovery.jpg"
@@ -1789,12 +1789,12 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 4.998,
-          "distanceTravelled": 7.651,
+          "elapsedSeconds": 4.816,
+          "distanceTravelled": 7.657,
           "paused": true,
           "pauseReason": "manual",
-          "boundaryRecoveries": 12,
-          "collisions": 31,
+          "boundaryRecoveries": 8,
+          "collisions": 17,
           "lastEvent": "paused:manual",
           "zone": "fort",
           "zoneHistory": [
@@ -1865,7 +1865,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 175.002,
+          "remainingLight": 175.184,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -1878,20 +1878,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": -0.0346,
+            "wingBeat": -0.0309,
             "wingFold": 0,
             "mode": "downstroke",
-            "bank": 0.0347,
+            "bank": 0.0484,
             "direction": [
-              -0.9877,
-              -0.1047,
-              0.1164
+              -0.9868,
+              -0.1016,
+              0.1261
             ]
           },
           "position": {
-            "x": 6.07,
-            "y": 8.88,
-            "z": -2.69
+            "x": 6.51,
+            "y": 8.93,
+            "z": -2.76
           },
           "scale": 0.7216,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -1901,7 +1901,7 @@
           "adults": 2,
           "young": 3,
           "branchAngle": 0.03,
-          "branchContactDistance": 0.96,
+          "branchContactDistance": 0.959,
           "positions": [
             {
               "x": -8,
@@ -1915,12 +1915,12 @@
             },
             {
               "x": -2.2,
-              "y": -1.003,
+              "y": -1.002,
               "z": -24.8
             },
             {
               "x": 3.4,
-              "y": -0.777,
+              "y": -0.776,
               "z": -27.2
             },
             {
@@ -2110,7 +2110,7 @@
             {
               "cue": "search",
               "caption": "[a near call circles overhead]",
-              "at": 2.864
+              "at": 3.147
             }
           ]
         },
@@ -2165,8 +2165,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 328,
-          "skippedFrames": 397,
+          "renderedFrames": 315,
+          "skippedFrames": 381,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -2176,7 +2176,7 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
+        "firstRenderedAt": 301.5,
         "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/05-manual-pause.jpg"
@@ -2220,7 +2220,7 @@
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 0.116,
+          "elapsedSeconds": 0.133,
           "distanceTravelled": 0,
           "paused": false,
           "pauseReason": null,
@@ -2292,7 +2292,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 179.884,
+          "remainingLight": 179.867,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -2305,20 +2305,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": 0.2512,
+            "wingBeat": 0.2897,
             "wingFold": 0,
             "mode": "upstroke",
-            "bank": -0.0816,
+            "bank": -0.0751,
             "direction": [
-              -0.9926,
-              -0.1207,
-              0.0135
+              -0.9927,
+              -0.1191,
+              0.0202
             ]
           },
           "position": {
-            "x": 0.76,
-            "y": 8.37,
-            "z": -2.11
+            "x": 1.16,
+            "y": 8.46,
+            "z": -2.04
           },
           "scale": 0.7216,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -2327,12 +2327,12 @@
           "moment": "glade-branch-pull",
           "adults": 2,
           "young": 3,
-          "branchAngle": 0.067,
-          "branchContactDistance": 0.665,
+          "branchAngle": 0.094,
+          "branchContactDistance": 0.481,
           "positions": [
             {
               "x": -8,
-              "y": -0.598,
+              "y": -0.6,
               "z": -31
             },
             {
@@ -2342,17 +2342,17 @@
             },
             {
               "x": -2.2,
-              "y": -1.028,
+              "y": -1.027,
               "z": -24.8
             },
             {
               "x": 3.4,
-              "y": -0.781,
+              "y": -0.782,
               "z": -27.2
             },
             {
               "x": 2.5,
-              "y": -0.322,
+              "y": -0.321,
               "z": -35
             }
           ],
@@ -2532,7 +2532,7 @@
             {
               "cue": "field-start",
               "caption": "[brook water and insects under the canopy]",
-              "at": 5.595
+              "at": 5.872
             }
           ]
         },
@@ -2587,8 +2587,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 380,
-          "skippedFrames": 454,
+          "renderedFrames": 368,
+          "skippedFrames": 438,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -2598,7 +2598,7 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
+        "firstRenderedAt": 301.5,
         "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/06-clean-restart.jpg"
@@ -2624,26 +2624,26 @@
         "renderer": "WebGL2",
         "player": {
           "position": {
-            "x": 9.553,
-            "z": 61.568
+            "x": 8.756,
+            "z": 61.723
           },
           "lastStablePosition": {
-            "x": 9.553,
-            "z": 61.568
+            "x": 8.756,
+            "z": 61.723
           },
-          "groundY": -0.346,
+          "groundY": -0.349,
           "verticalOffset": 0,
           "verticalVelocity": 0,
           "grounded": true,
           "velocity": {
-            "x": 3.905,
+            "x": 4.2,
             "z": 0
           },
           "heading": 0,
           "pitch": 0,
           "stance": "walk",
-          "elapsedSeconds": 60.158,
-          "distanceTravelled": 243.791,
+          "elapsedSeconds": 60.174,
+          "distanceTravelled": 243.407,
           "paused": false,
           "pauseReason": null,
           "boundaryRecoveries": 0,
@@ -2729,7 +2729,7 @@
           "failed": false,
           "failureCause": null,
           "contactCount": 0,
-          "remainingLight": 119.842,
+          "remainingLight": 119.826,
           "returnRoute": null,
           "returnCostSeconds": 0,
           "returnStrike": false,
@@ -2742,20 +2742,20 @@
           "attackStage": "orbit",
           "attackProgress": 0,
           "flightPose": {
-            "wingBeat": 0.0201,
+            "wingBeat": -0.1215,
             "wingFold": 0,
-            "mode": "upstroke",
-            "bank": -0.159,
+            "mode": "downstroke",
+            "bank": -0.1597,
             "direction": [
-              0.2311,
-              0.2216,
-              0.9474
+              0.2857,
+              0.2169,
+              0.9335
             ]
           },
           "position": {
-            "x": 28.89,
-            "y": 22.8,
-            "z": -9.86
+            "x": 28.84,
+            "y": 22.75,
+            "z": -10.08
           },
           "scale": 0.88,
           "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -2764,22 +2764,22 @@
           "moment": "glade-branch-pull",
           "adults": 2,
           "young": 3,
-          "branchAngle": 0.109,
-          "branchContactDistance": 0.378,
+          "branchAngle": 0.082,
+          "branchContactDistance": 0.558,
           "positions": [
             {
               "x": -8,
-              "y": -0.61,
+              "y": -0.611,
               "z": -31
             },
             {
               "x": 10.5,
-              "y": -0.3,
+              "y": -0.299,
               "z": -39
             },
             {
               "x": -2.2,
-              "y": -1.018,
+              "y": -1.016,
               "z": -24.8
             },
             {
@@ -2789,7 +2789,7 @@
             },
             {
               "x": 2.5,
-              "y": -0.311,
+              "y": -0.31,
               "z": -35
             }
           ],
@@ -2969,7 +2969,7 @@
             {
               "cue": "field-start",
               "caption": "[brook water and insects under the canopy]",
-              "at": 5.595
+              "at": 5.872
             }
           ]
         },
@@ -3024,8 +3024,8 @@
           "maxPixelRatio": 1.25,
           "quality": "balanced",
           "activeFpsCap": 60,
-          "renderedFrames": 3982,
-          "skippedFrames": 4056,
+          "renderedFrames": 3970,
+          "skippedFrames": 4042,
           "activeFpsPolicy": "60fps-cap-across-refresh-rates",
           "idleFpsCap": 30,
           "pausedFpsCap": 15,
@@ -3035,7 +3035,7 @@
           "gtaoSamples": 4,
           "antialiasing": "single-pass-fxaa"
         },
-        "firstRenderedAt": 291.80000019073486,
+        "firstRenderedAt": 301.5,
         "recentMedianFrameMs": 16.7
       },
       "visual": "build/evidence/s1/07-smoke-end.jpg"

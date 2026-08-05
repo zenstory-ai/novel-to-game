@@ -5,10 +5,10 @@
     "scope": "index.html, package manifests, public assets and src",
     "sha256": "a22e12e210d86d1c8e256eac70bf303825deb603824a0acef997d1ca06d25d22"
   },
-  "capturedAtUnixMs": 1785861949388,
+  "capturedAtUnixMs": 1785893891688,
   "environment": {
     "baseUrl": "http://127.0.0.1:4173",
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.0.0 Safari/537.36",
     "requestHosts": [
       "",
       "127.0.0.1:4173"
@@ -36,9 +36,9 @@
       "visual": "frames/vt01-title-1440x900.jpg",
       "state": "state/vt01-title-1440x900.json",
       "browser": "browser/vt01-title-1440x900.json",
-      "visualSha256": "accd4d59d12d34ee7d798ba9f93cf7ad230264100ecb6a47382d5340cd4f8d03",
-      "stateSha256": "44c241828c08b79a201df6e0fa87bf44399f0868a8602725c31a76473ee5e96b",
-      "browserSha256": "5bc7effb96474827f9ce0bdb2a3ed4596c6972706bbeb0e79a1997045edb0268",
+      "visualSha256": "a46ca01288c7d726b0588a2907087137bdde70236eeabe2ed5ef6c1ce381a483",
+      "stateSha256": "aec220dff253fc8ef1b31d14da08442664c559bcec4cbf675162556880429a1f",
+      "browserSha256": "49975ef1d11c18a35c288f2685cfa606a95f972ba981ab1ecd267ef485c11234",
       "viewport": [
         1440,
         900
@@ -50,9 +50,9 @@
       "visual": "frames/vt01-title-1280x720.jpg",
       "state": "state/vt01-title-1280x720.json",
       "browser": "browser/vt01-title-1280x720.json",
-      "visualSha256": "4d9be6daad08af1d2a3ecbf5b9eda338e6f163766b10b592f4fb3759f4987ef7",
-      "stateSha256": "845c29a822f07751130958a4477d58b48a8a945a08bcdcf69490668c07e1319f",
-      "browserSha256": "3239fc410aa15f906ee65070091be3397b8ad38cb7d3ec74afb20fdd5b0edcba",
+      "visualSha256": "839849888e6fa617c20003fb957c1295c1ad6a35c11ce0df9e140121f153fe72",
+      "stateSha256": "f285e9347ea3980e668bdb6eac80f889f46fac496a966a65fec1cafe8f94fb1c",
+      "browserSha256": "088f77d23a585129f5e0ea335f7927363f0a37a192666fff0147caef81662243",
       "viewport": [
         1280,
         720
@@ -64,9 +64,9 @@
       "visual": "frames/vt02-first-controllable-track.jpg",
       "state": "state/vt02-first-controllable-track.json",
       "browser": "browser/vt02-first-controllable-track.json",
-      "visualSha256": "47d95b4e49f589d76cc127ec44993794ea73713ae90d962a87b36d631887f84f",
-      "stateSha256": "e9f411cf823210f2e8981d58656f5a067371a48e340e861e5a3d4f34027242b5",
-      "browserSha256": "0378a3317ae0ca54ccf47fa9b266faf916ede00502b9d1e163fdfddb6ec21463",
+      "visualSha256": "6f25ebde89c80b7beb2580cd406fcf435a21453d40270f4a0d8df62ec7234a45",
+      "stateSha256": "61f297ffc6ad7aa3f17fe5191047333a04e0cf4c74bbf7bfbbaaa49ec60115ca",
+      "browserSha256": "a192a09188491e79cf5c2ada342ac9690b47801046413fc91ec9b0dc7f8136e7",
       "viewport": [
         1440,
         900
@@ -78,9 +78,9 @@
       "visual": "frames/vt02-track-examined.jpg",
       "state": "state/vt02-track-examined.json",
       "browser": "browser/vt02-track-examined.json",
-      "visualSha256": "23c0d349099adfeafcb5e704f214087b1e155acd7ba2d7582486a050a172618a",
-      "stateSha256": "1d10da98d8592f68acb42568c519a014d083d75b6de5c8da68ac26ad73564d95",
-      "browserSha256": "c63ecee08179ff98d49190daa78411c802aab22d02a1291257086fe33bbec8d5",
+      "visualSha256": "3bacb5c846848bfd8dae961a32725218455bd80ab431122e88861a72830a7a4c",
+      "stateSha256": "f940096df7994f3a364ab84e5b29d3e3913219322e23fb6a8a94363c285b7e48",
+      "browserSha256": "a35fc8097da5b07c0e32bf1d27f6e85858bda397178d23d0dfd31496bd6cc562",
       "viewport": [
         1440,
         900
@@ -92,9 +92,9 @@
       "visual": "frames/vt03-young-play-silver-frame.jpg",
       "state": "state/vt03-young-play-silver-frame.json",
       "browser": "browser/vt03-young-play-silver-frame.json",
-      "visualSha256": "d8f553b052045b042486cc887113bf13565ec7e39855d8a0ac4b00b33f4fe82a",
-      "stateSha256": "6348addbf893e3c0a81590ee50722f7581ae373a82b6ed35df3f3e47047c2475",
-      "browserSha256": "3e2ddfc474b435e4fd2e1fb48eb43418093ee641b701179f11e8a99dbd6bf3d0",
+      "visualSha256": "e6c09e2a976db5014316372fa65989fa64b54c54e7399212d6821084d380ab6b",
+      "stateSha256": "ebd297c6b002245ce3a7332f38deaf5c541e77531a5a483683b7d8303e24cb5c",
+      "browserSha256": "e36ce68b377302ab96c656f3f27d70a2d7c2cbf9c8f0e06b42521bc56d378b4a",
       "viewport": [
         1440,
         900
@@ -106,9 +106,9 @@
       "visual": "frames/vt03-branch-pull-silver-frame.jpg",
       "state": "state/vt03-branch-pull-silver-frame.json",
       "browser": "browser/vt03-branch-pull-silver-frame.json",
-      "visualSha256": "99677111e2503fa7bb45f3f71e7fb08248c950600f538337f34059cbbbabc6a8",
-      "stateSha256": "8b55a5b4e527e8cf729ac93e022c941c80a892a09a4d7213627ae77882f485d8",
-      "browserSha256": "8a1d7df59eccbfa14e33591aee0924ea4c5cef0536ca5f256887c35357cd9119",
+      "visualSha256": "2100c2c20bfe1e0569f03b8a0d3881a6e1524ed8a14d5ee371a0a7a5565f22a7",
+      "stateSha256": "f639132fb59e06bbe511960a4c7ec2c9cb2cd56abf0b6bf3c676bd3d87880837",
+      "browserSha256": "3535688cb650aab9c108caf576c25c9a05fe7e2ebffdd3580491e336edeb8518",
       "viewport": [
         1440,
         900
@@ -120,9 +120,9 @@
       "visual": "frames/vt04-attack-defense.jpg",
       "state": "state/vt04-attack-defense.json",
       "browser": "browser/vt04-attack-defense.json",
-      "visualSha256": "ce13c2ccaddda0c8e43607beb04b63d839a886cba416c475766857bbf7096100",
-      "stateSha256": "b80beb50f66c30dd33decd28a2d046d3f88e068852f7096b43ba74f974fcabd6",
-      "browserSha256": "a4a073482017cdedfe901996287cbd97855d72b0711cf0ee73768be281a82054",
+      "visualSha256": "37a819a4736ae55dfb1e3f6bacf53d0542212071fa2307b2367c72513d555d89",
+      "stateSha256": "b0ada94835000cdaf221b6d3625e4e3ca1cd197a42568e38d65cacaad34dac17",
+      "browserSha256": "e6f7a7aefeafd9473d3c9ef720ccaf8e077cb6c2395f0b942cfe3ec0c551f25f",
       "viewport": [
         1440,
         900
@@ -134,9 +134,9 @@
       "visual": "frames/vt05-strong-result.jpg",
       "state": "state/vt05-strong-result.json",
       "browser": "browser/vt05-strong-result.json",
-      "visualSha256": "7cbe74f3339d54e14a9bc58f2f596200a585800ad1d7f63593d837794ebd19a2",
-      "stateSha256": "1cb2c01ff59b200a395e949a4b1da15b9cc53d5be59688d89d99351911a47b0d",
-      "browserSha256": "005a16011ec7aed7878494e6bcbbe30bf4e3abea2c0dabb2210e45a6d2f28dfe",
+      "visualSha256": "d1155d564f1aa75e06b29d511a937c175ef4c13b86412909f205a0d324959035",
+      "stateSha256": "a0e11170f70921322c709b20a55944e9598aba0806ba7cd479f8ec273f690c90",
+      "browserSha256": "7becec20c96a790ea694af8a11b9e177a426370dc1a42c3dd58fb7d77561f5a8",
       "viewport": [
         1440,
         900
@@ -148,9 +148,9 @@
       "visual": "frames/vt06-minimum-field-1280x720.jpg",
       "state": "state/vt06-minimum-field-1280x720.json",
       "browser": "browser/vt06-minimum-field-1280x720.json",
-      "visualSha256": "39289f2de79f5d9d3d07fc2a5802534239b5972127cdab375f46f1b19b1046b2",
-      "stateSha256": "a31fbadb981b986fcb93972210e15dda3b898615a74d4d1f62468fedb3bb4ee0",
-      "browserSha256": "f23bc0c6248b2bb63a708e2c41842011eef99e2d5ade01e815596bde8d91ed67",
+      "visualSha256": "e6fdaf14953ffabbb2ac9ff7d8ab9a051dcc53c6281997f31ca34c16e1436884",
+      "stateSha256": "e91f148aef41656265812b9c06065f964dce244d0e9a304c5d679e7790ea8c70",
+      "browserSha256": "4754157fc6cf8c54665490395f90402aec41d98b78a99b8e52f8f6cc485e7c5f",
       "viewport": [
         1280,
         720
@@ -162,9 +162,9 @@
       "visual": "frames/vt06-minimum-150-text-reduced-motion.jpg",
       "state": "state/vt06-minimum-150-text-reduced-motion.json",
       "browser": "browser/vt06-minimum-150-text-reduced-motion.json",
-      "visualSha256": "afdd0534af5091d18f02e12d93d79b128aa0ffca16bf5506679dd2315144e3b1",
-      "stateSha256": "33d7ef47afbf0e31c7ae33071c41d18eafffa66fbd4bdc7255d318223038bb8d",
-      "browserSha256": "4d9f8f16b1dcb38ad5552575dff6714c0b9558fd6b7f1af52306724520135749",
+      "visualSha256": "758f4bc6cfcdb197606be12cd96292aa8ba4cd7f2069ed21864560b8437c8444",
+      "stateSha256": "f856280987a6b4a7a8067063237287d0bd8146f4f2e34661acada66a5fd82859",
+      "browserSha256": "948bb41aa3a1871cba15dc6c1676bdb5739e14900beff777cbc16018de37f5d7",
       "viewport": [
         1280,
         720
@@ -176,9 +176,9 @@
       "visual": "frames/orbit-iguanodon-000.jpg",
       "state": "state/orbit-iguanodon-000.json",
       "browser": "browser/orbit-iguanodon-000.json",
-      "visualSha256": "99aca059ad6c0fd5486acf0fde37060e3cab612067072f8fabc19dd422346a2a",
-      "stateSha256": "2bc4589bb72a0e2984e1f5989c3dbd88fc87c0a493786f889f2024819bfe7310",
-      "browserSha256": "ab7308ff36d46ccc478234ccc10a7946da6ec33d0533301121700719eb99605a",
+      "visualSha256": "27d581b1a2b452e597937c1880e2277d778f08783f6b670c0e36a9223c465b50",
+      "stateSha256": "223d8ce622c0776f4b8fa01032cf6bf4b65ed937178052bacbfde57f10498a30",
+      "browserSha256": "9dad74daeeca4376a9a57ed848cf8a495cb32be3a9af03e1466c19c2f87ae280",
       "viewport": [
         1440,
         900
@@ -190,9 +190,9 @@
       "visual": "frames/orbit-iguanodon-090.jpg",
       "state": "state/orbit-iguanodon-090.json",
       "browser": "browser/orbit-iguanodon-090.json",
-      "visualSha256": "84b09729e32cbd36f5f115ff20d081106ab69bb3e12d4527a341d4a481bd530a",
-      "stateSha256": "11ef1392e99a3404c24b45134d3e9e714d46c369e6a7836300879199718f9bbc",
-      "browserSha256": "8a76a14975e7166cc378e4d1a4b05025ddb50e038e3ca1d82872ab73bd5c00a8",
+      "visualSha256": "bf2d055462beb6145bfbfb29e9cb3d1b4b4313b31dea5c34af2d6d3a31a48160",
+      "stateSha256": "e1ecedfa85d45c9dbf5540e72393f2c09e534558b8df2b497883e0b7cc7f19ed",
+      "browserSha256": "8a721543f05c99ab8b869a1027587a05bd1d127894302838ec61ba8dd58f748c",
       "viewport": [
         1440,
         900
@@ -204,9 +204,9 @@
       "visual": "frames/orbit-iguanodon-180.jpg",
       "state": "state/orbit-iguanodon-180.json",
       "browser": "browser/orbit-iguanodon-180.json",
-      "visualSha256": "d5fb74356c6e55ce5a9a4c5fc1603d6ac2dbb87fba526f38aa61e93c5f5acfce",
-      "stateSha256": "ac2e7e3dab99dcf5493fb8cc146d4bb1c06cc3948f4d3e77c2fe4b4b7c8718e7",
-      "browserSha256": "3a442b91ad5784e19a0f58914379c87c4baaceaa7f82fb8d115955d11d515cd7",
+      "visualSha256": "c7bc4574e89735913a4900b335f7f7dcba02e3815ba3d513fcb4510d950ba026",
+      "stateSha256": "c2be6ca8930c5406dbdb8a328d9ebe7f76060a6aa1087d107ed2dec83b6b7c3d",
+      "browserSha256": "876ef0d828af34ebd6436052647a5b882d46e07f7e6c68872ca22d1c4f02aeb4",
       "viewport": [
         1440,
         900
@@ -218,9 +218,9 @@
       "visual": "frames/orbit-iguanodon-270.jpg",
       "state": "state/orbit-iguanodon-270.json",
       "browser": "browser/orbit-iguanodon-270.json",
-      "visualSha256": "1f186da0c4a46b4d867a357a38e351af0e0b8363871c7a9555edb3474f0536cf",
-      "stateSha256": "89baf10b7bc4bd336f7920add18b2e6401c2674cfcc56bd9e7ab81ba969a36a4",
-      "browserSha256": "1cb580857e4ba59158a0a38c1b02f2d32d8ee01e916a565b620cd8883722e178",
+      "visualSha256": "b19e91362114c402e41b90893a6dd5556f21d14902e7ab1728afc64e85b8318f",
+      "stateSha256": "713d4337079fef4c299e4d08ebb364cf8ee3fd22c8df2d516cf0ececc015d218",
+      "browserSha256": "f6a5b5f27c719b419342d345aa9e950c0c25e46e39ec03e792a8c3ec777828f9",
       "viewport": [
         1440,
         900
@@ -232,9 +232,9 @@
       "visual": "frames/orbit-pterodactyl-000.jpg",
       "state": "state/orbit-pterodactyl-000.json",
       "browser": "browser/orbit-pterodactyl-000.json",
-      "visualSha256": "858dcb7e382abfc294781992f0a2ac4fceaa8a799927ae258f546f3a2184ba74",
-      "stateSha256": "d6d2cdd9faf6440d27a8b686502a3ca762abad36afab6555a212ea193d7b96ed",
-      "browserSha256": "7e5afdd9268b0c8c7556b675d3bc2c68d419db8175cd742abf50e0eed468e2cd",
+      "visualSha256": "8ade16c4fe218b0860473fb8d3e7393bce0ccc8df65d1e242ab3911233844227",
+      "stateSha256": "b6556913c7e8d253f120ab22fba5b1dfb20d07606215c3e7ea5ba1e320b069c1",
+      "browserSha256": "bb3190e7bdef310c3f6abc5d80052005759c229a3aab06818615f8b6e18d2839",
       "viewport": [
         1440,
         900
@@ -246,9 +246,9 @@
       "visual": "frames/orbit-pterodactyl-090.jpg",
       "state": "state/orbit-pterodactyl-090.json",
       "browser": "browser/orbit-pterodactyl-090.json",
-      "visualSha256": "25e1a66fa2e66e6fa805ba116fc5056c145ae61e5e564adf167ddf252dbfdd18",
-      "stateSha256": "a867fbc0b50e6c0450fb95dd0ce0dcd2e4f4107619f5ee159bed03a79aead7ff",
-      "browserSha256": "a4f45b2116d2e86cdf35199e9d16f43ea04c10f7b122eab5ddb805b1e14a262c",
+      "visualSha256": "ea3b69d71f2fe76f14a14893462dc88e4016c7167eb0e7d698dd9bde3f7acde8",
+      "stateSha256": "699205a9969b2f1c32488c0ccfa63f18bd9d0fb05005de611bce78961fd457bc",
+      "browserSha256": "b68435e76d345519b8c614826f7ad49715613c7f39159388b6711ffc67766d70",
       "viewport": [
         1440,
         900
@@ -260,9 +260,9 @@
       "visual": "frames/orbit-pterodactyl-180.jpg",
       "state": "state/orbit-pterodactyl-180.json",
       "browser": "browser/orbit-pterodactyl-180.json",
-      "visualSha256": "680c05e97090f921029ca92056f788d0fd5668836fc556d90f897403c1e75280",
-      "stateSha256": "eb8e46325663ee34b07f1dd1f06eebfa210258225745020190713cf2557e4337",
-      "browserSha256": "9661af739a2034c4ef6d8cecd9261daf222bd7d18d0b648528806b98c5a09654",
+      "visualSha256": "f5c6ac0caa4da5beee344d24319cfdace20693e6181d0bc713934d275c24d780",
+      "stateSha256": "82e5b7bf9f2aec9c45f8f4c28507addae46ca7d80960d37b0d92ed75b2e5b3e4",
+      "browserSha256": "21020255e31b1b01a60d70a7b2f54a65d4625656261b209770a9c89f991cd2e3",
       "viewport": [
         1440,
         900
@@ -274,9 +274,9 @@
       "visual": "frames/orbit-pterodactyl-270.jpg",
       "state": "state/orbit-pterodactyl-270.json",
       "browser": "browser/orbit-pterodactyl-270.json",
-      "visualSha256": "d620ef62333b53a196e10f87e8228d8413d3fd1ad8d7ed10c12e2861885a31ee",
-      "stateSha256": "1cbe832906ce808057affd00d236fc683f1fd0a72bdb6e01829db2269d41b335",
-      "browserSha256": "665c3ceca94fb7d86b350a1be92e40654d2e117ff70bbca9b9414c69af79a715",
+      "visualSha256": "3ac7a64f66318b86e88a9cea3a49b86a5f48017a63b488799dac65de5cbaee85",
+      "stateSha256": "7de0f0545633588e08e6ad40ba1db0ea4eee5c919f49040a54433f0cb360552c",
+      "browserSha256": "0d2ac8995650e511f921f860b6f326ac4d6e2bb62067e0010896ba910d92cd6a",
       "viewport": [
         1440,
         900
@@ -289,27 +289,27 @@
       "variant": "brook-track",
       "frameKey": "brook-partial",
       "visual": "frames/plate-1-brook-track.jpg",
-      "visualSha256": "ee81615f187edd402b24987344e8d57a4325bc2c6e42da6010dd408e76fa7c40",
+      "visualSha256": "077194f57c3797aa85da59242e5bbd1e0e37b7aa0f25ea72d0746b1946762b6b",
       "size": [
         1440,
         900
       ],
-      "lumaStdDev": 47.817,
-      "entropy": 6.714,
-      "trackRoiStdDev": 12.13,
-      "trackRoiEntropy": 5.046
+      "lumaStdDev": 47.802,
+      "entropy": 6.716,
+      "trackRoiStdDev": 12.109,
+      "trackRoiEntropy": 5.042
     },
     {
       "plateIndex": 1,
       "variant": "basalt-scale",
       "frameKey": "basalt-scale",
       "visual": "frames/plate-2-basalt-scale.jpg",
-      "visualSha256": "41c9329d9a6310dbef5c4803cac8364849e641d003f0b8f47a6cf16cc0e590fa",
+      "visualSha256": "3c5034382aabf9abb1d8fb290fab6938f10e8cc090807101fec3b3ed62299f97",
       "size": [
         1440,
         900
       ],
-      "lumaStdDev": 40.331,
+      "lumaStdDev": 40.32,
       "entropy": 7.042
     },
     {
@@ -317,41 +317,41 @@
       "variant": "young-play",
       "frameKey": "glade-young-play",
       "visual": "frames/plate-3-young-play.jpg",
-      "visualSha256": "5b8688dd38775e5a93caa8be254ff3e7bc5760e9f852d5604d76684f08808cea",
+      "visualSha256": "6e48d66326e5474292bd7d2ade2607661716891297cd0663d5169235092fff6c",
       "size": [
         1440,
         900
       ],
-      "lumaStdDev": 38.283,
-      "entropy": 7.042
+      "lumaStdDev": 38.229,
+      "entropy": 7.041
     },
     {
       "plateIndex": 3,
       "variant": "branch-pull",
       "frameKey": "glade-branch-pull",
       "visual": "frames/plate-4-branch-pull.jpg",
-      "visualSha256": "eaa2fa94638aa36942623fe532fa001e1b38e4d31c9c43c2c5b76badb0da7df7",
+      "visualSha256": "39b0141f3e746043cfec9c2cdccd27af0bdaeb16dc98906df7ce75baa4a92d69",
       "size": [
         1440,
         900
       ],
-      "lumaStdDev": 35.075,
-      "entropy": 6.769
+      "lumaStdDev": 35.33,
+      "entropy": 6.772
     }
   ],
   "platePairwiseMeanLumaDistances": [
-    32.722,
-    38.242,
-    39.933,
-    17.885,
-    22.881,
-    18.629
+    32.733,
+    38.24,
+    40.062,
+    17.699,
+    22.942,
+    18.612
   ],
   "terminalPlateStyles": [
     {
       "frameKey": "brook-partial",
       "captured": "true",
-      "inlineImageLength": 99874,
+      "inlineImageLength": 99354,
       "backgroundPosition": "50% 50%",
       "backgroundSize": "cover",
       "backgroundRepeat": "no-repeat"
@@ -359,7 +359,7 @@
     {
       "frameKey": "basalt-scale",
       "captured": "true",
-      "inlineImageLength": 98038,
+      "inlineImageLength": 97986,
       "backgroundPosition": "50% 50%",
       "backgroundSize": "cover",
       "backgroundRepeat": "no-repeat"
@@ -367,7 +367,7 @@
     {
       "frameKey": "glade-young-play",
       "captured": "true",
-      "inlineImageLength": 96546,
+      "inlineImageLength": 96630,
       "backgroundPosition": "50% 50%",
       "backgroundSize": "cover",
       "backgroundRepeat": "no-repeat"
@@ -375,7 +375,7 @@
     {
       "frameKey": "glade-branch-pull",
       "captured": "true",
-      "inlineImageLength": 105930,
+      "inlineImageLength": 105206,
       "backgroundPosition": "50% 50%",
       "backgroundSize": "cover",
       "backgroundRepeat": "no-repeat"
@@ -389,8 +389,8 @@
       "frameIndex": 0,
       "visual": "frames/motion-young-play-00.jpg",
       "state": "state/motion-young-play-00.json",
-      "visualSha256": "1efa22da65d8563f554009b83f80bb236197247f6654da39c90b2c858deb9328",
-      "stateSha256": "bab5f34a1f471acc36bffe886a25b95666614989a91c740caae0da1c3cd16c39"
+      "visualSha256": "87699f538aa29eb2fc577e801926e85d2f4a3d2b1ecf1933ff74b9135bbd7737",
+      "stateSha256": "8dab05b0885816ba999fd8a18188d2c06e4a7972e6ea9cdc9c6ff3f90642d5b5"
     },
     {
       "target": "MOTION",
@@ -399,8 +399,8 @@
       "frameIndex": 1,
       "visual": "frames/motion-young-play-01.jpg",
       "state": "state/motion-young-play-01.json",
-      "visualSha256": "3cf7aa05645563dd9a6526a098541a0dfd623647802cd23b70116710b13352db",
-      "stateSha256": "fa6392f4d16d2acd132d8d703f1d055095fc7fce00d98a38f818486177864931"
+      "visualSha256": "e22750111d0775efac32fcfb6eaf4b8ea210a33804d93318e2cfc189e58f9554",
+      "stateSha256": "7321a224bbd53dc925fb072fc8451b28e04c6269ad0d12024fb5011cdb712a44"
     },
     {
       "target": "MOTION",
@@ -409,8 +409,8 @@
       "frameIndex": 2,
       "visual": "frames/motion-young-play-02.jpg",
       "state": "state/motion-young-play-02.json",
-      "visualSha256": "1f806c83c0a660658eb7f31af8fd044c0cce95b61f09ac95be37e456c29f4975",
-      "stateSha256": "681e0d740e49a87cc7381b1da8b2abf6c127649820046178c3c1303f0ac166dc"
+      "visualSha256": "17d0e0de357082d9a95bbb4312db9c1a9f400728ed6986f2bfa4e7666ea87cb7",
+      "stateSha256": "2b5537e92ddadb81eb11e53f391c7eaa08770be79974d6b6e9368d60fd808cbf"
     },
     {
       "target": "MOTION",
@@ -419,8 +419,8 @@
       "frameIndex": 0,
       "visual": "frames/motion-branch-pull-00.jpg",
       "state": "state/motion-branch-pull-00.json",
-      "visualSha256": "aabf728ea05bf9359e443604f455533d123c4a3a7c7e88709714536db41bbc1e",
-      "stateSha256": "3a1e5f2e2d4fdf283b28383b7231ae470b25db4fd0015b19d5ca070dba7d57bd"
+      "visualSha256": "28b6e9ca46ede5c6a55db63e10afd061fbf0fb99ed04c6149ebe0a4c20abce79",
+      "stateSha256": "e08b01ee05482a749fca6d4501c5ae9e5599b4cf93e1cb2768f2c1c4dbbf1191"
     },
     {
       "target": "MOTION",
@@ -429,8 +429,8 @@
       "frameIndex": 1,
       "visual": "frames/motion-branch-pull-01.jpg",
       "state": "state/motion-branch-pull-01.json",
-      "visualSha256": "5662ae5a028365808c75da14d4727978874cfab2fc1ae06f49c1e3873b5b971e",
-      "stateSha256": "7abcfaccbd4e8e5a760c97417f501f03f32774741a21f97dd91123a80d97e053"
+      "visualSha256": "3bc700bc6bd63a1449efbf784024cc5fedafceeb229a3ad10e99e6a165a67137",
+      "stateSha256": "0ec80957d1b7450f9ea64023b107c0bb1811e7fb14b6577f5f473cd9ab0bda61"
     },
     {
       "target": "MOTION",
@@ -439,8 +439,8 @@
       "frameIndex": 2,
       "visual": "frames/motion-branch-pull-02.jpg",
       "state": "state/motion-branch-pull-02.json",
-      "visualSha256": "64ab5221df0377d63870e98ed98928d325fe53059e9b3f0c8834d388763101d4",
-      "stateSha256": "1516f60951c9f81cfd826d9765553efefd44587639e5cc24593fa77a8c461857"
+      "visualSha256": "b95d026f912bd4d988d21eec39a1c72bb75ac1475ca8acc6cc27a36ed4ec904d",
+      "stateSha256": "c76c259ff55b1c76a56bca6a1d32cff61c339ba66be45ec4f64e967fba0e7b0b"
     },
     {
       "target": "MOTION",
@@ -449,8 +449,8 @@
       "frameIndex": 0,
       "visual": "frames/motion-pterodactyl-attack-00.jpg",
       "state": "state/motion-pterodactyl-attack-00.json",
-      "visualSha256": "628b51d7f909524330a4f16aebf3402a917ae6b774700999302a196837066534",
-      "stateSha256": "39f83d61dd280accdd46cea3f1c73d42cc5deef5a20c316501533b0f063297d3"
+      "visualSha256": "b2adbc048ca88fbec69d5641c2b07f6d0611f2b7a15448f969b86bbba0455879",
+      "stateSha256": "38f84dd5d39a91044c6fd63b47b6c7186d22764d1f55f3225be3228efaf8c541"
     },
     {
       "target": "MOTION",
@@ -459,8 +459,8 @@
       "frameIndex": 1,
       "visual": "frames/motion-pterodactyl-attack-01.jpg",
       "state": "state/motion-pterodactyl-attack-01.json",
-      "visualSha256": "59028a0e118486d07d36fc2f23d81c4398ce8b26ecb4ee4b522e8f6e05d92e00",
-      "stateSha256": "c5d34bb73999d23dec790cf67ce3c40cc6f263651668d3cc220239d2737a6719"
+      "visualSha256": "82e0ca45dca1c67118a1877b756f45191ae04d7c35a514574a40cbb01944db79",
+      "stateSha256": "ebb775b48775e80b28aa74cb962dc267ccbb30df69e3da82b8dff8752496eb9f"
     },
     {
       "target": "MOTION",
@@ -469,8 +469,8 @@
       "frameIndex": 2,
       "visual": "frames/motion-pterodactyl-attack-02.jpg",
       "state": "state/motion-pterodactyl-attack-02.json",
-      "visualSha256": "2e0569f7498b0a7a4d69858b7efa88407c76821997e4b136301ff49f32039a2c",
-      "stateSha256": "c3ab9f18abb882db919568d0842d1198ed9322455241478ba5e7875afda3b478"
+      "visualSha256": "b104c974048a8039381cba2deddf003af6db3724193dd148e219206fce4ef564",
+      "stateSha256": "deceec0dbd904d49461cfa18a6f8e7afc431a22d4c634e6e06ec3d017ee74d98"
     },
     {
       "target": "MOTION",
@@ -479,8 +479,8 @@
       "frameIndex": 0,
       "visual": "frames/motion-pterodactyl-wingbeat-00.jpg",
       "state": "state/motion-pterodactyl-wingbeat-00.json",
-      "visualSha256": "ca5c1434a9c01c74c38549d812eaa06f8757a6039e5b44d97cfe86b6c8f05915",
-      "stateSha256": "cc530ba1966dbadbc2470e2ffa13b31fd6104cd8b0e26452aa914ed2ab7d0058"
+      "visualSha256": "26f166bd328d6829a95d429935711cea471d8cc941e4fee7ce3f7f02d2db8cc3",
+      "stateSha256": "8bacf12fc15adb519fe679167fa087a0b9aad96d3816ce3b7487b013269cb0bc"
     },
     {
       "target": "MOTION",
@@ -489,8 +489,8 @@
       "frameIndex": 1,
       "visual": "frames/motion-pterodactyl-wingbeat-01.jpg",
       "state": "state/motion-pterodactyl-wingbeat-01.json",
-      "visualSha256": "a8c73de0dabe75ca22387520315ed02112b08d4c0bde2d2157fb60438f6887d0",
-      "stateSha256": "4822489ac116f0850f1a8d892817217312dc337d6cb547b7e21258c2cd628295"
+      "visualSha256": "9a6ed70fe55913c1a0e7940ed8e75811d87529ff5a4c54a3c0609b0f53af2028",
+      "stateSha256": "e09c4a505879ea5142bb2b954796b3a79a159936c9f0d93c2dd5a97d75f82a21"
     },
     {
       "target": "MOTION",
@@ -499,26 +499,26 @@
       "frameIndex": 2,
       "visual": "frames/motion-pterodactyl-wingbeat-02.jpg",
       "state": "state/motion-pterodactyl-wingbeat-02.json",
-      "visualSha256": "45a92859bca0d37c7ff60060242244eb36a9830309c9577833c54fffede0f644",
-      "stateSha256": "7ab425e31a85850576532f96ec1a5d570fb7f438802eae7b3a63c9ae947932d4"
+      "visualSha256": "669949ef9ed4777de371538663cbcc6e3de44197853f2229e55c7e9289b1226a",
+      "stateSha256": "67d65abc0f698a19af00e4bd9c7d486ff0e3a6d6b4008f0c5eaa3c058b2d219e"
     }
   ],
   "motionPairwiseMeanLumaDistances": {
     "young-play": [
-      4.355,
-      0.819
+      4.612,
+      0.823
     ],
     "branch-pull": [
-      4.346,
-      0.194
+      4.585,
+      0.202
     ],
     "pterodactyl-attack": [
-      0.756,
-      0.434
+      0.919,
+      0.438
     ],
     "pterodactyl-wingbeat": [
-      1.709,
-      1.511
+      1.685,
+      1.577
     ]
   },
   "accessibleUiLayout": {
@@ -544,24 +544,24 @@
   "contactSheets": [
     {
       "path": "contact-sheet-targets.jpg",
-      "sha256": "388880a60d789185a70784d805e86e8393e6a6c755a2bc3980c54c19f7669469"
+      "sha256": "797a193df5c7246e4566858e1615cc92a4857cc24031be6bab301dfa3e60b903"
     },
     {
       "path": "contact-sheet-orbits.jpg",
-      "sha256": "813c1b70d29290421d4b8d0ce88299524cc6b1559032169f344db7f3e68c0794"
+      "sha256": "eee4b2322525ae4b5cd3d7732ef65020bb57f82f3cded878918a8174c2e1e2fb"
     },
     {
       "path": "contact-sheet-plates.jpg",
-      "sha256": "fcd8ae452f8cc11657b3e1fdb85fb375d1194cb594499d4ad0ab06bdb2ccaf46"
+      "sha256": "39b33b5fb85c6a4f70c4a5a4cc924554950fda7dabd2e4e7821e6f52ece215f7"
     },
     {
       "path": "contact-sheet-motion.jpg",
-      "sha256": "0914a07f56cddbc6f181bd9549590e4ca56d31af2b70d31138a5e3a981540e96"
+      "sha256": "9ec517016d664e78bec86172cd52804f70bfbcba450a033920c22ccadd195efc"
     }
   ],
   "performance": {
     "path": "performance.json",
-    "sha256": "2c60ed5c4ec1c9ddf8b96507438850d432cdd0eb967925d851b4c7610c2d7236"
+    "sha256": "518ef3c83a482e0bb5597f6b1fced12502683db729d5274e1990a0ef1f6f70ae"
   },
   "reviewStatus": "pending-independent-visual-review"
 }

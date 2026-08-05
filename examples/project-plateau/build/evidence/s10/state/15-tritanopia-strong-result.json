@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 17.047,
+    "elapsedSeconds": 17.127,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -67,7 +67,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.6254000000953663,
+    "previewSeconds": 3.6258999998569488,
     "lastProofEvent": {
       "plateIndex": 3,
       "frameKey": "glade-branch-pull",
@@ -119,7 +119,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 134.953,
+    "remainingLight": 134.873,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -133,7 +133,7 @@
       "survivingPlates": 4,
       "route": "covered",
       "brookResponse": "answering-call",
-      "remainingLight": 135,
+      "remainingLight": 134.9,
       "gunshotCallback": "The report carried. Something answered by the brook."
     }
   },
@@ -143,22 +143,22 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": 0.0186,
+      "wingBeat": 0.021,
       "wingFold": 0,
       "mode": "upstroke",
-      "bank": -0.0574,
+      "bank": -0.0481,
       "direction": [
-        0.9846,
-        -0.0968,
-        0.1454
+        0.9837,
+        -0.0928,
+        0.1537
       ]
     },
     "position": {
-      "x": -2.1,
-      "y": 6.54,
-      "z": -8.1
+      "x": -1.72,
+      "y": 6.56,
+      "z": -8.38
     },
-    "scale": 0.8667,
+    "scale": 0.8624,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
   },
   "familyVisual": {
@@ -180,12 +180,12 @@
       },
       {
         "x": -2.2,
-        "y": -1.007,
+        "y": -1.005,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.766,
+        "y": -0.767,
         "z": -27.2
       },
       {
@@ -370,82 +370,82 @@
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.507
+        "at": 2.544
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.496
+        "at": 4.539
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.496
+        "at": 4.539
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.581
+        "at": 10.635
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.667
+        "at": 10.725
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 12.389
+        "at": 12.517
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 12.469
+        "at": 12.592
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 14.464
+        "at": 14.581
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 14.464
+        "at": 14.581
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.475
+        "at": 14.592
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 14.544
+        "at": 14.667
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 16.555
+        "at": 16.672
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 16.832
+        "at": 16.939
       },
       {
         "cue": "rifle",
         "caption": "[rifle report; echo runs toward the brook]",
-        "at": 16.832
+        "at": 16.939
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 16.853
+        "at": 16.949
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 16.928
+        "at": 17.051
       }
     ]
   },
@@ -489,7 +489,7 @@
   },
   "plateCapture": {
     "status": "ready",
-    "durationMs": 30.7,
+    "durationMs": 33.2,
     "error": null
   },
   "sceneChildren": 62,
@@ -506,8 +506,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 1053,
-    "skippedFrames": 1086,
+    "renderedFrames": 1056,
+    "skippedFrames": 1092,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -517,6 +517,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 287.90000009536743,
+  "firstRenderedAt": 289.09999990463257,
   "recentMedianFrameMs": 16.7
 }

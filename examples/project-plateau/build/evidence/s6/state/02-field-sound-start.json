@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.196,
+    "elapsedSeconds": 0.219,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -107,7 +107,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.803,
+    "remainingLight": 179.781,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -120,20 +120,20 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.2623,
+      "wingBeat": -0.2743,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": 0.0696,
+      "bank": 0.071,
       "direction": [
-        -0.4675,
-        0.1932,
-        0.8626
+        -0.4759,
+        0.1917,
+        0.8583
       ]
     },
     "position": {
-      "x": 28.49,
-      "y": 23.44,
-      "z": -7.11
+      "x": 28.47,
+      "y": 23.45,
+      "z": -7.07
     },
     "scale": 0.88,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -143,7 +143,7 @@
     "adults": 2,
     "young": 3,
     "branchAngle": 0.03,
-    "branchContactDistance": 0.92,
+    "branchContactDistance": 0.919,
     "positions": [
       {
         "x": -8,
@@ -157,7 +157,7 @@
       },
       {
         "x": -2.2,
-        "y": -0.992,
+        "y": -0.999,
         "z": -24.8
       },
       {
@@ -403,7 +403,7 @@
     "quality": "balanced",
     "activeFpsCap": 60,
     "renderedFrames": 37,
-    "skippedFrames": 67,
+    "skippedFrames": 71,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -413,6 +413,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 298.10000014305115,
-  "recentMedianFrameMs": 26.4
+  "firstRenderedAt": 329.5,
+  "recentMedianFrameMs": 27.7
 }

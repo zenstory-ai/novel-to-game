@@ -42,9 +42,9 @@
   },
   "loading": {
     "firstNoCacheNavigation": {
-      "timeToFirstFrameMs": 2944.6,
-      "domInteractiveMs": 46.5,
-      "loadEventMs": 201.6,
+      "timeToFirstFrameMs": 2937.1,
+      "domInteractiveMs": 43.6,
+      "loadEventMs": 192.6,
       "resourceCount": 43,
       "ui": {
         "visible": false,
@@ -53,9 +53,9 @@
       }
     },
     "finalNavigation": {
-      "timeToFirstFrameMs": 2966.7,
-      "domInteractiveMs": 88.3,
-      "loadEventMs": 235.4,
+      "timeToFirstFrameMs": 2929.7,
+      "domInteractiveMs": 81,
+      "loadEventMs": 216.2,
       "resourceCount": 44,
       "ui": {
         "visible": false,
@@ -146,17 +146,17 @@
   "performance": {
     "minimumViewport": {
       "samples": 120,
-      "medianFrameMs": 16.6,
-      "medianFps": 60.2,
-      "onePercentLowFps": 38.9,
-      "worstFrameMs": 25.7
+      "medianFrameMs": 16.7,
+      "medianFps": 59.9,
+      "onePercentLowFps": 39.5,
+      "worstFrameMs": 25.5
     },
     "targetViewport": {
       "samples": 120,
       "medianFrameMs": 16.7,
       "medianFps": 59.9,
-      "onePercentLowFps": 53.6,
-      "worstFrameMs": 18.7
+      "onePercentLowFps": 39.6,
+      "worstFrameMs": 25.3
     }
   },
   "checkpoints": [

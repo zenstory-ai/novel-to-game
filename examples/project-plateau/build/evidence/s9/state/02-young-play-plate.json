@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 12.926,
+    "elapsedSeconds": 12.862,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -58,7 +58,7 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.016599999904632567,
+    "attackSeconds": 0.008200000047683715,
     "examinedTrack": true,
     "observedBehavior": true,
     "lastObservation": "The young keep close while the adults feed.",
@@ -117,7 +117,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 167.074,
+    "remainingLight": 167.138,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -130,20 +130,20 @@
     "attackStage": "search",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": 0.1372,
+      "wingBeat": 0.2378,
       "wingFold": 0.1,
       "mode": "upstroke",
       "bank": -0.04,
       "direction": [
-        0.7019,
+        0.704,
         0.1087,
-        -0.704
+        -0.7018
       ]
     },
     "position": {
-      "x": -14.41,
-      "y": 8.88,
-      "z": -12.16
+      "x": -14.55,
+      "y": 8.86,
+      "z": -12.08
     },
     "scale": 0.7216,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -167,12 +167,12 @@
       },
       {
         "x": -2.2,
-        "y": -0.961,
+        "y": -0.943,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.816,
+        "y": -0.814,
         "z": -27.2
       },
       {
@@ -367,7 +367,7 @@
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.203
+        "at": 0.197
       },
       {
         "cue": "shutter",
@@ -377,62 +377,62 @@
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 2.293
+        "at": 2.288
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 2.293
+        "at": 2.288
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 2.464
+        "at": 2.459
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 2.539
+        "at": 2.533
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 4.549
+        "at": 4.523
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 4.549
+        "at": 4.523
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 10.651
+        "at": 10.592
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 10.741
+        "at": 10.683
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 10.741
+        "at": 10.688
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 10.821
+        "at": 10.763
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 12.816
+        "at": 12.752
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 12.816
+        "at": 12.752
       }
     ]
   },
@@ -470,7 +470,7 @@
   },
   "plateCapture": {
     "status": "ready",
-    "durationMs": 34.3,
+    "durationMs": 28.4,
     "error": null
   },
   "sceneChildren": 62,
@@ -487,8 +487,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 796,
-    "skippedFrames": 817,
+    "renderedFrames": 793,
+    "skippedFrames": 814,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -498,6 +498,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 306.59999990463257,
+  "firstRenderedAt": 297.39999985694885,
   "recentMedianFrameMs": 16.7
 }

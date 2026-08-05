@@ -17,12 +17,12 @@
   "renderer": "WebGL2",
   "player": {
     "position": {
-      "x": 2.409,
-      "z": 62.03
+      "x": 2.388,
+      "z": 62.025
     },
     "lastStablePosition": {
-      "x": 2.409,
-      "z": 62.03
+      "x": 2.388,
+      "z": 62.025
     },
     "groundY": -0.361,
     "verticalOffset": 0,
@@ -35,8 +35,8 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 59.097,
-    "distanceTravelled": 133.779,
+    "elapsedSeconds": 59.071,
+    "distanceTravelled": 133.729,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -122,7 +122,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 92.903,
+    "remainingLight": 92.929,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -146,18 +146,18 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.0321,
+      "wingBeat": -0.0322,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": -0.0349,
+      "bank": -0.0346,
       "direction": [
         0.994,
-        -0.087,
-        -0.0658
+        -0.0869,
+        -0.066
       ]
     },
     "position": {
-      "x": -4.83,
+      "x": -4.84,
       "y": 9.84,
       "z": -17.94
     },
@@ -373,47 +373,47 @@
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 17.035
+        "at": 16.997
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 23.168
+        "at": 23.131
       },
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 27.067
+        "at": 27.051
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 27.072
+        "at": 27.067
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 27.136
+        "at": 27.131
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 29.152
+        "at": 29.136
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 29.152
+        "at": 29.136
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 29.669
+        "at": 29.696
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 35.669
+        "at": 35.68
       },
       {
         "cue": "camera-raise",
@@ -428,27 +428,27 @@
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 38.373
+        "at": 38.336
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 38.373
+        "at": 38.336
       },
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 44.965
+        "at": 44.912
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 50.971
+        "at": 50.912
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 58.987
+        "at": 58.965
       }
     ]
   },
@@ -492,7 +492,7 @@
   },
   "plateCapture": {
     "status": "ready",
-    "durationMs": 34.4,
+    "durationMs": 35.4,
     "error": null
   },
   "sceneChildren": 62,
@@ -509,8 +509,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 3572,
-    "skippedFrames": 3603,
+    "renderedFrames": 3571,
+    "skippedFrames": 3598,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -520,6 +520,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 284.59999990463257,
+  "firstRenderedAt": 293.89999985694885,
   "recentMedianFrameMs": 16.7
 }

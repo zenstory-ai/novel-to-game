@@ -123,17 +123,17 @@
       "wingBeat": 0.045,
       "wingFold": 0,
       "mode": "upstroke",
-      "bank": 0.0651,
+      "bank": 0.0629,
       "direction": [
-        -0.4414,
-        0.1975,
-        0.8753
+        -0.4283,
+        0.1995,
+        0.8813
       ]
     },
     "position": {
-      "x": 28.56,
-      "y": 23.41,
-      "z": -7.24
+      "x": 28.59,
+      "y": 23.4,
+      "z": -7.3
     },
     "scale": 0.88,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -147,7 +147,7 @@
     "positions": [
       {
         "x": -8,
-        "y": -0.601,
+        "y": -0.6,
         "z": -31
       },
       {
@@ -162,7 +162,7 @@
       },
       {
         "x": 3.4,
-        "y": -0.762,
+        "y": -0.763,
         "z": -27.2
       },
       {
@@ -396,8 +396,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 66,
-    "skippedFrames": 184,
+    "renderedFrames": 64,
+    "skippedFrames": 179,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -407,6 +407,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 2957.7999999523163,
-  "recentMedianFrameMs": 33.3
+  "firstRenderedAt": 2960.2000000476837,
+  "recentMedianFrameMs": 33.4
 }

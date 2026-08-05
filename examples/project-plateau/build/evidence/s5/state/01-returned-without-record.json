@@ -35,8 +35,8 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.731,
-    "distanceTravelled": 1.134,
+    "elapsedSeconds": 0.786,
+    "distanceTravelled": 1.138,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -110,7 +110,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 151.269,
+    "remainingLight": 151.214,
     "returnRoute": "covered",
     "returnCostSeconds": 28,
     "returnStrike": false,
@@ -124,7 +124,7 @@
       "survivingPlates": 0,
       "route": "covered",
       "brookResponse": null,
-      "remainingLight": 151.3,
+      "remainingLight": 151.2,
       "gunshotCallback": null
     }
   },
@@ -134,20 +134,20 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": 0.0398,
+      "wingBeat": 0.0412,
       "wingFold": 0,
       "mode": "upstroke",
-      "bank": 0.1303,
+      "bank": 0.1394,
       "direction": [
-        -0.5818,
-        0.1741,
-        0.7945
+        -0.6136,
+        0.1661,
+        0.7719
       ]
     },
     "position": {
-      "x": 27.44,
-      "y": 20.5,
-      "z": -6.54
+      "x": 27.29,
+      "y": 20.54,
+      "z": -6.34
     },
     "scale": 0.8442,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -157,7 +157,7 @@
     "adults": 2,
     "young": 3,
     "branchAngle": 0.03,
-    "branchContactDistance": 0.95,
+    "branchContactDistance": 0.949,
     "positions": [
       {
         "x": -8,
@@ -171,12 +171,12 @@
       },
       {
         "x": -2.2,
-        "y": -1.021,
+        "y": -1.022,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.775,
+        "y": -0.774,
         "z": -27.2
       },
       {
@@ -366,17 +366,17 @@
       {
         "cue": "search",
         "caption": "[a near call circles overhead]",
-        "at": 0.507
+        "at": 0.565
       },
       {
         "cue": "cover",
         "caption": "[branches scrape the camera; wingbeats widen]",
-        "at": 0.555
+        "at": 0.619
       },
       {
         "cue": "result",
         "caption": "[glass plates settle on the light board]",
-        "at": 0.624
+        "at": 0.683
       }
     ]
   },
@@ -437,8 +437,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 64,
-    "skippedFrames": 85,
+    "renderedFrames": 69,
+    "skippedFrames": 88,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -448,6 +448,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.60000014305115,
-  "recentMedianFrameMs": 17.3
+  "firstRenderedAt": 453.2000000476837,
+  "recentMedianFrameMs": 16.7
 }

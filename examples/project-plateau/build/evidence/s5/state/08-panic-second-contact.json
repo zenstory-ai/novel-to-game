@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 10.208,
+    "elapsedSeconds": 10.258,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -62,7 +62,7 @@
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 1.0167000000476807,
+    "previewSeconds": 0.999999999999997,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -114,7 +114,7 @@
     "failed": true,
     "failureCause": "second-unblocked-strike",
     "contactCount": 2,
-    "remainingLight": 169.792,
+    "remainingLight": 169.742,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -133,13 +133,13 @@
     "attackStage": "search",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": 0.0144,
+      "wingBeat": 0.0104,
       "wingFold": 0.1,
       "mode": "upstroke",
       "bank": -0.04,
       "direction": [
-        0.6413,
-        0.3882,
+        0.6411,
+        0.3884,
         0.6619
       ]
     },
@@ -155,8 +155,8 @@
     "moment": "glade-branch-pull",
     "adults": 2,
     "young": 3,
-    "branchAngle": 0.031,
-    "branchContactDistance": 0.905,
+    "branchAngle": 0.036,
+    "branchContactDistance": 0.878,
     "positions": [
       {
         "x": -8,
@@ -360,72 +360,72 @@
       {
         "cue": "field-start",
         "caption": "[brook water and insects under the canopy]",
-        "at": 36.432
+        "at": 36.576
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 36.512
+        "at": 36.651
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 36.571
+        "at": 36.709
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 36.624
+        "at": 36.768
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 38.608
+        "at": 38.768
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 38.608
+        "at": 38.768
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 41.595
+        "at": 41.776
       },
       {
         "cue": "contact",
         "caption": "[case strike; glass cracks]",
-        "at": 41.595
+        "at": 41.776
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 41.605
+        "at": 41.787
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 41.659
+        "at": 41.84
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 43.643
+        "at": 43.819
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 43.643
+        "at": 43.819
       },
       {
         "cue": "contact",
         "caption": "[case strike; glass cracks]",
-        "at": 46.629
+        "at": 46.816
       },
       {
         "cue": "failure",
         "caption": "[the field sound narrows to wind and brook]",
-        "at": 46.629
+        "at": 46.816
       }
     ]
   },
@@ -469,7 +469,7 @@
   },
   "plateCapture": {
     "status": "ready",
-    "durationMs": 28.7,
+    "durationMs": 24.4,
     "error": null
   },
   "sceneChildren": 62,
@@ -486,8 +486,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 2842,
-    "skippedFrames": 2943,
+    "renderedFrames": 2855,
+    "skippedFrames": 2955,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -497,6 +497,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.60000014305115,
+  "firstRenderedAt": 453.2000000476837,
   "recentMedianFrameMs": 16.7
 }

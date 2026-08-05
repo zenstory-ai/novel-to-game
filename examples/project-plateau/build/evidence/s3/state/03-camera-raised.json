@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.701,
+    "elapsedSeconds": 0.747,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -108,7 +108,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.3,
+    "remainingLight": 179.253,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -121,20 +121,20 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.1106,
+      "wingBeat": 0.074,
       "wingFold": 0,
-      "mode": "downstroke",
-      "bank": 0.0907,
+      "mode": "upstroke",
+      "bank": 0.0993,
       "direction": [
-        -0.5828,
-        0.17,
-        0.7946
+        -0.6254,
+        0.1594,
+        0.7639
       ]
     },
     "position": {
-      "x": 28.09,
-      "y": 23.58,
-      "z": -6.48
+      "x": 27.88,
+      "y": 23.64,
+      "z": -6.2
     },
     "scale": 0.88,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -144,31 +144,31 @@
     "adults": 2,
     "young": 3,
     "branchAngle": 0.03,
-    "branchContactDistance": 0.912,
+    "branchContactDistance": 0.91,
     "positions": [
       {
         "x": -8,
-        "y": -0.592,
+        "y": -0.593,
         "z": -31
       },
       {
         "x": 10.5,
-        "y": -0.28,
+        "y": -0.279,
         "z": -39
       },
       {
         "x": -2.2,
-        "y": -1.046,
+        "y": -1.056,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.783,
+        "y": -0.772,
         "z": -27.2
       },
       {
         "x": 2.5,
-        "y": -0.325,
+        "y": -0.324,
         "z": -35
       }
     ],
@@ -353,12 +353,12 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 0.357
+        "at": 0.384
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 0.491
+        "at": 0.544
       }
     ]
   },
@@ -413,8 +413,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 63,
-    "skippedFrames": 83,
+    "renderedFrames": 68,
+    "skippedFrames": 89,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -424,6 +424,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.89999985694885,
-  "recentMedianFrameMs": 17.6
+  "firstRenderedAt": 336.60000014305115,
+  "recentMedianFrameMs": 16.8
 }

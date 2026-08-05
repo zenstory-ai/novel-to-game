@@ -35,7 +35,7 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 0.246,
+    "elapsedSeconds": 0.265,
     "distanceTravelled": 0,
     "paused": false,
     "pauseReason": null,
@@ -107,7 +107,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 179.754,
+    "remainingLight": 179.735,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -120,20 +120,20 @@
     "attackStage": "orbit",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": -0.1737,
+      "wingBeat": -0.2098,
       "wingFold": 0,
       "mode": "downstroke",
-      "bank": 0.0628,
+      "bank": 0.0652,
       "direction": [
-        -0.4275,
-        0.1996,
-        0.8817
+        -0.4417,
+        0.1974,
+        0.8752
       ]
     },
     "position": {
-      "x": 28.59,
-      "y": 23.4,
-      "z": -7.3
+      "x": 28.56,
+      "y": 23.41,
+      "z": -7.23
     },
     "scale": 0.88,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
@@ -143,21 +143,21 @@
     "adults": 2,
     "young": 3,
     "branchAngle": 0.03,
-    "branchContactDistance": 0.922,
+    "branchContactDistance": 0.921,
     "positions": [
       {
         "x": -8,
-        "y": -0.589,
+        "y": -0.59,
         "z": -31
       },
       {
         "x": 10.5,
-        "y": -0.284,
+        "y": -0.283,
         "z": -39
       },
       {
         "x": -2.2,
-        "y": -0.96,
+        "y": -0.971,
         "z": -24.8
       },
       {
@@ -402,8 +402,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 35,
-    "skippedFrames": 55,
+    "renderedFrames": 36,
+    "skippedFrames": 59,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -413,6 +413,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 291.60000014305115,
-  "recentMedianFrameMs": 31.7
+  "firstRenderedAt": 322.90000009536743,
+  "recentMedianFrameMs": 27.1
 }

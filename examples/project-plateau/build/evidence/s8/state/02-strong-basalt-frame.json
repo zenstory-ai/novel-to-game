@@ -18,13 +18,13 @@
   "player": {
     "position": {
       "x": 3,
-      "z": 17.562
+      "z": 17.6
     },
     "lastStablePosition": {
       "x": 3,
-      "z": 17.562
+      "z": 17.6
     },
-    "groundY": -1.766,
+    "groundY": -1.764,
     "verticalOffset": 0,
     "verticalVelocity": 0,
     "grounded": true,
@@ -35,8 +35,8 @@
     "heading": 0,
     "pitch": 0,
     "stance": "walk",
-    "elapsedSeconds": 17.231,
-    "distanceTravelled": 52.438,
+    "elapsedSeconds": 17.18,
+    "distanceTravelled": 52.4,
     "paused": false,
     "pauseReason": null,
     "boundaryRecoveries": 0,
@@ -56,14 +56,14 @@
     "threatAwareness": 3,
     "threatState": "attack",
     "lastThreatEvent": "plate-exposure:+2",
-    "attackSeconds": 0.10020000004768372,
+    "attackSeconds": 0.09990000009536742,
     "examinedTrack": true,
     "observedBehavior": false,
     "lastObservation": "Three toes. Fresh. The brook runs back to camp.",
     "cameraRaised": false,
     "plateRailRevealed": true,
     "pendingExposure": null,
-    "previewSeconds": 3.916599999904632,
+    "previewSeconds": 3.9249999999999994,
     "lastProofEvent": {
       "plateIndex": 1,
       "frameKey": "basalt-scale",
@@ -115,7 +115,7 @@
     "failed": false,
     "failureCause": null,
     "contactCount": 0,
-    "remainingLight": 162.769,
+    "remainingLight": 162.82,
     "returnRoute": null,
     "returnCostSeconds": 0,
     "returnStrike": false,
@@ -128,34 +128,34 @@
     "attackStage": "search",
     "attackProgress": 0,
     "flightPose": {
-      "wingBeat": 0.3195,
+      "wingBeat": 0.2963,
       "wingFold": 0.1,
       "mode": "upstroke",
       "bank": -0.04,
       "direction": [
-        0.9199,
-        -0.008,
-        0.3922
+        0.9206,
+        -0.0078,
+        0.3904
       ]
     },
     "position": {
-      "x": -19.44,
+      "x": -19.74,
       "y": 10.55,
-      "z": -14.04
+      "z": -14.09
     },
-    "scale": 0.7271,
+    "scale": 0.7261,
     "anchorModel": "fixed-world-orbit-latched-attack-origin"
   },
   "familyVisual": {
-    "moment": "glade-branch-pull",
+    "moment": "glade-young-play",
     "adults": 2,
     "young": 3,
     "branchAngle": 0.03,
-    "branchContactDistance": 0.897,
+    "branchContactDistance": 0.917,
     "positions": [
       {
         "x": -8,
-        "y": -0.603,
+        "y": -0.602,
         "z": -31
       },
       {
@@ -165,12 +165,12 @@
       },
       {
         "x": -2.2,
-        "y": -1.008,
+        "y": -0.904,
         "z": -24.8
       },
       {
         "x": 3.4,
-        "y": -0.767,
+        "y": -0.725,
         "z": -27.2
       },
       {
@@ -360,47 +360,47 @@
       {
         "cue": "examine",
         "caption": "[fern brushes aside; pencil marks the field card]",
-        "at": 6.261
+        "at": 6.245
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 6.272
+        "at": 6.256
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 6.336
+        "at": 6.32
       },
       {
         "cue": "watch",
         "caption": "[one wing call answers at a distance]",
-        "at": 8.336
+        "at": 8.304
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 8.336
+        "at": 8.304
       },
       {
         "cue": "camera-raise",
         "caption": "[wood frame lifts; bellows opens]",
-        "at": 14.976
+        "at": 14.923
       },
       {
         "cue": "shutter",
         "caption": "[shutter releases]",
-        "at": 15.045
+        "at": 14.987
       },
       {
         "cue": "attack",
         "caption": "[wingbeats tighten into a dive]",
-        "at": 17.035
+        "at": 16.997
       },
       {
         "cue": "plate-slide",
         "caption": "[glass plate seats in its case]",
-        "at": 17.035
+        "at": 16.997
       }
     ]
   },
@@ -438,7 +438,7 @@
   },
   "plateCapture": {
     "status": "ready",
-    "durationMs": 28.1,
+    "durationMs": 23.5,
     "error": null
   },
   "sceneChildren": 62,
@@ -455,8 +455,8 @@
     "maxPixelRatio": 1.25,
     "quality": "balanced",
     "activeFpsCap": 60,
-    "renderedFrames": 1059,
-    "skippedFrames": 1082,
+    "renderedFrames": 1057,
+    "skippedFrames": 1076,
     "activeFpsPolicy": "60fps-cap-across-refresh-rates",
     "idleFpsCap": 30,
     "pausedFpsCap": 15,
@@ -466,6 +466,6 @@
     "gtaoSamples": 4,
     "antialiasing": "single-pass-fxaa"
   },
-  "firstRenderedAt": 284.59999990463257,
+  "firstRenderedAt": 293.89999985694885,
   "recentMedianFrameMs": 16.7
 }

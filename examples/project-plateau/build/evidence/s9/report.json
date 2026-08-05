@@ -30,26 +30,26 @@
   "plateImages": [
     {
       "plate": 1,
-      "bytesInCssValue": 109702,
-      "sha256": "3c3c1605d165e1fc1e8f2909472dceff9da5be08595c1e36e0a0602fca162e9e",
+      "bytesInCssValue": 109594,
+      "sha256": "c6919c2efb98382e79bd6ba0ddbe30a757e7cc606d875c88a65a24e987f2fb80",
       "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 2,
-      "bytesInCssValue": 97586,
-      "sha256": "7982f403bc6fdab49bd662b5f02710f88f35416f8daca26580da496edbb4abc7",
+      "bytesInCssValue": 98078,
+      "sha256": "47c0439cb064116f2e04064f2401af21fc14fc326952c81057c0355ad8bc19ba",
       "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 3,
-      "bytesInCssValue": 100138,
-      "sha256": "e2de9b080f40450eab6b609bce2274a50b019274537ebda332fa1cee9f93aff2",
+      "bytesInCssValue": 99254,
+      "sha256": "fbf82458c06572d01781672bd81ce54fbbd204a90f7df91fc9158a2603c943b5",
       "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     },
     {
       "plate": 4,
-      "bytesInCssValue": 103054,
-      "sha256": "60fb3a367879b5346fd92e4e9c081d44786a814b0d33329c2b643474362f4382",
+      "bytesInCssValue": 102234,
+      "sha256": "43a1261c2cc0dc3ba22663189d36c0b28c5970d96df02b5d16ef0837677f1d87",
       "filter": "grayscale(1) sepia(0.08) contrast(1.24) brightness(0.82)"
     }
   ],
@@ -57,8 +57,8 @@
     "samples": 240,
     "medianFrameMs": 16.7,
     "medianFps": 59.9,
-    "onePercentLowFps": 39.3,
-    "worstFrameMs": 25.5
+    "onePercentLowFps": 39.5,
+    "worstFrameMs": 25.4
   },
   "checkpoints": [
     {
