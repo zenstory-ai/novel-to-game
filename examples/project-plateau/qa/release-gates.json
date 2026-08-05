@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": null,
-  "evidenceCommit": null,
+  "sourceCommit": "b8e2d34b27d24b9580c33afa9ce0e20e11068813",
+  "evidenceCommit": "b8e2d34b27d24b9580c33afa9ce0e20e11068813",
   "targetFinish": "playable-prototype",
   "demonstratedTier": "playable-prototype",
   "publicationTier": "playable-prototype",
