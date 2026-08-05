@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "seed": 139,
+  "baselineCommit": "db8bc29b023fc54e8b2b03aadff3085d39b2bad2",
+  "files": {
+    "src/environment-layout.js": "fdf0251cebe22324abdc9c6d50a07db0ec634fc8fed8bbc8662ffb9f171ecb31",
+    "src/collision-layout.js": "d2835764716c091d59a8d8427a123e946bd00b2dcc63e5e6d38397308a40562f"
+  },
+  "changePolicy": "immutable unless a world-owner spatial-delta approval accompanies collision, route-clock, and deterministic-path regressions",
+  "derivedSnapshot": {
+    "path": "test/spatial-anchor-snapshot.json",
+    "sha256": "11e7a37f5e967d5d67e0c860c4e1ccf618767187ea878678cae6070360273e26",
+    "colliderCount": 59,
+    "treeCount": 128
+  }
+}

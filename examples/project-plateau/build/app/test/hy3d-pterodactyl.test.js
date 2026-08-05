@@ -63,7 +63,7 @@ test('pterodactyl loader caches one matte template with shared flight morphs', a
     mesh.geometry.userData.silhouetteRefinement,
     'integrated-torso-wing-root-volume',
   );
-  assert.equal(mesh.material.roughness, 0.84);
+  assert.equal(mesh.material.roughness, 0.86);
   assert.equal(mesh.material.metalness, 0);
   const positions = mesh.geometry.getAttribute('position');
   const diveFold = mesh.geometry.morphAttributes.position[

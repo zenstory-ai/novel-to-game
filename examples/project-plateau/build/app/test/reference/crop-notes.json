@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceViewport": [
+    1440,
+    900
+  ],
+  "frames": [
+    {
+      "path": "ashmaw-reference-01.jpg",
+      "crop": "none",
+      "purpose": "selected active presentation-maturity reference"
+    },
+    {
+      "path": "ashmaw-reference-02.jpg",
+      "crop": "none",
+      "purpose": "selected active presentation-maturity reference"
+    },
+    {
+      "path": "ashmaw-reference-03.jpg",
+      "crop": "none",
+      "purpose": "selected active presentation-maturity reference"
+    }
+  ],
+  "contactSheet": "ashmaw-contact-sheet.jpg"
+}

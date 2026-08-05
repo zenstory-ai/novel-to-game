@@ -777,14 +777,16 @@ export function pterodactylAttackFlightState({
 }
 
 function terrainColorAt(x, z) {
-  const drySoil = new THREE.Color(0x696044);
-  const mossSoil = new THREE.Color(0x405640);
-  const exposedSoil = new THREE.Color(0x817254);
-  const wetSoil = new THREE.Color(0x294745);
+  const drySoil = new THREE.Color(0x5f583f);
+  const mossSoil = new THREE.Color(0x354d38);
+  const exposedSoil = new THREE.Color(0x756548);
+  const wetSoil = new THREE.Color(0x183b3b);
   const variation = terrainVariation(x, z);
   const wetness = terrainWetness(x, z);
   const slope = terrainSlope(x, z);
   const height = terrainHeight(x, z);
+  const gladeDistance = Math.hypot((x - 1) / 28, (z + 30) / 38);
+  const gladeSunWeight = 1 - THREE.MathUtils.smoothstep(gladeDistance, 0.34, 0.96);
   const exposure = THREE.MathUtils.clamp((height + 2.1) / 5.4, 0, 1);
   const mossWeight = THREE.MathUtils.clamp(
     0.4 + variation * 0.32 + (1 - exposure) * 0.24 - slope * 0.7,
@@ -797,6 +799,7 @@ function terrainColorAt(x, z) {
     .lerp(exposedSoil, exposedWeight)
     .lerp(wetSoil, wetness * 0.82);
   color.offsetHSL(0, 0, variation * 0.045);
+  color.offsetHSL(0.012 * gladeSunWeight, -0.035 * gladeSunWeight, 0.11 * gladeSunWeight);
   return color;
 }
 
@@ -1055,9 +1058,9 @@ function createTrackMudImpressionGeometry() {
   const colors = [];
   const uvs = [];
   const indices = [];
-  const pressedMud = new THREE.Color(0x0d2526);
-  const compressedRim = new THREE.Color(0x9a8964);
-  const standingWater = new THREE.Color(0x405b57);
+  const pressedMud = new THREE.Color(0x07191a);
+  const compressedRim = new THREE.Color(0xb29c6c);
+  const standingWater = new THREE.Color(0x4c6964);
 
   function writeVertex(localX, localZ, normalizedRadius) {
     const world = trackWorldCoordinates(localX, localZ);
@@ -1261,25 +1264,25 @@ function makeRouteAndBrook(scene) {
   const brook = makeRibbon(brookPoints, 3.4, PALETTE.water, 0.12);
   brook.material.dispose();
   brook.material = new THREE.MeshPhysicalMaterial({
-    color: 0x315e66,
+    color: 0x47757b,
     map: waterDetailTexture,
-    roughness: 0.68,
+    roughness: 0.48,
     roughnessMap: waterDetailTexture,
     bumpMap: waterDetailTexture,
     bumpScale: 0.075,
     metalness: 0,
     ior: 1.33,
-    specularIntensity: 0.05,
-    specularColor: new THREE.Color(0x587a78),
-    clearcoat: 0.02,
-    clearcoatRoughness: 0.72,
+    specularIntensity: 0.06,
+    specularColor: new THREE.Color(0x8da7a0),
+    clearcoat: 0.08,
+    clearcoatRoughness: 0.48,
     transparent: true,
-    opacity: 0.7,
+    opacity: 0.74,
     vertexColors: true,
     depthWrite: false,
     side: THREE.DoubleSide,
     emissive: 0x0a1817,
-    emissiveIntensity: 0.08,
+    emissiveIntensity: 0.03,
   });
   brook.material.userData.surface = 'procedural-ripple-microdetail';
   brook.material.userData.motion = 'animated-downstream-uv-flow';
@@ -1339,7 +1342,7 @@ function makeRouteAndBrook(scene) {
   const brookStoneCount = 56;
   const brookStones = new THREE.InstancedMesh(
     new THREE.DodecahedronGeometry(1, 0),
-    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.86, flatShading: true }),
+    new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.94, flatShading: true }),
     brookStoneCount,
   );
   const random = seededRandom(482);
@@ -1358,7 +1361,7 @@ function makeRouteAndBrook(scene) {
     dummy.scale.set(scale * (0.8 + random() * 0.6), scale * 0.38, scale);
     dummy.updateMatrix();
     brookStones.setMatrixAt(index, dummy.matrix);
-    stoneColor.setHSL(0.42 + random() * 0.045, 0.08 + random() * 0.08, 0.3 + random() * 0.12);
+    stoneColor.setHSL(0.41 + random() * 0.035, 0.06 + random() * 0.06, 0.2 + random() * 0.085);
     brookStones.setColorAt(index, stoneColor);
   }
   brookStones.name = 'world.connected_route.brook-stones';
@@ -1618,6 +1621,8 @@ function placeVegetation(scene) {
       index: i, x, z, scale, isAraucaria,
     } = tree;
     const y = terrainHeight(x, z);
+    const crownClusterScale = 0.92 + ((i * 7) % 5) * 0.04;
+    const crownValueShift = (Math.floor(i / 5) % 3 - 1) * 0.026;
     // The current authored trunk loft starts at y=0. The previous placement
     // still treated it like a center-origin cylinder and lifted every tree by
     // roughly half its height. Reset all Euler axes as well: otherwise a
@@ -1633,10 +1638,11 @@ function placeVegetation(scene) {
     if (isAraucaria) {
       dummy.position.set(x, y + 5.72 * scale, z);
       dummy.rotation.set(0, tree.canopyYaw, 0);
-      dummy.scale.set(...tree.canopyScale);
+      dummy.scale.set(...tree.canopyScale).multiplyScalar(crownClusterScale);
       dummy.updateMatrix();
       araucariaMesh.setMatrixAt(araucariaIndex, dummy.matrix);
       crownColor.setHSL(...tree.crownColor);
+      crownColor.offsetHSL(0, crownValueShift * 0.55, crownValueShift);
       araucariaMesh.setColorAt(araucariaIndex, crownColor);
       araucariaIndex += 1;
 
@@ -1652,10 +1658,11 @@ function placeVegetation(scene) {
       const [crownOffsetX, crownOffsetZ] = tree.crownOffset;
       dummy.position.set(x + crownOffsetX, y + 6.15 * scale, z + crownOffsetZ);
       dummy.rotation.set(...tree.crownRotation);
-      dummy.scale.set(...tree.crownScale);
+      dummy.scale.set(...tree.crownScale).multiplyScalar(crownClusterScale);
       dummy.updateMatrix();
       crownMesh.setMatrixAt(i, dummy.matrix);
       crownColor.setHSL(...tree.crownColor);
+      crownColor.offsetHSL(0, crownValueShift * 0.55, crownValueShift);
       crownMesh.setColorAt(i, crownColor);
 
       dummy.position.set(
@@ -1664,7 +1671,7 @@ function placeVegetation(scene) {
         z + tree.accentOffset[1],
       );
       dummy.rotation.set(...tree.accentRotation);
-      dummy.scale.set(...tree.accentScale);
+      dummy.scale.set(...tree.accentScale).multiplyScalar(2 - crownClusterScale);
       dummy.updateMatrix();
       crownAccentMesh.setMatrixAt(i, dummy.matrix);
       crownColor.offsetHSL(0.01, -0.02, 0.035);
@@ -1726,10 +1733,12 @@ function placeVegetation(scene) {
     } = stone;
     dummy.position.set(x, terrainHeight(x, z) + scale * 0.2, z);
     dummy.rotation.set(...stone.rotation);
-    dummy.scale.set(...stone.instanceScale);
+    const visualClusterScale = 0.72 + ((index * 5) % 7) * 0.06;
+    dummy.scale.set(...stone.instanceScale).multiplyScalar(visualClusterScale);
     dummy.updateMatrix();
     stoneMesh.setMatrixAt(index, dummy.matrix);
     crownColor.setHSL(...stone.color);
+    crownColor.offsetHSL(0, -0.025, (Math.floor(index / 9) % 3 - 1) * 0.025 - 0.025);
     stoneMesh.setColorAt(index, crownColor);
   });
   stoneMesh.name = 'world.connected_route.ground-stones';
@@ -1848,6 +1857,84 @@ function makeHabitatAccents(scene) {
   };
 }
 
+function makeDegradableGroundAccents(scene) {
+  const group = new THREE.Group();
+  const wetlandCount = 36;
+  const marginCount = 28;
+  const wetland = new THREE.InstancedMesh(
+    shared.fernGeometries[1],
+    shared.fernMaterial,
+    wetlandCount,
+  );
+  const margins = new THREE.InstancedMesh(
+    shared.fernGeometries[2],
+    shared.fernMaterial,
+    marginCount,
+  );
+  const dummy = new THREE.Object3D();
+  const color = new THREE.Color();
+  const random = seededRandom(2719);
+
+  // Follow the brook at irregular intervals, but stay outside its open water
+  // and the opening track read. These are visual instances only: they never
+  // enter collision or navigation truth.
+  for (let index = 0; index < wetlandCount; index += 1) {
+    const t = (index + 0.35 + random() * 0.3) / wetlandCount;
+    const z = THREE.MathUtils.lerp(82, -66, t);
+    const brookX = -11.5 + Math.sin(z * 0.071) * 3.1;
+    const side = index % 2 ? -1 : 1;
+    const x = brookX + side * (3.1 + random() * 2.2);
+    const trackDistance = Math.hypot(x - TRACK_IMPRESSION.x, z - TRACK_IMPRESSION.z);
+    const finalZ = trackDistance < 7 ? z + (z > TRACK_IMPRESSION.z ? 7 : -7) : z;
+    const scale = 0.62 + random() * 0.72;
+    dummy.position.set(x, terrainHeight(x, finalZ) + 0.02, finalZ);
+    dummy.rotation.set(0, random() * Math.PI * 2, (random() - 0.5) * 0.07);
+    dummy.scale.set(scale * (0.72 + random() * 0.28), scale * (1.1 + random() * 0.35), scale);
+    dummy.updateMatrix();
+    wetland.setMatrixAt(index, dummy.matrix);
+    color.setHSL(0.36 + random() * 0.035, 0.34 + random() * 0.12, 0.16 + random() * 0.055);
+    wetland.setColorAt(index, color);
+  }
+
+  // Alternate route margins and depth bands so the plateau no longer reads
+  // as one flat horizontal strip or a regularly spaced tree row.
+  for (let index = 0; index < marginCount; index += 1) {
+    const nearBand = index < 12;
+    const side = index % 2 ? -1 : 1;
+    const z = nearBand
+      ? 48 + random() * 34
+      : -54 + random() * 70;
+    const x = side * (nearBand ? 14 + random() * 10 : 20 + random() * 13);
+    const scale = nearBand ? 1.35 + random() * 1.25 : 0.9 + random() * 1.05;
+    dummy.position.set(x, terrainHeight(x, z) + 0.025, z);
+    dummy.rotation.set(0, random() * Math.PI * 2, side * (0.04 + random() * 0.08));
+    dummy.scale.set(scale * (1.12 + random() * 0.32), scale * (0.68 + random() * 0.22), scale);
+    dummy.updateMatrix();
+    margins.setMatrixAt(index, dummy.matrix);
+    color.setHSL(0.3 + random() * 0.035, 0.4 + random() * 0.11, nearBand ? 0.105 : 0.15 + random() * 0.04);
+    margins.setColorAt(index, color);
+  }
+
+  wetland.name = 'world.connected_route.degradable-wetland-accents';
+  margins.name = 'world.connected_route.degradable-margin-accents';
+  for (const mesh of [wetland, margins]) {
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.userData.collisionRole = 'non-solid-visual-accent';
+    mesh.userData.qualityProfile = 'balanced-high-only';
+  }
+  wetland.userData.compositionRole = 'irregular-wetland-midground-rhythm';
+  margins.userData.compositionRole = 'foreground-midground-depth-break';
+  group.name = 'world.connected_route.degradable-ground-accents';
+  group.userData.profile = 'deterministic-non-solid-instanced-accents';
+  group.userData.instanceCount = wetlandCount + marginCount;
+  group.userData.drawCalls = 2;
+  group.userData.quality = 'balanced';
+  group.add(wetland, margins);
+  scene.add(group);
+  return group;
+}
+
 function makeBrookBoulder(scene) {
   const geometry = new THREE.DodecahedronGeometry(1, 1);
   const material = new THREE.MeshStandardMaterial({
@@ -1876,7 +1963,7 @@ function makeBasalt(scene) {
   const material = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     vertexColors: true,
-    roughness: 0.91,
+    roughness: 0.86,
     flatShading: true,
   });
   const pillarMaterial = material.clone();
@@ -1884,6 +1971,8 @@ function makeBasalt(scene) {
   pillarMaterial.roughnessMap = basaltDetailTexture;
   pillarMaterial.bumpMap = basaltDetailTexture;
   pillarMaterial.bumpScale = 0.075;
+  pillarMaterial.emissive.set(0x542019);
+  pillarMaterial.emissiveIntensity = 0.34;
   pillarMaterial.userData.surface = 'fractured-mineral-banding';
   const pillars = new THREE.InstancedMesh(geometry, pillarMaterial, SCENE_BUDGET.basaltPillars);
   const seamGeometry = new THREE.TorusGeometry(1, 0.026, 4, 6, Math.PI * 1.35);
@@ -1891,8 +1980,8 @@ function makeBasalt(scene) {
   seamGeometry.userData.profile = 'irregular-column-fracture-seam';
   const seamMaterial = new THREE.MeshStandardMaterial({
     color: 0x51342d,
-    roughness: 0.72,
-    metalness: 0.02,
+    roughness: 0.82,
+    metalness: 0,
     flatShading: true,
   });
   const seams = new THREE.InstancedMesh(
@@ -1969,7 +2058,7 @@ function makeBasalt(scene) {
     dummy.updateMatrix();
     pillars.setMatrixAt(i, dummy.matrix);
     const pillarMatrix = dummy.matrix.clone();
-    color.setHSL(0.025 + random() * 0.018, 0.4 + random() * 0.12, 0.24 + random() * 0.075);
+    color.setHSL(0.018 + random() * 0.014, 0.45 + random() * 0.1, 0.255 + random() * 0.065);
     pillars.setColorAt(i, color);
 
     const seamLevel = 0.24 + random() * 0.52;
@@ -2252,7 +2341,7 @@ function makeGladeSunLane(scene) {
     fog: false,
     uniforms: {
       moteColor: { value: new THREE.Color(0xe8cd8b) },
-      moteOpacity: { value: 0.17 },
+      moteOpacity: { value: 0.14 },
     },
     vertexShader: `
       void main() {
@@ -2289,7 +2378,7 @@ function makeGladeSunLane(scene) {
       side: THREE.DoubleSide,
       uniforms: {
         shaftColor: { value: new THREE.Color(0xf0d69c) },
-        shaftOpacity: { value: 0.043 - index * 0.005 },
+        shaftOpacity: { value: 0.035 - index * 0.004 },
         phase: { value: phase },
         time: { value: 0 },
       },
@@ -2393,6 +2482,8 @@ function makePterodactylShadow(scene) {
   shadow.name = 'threat.pterodactyl.projected-shadow';
   shadow.visible = false;
   shadow.renderOrder = 2;
+  shadow.userData.targetPosition = new THREE.Vector3();
+  shadow.userData.smoothingScale = new THREE.Vector3(1, 1, 1);
 
   // Two quiet outer silhouettes soften the otherwise cut-paper edge without
   // adding a screen-space blur pass or another dynamic shadow map.
@@ -2458,13 +2549,17 @@ function makeAFrameTent() {
   const halfWidth = width / 2;
   const halfLength = length / 2;
   const canvasMaterial = new THREE.MeshStandardMaterial({
-    color: 0x95866b,
+    color: 0xad9770,
+    emissive: 0x392719,
+    emissiveIntensity: 0.34,
     roughness: 0.96,
     metalness: 0,
     side: THREE.DoubleSide,
   });
   const endMaterial = new THREE.MeshStandardMaterial({
-    color: 0x7f7058,
+    color: 0x8f7957,
+    emissive: 0x2f2117,
+    emissiveIntensity: 0.28,
     roughness: 1,
     side: THREE.DoubleSide,
   });
@@ -2668,7 +2763,7 @@ function makeFort(scene) {
   const flameGroup = new THREE.Group();
   flameGroup.name = 'camp-flames';
   const flameColors = [0xffb23e, 0xf4762b, 0xffd77a];
-  [[-0.18, 0.02, 0.76], [0.17, -0.08, 0.92], [0.02, 0.18, 0.62]].forEach(
+  [[-0.2, 0.02, 1.14], [0.18, -0.08, 1.34], [0.02, 0.18, 0.96]].forEach(
     ([x, z, height], index) => {
       const flameGeometry = createVerticalLoft([
         [0, 0, 0, 0.15, 0.12],
@@ -2682,17 +2777,17 @@ function makeFort(scene) {
         new THREE.MeshBasicMaterial({
           color: flameColors[index],
           transparent: true,
-          opacity: 0.86,
+          opacity: 0.95,
           depthWrite: false,
-          toneMapped: true,
+          toneMapped: false,
         }),
       );
       flame.position.set(x, 0.34, z);
-      flame.userData.baseScale = 0.92 + index * 0.08;
+      flame.userData.baseScale = 1.68 + index * 0.14;
       flameGroup.add(flame);
     },
   );
-  const emberGlow = new THREE.PointLight(0xff8a3a, 3.1, 13, 2.05);
+  const emberGlow = new THREE.PointLight(0xff8a3a, 6.8, 20, 1.85);
   emberGlow.name = 'ember-glow';
   emberGlow.position.y = 0.72;
   emberGlow.castShadow = false;
@@ -2711,16 +2806,18 @@ function makeFort(scene) {
       map: smokeTexture,
       color: smokeColor,
       transparent: true,
-      opacity: 0.16 - index * 0.0085,
+      opacity: 0.31 - index * 0.012,
       depthWrite: false,
     }));
-    const baseX = Math.sin(index * 1.61) * (0.14 + index * 0.026);
+    const windLean = -index * 0.18;
+    const baseX = windLean + Math.sin(index * 1.61) * (0.08 + index * 0.012);
     const baseY = 0.58 + index * 0.79;
     wisp.position.set(baseX, baseY, Math.cos(index * 1.27) * 0.16);
     wisp.userData.baseX = baseX;
     wisp.userData.baseY = baseY;
+    wisp.userData.windLean = windLean;
     wisp.userData.baseRotation = Math.sin(index * 2.17) * 0.2;
-    wisp.scale.set(1.35 + index * 0.13, 1.65 + index * 0.19, 1);
+    wisp.scale.set(1.58 + index * 0.15, 1.9 + index * 0.22, 1);
     wisp.material.rotation = wisp.userData.baseRotation;
     wisp.renderOrder = 1;
     smoke.add(wisp);
@@ -2730,6 +2827,51 @@ function makeFort(scene) {
   smoke.userData.profile = 'layered-billboard-wisps';
   smoke.userData.campFlames = flameGroup;
   smoke.userData.emberGlow = emberGlow;
+
+  const signal = new THREE.Group();
+  const signalX = 7.4;
+  const signalZ = 73.2;
+  const signalGround = terrainHeight(signalX, signalZ);
+  signal.name = 'world.connected_route.fort-signal';
+  signal.position.set(signalX, signalGround, signalZ);
+  const signalPole = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.055, 0.085, 4.8, 7),
+    new THREE.MeshStandardMaterial({ color: 0x493929, roughness: 0.9 }),
+  );
+  signalPole.name = 'signal-pole';
+  signalPole.position.y = 2.4;
+  signalPole.castShadow = true;
+  const flagGeometry = createTentPanelGeometry(
+    [
+      0, 0.56, 0,
+      0, -0.56, 0,
+      -1.3, -0.42, 0,
+      -1.3, 0.42, 0,
+      -2.6, -0.5, 0,
+      -2.6, 0.08, 0,
+    ],
+    [0, 1, 2, 0, 2, 3, 3, 2, 4, 3, 4, 5],
+  );
+  const signalFlag = new THREE.Mesh(
+    flagGeometry,
+    new THREE.MeshStandardMaterial({
+      color: 0xb75236,
+      emissive: 0x3a140d,
+      emissiveIntensity: 0.36,
+      roughness: 0.88,
+      side: THREE.DoubleSide,
+    }),
+  );
+  signalFlag.name = 'signal-flag';
+  signalFlag.position.y = 4.12;
+  signalFlag.castShadow = true;
+  signalFlag.userData.profile = 'wind-readable-camp-signal';
+  signalFlag.userData.basePositions = Float32Array.from(
+    signalFlag.geometry.attributes.position.array,
+  );
+  signal.add(signalPole, signalFlag);
+  scene.add(signal);
+  smoke.userData.campSignal = signalFlag;
   scene.add(smoke);
   return smoke;
 }
@@ -2796,6 +2938,7 @@ export function createWorld(scene) {
   const coverArches = makeCoverArches(scene);
   placeVegetation(scene);
   const habitatAccents = makeHabitatAccents(scene);
+  const degradableGroundAccents = makeDegradableGroundAccents(scene);
   makeBasalt(scene);
   const family = makeFamily(scene);
   const familyContactShadows = makeFamilyContactShadows(scene, family);
@@ -2915,6 +3058,7 @@ export function createWorld(scene) {
     family,
     coverArches,
     habitatAccents,
+    degradableGroundAccents,
     pterodactyls,
     pterodactylShadow,
     smoke,
@@ -2925,6 +3069,11 @@ export function createWorld(scene) {
     enableHy3dVisuals,
     update(elapsed, reducedMotion = false, runtime = {}) {
       const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
+      const visualQuality = ['low', 'balanced', 'high'].includes(runtime.quality)
+        ? runtime.quality
+        : 'balanced';
+      degradableGroundAccents.visible = visualQuality !== 'low';
+      degradableGroundAccents.userData.quality = visualQuality;
       renderedThreatState = ['distant', 'watch', 'search', 'attack'][awareness];
       renderedThreatResponse = awareness === 3 && runtime.inCover ? 'cover-pull-up' : 'orbit';
       const playerPosition = runtime.playerPosition ?? { x: 0, z: 0 };
@@ -2968,11 +3117,15 @@ export function createWorld(scene) {
       waterDetailTexture.offset.x = Math.sin(elapsed * 0.11) * (reducedMotion ? 0.004 : 0.014);
       routeAndBrook.brook.material.userData.flowOffset = Number(waterDetailTexture.offset.y.toFixed(4));
       gladeSunLane.userData.motes.rotation.y = reducedMotion ? 0 : elapsed * 0.006;
-      gladeSunLane.userData.motes.material.uniforms.moteOpacity.value = reducedMotion
-        ? 0.11
-        : 0.15 + Math.sin(elapsed * 0.37) * 0.025;
+      const eventClarity = awareness === 3 ? 0.68 : awareness === 2 ? 0.84 : 1;
+      gladeSunLane.userData.motes.material.uniforms.moteOpacity.value = (reducedMotion
+        ? 0.085
+        : 0.125 + Math.sin(elapsed * 0.37) * 0.018) * eventClarity;
       gladeSunLane.userData.shafts.children.forEach((shaft) => {
         shaft.material.uniforms.time.value = reducedMotion ? 0 : elapsed * 0.04;
+        const shaftIndex = Number(shaft.name.slice(-1)) - 1;
+        shaft.material.uniforms.shaftOpacity.value = (0.035 - shaftIndex * 0.004)
+          * eventClarity;
       });
       brookResponse.userData.response = runtime.brookResponse ?? null;
       const responseStrength = runtime.brookResponse === 'brush-moving'
@@ -2993,6 +3146,7 @@ export function createWorld(scene) {
       pterodactyls.forEach((mesh, index) => {
         const { radius, height, phase } = mesh.userData;
         const isPrimary = index === 0;
+        const previousVisualScale = mesh.scale.x;
         mesh.visible = isPrimary || awareness === 0;
         const lowerAwareness = Math.floor(visualOrbitAwareness);
         const upperAwareness = Math.ceil(visualOrbitAwareness);
@@ -3070,7 +3224,7 @@ export function createWorld(scene) {
           // camera centre. Orient against this same authored curve so the
           // animal cannot slide sideways or pitch upward while descending.
           const attackScale = mesh.userData.baseScale
-            * (0.92 + diveApproach * 0.08);
+            * (0.96 + diveApproach * 0.5);
           const transition = attackEntryPosition
             ? THREE.MathUtils.smoothstep(
               elapsed - attackEntryElapsed,
@@ -3130,10 +3284,25 @@ export function createWorld(scene) {
           ));
           mesh.rotation.x = 0;
         }
+        const poseBlend = mesh.userData.hasRenderedFlightPose && deltaSeconds > 0
+          ? 1 - Math.exp(-deltaSeconds * 10)
+          : 1;
+        const desiredVisualScale = mesh.scale.x;
+        mesh.scale.setScalar(THREE.MathUtils.lerp(
+          previousVisualScale,
+          desiredVisualScale,
+          poseBlend,
+        ));
         mesh.name = `threat.pterodactyl.${isPrimary ? renderedThreatState : 'distant'}`;
-        const wingFold = isPrimary && awareness === 3 && !runtime.inCover
+        const authoredWingFold = isPrimary && awareness === 3 && !runtime.inCover
           ? Math.max(attackWingFold, 0.1 + diveApproach * 0.7)
           : 0;
+        const wingFold = THREE.MathUtils.lerp(
+          mesh.userData.renderedWingFold ?? authoredWingFold,
+          authoredWingFold,
+          poseBlend,
+        );
+        mesh.userData.renderedWingFold = wingFold;
         const wingBeat = pterodactylWingBeat(elapsed, phase, awareness, reducedMotion)
           * (1 - wingFold * 0.78);
         for (const [sideName, sideSign] of [['leftWing', -1], ['rightWing', 1]]) {
@@ -3173,25 +3342,32 @@ export function createWorld(scene) {
         mesh.userData.rig.tail.rotation.y = Math.sin(angle * 1.4) * 0.08;
         const directAttack = isPrimary && awareness === 3 && !runtime.inCover;
         const rollAmplitude = awareness === 3 ? 0.08 : 0.16 + awareness * 0.035;
-        const flightRoll = directAttack
+        const authoredFlightRoll = directAttack
           ? -0.04 - diveApproach * 0.05 + attackRecovery * 0.1
           : Math.sin(angle * 2.4) * rollAmplitude;
+        const flightRoll = THREE.MathUtils.lerp(
+          mesh.userData.renderedFlightRoll ?? authoredFlightRoll,
+          authoredFlightRoll,
+          poseBlend,
+        );
+        mesh.userData.renderedFlightRoll = flightRoll;
         alignPterodactylToTravel(mesh, flightVelocity, flightRoll);
         mesh.userData.flightPose.bank = Number(flightRoll.toFixed(4));
         mesh.userData.flightPose.direction = mesh.userData.flightDirection
           ? mesh.userData.flightDirection.toArray().map((value) => Number(value.toFixed(4)))
           : null;
+        mesh.userData.hasRenderedFlightPose = true;
       });
       if (runtime.captureThreatPose === 'family' || runtime.captureThreatPose === 'dive') {
         const primary = pterodactyls[0];
         const dive = runtime.captureThreatPose === 'dive';
-        primary.position.set(dive ? 4.8 : -4, dive ? 6.15 : 10.5, dive ? -25.5 : -31);
+        primary.position.set(dive ? 3.8 : -4, dive ? 5.3 : 10.5, dive ? -21.5 : -31);
         primary.rotation.set(
           dive ? 0.62 : 0.12,
           dive ? Math.PI + 0.46 : Math.PI,
           dive ? -0.62 : -0.12,
         );
-        primary.scale.setScalar(primary.userData.baseScale * (dive ? 0.92 : 0.86));
+        primary.scale.setScalar(primary.userData.baseScale * (dive ? 1.18 : 0.86));
         applyHy3dPterodactylPose(primary, {
           wingUp: dive ? 0 : 0.2,
           wingDown: 0,
@@ -3205,19 +3381,48 @@ export function createWorld(scene) {
         const shadowTarget = awareness === 3
           ? attackAnchor
           : PTERODACTYL_ORBIT_CENTER;
-        const shadowX = THREE.MathUtils.lerp(primaryThreat.position.x, shadowTarget.x, 0.38);
-        const shadowZ = THREE.MathUtils.lerp(primaryThreat.position.z, shadowTarget.z - 3.8, 0.36);
-        pterodactylShadow.position.set(
+        const attackShadowPull = awareness === 3
+          ? 0.3 + renderedAttackProgress * 0.32
+          : 0.38;
+        const shadowX = THREE.MathUtils.lerp(primaryThreat.position.x, shadowTarget.x, attackShadowPull);
+        const shadowZ = THREE.MathUtils.lerp(
+          primaryThreat.position.z,
+          shadowTarget.z - (awareness === 3
+            ? THREE.MathUtils.lerp(3.8, 1.2, renderedAttackProgress)
+            : 3.8),
+          awareness === 3 ? 0.3 + renderedAttackProgress * 0.28 : 0.36,
+        );
+        const shadowTargetPosition = pterodactylShadow.userData.targetPosition.set(
           shadowX,
           terrainHeight(shadowX, shadowZ) + 0.048,
           shadowZ,
         );
-        pterodactylShadow.rotation.y = primaryThreat.rotation.y;
-        const shadowScale = 1.34 + renderedAttackProgress * 0.96;
-        pterodactylShadow.scale.set(shadowScale, shadowScale, shadowScale);
-        pterodactylShadow.material.opacity = (awareness === 3 ? 0.25 : 0.22)
-          + renderedAttackProgress * 0.18;
+        const shadowBlend = pterodactylShadow.userData.wasVisible
+          ? deltaSeconds > 0 ? 1 - Math.exp(-deltaSeconds * 8) : 1
+          : 1;
+        if (pterodactylShadow.userData.wasVisible) {
+          pterodactylShadow.position.lerp(shadowTargetPosition, shadowBlend);
+        } else {
+          pterodactylShadow.position.copy(shadowTargetPosition);
+        }
+        pterodactylShadow.rotation.y = THREE.MathUtils.lerp(
+          pterodactylShadow.rotation.y,
+          primaryThreat.rotation.y,
+          shadowBlend,
+        );
+        const shadowScale = 1.34 + renderedAttackProgress * 1.42;
+        pterodactylShadow.userData.smoothingScale.setScalar(shadowScale);
+        pterodactylShadow.scale.lerp(
+          pterodactylShadow.userData.smoothingScale,
+          shadowBlend,
+        );
+        pterodactylShadow.material.opacity = THREE.MathUtils.lerp(
+          pterodactylShadow.material.opacity,
+          (awareness === 3 ? 0.27 : 0.19) + renderedAttackProgress * 0.18,
+          shadowBlend,
+        );
       }
+      pterodactylShadow.userData.wasVisible = shadowVisible;
       if (awareness !== 3) {
         renderedAttackStage = 'orbit';
         renderedAttackProgress = 0;
@@ -3376,7 +3581,7 @@ export function createWorld(scene) {
         );
       });
       smoke.children.forEach((puff, index) => {
-        const drift = reducedMotion ? 0.08 : 0.32 + index * 0.025;
+        const drift = reducedMotion ? 0.04 : 0.14 + index * 0.012;
         puff.position.x = puff.userData.baseX + Math.sin(elapsed * 0.22 + index) * drift;
         puff.position.y = puff.userData.baseY
           + Math.sin(elapsed * 0.16 + index * 0.7) * (reducedMotion ? 0.04 : 0.14);
@@ -3397,6 +3602,27 @@ export function createWorld(scene) {
       smoke.userData.emberGlow.intensity = reducedMotion
         ? 2.85
         : 2.85 + Math.sin(elapsed * 5.6) * 0.22;
+      const signalFlag = smoke.userData.campSignal;
+      const signalPositions = signalFlag.geometry.attributes.position;
+      const basePositions = signalFlag.userData.basePositions;
+      for (let index = 0; index < signalPositions.count; index += 1) {
+        const offset = index * 3;
+        const distanceFromHoist = THREE.MathUtils.clamp(-basePositions[offset] / 2.6, 0, 1);
+        signalPositions.setY(
+          index,
+          basePositions[offset + 1]
+            + Math.sin(elapsed * (reducedMotion ? 0.32 : 1.75) + distanceFromHoist * 2.1)
+              * distanceFromHoist * (reducedMotion ? 0.02 : 0.085),
+        );
+        signalPositions.setZ(
+          index,
+          basePositions[offset + 2]
+            + Math.sin(elapsed * (reducedMotion ? 0.45 : 2.8) + distanceFromHoist * 4.2)
+              * distanceFromHoist * (reducedMotion ? 0.035 : 0.15),
+        );
+      }
+      signalPositions.needsUpdate = true;
+      signalFlag.rotation.z = reducedMotion ? 0 : Math.sin(elapsed * 1.65) * 0.035;
     },
     threatSnapshot() {
       const primary = pterodactyls[0];
@@ -3539,6 +3765,14 @@ export function createWorld(scene) {
           )).length,
           familyWidth: Math.max(...family.map((animal) => animal.userData.baseX))
             - Math.min(...family.map((animal) => animal.userData.baseX)),
+        },
+        degradableGroundAccents: {
+          profile: degradableGroundAccents.userData.profile,
+          quality: degradableGroundAccents.userData.quality,
+          visible: degradableGroundAccents.visible,
+          instanceCount: degradableGroundAccents.userData.instanceCount,
+          drawCalls: degradableGroundAccents.userData.drawCalls,
+          collisionRole: 'non-solid-visual-accent',
         },
       };
     },

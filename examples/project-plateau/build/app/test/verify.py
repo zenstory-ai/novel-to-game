@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 from dataclasses import dataclass
 import hashlib
 import json
@@ -52,6 +53,7 @@ JS_TESTS = (
     "test/settings.test.js",
     "test/simulation.test.js",
     "test/terrain.test.js",
+    "test/targeted-runner.test.js",
 )
 HISTORY_QA = tuple(f"test/qa_s{stage}.py" for stage in range(8)) + ("test/qa_s9.py",)
 COMPLETE_RUN_QA = ("test/qa_s8.py",)
@@ -67,6 +69,9 @@ CURRENT_VISUAL_QA = (
 )
 EXCLUDED_TEST_TOOLS = {
     "test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite",
+    "test/qa_assertions.py": "shared targeted assertion library; exercised by targeted-runner.test.js",
+    "test/qa_promotion.py": "real-input promotion capture tool; invoked by qa_targeted.py before freeze",
+    "test/qa_targeted.py": "targeted suite and frozen-evidence orchestrator; exercised by targeted-runner.test.js",
     "test/verify.py": "authoritative suite orchestrator; registering it would recurse",
 }
 EXPECTED_TEST_SCRIPTS = {
@@ -472,6 +477,17 @@ def main() -> int:
     parser.add_argument("--audit-only", action="store_true", help="check suite discovery without executing suites")
     args = parser.parse_args()
     registry = audit_registry()
+    frozen_evidence = os.environ.get("PROJECT_PLATEAU_FROZEN_EVIDENCE")
+    frozen_bundle = (APP / frozen_evidence).resolve() if frozen_evidence else None
+    authoritative_receipt = {"pending": False}
+    if frozen_bundle is not None:
+        def cleanup_abandoned_receipt() -> None:
+            if authoritative_receipt["pending"]:
+                from qa_targeted import abort_authoritative_verify
+
+                abort_authoritative_verify(frozen_bundle)
+
+        atexit.register(cleanup_abandoned_receipt)
     for problem in registry["problems"]:
         print(problem)
     if registry["problems"]:
@@ -484,6 +500,11 @@ def main() -> int:
         for suite in SUITES:
             print(f"suite={suite.identifier} locations={','.join(suite.locations)}")
         return 0
+    if frozen_bundle is not None:
+        from qa_targeted import consume_authoritative_verify
+
+        consume_authoritative_verify(frozen_bundle)
+        authoritative_receipt["pending"] = True
 
     QA_EVIDENCE.mkdir(parents=True, exist_ok=True)
     CANDIDATE_VERIFICATION.unlink(missing_ok=True)
@@ -600,6 +621,44 @@ def main() -> int:
         suite_results=suite_results,
         exit_code=exit_code,
     )
+    if frozen_bundle is not None:
+        from qa_targeted import ContractError, abort_authoritative_verify, post_verify_audit
+
+        if exit_code:
+            abort_authoritative_verify(frozen_bundle)
+            authoritative_receipt["pending"] = False
+        else:
+            try:
+                post_verify_audit(
+                    frozen_bundle,
+                    verification_path=VERIFICATION,
+                    log_path=LOG,
+                )
+                authoritative_receipt["pending"] = False
+            except (ContractError, OSError, json.JSONDecodeError, KeyError, AssertionError) as error:
+                exit_code = 2
+                log_lines.extend(
+                    [
+                        f"postVerifyAudit=FAIL",
+                        f"postVerifyAuditError={type(error).__name__}: {error}",
+                    ]
+                )
+                log_temporary.write_text(
+                    normalize_log_text("\n".join(log_lines)) + "\n",
+                    encoding="utf-8",
+                )
+                log_temporary.replace(LOG)
+                write_verification(
+                    source_commit=source_commit,
+                    fingerprint=fingerprint,
+                    environment_record=environment_record,
+                    duration_ms=duration_ms,
+                    registry=registry,
+                    suite_results=suite_results,
+                    exit_code=exit_code,
+                )
+                abort_authoritative_verify(frozen_bundle)
+                authoritative_receipt["pending"] = False
     CANDIDATE_VERIFICATION.unlink(missing_ok=True)
     CANDIDATE_LOG.unlink(missing_ok=True)
     if exit_code:

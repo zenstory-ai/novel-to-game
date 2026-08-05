@@ -1,0 +1,15 @@
+{
+  "pf": "PF-06",
+  "viewport": "1280x720",
+  "timecodeMs": 66926.49,
+  "traceId": "strong-1280x720-1785948727983",
+  "inputs": [
+    "KeyW",
+    "Fort-submit"
+  ],
+  "inputOnly": true,
+  "uncut": true,
+  "diagnostic": false,
+  "cameraMode": "terminal",
+  "url": "http://127.0.0.1:4173/?qa=promotion"
+}

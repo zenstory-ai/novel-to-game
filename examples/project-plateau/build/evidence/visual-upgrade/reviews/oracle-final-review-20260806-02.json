@@ -1,0 +1,168 @@
+{
+  "reviewerId": "oracle-final-review-20260806-02",
+  "rubricFingerprint": "927e8debdfaee57f9d3143ef56b4b72c816a0a660bedbc66cc208f4888f0c351",
+  "referenceFingerprint": "208417b80b3e944445086650c49c5e19d0af145a1959d07a4f915cf6be6c4c2f",
+  "calibration": {
+    "status": "PASS",
+    "knownFailureAnchorId": "known-flat-stage",
+    "anchorDisposition": "FAIL",
+    "identifiedBlocker": "The baseline FAMILY/DIVE proxy collapses near, middle and far subjects into one repeated horizontal stage: similar scale/value bands and nearly reused framing weaken depth, subject separation and the readability of the dive event.",
+    "rubricFingerprint": "927e8debdfaee57f9d3143ef56b4b72c816a0a660bedbc66cc208f4888f0c351",
+    "referenceFingerprint": "208417b80b3e944445086650c49c5e19d0af145a1959d07a4f915cf6be6c4c2f"
+  },
+  "scores": {
+    "PF-01": {
+      "before": {
+        "composition-focal-hierarchy": 2,
+        "depth-scale": 2,
+        "subject-separation": 2,
+        "material-light-coherence": 2,
+        "density-repetition": 1,
+        "motion-event-readability": 1
+      },
+      "candidate": {
+        "composition-focal-hierarchy": 3,
+        "depth-scale": 3,
+        "subject-separation": 3,
+        "material-light-coherence": 2,
+        "density-repetition": 2,
+        "motion-event-readability": 2
+      },
+      "blockers": 0,
+      "majors": 0
+    },
+    "PF-02": {
+      "before": {
+        "composition-focal-hierarchy": 2,
+        "depth-scale": 2,
+        "subject-separation": 2,
+        "material-light-coherence": 2,
+        "density-repetition": 1,
+        "motion-event-readability": 1
+      },
+      "candidate": {
+        "composition-focal-hierarchy": 3,
+        "depth-scale": 3,
+        "subject-separation": 3,
+        "material-light-coherence": 2,
+        "density-repetition": 2,
+        "motion-event-readability": 3
+      },
+      "blockers": 0,
+      "majors": 0
+    },
+    "PF-03": {
+      "before": {
+        "composition-focal-hierarchy": 2,
+        "depth-scale": 2,
+        "subject-separation": 2,
+        "material-light-coherence": 2,
+        "density-repetition": 1,
+        "motion-event-readability": 1
+      },
+      "candidate": {
+        "composition-focal-hierarchy": 3,
+        "depth-scale": 3,
+        "subject-separation": 3,
+        "material-light-coherence": 2,
+        "density-repetition": 2,
+        "motion-event-readability": 3
+      },
+      "blockers": 0,
+      "majors": 0
+    },
+    "PF-04": {
+      "before": {
+        "composition-focal-hierarchy": 2,
+        "depth-scale": 2,
+        "subject-separation": 2,
+        "material-light-coherence": 2,
+        "density-repetition": 1,
+        "motion-event-readability": 2
+      },
+      "candidate": {
+        "composition-focal-hierarchy": 3,
+        "depth-scale": 3,
+        "subject-separation": 3,
+        "material-light-coherence": 2,
+        "density-repetition": 2,
+        "motion-event-readability": 3
+      },
+      "blockers": 0,
+      "majors": 0
+    },
+    "PF-05": {
+      "before": {
+        "composition-focal-hierarchy": 2,
+        "depth-scale": 1,
+        "subject-separation": 1,
+        "material-light-coherence": 2,
+        "density-repetition": 1,
+        "motion-event-readability": 0
+      },
+      "candidate": {
+        "composition-focal-hierarchy": 3,
+        "depth-scale": 3,
+        "subject-separation": 3,
+        "material-light-coherence": 2,
+        "density-repetition": 2,
+        "motion-event-readability": 2
+      },
+      "blockers": 0,
+      "majors": 0
+    },
+    "PF-06": {
+      "continuity": "PASS",
+      "rationale": "The uncut 67.56-second route preserves a legible brook-to-family-to-attack-to-covered-return progression. Samples around 42.7–43.9 seconds show a stable pterodactyl approach and dive without an orientation flip, while the terminal board closes the same four captured plates."
+    }
+  },
+  "disposition": {
+    "status": "PASS",
+    "tier": "one-gap",
+    "rationale": "PF-01 through PF-05 each meet the frozen 15-point/minimum-2 rubric with zero blockers or majors. Relative to the mapped baseline proxies, the candidate improves focal hierarchy, near/mid/far depth, subject separation, density rhythm and event readability; it remains one maturity gap behind the external reference in environmental richness and fine material variation."
+  },
+  "independence": {
+    "status": "INDEPENDENT",
+    "conflicts": []
+  },
+  "blindOrder": [
+    "before-B",
+    "candidate-C",
+    "reference-A"
+  ],
+  "beforeMapping": {
+    "comparisonMode": "presentation-maturity-proxy",
+    "sourceArtifact": "contact-sheets/before.jpg",
+    "pfToBaselineScene": {
+      "PF-01": "FAMILY",
+      "PF-02": "FAMILY",
+      "PF-03": "FAMILY",
+      "PF-04": "DIVE",
+      "PF-05": "TITLE/CAMP"
+    },
+    "allowedClaim": "Relative presentation-maturity improvement across composition, depth, separation, material/light, density and event readability.",
+    "prohibitedClaims": [
+      "same-camera before/after comparison",
+      "same-gameplay-state before/after comparison",
+      "pixel-matched visual delta"
+    ]
+  },
+  "reviewProcess": {
+    "mode": "independent-hash-attested-comparison",
+    "requiresUniqueReviewerIds": true,
+    "requiresConflictDisclosure": true,
+    "requiresRecordedViewingOrder": true,
+    "cryptographicIdentityClaimed": false,
+    "sealedPreRevealArtifactClaimed": false,
+    "prohibitedClaims": [
+      "cryptographically authenticated reviewer identity",
+      "sealed two-stage blind review"
+    ]
+  },
+  "signature": {
+    "type": "self-declared-payload-sha256",
+    "signedBy": "oracle-final-review-20260806-02",
+    "signedAt": "2026-08-05T16:56:11Z",
+    "payloadSha256": "9324e6c2947de173c841bd19bb2500fef72c3644909ccf604ba80ec3f36b99ee"
+  }
+}

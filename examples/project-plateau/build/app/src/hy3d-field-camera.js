@@ -19,10 +19,10 @@ const MODEL_SCALE = 2.2;
 function prepareMaterial(material) {
   if (!material) return material;
   const prepared = material.clone();
-  prepared.roughness = Math.max(prepared.roughness ?? 0.72, 0.74);
-  prepared.metalness = Math.min(prepared.metalness ?? 0.68, 0.72);
-  prepared.envMapIntensity = Math.min(prepared.envMapIntensity ?? 1, 0.62);
-  if (prepared.normalScale) prepared.normalScale.multiplyScalar(0.72);
+  prepared.roughness = Math.max(prepared.roughness ?? 0.72, 0.8);
+  prepared.metalness = Math.min(prepared.metalness ?? 0.68, 0.56);
+  prepared.envMapIntensity = Math.min(prepared.envMapIntensity ?? 1, 0.42);
+  if (prepared.normalScale) prepared.normalScale.multiplyScalar(0.64);
   prepared.needsUpdate = true;
   return prepared;
 }

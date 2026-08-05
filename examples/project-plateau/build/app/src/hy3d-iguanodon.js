@@ -264,10 +264,15 @@ function prepareMaterial(material) {
   // metallic-roughness map's photoreal highlights.
   material.roughnessMap = null;
   material.metalnessMap = null;
-  material.roughness = 0.86;
+  material.roughness = 0.92;
   material.metalness = 0;
-  material.envMapIntensity = Math.min(material.envMapIntensity ?? 1, 0.55);
-  if (material.normalScale) material.normalScale.multiplyScalar(0.68);
+  material.envMapIntensity = Math.min(material.envMapIntensity ?? 1, 0.34);
+  material.color?.offsetHSL(0.008, -0.02, 0.1);
+  if (material.emissive) {
+    material.emissive.set(0x2a2114);
+    material.emissiveIntensity = 0.18;
+  }
+  if (material.normalScale) material.normalScale.multiplyScalar(0.58);
   material.needsUpdate = true;
   return material;
 }

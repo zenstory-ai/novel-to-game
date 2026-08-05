@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "canonicalAcceptanceSet": "AC-01..AC-20",
+  "registrations": [
+    {
+      "acId": "AC-01",
+      "selector": "strong-route",
+      "selectorArgs": {
+        "profile": "balanced"
+      },
+      "metric": "gameplay",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_s8.py#run",
+      "fixtureOrCheckpointSource": "../evidence/s8/report.json#/checkpoints",
+      "authoritativeSuite": "browser:complete-run"
+    },
+    {
+      "acId": "AC-02",
+      "selector": "deterministic-paths",
+      "selectorArgs": {
+        "paths": "strong,mixed,panic",
+        "profile": "balanced"
+      },
+      "metric": "gameplay",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_s8.py#run",
+      "fixtureOrCheckpointSource": "../evidence/s8/report.json#/pathMetrics",
+      "authoritativeSuite": "browser:complete-run"
+    },
+    {
+      "acId": "AC-03",
+      "selector": "route-clock",
+      "selectorArgs": {
+        "baselineSeconds": 59.071,
+        "baselineToleranceSeconds": 1.0,
+        "profile": "balanced"
+      },
+      "metric": "seconds",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_assertions.py#assert_route_clock",
+      "fixtureOrCheckpointSource": "../evidence/s8/report.json#/inputTrace",
+      "authoritativeSuite": "browser:complete-run"
+    },
+    {
+      "acId": "AC-04",
+      "selector": "promotion-trace",
+      "selectorArgs": {
+        "inputOnly": true,
+        "uncut": true,
+        "profile": "balanced"
+      },
+      "metric": "continuity",
+      "viewport": "1440x900",
+      "assertionSource": "test/telemetry-schema.json#/synchronization/promotionTrace",
+      "fixtureOrCheckpointSource": "test/fixtures/promotion-telemetry.jsonl",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-05",
+      "selector": "camera-continuity",
+      "selectorArgs": {
+        "controllerContract": "current"
+      },
+      "metric": "telemetry",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_controller.py#run + test/telemetry-schema.json#/promotionSampleRequired",
+      "fixtureOrCheckpointSource": "test/fixtures/promotion-telemetry.jsonl",
+      "authoritativeSuite": "browser:controller-contract + authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-06",
+      "selector": "performance-heaviest",
+      "selectorArgs": {
+        "profile": "balanced",
+        "warmupFrames": 300,
+        "repeats": 3,
+        "frames": 600
+      },
+      "metric": "fps",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_assertions.py#assert_performance_contract",
+      "fixtureOrCheckpointSource": "../evidence/visual-upgrade/performance/manifest-1440x900-balanced.json",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-07",
+      "selector": "performance-heaviest",
+      "selectorArgs": {
+        "profile": "balanced",
+        "warmupFrames": 300,
+        "repeats": 3,
+        "frames": 600,
+        "viewport": "1280x720"
+      },
+      "metric": "fps",
+      "viewport": "1280x720",
+      "assertionSource": "test/qa_assertions.py#assert_performance_contract",
+      "fixtureOrCheckpointSource": "../evidence/visual-upgrade/performance/manifest-1280x720-balanced.json",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-08",
+      "selector": "delivery-budget",
+      "selectorArgs": {
+        "metric": "raw-bytes"
+      },
+      "metric": "bytes",
+      "viewport": "n/a",
+      "assertionSource": "test/qa_assertions.py#assert_delivery_budget",
+      "fixtureOrCheckpointSource": "package.json",
+      "authoritativeSuite": "build:production"
+    },
+    {
+      "acId": "AC-09",
+      "selector": "delivery-budget",
+      "selectorArgs": {
+        "metric": "initial-gzip"
+      },
+      "metric": "bytes",
+      "viewport": "n/a",
+      "assertionSource": "test/qa_assertions.py#assert_delivery_budget",
+      "fixtureOrCheckpointSource": "package.json",
+      "authoritativeSuite": "build:production"
+    },
+    {
+      "acId": "AC-10",
+      "selector": "delivery-budget",
+      "selectorArgs": {
+        "metric": "tti-errors",
+        "networkMbps": 25
+      },
+      "metric": "ms/error-count",
+      "viewport": "1440x900",
+      "assertionSource": "test/qa_s7.py#run",
+      "fixtureOrCheckpointSource": "../evidence/s7/report.json#/loading",
+      "authoritativeSuite": "browser:checkpoint-history"
+    },
+    {
+      "acId": "AC-11",
+      "selector": "evidence-integrity",
+      "selectorArgs": {
+        "fingerprints": "all4"
+      },
+      "metric": "hashes",
+      "viewport": "both",
+      "assertionSource": "test/telemetry-schema.json#/requiredFingerprints",
+      "fixtureOrCheckpointSource": "test/reference-manifest.json",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-12",
+      "selector": "spatial-anchors",
+      "selectorArgs": {
+        "profile": "balanced"
+      },
+      "metric": "hashes",
+      "viewport": "n/a",
+      "assertionSource": "test/qa_collision.py#run + ../../qa/check_design_invariants.py#main",
+      "fixtureOrCheckpointSource": "test/spatial-anchor-baseline.json",
+      "authoritativeSuite": "browser:collision-contract + qa:design-invariants"
+    },
+    {
+      "acId": "AC-13",
+      "selector": "profile-equivalence",
+      "selectorArgs": {
+        "profiles": "low,balanced,high"
+      },
+      "metric": "state-diff",
+      "viewport": "1440x900",
+      "assertionSource": "test/render-budget.test.js + test/simulation.test.js",
+      "fixtureOrCheckpointSource": "test/telemetry-schema.json#/profileEquivalence",
+      "authoritativeSuite": "unit:simulation + authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-14",
+      "selector": "pf-contracts",
+      "selectorArgs": {
+        "pf": "01..06"
+      },
+      "metric": "frame/state",
+      "viewport": "both",
+      "assertionSource": "test/qa_visual_targets.py#run + test/telemetry-schema.json#/pfBundleContract",
+      "fixtureOrCheckpointSource": "test/telemetry-schema.json#/pfBundleContract",
+      "authoritativeSuite": "browser:current-visual + authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-15",
+      "selector": "accessibility-layout-motion",
+      "selectorArgs": {
+        "textScale": 1.5,
+        "reducedMotion": true
+      },
+      "metric": "layout/state",
+      "viewport": "1280x720",
+      "assertionSource": "test/qa_s7.py#run",
+      "fixtureOrCheckpointSource": "../evidence/s7/report.json#/checkpoints",
+      "authoritativeSuite": "browser:checkpoint-history"
+    },
+    {
+      "acId": "AC-16",
+      "selector": "accessibility-colour",
+      "selectorArgs": {
+        "modes": "protanopia,deuteranopia,tritanopia,achromatopsia"
+      },
+      "metric": "cue-read",
+      "viewport": "both",
+      "assertionSource": "test/qa_s8.py#run + test/qa_s10.py#run",
+      "fixtureOrCheckpointSource": "../evidence/s10/report.json#/colourVisionMatrix",
+      "authoritativeSuite": "browser:complete-run + browser:current-visual"
+    },
+    {
+      "acId": "AC-17",
+      "selector": "evidence-schema",
+      "selectorArgs": {
+        "bundle": "frozen"
+      },
+      "metric": "schema/hash",
+      "viewport": "n/a",
+      "assertionSource": "test/telemetry-schema.json#/promotionSampleRequired + test/telemetry-schema.json#/performanceSampleRequired",
+      "fixtureOrCheckpointSource": "test/fixtures/promotion-telemetry.jsonl",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-18",
+      "selector": "review-bundle-audit",
+      "selectorArgs": {
+        "forms": "signed",
+        "bundle": "frozen"
+      },
+      "metric": "calibration/tier",
+      "viewport": "n/a",
+      "assertionSource": "test/visual-review-contract.json#/framePass",
+      "fixtureOrCheckpointSource": "test/visual-review-contract.json#/attestedFormRequired",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-19",
+      "selector": "investment-stop-loss",
+      "selectorArgs": {
+        "source": "AC-06,AC-07",
+        "threshold": "50/35"
+      },
+      "metric": "fps",
+      "viewport": "both",
+      "assertionSource": "test/qa_assertions.py#assert_investment_stop_loss",
+      "fixtureOrCheckpointSource": "../evidence/visual-upgrade/performance",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    },
+    {
+      "acId": "AC-20",
+      "selector": "quality-delta-audit",
+      "selectorArgs": {
+        "activePF": "01..05",
+        "minDelta": 1,
+        "minDimensions": 4
+      },
+      "metric": "rubric-delta",
+      "viewport": "n/a",
+      "assertionSource": "test/visual-review-contract.json#/qualityDelta",
+      "fixtureOrCheckpointSource": "test/visual-review-contract.json#/attestedFormRequired",
+      "authoritativeSuite": "authoritative:frozen-evidence"
+    }
+  ]
+}

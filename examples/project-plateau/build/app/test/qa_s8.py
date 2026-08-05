@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import Page, sync_playwright
 
+from qa_assertions import ROUTE_INPUT_CONTINUATION_MS, route_input_calibration
+
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
 EVIDENCE = Path(
@@ -142,12 +144,26 @@ def run() -> dict[str, object]:
             )
             return state
 
-        def move_until(path: str, key: str, predicate: str, label: str, timeout: int = 30000) -> None:
+        def move_until(
+            path: str,
+            key: str,
+            predicate: str,
+            label: str,
+            timeout: int = 30000,
+            continuation_ms: int = 0,
+        ) -> None:
             before = snapshot(page)["player"]
             started = time.monotonic()
             page.keyboard.down(key)
             try:
                 page.wait_for_function(predicate, timeout=timeout)
+                if continuation_ms:
+                    route_input_calibration(key, continuation_ms)
+                    page.keyboard.down("KeyC")
+                    try:
+                        page.wait_for_timeout(continuation_ms)
+                    finally:
+                        page.keyboard.up("KeyC")
             finally:
                 page.keyboard.up(key)
             page.wait_for_timeout(70)
@@ -161,6 +177,7 @@ def run() -> dict[str, object]:
                     "start": before["position"],
                     "end": after["position"],
                     "distanceAfter": after["distanceTravelled"],
+                    **(route_input_calibration(key, continuation_ms) if continuation_ms else {}),
                 }
             )
 
@@ -275,7 +292,13 @@ def run() -> dict[str, object]:
             identifiers: tuple[str, str, str, str, str],
         ) -> dict[str, object]:
             brook_id, basalt_id, glade_id, covered_id, result_id = identifiers
-            move_until(path, "KeyW", "window.__projectPlateau.snapshot().player.position.z <= 45", "Fort to brook")
+            move_until(
+                path,
+                "KeyW",
+                "window.__projectPlateau.snapshot().player.position.z <= 45",
+                "Fort to brook",
+                continuation_ms=ROUTE_INPUT_CONTINUATION_MS if path == "Strong" else 0,
+            )
             page.keyboard.press("KeyE")
             expose_plate(path, 0, "partial tutorial frame")
             partial = capture(brook_id, ["W to brook", "E", "camera commitment"])
