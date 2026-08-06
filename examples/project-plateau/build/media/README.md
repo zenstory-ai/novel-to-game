@@ -1,38 +1,32 @@
 # Project Plateau media pack
 
 This pack is derived from the same local WebGL build and input-only Strong path
-used by the S8 traversal evidence. It contains no generated concept art and no
+used by the current complete-run evidence. It contains no generated concept art and no
 substitute render.
 
 ## Tracked artifacts
 
 | Artifact | Purpose | Evidence boundary |
 |---|---|---|
-| `project-plateau-github.jpg` | 1280×640 repository/share card | Crop and resize of the real S10 browser frame only |
-| `clip/contact-sheet.jpg` | Ten-frame review of the promoted 15-second encode | One frame every 1.5 seconds |
-| `clip/contact-sheet-30s.jpg` | Ten-frame review of the extended 30-second encode | One frame every three seconds |
-| `clip/marks.json` | Every input/state beat in the continuous source take | Includes raw hash, edit marks and console/request audit |
-| `clip/manifest.json` | Measured MP4 properties and hashes | Includes all 14 delivery checks for both encodes |
+| `project-plateau-github.jpg` | 1280×640 repository/share card | Crop and resize of a retained current-run browser frame only |
 | `RELEASE_COPY.md` | English copy and alt text tied to the captured build | Does not claim public hosting or independent approval |
 | `remotion/` | Reproducible 36-second English launch-video project | Wraps the full 30-second capture with captions, CTA, Fish Audio narration and original procedural sound |
 
-The reproducible but derived `raw_take.webm`, `project-plateau-30s.mp4` and
-`project-plateau-15s.mp4` files are intentionally ignored by Git. Their hashes
-and full probe records remain in the manifest so a regenerated delivery file can
-be compared exactly.
+The reproducible `clip/` directory is ignored by Git. Raw takes, encodes, marks,
+manifests and contact sheets are delivery-media intermediates, not game QA evidence.
 
 ## Reproduce
 
 ```bash
 cd examples/project-plateau/build/app
 npm run build
-python3 test/capture_demo_clip.py
+python3 ../media/scripts/capture_demo_clip.py
 ```
 
 To re-encode the existing local raw take without replaying the route:
 
 ```bash
-python3 test/capture_demo_clip.py --reuse-raw
+python3 ../media/scripts/capture_demo_clip.py --reuse-raw
 ```
 
 The capture performs one continuous input-only Strong-result run at `1280×800`:
@@ -44,9 +38,7 @@ winged dive, first rifle response, branch proof and result remain legible. They 
 direct time advance, fabricated state, substitute render or synthetic frame. The
 30-second and 15-second encodes are H.264 High Profile, `yuv420p`, progressive,
 30 FPS, square-pixel, fast-start MP4s with exact 30/15-second durations, a
-non-black first frame and no audio track. Reuse fails closed unless raw hash,
-byte size, probe duration, edit bounds and the immutable interactive-source
-commit all match the recorded marks.
+non-black first frame and no audio track.
 
 To render the captioned 1920×1080 launch version:
 
@@ -70,12 +62,9 @@ The Remotion project also produces a two-pass 1080p H.264 GitHub delivery under
 
 ## Claim boundary
 
-- `build/evidence/s8/report.json` remains the uncut timing and traversal
+- `build/evidence/current-run/report.json` remains the uncut timing and traversal
   authority; the edited delivery clips are not timing evidence.
-- S10 proves browser states, image provenance and gross composition floors; it
+- The current-run report proves browser states and player-visible effects; it
   does not prove subjective visual quality.
-- Public-host loading is recorded separately; independent visual review and
-  protocol-level first-time player records remain open evidence gates after
-  example publication.
 - The captioned launch video adds claims and motion graphics around the recorded
   run; it does not upgrade the run into independent QA evidence.

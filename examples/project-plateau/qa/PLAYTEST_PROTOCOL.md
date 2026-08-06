@@ -2,8 +2,7 @@
 
 ## Purpose and claim boundary
 
-This protocol collects the independent first-time evidence required by
-[`QA_REPORT.md`](QA_REPORT.md). It tests whether a new player can recognize and
+This optional protocol collects the independent first-time evidence required only for a future delivery or release claim; it is not part of the current smoke PASS. It tests whether a new player can recognize and
 perform the scout → proof → survive → extract loop in the current build. It
 does not turn opinions about fun, balance or commercial appeal into automated
 facts.
@@ -23,8 +22,7 @@ and collect no unnecessary personal data.
   saved settings, storage, cache or prior run.
 - Use the normal clock and real input. Disable QA placement, teleport, direct
   time advancement, walkthroughs and injected saves.
-- Record browser/OS versions, source commit, app fingerprint, viewport and
-  whether the run was local or on the later public host.
+- Record browser/OS versions, viewport and whether the run was local or hosted.
 - Capture one continuous screen recording or timestamped observer log from the
   title through result and one attempted restart. Preserve participant speech
   verbatim where consent permits.
@@ -70,7 +68,7 @@ blocker. Ask these questions in order without correcting the answers:
 9. Would you start another run now? Why or why not? This answer is subjective
    context and does not determine PASS.
 
-## Release thresholds
+## Delivery/release thresholds
 
 The first-time gate passes only when all of the following are supported by raw
 participant records:
@@ -92,8 +90,7 @@ participant records:
   failure or unreadable supported-viewport state.
 
 A failed threshold remains a finding. Route it to product, design or build in
-`QA_REPORT.md`; do not average it away or replace it with the deterministic S8
-path.
+`QA_REPORT.md`; do not average it away or replace it with the deterministic current complete-run path.
 
 ## Evidence record
 
@@ -104,8 +101,6 @@ Save one file per participant as
 participant: P01
 consent: screen / voice / quotation / none
 prior_context: novel familiarity; first-person-control familiarity
-source_commit: <sha>
-app_fingerprint: <sha256>
 environment: <OS; browser; viewport; local or public URL>
 unassisted_window: <start/end timestamps>
 first_meaningful_action_seconds: <number or NOT_REACHED>
@@ -122,6 +117,10 @@ each decision to the raw records. A summary without those files is not evidence.
 
 ## 动态威胁节奏复核
 
-自动采集的 `build/evidence/visual-upgrade/generated/manifest.json` 应包含一个未剪辑的真实浏览器 WebM，以及 `watch`、`bank`、`dive`、`pull-up` 四个确定性 JPEG 相位样本。每项记录时间或渲染器时刻、观察到的威胁状态、相对路径、SHA-256 和字节数。WebM 至少覆盖一次完整的 3.2 秒攻击周期；相位样本用于稳定定位画面，不冒充真实游玩计时。
+需要定位动态问题时，可采集一个未剪辑的真实浏览器 WebM，以及 `watch`、`bank`、`dive`、`pull-up`
+四个相位样本。WebM 至少覆盖一次完整的 3.2 秒攻击周期；相位样本只用于定位画面，不冒充真实
+游玩计时，也不要求单独的 manifest 或哈希门禁。
 
-首次玩家测试仍需让观察者在连续录屏中标记玩家第一次说出或以行动响应这四个阶段的时间。自动化只能证明浏览器实际渲染了连续运动和状态转换，不能代替玩家是否读懂节奏的感知证据。若录屏与 manifest 哈希不一致、任何阶段缺失或状态顺序倒置，本轮动态证据为 `FAIL`，必须重新采集，不能挑选旧截图补齐。
+首次玩家测试仍需让观察者在连续录屏中标记玩家第一次说出或以行动响应这四个阶段的时间。自动化
+只能证明浏览器实际渲染了连续运动和状态转换，不能代替玩家是否读懂节奏的感知证据。若任何阶段
+缺失或状态顺序倒置，本轮动态效果为 `FAIL`；重新运行即可，不用维护旧证据身份。

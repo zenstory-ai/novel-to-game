@@ -84,7 +84,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#s0-badge').textContent = 'S10 · clear glade';
+document.querySelector('#build-badge').textContent = 'Playable prototype';
 const query = new URLSearchParams(window.location.search);
 const systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let presentationSettings = loadSettings(window.localStorage, systemReducedMotion);
@@ -1162,7 +1162,7 @@ function playerSnapshot() {
 }
 
 window.__projectPlateau = {
-  stage: 's10-glade-clarity',
+  stage: 'current-complete-run',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   productBudget: PRODUCT_BUDGET,

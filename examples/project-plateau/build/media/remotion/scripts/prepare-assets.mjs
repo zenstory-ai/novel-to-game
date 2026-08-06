@@ -15,7 +15,7 @@ const inputs = [
     label: 'curated 30-second same-take core-loop demo',
   },
   {
-    source: path.resolve(media, '..', 'evidence', 's8', '05-strong-input-result.jpg'),
+    source: path.resolve(media, '..', 'evidence', 'current-run', '05-strong-input-result.jpg'),
     target: path.join(publicDir, 'result.jpg'),
     label: 'Strong result browser frame',
   },

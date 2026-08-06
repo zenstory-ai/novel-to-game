@@ -1,415 +1,69 @@
 {
-  "schemaVersion": 1,
-  "updated": "2026-08-04 CST · HY3D first-person tool-and-hands viewmodels verified; final release candidate recapture pending",
-  "policy": "Every shipped non-code asset must be original, public domain, or redistribution-compatible. Modern adaptation assets are prohibited.",
+  "schemaVersion": 2,
   "entries": [
     {
       "key": "world.connected_route",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/src/world.js; app/src/atmosphere.js",
-      "provenance": "Original deterministic authored procedural geometry and layered atmosphere",
-      "rights": "Original project code and geometry",
-      "evidence": [
-        "evidence/s0/01-title.jpg",
-        "evidence/s0/03-glade-heavy.jpg",
-        "evidence/s1/01-clean-start.jpg",
-        "evidence/s1/03-collision-slide.jpg",
-        "evidence/s1/04-boundary-recovery.jpg",
-        "evidence/s2/01-fort-distant.jpg",
-        "evidence/s2/02-canopy-watch.jpg",
-        "evidence/s2/03-glade-search.jpg",
-        "evidence/s2/05-covered-deescalation.jpg",
-        "evidence/s4/02-covered-return-committed.jpg",
-        "evidence/s4/04-strong-result.jpg",
-        "evidence/s5/03-noisy-exposed-return.jpg",
-        "evidence/s5/05-exposed-case-strike.jpg",
-        "evidence/s6/07-cover-pull-up.jpg",
-        "evidence/s6/08-rifle-brook-response.jpg",
-        "evidence/s8/04-strong-covered-return.jpg",
-        "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/08-mixed-rifle-brook.jpg",
-        "evidence/s9/01-young-play-commitment.jpg",
-        "evidence/s9/03-branch-pull-commitment.jpg",
-        "evidence/s10/01-clear-family-sightline.jpg",
-        "evidence/s10/02-young-play-silver-frame.jpg",
-        "evidence/visual-sota/tree-grounding-v1/README.md",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-targets.jpg",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/src/world.js", "app/src/atmosphere.js"],
+      "fallback": "Readable primitive geometry with the same route, collision, cover, and landmarks."
     },
     {
       "key": "tool.field_camera",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/art/source-references/field-camera-hands-imagegen-v4-rear-view.png; app/art/source-references/field-camera-hands-hy3d-preview-v4-rear-view.png; app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb; app/src/hy3d-field-camera.js; app/src/world.js; app/src/main.js",
-      "provenance": "Project-specific ImageGen rear-view reference followed by Tencent Hunyuan 3D image2ModelV3.1 reconstruction and local 50K/1K WebP optimization. The ground-glass back is authored toward the player; camera and both gripping hands ship as one required viewmodel with no runtime orientation patch, procedural fallback or alternate production camera path.",
-      "rights": "Project-specific generated reference and mesh; retain the applicable OpenAI ImageGen and Tencent Hunyuan output-rights records before distribution.",
-      "evidence": [
-        "evidence/visual-targets/frames/vt02-first-controllable-track.jpg",
-        "evidence/visual-targets/frames/vt02-track-examined.jpg",
-        "evidence/visual-targets/manifest.json",
-        "app/art/source-references/field-camera-hands-imagegen-v4-rear-view.png",
-        "app/art/source-references/field-camera-hands-hy3d-preview-v4-rear-view.png",
-        "../qa/evidence/independent-viewmodel-review-2026-08-04.md",
-        "../qa/verification.json"
-      ],
-      "remaining": "none",
-      "generation": {
-        "reference": {
-          "path": "app/art/source-references/field-camera-hands-imagegen-v4-rear-view.png",
-          "sha256": "65fb884ff960f61716b0fb09ab1df5af6be7b216d38a0cd05d2ddc7f23545582",
-          "bytes": 1881431
-        },
-        "preview": {
-          "path": "app/art/source-references/field-camera-hands-hy3d-preview-v4-rear-view.png",
-          "sha256": "4f9162dccd56b3ff86c3feffc36b815bf15c86b96db7fe5ae109f58b2079379f",
-          "bytes": 70247
-        },
-        "acceptedRuntimeAsset": {
-          "path": "app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
-          "sha256": "b9130671704349c7e287c2edd7fa812e9f95ac04f19596957be6bd69fe1e5193",
-          "bytes": 1108408,
-          "triangles": 50000,
-          "textureSize": 1024,
-          "approximateGpuMiB": 18
-        },
-        "hunyuan": {
-          "version": "3.1",
-          "creationId": "165c0431-9378-4ac9-99a6-034c1011583e",
-          "assetId": "d9fa9671-32b3-4599-92b4-7982203ab6e7",
-          "taskId": "r_a44a8c758ff311f1b8ab7e059e38f1f1",
-          "rawSha256": "e7d080fecb459c9581a68470e77c46aac4573d8fae255f2428989ef592e44d60",
-          "rawBytes": 32122116
-        },
-        "optimizeCommand": "npx -y @gltf-transform/cli@4.2.1 optimize /tmp/field-camera-hands-hy3d-v4-rear-view-raw.glb app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb --compress quantize --texture-compress webp --texture-size 1024 --simplify false --palette false",
-        "integratedHands": 2,
-        "gripRoles": [
-          "camera-left-grip",
-          "camera-right-grip"
-        ],
-        "fallback": "none; required focal asset failures are release-blocking"
-      }
+      "status": "adopted",
+      "source": ["app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb", "app/src/hy3d-field-camera.js"],
+      "provenance": "Project-specific ImageGen reference reconstructed with Tencent Hunyuan 3D and locally optimized.",
+      "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "tool.plate_case",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/index.html; app/src/main.js; app/src/simulation.js; app/src/styles.css",
-      "provenance": "Original HTML/CSS plate previews and deterministic resource state",
-      "rights": "Original project geometry required",
-      "evidence": [
-        "evidence/s3/05-partial-plate.jpg",
-        "evidence/s3/06-recoverable-contact.jpg",
-        "evidence/s4/04-strong-result.jpg",
-        "evidence/s4/09-second-contact-failure.jpg",
-        "evidence/s5/04-corroborating-shot-result.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg",
-        "evidence/s6/05-plate-slide-caption.jpg",
-        "evidence/s8/03-strong-glade-frames.jpg",
-        "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/09-mixed-input-result.jpg",
-        "evidence/s8/12-panic-input-failure.jpg",
-        "evidence/s9/02-young-play-plate.jpg",
-        "evidence/s9/04-branch-pull-plate.jpg",
-        "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s9/06-clean-order-no-plates.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-targets.jpg",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/src/main.js", "app/src/simulation.js", "app/src/styles.css"],
+      "fallback": "Geometric tabs and crack marks preserve plate state."
     },
     {
       "key": "tool.period_rifle",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/art/source-references/expedition-rifle-hands-imagegen-v1.png; app/public/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb; app/src/hy3d-rifle.js; app/src/world.js; app/src/main.js",
-      "provenance": "Project-specific ImageGen reference followed by Tencent Hunyuan 3D image2ModelV3.1 reconstruction and local 50K/1K WebP optimization. Period rifle and both gripping hands ship as one required viewmodel; the former procedural rifle, CSS sight and secondary hand path were removed.",
-      "rights": "Project-specific generated reference and mesh; retain the applicable OpenAI ImageGen and Tencent Hunyuan output-rights records before distribution.",
-      "evidence": [
-        "evidence/visual-targets/frames/vt04-attack-defense.jpg",
-        "evidence/visual-targets/manifest.json",
-        "app/art/source-references/expedition-rifle-hands-imagegen-v1.png",
-        "app/art/source-references/expedition-rifle-hands-hy3d-preview-v1.png",
-        "../qa/verification.json"
-      ],
-      "remaining": "none",
-      "generation": {
-        "reference": {
-          "path": "app/art/source-references/expedition-rifle-hands-imagegen-v1.png",
-          "sha256": "cb0da7f456853c68960623e4d1b5d9160a89dd0d11d4d1d3ba5d4b0dda829c89",
-          "bytes": 1238298
-        },
-        "preview": {
-          "path": "app/art/source-references/expedition-rifle-hands-hy3d-preview-v1.png",
-          "sha256": "1f330d0baac1cd339448ad31ae0f3856d42145fa6248cefdade0cc998a0cfff4",
-          "bytes": 27337
-        },
-        "acceptedRuntimeAsset": {
-          "path": "app/public/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb",
-          "sha256": "db4f0a6dc2cab117e913b9179d31882c02c64c1f20de0e8645a06ba1f39c411c",
-          "bytes": 1000112,
-          "triangles": 50000,
-          "textureSize": 1024,
-          "approximateGpuMiB": 18
-        },
-        "hunyuan": {
-          "version": "3.1",
-          "creationId": "d8456aef-2144-4d3f-a860-21adf21250b8",
-          "assetId": "93f11215-ec3c-4c65-aff9-832045ac73ef",
-          "rawSha256": "6a71dc1bc6e471749cc61c8d123da4eebd0d2202623b0d5b0bbb65c777f6cb8e",
-          "rawBytes": 24322608
-        },
-        "optimizeCommand": "npx -y @gltf-transform/cli@4.2.1 optimize input.glb output.glb --compress quantize --texture-compress webp --texture-size 1024 --simplify false --palette false",
-        "integratedHands": 2,
-        "gripRoles": [
-          "fore-end-support",
-          "trigger-grip"
-        ],
-        "fallback": "none; required focal asset failures are release-blocking"
-      }
+      "status": "adopted",
+      "source": ["app/public/assets/expedition-rifle-hands-hy3d-v31-50k-v1-1k.glb", "app/src/hy3d-rifle.js"],
+      "provenance": "Project-specific ImageGen reference reconstructed with Tencent Hunyuan 3D and locally optimized.",
+      "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "subject.iguanodon_family",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/public/assets/iguanodon-hy3d-v35-stylized.glb; app/src/hy3d-iguanodon.js; app/src/world.js",
-      "provenance": "Original style-controlled reference generated for this project, reconstructed with Tencent Hunyuan 3D image2ModelV3.5, compressed to a local 25K/1K GLB; original procedural family remains as the loading/error fallback",
-      "rights": "Original project reference and generated mesh; release use remains gated on retaining the applicable Hunyuan output-rights record",
-      "evidence": [
-        "evidence/s0/03-glade-heavy.jpg",
-        "evidence/s8/03-strong-glade-frames.jpg",
-        "evidence/s9/01-young-play-commitment.jpg",
-        "evidence/s9/03-branch-pull-commitment.jpg",
-        "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s10/01-clear-family-sightline.jpg",
-        "evidence/s10/02-young-play-silver-frame.jpg",
-        "evidence/s10/03-branch-pull-silver-frame.jpg",
-        "evidence/visual-sota/hy3d-stylized-v1/README.md",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-orbits.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-motion.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/manifest.json",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/public/assets/iguanodon-family-hy3d-v31.glb", "app/src/hy3d-iguanodon.js"],
+      "provenance": "Project-specific generated creature mesh with locally authored family posing.",
+      "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "threat.pterodactyl",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/public/assets/pterodactyl-hy3d-v35-stylized.glb; app/src/hy3d-pterodactyl.js; app/src/world.js",
-      "provenance": "Original style-controlled reference generated for this project, reconstructed with Tencent Hunyuan 3D image2ModelV3.5, compressed to a local 30K/1K GLB; original procedural threat remains as the loading/error fallback",
-      "rights": "Original project reference and generated mesh; release use remains gated on retaining the applicable Hunyuan output-rights record",
-      "evidence": [
-        "evidence/s0/02-field-order.jpg",
-        "evidence/s0/03-glade-heavy.jpg",
-        "evidence/s2/01-fort-distant.jpg",
-        "evidence/s2/02-canopy-watch.jpg",
-        "evidence/s2/03-glade-search.jpg",
-        "evidence/s2/04-creek-attack.jpg",
-        "evidence/s2/05-covered-deescalation.jpg",
-        "evidence/s3/06-recoverable-contact.jpg",
-        "evidence/s3/07-shot-interrupt.jpg",
-        "evidence/s4/02-covered-return-committed.jpg",
-        "evidence/s4/09-second-contact-failure.jpg",
-        "evidence/s5/03-noisy-exposed-return.jpg",
-        "evidence/s5/05-exposed-case-strike.jpg",
-        "evidence/s6/06-membrane-wing-attack.jpg",
-        "evidence/s6/07-cover-pull-up.jpg",
-        "evidence/s8/04-strong-covered-return.jpg",
-        "evidence/s8/08-mixed-rifle-brook.jpg",
-        "evidence/s8/11-panic-first-contact.jpg",
-        "evidence/s8/12-panic-input-failure.jpg",
-        "evidence/s8/18-achromatopsia-covered-return.jpg",
-        "evidence/s10/02-young-play-silver-frame.jpg",
-        "evidence/s10/03-branch-pull-silver-frame.jpg",
-        "evidence/s10/04-achromatopsia-attack.jpg",
-        "evidence/s10/10-protanopia-attack-defense.jpg",
-        "evidence/s10/11-deuteranopia-attack-defense.jpg",
-        "evidence/s10/12-tritanopia-attack-defense.jpg",
-        "evidence/visual-sota/hy3d-pterodactyl-v1/README.md",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-orbits.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-motion.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/manifest.json",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/public/assets/pterodactyl-hy3d-v31.glb", "app/src/hy3d-pterodactyl.js"],
+      "provenance": "Project-specific generated creature mesh with locally authored flight posing.",
+      "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "ui.field_system",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/index.html; app/src/main.js; app/src/settings.js; app/src/styles.css",
-      "provenance": "Original HTML/CSS interface using system fonts",
-      "rights": "Original project layout and icons",
-      "evidence": [
-        "evidence/s0/01-title.jpg",
-        "evidence/s0/02-field-order.jpg",
-        "evidence/s0/04-minimum-viewport.jpg",
-        "evidence/s1/04-boundary-recovery.jpg",
-        "evidence/s1/05-manual-pause.jpg",
-        "evidence/s3/02-track-examined.jpg",
-        "evidence/s3/03-camera-raised.jpg",
-        "evidence/s3/04-paused-commitment.jpg",
-        "evidence/s3/05-partial-plate.jpg",
-        "evidence/s3/06-recoverable-contact.jpg",
-        "evidence/s3/07-shot-interrupt.jpg",
-        "evidence/s4/02-covered-return-committed.jpg",
-        "evidence/s4/04-strong-result.jpg",
-        "evidence/s4/06-timeout-failure.jpg",
-        "evidence/s4/09-second-contact-failure.jpg",
-        "evidence/s5/01-returned-without-record.jpg",
-        "evidence/s5/02-insufficient-record.jpg",
-        "evidence/s5/04-corroborating-shot-result.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg",
-        "evidence/s6/01-audio-settings.jpg",
-        "evidence/s6/04-bellows-camera-raised.jpg",
-        "evidence/s6/10-failure-cue.jpg",
-        "evidence/s7/02-settings-150-minimum.jpg",
-        "evidence/s7/05-manual-pause-minimum.jpg",
-        "evidence/s7/07-result-minimum.jpg",
-        "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/09-mixed-input-result.jpg",
-        "evidence/s8/12-panic-input-failure.jpg",
-        "evidence/s8/13-panic-clean-restart.jpg",
-        "evidence/s8/14-achromatopsia-field-order.jpg",
-        "evidence/s8/19-achromatopsia-input-result.jpg",
-        "evidence/s8/20-achromatopsia-clean-restart.jpg",
-        "evidence/s9/02-young-play-plate.jpg",
-        "evidence/s9/04-branch-pull-plate.jpg",
-        "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s9/06-clean-order-no-plates.jpg",
-        "evidence/s10/02-young-play-silver-frame.jpg",
-        "evidence/s10/04-achromatopsia-attack.jpg",
-        "evidence/s10/05-strong-plate-board.jpg",
-        "evidence/s10/06-clean-restart.jpg",
-        "evidence/s10/report.json",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-targets.jpg",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/index.html", "app/src/main.js", "app/src/styles.css"],
+      "fallback": "Plain CSS geometry preserves orders, prompts, plate state, resources, captions, and results."
     },
     {
       "key": "light.functional_arc",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/src/main.js; app/src/config.js",
-      "provenance": "Original real-time lighting and approved functional palette",
-      "rights": "Original project code; no third-party sky",
-      "evidence": [
-        "evidence/s0/01-title.jpg",
-        "evidence/s0/03-glade-heavy.jpg",
-        "evidence/s4/02-covered-return-committed.jpg",
-        "evidence/s4/06-timeout-failure.jpg",
-        "evidence/s5/07-strong-result-1280x720.jpg",
-        "evidence/s8/05-strong-input-result.jpg",
-        "evidence/s8/09-mixed-input-result.jpg",
-        "evidence/s8/12-panic-input-failure.jpg",
-        "evidence/s10/01-clear-family-sightline.jpg",
-        "evidence/s10/02-young-play-silver-frame.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-targets.jpg",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
+      "status": "adopted",
+      "source": ["app/src/atmosphere.js", "app/src/world.js"],
+      "fallback": "Directional light, hemisphere light, and depth fog preserve route and threat readability."
     },
     {
       "key": "audio.core_world",
-      "tier": "release-gate",
-      "status": "tested-captioned-fallback",
-      "releaseGatePassed": false,
-      "source": "app/src/audio.js; app/src/main.js",
-      "provenance": "Original runtime Web Audio synthesis and authored English captions",
-      "rights": "Original project code; no recorded or third-party audio asset",
-      "evidence": [
-        "evidence/s6/02-field-sound-start.jpg",
-        "evidence/s6/03-examine-caption.jpg",
-        "evidence/s6/05-plate-slide-caption.jpg",
-        "evidence/s6/08-rifle-brook-response.jpg",
-        "evidence/s6/09-result-cue.jpg",
-        "evidence/s6/10-failure-cue.jpg",
-        "evidence/s7/06-focus-pause-commitment-minimum.jpg",
-        "evidence/s8/08-mixed-rifle-brook.jpg",
-        "evidence/s8/09-mixed-input-result.jpg",
-        "evidence/s8/12-panic-input-failure.jpg",
-        "../qa/verification.json"
-      ],
-      "remaining": "Subjective production-mix review remains. The tested fallback preserves every core cue through authored on-screen sound captions and the existing visual/state response; complete paths and settings are recorded in qa/verification.json.",
-      "fallback": {
-        "behavior": "When production audio is unavailable or unsuitable, authored on-screen sound captions plus the existing visual and state responses communicate every core cue.",
-        "evidence": [
-          "evidence/s6/02-field-sound-start.jpg",
-          "evidence/s6/03-examine-caption.jpg",
-          "evidence/s6/05-plate-slide-caption.jpg",
-          "evidence/s6/08-rifle-brook-response.jpg",
-          "evidence/s6/09-result-cue.jpg",
-          "evidence/s6/10-failure-cue.jpg",
-          "evidence/s7/06-focus-pause-commitment-minimum.jpg",
-          "evidence/s8/08-mixed-rifle-brook.jpg",
-          "evidence/s8/09-mixed-input-result.jpg",
-          "evidence/s8/12-panic-input-failure.jpg",
-          "../qa/verification.json"
-        ],
-        "preserved": {
-          "coreAction": true,
-          "state": true,
-          "result": true,
-          "readableFeedback": true,
-          "restart": true
-        }
-      }
+      "status": "adopted-with-caption-fallback",
+      "source": ["app/src/audio.js", "app/src/main.js"],
+      "fallback": "Authored captions and visible state changes preserve every gameplay cue when audio is muted or unavailable."
     },
     {
       "key": "accessibility.presentation",
-      "tier": "release-gate",
-      "status": "playable-prototype-verified",
-      "releaseGatePassed": true,
-      "source": "app/index.html; app/src/main.js; app/src/settings.js; app/src/styles.css",
-      "provenance": "Original reduced-motion and text-scale controls",
-      "rights": "Original project UI",
-      "evidence": [
-        "evidence/s0/01-title.jpg",
-        "evidence/s0/04-minimum-viewport.jpg",
-        "evidence/s1/05-manual-pause.jpg",
-        "evidence/s6/01-audio-settings.jpg",
-        "evidence/s6/03-examine-caption.jpg",
-        "evidence/s6/10-failure-cue.jpg",
-        "evidence/s7/01-persisted-settings-target.jpg",
-        "evidence/s7/02-settings-150-minimum.jpg",
-        "evidence/s7/06-focus-pause-commitment-minimum.jpg",
-        "evidence/s7/09-restored-defaults-target.jpg",
-        "evidence/s8/report.json",
-        "evidence/s9/05-distinct-recovered-plates.jpg",
-        "evidence/s10/04-achromatopsia-attack.jpg",
-        "evidence/s10/report.json",
-        "evidence/visual-sota/hy3d-creatures-v23/contact-sheet-targets.jpg",
-        "evidence/visual-sota/hy3d-creatures-v23/manifest.json",
-        "../qa/evidence/perception/hy3d-v23-independent-review.md"
-      ],
-      "remaining": "none"
-    },
-    {
-      "key": "media.launch_voiceover",
-      "tier": "delivery-support",
-      "status": "generated",
-      "releaseGatePassed": false,
-      "source": "media/remotion/voiceover.json; media/remotion/scripts/generate-voiceover.mjs",
-      "provenance": "Fish Audio s2.1-pro-free synthesis of the repository-authored English script using the public Energetic Male voice model 802e3bc2b27e49c2995d23ef70e6ac89; generated at 1.14 prosody speed and locally loudness-normalized",
-      "rights": "NOT_APPROVED: generated through the Fish Audio API; the reference is hash-recorded, but retained evidence for voice eligibility and applicable account terms is still required",
-      "evidence": [
-        "media/remotion/voiceover.json",
-        "media/remotion/voiceover-review.json",
-        "media/remotion/README.md"
-      ],
-      "remaining": "Generated audio stays outside Git. The ignored schema-4 sidecar binds request, source and normalized hashes, but voiceover-review.json remains BLOCKED until rights evidence and a hash-bound human listening approval are recorded. No newly generated take or render may be described as release-approved before that gate passes."
+      "status": "adopted",
+      "source": ["app/index.html", "app/src/main.js", "app/src/styles.css"],
+      "fallback": "Core route remains playable at default presentation settings."
     }
   ]
 }

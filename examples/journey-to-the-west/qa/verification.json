@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "assuranceProfile": "smoke",
+  "status": "PASS",
+  "verify": {
+    "command": "node test/battle.mjs && python3 test/qa_browser.py",
+    "exitCode": 0
+  },
+  "completeRun": {
+    "id": "journey-to-the-west-current-complete-run",
+    "cleanContext": true,
+    "terminal": "campaign-ending",
+    "restart": "title-or-loaded-campaign",
+    "evidence": "qa/evidence/automated.json"
+  },
+  "checks": {
+    "launch": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    },
+    "render": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    },
+    "input": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    },
+    "coreLoop": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    },
+    "outcome": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    },
+    "restart": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/automated.json"
+      ]
+    }
+  },
+  "limitations": [
+    {
+      "scope": "first-time human comprehension",
+      "reason": "Automation proves the playable path, not unassisted first-use comprehension.",
+      "blocksProfiles": [
+        "delivery",
+        "release"
+      ]
+    }
+  ]
+}

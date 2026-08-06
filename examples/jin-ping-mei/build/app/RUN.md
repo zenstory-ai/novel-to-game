@@ -80,8 +80,8 @@ QA_SLOW=1 python3 test/qa_browser.py  # 正常速度完整路径，时序证据�
 - 控制台错误 0，关键资源失败 0，外部请求域 0；
 - 最重转场（群体冲突场景册关闭）点击→绘制 12.3 ms（加速）/ 38.2 ms（正常速度）；
 - 主线程长任务：按观察器记录的 `phase` 归因，仅年龄门/首屏一次 171 ms（加速）/ 181 ms（正常速度），玩家进入游戏后 0 次；
-- 浏览器证据：`qa/evidence/browser/evidence-fast.json`（加速）与 `evidence-normal.json`（正常速度）；
-- 安全截图：`qa/evidence/browser/safe/`；
+- 浏览器证据：只保留 `qa/evidence/browser/evidence-normal.json`（正常速度）；
+- 逐步安全截图：测试时按需生成，提交时只保留 `screenshots/` 精选图；
 - 18+ 内部验收截图：`qa/evidence/browser/adult/`（已 gitignore，不随仓库发布），不得用于 README 或公开商店页。
 
 本作是纯 DOM/CSS，无 `requestAnimationFrame` 渲染循环，**帧率数字对它不构成性能结论**

@@ -1,6 +1,7 @@
 # PRODUCT BRIEF · Project Plateau
 
 `targetFinish: playable-prototype`
+`assuranceProfile: smoke`
 
 > Intake artifact. These product boundaries are protected upstream facts; downstream stages may not silently rewrite them.
 

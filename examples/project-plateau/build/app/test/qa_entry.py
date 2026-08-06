@@ -13,9 +13,6 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import sync_playwright
 
-from verify import app_fingerprint
-
-
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
 EVIDENCE = BUILD / "evidence" / "entry"
@@ -193,7 +190,6 @@ def run() -> dict[str, object]:
         report = {
             "suite": "browser:entry-conversion",
             "status": "PASS",
-            "sourceFingerprint": app_fingerprint(),
             "checks": {
                 "desktopWebGL2LoadsInteractiveBuild": True,
                 "desktopDoesNotRequestPreviewMedia": True,

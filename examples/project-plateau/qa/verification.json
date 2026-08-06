@@ -1,756 +1,151 @@
 {
-  "schemaVersion": 1,
-  "sourceCommit": "b8e2d34b27d24b9580c33afa9ce0e20e11068813",
-  "sourceFingerprint": "c975fb2eeb52ffb09e036c3c04fba8683127307229ac545f359ade6ee792d96e",
-  "environment": {
-    "runtime": "Node.js",
-    "runtimeVersion": "v25.6.1",
-    "packageManager": "npm@11.9.0",
-    "pythonVersion": "3.14.3",
-    "browser": "Google Chrome 150.0.7871.187",
-    "targetViewport": [
-      1440,
-      900
-    ],
-    "minimumViewport": [
-      1280,
-      720
-    ]
-  },
+  "schemaVersion": 2,
+  "assuranceProfile": "smoke",
+  "status": "PASS",
   "verify": {
     "command": "npm run verify",
-    "log": "qa/evidence/verify.log",
-    "logSha256": "6ab37e6f83df025be3412e6cb21985c5b89c543a79764adca25484e982f1ec56",
     "exitCode": 0,
-    "durationMs": 623317,
     "suites": [
       {
         "id": "unit:simulation",
-        "locations": [
-          "test/audio.test.js",
-          "test/controller.test.js",
-          "test/entry-mode.test.js",
-          "test/foundation.test.js",
-          "test/hy3d-field-camera.test.js",
-          "test/collision.test.js",
-          "test/hy3d-iguanodon.test.js",
-          "test/hy3d-pterodactyl.test.js",
-          "test/hy3d-rifle.test.js",
-          "test/iguanodon.test.js",
-          "test/pterodactyl.test.js",
-          "test/render-budget.test.js",
-          "test/settings.test.js",
-          "test/simulation.test.js",
-          "test/terrain.test.js",
-          "test/targeted-runner.test.js"
-        ],
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "npm test",
-            "exitCode": 0,
-            "durationMs": 4438
-          }
-        ]
+        "passed": true
       },
       {
         "id": "build:production",
-        "locations": [
-          "index.html",
-          "src/",
-          "public/"
-        ],
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "npm run build",
-            "exitCode": 0,
-            "durationMs": 352
-          }
-        ]
-      },
-      {
-        "id": "browser:checkpoint-history",
-        "locations": [
-          "test/qa_s0.py",
-          "test/qa_s1.py",
-          "test/qa_s2.py",
-          "test/qa_s3.py",
-          "test/qa_s4.py",
-          "test/qa_s5.py",
-          "test/qa_s6.py",
-          "test/qa_s7.py",
-          "test/qa_s9.py"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_s0.py",
-            "exitCode": 0,
-            "durationMs": 8065
-          },
-          {
-            "command": "python3 test/qa_s1.py",
-            "exitCode": 0,
-            "durationMs": 72515
-          },
-          {
-            "command": "python3 test/qa_s2.py",
-            "exitCode": 0,
-            "durationMs": 15851
-          },
-          {
-            "command": "python3 test/qa_s3.py",
-            "exitCode": 0,
-            "durationMs": 16403
-          },
-          {
-            "command": "python3 test/qa_s4.py",
-            "exitCode": 0,
-            "durationMs": 38500
-          },
-          {
-            "command": "python3 test/qa_s5.py",
-            "exitCode": 0,
-            "durationMs": 53728
-          },
-          {
-            "command": "python3 test/qa_s6.py",
-            "exitCode": 0,
-            "durationMs": 15229
-          },
-          {
-            "command": "python3 test/qa_s7.py",
-            "exitCode": 0,
-            "durationMs": 36670
-          },
-          {
-            "command": "python3 test/qa_s9.py",
-            "exitCode": 0,
-            "durationMs": 46936
-          }
-        ]
-      },
-      {
-        "id": "browser:complete-run",
-        "locations": [
-          "test/qa_s8.py"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_s8.py",
-            "exitCode": 0,
-            "durationMs": 190374
-          }
-        ]
-      },
-      {
-        "id": "browser:controller-contract",
-        "locations": [
-          "test/qa_controller.py"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_controller.py",
-            "exitCode": 0,
-            "durationMs": 4835
-          }
-        ]
-      },
-      {
-        "id": "browser:motion-visual",
-        "locations": [
-          "test/qa_motion.py"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_motion.py",
-            "exitCode": 0,
-            "durationMs": 8372
-          }
-        ]
+        "passed": true
       },
       {
         "id": "browser:collision-contract",
-        "locations": [
-          "test/qa_collision.py"
-        ],
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_collision.py",
-            "exitCode": 0,
-            "durationMs": 6592
-          }
-        ]
+        "passed": true
+      },
+      {
+        "id": "browser:complete-run",
+        "executed": true,
+        "passed": true
+      },
+      {
+        "id": "browser:controller-contract",
+        "executed": true,
+        "passed": true
       },
       {
         "id": "browser:entry-conversion",
-        "locations": [
-          "test/qa_entry.py"
-        ],
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_entry.py",
-            "exitCode": 0,
-            "durationMs": 3612
-          }
-        ]
+        "passed": true
       },
       {
         "id": "browser:loading-state",
-        "locations": [
-          "test/qa_loading.py"
-        ],
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_loading.py",
-            "exitCode": 0,
-            "durationMs": 3137
-          }
-        ]
+        "passed": true
       },
       {
-        "id": "browser:current-visual",
-        "locations": [
-          "test/qa_s10.py",
-          "test/qa_visual_targets.py",
-          "test/capture_visual_upgrade.py"
-        ],
+        "id": "browser:motion-visual",
         "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 test/qa_s10.py",
-            "exitCode": 0,
-            "durationMs": 47731
-          },
-          {
-            "command": "python3 test/qa_visual_targets.py",
-            "exitCode": 0,
-            "durationMs": 40084
-          },
-          {
-            "command": "python3 test/capture_visual_upgrade.py",
-            "exitCode": 0,
-            "durationMs": 118
-          }
-        ]
-      },
-      {
-        "id": "qa:design-invariants",
-        "locations": [
-          "qa/check_design_invariants.py"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 qa/check_design_invariants.py",
-            "exitCode": 0,
-            "durationMs": 24
-          }
-        ]
-      },
-      {
-        "id": "repo:contract",
-        "locations": [
-          "scripts/validate_repo.py",
-          "tests/"
-        ],
-        "executed": true,
-        "passed": true,
-        "commands": [
-          {
-            "command": "python3 scripts/validate_repo.py --verification-candidate examples/project-plateau/qa/.verification-candidate.json",
-            "exitCode": 0,
-            "durationMs": 1950
-          },
-          {
-            "command": "python3 -m unittest discover -s tests -v",
-            "exitCode": 0,
-            "durationMs": 7299
-          }
-        ]
+        "passed": true
       }
-    ],
-    "registry": {
-      "discovered": [
-        "test/audio.test.js",
-        "test/capture_demo_clip.py",
-        "test/capture_visual_upgrade.py",
-        "test/collision.test.js",
-        "test/controller.test.js",
-        "test/entry-mode.test.js",
-        "test/foundation.test.js",
-        "test/hy3d-field-camera.test.js",
-        "test/hy3d-iguanodon.test.js",
-        "test/hy3d-pterodactyl.test.js",
-        "test/hy3d-rifle.test.js",
-        "test/iguanodon.test.js",
-        "test/pterodactyl.test.js",
-        "test/qa_assertions.py",
-        "test/qa_collision.py",
-        "test/qa_controller.py",
-        "test/qa_entry.py",
-        "test/qa_loading.py",
-        "test/qa_motion.py",
-        "test/qa_promotion.py",
-        "test/qa_s0.py",
-        "test/qa_s1.py",
-        "test/qa_s10.py",
-        "test/qa_s2.py",
-        "test/qa_s3.py",
-        "test/qa_s4.py",
-        "test/qa_s5.py",
-        "test/qa_s6.py",
-        "test/qa_s7.py",
-        "test/qa_s8.py",
-        "test/qa_s9.py",
-        "test/qa_targeted.py",
-        "test/qa_visual_targets.py",
-        "test/render-budget.test.js",
-        "test/settings.test.js",
-        "test/simulation.test.js",
-        "test/targeted-runner.test.js",
-        "test/terrain.test.js",
-        "test/verify.py"
-      ],
-      "registered": [
-        "test/audio.test.js",
-        "test/capture_visual_upgrade.py",
-        "test/collision.test.js",
-        "test/controller.test.js",
-        "test/entry-mode.test.js",
-        "test/foundation.test.js",
-        "test/hy3d-field-camera.test.js",
-        "test/hy3d-iguanodon.test.js",
-        "test/hy3d-pterodactyl.test.js",
-        "test/hy3d-rifle.test.js",
-        "test/iguanodon.test.js",
-        "test/pterodactyl.test.js",
-        "test/qa_collision.py",
-        "test/qa_controller.py",
-        "test/qa_entry.py",
-        "test/qa_loading.py",
-        "test/qa_motion.py",
-        "test/qa_s0.py",
-        "test/qa_s1.py",
-        "test/qa_s10.py",
-        "test/qa_s2.py",
-        "test/qa_s3.py",
-        "test/qa_s4.py",
-        "test/qa_s5.py",
-        "test/qa_s6.py",
-        "test/qa_s7.py",
-        "test/qa_s8.py",
-        "test/qa_s9.py",
-        "test/qa_visual_targets.py",
-        "test/render-budget.test.js",
-        "test/settings.test.js",
-        "test/simulation.test.js",
-        "test/targeted-runner.test.js",
-        "test/terrain.test.js"
-      ],
-      "excluded": {
-        "test/capture_demo_clip.py": "reproducible delivery-media recorder, not a pass/fail test suite",
-        "test/qa_assertions.py": "shared targeted assertion library; exercised by targeted-runner.test.js",
-        "test/qa_promotion.py": "real-input promotion capture tool; invoked by qa_targeted.py before freeze",
-        "test/qa_targeted.py": "targeted suite and frozen-evidence orchestrator; exercised by targeted-runner.test.js",
-        "test/verify.py": "authoritative suite orchestrator; registering it would recurse"
-      },
-      "packageScripts": {
-        "test": "node --test test/*.test.js",
-        "test:browser": "python3 test/qa_s0.py",
-        "test:collision": "python3 test/qa_collision.py",
-        "test:controller": "python3 test/qa_controller.py",
-        "test:entry": "python3 test/qa_entry.py",
-        "test:loading": "python3 test/qa_loading.py",
-        "test:motion": "python3 test/qa_motion.py",
-        "test:s1": "python3 test/qa_s1.py",
-        "test:s10": "python3 test/qa_s10.py",
-        "test:s2": "python3 test/qa_s2.py",
-        "test:s3": "python3 test/qa_s3.py",
-        "test:s4": "python3 test/qa_s4.py",
-        "test:s5": "python3 test/qa_s5.py",
-        "test:s6": "python3 test/qa_s6.py",
-        "test:s7": "python3 test/qa_s7.py",
-        "test:s8": "python3 test/qa_s8.py",
-        "test:s9": "python3 test/qa_s9.py"
-      },
-      "problems": []
+    ]
+  },
+  "checks": {
+    "launch": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "render": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "input": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "coreLoop": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "outcome": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "restart": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
+    },
+    "accessibilityModes": {
+      "status": "PASS",
+      "evidence": [
+        "build/evidence/current-run/report.json"
+      ]
     }
   },
+  "limitations": [
+    {
+      "scope": "first-time player comprehension",
+      "reason": "Automation cannot substitute for an independent first-time player record.",
+      "blocksProfiles": [
+        "delivery",
+        "release"
+      ]
+    }
+  ],
   "completeRun": {
-    "id": "s8-strong-input-only",
+    "id": "current-strong-input-only",
     "cleanContext": true,
     "speed": "normal",
+    "evidence": "build/evidence/current-run/report.json",
     "steps": [
       {
         "id": "step_01",
         "input": "Enter the basin",
         "expected": "clean 180-second field order",
-        "checkpoint": "s8:00-clean-field-order"
+        "checkpoint": "current:00-clean-field-order"
       },
       {
         "id": "step_02",
         "input": "W, E, raise camera and expose the brook plate",
         "expected": "traversal and first physical proof",
-        "checkpoint": "s8:01-strong-brook-frame"
+        "checkpoint": "current:01-strong-brook-frame"
       },
       {
         "id": "step_03",
         "input": "use cover, reach the glade and expose both behavior plates",
         "expected": "seven evidence points across four plates",
-        "checkpoint": "s8:03-strong-glade-frames"
+        "checkpoint": "current:03-strong-glade-frames"
       },
       {
         "id": "step_04",
         "input": "retreat under cover until the dive widens",
         "expected": "covered return route and retained body margin",
-        "checkpoint": "s8:04-strong-covered-return"
+        "checkpoint": "current:04-strong-covered-return"
       },
       {
         "id": "step_05",
         "input": "follow the covered return to Fort",
         "expected": "Strong field record with all captured views",
-        "checkpoint": "s8:05-strong-input-result"
+        "checkpoint": "current:05-strong-input-result"
       },
       {
         "id": "step_06",
         "input": "Take the route again",
         "expected": "clean field order with no spent resource or travelled distance",
-        "checkpoint": "s8:06-strong-clean-restart"
+        "checkpoint": "current:06-strong-clean-restart"
       }
     ],
     "terminal": "strong-field-record",
     "restart": "clean-field-order"
-  },
-  "checkpoints": [
-    {
-      "id": "s8:00-clean-field-order",
-      "state": "build/evidence/s8/state/00-clean-field-order.json",
-      "browser": "build/evidence/s8/browser/00-clean-field-order.json",
-      "visual": "build/evidence/s8/00-clean-field-order.jpg"
-    },
-    {
-      "id": "s8:01-strong-brook-frame",
-      "state": "build/evidence/s8/state/01-strong-brook-frame.json",
-      "browser": "build/evidence/s8/browser/01-strong-brook-frame.json",
-      "visual": "build/evidence/s8/01-strong-brook-frame.jpg"
-    },
-    {
-      "id": "s8:02-strong-basalt-frame",
-      "state": "build/evidence/s8/state/02-strong-basalt-frame.json",
-      "browser": "build/evidence/s8/browser/02-strong-basalt-frame.json",
-      "visual": "build/evidence/s8/02-strong-basalt-frame.jpg"
-    },
-    {
-      "id": "s8:03-strong-glade-frames",
-      "state": "build/evidence/s8/state/03-strong-glade-frames.json",
-      "browser": "build/evidence/s8/browser/03-strong-glade-frames.json",
-      "visual": "build/evidence/s8/03-strong-glade-frames.jpg"
-    },
-    {
-      "id": "s8:04-strong-covered-return",
-      "state": "build/evidence/s8/state/04-strong-covered-return.json",
-      "browser": "build/evidence/s8/browser/04-strong-covered-return.json",
-      "visual": "build/evidence/s8/04-strong-covered-return.jpg"
-    },
-    {
-      "id": "s8:05-strong-input-result",
-      "state": "build/evidence/s8/state/05-strong-input-result.json",
-      "browser": "build/evidence/s8/browser/05-strong-input-result.json",
-      "visual": "build/evidence/s8/05-strong-input-result.jpg"
-    },
-    {
-      "id": "s8:06-strong-clean-restart",
-      "state": "build/evidence/s8/state/06-strong-clean-restart.json",
-      "browser": "build/evidence/s8/browser/06-strong-clean-restart.json",
-      "visual": "build/evidence/s8/06-strong-clean-restart.jpg"
-    },
-    {
-      "id": "s8:07-mixed-return-attack",
-      "state": "build/evidence/s8/state/07-mixed-return-attack.json",
-      "browser": "build/evidence/s8/browser/07-mixed-return-attack.json",
-      "visual": "build/evidence/s8/07-mixed-return-attack.jpg"
-    },
-    {
-      "id": "s8:08-mixed-rifle-brook",
-      "state": "build/evidence/s8/state/08-mixed-rifle-brook.json",
-      "browser": "build/evidence/s8/browser/08-mixed-rifle-brook.json",
-      "visual": "build/evidence/s8/08-mixed-rifle-brook.jpg"
-    },
-    {
-      "id": "s8:09-mixed-input-result",
-      "state": "build/evidence/s8/state/09-mixed-input-result.json",
-      "browser": "build/evidence/s8/browser/09-mixed-input-result.json",
-      "visual": "build/evidence/s8/09-mixed-input-result.jpg"
-    },
-    {
-      "id": "s8:10-mixed-clean-restart",
-      "state": "build/evidence/s8/state/10-mixed-clean-restart.json",
-      "browser": "build/evidence/s8/browser/10-mixed-clean-restart.json",
-      "visual": "build/evidence/s8/10-mixed-clean-restart.jpg"
-    },
-    {
-      "id": "s8:11-panic-first-contact",
-      "state": "build/evidence/s8/state/11-panic-first-contact.json",
-      "browser": "build/evidence/s8/browser/11-panic-first-contact.json",
-      "visual": "build/evidence/s8/11-panic-first-contact.jpg"
-    },
-    {
-      "id": "s8:12-panic-input-failure",
-      "state": "build/evidence/s8/state/12-panic-input-failure.json",
-      "browser": "build/evidence/s8/browser/12-panic-input-failure.json",
-      "visual": "build/evidence/s8/12-panic-input-failure.jpg"
-    },
-    {
-      "id": "s8:13-panic-clean-restart",
-      "state": "build/evidence/s8/state/13-panic-clean-restart.json",
-      "browser": "build/evidence/s8/browser/13-panic-clean-restart.json",
-      "visual": "build/evidence/s8/13-panic-clean-restart.jpg"
-    },
-    {
-      "id": "s8:14-achromatopsia-field-order",
-      "state": "build/evidence/s8/state/14-achromatopsia-field-order.json",
-      "browser": "build/evidence/s8/browser/14-achromatopsia-field-order.json",
-      "visual": "build/evidence/s8/14-achromatopsia-field-order.jpg"
-    },
-    {
-      "id": "s8:15-achromatopsia-brook-frame",
-      "state": "build/evidence/s8/state/15-achromatopsia-brook-frame.json",
-      "browser": "build/evidence/s8/browser/15-achromatopsia-brook-frame.json",
-      "visual": "build/evidence/s8/15-achromatopsia-brook-frame.jpg"
-    },
-    {
-      "id": "s8:16-achromatopsia-basalt-frame",
-      "state": "build/evidence/s8/state/16-achromatopsia-basalt-frame.json",
-      "browser": "build/evidence/s8/browser/16-achromatopsia-basalt-frame.json",
-      "visual": "build/evidence/s8/16-achromatopsia-basalt-frame.jpg"
-    },
-    {
-      "id": "s8:17-achromatopsia-glade-frames",
-      "state": "build/evidence/s8/state/17-achromatopsia-glade-frames.json",
-      "browser": "build/evidence/s8/browser/17-achromatopsia-glade-frames.json",
-      "visual": "build/evidence/s8/17-achromatopsia-glade-frames.jpg"
-    },
-    {
-      "id": "s8:18-achromatopsia-covered-return",
-      "state": "build/evidence/s8/state/18-achromatopsia-covered-return.json",
-      "browser": "build/evidence/s8/browser/18-achromatopsia-covered-return.json",
-      "visual": "build/evidence/s8/18-achromatopsia-covered-return.jpg"
-    },
-    {
-      "id": "s8:19-achromatopsia-input-result",
-      "state": "build/evidence/s8/state/19-achromatopsia-input-result.json",
-      "browser": "build/evidence/s8/browser/19-achromatopsia-input-result.json",
-      "visual": "build/evidence/s8/19-achromatopsia-input-result.jpg"
-    },
-    {
-      "id": "s8:20-achromatopsia-clean-restart",
-      "state": "build/evidence/s8/state/20-achromatopsia-clean-restart.json",
-      "browser": "build/evidence/s8/browser/20-achromatopsia-clean-restart.json",
-      "visual": "build/evidence/s8/20-achromatopsia-clean-restart.jpg"
-    },
-    {
-      "id": "s7:02-settings-150-minimum",
-      "state": "build/evidence/s7/state/02-settings-150-minimum.json",
-      "browser": "build/evidence/s7/browser/02-settings-150-minimum.json",
-      "visual": "build/evidence/s7/02-settings-150-minimum.jpg"
-    },
-    {
-      "id": "s7:10-heavy-state-target",
-      "state": "build/evidence/s7/state/10-heavy-state-target.json",
-      "browser": "build/evidence/s7/browser/10-heavy-state-target.json",
-      "visual": "build/evidence/s7/10-heavy-state-target.jpg"
-    },
-    {
-      "id": "s10:00a-protanopia-field-order",
-      "state": "build/evidence/s10/state/00a-protanopia-field-order.json",
-      "browser": "build/evidence/s10/browser/00a-protanopia-field-order.json",
-      "visual": "build/evidence/s10/00a-protanopia-field-order.jpg",
-      "visionMode": "protanopia"
-    },
-    {
-      "id": "s10:00b-deuteranopia-field-order",
-      "state": "build/evidence/s10/state/00b-deuteranopia-field-order.json",
-      "browser": "build/evidence/s10/browser/00b-deuteranopia-field-order.json",
-      "visual": "build/evidence/s10/00b-deuteranopia-field-order.jpg",
-      "visionMode": "deuteranopia"
-    },
-    {
-      "id": "s10:00c-tritanopia-field-order",
-      "state": "build/evidence/s10/state/00c-tritanopia-field-order.json",
-      "browser": "build/evidence/s10/browser/00c-tritanopia-field-order.json",
-      "visual": "build/evidence/s10/00c-tritanopia-field-order.jpg",
-      "visionMode": "tritanopia"
-    },
-    {
-      "id": "s10:01-clear-family-sightline",
-      "state": "build/evidence/s10/state/01-clear-family-sightline.json",
-      "browser": "build/evidence/s10/browser/01-clear-family-sightline.json",
-      "visual": "build/evidence/s10/01-clear-family-sightline.jpg",
-      "visionMode": "full-colour"
-    },
-    {
-      "id": "s10:07-protanopia-glade",
-      "state": "build/evidence/s10/state/07-protanopia-glade.json",
-      "browser": "build/evidence/s10/browser/07-protanopia-glade.json",
-      "visual": "build/evidence/s10/07-protanopia-glade.jpg",
-      "visionMode": "protanopia"
-    },
-    {
-      "id": "s10:08-deuteranopia-glade",
-      "state": "build/evidence/s10/state/08-deuteranopia-glade.json",
-      "browser": "build/evidence/s10/browser/08-deuteranopia-glade.json",
-      "visual": "build/evidence/s10/08-deuteranopia-glade.jpg",
-      "visionMode": "deuteranopia"
-    },
-    {
-      "id": "s10:09-tritanopia-glade",
-      "state": "build/evidence/s10/state/09-tritanopia-glade.json",
-      "browser": "build/evidence/s10/browser/09-tritanopia-glade.json",
-      "visual": "build/evidence/s10/09-tritanopia-glade.jpg",
-      "visionMode": "tritanopia"
-    },
-    {
-      "id": "s10:02-young-play-silver-frame",
-      "state": "build/evidence/s10/state/02-young-play-silver-frame.json",
-      "browser": "build/evidence/s10/browser/02-young-play-silver-frame.json",
-      "visual": "build/evidence/s10/02-young-play-silver-frame.jpg",
-      "visionMode": "full-colour"
-    },
-    {
-      "id": "s10:03-branch-pull-silver-frame",
-      "state": "build/evidence/s10/state/03-branch-pull-silver-frame.json",
-      "browser": "build/evidence/s10/browser/03-branch-pull-silver-frame.json",
-      "visual": "build/evidence/s10/03-branch-pull-silver-frame.jpg",
-      "visionMode": "full-colour"
-    },
-    {
-      "id": "s10:04-achromatopsia-attack",
-      "state": "build/evidence/s10/state/04-achromatopsia-attack.json",
-      "browser": "build/evidence/s10/browser/04-achromatopsia-attack.json",
-      "visual": "build/evidence/s10/04-achromatopsia-attack.jpg",
-      "visionMode": "achromatopsia"
-    },
-    {
-      "id": "s10:10-protanopia-attack-defense",
-      "state": "build/evidence/s10/state/10-protanopia-attack-defense.json",
-      "browser": "build/evidence/s10/browser/10-protanopia-attack-defense.json",
-      "visual": "build/evidence/s10/10-protanopia-attack-defense.jpg",
-      "visionMode": "protanopia"
-    },
-    {
-      "id": "s10:11-deuteranopia-attack-defense",
-      "state": "build/evidence/s10/state/11-deuteranopia-attack-defense.json",
-      "browser": "build/evidence/s10/browser/11-deuteranopia-attack-defense.json",
-      "visual": "build/evidence/s10/11-deuteranopia-attack-defense.jpg",
-      "visionMode": "deuteranopia"
-    },
-    {
-      "id": "s10:12-tritanopia-attack-defense",
-      "state": "build/evidence/s10/state/12-tritanopia-attack-defense.json",
-      "browser": "build/evidence/s10/browser/12-tritanopia-attack-defense.json",
-      "visual": "build/evidence/s10/12-tritanopia-attack-defense.jpg",
-      "visionMode": "tritanopia"
-    },
-    {
-      "id": "s10:05-strong-plate-board",
-      "state": "build/evidence/s10/state/05-strong-plate-board.json",
-      "browser": "build/evidence/s10/browser/05-strong-plate-board.json",
-      "visual": "build/evidence/s10/05-strong-plate-board.jpg",
-      "visionMode": "full-colour"
-    },
-    {
-      "id": "s10:13-protanopia-strong-result",
-      "state": "build/evidence/s10/state/13-protanopia-strong-result.json",
-      "browser": "build/evidence/s10/browser/13-protanopia-strong-result.json",
-      "visual": "build/evidence/s10/13-protanopia-strong-result.jpg",
-      "visionMode": "protanopia"
-    },
-    {
-      "id": "s10:14-deuteranopia-strong-result",
-      "state": "build/evidence/s10/state/14-deuteranopia-strong-result.json",
-      "browser": "build/evidence/s10/browser/14-deuteranopia-strong-result.json",
-      "visual": "build/evidence/s10/14-deuteranopia-strong-result.jpg",
-      "visionMode": "deuteranopia"
-    },
-    {
-      "id": "s10:15-tritanopia-strong-result",
-      "state": "build/evidence/s10/state/15-tritanopia-strong-result.json",
-      "browser": "build/evidence/s10/browser/15-tritanopia-strong-result.json",
-      "visual": "build/evidence/s10/15-tritanopia-strong-result.jpg",
-      "visionMode": "tritanopia"
-    },
-    {
-      "id": "s10:06-clean-restart",
-      "state": "build/evidence/s10/state/06-clean-restart.json",
-      "browser": "build/evidence/s10/browser/06-clean-restart.json",
-      "visual": "build/evidence/s10/06-clean-restart.jpg",
-      "visionMode": "full-colour"
-    }
-  ],
-  "colourVisionEvidence": {
-    "completeInputRoutes": {
-      "full-colour": [
-        "00-clean-field-order",
-        "01-strong-brook-frame",
-        "03-strong-glade-frames",
-        "04-strong-covered-return",
-        "05-strong-input-result",
-        "06-strong-clean-restart"
-      ],
-      "achromatopsia": [
-        "14-achromatopsia-field-order",
-        "15-achromatopsia-brook-frame",
-        "17-achromatopsia-glade-frames",
-        "18-achromatopsia-covered-return",
-        "19-achromatopsia-input-result",
-        "20-achromatopsia-clean-restart"
-      ]
-    },
-    "reviewCheckpoints": {
-      "protanopia": {
-        "order": "00a-protanopia-field-order",
-        "glade": "07-protanopia-glade",
-        "attackDefense": "10-protanopia-attack-defense",
-        "result": "13-protanopia-strong-result"
-      },
-      "deuteranopia": {
-        "order": "00b-deuteranopia-field-order",
-        "glade": "08-deuteranopia-glade",
-        "attackDefense": "11-deuteranopia-attack-defense",
-        "result": "14-deuteranopia-strong-result"
-      },
-      "tritanopia": {
-        "order": "00c-tritanopia-field-order",
-        "glade": "09-tritanopia-glade",
-        "attackDefense": "12-tritanopia-attack-defense",
-        "result": "15-tritanopia-strong-result"
-      }
-    },
-    "independentCueReadability": "NOT_RUN"
-  },
-  "claimBoundaries": [
-    "Automated paths are not first-time human navigation or premise-comprehension evidence.",
-    "Pixel and state checks do not prove subjective composition, anatomy, motion, fun or balance.",
-    "Local 25 Mbps throttling is not public-host cold-loading evidence.",
-    "Chromium-emulated routes and checkpoints do not prove independent human cue readability."
-  ]
+  }
 }

@@ -277,7 +277,7 @@ def start_fresh(page, opening: str) -> None:
 
 def main() -> int:
     global errors, network_errors, http_errors
-    # 只清截图子目录：qa/evidence/ 下还有手写的 design-invariants.md 等独立验证证据，
+    # 只清本次截图子目录；qa/evidence/ 下的机器汇总由各自生成器维护，
     # 不能被复跑抹掉。
     shutil.rmtree(SAFE, ignore_errors=True)
     shutil.rmtree(ADULT, ignore_errors=True)
@@ -540,12 +540,17 @@ def main() -> int:
         "external_hosts": external,
         "safe_screenshots": sorted(p.name for p in SAFE.glob("*.jpg")),
         "adult_screenshots": sorted(p.name for p in ADULT.glob("*.jpg")),
+        "screenshots_retained_in_git": False,
     }
-    run_evidence = SHOTS / ("evidence-normal.json" if SLOW else "evidence-fast.json")
-    run_evidence.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if SLOW:
+        run_evidence = SHOTS / "evidence-normal.json"
+        run_evidence.write_text(
+            json.dumps(evidence, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     print(f"\n控制台错误: {len(errors)}；资源失败: {len(network_errors)}")
     print(f"包体: {size_bytes/1048576:.2f} MB；外部域: {external or '无'}")
-    print(f"结果: {passed} 通过, {failed} 失败；证据 → {SHOTS}")
+    print(f"结果: {passed} 通过, {failed} 失败")
     if not SLOW:
         print("提示: 本轮为加速路径，时序证据无效（qa-contract《首次上手》）；"
               "正常速度完整路径须以 QA_SLOW=1 复跑一次，秒级节拍写回 QA_REPORT。")

@@ -28,7 +28,7 @@ Play the full expedition on desktop, or watch the 15-second gameplay preview on 
 
 #### 36-second Remotion launch trailer
 
-The trailer follows [the verified same-take gameplay route](examples/project-plateau/qa/evidence/remotion-launch-trailer-2026-08-04.md) and uses an approved Fish Audio synthetic narration. Captions preserve the complete story when muted.
+The trailer follows [the verified same-take gameplay route](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md) and uses an approved Fish Audio synthetic narration. Captions preserve the complete story when muted.
 
 https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
 
@@ -75,7 +75,7 @@ Recommend the target platform, genre, and engine from the source, and keep the f
 Let the player enter the world as an original character with a new playable route through its conflict.
 ```
 
-`quick` is the hands-off option: after confirming your requirements, the agent compares three ways to turn the novel into a game, chooses the most promising one, and continues through design, build, and QA. Choose `director` if you want to review those three proposals and decide which one should be built.
+`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. It defaults to **smoke assurance**—real startup, rendering, input, a complete loop, an outcome, and restart. Choose `director` to pick the concept yourself, `delivery` assurance for a handoff or target-device check, or `release` assurance to add target-device performance, required-asset fallback, and independent playtesting.
 
 <details>
 <summary><strong>Native plugin installation</strong></summary>
@@ -107,13 +107,13 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## Workflow
 
-The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Failed QA returns to the build for another repair pass until the evidence clears the gate.
+The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Concept, experience/level design, and art direction remain distinct, while acceptance checks only scope consistency and the playable experience required by the selected assurance profile.
 
 ```text
 Novel → Source analysis → Concept → World design → Art direction → Build ⇄ QA → Playable game
 ```
 
-Concept selection, experience and level design, and art direction remain separately reviewable. Build targets the chosen runtime; QA verifies that same runtime with real execution evidence. If art direction selects voice, build-time TTS is optional and provider-neutral: line-level rights, request fingerprints, local audio, subtitles, failure fallback, decode and loudness evidence, and human listening review are required before release.
+Build targets the chosen runtime; QA verifies player-visible effects in that runtime with real execution evidence. Smoke, delivery, and release assurance are monotonic presets rather than separate workflows. Capability-specific checks run only when that capability is actually adopted; source identity, public hosting, marketing, rights, and secret reviews are not game-effect QA gates.
 
 ## Skills
 
@@ -140,6 +140,7 @@ game-adaptations/<project>/
   design/ART_DIRECTION.md
   build/BUILD_BRIEF.md
   build/app/
+  qa/verification.json
   qa/QA_REPORT.md
   _progress.md
 ```

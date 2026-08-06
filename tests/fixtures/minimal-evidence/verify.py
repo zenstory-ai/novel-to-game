@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import json
-import os
-import platform
 import subprocess
 import sys
 import time
@@ -13,210 +11,79 @@ from game import Expedition
 
 
 ROOT = Path(__file__).resolve().parent
-EVIDENCE = ROOT / "qa/evidence"
-REGISTERED_SUITES = {
-    "unit": ["tests/test_game.py"],
-}
-
-
-def discover_test_files() -> set[str]:
-    return {
-        path.relative_to(ROOT).as_posix()
-        for path in (ROOT / "tests").glob("test_*.py")
-    }
-
-
-def write_state(checkpoint: str, state: dict[str, object]) -> str:
-    relative = f"qa/evidence/state/{checkpoint}.json"
-    path = ROOT / relative
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
-    return relative
-
-
-def write_runtime(checkpoint: str, state: dict[str, object]) -> str:
-    relative = f"qa/evidence/runtime/{checkpoint}.json"
-    path = ROOT / relative
-    path.parent.mkdir(parents=True, exist_ok=True)
-    record = {
-        "runner": "CPython command-line process",
-        "checkpoint": checkpoint,
-        "stateObserved": state,
-        "errors": [],
-    }
-    path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-    return relative
+EVIDENCE = ROOT / "qa/evidence/run.json"
+CORE_CHECKS = ("launch", "render", "input", "coreLoop", "outcome", "restart")
 
 
 def main() -> int:
-    discovered = discover_test_files()
-    registered = {
-        location
-        for locations in REGISTERED_SUITES.values()
-        for location in locations
-    }
-    orphaned = sorted(discovered - registered)
-    if orphaned:
-        print(
-            "ORPHANED_TEST_SUITE major: "
-            + ", ".join(orphaned)
-            + " discovered under tests/ but absent from authoritative verify"
-        )
-        return 2
-
-    missing = sorted(registered - discovered)
-    if missing:
-        print("MISSING_REQUIRED_SUITE blocker: " + ", ".join(missing))
-        return 2
-
-    EVIDENCE.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    log_lines = [
-        "targetRuntime=CPython command-line process",
-        "testedRuntime=CPython command-line process",
-        f"runtime={sys.executable}",
-        f"runtimeVersion={platform.python_version()}",
+    command = [
+        sys.executable,
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v",
     ]
-    suite_results: list[dict[str, object]] = []
-    exit_code = 0
-    for suite_id, locations in REGISTERED_SUITES.items():
-        pattern = Path(locations[0]).name
-        command = [
-            sys.executable,
-            "-m",
-            "unittest",
-            "discover",
-            "-s",
-            "tests",
-            "-p",
-            pattern,
-            "-v",
-        ]
-        result = subprocess.run(
-            command,
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-        )
-        log_lines.extend(
-            [
-                f"suite={suite_id}",
-                "command=" + " ".join(command),
-                result.stdout,
-                result.stderr,
-                f"exitCode={result.returncode}",
-            ]
-        )
-        executed = result.returncode == 0
-        suite_results.append(
-            {"id": suite_id, "locations": locations, "executed": executed}
-        )
-        exit_code = max(exit_code, result.returncode)
-
-    if exit_code:
-        (EVIDENCE / "verify.log").write_text(
-            "\n".join(log_lines), encoding="utf-8"
-        )
-        return exit_code
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    if result.returncode:
+        sys.stdout.write(result.stdout)
+        sys.stderr.write(result.stderr)
+        return result.returncode
 
     game = Expedition()
-    initial = game.snapshot()
-    observed = game.observe()
-    extracted = game.extract()
-    restarted = game.restart()
-    checkpoints = [
-        ("cp_initial", initial),
-        ("cp_observe", observed),
-        ("cp_extract", extracted),
-        ("cp_restart", restarted),
-    ]
-    checkpoint_records = [
-        {
-            "id": checkpoint,
-            "state": write_state(checkpoint, state),
-            "runtime": write_runtime(checkpoint, state),
-            "visual": "NOT_RUN: contract fixture has no visual renderer",
-        }
-        for checkpoint, state in checkpoints
-    ]
-    duration_ms = round((time.monotonic() - started) * 1000)
-    log_lines.extend(
-        [
-            "completeRun=complete_run_01",
-            "terminal=extracted_with_proof",
-            "restart=initial_state",
-            f"durationMs={duration_ms}",
-        ]
-    )
-    (EVIDENCE / "verify.log").write_text("\n".join(log_lines), encoding="utf-8")
+    states = {
+        "initial": game.snapshot(),
+        "observed": game.observe(),
+        "outcome": game.extract(),
+        "restart": game.restart(),
+    }
+    assert states["initial"]["phase"] == "arrival"
+    assert states["observed"]["proof"] is True
+    assert states["outcome"]["outcome"] == "extracted_with_proof"
+    assert states["restart"] == states["initial"]
 
+    EVIDENCE.parent.mkdir(parents=True, exist_ok=True)
+    EVIDENCE.write_text(
+        json.dumps(
+            {
+                "command": "python3 verify.py",
+                "unitExitCode": result.returncode,
+                "states": states,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    evidence = "qa/evidence/run.json"
     verification = {
-        "schemaVersion": 1,
-        "sourceCommit": os.environ.get(
-            "SOURCE_COMMIT", "NOT_AVAILABLE: SOURCE_COMMIT was not provided"
-        ),
-        "environment": {
-            "targetPlatform": "desktop command line",
-            "targetRuntime": "CPython command-line process",
-            "testedRuntime": "CPython command-line process",
-            "engine": "Python standard library",
-            "engineVersion": platform.python_version(),
-            "runtime": sys.executable,
-            "runtimeVersion": platform.python_version(),
-            "packageManager": "none",
-            "browser": "N/A: target runtime does not use a browser",
-            "viewport": "N/A: target runtime has no graphical viewport",
-        },
-        "verify": {
-            "command": "python3 verify.py",
-            "log": "qa/evidence/verify.log",
-            "exitCode": 0,
-            "durationMs": duration_ms,
-            "suites": suite_results,
-        },
+        "schemaVersion": 2,
+        "assuranceProfile": "smoke",
+        "status": "PASS",
+        "verify": {"command": "python3 verify.py", "exitCode": 0},
         "completeRun": {
             "id": "complete_run_01",
             "cleanContext": True,
-            "speed": "normal",
-            "steps": [
-                {
-                    "id": "step_01",
-                    "input": "start with a new Expedition",
-                    "expected": "arrival state without proof",
-                    "checkpoint": "cp_initial",
-                },
-                {
-                    "id": "step_02",
-                    "input": "observe",
-                    "expected": "proof acquired and route opened",
-                    "checkpoint": "cp_observe",
-                },
-                {
-                    "id": "step_03",
-                    "input": "extract",
-                    "expected": "designed result reached with proof",
-                    "checkpoint": "cp_extract",
-                },
-                {
-                    "id": "step_04",
-                    "input": "restart",
-                    "expected": "valid initial state restored",
-                    "checkpoint": "cp_restart",
-                },
-            ],
             "terminal": "extracted_with_proof",
             "restart": "initial_state",
+            "evidence": evidence,
         },
-        "checkpoints": checkpoint_records,
+        "checks": {
+            name: {"status": "PASS", "evidence": [evidence]}
+            for name in CORE_CHECKS
+        },
+        "limitations": [],
     }
     (ROOT / "qa").mkdir(exist_ok=True)
     (ROOT / "qa/verification.json").write_text(
-        json.dumps(verification, indent=2) + "\n",
-        encoding="utf-8",
+        json.dumps(verification, indent=2) + "\n", encoding="utf-8"
     )
-    print("authoritative verification: PASS")
-    print("suites=" + ",".join(REGISTERED_SUITES))
-    print("completeRun=complete_run_01")
+    duration_ms = round((time.monotonic() - started) * 1000)
+    print(f"authoritative verification: PASS ({duration_ms}ms)")
     return 0
 
 

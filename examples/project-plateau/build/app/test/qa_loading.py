@@ -13,9 +13,6 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import Route, sync_playwright
 
-from verify import app_fingerprint
-
-
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
 EVIDENCE = BUILD / "evidence" / "loading"
@@ -103,7 +100,6 @@ def run() -> dict[str, object]:
         report = {
             "suite": "browser:loading-state",
             "status": "PASS",
-            "sourceFingerprint": app_fingerprint(),
             "checks": {
                 "bootLoaderClearsAfterFirstFrame": True,
                 "requiredAssetLoaderVisible": True,

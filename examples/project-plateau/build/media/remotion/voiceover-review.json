@@ -3,7 +3,7 @@
   "releaseStatus": "APPROVED",
   "rights": {
     "status": "APPROVED",
-    "evidence": "qa/evidence/voiceover-approval-2026-08-04.md#rights-authorization",
+    "evidence": "build/media/remotion/VOICEOVER_APPROVAL.md#rights-authorization",
     "approvedReferenceSha256": "4729e3c804de8bec56836f7f5c70ceb1ec2be6b8141205ef2f65c58e279e35da"
   },
   "listening": {

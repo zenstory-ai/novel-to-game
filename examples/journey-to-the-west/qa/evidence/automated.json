@@ -7,14 +7,14 @@
   "frame_ms": {
     "battle3_whitebull": {
       "p50": 8.3,
-      "p95": 8.9,
-      "max": 25,
+      "p95": 10.3,
+      "max": 17.1,
       "n": 90
     },
     "battle3_godassist": {
       "p50": 8.4,
-      "p95": 16.7,
-      "max": 17,
+      "p95": 16.8,
+      "max": 17.9,
       "n": 90
     }
   },
@@ -24,7 +24,7 @@
     "127.0.0.1:5173"
   ],
   "external_hosts": [],
-  "build_bytes": 4238279,
-  "shots_dir": "qa/evidence/browser",
-  "shots": 47
+  "build_bytes": 4235264,
+  "generated_screenshots": 47,
+  "screenshots_retained_in_git": false
 }

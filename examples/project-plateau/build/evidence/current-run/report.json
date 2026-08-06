@@ -1,0 +1,1015 @@
+{
+  "stage": "current-complete-run",
+  "environment": {
+    "browser": "Google Chrome 150.0.7871.187",
+    "viewport": [
+      1440,
+      900
+    ],
+    "baseUrl": "http://127.0.0.1:4173"
+  },
+  "checks": {
+    "noTeleportOrDirectTimeAdvance": true,
+    "strongAllFiveVerbsNoShot": true,
+    "strongEvidenceSevenAndBodyMargin": true,
+    "strongDistinctBehaviorFrames": true,
+    "strongRemainingLightWithinReferenceWindow": true,
+    "cleanRestartAfterStrongResult": true,
+    "accessibilityModesAppliedAndReset": true,
+    "noThreatMeter": true,
+    "consoleErrors": []
+  },
+  "verbEvidenceMatrix": {
+    "traverse": "Strong input trace + 05-strong-input-result",
+    "observe": "01-strong-brook-frame + 03-strong-glade-frames",
+    "commitExposedObjective": "02-strong-basalt-frame + 03-strong-glade-frames",
+    "evadeOrDefend": "04-strong-covered-return",
+    "reachRelativeSafety": "05-strong-input-result"
+  },
+  "pathMetrics": {
+    "Strong": {
+      "wallSeconds": 59.145,
+      "simulationSeconds": 59.252,
+      "distanceTravelled": 133.79,
+      "remainingLight": 92.748,
+      "returnCostSeconds": 28,
+      "route": "covered",
+      "result": {
+        "kind": "alive",
+        "band": "strong-field-record",
+        "title": "Strong field record",
+        "copy": "Scale. Living form. Behavior. The field record holds.",
+        "evidence": 7,
+        "survivingPlates": 4,
+        "route": "covered",
+        "brookResponse": null,
+        "remainingLight": 92.7,
+        "gunshotCallback": null
+      },
+      "visionMode": "full-colour"
+    }
+  },
+  "accessibility": {
+    "settings": {
+      "reducedMotion": true,
+      "captionsEnabled": false,
+      "textScale": "1.5",
+      "quality": "balanced",
+      "lookSensitivity": 1,
+      "volumes": {
+        "ambience": 0.34,
+        "effects": 0.72,
+        "music": 0.2
+      },
+      "storageKey": "project-plateau:presentation:v2"
+    },
+    "reducedMotionClass": true,
+    "textScale": "1.5",
+    "horizontalOverflow": false
+  },
+  "inputTrace": [
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "Fort to brook",
+      "wallSeconds": 6.398,
+      "start": {
+        "x": 3,
+        "z": 70
+      },
+      "end": {
+        "x": 3,
+        "z": 44.2
+      },
+      "distanceAfter": 25.8,
+      "concurrentInput": "KeyC",
+      "continuationMs": 250,
+      "continuousInput": true,
+      "noInputSegment": false
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "partial tutorial frame",
+      "wallSeconds": 2.161,
+      "plate": 1,
+      "frame": "brook-partial",
+      "points": 1
+    },
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "brook to basalt",
+      "wallSeconds": 6.418,
+      "start": {
+        "x": 3,
+        "z": 44.186
+      },
+      "end": {
+        "x": 3,
+        "z": 17.747
+      },
+      "distanceAfter": 52.253
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "basalt scale frame",
+      "wallSeconds": 2.157,
+      "plate": 2,
+      "frame": "basalt-scale",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyA",
+      "purpose": "enter canopy",
+      "wallSeconds": 0.252,
+      "start": {
+        "x": 3,
+        "z": 17.568
+      },
+      "end": {
+        "x": 2.501,
+        "z": 17.568
+      },
+      "distanceAfter": 52.931
+    },
+    {
+      "path": "Strong",
+      "input": "hold position under cover",
+      "purpose": "widen the attack before glade",
+      "wallSeconds": 5.758,
+      "awarenessBefore": 3,
+      "awarenessAfter": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "canopy to glade",
+      "wallSeconds": 3.898,
+      "start": {
+        "x": 2.4,
+        "z": 17.568
+      },
+      "end": {
+        "x": 2.4,
+        "z": 1.715
+      },
+      "distanceAfter": 68.885
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "young-at-play frame",
+      "wallSeconds": 2.151,
+      "plate": 3,
+      "frame": "glade-young-play",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyS",
+      "purpose": "protect first behavior plate",
+      "wallSeconds": 0.596,
+      "start": {
+        "x": 2.4,
+        "z": 1.545
+      },
+      "end": {
+        "x": 2.4,
+        "z": 3.478
+      },
+      "distanceAfter": 70.987
+    },
+    {
+      "path": "Strong",
+      "input": "hold position under cover",
+      "purpose": "break the dive between behavior frames",
+      "wallSeconds": 5.861,
+      "awarenessBefore": 3,
+      "awarenessAfter": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyW",
+      "purpose": "return for second behavior frame",
+      "wallSeconds": 0.601,
+      "start": {
+        "x": 2.4,
+        "z": 3.707
+      },
+      "end": {
+        "x": 2.4,
+        "z": 1.71
+      },
+      "distanceAfter": 73.213
+    },
+    {
+      "path": "Strong",
+      "input": "Right Mouse + Left Mouse",
+      "purpose": "branch-pull frame",
+      "wallSeconds": 2.162,
+      "plate": 4,
+      "frame": "glade-branch-pull",
+      "points": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyS",
+      "purpose": "retreat into cover",
+      "wallSeconds": 0.572,
+      "start": {
+        "x": 2.4,
+        "z": 1.567
+      },
+      "end": {
+        "x": 2.4,
+        "z": 3.467
+      },
+      "distanceAfter": 75.257
+    },
+    {
+      "path": "Strong",
+      "input": "hold position under cover",
+      "purpose": "break the final dive",
+      "wallSeconds": 5.865,
+      "awarenessBefore": 3,
+      "awarenessAfter": 2
+    },
+    {
+      "path": "Strong",
+      "input": "KeyS",
+      "purpose": "covered return through the Fort gate",
+      "wallSeconds": 14.076,
+      "start": {
+        "x": 2.4,
+        "z": 3.667
+      },
+      "end": {
+        "x": 2.4,
+        "z": 62
+      },
+      "distanceAfter": 133.79
+    }
+  ],
+  "performance": {
+    "samples": 240,
+    "medianFrameMs": 16.4,
+    "medianFps": 61,
+    "onePercentLowFps": 38.6,
+    "worstFrameMs": 26.1
+  },
+  "checkpoints": [
+    {
+      "id": "00-clean-field-order",
+      "inputs": [
+        "Enter the basin"
+      ],
+      "state": {
+        "mode": "order",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "order",
+        "pointerLock": {
+          "active": false,
+          "status": "idle",
+          "error": null,
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "zone": "fort",
+          "remainingLight": 180,
+          "elapsedSeconds": 0,
+          "distanceTravelled": 0,
+          "plates": [
+            {
+              "index": 0,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": null,
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "Enter the basin"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/00-clean-field-order.jpg"
+    },
+    {
+      "id": "01-strong-brook-frame",
+      "inputs": [
+        "W to brook",
+        "E",
+        "camera commitment"
+      ],
+      "state": {
+        "mode": "field",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "field",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 44.186
+          },
+          "zone": "brook-blind",
+          "remainingLight": 171.211,
+          "elapsedSeconds": 8.789,
+          "distanceTravelled": 25.814,
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "PARTIAL \u2014 foliage hides the flank.",
+              "frameKey": "brook-partial"
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": null,
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "W to brook",
+          "E",
+          "camera commitment"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/01-strong-brook-frame.jpg"
+    },
+    {
+      "id": "02-strong-basalt-frame",
+      "inputs": [
+        "W to basalt",
+        "camera commitment"
+      ],
+      "state": {
+        "mode": "field",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "field",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 17.568
+          },
+          "zone": "basalt-shelf",
+          "remainingLight": 162.594,
+          "elapsedSeconds": 17.406,
+          "distanceTravelled": 52.432,
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "PARTIAL \u2014 foliage hides the flank.",
+              "frameKey": "brook-partial"
+            },
+            {
+              "index": 1,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "CONTEXT \u2014 basalt gives scale.",
+              "frameKey": "basalt-scale"
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": null,
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "W to basalt",
+          "camera commitment"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/02-strong-basalt-frame.jpg"
+    },
+    {
+      "id": "03-strong-glade-frames",
+      "inputs": [
+        "W to glade",
+        "E",
+        "two camera commitments"
+      ],
+      "state": {
+        "mode": "field",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "field",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 2.4,
+            "z": 1.567
+          },
+          "zone": "iguanodon-glade",
+          "remainingLight": 113.265,
+          "elapsedSeconds": 38.735,
+          "distanceTravelled": 73.356,
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "PARTIAL \u2014 foliage hides the flank.",
+              "frameKey": "brook-partial"
+            },
+            {
+              "index": 1,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "CONTEXT \u2014 basalt gives scale.",
+              "frameKey": "basalt-scale"
+            },
+            {
+              "index": 2,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 young play beside the adults.",
+              "frameKey": "glade-young-play"
+            },
+            {
+              "index": 3,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
+              "frameKey": "glade-branch-pull"
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": "covered",
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "W to glade",
+          "E",
+          "two camera commitments"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/03-strong-glade-frames.jpg"
+    },
+    {
+      "id": "04-strong-covered-return",
+      "inputs": [
+        "S into cover",
+        "hold until wider pass"
+      ],
+      "state": {
+        "mode": "field",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "field",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 2.4,
+            "z": 3.667
+          },
+          "zone": "covered-return",
+          "remainingLight": 106.781,
+          "elapsedSeconds": 45.219,
+          "distanceTravelled": 75.457,
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "PARTIAL \u2014 foliage hides the flank.",
+              "frameKey": "brook-partial"
+            },
+            {
+              "index": 1,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "CONTEXT \u2014 basalt gives scale.",
+              "frameKey": "basalt-scale"
+            },
+            {
+              "index": 2,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 young play beside the adults.",
+              "frameKey": "glade-young-play"
+            },
+            {
+              "index": 3,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
+              "frameKey": "glade-branch-pull"
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": "covered",
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "S into cover",
+          "hold until wider pass"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/04-strong-covered-return.jpg"
+    },
+    {
+      "id": "05-strong-input-result",
+      "inputs": [
+        "S along the complete return to Fort"
+      ],
+      "state": {
+        "mode": "terminal",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "terminal",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 2.4,
+            "z": 62
+          },
+          "zone": "fort",
+          "remainingLight": 92.748,
+          "elapsedSeconds": 59.252,
+          "distanceTravelled": 133.79,
+          "plates": [
+            {
+              "index": 0,
+              "status": "exposed",
+              "points": 1,
+              "lostPoints": 0,
+              "label": "PARTIAL \u2014 foliage hides the flank.",
+              "frameKey": "brook-partial"
+            },
+            {
+              "index": 1,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "CONTEXT \u2014 basalt gives scale.",
+              "frameKey": "basalt-scale"
+            },
+            {
+              "index": 2,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 young play beside the adults.",
+              "frameKey": "glade-young-play"
+            },
+            {
+              "index": 3,
+              "status": "exposed",
+              "points": 2,
+              "lostPoints": 0,
+              "label": "BEHAVIOR \u2014 an adult pulls the branch down.",
+              "frameKey": "glade-branch-pull"
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": "covered",
+          "runStatus": "result",
+          "result": {
+            "kind": "alive",
+            "band": "strong-field-record",
+            "title": "Strong field record",
+            "copy": "Scale. Living form. Behavior. The field record holds.",
+            "evidence": 7,
+            "survivingPlates": 4,
+            "route": "covered",
+            "brookResponse": null,
+            "remainingLight": 92.7,
+            "gunshotCallback": null
+          }
+        }
+      },
+      "browser": {
+        "inputs": [
+          "S along the complete return to Fort"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/05-strong-input-result.jpg"
+    },
+    {
+      "id": "06-strong-clean-restart",
+      "inputs": [
+        "Take the route again"
+      ],
+      "state": {
+        "mode": "order",
+        "stage": "current-complete-run",
+        "viewport": [
+          1440,
+          900
+        ],
+        "sceneChildren": 64,
+        "triangles": 1,
+        "cameraMode": "order",
+        "pointerLock": {
+          "active": false,
+          "status": "unavailable",
+          "error": "The browser denied pointer lock. Click Resume field work to retry.",
+          "cameraForward": {
+            "x": 0,
+            "y": 0,
+            "z": -1
+          }
+        },
+        "presentationSettings": {
+          "reducedMotion": false,
+          "captionsEnabled": true,
+          "textScale": "1",
+          "quality": "balanced",
+          "lookSensitivity": 1,
+          "volumes": {
+            "ambience": 0.34,
+            "effects": 0.72,
+            "music": 0.2
+          },
+          "storageKey": "project-plateau:presentation:v2"
+        },
+        "player": {
+          "position": {
+            "x": 3,
+            "z": 70
+          },
+          "zone": "fort",
+          "remainingLight": 180,
+          "elapsedSeconds": 0,
+          "distanceTravelled": 0,
+          "plates": [
+            {
+              "index": 0,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 1,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 2,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            },
+            {
+              "index": 3,
+              "status": "unexposed",
+              "points": 0,
+              "lostPoints": 0,
+              "label": null,
+              "frameKey": null
+            }
+          ],
+          "shotCount": 0,
+          "cartridges": 2,
+          "bodyMargin": 1,
+          "returnRoute": null,
+          "runStatus": "active",
+          "result": null
+        }
+      },
+      "browser": {
+        "inputs": [
+          "Take the route again"
+        ],
+        "viewport": [
+          1440,
+          900
+        ],
+        "visionMode": "full-colour",
+        "url": "http://127.0.0.1:4173/?qa=complete-run",
+        "consoleErrorsAtCheckpoint": []
+      },
+      "visual": "build/evidence/current-run/06-strong-clean-restart.jpg"
+    }
+  ],
+  "limitations": [
+    "The paths use real keyboard/mouse movement and wait on observed state, but they are deterministic automation rather than first-time human navigation evidence.",
+    "The run validates the reconciled 1\u20133 minute product budget; independent first-time perception is outside smoke assurance.",
+    "The Strong path records distinct young-play and branch-pull states, but automated pose checks do not establish anatomy or animation quality.",
+    "Subjective fun, balance and audio mix are not inferred from the deterministic results."
+  ]
+}

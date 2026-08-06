@@ -1,6 +1,7 @@
 # 成品目标
 
 `targetFinish: playable-prototype`
+`assuranceProfile: smoke`
 `publicationTier: graybox`
 `demonstratedTier: graybox`
 `grayboxReady: PASS`

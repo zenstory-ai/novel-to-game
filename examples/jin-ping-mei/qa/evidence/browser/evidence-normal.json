@@ -16,22 +16,22 @@
   "http_errors": [],
   "performance": {
     "note": "纯 DOM/CSS，无 rAF 渲染循环；帧率对本作无意义，改测转场延迟与主线程长任务",
-    "local_load_ms": 25.5,
+    "local_load_ms": 29.5,
     "transitions": {
       "banquet_conflict_close": {
-        "transition_to_paint_ms": 38.2
+        "transition_to_paint_ms": 22
       }
     },
     "transition_budget_ms": 200.0,
     "longtasks_over_50ms": [
       {
-        "ms": 181,
-        "at": 944,
+        "ms": 164,
+        "at": 970,
         "phase": "?"
       }
     ],
     "stall_gate_ms": 200.0,
-    "build_bytes": 6266888
+    "build_bytes": 6244598
   },
   "request_hosts": [
     "127.0.0.1:5173"
@@ -63,5 +63,6 @@
     "yue_day4_explicit.jpg",
     "yue_day5_explicit.jpg",
     "yue_day6_explicit.jpg"
-  ]
+  ],
+  "screenshots_retained_in_git": false
 }

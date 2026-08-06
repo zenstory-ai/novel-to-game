@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 2,
+  "assuranceProfile": "smoke",
+  "status": "PASS",
+  "verify": {
+    "command": "node test/ledger.mjs && python3 test/qa_browser.py && QA_SLOW=1 python3 test/qa_browser.py",
+    "exitCode": 0
+  },
+  "completeRun": {
+    "id": "jin-ping-mei-current-complete-run",
+    "cleanContext": true,
+    "terminal": "exclusive-ending",
+    "restart": "day-1-opening",
+    "evidence": "qa/evidence/browser/evidence-normal.json"
+  },
+  "checks": {
+    "launch": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "render": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "input": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "coreLoop": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "outcome": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "restart": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    },
+    "accessibilityModes": {
+      "status": "PASS",
+      "evidence": [
+        "qa/evidence/browser/evidence-normal.json"
+      ]
+    }
+  },
+  "limitations": [
+    {
+      "scope": "first-time human comprehension",
+      "reason": "Automation proves the playable path, not unassisted first-use comprehension.",
+      "blocksProfiles": [
+        "delivery",
+        "release"
+      ]
+    }
+  ]
+}

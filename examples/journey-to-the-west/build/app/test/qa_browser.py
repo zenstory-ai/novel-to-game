@@ -3,14 +3,14 @@
 标题 → 序幕(土地对话/阵型/存档) → 战斗1(教学/法术/变化/化虫入腹)
 → 战斗2(携宠/假扇反噬) → BOSS(阵型切换/真扇三段/白牛真身) → 结局 → 读档。
 断言:关键 DOM 存在、控制台 0 报错、帧时分布、无外部请求域;
-截图存示例工作区内 qa/evidence/browser/。
+截图在运行期间存于示例工作区内 qa/evidence/browser/，只保留聚合结果；
+面向仓库的精选画面位于 examples/journey-to-the-west/screenshots/。
 
 用法: python3 test/qa_browser.py
 环境变量: BASE_URL(默认 http://127.0.0.1:5173), QA_SLOW=1 关闭加速,
           QA_SHOTS 覆盖截图目录。
 
-截图默认落在工作区内的持久路径而非系统临时目录:qa 契约把临时目录路径视为无证据,
-对应检查项不得记通过。
+截图不落系统临时目录，便于失败时诊断；成功后的逐步截图可删除，不作为当前 PASS 的唯一依据。
 """
 import json, os, shutil, socket, subprocess, sys, time
 from urllib.parse import urlparse
@@ -226,8 +226,8 @@ def main():
         "frame_budget_ms": None, "stall_gate_ms": STALL_MS,
         "request_hosts": sorted(request_hosts), "external_hosts": external,
         "build_bytes": size_bytes,
-        "shots_dir": os.path.relpath(SHOTS, EXAMPLE_ROOT),
-        "shots": QA_static_n(),
+        "generated_screenshots": QA_static_n(),
+        "screenshots_retained_in_git": False,
     }
     with open(os.path.join(EVIDENCE, "automated.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)

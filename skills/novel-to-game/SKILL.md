@@ -4,94 +4,67 @@ description: "Turn a novel into a fully playable game on the selected target pla
 ---
 # NovelToGame 总入口
 
-你是小说游戏化总导演：守住改编判断、阶段边界和完成证据，不教授编码模型已经掌握
-的工程知识。
-
+你是小说游戏化总导演：守住改编判断、阶段边界和完成证据，不把普通原型当正式发行审计。
 开始前读取 [pipeline-contract.md](references/pipeline-contract.md)。
 
-## 第一步：需求 intake（不可跳过）
+## 默认策略
 
-用户第一次给出小说时，**先框定产品，再进拆解**。十一个产品维度（唯一权威清单见
-[pipeline-contract.md](references/pipeline-contract.md) 交接门表）一旦让下游各阶段各自默认，
-做到一半才暴露，返工极贵。按 [intake-method.md](references/intake-method.md) 做这一步：速读原作、替
-用户填一份推荐草案、请他确认或改（离散选择用 AskUserQuestion，推荐项在前），锁进
-`PRODUCT_BRIEF.md`。仅在 intake-method 列出的全自动条件下才按默认推进，且把每条标为
-未确认假设列出。
+先速读来源并替用户起草 `PRODUCT_BRIEF.md`，再按
+[intake-method.md](references/intake-method.md) 只处理会实质改变方向或带来权利、尺度、平台风险的
+歧义。低风险空白集中列为未确认假设，不逐项拦停。
 
-`PRODUCT_BRIEF.md` 是与 `SOURCE_BIBLE.md` 并列的上游事实，进入"不得下游静默改写"的保护
-范围（见 [pipeline-contract.md](references/pipeline-contract.md)）。其中必须锁定**目标运行形态**：
-平台、生产引擎、实际交付物和验收设备或运行器。网页、PC 客户端、移动 App、小程序、引擎工程
-和设备构建都可以成为交付形态，构建阶段按这里的选择执行。当前环境缺少目标工具链时，只能使用
-`PRODUCT_BRIEF.md` 已显式批准的替代验证运行时；替代版本只证明它实际覆盖的玩法，不代表目标
-平台已经通过。
+完成度与验收强度分开：
 
-第 4 维同时锁定画风与 `targetFinish`（`graybox` / `playable-prototype` /
-`polished-vertical-slice` / `showcase`）、带借鉴维度与权利边界的视觉参照、可否决反例、投入边界
-和未达目标处置。该值由 art、build、QA 逐字继承；全自动默认也只能列作未确认假设，不能由下游
-把灰盒静默升级成 polished 或 showcase。
+- `targetFinish`：`graybox` / `playable-prototype` / `polished-vertical-slice` / `showcase`，表示想做到什么成色。
+- `assuranceProfile`：`smoke` / `delivery` / `release`，表示要证明到什么强度。
+- `quick` 默认 `smoke`；交给他人或指定设备验收时推荐 `delivery`；面向最终用户时才用 `release`
+  增加性能、必要资产降级和独立试玩。
 
-等级顺序固定为 `graybox < playable-prototype < polished-vertical-slice < showcase`。只有 graybox
-可保留视觉 `NOT_RUN`、visual major 或灰盒资产；从 playable 起必须零 blocker/major、焦点发布
-资产晋级且必需视觉证据与独立评审通过。最终始终满足
-`publicationTier <= demonstratedTier <= targetFinish`。
+三个 profile 单调累加，不与四档 finish 组合成十二套流程。真实采用的语音、生成媒体、多语言、
+无障碍和连续 3D 只在改变玩家体验时增加检查；权利和秘密属于产品安全，不塞进游戏 QA。
+
+`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实，下游不得静默改写。brief 必须锁定目标运行
+形态：平台、生产引擎、实际交付物、目标运行时和实际验收设备或运行器。工具链不可用时，只能使用
+brief 已批准的替代运行时；替代结果不证明目标平台已通过。
 
 ## 模式
 
-- `quick`：默认。比较三个概念后自动选择并完成整条流程。
-- `director`：给出三个概念和推荐后停靠，等待用户选择。
-- `resume`：读 `_progress.md`，按交接门表核对实际产物，从最早未过门的阶段继续。
-
-三种模式都必须先完成 intake 确认停靠；`quick` 只免去概念阶段的停靠，不免 intake。
-
-## 输入路由
-
-优先复用信息最完整的来源：已有 NovelToGame 工作区、oh-story 写作工程、拆文库，
-最后才是原始小说。结构化资产缺什么补什么，不为统一格式重新拆书。
-
-## 语言与文化
-
-接受任意语言的小说。策划产物使用用户指定语言；未指定时跟随对话语言，不默认生成
-中英双份。原文证据保留原语言，跨语言时只补必要译文，并在 `SOURCE_BIBLE.md` 维护统一
-术语。分别记录原作文化语境、目标玩家市场和游戏界面语言，不把本地化简化成逐字翻译。
-
-游戏界面语言由目标玩家决定，首版至少锁定一种主语言；需要多语言时把支持范围写进
-设计和构建说明，所有玩家可见文案必须可替换。
+- `quick`：默认；用推荐草案推进，比较三个概念后自动选择，默认 `assuranceProfile: smoke`。
+- `director`：给出三个概念和推荐后停靠，等待用户选方向。
+- `resume`：读取 `_progress.md` 和实际产物，从最早未完成的交接继续。
 
 ## 流程
 
-1. 创建工作区并在 `_progress.md` 记录来源、模式和当前阶段。
-2. 做需求 intake 这一步，生成 `PRODUCT_BRIEF.md`（见上）；未确认假设记入 `_progress.md`。
-3. 调用 `novel-game-analyze` 生成有必要证据的 `SOURCE_BIBLE.md`。
-4. 调用 `game-concept`，在 `PRODUCT_BRIEF` 框定的平台/类型/画风/分级内生成并选择
-   `CONCEPT.md`；`director` 在这里停靠。
+1. 建立工作区，记录来源、模式、当前阶段和未确认假设。
+2. 生成 `PRODUCT_BRIEF.md`；高风险歧义未解决时才停靠。
+3. 调用 `novel-game-analyze` 生成有原文依据的 `SOURCE_BIBLE.md`。
+4. 调用 `game-concept` 生成三个真正不同的方向并选定 `CONCEPT.md`；`director` 在此停靠。
 5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`。
-6. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；非 graybox 还须生成可审的视觉目标包。
-7. 调用 `game-build` 先使 `grayboxReady: PASS`，再按 `targetFinish` 使 `visualPromotion: PASS`
-   状态；用 `game-qa` 独立验证。`blocker`/`major` 按
-   `QA_REPORT.md` 发现与回流表的归属阶段回流（build → `game-build` 修复；design →
-   `game-world-design` 修订设计后重建回归；product → 回 intake 显式修订
-   `PRODUCT_BRIEF.md`），规则见 pipeline-contract 质量回流一节。其中**品类认不出 / 无弧线 /
-   前提未上屏**三类不进回环上限，也不得作为未解决问题上报：停下来问用户，附裁决者的逐字
-   回答、要改的那一层（概念 / 设计 / 构建）和两个选项（改这一版 / 回 concept 换方向）。
+6. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标与 profile 需要时再制作视觉目标包。
+7. 调用 `game-build` 生成可运行版本，再由 `game-qa` 按 profile 验证；问题按 product / design / art /
+   build 归属回流，不让实现阶段静默重做策划。
 
-每步产物落盘后，由本 skill（编排器，而非刚产出文档的阶段）按 pipeline-contract 的过门
-留痕规则核对并记 `gate:` 行，未过门不进下一阶段。
+编排器只记录两项完成结果：
+
+- `scope`：上游范围和阶段 owner 齐全且不冲突；
+- `playable`：当前 profile 要求的玩家效果均有真实运行证据。
+
+中间产物仍由各自阶段 owner 负责，但不再把每个内部交接都包装成用户验收会。
+
+## 语言与文化
+
+接受任意语言小说。产物使用用户指定语言，未指定时跟随对话语言；原文证据保留原语言，跨语言
+只补决策所需译文并维护一个术语表。原作文化语境、目标市场和界面语言分别记录，不用逐字翻译
+替代本地化判断。
 
 ## 不可删除的判断
 
 - 剧情必须转成玩家动词、选择和世界反馈，而非逐章复演。
-- 玩法取自已被大量玩家玩过的成熟打法，小说只做 IP 皮：核心动词与循环结构必须与 ≥2 款
-  已发行游戏同玩法，创新落在世界、人物、剧情、题材与美术，发明新机制是非目标。
-- 玩家必须在第一分钟内从**屏幕上**知道我是什么、我要什么、什么会终结这一局；核心幻想
-  锁在 brief 里而从未上屏，等于没交付。
-- 设计收敛到一个能证明核心幻想、并在目标运行形态中可完整游玩的验证切片，时长服从
-  `PRODUCT_BRIEF` 锁定的单局时长（默认 10-30 分钟）；brief 时长更长时，切片只做
-  全量体验中已声明的一段，不默认做全量。
-- 实现模型在 `PRODUCT_BRIEF` 锁定的生产引擎、目标运行时和可选替代运行时内自由选择其余技术，不能静默改变
-  批准的体验与视觉风格。
-- 完成必须以运行、输入、画面、结果和重开证据为准。
-- AI 不能客观证明趣味、长期平衡或商业价值。
+- 概念、体验/关卡设计、美术方向分别拥有自己的批准边界；构建只能实现，不能暗中重选方向。
+- 玩家第一分钟应从屏幕知道自己是谁、要做什么、什么会终结这一局。
+- 验证切片必须在目标运行形态中完整走通；范围服从 brief，不默认扩成长篇全量游戏。
+- 完成以运行、画面、真实输入、结果和重开证据为准；AI 不能客观证明趣味、长期平衡或商业价值。
 
-只有 `QA_REPORT.md` 无 `blocker`/`major`、`qa/release-gates.json` 对目标等级的必需项全部
-`PASS` 且可运行路径明确时，才报告相应等级完成。`NOT_RUN` 可以诚实结束本次执行，但不能满足
-声明等级。
+只有当前 `assuranceProfile` 的必需项全部 `PASS` 才报告该档验证完成。`NOT_RUN` 可以诚实结束本次
+执行，但不能满足当前声明。所有 profile 都以 `qa/verification.json` 为唯一游戏效果事实源；不要为
+QA 另建发布 gate 文件。

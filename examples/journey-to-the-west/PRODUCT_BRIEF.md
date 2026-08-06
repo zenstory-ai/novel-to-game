@@ -4,6 +4,7 @@
 > （本作先于 intake gate 建成，此文档回填并记录其产品框架，也是 intake 产出的范例。）
 
 `targetFinish: playable-prototype`
+`assuranceProfile: smoke`
 
 该目标完成度是迁移后对原“免费网页完整战役”意图的规范化记录；当前公开等级仍受失败的 QA 与视觉 major 限制。
 
