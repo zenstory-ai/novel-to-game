@@ -6,7 +6,7 @@ import {
   OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, SCENES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 // 破裂规则(GAME_DESIGN 第 5 节「拒绝／破裂」):公开越过她两次、或宅门 house<30,
 // 路线冷却一天。此前实现用单次失信旗标永久锁死明确场景,既漏了计数与 house 触发,
@@ -25,6 +25,11 @@ const OVERRIDE_FLAG_TO_HEROINE = Object.freeze({
 // 但不锁死任何一条深线的内容。
 export const STRAIN_STRAINED = 30;   // 撑不起「走官面 / 整席面」
 export const STRAIN_REST_RELIEF = 6; // 不进亲密场景的一夜回落
+// 曝光的读取点(F3):它不是权谋结局的奖励门,是每日结转开始咬人的代价条。
+// 三档:传过街(封口钱) → 传进院(全员妒) → 进了别人的账(官面与三杯同斟关门)。
+export const EXPOSURE_STREET = 25;
+export const EXPOSURE_HOUSEHOLD = 40;
+export const EXPOSURE_LEDGERED = 55;
 export const MAX_DAY = 6;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const cap100 = (value) => clamp(value, 0, 100);
@@ -49,6 +54,9 @@ export function newGame(seed = 42) {
     flags: {},
     publicOverrides: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
     routeReopensOn: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
+    // 每名女主的个人弧线按「她的第几次」走,不按日历天——
+    // 轮换顺序不再把任何人的好选项锁死(设计评审 §3)。
+    visits: Object.fromEntries(HEROINE_IDS.map((id) => [id, 0])),
     history: [],
     log: [],
     currentHeroine: null,
@@ -64,7 +72,12 @@ export function newGame(seed = 42) {
 }
 
 export function dayDef(state) {
-  return { day: state.day, name: DAY_NAMES[state.day - 1], pressure: DAY_PRESSURE[state.day - 1] };
+  let pressure = DAY_PRESSURE[state.day - 1];
+  // 话传出了这条街:曝光的头一档后果,每天都让玩家看见它在扣钱。
+  if (state.resources.exposure >= EXPOSURE_STREET) {
+    pressure = `门房今早又打发走一个来打听的。${pressure}`;
+  }
+  return { day: state.day, name: DAY_NAMES[state.day - 1], pressure };
 }
 
 export function hasToken(state, token) {
@@ -188,9 +201,12 @@ export function chooseOpening(state, choiceId) {
 export function dayOptions(state) {
   return Object.values(DAY_ACTIONS).map((option) => {
     let hint = option.description;
+    // 曝光第三档:官面上有人记了你一笔,走官面这条路今日关上。
+    const ledgered = option.id === 'office' && state.resources.exposure >= EXPOSURE_LEDGERED;
     if (option.id === 'office') {
       const usable = usableSecret(state);
-      if (usable) hint = `拿${secretName(usable)}去说话；这条人情会见光。`;
+      if (ledgered) hint = '你的名字已经进了别人的账。今日递不进去话。';
+      else if (usable) hint = `拿${secretName(usable)}去说话；这条人情会见光。`;
       else if (state.resources.silver < 30) hint = '没话可递，手里也凑不出三十两。';
     }
     if (option.id === 'ledger' && state.flags.pinger_same_chest) hint = '瓶儿已经摊开她的账，这回能多追回一些。';
@@ -200,7 +216,7 @@ export function dayOptions(state) {
     return {
       ...option,
       hint,
-      disabled: strained || (option.id === 'office' && !usableSecret(state) && state.resources.silver < 30),
+      disabled: strained || ledgered || (option.id === 'office' && !usableSecret(state) && state.resources.silver < 30),
     };
   });
 }
@@ -243,6 +259,7 @@ export function chooseDayAction(state, actionId) {
       break;
     }
     case 'office': {
+      if (r.exposure >= EXPOSURE_LEDGERED) return { ok: false, error: '你的名字已经进了别人的账。今日递不进去话。' };
       const secret = usableSecret(state);
       if (secret) {
         removeSecret(state, secret);
@@ -318,10 +335,15 @@ export function resolveHouseholdEvent(state, choiceId) {
 }
 
 export function banquetOptions(state) {
+  // 失信或外传都会让三杯同斟没人肯接;两条理由各说各的,别拿错那句糊弄玩家。
+  const exposed = state.resources.exposure >= EXPOSURE_LEDGERED;
+  const betrayed = state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word;
   return BANQUET_CHOICES.map((choice) => ({
     ...choice,
-    disabled: choice.id === 'banquet_balance' && (state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word),
-    locked: choice.id === 'banquet_balance' ? '先前有人被你晾过，这三杯斟得再齐也没人肯信。' : '',
+    disabled: choice.id === 'banquet_balance' && (betrayed || exposed),
+    locked: choice.id === 'banquet_balance'
+      ? (exposed ? '外头的闲话先进了席，这三杯谁也不敢接。' : '先前有人被你晾过，这三杯斟得再齐也没人肯信。')
+      : '',
   }));
 }
 
@@ -329,6 +351,9 @@ export function chooseBanquet(state, choiceId) {
   if (state.phase !== 'banquet') return { ok: false, error: '还没到开席的时候。' };
   const choice = BANQUET_CHOICES.find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个席面选择。' };
+  if (choiceId === 'banquet_balance' && state.resources.exposure >= EXPOSURE_LEDGERED) {
+    return { ok: false, error: '外头的闲话先进了席，这三杯谁也不敢接。' };
+  }
   if (choiceId === 'banquet_balance' && (state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word)) {
     return { ok: false, error: '先前有人被你晾过。这三杯斟得再齐，也没人肯喝。' };
   }
@@ -342,8 +367,14 @@ export function chooseBanquet(state, choiceId) {
   return { ok: true, text: choice.text, scene: 'banquet_conflict' };
 }
 
+// 个人弧线的拍号 = 你第几次进她的门(结算成功才计次),钳在最后一拍。
+// 取代旧的 state.day - 1:按日历天索引会让轮换玩家撞上「好选项被锁、只能选伤害项」。
+function routeStep(state, heroineId) {
+  return Math.min(state.visits?.[heroineId] ?? 0, (ROUTE_CHOICES[heroineId]?.length ?? 1) - 1);
+}
+
 export function visitChoices(state, heroineId) {
-  const rows = ROUTE_CHOICES[heroineId]?.[state.day - 1] ?? [];
+  const rows = ROUTE_CHOICES[heroineId]?.[routeStep(state, heroineId)] ?? [];
   return rows.map((choice) => ({
     ...choice,
     disabled: !!choice.condition && !hasToken(state, choice.condition),
@@ -361,10 +392,11 @@ export function startVisit(state, heroineId) {
 
 export function chooseVisit(state, choiceId) {
   if (state.phase !== 'visit' || !state.currentHeroine) return { ok: false, error: '先选一处院门。' };
-  const choice = (ROUTE_CHOICES[state.currentHeroine]?.[state.day - 1] ?? []).find((item) => item.id === choiceId);
+  const choice = (ROUTE_CHOICES[state.currentHeroine]?.[routeStep(state, state.currentHeroine)] ?? []).find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个回应。' };
   if (choice.condition && !hasToken(state, choice.condition)) return { ok: false, error: choice.locked || '前面的话还没接上。' };
   applyEffects(state, choice.effects, state.currentHeroine, choice.text);
+  state.visits[state.currentHeroine] = (state.visits[state.currentHeroine] ?? 0) + 1;
   record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: state.day === 5 });
   state.log.push(choice.text);
   state.phase = 'night';
@@ -506,8 +538,23 @@ function advanceAfterNight(state) {
     return;
   }
   state.day += 1;
+  applyExposurePressure(state);
   state.morning = buildMorning(state, visited);
   state.phase = 'morning';
+}
+
+// 曝光每日结转(F3):高曝光从这夜起开始咬人,三档全部落在场面上。
+// ≥25 门房替你打发打听的人,封口钱日扣十五两;≥40 闲话传进院,三人都记一笔妒;
+// ≥55 的第三档(官面与三杯同斟关门)在 dayOptions()/banquetOptions() 里读。
+function applyExposurePressure(state) {
+  const exposure = state.resources.exposure;
+  if (exposure >= EXPOSURE_STREET) {
+    changeResources(state, { silver: -15 });
+    state.log.push('门房替你打发走一个来打听的人，十五两封口钱先记在账上。');
+  }
+  if (exposure >= EXPOSURE_HOUSEHOLD) {
+    for (const id of HEROINE_IDS) changeRel(state, id, { du: 4 }, '外头的话，传到院里了');
+  }
 }
 
 function buildMorning(state, visited) {
@@ -605,10 +652,12 @@ export function resolveMorning(state, choiceId) {
   return { ok: true, text: event.text };
 }
 
+// 五档刻度:第一格边界压到开局增量能跨过的位置(情 18 / 欲 16 / 妒 4),
+// 让日 1 的第一次选择当场点亮左栏,而不是九个标签一个不动。
 export function relationTier(value, kind) {
-  if (kind === 'qing') return value >= 60 ? '知心' : value >= 30 ? '亲近' : '生疏';
-  if (kind === 'yu') return value >= 60 ? '主动' : value >= 30 ? '发热' : '克制';
-  return value >= 70 ? '要翻脸' : value >= 30 ? '发酸' : '平静';
+  if (kind === 'qing') return value >= 80 ? '只认你' : value >= 60 ? '知心' : value >= 38 ? '亲近' : value >= 18 ? '有话说' : '生疏';
+  if (kind === 'yu') return value >= 78 ? '不放你走' : value >= 58 ? '主动' : value >= 34 ? '发热' : value >= 16 ? '留意你' : '克制';
+  return value >= 70 ? '要翻脸' : value >= 44 ? '要说法' : value >= 20 ? '发酸' : value >= 4 ? '记着了' : '平静';
 }
 
 export function householdTier(regard) {
@@ -627,8 +676,24 @@ export function determineEnding(state) {
     id = 'balanced';
   } else if (qing[top] >= 60 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 50)) {
     id = 'exclusive';
-  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= 250) && state.resources.exposure >= 25) {
+  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= 250)) {
+    // 曝光不再是权谋的达成条件(F3:高曝光是代价,不是奖励),它只决定这一局的成色。
     id = 'intrigue';
+  }
+  let text = ENDINGS[id].text;
+  let intrigueCost = null;
+  let missedBy = null;
+  if (id === 'intrigue') {
+    intrigueCost = state.resources.exposure >= EXPOSURE_LEDGERED ? 'burned' : state.resources.exposure >= EXPOSURE_STREET ? 'watched' : 'clean';
+    text = ENDINGS.intrigue.texts[intrigueCost];
+  } else if (id === 'unstable') {
+    // F4:输要输得明白——按优先级回读具体差在哪一条,不再共用一句收尾。
+    if (qing[top] >= 60 && !explicitByHeroine[top]) missedBy = 'no_scene';
+    else if (qing[top] >= 60) missedBy = 'second_too_close';
+    else if (!state.flags.banquet_balanced && HEROINE_IDS.some((heroine) => state.publicOverrides[heroine] > 0)) missedBy = 'broke_word';
+    else if (state.secretsUsed.length >= 2) missedBy = 'not_enough_power';
+    else missedBy = 'spread_thin';
+    text = ENDINGS.unstable.texts[missedBy].replace('{name}', HEROINES[top].name);
   }
   const routeResult = id === 'exclusive' ? ({
     wu_yueniang: state.flags.yue_co_rule ? '共掌一宅' : '一院灯深',
@@ -637,7 +702,11 @@ export function determineEnding(state) {
   })[top] : null;
   return {
     id,
-    ...ENDINGS[id],
+    title: ENDINGS[id].title,
+    tag: ENDINGS[id].tag,
+    text,
+    intrigueCost,
+    missedBy,
     routeResult,
     heroine: id === 'exclusive' ? top : null,
     heroineName: id === 'exclusive' ? HEROINES[top].name : null,
@@ -679,8 +748,20 @@ export function deserialize(raw) {
         if (state.flags?.[flag]) state.publicOverrides[heroine] = 1;
       }
     }
+    // v5 → v6:路线索引从日历天改为已结算的拜访次数。旧档按 history 里的
+    // visit_choice 回填；只有 visit_start 的中途存档不计次，继续显示当前一拍。
+    // 取不到历史就置 0——从第 1 拍重入,不许崩。
+    if (state.version === 5) {
+      state.version = 6;
+      state.visits = Object.fromEntries(HEROINE_IDS.map((id) => [id, 0]));
+      for (const entry of state.history ?? []) {
+        if (entry?.type === 'visit_choice' && HEROINE_IDS.includes(entry.heroine)) {
+          state.visits[entry.heroine] += 1;
+        }
+      }
+    }
     if (state.version !== SAVE_VERSION || !HOUSEHOLD_IDS.every((id) => state.household?.[id])) return null;
-    if (!state.publicOverrides || !state.routeReopensOn) return null;
+    if (!state.publicOverrides || !state.routeReopensOn || !state.visits) return null;
     return state;
   } catch {
     return null;

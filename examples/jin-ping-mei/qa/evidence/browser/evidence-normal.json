@@ -16,22 +16,22 @@
   "http_errors": [],
   "performance": {
     "note": "纯 DOM/CSS，无 rAF 渲染循环；帧率对本作无意义，改测转场延迟与主线程长任务",
-    "local_load_ms": 29.5,
+    "local_load_ms": 32.1,
     "transitions": {
       "banquet_conflict_close": {
-        "transition_to_paint_ms": 22
+        "transition_to_paint_ms": 4.7
       }
     },
     "transition_budget_ms": 200.0,
     "longtasks_over_50ms": [
       {
-        "ms": 164,
-        "at": 970,
+        "ms": 170,
+        "at": 957,
         "phase": "?"
       }
     ],
     "stall_gate_ms": 200.0,
-    "build_bytes": 6244598
+    "build_bytes": 7012450
   },
   "request_hosts": [
     "127.0.0.1:5173"

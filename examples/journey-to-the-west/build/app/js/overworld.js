@@ -187,32 +187,10 @@ export function runOverworld(ctx) {
   }
 
   function drawScenery() {
-    // 远山(火焰山轮廓) + 芭蕉洞入口标记,有背景图时作为点缀叠加
+    // 背景画本身已是完整的火焰山脚木刻,不再盖手绘假山/米色热浪带/墨绿半圆
+    // (三者把画拦腰截出硬边,绿色半椭圆读作坏图占位——简报 T4 全删,让背景露出来)。
+    // 只保留「芭蕉洞」地标牌:加描边底牌保证在山体上可读
     g.save();
-    g.globalAlpha = 0.55;
-    g.fillStyle = '#8a2e1e';
-    g.beginPath();
-    g.moveTo(0, 240); g.lineTo(180, 120); g.lineTo(340, 210); g.lineTo(520, 90);
-    g.lineTo(700, 190); g.lineTo(900, 110); g.lineTo(1100, 200); g.lineTo(1280, 130);
-    g.lineTo(1280, 0); g.lineTo(0, 0); g.closePath();
-    g.fill();
-    g.restore();
-    // 地面可走带
-    g.save();
-    g.globalAlpha = 0.2;
-    g.fillStyle = '#f2d89a';
-    g.fillRect(0, 180, W, H - 180);
-    g.restore();
-    // 芭蕉洞入口(罗刹女身后)
-    g.save();
-    g.fillStyle = 'rgba(30,58,46,0.9)';
-    g.beginPath();
-    g.ellipse(ents.luosha.x + 10, ents.luosha.y - 60, 90, 110, 0, Math.PI, 0);
-    g.fill();
-    g.strokeStyle = '#c9a227';
-    g.lineWidth = 3;
-    g.stroke();
-    // 地标挪到洞口左侧(上方让给「!」指引标记),加描边底牌保证在山体上可读
     g.font = '17px "Songti SC", serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';

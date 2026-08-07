@@ -8,6 +8,7 @@ const unitPaths = {
   pixie: 'assets/units/pixie.png', mob_fire1: 'assets/units/mob_fire1.png', mob_fire2: 'assets/units/mob_fire2.png',
   yumian: 'assets/units/yumian.png', yaojiang: 'assets/units/yaojiang.png',
   nezha: 'assets/units/nezha.png', litianwang: 'assets/units/litianwang.png',
+  lingji: 'assets/units/lingji.png',
 };
 const bgPaths = {
   cuiyun: 'assets/bg/cuiyun.jpg', huoyan: 'assets/bg/huoyan.jpg',
@@ -25,6 +26,7 @@ const fallbackColors = {
   niumowang: '#5a4a7a', whitebull: '#d8d4c8', pixie: '#2a6b8a',
   mob_fire1: '#a83a2a', mob_fire2: '#c2542a',
   yumian: '#8a6a8a', yaojiang: '#6a6a7a', nezha: '#b8542e', litianwang: '#7a6a4a',
+  lingji: '#d8b84a',
 };
 // 回退背景渐变(按背景键): [上, 中, 下]
 const fallbackBg = {

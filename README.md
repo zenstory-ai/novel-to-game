@@ -12,15 +12,29 @@ Bring a novel in any language and choose the target runtime. Generated artifacts
 
 ## Play Online
 
-### Play now
+Three playable adaptations, each available in a browser right now and linked to the case study behind it: source provenance, concept trade-offs, game and art direction, runnable source, and evidence from the playable paths.
 
-| [Journey to the West · Three Borrowings of the Banana Fan · Graybox](examples/journey-to-the-west/) | [Jin Ping Mei · Ledger of Desire · Graybox](examples/jin-ping-mei/) |
-|---|---|
-| [![Three Borrowings title screen](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![Ledger of Desire title screen](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
-| Turn-based systems RPG with elements, formations, transformations, a companion, and a multi-stage boss | 18+ six-day relationship strategy game built around character agency, resources, social debts, and three endings |
-| **[Play in browser](https://xiyouji.vibecoco.ai)** | **[Play in browser](https://jinpingmei.vibecoco.ai)** |
+### Journey to the West · Three Borrowings of the Banana Fan
 
-### Project Plateau · Playable prototype · 3D
+[![Wukong's party faces the Bull Demon King on the Jilei Mountain stage under the third fan's rain, five-element badges on both sides and a live command tray below](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+
+**One wave of a fan blew you fifty thousand li. Take the mountain back one turn at a time.**
+
+Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read the five-element wheel, set a formation, transform your way in where force will not work, and turn a demon king who outclasses you into a rainstorm over the Mountain of Flames.
+
+**[Play in browser](https://xiyouji.vibecoco.ai)** · [Read the case study](examples/journey-to-the-west/) · design estimate: 45–90 min · all ages · graybox
+
+### Jin Ping Mei · Ledger of Desire
+
+[![Three women of the Ximen household look straight at the player; one holds out a brass key](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+
+**Choose whose door you enter tonight. Find out whose door knocks in the morning.**
+
+Six nights, three courtyards. Spend each day converting silver, standing and secrets into the right to choose — then wake up and settle what the other two are owed.
+
+**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 20–30 min · 18+ · graybox
+
+### Project Plateau · The Lost World · 3D
 
 A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Cross a connected plateau, observe a living Iguanodon family, expose four glass plates under aerial pressure, and return with the views that survived.
 
@@ -32,9 +46,7 @@ The trailer follows [the verified same-take gameplay route](examples/project-pla
 
 https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
 
-**[Play in your browser — no install](https://plateau.vibecoco.ai)** · **[Explore the complete case study](examples/project-plateau/)** · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7)
-
-Each case study includes source provenance, product constraints, adaptation analysis, concept and design decisions, runnable source, and QA evidence.
+**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Read the case study](examples/project-plateau/) · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 min run · desktop WebGL2 · playable prototype
 
 ## Why NovelToGame
 

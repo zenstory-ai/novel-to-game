@@ -347,6 +347,53 @@ button { font-family: inherit; cursor: pointer; }
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- 章回卡(三借递进) ---------- */
+/* 全屏压暗 + 宣纸卷轴:两端木轴、左侧朱印字号、宋体标题——沿用顶栏/木框同一套语汇 */
+.chapter-card {
+  position: absolute; inset: 0; z-index: 80;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 12, 6, 0.62);
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.chapter-card.out { opacity: 0; }
+.chapter-inner {
+  position: relative;
+  display: grid; grid-template-columns: auto auto; align-items: center;
+  column-gap: 22px; row-gap: 6px;
+  padding: 26px 52px;
+  border: 3px solid var(--wood); border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--gold), 0 10px 40px rgba(0, 0, 0, 0.6);
+  background:
+    repeating-linear-gradient(0deg, rgba(58, 42, 28, 0.04) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, var(--paper), var(--paper-dim));
+  animation: bannerIn 0.3s ease;
+}
+.chapter-inner::before, .chapter-inner::after {
+  /* 卷轴两端木轴 */
+  content: ''; position: absolute; top: -7px; bottom: -7px; width: 12px;
+  background: linear-gradient(90deg, #241812, #5a4630 50%, #241812);
+  border: 1px solid var(--gold); border-radius: 6px;
+}
+.chapter-inner::before { left: -8px; }
+.chapter-inner::after { right: -8px; }
+.chapter-seal {
+  grid-row: 1 / 3;
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px; font-weight: bold; color: var(--text-hi);
+  background: linear-gradient(160deg, var(--zhu-hi), var(--zhu));
+  border: 2px solid var(--gold); border-radius: 6px;
+  box-shadow: inset 0 0 0 2px rgba(244, 234, 210, 0.35), 0 2px 6px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 2px #000;
+  transform: rotate(-4deg);
+}
+.chapter-title {
+  font-size: 34px; letter-spacing: 8px; font-weight: bold; color: var(--ink);
+  white-space: nowrap;
+}
+.chapter-sub { font-size: 15px; letter-spacing: 3px; color: var(--zhe); white-space: nowrap; }
+
 /* ---------- 战斗 ---------- */
 .battle-root { position: absolute; inset: 44px 0 0 0; display: flex; flex-direction: column; }
 .battle-field {
@@ -419,9 +466,9 @@ button { font-family: inherit; cursor: pointer; }
   border: 1px solid var(--gold); border-radius: 3px; text-shadow: 0 1px 1px #000;
 }
 
-/* 五行相克环(常驻) */
+/* 五行相克环(常驻指令台右格,简报 T8:不再占舞台左下角) */
 .wuxing-ring {
-  position: absolute; left: 12px; bottom: 10px; z-index: 6;
+  flex: none; align-self: center; margin-left: 12px;
   display: flex; align-items: center; gap: 3px;
   background: rgba(36, 24, 18, 0.85);
   border: 1px solid var(--gold); border-radius: 4px;
@@ -466,22 +513,25 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; flex-direction: column; align-items: center;
   transition: transform 0.18s ease, filter 0.3s, opacity 0.5s;
 }
-.unit-card .float-anchor { position: absolute; left: 0; right: 0; top: 8px; height: 0; z-index: 9; }
+.unit-card .float-anchor { position: absolute; left: 0; right: 0; top: -26px; height: 0; z-index: 9; }
 .unit-shadow {
-  position: absolute; bottom: 62px; left: 50%; transform: translateX(-50%);
-  width: 120px; height: 22px; border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45), transparent 70%);
+  /* 名牌血条栈高固定 79px(见 .buff-chips/.unit-card.enemy .unit-bars),阴影贴着脚线 */
+  position: absolute; bottom: 73px; left: 50%; transform: translateX(-50%);
+  width: 100px; height: 16px; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
   z-index: -1;
 }
 .unit-portrait {
   width: 140px; height: 178px; object-fit: contain;
+  /* 底对齐:源图宽高比不一(258×600~799×600),垂直居中会让脚线永远不共线 */
+  object-position: 50% 100%;
   filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.45));
   border-radius: 4px;
 }
 .unit-card.party .unit-portrait { transform: scaleX(-1); }
 .unit-card.big .unit-portrait { width: 240px; height: 290px; }
 .unit-card.big { width: 260px; }
-.unit-card.big .unit-shadow { width: 210px; height: 32px; bottom: 66px; }
+.unit-card.big .unit-shadow { width: 190px; height: 26px; bottom: 73px; }
 .unit-name {
   margin-top: 2px; color: var(--text-hi); font-size: 14px; letter-spacing: 2px;
   background: linear-gradient(180deg, #54402c, var(--wood));
@@ -559,7 +609,13 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 10px; line-height: 14px; color: #fff; text-shadow: 0 1px 1px #000;
   z-index: 2; letter-spacing: 0.5px;
 }
-.buff-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; justify-content: center; max-width: 150px; }
+.buff-chips {
+  display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; justify-content: center; max-width: 150px;
+  /* 固定一行高度:状态签出现/消失不再让脚线上下跳(站位按卡底锚定) */
+  min-height: 17px;
+}
+/* 敌方没有法力条:补出与我方等高的牌条区,敌我脚线用同一个 79px 栈高对齐 */
+.unit-card.enemy .unit-bars { padding-bottom: 18px; }
 .buff-chip {
   font-size: 10px; color: var(--text-hi);
   background: linear-gradient(180deg, #54402c, var(--wood));
@@ -568,6 +624,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .unit-card.dead { opacity: 0.18; filter: grayscale(1); pointer-events: none; }
+/* 阵亡/被收服:名牌、血条、五行徽、状态签一并撤下,只留一具淡出的灰立绘——
+   18% 不透明度下金框名牌依然可读,会在半空挂成「幽灵名牌」(记录缺陷 R1) */
+.unit-card.dead .unit-name,
+.unit-card.dead .unit-bars,
+.unit-card.dead .elem-badge,
+.unit-card.dead .buff-chips { display: none; }
 .unit-card.commanding .unit-portrait {
   filter: drop-shadow(0 0 12px rgba(201, 162, 39, 1)) drop-shadow(0 0 26px rgba(201, 162, 39, 0.5));
   animation: breathe 1.4s ease-in-out infinite;
@@ -628,9 +690,9 @@ button { font-family: inherit; cursor: pointer; }
     0 2px 3px rgba(0, 0, 0, 0.6);
 }
 @keyframes floatUp {
-  0% { opacity: 0; margin-top: 12px; }
+  0% { opacity: 0; margin-top: 0; }
   15% { opacity: 1; }
-  100% { opacity: 0; margin-top: -58px; }
+  100% { opacity: 0; margin-top: -64px; }
 }
 /* 飘字层次(简报二.2):普通小号白字 / 克制大号金字 / 暴击加粗拖影 / 治疗绿字上飘 */
 .float-text.dmg { color: #f4ead2; font-size: 20px; }
@@ -648,16 +710,16 @@ button { font-family: inherit; cursor: pointer; }
     -2px -2px 0 var(--ink), 2px -2px 0 var(--ink), -2px 2px 0 var(--ink), 2px 2px 0 var(--ink);
 }
 @keyframes critBounce {
-  0% { opacity: 0; margin-top: 26px; transform: translateX(-50%) scale(1.7); }
+  0% { opacity: 0; margin-top: 0; transform: translateX(-50%) scale(1.7); }
   18% { opacity: 1; transform: translateX(-50%) scale(0.92); }
   30% { transform: translateX(-50%) scale(1.08); }
   100% { opacity: 0; margin-top: -72px; transform: translateX(-50%) scale(1); }
 }
 .float-text.beike { color: #b9b2a4; font-size: 16px; animation: floatSink 1.1s ease-out forwards; }
 @keyframes floatSink {
-  0% { opacity: 0; margin-top: 4px; }
+  0% { opacity: 0; margin-top: -4px; }
   20% { opacity: 1; }
-  100% { opacity: 0; margin-top: 34px; }
+  100% { opacity: 0; margin-top: 22px; }
 }
 .float-text.huge { font-size: 42px; }
 .float-text.heavy {
@@ -800,6 +862,30 @@ button { font-family: inherit; cursor: pointer; }
 .cmd-item.counter { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold), 0 0 8px rgba(201, 162, 39, 0.5); }
 .cmd-empty { color: var(--disabled); padding: 8px; }
 
+/* ---------- 战况卷轴(简报 T8:结算/对话时段的底栏空态填充) ---------- */
+.battle-report {
+  flex: 1; display: flex; align-items: center; gap: 18px;
+  padding: 6px 10px; overflow: hidden;
+}
+.battle-report-title {
+  flex: none; writing-mode: vertical-rl;
+  font-size: 20px; letter-spacing: 6px; font-weight: bold; color: var(--zhu);
+  border: 1.5px solid var(--gold); border-radius: 3px; padding: 6px 3px;
+  background: linear-gradient(180deg, #f4e9cd, #e2d3ac);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.5);
+}
+.battle-report-lines { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.battle-report-line {
+  font-size: 14px; letter-spacing: 2px; color: var(--text-de);
+  border-bottom: 1px dashed rgba(138, 90, 46, 0.55); padding-bottom: 3px;
+  white-space: nowrap;
+}
+
+/* 模态/战斗对话在场时,底部指令台随遮罩一并压暗,不再比面板还亮(简报 T8) */
+.battle-bottom { transition: filter 0.2s ease; }
+body.modal-open .battle-bottom,
+body.dlg-open .battle-bottom { filter: brightness(0.55); }
+
 /* ---------- 序幕小世界 ---------- */
 .overworld-root { position: absolute; inset: 44px 0 0 0; background: #1a1008; }
 .overworld-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
@@ -824,6 +910,12 @@ button { font-family: inherit; cursor: pointer; }
   background: linear-gradient(180deg, #1e2a38, #2a4a5a 60%, #3a6a5a);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
+}
+/* 结局底图独立一层:huoyan + 雨后退色(简报 T1),滤镜不波及上方面板 */
+.ending-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: saturate(0.55) brightness(1.12);
 }
 .ending-root.raining::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -958,11 +1050,19 @@ button { font-family: inherit; cursor: pointer; }
 }
 .fx-tint.on { opacity: 1; }
 
-/* ---------- 节奏开关组(简报二.5) ---------- */
+/* ---------- 节奏开关组(简报二.5):收进顶栏「设」下拉(简报 T7) ---------- */
 .battle-toggles {
   position: absolute; top: 52px; right: 276px; z-index: 6;
   display: flex; gap: 6px;
 }
+/* 下拉内改竖排,与存档/读档等系统项同列 */
+.topbar-dropdown .battle-toggles {
+  position: static;
+  flex-direction: column;
+  margin-top: 2px; padding-top: 8px;
+  border-top: 1px solid rgba(201, 162, 39, 0.45);
+}
+.topbar-dropdown .battle-toggles .toggle-btn { width: 100%; text-align: left; }
 .toggle-btn {
   padding: 4px 10px; font-size: 12px; letter-spacing: 1px;
   color: rgba(244, 234, 210, 0.85);
@@ -978,17 +1078,21 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 0 8px rgba(168, 50, 42, 0.5);
 }
 
-/* 窄视口:开关组挪到换阵钮左侧更紧凑 */
+/* 窄视口:开关已收进「设」下拉,只收紧按钮本身 */
 @media (max-width: 1360px) {
-  .battle-toggles { right: 264px; }
   .toggle-btn { padding: 4px 7px; font-size: 11px; }
 }
 
-/* 预览条在时,常驻五行环让位——两者同处底部左侧一条带,并存必叠字。 */
-body.preview-on .wuxing-ring {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
+/* ---------- 非游玩阶段隐藏顶栏(标题/结局,简报 T7) ---------- */
+body.no-topbar #topbar { display: none; }
+body.no-topbar .screen,
+body.no-topbar .overworld-root,
+body.no-topbar .battle-root,
+body.no-topbar .ending-root,
+body.no-topbar .story-bg { inset: 0; }
+
+/* 五行环已常驻指令台右格,预览条不再与它叠字,无需再让位。 */
+.wuxing-ring { transition: opacity 0.15s ease; }
 
 /* ---------- 剧情过场底景(战斗外段落不再落在虚空) ---------- */
 .story-bg {
@@ -1010,5 +1114,13 @@ body.preview-on .wuxing-ring {
     repeating-linear-gradient(105deg, transparent 0 10px, rgba(190, 226, 246, 0.24) 10px 11.5px),
     repeating-linear-gradient(100deg, transparent 0 17px, rgba(160, 205, 235, 0.16) 17px 18px);
   animation-duration: 0.34s;
+}
+/* 火根断绝后:雨幕转为薄光(雨后晴土),不再是密集雨线 */
+.ending-root.rain-glow::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 50% 16%, rgba(240, 244, 226, 0.30), transparent 55%),
+    linear-gradient(180deg, rgba(228, 238, 228, 0.14), rgba(210, 226, 216, 0.07));
+  animation: none;
 }
 .wuxing-ring { transition: opacity 0.15s ease; }

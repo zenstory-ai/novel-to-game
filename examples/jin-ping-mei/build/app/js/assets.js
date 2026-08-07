@@ -1,7 +1,11 @@
-// 视觉键表：发布模式对 7 张关键 CG 采用 fail-closed，不静默回退。
+// 视觉键表：发布模式对所有首屏、人物近景与奖励 CG 采用 fail-closed，不静默回退。
 
 export const ASSET_PATHS = Object.freeze({
-  cover: 'assets/cg/group/banquet_conflict.webp',
+  // cover 与宴席群像解绑:三人同框的册页只属于「按下那个按钮之后」。
+  // 标题另出一张专用群像(ART_DIRECTION《标题：三人都在看你》:月娘正中偏后、
+  // 金莲从屏风边前探、瓶儿递来钥匙,三条视线汇向镜头下方的玩家),
+  // 它不占用任何奖励位,右三分之一留暗给标题栏。
+  cover: 'assets/cg/group/title_three.webp',
   compound: 'assets/bg/compound_act1.jpg',
   'heroine/yue': 'assets/portrait/wu_yueniang.png',
   'heroine/pan': 'assets/portrait/pan_jinlian.png',
@@ -9,9 +13,12 @@ export const ASSET_PATHS = Object.freeze({
   'household/meng': 'assets/portrait/meng_yulou.png',
   'household/xuee': 'assets/portrait/sun_xuee.png',
   'household/jiaoer': 'assets/portrait/li_jiaoer.png',
-  'heroine/yue/close': 'assets/cg/yue/prelude.webp',
-  'heroine/pan/close': 'assets/cg/pan/prelude.webp',
-  'heroine/pinger/close': 'assets/cg/pinger/prelude.webp',
+  // 日常近景用新生成的着装夜间立绘(与宴席群像同一谱系,横构图整版,人物在右侧,
+  // 左三分之一暗部留给对话面板);18+ 前奏 CG 收回解锁之后,只做场景册奖励。
+  // assets/portrait/ 里吴月娘、潘金莲、李瓶儿三张立绘从此只服务门卡与开场群像。
+  'heroine/yue/close': 'assets/heroine/yue/night.webp',
+  'heroine/pan/close': 'assets/heroine/pan/night.webp',
+  'heroine/pinger/close': 'assets/heroine/pinger/night.webp',
   'cg/yue/prelude': 'assets/cg/yue/prelude.webp',
   'cg/yue/explicit': 'assets/cg/yue/explicit.webp',
   'cg/pan/prelude': 'assets/cg/pan/prelude.webp',
@@ -22,6 +29,7 @@ export const ASSET_PATHS = Object.freeze({
 });
 
 export const CRITICAL_CG_KEYS = Object.freeze([
+  'cover', 'heroine/yue/close', 'heroine/pan/close', 'heroine/pinger/close',
   'cg/yue/prelude', 'cg/yue/explicit', 'cg/pan/prelude', 'cg/pan/explicit',
   'cg/pinger/prelude', 'cg/pinger/explicit', 'cg/group/banquet_conflict',
 ]);

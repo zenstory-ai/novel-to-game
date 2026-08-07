@@ -4,7 +4,7 @@ import { TEXT } from './text.js';
 import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES } from './data.js';
 import { audio } from './audio.js';
 import { loadAssets, coverURL, bgURL, unitURL, bgStyle } from './assets.js';
-import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard } from './ui.js';
+import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard, resetOverlayShading } from './ui.js';
 import { unitLevelStats, skillsAtLevel } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend } from './growth.js';
 import { runBattleScreen } from './battle_ui.js';
@@ -22,6 +22,12 @@ const SEED = params.has('seed') ? Number(params.get('seed')) : (Date.now() % 100
 const app = document.getElementById('app');
 let phase = 'boot'; // title | overworld | battle | ending
 let overworldCtl = null;
+
+// 阶段切换:非游玩阶段(标题/结局)隐藏顶栏——那里角色/背包/召唤兽/阵型一概不可用(简报 T7)
+function setPhase(p) {
+  phase = p;
+  document.body.classList.toggle('no-topbar', p === 'title' || p === 'ending');
+}
 
 // ---------- 战役状态 ----------
 function newCampaign() {
@@ -282,7 +288,7 @@ function setupTopbar() {
 
 // ---------- 标题画面 ----------
 function showTitle() {
-  phase = 'title';
+  setPhase('title');
   audio.playBGM('title');
   clearScreens();
   const s = el('div', 'screen title-screen');
@@ -354,6 +360,7 @@ function showTitle() {
 
 function clearScreens() {
   app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .modal-mask, .story-bg').forEach((n) => n.remove());
+  resetOverlayShading();
   overworldCtl = null;
 }
 
@@ -399,7 +406,7 @@ function buildPartyDefs() {
 async function runBattle(battleId, seedOffset, opts = {}) {
   let attempt = 0;
   for (;;) {
-    phase = 'battle';
+    setPhase('battle');
     audio.playBGM(BATTLES[battleId]?.boss ? 'boss' : 'battle');
     const showTutorial = opts.tutorial && !localStorage.getItem(TUT_KEY);
     const result = await runBattleScreen({
@@ -414,6 +421,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
       fast: FAST,
       showTutorial,
       onceCards: opts.onceCards ?? [],
+      systemControlsHost: app.querySelector('#topbar .topbar-dropdown'),
     });
     if (showTutorial) localStorage.setItem(TUT_KEY, '1');
     if (result.winner === 'party') return result;
@@ -441,7 +449,7 @@ function applyCaught(caughtKeys) {
 
 // ---------- 序幕 ----------
 async function startPrologue() {
-  phase = 'overworld';
+  setPhase('overworld');
   audio.playBGM('overworld');
   clearScreens();
   let tudiTalked = false;
@@ -505,7 +513,7 @@ async function startPrologue() {
 
 // ---------- 战斗2 前 ----------
 async function startPreFire() {
-  phase = 'overworld';
+  setPhase('overworld');
   audio.playBGM('overworld');
   clearScreens();
   setStoryBg('huoyan'); // 假扇越扇火越旺,火焰山为底
@@ -524,7 +532,7 @@ async function startPreFire() {
 
 // ---------- 批2:摩云洞·玉面公主 → 初战牛魔王 ----------
 async function startPreYumian() {
-  phase = 'overworld';
+  setPhase('overworld');
   audio.playBGM('overworld');
   clearScreens();
   setStoryBg('moyundong'); // 摩云洞前,妖云缭绕
@@ -545,7 +553,7 @@ async function startPreYumian() {
 }
 
 async function startPreNiu1() {
-  phase = 'overworld';
+  setPhase('overworld');
   audio.playBGM('overworld');
   clearScreens();
   campaign.stage = 'pre_niu1';
@@ -579,7 +587,7 @@ async function startPreNiu1() {
 
 // ---------- BOSS 前 ----------
 async function startPreBoss() {
-  phase = 'overworld';
+  setPhase('overworld');
   audio.playBGM('overworld');
   clearScreens();
   setStoryBg('leiji'); // 反骗与决战前夜,积雷山为底
@@ -618,16 +626,18 @@ async function startPreBoss() {
 
 // ---------- 结局(降伏→真扇三段→四十九扇→还扇西行) ----------
 async function showEnding() {
-  phase = 'ending';
+  setPhase('ending');
   audio.playBGM('ending');
   clearScreens();
   const wrap = el('div', 'ending-root');
   wrap.id = 'ending-root';
-  const bg = bgURL('cuiyun');
+  // 火根断绝发生在火焰山,结局底图必须用 huoyan(简报 T1:此前错用翠云山竹林);
+  // 独立一层 .ending-bg 承载「雨后」退色调,不滤到上面的卷轴面板。
+  const bg = bgURL('huoyan');
   if (bg) {
-    wrap.style.backgroundImage = `linear-gradient(rgba(20,34,44,0.52), rgba(20,34,44,0.38)), url(${bg})`;
-    wrap.style.backgroundSize = 'cover';
-    wrap.style.backgroundPosition = 'center';
+    const bgd = el('div', 'ending-bg');
+    bgd.style.backgroundImage = `linear-gradient(rgba(20,34,44,0.52), rgba(20,34,44,0.38)), url(${bg})`;
+    wrap.appendChild(bgd);
   }
   app.appendChild(wrap);
   const sleep = (ms) => new Promise((r) => setTimeout(r, FAST ? Math.max(30, ms * 0.2) : ms));
@@ -660,6 +670,9 @@ async function showEnding() {
   audio.sfx('victory');
   await sleep(900);
   counter.remove();
+  // 火根断绝后,均匀雨幕转为薄光(AD 结局签名帧:雨后晴土,不再是全屏密集大雨)
+  wrap.classList.remove('raining', 'rain-2', 'rain-3');
+  wrap.classList.add('rain-glow');
 
   // 还扇西行
   const panel = el('div', 'ending-panel');

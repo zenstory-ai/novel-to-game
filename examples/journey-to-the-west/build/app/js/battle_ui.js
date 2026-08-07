@@ -17,7 +17,7 @@ import { getSpeed, setSpeed, getSkipFx, setSkipFx, getShake, setShake } from './
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function runBattleScreen(ctx) {
-  // ctx: {root, battleId, partyLevels, petJoined, formation, items, seed, fast, showTutorial}
+  // ctx: {root, battleId, partyLevels, petJoined, formation, items, seed, fast, showTutorial, systemControlsHost}
   const { root, battleId, fast } = ctx;
   root.querySelectorAll('.toast').forEach((n) => n.remove()); // 清掉上一场残留提示
   const state = createBattle({
@@ -59,7 +59,7 @@ export async function runBattleScreen(ctx) {
   const roundTag = el('div', 'round-tag');
   const banner = el('div', 'skill-banner');
   banner.style.display = 'none';
-  // 五行相克环(常驻角落)
+  // 五行相克环(常驻指令台右格)
   const ring = el('div', 'wuxing-ring');
   ring.title = '五行相克:金克木、木克土、土克水、水克火、火克金';
   const ringSeq = ['金', '木', '土', '水', '火'];
@@ -81,7 +81,11 @@ export async function runBattleScreen(ctx) {
   const shakeBtn = el('button', 'btn toggle-btn');
   shakeBtn.id = 'btn-shake';
   toggles.append(speedBtn, skipBtn, shakeBtn);
-  field.append(orderBar, roundTag, banner, ring, formBtn, toggles);
+  // 节奏开关收进顶栏「设」齿轮下拉(简报 T7):不再挂在舞台右上角每张截图里
+  const sysDrop = ctx.systemControlsHost;
+  field.append(orderBar, roundTag, banner, formBtn);
+  if (sysDrop) sysDrop.appendChild(toggles);
+  else field.appendChild(toggles); // 无顶栏的独立挂载场景兜底
   const bottom = el('div', 'battle-bottom');
   const cmdStatus = el('div', 'cmd-status');
   const cmdMenu = el('div', 'cmd-menu');
@@ -89,7 +93,8 @@ export async function runBattleScreen(ctx) {
   cmdMenu.addEventListener('click', (ev) => {
     if (ev.target.closest('button')) audio.sfx('click');
   });
-  bottom.append(cmdStatus, cmdMenu);
+  // 五行相克环常驻指令台右侧(简报 T8):不再占舞台左下角,预览条也不再压它
+  bottom.append(cmdStatus, cmdMenu, ring);
   // 悬停/键盘聚焦时的预期效果预览(简报一.2):打谁、伤害区间、五行利弊
   const previewBox = el('div', 'cmd-preview');
   previewBox.id = 'cmd-preview';
@@ -134,8 +139,34 @@ export async function runBattleScreen(ctx) {
 
   const cardByUnit = new Map();
 
+  // ---------- 站位(bottom 锚定 + 每场一条地平线) ----------
+  // 地平线常量:卡底边在战场高度的百分比(自顶),按背景画里实际可站的地面读。
+  // 立绘经 object-position 底对齐后,脚线 = 卡底边 − 79px(名牌+血条+状态签栈高),
+  // 因此卡永远从地平线往下长,第四个单位不会再被场地下缘裁掉。
+  const HORIZON = { cuiyun: 92, huoyan: 96, moyundong: 96, leiji: 96 };
+  // 敌我各占一条斜列车道,同一套规则(简报 T11):
+  // 敌左 3→42%、我右 56→83%;每档卡底只差 4.5%,纵深用 zoom(远小近大)表达。
+  // 敌方步进 13% ≥ 缩放后卡宽(168px×0.99≈1280 宽下的 13%),名牌/血条/状态签
+  // 不再越界压到相邻单位(此前 7% 步进,玉面公主与妖将的名牌签叠成一团)。
+  function laneLayout(list, side) {
+    const frontT = (HORIZON[state.def.bg] ?? 94) - (side === 'enemy' ? 14 : 0);
+    const startX = side === 'enemy' ? 3 : 56;
+    const stepX = side === 'enemy' ? 13 : 9;
+    const n = list.length;
+    let extra = 0; // 大体积单位(白牛真身)之后的车道右让,避免盖住邻位
+    return list.map((u, i) => {
+      const pos = {
+        left: startX + i * stepX + extra,
+        bottom: 100 - (frontT - (n - 1 - i) * 4.5),
+        zoom: side === 'enemy' ? Math.min(0.99, 0.84 + i * 0.05) : Math.min(1.03, 0.88 + i * 0.05),
+      };
+      if (u.big) extra += 12;
+      return pos;
+    });
+  }
+
   // ---------- 单位卡片 ----------
-  function unitCard(u, idx) {
+  function unitCard(u, pos) {
     const card = el('div', `unit-card ${u.side}`);
     card.dataset.unitId = u.id;
     const anchor = el('div', 'float-anchor');
@@ -157,14 +188,10 @@ export async function runBattleScreen(ctx) {
     }
     const chips = el('div', 'buff-chips');
     card.append(anchor, shadow, badge, img, name, bars, chips);
-    // 站位:敌左上斜列、我右下斜列
-    if (u.side === 'enemy') {
-      card.style.left = `${5 + idx * 12}%`;
-      card.style.top = `${8 + idx * 14}%`;
-    } else {
-      card.style.left = `${54 + idx * 10}%`;
-      card.style.top = `${33 + idx * 11}%`;
-    }
+    // 卡底锚定:bottom 定死脚线高度,zoom 表达纵深(不碰 transform,让位/抖动动画不受影响)
+    card.style.left = `${pos.left}%`;
+    card.style.bottom = `${pos.bottom}%`;
+    card.style.zoom = String(pos.zoom);
     if (u.big) card.classList.add('big');
     return { card, img, name, badge, hpBar, mpBar, chips, anchor };
   }
@@ -218,13 +245,15 @@ export async function runBattleScreen(ctx) {
     cardByUnit.clear();
     const enemies = state.units.filter((u) => u.side === 'enemy');
     const party = state.units.filter((u) => u.side === 'party');
+    const ePos = laneLayout(enemies, 'enemy');
+    const pPos = laneLayout(party, 'party');
     for (const [i, u] of enemies.entries()) {
-      const uc = unitCard(u, i);
+      const uc = unitCard(u, ePos[i]);
       field.appendChild(uc.card);
       cardByUnit.set(u.id, uc);
     }
     for (const [i, u] of party.entries()) {
-      const uc = unitCard(u, i);
+      const uc = unitCard(u, pPos[i]);
       field.appendChild(uc.card);
       cardByUnit.set(u.id, uc);
     }
@@ -357,6 +386,7 @@ export async function runBattleScreen(ctx) {
   }
 
   function showPreview(rows) {
+    if (!rows || rows.length === 0) { hidePreview(); return; } // 无实据时报空,不挂静态说明(简报 T10)
     previewBox.innerHTML = '';
     for (const r of rows) {
       const line = el('div', 'pv-line');
@@ -369,14 +399,10 @@ export async function runBattleScreen(ctx) {
       previewBox.appendChild(line);
     }
     previewBox.style.display = 'block';
-    // 预览条与常驻五行环挤在同一条带上会叠字。预览本身就写明了「金→木 克! ×1.5」,
-    // 比图例信息更全,所以预览在时让图例让位。
-    document.body.classList.add('preview-on');
   }
 
   function hidePreview() {
     previewBox.style.display = 'none';
-    document.body.classList.remove('preview-on');
   }
 
   // 对单目标的预览行:伤害区间 + 双方五行 + 利弊 + 命中
@@ -517,7 +543,30 @@ export async function runBattleScreen(ctx) {
 
   function clearStatus() {
     cmdStatus.innerHTML = '';
-    cmdStatus.append(el('div', 'cmd-who-tip', '……'));
+    const who = el('div', 'cmd-who');
+    who.append(el('div', 'cmd-who-name', '战况'));
+    who.append(el('div', 'cmd-who-tip', '号令已下,观战'));
+    cmdStatus.append(who);
+  }
+
+  // ---------- 战况卷轴(简报 T8) ----------
+  // 结算/对话时段,底部指令台不再是一块带「……」的空白板:
+  // 右格以宣纸木刻排字列出最近 3 条战报。
+  const battleLog = []; // 新条目在前
+  function pushLog(text) {
+    battleLog.unshift(text);
+    if (battleLog.length > 6) battleLog.pop();
+  }
+  function showIdleBottom() {
+    cmdMenu.innerHTML = '';
+    clearStatus();
+    const sc = el('div', 'battle-report');
+    sc.append(el('div', 'battle-report-title', '战况'));
+    const lines = el('div', 'battle-report-lines');
+    if (battleLog.length === 0) lines.append(el('div', 'battle-report-line', '两军对峙,各听号令。'));
+    for (const t of battleLog.slice(0, 3)) lines.append(el('div', 'battle-report-line', t));
+    sc.append(lines);
+    cmdMenu.appendChild(sc);
   }
 
   function pickTarget(u, side, skill = BASIC_ATTACK, label = TEXT.commands.attack) {
@@ -628,16 +677,16 @@ export async function runBattleScreen(ctx) {
       cmdMenu.innerHTML = '';
       const wrap = el('div', 'cmd-grid');
 
+      // 常驻说明文字已从战场撤掉(简报 T10):预览条只报「这一击/这个菜单现在是什么」,
+      // 静态词条释义收进顶栏「助」帮助面板;防御一条报数值后果,属反馈,保留。
       const bAtk = cmdButton(TEXT.commands.attack, 'attack');
-      bAtk.title = TEXT.battle.attackTip;
       attachPreview(bAtk, () => dmgPreviewRows(u, BASIC_ATTACK, TEXT.commands.attack));
       bAtk.onclick = async () => {
         const t = await pickTarget(u, 'enemy', BASIC_ATTACK, TEXT.commands.attack);
         resolve(t ? { type: 'attack', targetId: t } : null);
       };
       const bSkill = cmdButton(TEXT.commands.skill, 'skill');
-      bSkill.title = TEXT.battle.skillTip;
-      attachPreview(bSkill, () => [TEXT.battle.skillTip]);
+      attachPreview(bSkill, () => [`${TEXT.commands.skill} · ${unitSkills(u).length} 招 · ${TEXT.ui.mp} ${u.mp}/${u.maxMp}`]);
       bSkill.onclick = () => skillMenu(u, resolve);
       const bDef = cmdButton(TEXT.commands.defend, 'defend');
       bDef.title = TEXT.battle.defendTip;
@@ -665,9 +714,15 @@ export async function runBattleScreen(ctx) {
         resolve({ type: 'auto' });
       };
       const bFlee = cmdButton(TEXT.commands.flee, 'flee');
-      bFlee.title = TEXT.battle.fleeTip;
-      attachPreview(bFlee, () => [TEXT.battle.fleeTip]);
-      bFlee.onclick = () => resolve({ type: 'flee' });
+      if (state.def.boss) {
+        // 「BOSS 战无效」由按钮变灰来说,不再常驻文案(简报 T10)
+        bFlee.classList.add('disabled');
+        bFlee.title = TEXT.ui.bossNoEscape;
+        attachPreview(bFlee, () => []);
+      } else {
+        bFlee.onclick = () => resolve({ type: 'flee' });
+        attachPreview(bFlee, () => []);
+      }
 
       wrap.append(bAtk, bSkill, bDef, bItem, bSp, bAuto, bFlee);
       cmdMenu.appendChild(wrap);
@@ -844,6 +899,13 @@ export async function runBattleScreen(ctx) {
     return n - 1;
   }
 
+  // 回合切换/战斗结束时强制清空飘字层(简报 T9):
+  // 飘字动画是真实时长的 CSS,结算睡眠随 D 缩放——加速模式下回合结束了,
+  // 上一回合的飘字还挂在画面上淡出(残影)。新回合开始前一律不留。
+  function clearFloats() {
+    field.querySelectorAll('.float-text, .float-stamp').forEach((n) => n.remove());
+  }
+
   async function playEvents(events) {
     const done = [];
     for (const ev of events) {
@@ -867,6 +929,7 @@ export async function runBattleScreen(ctx) {
           const u = getUnit(state, ev.actor);
           const uc = u ? cardOf(ev.actor) : null;
           if (uc) floatText(uc.anchor, ev.name, 'info');
+          if (u) pushLog(`${u.name} · ${ev.name}`);
           if (ev.skill) {
             const fxKind = SPELL_FX[skillKeyByName[ev.name]];
             if (fxKind && uc) {
@@ -979,6 +1042,8 @@ export async function runBattleScreen(ctx) {
         }
         case 'transform': {
           const uc = cardOf(ev.actor);
+          const actorU = getUnit(state, ev.actor);
+          if (actorU) pushLog(`${actorU.name} 变化 · ${ev.name}`);
           if (uc) {
             uc.card.classList.add('flash');
             floatText(uc.anchor, TEXT.float.transform.replace('{name}', ev.name), 'ke');
@@ -1017,6 +1082,7 @@ export async function runBattleScreen(ctx) {
         case 'phase': {
           sawPhase = true;
           renderUnits();
+          pushLog(TEXT.story.phase2[0].text);
           const uc = cardOf(ev.unit);
           if (uc) {
             uc.card.classList.add('flash');
@@ -1031,6 +1097,8 @@ export async function runBattleScreen(ctx) {
         }
         case 'death': {
           const uc = cardOf(ev.unit);
+          const deadU = getUnit(state, ev.unit);
+          if (deadU) pushLog(`${deadU.name} 败退`);
           if (uc) uc.card.classList.add('dead');
           refreshAll();
           await sleep(320 * D);
@@ -1064,10 +1132,9 @@ export async function runBattleScreen(ctx) {
         }
         case 'caught': {
           const uc = cardOf(ev.target);
-          if (uc) {
-            floatText(uc.anchor, `收服了 ${ev.name}!`, 'ke');
-            uc.card.classList.add('dead');
-          }
+          if (uc) uc.card.classList.add('dead');
+          // 只留 toast 一条通道:同一句提示不再「飘字+顶部横幅」两处绘制(记录缺陷 R2)
+          pushLog(`收服 ${ev.name}`);
           audio.sfx('levelup');
           toast(root, `收服了 ${ev.name}!可在「召唤兽」中安排上阵`);
           await sleep(420 * D);
@@ -1263,6 +1330,7 @@ export async function runBattleScreen(ctx) {
     refreshFormationBtn();
 
     while (!state.over && state.round <= 60) {
+      clearFloats(); // 新回合开始前,上一回合的飘字一律不留(简报 T9)
       renderOrderBar();
       commandPhase = true;
       refreshFormationBtn();
@@ -1275,8 +1343,7 @@ export async function runBattleScreen(ctx) {
       commandPhase = false;
       refreshFormationBtn();
       unbindKbd(); // 指令阶段结束,菜单清空前先撤掉键盘导航
-      cmdMenu.innerHTML = '';
-      clearStatus();
+      showIdleBottom(); // 结算期间底栏改展示战况卷轴,不再是空白板
       hidePreview();
       const events = executeRound(state, commands);
       await playEvents(events);
@@ -1285,6 +1352,7 @@ export async function runBattleScreen(ctx) {
 
     // ---------- 结算 ----------
     root.querySelectorAll('.toast').forEach((n) => n.remove()); // 清掉战斗中的提示,别压在结算面板上
+    clearFloats(); // 结算帧同样不留飘字残影(简报 T9)
     if (state.winner === 'story') {
       // 剧情桥段:保留战斗画面作过场底景,由 main 在过场结束后移除
       return { winner: 'story', rounds: state.round - 1 };
@@ -1321,6 +1389,7 @@ export async function runBattleScreen(ctx) {
     window.removeEventListener('keydown', onGlobalKey);
     unbindKbd();
     hidePreview();
+    toggles.remove(); // 开关是挂在顶栏「设」下拉里的,随战斗结束一并撤下
     fx.dispose();
   }
 
@@ -1353,4 +1422,3 @@ export async function runBattleScreen(ctx) {
     });
   }
 }
-

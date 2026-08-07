@@ -102,7 +102,21 @@ class QA:
     def shot(self, name):
         # 存 JPEG:证据要长期留在仓库里,48 张 PNG 约 71MB、JPEG 约 6MB,且不影响判读。
         self.n += 1
+        # 简报 T9:每次截图前,飘字容器必须为空——残影(上回合没回收的淡出飘字)
+        # 是证据帧「看起来没做完」的直接成因。动画结束节点即被回收,这里只等现存的播完。
+        ok(self.wait_floats_clear(), f"截图前飘字层已清空(#{self.n:02d} {name})")
         self.p.screenshot(path=f"{SHOTS}/{self.n:02d}_{name}.jpg", type="jpeg", quality=80)
+
+    def wait_floats_clear(self, timeout_ms=12000):
+        """等 .float-text/.float-stamp 全部从 DOM 移除;超时=有节点没被回收(残影泄漏)。"""
+        try:
+            self.p.wait_for_function(
+                "() => document.querySelectorAll('.float-text, .float-stamp').length === 0",
+                timeout=timeout_ms,
+            )
+            return True
+        except Exception:
+            return False
 
     def click_dialogs(self, max_clicks=20):
         """点完当前剧情对话;返回点击次数。"""
@@ -267,12 +281,24 @@ def run():
         page.click("#btn-howto")
         page.wait_for_selector("#modal-help")
         qa.shot("help")
-        page.click("#btn-help-close")
+        ok(page.locator("body.modal-open").count() == 1, "帮助弹窗会压暗底层指令区")
 
         # ---------- 序幕 ----------
         section("序幕 · 火焰山脚")
-        page.click("#btn-start")
-        qa.wait_dialog_then_clear()  # 序幕旁白
+        # 程序化触发底层开始键，覆盖异步切场直接回收旧 modal 的 teardown 路径。
+        page.evaluate("document.querySelector('#btn-start').click()")
+        page.wait_for_selector("#dialog")
+        page.evaluate("document.querySelector('#dialog').dataset.forcedOld = '1'")
+        # 读档会强制回收仍在播放的旧对话并立刻创建新对话；旧 handler 不得清掉新遮罩。
+        page.evaluate("document.querySelector('#btn-load').click()")
+        page.wait_for_selector("#dialog:not([data-forced-old])")
+        page.keyboard.press("Enter")
+        ok(
+            page.locator("#dialog").count() == 1 and page.locator("body.dlg-open").count() == 1,
+            "旧对话 cleanup 不会误清新对话遮罩",
+        )
+        qa.wait_dialog_then_clear()  # 清完重建后的序幕旁白
+        ok(page.locator("body.modal-open, body.dlg-open").count() == 0, "切场后遮罩状态完全清理")
         page.wait_for_selector("#overworld-canvas", timeout=5000)
         page.wait_for_timeout(600)
         ok(page.evaluate("__game.phase()") == "overworld", "phase=overworld")
@@ -432,20 +458,24 @@ def run():
         ok(page.locator(".unit-card.party").count() == 3, "我方 3 单位")
         ok(page.locator(".unit-card.enemy").count() == 3, "敌方 3 火妖")
         qa.shot("battle2_cmd")
-        # 节奏开关(简报二.5/验收:加速开关持久化)
+        # 节奏开关(简报二.5/验收:加速开关持久化);T7 起收进顶栏「设」下拉,先开下拉再点
+        page.click("#btn-system")
         page.click("#btn-speed")
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "2", "加速开关写入 localStorage")
         ok("×2" in page.locator("#btn-speed").inner_text(), "加速钮显示 ×2 状态")
+        page.click("#btn-system")
         page.click("#btn-skipfx")
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_skipfx')") == "1", "跳过演出开关写入 localStorage")
+        page.click("#btn-system")
         page.click("#btn-skipfx")  # 恢复演出,后续真扇截图要看
         page.wait_for_timeout(150)
         qa.shot("battle2_toggles")
         # 加速同样要复位:决战的招牌帧(真扇三段/白牛真身/众神围剿)必须只由它声称的那条
         # 路径决定,不带上一场战斗留下的持久开关。写入已验证,值改回常速仍留在 localStorage,
         # 决战入口据此核对跨战斗持久化。
+        page.click("#btn-system")
         page.click("#btn-speed")
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "1", "加速开关复位常速并写回 localStorage")
@@ -739,8 +769,10 @@ def run():
         qa.shot("ending")
 
         # ---------- 成长面板(加点/推荐/召唤兽上阵) ----------
+        # T7 起结局页属非游玩阶段、顶栏隐藏:这里仍要在通关存档上实测面板,
+        # 用 dispatch_event 触发被隐藏的顶栏钮,断言对象(加点/召唤兽逻辑)不变。
         section("成长面板实测")
-        page.click("#btn-hero")
+        page.locator("#btn-hero").dispatch_event("click")
         page.wait_for_selector("#modal-hero")
         ok(page.locator('[data-alloc-plus="wukong:攻"]').count() == 1, "加点 ＋ 钮存在")
         page.click('[data-alloc-plus="wukong:攻"]')
@@ -754,7 +786,7 @@ def run():
         ok(rec_box is not None and rec_box["width"] > 34, "推荐加点按钮横向铺开(不再竖排挤压)")
         qa.shot("panel_hero_alloc")
         page.click("#modal-hero-close")
-        page.click("#btn-pet")
+        page.locator("#btn-pet").dispatch_event("click")
         page.wait_for_selector("#modal-pet")
         ok(page.locator('[data-pet-active="huobao"]').count() == 1, "召唤兽面板列出赤焰火骝")
         ok(page.locator('[data-pet-active="pixie"]').count() == 1, "召唤兽面板列出辟水金睛兽")

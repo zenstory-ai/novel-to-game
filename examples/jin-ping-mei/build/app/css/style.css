@@ -149,9 +149,13 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .plain-button:hover { border-color: var(--gold); color: #fff0ce; }
 
 /* 标题 */
-.title-screen { width: 100%; height: 100%; display: grid; grid-template-columns: 59% 41%; background: var(--night); color: #eee3d0; }
+/* 标题屏与 visit/night/morning 用同一条规矩:整版单图 + 斜向 scrim,
+   不做 59%/41% 的对接分栏——那正是 P0-1 那条贯穿全屏的硬边。
+   标题图右三分之一本身就是漆黑的,题字栏落在它上面。 */
+.title-screen { position: relative; width: 100%; height: 100%; display: grid; grid-template-columns: 56% 44%; background: var(--night); color: #eee3d0; }
 .title-art {
-  position: relative;
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: 50% center;
   filter: saturate(.82) contrast(1.06);
@@ -160,10 +164,11 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent 55%, var(--night) 100%), linear-gradient(0deg, rgba(12,8,7,.45), transparent 50%);
+  background: linear-gradient(100deg, transparent 38%, rgba(12,8,7,.72) 62%, var(--night) 84%), linear-gradient(0deg, rgba(12,8,7,.45), transparent 50%);
 }
 .title-copy {
   position: relative;
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -240,15 +245,64 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .relation-name b { display: block; letter-spacing: .08em; }
 .relation-name small { display: block; margin-top: .15rem; color: #8e806f; font: .66rem var(--sans); }
 .relation-tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: .25rem; margin: .7rem 0 .55rem; }
-.relation-tiers span { display: flex; flex-direction: column; color: #807463; font: .62rem var(--sans); }
+.relation-tiers span { position: relative; display: flex; flex-direction: column; color: #807463; font: .62rem var(--sans); }
 .relation-tiers b { margin-top: .12rem; color: #d8c6a8; font-size: .75rem; }
+/* 刚跨档的那一格:700ms 微亮 + 一枚朱印,一次性提示。
+   任意一帧都必须能读清字——不用 blur,起始不透明度不低于 .75。
+   prefers-reduced-motion 下全局规则关掉动画,只留朱印。 */
+.relation-tiers span[data-changed] b { animation: tier-ink .7s ease-out; }
+/* 朱印贴在被改那格的档位字右侧,不再绝对定位到格缘——
+   贴右缘会看上去像标在右边那一格上。 */
+.relation-tiers span[data-changed] b::after {
+  content: "";
+  display: inline-block;
+  width: .52em;
+  height: .52em;
+  margin-left: .38em;
+  background: var(--cinnabar);
+  box-shadow: 0 0 0 1px rgba(216,90,72,.45), 0 1px 3px rgba(0,0,0,.4);
+  transform: rotate(-4deg);
+}
+@keyframes tier-ink {
+  from { opacity: .78; color: #f0dfba; text-shadow: 0 0 10px rgba(228,188,116,.9); }
+  to { opacity: 1; color: #d8c6a8; text-shadow: none; }
+}
 .relation-card p { margin: 0; min-height: 2.6em; color: #948776; font: .68rem/1.55 var(--sans); }
-.household-roster { margin-top: auto; padding: .65rem .7rem .55rem; border-top: 1px solid rgba(216,181,111,.2); background: rgba(0,0,0,.12); }
+.household-roster { padding: .65rem .7rem .55rem; border-top: 1px solid rgba(216,181,111,.2); background: rgba(0,0,0,.12); }
 .household-roster > p { margin: 0 0 .42rem; color: #897d6b; font: .64rem var(--sans); letter-spacing: .18em; }
 .household-row { display: grid; grid-template-columns: 24px 54px 1fr; align-items: center; min-height: 28px; color: #b8aa93; font: .66rem var(--sans); }
 .household-row > span { width: 20px; height: 20px; display: grid; place-content: center; border: 1px solid rgba(209,177,113,.32); color: #cdb37f; font-size: .58rem; }
 .household-row b { color: #d4c5ad; font-weight: 500; }
 .household-row small { color: #7f7464; font-size: .62rem; text-align: right; }
+
+/* 账簿页:人物账与宅中人之间的中段,state.history 最近 4 条竖排墨字,新条目渗入。 */
+.ledger-book {
+  flex: 1;
+  min-height: 4.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: .7rem .4rem;
+  border-top: 1px solid rgba(216,181,111,.16);
+  border-bottom: 1px solid rgba(216,181,111,.12);
+  overflow: hidden;
+}
+.ledger-line {
+  writing-mode: vertical-rl;
+  margin: 0;
+  max-height: 100%;
+  overflow: hidden;
+  color: #9d8f78;
+  font: .7rem/1.6 var(--serif);
+  letter-spacing: .08em;
+}
+.ledger-line b { color: #c8a75f; font-weight: 700; }
+.ledger-line[data-fresh] { color: #e6d6b6; animation: ledger-ink .9s ease-out; }
+.ledger-empty { margin: auto; writing-mode: vertical-rl; color: #5f564a; font: .68rem var(--sans); letter-spacing: .2em; }
+@keyframes ledger-ink {
+  from { opacity: .78; transform: translateY(-5px); }
+  to { opacity: 1; transform: none; }
+}
 
 .phase-stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #2c251d; }
 .visual-stage { position: absolute; inset: 0; overflow: hidden; }
@@ -320,16 +374,18 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .door-card b { font-size: 1.12rem; letter-spacing: .08em; }
 .door-card small { margin-top: .3rem; color: #b6a68d; font: .68rem/1.5 var(--sans); }
 .door-card em { margin-top: .55rem; color: #d7b36b; font: normal .68rem var(--sans); }
+/* 门卡上的拜访次数:让「按她的第几次走」在界面上看得见。 */
+.door-knock { display: block; margin-top: .28rem; color: #9c8b70; font: normal .64rem var(--sans); font-style: normal; letter-spacing: .08em; }
 .door-card:hover img { transform: translateX(-50%) scale(1.035); filter: drop-shadow(0 15px 16px rgba(0,0,0,.55)) brightness(1.08); }
 .door-pan_jinlian { background-color: rgba(100,26,22,.2); }
 .door-li_pinger { background-color: rgba(132,98,44,.16); }
 
 /* 对话近景 */
 .dialogue-stage { background: #211712; }
-.dialogue-backdrop { position: absolute; inset: 0; background-position: center; background-size: cover; filter: blur(1px) saturate(.58) brightness(.6); transform: scale(1.03); }
 .close-portrait { position: absolute; z-index: 2; right: -2%; top: -1%; height: 192%; width: 70%; object-fit: contain; object-position: top center; filter: drop-shadow(-24px 20px 18px rgba(0,0,0,.48)) saturate(.96); }
 .close-portrait.closer { height: 208%; right: -4%; filter: drop-shadow(-24px 20px 18px rgba(0,0,0,.58)) saturate(1.05); }
-.dialogue-stage::after { background: linear-gradient(90deg, rgba(14,9,8,.72) 0%, rgba(14,9,8,.14) 48%, rgba(14,9,8,.25)); }
+/* 单张整版之后，舞台级 scrim 与 CG 上的 100° 斜向 scrim 必然打架，统一撤掉。 */
+.dialogue-stage::after, .morning-stage::after { background: none; }
 .dialogue-panel { left: 3.5%; top: 6%; bottom: 5%; width: 40%; padding: 1.5rem; overflow-y: auto; }
 .want-line { margin: .75rem 0 1rem; padding: .7rem; border-left: 2px solid var(--gold); color: #a99982; font: .74rem/1.65 var(--sans); }
 .want-line b { color: #d8c29b; }
@@ -341,15 +397,15 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .pov-prop.cup::before { content: ""; position: absolute; right: -28%; top: -24%; width: 62px; height: 40px; border: 5px solid #aa8052; border-radius: 50%; background: radial-gradient(ellipse, #3c1d18 40%, #b38753 44%, #50402d 55%); }
 
 /* 次晨 */
-.morning-stage::after { background: linear-gradient(90deg, rgba(15,10,8,.78) 0%, rgba(15,10,8,.08) 58%); }
 .morning-portrait { position: absolute; z-index: 2; right: 3%; top: 0; height: 140%; filter: drop-shadow(-22px 20px 18px rgba(0,0,0,.45)); }
 .morning-panel { left: 4%; top: 8%; width: 47%; padding: 1.45rem; }
 .tone-jealous .morning-panel { border-color: rgba(188,73,61,.72); }
 .tone-backing .morning-panel { border-color: rgba(126,167,149,.65); }
 
 /* 宴席 */
-.banquet-stage::before { background-position: center 38%; }
-.banquet-stage::after { background: linear-gradient(0deg, rgba(13,9,7,.92) 0%, rgba(13,9,7,.05) 70%); }
+/* 选择前不铺群像:宅院界画压暗加暖灯,把「中秋夜宴」的光先给到,群像留给选择之后。 */
+.banquet-stage::before { background-position: center 38%; filter: saturate(.66) brightness(.68) sepia(.3) contrast(1.05); }
+.banquet-stage::after { background: radial-gradient(80% 62% at 50% 32%, rgba(206,132,58,.24), transparent 62%), linear-gradient(0deg, rgba(13,9,7,.92) 0%, rgba(13,9,7,.05) 70%); }
 .banquet-panel { left: 3%; right: 3%; bottom: 3%; padding: 1rem 1.25rem; }
 .banquet-panel .phase-header > p:last-child { max-width: 58rem; }
 .banquet-panel .choice-grid { grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: .8rem; }
@@ -357,18 +413,23 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 
 /* 场景 CG */
 .scene-view { position: absolute; inset: 0; background: #100d0b; overflow: hidden; }
-.scene-view > img { width: 100%; height: 100%; object-fit: cover; object-position: center; animation: scene-enter 1.1s ease both; }
+.scene-view > img { width: 100%; height: 100%; object-fit: cover; object-position: center; animation: scene-enter .55s ease both; }
 .scene-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,8,7,.92) 0%, rgba(12,8,7,.38) 42%, transparent 72%), linear-gradient(0deg, rgba(12,8,7,.45), transparent 58%); }
 .scene-caption { position: absolute; z-index: 2; left: 4.5%; bottom: 7%; width: min(430px, 38%); color: #eee1cb; }
 .scene-caption h2 { margin: 0 0 .75rem; font-size: clamp(2rem, 3.6vw, 4rem); letter-spacing: .1em; }
 .scene-caption > p:not(.eyebrow) { color: #d5c4aa; font: .9rem/1.9 var(--sans); }
 .scene-meta { display: flex; gap: 1rem; margin: 1rem 0; color: #ad9878; font: .68rem var(--sans); }
 .scene-meta span { padding: .3rem .5rem; border: 1px solid rgba(213,182,122,.32); }
-@keyframes scene-enter { from { opacity: 0; transform: scale(1.035); filter: saturate(.55); } to { opacity: 1; transform: scale(1); filter: saturate(.9); } }
+/* 起始不透明度 .38、时长 .55s:任何时刻截图都不会拍到接近全黑的半淡入帧。 */
+@keyframes scene-enter { from { opacity: .38; transform: scale(1.018); filter: saturate(.7); } to { opacity: 1; transform: scale(1); filter: saturate(.9); } }
 
 /* 结算 */
 .ending-view { position: absolute; inset: 0; display: grid; grid-template-columns: 55% 45%; background: #130e0c; color: #eee1cc; }
 .ending-art { background-size: cover; background-position: center; }
+/* 四个结局四盏灯:专一暖、群像原色、权谋冷灰、不稳熄火。 */
+.ending-view[data-ending="exclusive"] .ending-art { background-position: 50% 10%; filter: saturate(.95) brightness(.92); }
+.ending-view[data-ending="intrigue"] .ending-art { filter: saturate(.5) brightness(.58) contrast(1.08); }
+.ending-view[data-ending="unstable"] .ending-art { filter: saturate(.42) brightness(.62); }
 .ending-copy { display: flex; flex-direction: column; justify-content: center; padding: 4.5vh 5vw 4vh 3.5vw; }
 .ending-copy h1 { margin: 0 0 .3rem; font-size: clamp(2.5rem, 4vw, 4.8rem); letter-spacing: .13em; }
 .ending-tag { color: var(--gold-bright); font-size: 1.1rem; }
@@ -441,51 +502,58 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 }
 
 /* 关系场景使用专属近景册页；完整奖励在解锁时全屏展开。 */
-.close-cg {
+/* 单张整版：一张图、一次曝光、一条 100° 斜向 scrim（光从右上斜入，对齐 CG 里的灯笼），
+   不再左右对接两张图。 */
+.close-cg, .morning-cg {
   position: absolute;
   z-index: 1;
-  inset: 0 0 0 35%;
+  inset: 0;
   background-size: cover;
+  /* 夜间立绘是 1280×853 完整构图(人物在右 55–70%,左三是留给面板的暗部),
+     不是人物切片;用 center 保住整版构图,第一批的 50% 12% 会把头切掉。 */
   background-position: center;
-  filter: saturate(.72) brightness(.8);
+  filter: saturate(.82) brightness(.86) contrast(1.04);
 }
-.close-cg::after {
+.close-cg::after, .morning-cg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(15,10,8,.88) 0%, rgba(15,10,8,.08) 50%, rgba(15,10,8,.18));
+  background:
+    linear-gradient(100deg, rgba(14,9,7,.95) 0%, rgba(14,9,7,.90) 24%, rgba(14,9,7,.52) 42%, rgba(14,9,7,.08) 60%, rgba(14,9,7,.30) 100%),
+    radial-gradient(115% 88% at 70% 42%, transparent 38%, rgba(10,7,6,.58) 100%);
 }
-.close-cg.closer { filter: saturate(.88) brightness(.7) contrast(1.04); transform: scale(1.025); transform-origin: center; }
+.close-cg.closer { filter: saturate(.9) brightness(.8) contrast(1.06); transform: scale(1.025); transform-origin: center; }
+/* 次晨沿用同一整版构图,只叠一层晨光;亮度别压过灯焰,夜灯要还活着。 */
+.morning-cg { filter: brightness(1.1) sepia(.12) saturate(.88) contrast(1.0); }
 .title-copy h1 { font-size: clamp(2.35rem, 3.35vw, 4.5rem); white-space: nowrap; }
 
 /* 视觉裁决 iteration 2：群像曝光、次晨角色一致性、人物账可读性。 */
 .scene-view[data-scene-tier="public"] .scene-scrim {
   background: linear-gradient(0deg, rgba(12,8,7,.82) 0%, rgba(12,8,7,.14) 44%, rgba(12,8,7,.03) 72%);
 }
+/* 整宽底栏:说明文字退出 x 34–70%, y 60–84% 的保护区(账簿、两把钥匙、月娘的手),
+   任何截图都不会再盖住这一帧的因果器物。 */
 .scene-view[data-scene-tier="public"] .scene-caption {
-  left: 4%;
-  bottom: 4%;
-  width: min(590px, 48%);
-  padding: 1rem 1.15rem;
-  border-left: 3px solid var(--gold);
-  background: rgba(19,12,9,.8);
-  backdrop-filter: blur(4px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  padding: 3.4rem 6% 2rem;
+  border-left: 0;
+  background: linear-gradient(0deg, rgba(12,8,6,.96) 0%, rgba(12,8,6,.86) 42%, transparent 100%);
+  backdrop-filter: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: .3rem 1.5rem;
 }
+.scene-view[data-scene-tier="public"] .scene-caption .eyebrow,
+.scene-view[data-scene-tier="public"] .scene-caption h2,
+.scene-view[data-scene-tier="public"] .scene-caption > p { grid-column: 1; }
+.scene-view[data-scene-tier="public"] .scene-caption h2 { margin-bottom: .5rem; font-size: clamp(1.7rem, 2.8vw, 2.9rem); }
+.scene-view[data-scene-tier="public"] .scene-caption .scene-meta { grid-column: 2; grid-row: 1 / span 2; margin: 0; justify-content: flex-end; }
+.scene-view[data-scene-tier="public"] .scene-caption .ink-button { grid-column: 2; }
 .scene-view[data-scene-tier="public"] > img { filter: saturate(.92) brightness(1.08); }
-.morning-cg {
-  position: absolute;
-  z-index: 1;
-  inset: 0 0 0 34%;
-  background-size: cover;
-  background-position: center;
-  filter: saturate(.68) brightness(.82);
-}
-.morning-cg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(16,10,8,.9), rgba(16,10,8,.08) 48%, rgba(16,10,8,.12));
-}
 .relation-card p { color: #b9ac99; font-size: .75rem; }
 .scene-view[data-scene-tier="public"] .scene-scrim {
   background: linear-gradient(0deg, rgba(12,8,7,.54) 0%, rgba(12,8,7,0) 36%);

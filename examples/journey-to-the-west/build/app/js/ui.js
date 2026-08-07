@@ -22,6 +22,31 @@ export function addCorners(panel) {
   for (const c of ['tl', 'tr', 'bl', 'br']) panel.appendChild(el('span', `corner ${c}`));
 }
 
+// ---------- 遮罩计数:模态/对话在场时,战斗底部指令台随之一并压暗(简报 T8) ----------
+let modalDepth = 0;
+let dlgDepth = 0;
+let shadeGeneration = 0;
+function shadeOn(kind) {
+  if (kind === 'modal') modalDepth += 1; else dlgDepth += 1;
+  document.body.classList.add(kind === 'modal' ? 'modal-open' : 'dlg-open');
+  return shadeGeneration;
+}
+function shadeOff(kind, ownerGeneration) {
+  if (ownerGeneration !== shadeGeneration) return;
+  if (kind === 'modal') modalDepth = Math.max(0, modalDepth - 1);
+  else dlgDepth = Math.max(0, dlgDepth - 1);
+  const cls = kind === 'modal' ? 'modal-open' : 'dlg-open';
+  if ((kind === 'modal' ? modalDepth : dlgDepth) === 0) document.body.classList.remove(cls);
+}
+
+// 切场会直接回收旧 screen；同时归零计数，避免被回收的遮罩把后续指令台永久压暗。
+export function resetOverlayShading() {
+  shadeGeneration += 1;
+  modalDepth = 0;
+  dlgDepth = 0;
+  document.body.classList.remove('modal-open', 'dlg-open');
+}
+
 // ---------- 剧情对话框 ----------
 // lines: [{who, text}]  who=null 为旁白。返回 Promise,播完 resolve。
 // 键盘:回车/空格/→ 推进(简报一.2 全流程键盘)。
@@ -39,6 +64,7 @@ export function showDialog(root, lines) {
     right.append(name, text, next);
     box.append(portrait, right);
     root.appendChild(box);
+    const ownerGeneration = shadeOn('dlg');
 
     function render() {
       const line = lines[idx];
@@ -57,6 +83,7 @@ export function showDialog(root, lines) {
     }
     function cleanup() {
       window.removeEventListener('keydown', onKey);
+      shadeOff('dlg', ownerGeneration);
     }
     function advance() {
       audio.sfx('click');
@@ -93,7 +120,11 @@ export function showModal(root, { id, title, bodyNodes, buttons }) {
   const body = el('div', 'modal-body');
   for (const n of bodyNodes) body.appendChild(n);
   const foot = el('div', 'modal-foot');
+  let closed = false;
   const close = () => {
+    if (closed) return;
+    closed = true;
+    shadeOff('modal', ownerGeneration);
     mask.remove();
     window.removeEventListener('keydown', onKey);
   };
@@ -134,6 +165,7 @@ export function showModal(root, { id, title, bodyNodes, buttons }) {
   panel.append(head, body, foot);
   mask.appendChild(panel);
   root.appendChild(mask);
+  const ownerGeneration = shadeOn('modal');
   return close;
 }
 
@@ -148,7 +180,11 @@ export function showPanel(root, { id, title, bodyNodes, onClose }) {
   closeBtn.id = `${id}-close`;
   const body = el('div', 'modal-body');
   for (const n of bodyNodes) body.appendChild(n);
+  let closed = false;
   const close = () => {
+    if (closed) return;
+    closed = true;
+    shadeOff('modal', ownerGeneration);
     mask.remove();
     window.removeEventListener('keydown', onKey);
     if (onClose) onClose();
@@ -169,11 +205,14 @@ export function showPanel(root, { id, title, bodyNodes, onClose }) {
   panel.append(head, closeBtn, body);
   mask.appendChild(panel);
   root.appendChild(mask);
+  const ownerGeneration = shadeOn('modal');
   return close;
 }
 
 // ---------- 轻提示 ----------
 export function toast(root, msg, ms = 2600) {
+  // 提示条串行化:先撤掉同根下的旧 toast,两条提示不再互相叠印(记录缺陷 R4)
+  root.querySelectorAll('.toast').forEach((n) => n.remove());
   const t = el('div', 'toast', msg);
   root.appendChild(t);
   setTimeout(() => t.classList.add('show'), 16);
@@ -214,7 +253,10 @@ export function floatText(parent, text, cls = 'dmg', slot = 0) {
   f.style.left = `calc(50% + ${x}px)`;
   f.style.top = `${slot * 30}px`;
   parent.appendChild(f);
-  setTimeout(() => f.remove(), 1400);
+  // 明确生命周期:动画结束即从 DOM 移除,不靠 opacity 停在画面上(简报 T9 残影);
+  // 保底 timeout 兜住动画被打断(节点所在卡片先被回收)的情况
+  f.addEventListener('animationend', () => f.remove(), { once: true });
+  setTimeout(() => f.remove(), 1500);
   return f;
 }
 
@@ -223,7 +265,8 @@ export function stampText(parent, text, cls = 'ke-stamp') {
   const f = el('div', `float-stamp ${cls}`);
   f.textContent = text;
   parent.appendChild(f);
-  setTimeout(() => f.remove(), 1100);
+  f.addEventListener('animationend', () => f.remove(), { once: true });
+  setTimeout(() => f.remove(), 1200);
   return f;
 }
 

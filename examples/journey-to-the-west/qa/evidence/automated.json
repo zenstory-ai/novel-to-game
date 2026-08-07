@@ -1,20 +1,20 @@
 {
   "url": "http://127.0.0.1:5173/?seed=42&fast=1",
   "viewport": "1440x900",
-  "passed": 89,
+  "passed": 138,
   "failed": 0,
   "console_errors": 0,
   "frame_ms": {
     "battle3_whitebull": {
       "p50": 8.3,
-      "p95": 10.3,
-      "max": 17.1,
+      "p95": 9.8,
+      "max": 10.3,
       "n": 90
     },
     "battle3_godassist": {
-      "p50": 8.4,
-      "p95": 16.8,
-      "max": 17.9,
+      "p50": 8.3,
+      "p95": 16.2,
+      "max": 18.6,
       "n": 90
     }
   },
@@ -24,7 +24,7 @@
     "127.0.0.1:5173"
   ],
   "external_hosts": [],
-  "build_bytes": 4235264,
-  "generated_screenshots": 47,
+  "build_bytes": 4246779,
+  "generated_screenshots": 46,
   "screenshots_retained_in_git": false
 }

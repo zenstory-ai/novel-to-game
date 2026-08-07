@@ -1,7 +1,7 @@
 import { TEXT } from './text.js';
 import {
-  HEROINES, HEROINE_IDS, HOUSEHOLD, HOUSEHOLD_IDS,
-  OPENING_CHOICES, NIGHT_TEXT, SCENES,
+  HEROINES, HEROINE_IDS, HOUSEHOLD, HOUSEHOLD_IDS, HOUSEHOLD_EVENTS,
+  OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, NIGHT_TEXT, SCENES,
 } from './data.js';
 import * as E from './engine.js';
 import { loadAssets, assetReport, urlFor, assertCriticalAssetSchema } from './assets.js';
@@ -144,7 +144,7 @@ function renderTitle() {
   const hasSave = !!loadSave();
   app.innerHTML = `
     <main class="title-screen">
-      <div class="title-art" style="background-image:url('${urlFor('cover')}')" role="img" aria-label="吴月娘、潘金莲与李瓶儿在中秋席上看向玩家"></div>
+      <div class="title-art" style="background-image:url('${urlFor('cover')}')" role="img" aria-label="月娘居中、金莲自屏风边前探、瓶儿递来钥匙,三人都在看你"></div>
       <section class="title-copy">
         <p class="eyebrow">成人后宫关系游戏 · 六日一局</p>
         <h1>${TEXT.title}</h1>
@@ -186,6 +186,9 @@ function renderGame() {
         <aside class="relation-rail" aria-label="人物账">
           <p class="rail-kicker">人物账</p>
           ${HEROINE_IDS.map(renderRelationCard).join('')}
+          <section class="ledger-book" aria-label="风月账">
+            ${renderLedger()}
+          </section>
           <section class="household-roster" aria-label="宅中人">
             <p>宅中人</p>
             ${HOUSEHOLD_IDS.map(renderHouseholdRow).join('')}
@@ -203,17 +206,40 @@ function resourceChip(glyph, value, key) {
   return `<div class="resource-chip ${key}" data-resource="${key}"><span>${glyph}</span><b>${value}</b></div>`;
 }
 
+// 档位变化的一次性提示:按 state 记忆上一次渲染的档位与数值,
+// 跨档时给该格加 data-changed="up|down"(方向按数值增减),由 CSS 做墨渗 + 朱印。
+const tierMemory = new WeakMap();
+
+function tierChanges(id, rel) {
+  let memory = tierMemory.get(state);
+  if (!memory) {
+    memory = {};
+    tierMemory.set(state, memory);
+  }
+  const changed = {};
+  for (const kind of ['qing', 'yu', 'du']) {
+    const key = `${id}.${kind}`;
+    const tier = E.relationTier(rel[kind], kind);
+    const before = memory[key];
+    if (before && before.tier !== tier) changed[kind] = rel[kind] > before.value ? 'up' : 'down';
+    memory[key] = { tier, value: rel[kind] };
+  }
+  return changed;
+}
+
 function renderRelationCard(id) {
   const heroine = HEROINES[id];
   const rel = state.relations[id];
   const reason = rel.reasons[0] || heroine.want;
+  const changed = tierChanges(id, rel);
+  const mark = (kind) => (changed[kind] ? ` data-changed="${changed[kind]}"` : '');
   return `
     <article class="relation-card relation-${id}" data-heroine="${id}" data-qing="${rel.qing}" data-yu="${rel.yu}" data-du="${rel.du}">
       <div class="relation-name"><span class="shape-mark">${heroine.glyph}</span><div><b>${heroine.name}</b><small>${heroine.house}</small></div></div>
       <div class="relation-tiers">
-        <span>情 <b>${E.relationTier(rel.qing, 'qing')}</b></span>
-        <span>欲 <b>${E.relationTier(rel.yu, 'yu')}</b></span>
-        <span>妒 <b>${E.relationTier(rel.du, 'du')}</b></span>
+        <span${mark('qing')}>情 <b>${E.relationTier(rel.qing, 'qing')}</b></span>
+        <span${mark('yu')}>欲 <b>${E.relationTier(rel.yu, 'yu')}</b></span>
+        <span${mark('du')}>妒 <b>${E.relationTier(rel.du, 'du')}</b></span>
       </div>
       <p>${escapeHtml(reason)}</p>
     </article>`;
@@ -225,6 +251,77 @@ function renderHouseholdRow(id) {
   return `<div class="household-row" data-household="${id}" data-regard="${row.regard}">
     <span>${person.glyph}</span><b>${person.name}</b><small>${E.householdTier(row.regard)}</small>
   </div>`;
+}
+
+// 账簿页:左栏中段原是一大块纯黑空白,如今填成 state.history 最近 4 条的竖排墨字。
+// 用 WeakMap 按 state 记住上次渲染到的条目数,新记上的几行带 data-fresh 渗入。
+const ledgerMemory = new WeakMap();
+
+function renderLedger() {
+  const total = state.history.length;
+  const seen = ledgerMemory.get(state) ?? 0;
+  ledgerMemory.set(state, total);
+  const entries = state.history.slice(-4);
+  if (!entries.length) return '<p class="ledger-empty">账页还空着</p>';
+  const dayGlyph = (day) => `${'一二三四五六'[day - 1] ?? day}日`;
+  return entries.map((entry, index) => {
+    const fresh = total - entries.length + index >= seen ? ' data-fresh="1"' : '';
+    return `<p class="ledger-line"${fresh}><b>${dayGlyph(entry.day)}</b>${escapeHtml(ledgerLine(entry))}</p>`;
+  }).join('');
+}
+
+function ledgerLine(entry) {
+  const cap = (text, max = 5) => {
+    const chars = [...String(text ?? '')];
+    return chars.length > max ? `${chars.slice(0, max).join('')}…` : chars.join('');
+  };
+  switch (entry.type) {
+    case 'opening':
+      return entry.choice === 'respect_yue' ? '账交月娘' : '先喝金莲酒';
+    case 'day_action': {
+      const gain = entry.action === 'ledger' ? entry.text?.match(/追回 (\d+) 两/) : null;
+      if (gain) return `翻账追回${gain[1]}两`;
+      return { office: '走官面递话', listen: '问口风', banquet: '整席面' }[entry.action] ?? '白日办事';
+    }
+    case 'household': {
+      const event = Object.values(HOUSEHOLD_EVENTS).find((item) => item.id === entry.event);
+      const label = event?.choices.find((item) => item.id === entry.choice)?.label ?? '廊下一句';
+      return `${HOUSEHOLD[entry.actor]?.short ?? '宅中人'}·${cap(label)}`;
+    }
+    case 'banquet': {
+      const label = BANQUET_CHOICES.find((item) => item.id === entry.choice)?.label ?? '举杯';
+      return cap(label, 6);
+    }
+    case 'visit_start':
+      return `黄昏进${HEROINES[entry.heroine]?.house ?? '内院'}`;
+    case 'visit_choice': {
+      // 路线按拜访次数走,条目里没有当时的拍号;选项 id 每人唯一,跨拍平铺查找。
+      const rows = Object.values(ROUTE_CHOICES[entry.heroine] ?? {}).flat();
+      const label = rows.find((item) => item.id === entry.choice)?.label ?? '夜话';
+      return cap(label, 6);
+    }
+    case 'night': {
+      const short = HEROINES[entry.heroine]?.short ?? '她';
+      return {
+        leave: `${short}屋·掩门出`,
+        talk: `${short}屋·坐更漏`,
+        prelude: `${short}点了头`,
+        explicit: `宿${HEROINES[entry.heroine]?.house ?? '内院'}`,
+      }[entry.action] ?? '夜话一回';
+    }
+    case 'morning': {
+      const short = HEROINES[entry.actor]?.short ?? '她';
+      return {
+        jealousy: `${short}来敲门`, pan_claim: `${short}堵门讨话`,
+        yue_delayed: '月娘记前话', yue_help: '月娘留账人',
+        pinger_help: '瓶儿递货单', quiet: '一盏醒酒茶',
+      }[entry.event] ?? '天亮一回';
+    }
+    case 'route_break':
+      return entry.heroine ? `${HEROINES[entry.heroine]?.short ?? '她'}门冷一日` : '各门冷一日';
+    default:
+      return '记下一笔';
+  }
 }
 
 function phaseHeader(kicker, title, body) {
@@ -300,7 +397,8 @@ function renderVisitHub() {
         ${HEROINE_IDS.map((id) => {
           const h = HEROINES[id];
           const r = state.relations[id];
-          return `<button class="door-card door-${id}" data-visit="${id}"><span>${h.house}</span><img src="${urlFor(h.portrait)}" alt="${h.name}"/><div><b>去${h.short}屋里</b><small>${h.want}</small><em>情 ${E.relationTier(r.qing, 'qing')} · 妒 ${E.relationTier(r.du, 'du')}</em></div></button>`;
+          const knock = (state.visits?.[id] ?? 0) + 1;
+          return `<button class="door-card door-${id}" data-visit="${id}"><span>${h.house}</span><img src="${urlFor(h.portrait)}" alt="${h.name}"/><div><b>去${h.short}屋里</b><small>${h.want}</small><em>情 ${E.relationTier(r.qing, 'qing')} · 妒 ${E.relationTier(r.du, 'du')}</em><i class="door-knock">第 ${knock} 次进这扇门</i></div></button>`;
         }).join('')}
       </div>
     </div>`;
@@ -317,7 +415,6 @@ function renderVisit() {
   const choices = E.visitChoices(state, id);
   return `
     <div class="dialogue-stage visual-stage dialogue-${id}">
-      <div class="dialogue-backdrop" style="background-image:linear-gradient(90deg,rgba(20,16,13,.94) 0%,rgba(20,16,13,.24) 48%,rgba(20,16,13,.55) 100%),url('${urlFor('compound')}')"></div>
       <div class="close-cg" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}近景"></div>
       <div class="decision-panel dialogue-panel">
         ${phaseHeader(`${h.house} · ${h.shape}`, h.name, h.voice)}
@@ -333,7 +430,6 @@ function renderNight() {
   const choices = E.nightOptions(state).map((option) => ({ ...NIGHT_TEXT[option.id], ...option }));
   return `
     <div class="dialogue-stage visual-stage night dialogue-${id}">
-      <div class="dialogue-backdrop" style="background-image:linear-gradient(90deg,rgba(14,10,10,.95),rgba(35,18,15,.28)),url('${urlFor('compound')}')"></div>
       <div class="close-cg closer" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}夜间近景"></div>
       <div class="decision-panel dialogue-panel">
         ${phaseHeader('夜深了', h.name, TEXT.nightLead)}
@@ -358,8 +454,10 @@ function renderMorning() {
 }
 
 function renderBanquet() {
+  // 选择前的宴席屏只用宅院界画加暖灯遮罩:三人同框的群像留给选择之后的场景册,
+  // 它第一次出现必须发生在玩家按下那个按钮之后。
   return `
-    <div class="banquet-stage visual-stage" style="--scene-bg:url('${urlFor('cg/group/banquet_conflict')}')">
+    <div class="banquet-stage visual-stage" style="--scene-bg:url('${urlFor('compound')}')">
       <div class="decision-panel banquet-panel">
         ${phaseHeader('第五日 · 中秋席', '第一杯酒还没递出去', TEXT.banquetLead)}
         <div class="choice-grid">${E.banquetOptions(state).map((choice) => choiceButton(choice, 'banquet')).join('')}</div>
@@ -387,9 +485,16 @@ function renderScene() {
 function renderEnding() {
   const end = state.ending;
   const top = HEROINE_IDS.slice().sort((a, b) => state.relations[b].qing - state.relations[a].qing)[0];
+  // 结局图跟着结局走:专一给该女主的立绘近景,平衡复用已赢得的宴席群像,
+  // 权谋与不稳退回夜色宅院,由 CSS 按 data-ending 分别调色。
+  const artUrl = end.id === 'exclusive' && end.heroine
+    ? urlFor(HEROINES[end.heroine].close)
+    : end.id === 'balanced'
+      ? urlFor('cg/group/banquet_conflict')
+      : urlFor('compound');
   return `
     <article class="ending-view" id="ending-view" data-ending="${end.id}">
-      <div class="ending-art" style="background-image:linear-gradient(90deg,rgba(16,12,10,.9),rgba(16,12,10,.25)),url('${urlFor('cover')}')"></div>
+      <div class="ending-art" style="background-image:linear-gradient(90deg,rgba(16,12,10,.9),rgba(16,12,10,.25)),url('${artUrl}')"></div>
       <div class="ending-copy">
         <p class="eyebrow">第 6 日 · 风月总账</p>
         <h1>${end.title}</h1>

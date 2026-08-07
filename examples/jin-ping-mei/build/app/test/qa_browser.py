@@ -247,8 +247,10 @@ def route_night(page, heroine: str, route: str, night: str, adult_name: str | No
     close_box = page.locator(".close-cg").bounding_box()
     stage_box = page.locator("#phase-stage").bounding_box()
     if close_box and stage_box:
+        # 美术 P0-1 修复后的回归防线：近景是单张整版铺满，人物占比由图内位置承担；
+        # 任何回到 inset 左右对接的改动都会在这里重新被抓到。
         ratio = close_box["width"] / stage_box["width"]
-        check(0.55 <= ratio <= 0.72, f"人物近景占画面 55%–70%（{ratio:.2f}）")
+        check(ratio >= 0.98 and abs(close_box["x"] - stage_box["x"]) <= 2, f"人物近景单张整版铺满、无分屏接缝（占比 {ratio:.2f}，左缘偏差 {abs(close_box['x'] - stage_box['x']):.0f}px）")
     click(page, f'[data-route-choice="{route}"]')
     check(phase(page) == "night", "人物回应后进入夜间意愿选择")
     check(page.locator('[data-night="leave"]:not([disabled])').count() == 1, "“到此为止”始终可选")
@@ -422,7 +424,7 @@ def main() -> int:
             check(page.locator(".gallery-card.locked").count() == 0, "已解锁页不再显示剪影")
             click(page, "#btn-gallery-close")
             page.evaluate("localStorage.setItem('jpm_save_v1', JSON.stringify({version:2,player:{name:'孟玉楼'}}))")
-            check(state(page)["version"] == 5, "旧孟玉楼存档键不污染新周目")
+            check(state(page)["version"] == 6, "旧孟玉楼存档键不污染新周目")
 
             section("双视口、键盘与资源")
             for width, height in [(1280, 800), (1920, 1080)]:
@@ -444,7 +446,7 @@ def main() -> int:
             page.keyboard.press("Tab")
             focused = page.evaluate("document.activeElement && document.activeElement.tagName")
             check(focused == "BUTTON", "核心控件可用 Tab 聚焦")
-            check(page.evaluate("__game.assets().missingCritical.length") == 0, "发布模式 7 张关键 CG 零缺失")
+            check(page.evaluate("__game.assets().missingCritical.length") == 0, "发布模式 11 张关键视觉零缺失")
             check(not network_errors and not http_errors, "关键资源请求零失败")
             check(not errors, "浏览器控制台 0 未处理异常")
             click(page, "#btn-mute")
@@ -458,9 +460,15 @@ def main() -> int:
             section("发布模式缺图失败")
             broken = browser.new_context(viewport={"width": 1280, "height": 800})
             broken_page = broken.new_page()
-            broken_page.route("**/assets/cg/pinger/explicit.webp", lambda route: route.abort())
+            broken_page.route("**/assets/cg/group/title_three.webp", lambda route: route.abort())
+            broken_page.route("**/assets/heroine/yue/night.webp", lambda route: route.abort())
             broken_page.goto(URL, wait_until="networkidle")
-            check(broken_page.locator("#asset-error").count() == 1, "缺任一关键 CG 时拒绝灰盒上线")
+            missing = broken_page.evaluate("__game.assets().missingCritical")
+            check(
+                broken_page.locator("#asset-error").count() == 1
+                and {"cover", "heroine/yue/close"}.issubset(set(missing)),
+                "首屏或人物近景缺图时拒绝进入残缺游戏",
+            )
             broken.close()
 
             section("reduce-motion")

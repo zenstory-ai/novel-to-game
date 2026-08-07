@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "note": "生成式美术资产的来源记录。此文件不是 build/asset-ledger.json（那份有严格 schema，只在 graybox 以上要求）；这里只诚实记录三张夜间立绘与一张标题群像是怎么来的、由什么条件出来的、以及可否复现。",
+  "generatedAt": "2026-08-06",
+  "generator": {
+    "tool": "codex-cli built-in image_gen skill",
+    "toolVersion": "codex-cli 0.146.0",
+    "skillPath": "$CODEX_HOME/skills/.system/imagegen",
+    "mode": "built-in tool mode (not scripts/image_gen.py CLI fallback)",
+    "reproducible": false,
+    "reproducibilityNote": "图像模型不保证逐字节可复现。重跑同一提示词与同一参考图会得到风格一致但不同的图；替换资产时必须重新做视觉验收，不能假设等价。"
+  },
+  "reason": "原 assets/portrait/*.png 与本作 CG 不同源：吴月娘、李瓶儿是正面对称的明代祖宗像风格（体态僵直、面容偏年长），潘金莲则是另一套三分身工笔；三者与 assets/cg/group/banquet_conflict.webp 里的人物互不相认。把 18+ 前奏 CG 从日常界面撤下之后，这批立绘变成全幅背景，身份断裂被放大。因此按 CG 谱系重出三张着装夜间立绘。",
+  "identityReference": {
+    "source": "examples/jin-ping-mei/build/app/assets/cg/group/banquet_conflict.webp",
+    "sourceSize": [1564, 1006],
+    "method": "按人物位置裁出三张身份参考图，作为 image_gen 的参考输入；提示词只写差量（时段、光照、动作、器物、构图），不重描外观，避免与参考图争夺条件。",
+    "crops": {
+      "pan_jinlian": [93, 20, 656, 784],
+      "wu_yueniang": [516, 0, 1094, 784],
+      "li_pinger": [969, 20, 1532, 784]
+    }
+  },
+  "sharedPromptContract": {
+    "constant": [
+      "独自一人，夜间，在她自己的院/房内",
+      "单一暖色油灯为唯一光源，身后房间落入漆黑",
+      "四分之三侧身、半身构图，直视观众（第一人称西门庆刚进门）",
+      "着装完整，除面、颈、手外无裸露",
+      "人物占画面右侧 55–70%，左三分之一留白留给界面文字",
+      "横构图约 3:2"
+    ],
+    "forbidden": [
+      "画面中出现第二个人",
+      "现代物件",
+      "文字、字幕、签名或水印",
+      "裸肩或未着装",
+      "与参考图不同的面孔"
+    ]
+  },
+  "assets": [
+    {
+      "path": "app/assets/heroine/yue/night.webp",
+      "character": "吴月娘",
+      "place": "正堂",
+      "prop": "摊开的账簿，一串铜钥匙压在她手下",
+      "robe": "靛蓝团花",
+      "bytes": 163128
+    },
+    {
+      "path": "app/assets/heroine/pan/night.webp",
+      "character": "潘金莲",
+      "place": "花园角门",
+      "prop": "已经斟满的酒盏朝观众微倾，团扇搁在桌上；半开的槅扇外是月下庭院",
+      "robe": "朱红折枝",
+      "bytes": 169430
+    },
+    {
+      "path": "app/assets/heroine/pinger/night.webp",
+      "character": "李瓶儿",
+      "place": "瓶儿私院",
+      "prop": "描金箱笼合着，她捏着一把铜钥匙半缩在袖里，像在斟酌要不要交出去",
+      "robe": "淡青缠枝",
+      "bytes": 133612
+    },
+    {
+      "path": "app/assets/cg/group/title_three.webp",
+      "character": "吴月娘 / 潘金莲 / 李瓶儿",
+      "usage": "标题屏专用群像（assets.js 的 cover 键）",
+      "reason": "把 cover 从宴席群像解绑之后，标题一度退回宅院界画：画面淡、右侧还留着 59%/41% 分栏的硬边，等于用最弱的一张去当门面。按 ART_DIRECTION《标题：三人都在看你》另出一张——它不出现在任何奖励位，所以既不剧透册页，也不再拿最强的画去换门面。",
+      "composition": "月娘正中偏后直视镜头；金莲自屏风边前探、执团扇；瓶儿在另一侧递出一把铜钥匙；三条视线汇向镜头下方的玩家位置；右三分之一落入漆黑，留给题字栏；整版单图，无分栏硬边",
+      "referenceInputs": [
+        "ref_pan_jinlian（裁自 banquet_conflict.webp）",
+        "ref_wu_yueniang（同上）",
+        "ref_li_pinger（同上）"
+      ],
+      "bytes": 286184,
+      "size": [1536, 1024]
+    }
+  ],
+  "postProcessing": {
+    "nightImages": "三张夜间立绘由 PNG 1536×1024 转为 WebP 1280×853，quality 88，method 6",
+    "titleImage": "标题群像保留 1536×1024，转为 WebP，未缩放",
+    "totalBytes": 752354,
+    "rationale": "夜间立绘沿用 examples/journey-to-the-west 的 q88 压缩约定。与原图逐张目视对照面部、金饰线脚与纸纹，无可见劣化；原始 PNG 不入库。",
+    "bundleImpact": "四张新增 WebP 合计 752354 bytes；实测运行目录 6244598 → 7012282 bytes（代码与资产合计 +767684 bytes）"
+  },
+  "executionReview": {
+    "status": "observed",
+    "reviewer": "本次改动的执行方逐张开图目视核对",
+    "checked": [
+      "三张夜间立绘与 banquet_conflict.webp 中对应人物面孔一致",
+      "三张夜间立绘彼此光照、构图、谱系一致，且着装完整，可用于非 18+ 界面与公开截图",
+      "标题群像包含三名对应人物，视线集中到玩家位置，右侧留有题字暗区，无分栏硬边、文字、水印或奖励 CG 复用"
+    ],
+    "notChecked": "未做第三方独立美术复核；本记录只说明本次逐图检查，不冒充独立美术结论。"
+  }
+}

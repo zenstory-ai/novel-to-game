@@ -12,15 +12,29 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 ## 在线试玩
 
-### 轻量试玩
+三款可玩的改编，都可以直接在浏览器里打开，每一款都链到对应的改编案例：原文依据、概念取舍、游戏与美术方向、可运行源码，以及来自实际游玩流程的证据。
 
-| [《西游记》· 三借芭蕉扇 · 灰盒](examples/journey-to-the-west/) | [《金瓶梅》· 风月总账 · 灰盒](examples/jin-ping-mei/) |
-|---|---|
-| [![《三借芭蕉扇》标题画面](examples/journey-to-the-west/screenshots/title.jpg)](https://xiyouji.vibecoco.ai) | [![《风月总账》标题画面](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai) |
-| 回合制系统 RPG：五行、阵型、变化、携宠与多阶段 Boss | 18+ 六日关系策略游戏：角色意志、资源与人情债，以及三种结局 |
-| **[浏览器试玩](https://xiyouji.vibecoco.ai)** | **[浏览器试玩](https://jinpingmei.vibecoco.ai)** |
+### 西游记 · 三借芭蕉扇
 
-### Project Plateau · 可玩原型 · 3D
+[![积雷山雨幕下悟空一行迎战牛魔王，敌我两侧五行徽记与下方实时指令台](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+
+**一扇吹出五万里。这口气，一回合一回合打回来。**
+
+你指挥孙悟空一行三借芭蕉扇：算五行、排阵型、变形取巧硬闯不进的地方，把一个正面打不过的牛魔王，打成落在火焰山上的一场雨。
+
+**[浏览器试玩](https://xiyouji.vibecoco.ai)** · [查看改编案例](examples/journey-to-the-west/) · 设计估时 45–90 分钟 · 全年龄 · 灰盒
+
+### 金瓶梅 · 风月总账
+
+[![西门宅中三人一齐看向玩家，其中一人递出一把铜钥匙](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+
+**今夜进谁的门，明早谁来敲你的门。**
+
+六个夜晚，三处院门。白日把银子、势力和秘密换成今夜的选择权；天一亮，没被选中的那两位会连本带利地讨回去。
+
+**[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [查看改编案例](examples/jin-ping-mei/) · 设计估时 20–30 分钟 · 18+ · 灰盒
+
+### Project Plateau · 失落的世界 · 3D
 
 这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。玩家穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
 
@@ -32,9 +46,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
 
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · **[查看完整改编案例](examples/project-plateau/)** · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7)
-
-每个完整案例都包含原文依据、产品约束、游戏化拆解、概念与设计决策、可运行源码和 QA 证据。
+**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [查看改编案例](examples/project-plateau/) · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 分钟一局 · 桌面 WebGL2 · 可玩原型
 
 ## 为什么用 NovelToGame
 
