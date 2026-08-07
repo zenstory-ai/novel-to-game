@@ -87,6 +87,20 @@ Recommend the target platform, genre, and engine from the source, and keep the f
 Let the player enter the world as an original character with a new playable route through its conflict.
 ```
 
+When you want an **interactive story** rather than a systems game, say so. That locks the `narrative-led` experience profile, so concept, design, and QA judge continuous scenes, character dialogue, testimony, and key choices instead of applying rounds, cards, and resource bars:
+
+```text
+Use novel-to-game quick to adapt this novel into an interactive story.
+Carry the experience with continuous scenes, character dialogue, testimony, and key choices.
+Keep variables as hidden causal tags rather than a visible stat panel.
+Key choices must change later scenes, character attitudes, and the ending, and be named back in later text.
+```
+
+The narrative track **lowers no standard**: it still needs >=2 same-gameplay precedents with a verifiable
+player-scale figure, still needs the three-phase arc, and still faces the same hard vetoes. Only the wording
+of those criteria changes -- new people to question, new ways to press a contradiction, attitudes that shifted
+because of what you did earlier.
+
 `quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. It defaults to **smoke assurance**—real startup, rendering, input, a complete loop, an outcome, and restart. Choose `director` to pick the concept yourself, `delivery` assurance for a handoff or target-device check, or `release` assurance to add target-device performance, required-asset fallback, and independent playtesting.
 
 <details>

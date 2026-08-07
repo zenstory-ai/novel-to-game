@@ -32,6 +32,7 @@ from validate_repo import (  # noqa: E402
     validate_example,
     validate_minimal_evidence_contract,
     validate_readme_publication_claims,
+    validate_rule_shape,
     validate_repository,
     validate_assurance,
     validate_skill,
@@ -1020,6 +1021,322 @@ class RepositoryValidationTests(unittest.TestCase):
                     )
 
         self.assertEqual(violations, [])
+
+
+class NarrativeTrackTests(unittest.TestCase):
+    """The narrative track must be additive.
+
+    Discussion #17 reported that interactive-fiction targets degenerate into card,
+    round and resource gameplay. The fix is a second track with its own equally hard
+    judging criteria -- not a softer bar for everyone. These tests pin both halves of
+    that bargain: the cross-genre rigor stays, and the narrative track exists.
+    """
+
+    def test_cross_genre_rigor_survives_in_concept_and_design(self) -> None:
+        """Rules that a previous narrative-first refactor deleted for every genre."""
+        concept_skill = (ROOT / "skills/game-concept/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        concept_method = (
+            ROOT / "skills/game-concept/references/concept-method.md"
+        ).read_text(encoding="utf-8")
+        design_skill = (ROOT / "skills/game-world-design/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+
+        for marker in ("同玩法", "三段弧"):
+            self.assertIn(marker, concept_skill)
+        for marker in ("硬否决", "无先例", "无弧线"):
+            self.assertIn(marker, concept_method)
+        for marker in (
+            "三段弧",
+            "只写不读",
+            "数值预算表",
+            "决策深度示例",
+            "品类保真",
+        ):
+            self.assertIn(marker, design_skill)
+
+    def test_interactive_fiction_is_not_vetoed_for_being_text(self) -> None:
+        """The old veto #1 rejected any concept whose player mainly reads dialogue.
+
+        That single line forced every novel adaptation to bolt on cards or resources
+        to survive concept selection. The veto must target consequence-free choice,
+        not the presentation medium.
+        """
+        concept_method = (
+            ROOT / "skills/game-concept/references/concept-method.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("玩家主要阅读对白或沿固定剧情点击", concept_method)
+        self.assertIn("不是承载媒介", concept_method)
+        self.assertIn("都不是本条的判据", concept_method)
+
+    def test_agency_contract_is_stated_across_the_pipeline(self) -> None:
+        """Causal rights + settlement rights: the gate against 'agency == a resource UI'."""
+        for relative_path in (
+            "skills/novel-to-game/SKILL.md",
+            "skills/game-concept/references/concept-method.md",
+            "skills/game-world-design/references/narrative-design-method.md",
+        ):
+            with self.subTest(path=relative_path):
+                content = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertIn("因果权", content)
+                self.assertIn("结算权", content)
+
+    def test_narrative_methods_are_reachable_from_the_design_skill(self) -> None:
+        """A craft file nothing links to is a craft file nothing reads."""
+        design_skill = (ROOT / "skills/game-world-design/SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        references = ROOT / "skills/game-world-design/references"
+        for name in (
+            "narrative-design-method.md",
+            "dialogue-design-method.md",
+            "game-writing-craft.md",
+            "numeric-design-method.md",
+            "world-design-method.md",
+        ):
+            with self.subTest(reference=name):
+                self.assertTrue((references / name).is_file())
+                self.assertIn(name, design_skill)
+
+    def test_hidden_state_rules_prefer_consequence_over_locked_content(self) -> None:
+        """Discussion #17 asked for variables as hidden causal tags, not stat panels."""
+        numeric = (
+            ROOT / "skills/game-world-design/references/numeric-design-method.md"
+        ).read_text(encoding="utf-8")
+        narrative = (
+            ROOT / "skills/game-world-design/references/narrative-design-method.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("隐藏旗标", numeric)
+        self.assertIn("限制行动广度", numeric)
+        self.assertIn("写入 → 第一次读取 → 延迟读取 → 玩家感知", narrative)
+
+    def test_qa_asserts_branch_reachability_and_no_crossover(self) -> None:
+        """Complaint #5 in Discussion #17 was characters bleeding across branches."""
+        contract = (ROOT / "skills/game-qa/references/qa-contract.md").read_text(
+            encoding="utf-8"
+        )
+        for marker in (
+            "分支可达",
+            "旗标被消费",
+            "未选事实不串线",
+            "人物知识边界",
+            "结局区分",
+        ):
+            self.assertIn(marker, contract)
+
+    def test_qa_keeps_the_schema_v2_core_check_names(self) -> None:
+        """Renaming coreLoop without touching the validator breaks every example."""
+        contract = (ROOT / "skills/game-qa/references/qa-contract.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("coreLoop", contract)
+        self.assertIn("schema v2", contract)
+        # validate_repo.py hard-requires schemaVersion 2; the prose must not tell
+        # generated projects to emit a version the repository validator rejects.
+        self.assertNotIn("schemaVersion: 3", contract)
+        self.assertNotIn("schema v3", contract)
+        self.assertIn("coreLoop", (ROOT / "skills/game-qa/SKILL.md").read_text(
+            encoding="utf-8"
+        ))
+
+    def test_interactive_fiction_precedents_carry_sourced_figures(self) -> None:
+        """Same-gameplay precedents need a sourced number, narrative track included."""
+        benchmark = (
+            ROOT / "skills/novel-to-game/references/intake-benchmark-reference.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("互动叙事", benchmark)
+        # Assert the tag form, not the bare word: the file's own disclaimer sentence
+        # ("这张表凭通用知识整理，不是已核实的定论") satisfies a substring check forever,
+        # so `assertIn("已核实", ...)` cannot fail and proves nothing.
+        self.assertGreaterEqual(benchmark.count("·**已核实**"), 5)
+        for precedent in ("隐形守护者", "山河旅探", "逆转裁判"):
+            with self.subTest(precedent=precedent):
+                self.assertIn(precedent, benchmark)
+        # Unverified figures must stay explicitly unusable as evidence.
+        self.assertIn("未能核实", benchmark)
+
+
+class RuleShapeTests(unittest.TestCase):
+    """Marker strings catch `rm`; these catch `sed`.
+
+    A refactor can keep every heading and marker while hollowing the body -- e.g.
+    "narrative-led projects may skip this section". That is the same regression as
+    deletion and must fail the same way.
+    """
+
+    def _hollow(
+        self, relative_path: str, old: str, new: str, *, count: int = 1
+    ) -> list[str]:
+        """Copy the skills tree, degrade one rule, and report what the guard says."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(ROOT / "skills", root / "skills")
+            target = root / relative_path
+            text = target.read_text(encoding="utf-8")
+            self.assertIn(old, text, f"anchor missing in {relative_path}")
+            target.write_text(text.replace(old, new, count), encoding="utf-8")
+            return validate_rule_shape(root)
+
+    def test_current_tree_has_no_hollowed_rules(self) -> None:
+        self.assertEqual(validate_rule_shape(ROOT), [])
+
+    def test_exempting_a_hard_veto_is_rejected(self) -> None:
+        issues = self._hollow(
+            "skills/game-concept/references/concept-method.md",
+            "- **无弧线**：",
+            "- **无弧线**：叙事主导豁免本条，只要文本量在增加即可。",
+        )
+        self.assertTrue(
+            any("硬否决" in issue and "豁免本条" in issue for issue in issues), issues
+        )
+
+    def test_denying_an_exemption_is_not_flagged(self) -> None:
+        """`文学契合度不构成豁免` denies an exemption and must stay legal."""
+        method = (
+            ROOT / "skills/game-concept/references/concept-method.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("不构成豁免", method)
+        self.assertEqual(validate_rule_shape(ROOT), [])
+
+    def test_narrative_switch_must_name_its_replacement(self) -> None:
+        issues = self._hollow(
+            "skills/game-world-design/SKILL.md",
+            "**叙事主导取**：换成隐藏状态预算表",
+            "**叙事主导取**：叙事主导可跳过。",
+        )
+        self.assertTrue(any("数值预算表" in issue for issue in issues), issues)
+
+    def test_deleting_a_narrative_clause_fails_like_deleting_the_rule(self) -> None:
+        """Positional evasion: drop the clause and put the exemption far from any marker.
+
+        The earlier window-based guard missed this, which defeated its own stated goal
+        of treating hollowing the same way as deletion.
+        """
+        design = (ROOT / "skills/game-world-design/SKILL.md").read_text(encoding="utf-8")
+        start = design.index("9. 数值预算表——")
+        end = design.index("10. 决策深度示例")
+        padding = "备注：本节的目的是让门槛可演算，避免出现无法达成的档位。" * 4
+        issues = self._hollow(
+            "skills/game-world-design/SKILL.md",
+            design[start:end],
+            "9. 数值预算表——凡被门槛引用的数值，写出起始值并演算一条及格线路径。"
+            + padding
+            + "\n   叙事主导时这一节不必产出任何表格。\n",
+        )
+        self.assertTrue(
+            any("数值预算表" in issue and "narrative-track" in issue for issue in issues),
+            issues,
+        )
+
+    def test_paraphrasing_a_veto_into_self_attestation_is_rejected(self) -> None:
+        """A phrase list is evadable; the veto's falsifiable predicate is not."""
+        method = (
+            ROOT / "skills/game-concept/references/concept-method.md"
+        ).read_text(encoding="utf-8")
+        start = method.index("- **无弧线**：")
+        end = method.index("- **能动性造假**：")
+        issues = self._hollow(
+            "skills/game-concept/references/concept-method.md",
+            method[start:end],
+            "- **无弧线**：叙事主导只要方向文档写明确认存在成长弧线并给出一句理由，"
+            "即视为成立；\n",
+        )
+        self.assertTrue(
+            any("无弧线" in issue and "falsifiable" in issue for issue in issues), issues
+        )
+
+    def test_decoy_required_word_does_not_satisfy_the_switch(self) -> None:
+        """`同样` used as "equally important" must not pass as "judged the same way"."""
+        design = (ROOT / "skills/game-world-design/SKILL.md").read_text(encoding="utf-8")
+        start = design.index("13. 关卡节拍——")
+        end = design.index("14. 首屏焦点")
+        issues = self._hollow(
+            "skills/game-world-design/SKILL.md",
+            design[start:end],
+            "13. 关卡节拍——五拍齐全。**叙事主导取**：同样重要的是节奏感，"
+            "具体安排团队自己把握就好，不必照搬上面五拍的结构。\n",
+        )
+        self.assertTrue(any("关卡节拍" in issue for issue in issues), issues)
+
+    def test_verified_figures_need_the_tag_form_not_the_bare_word(self) -> None:
+        benchmark_path = (
+            "skills/novel-to-game/references/intake-benchmark-reference.md"
+        )
+        # Strip every tag, the way a lazy refactor would -- the bare-word check the
+        # reviewer defeated could not see this at all.
+        issues = self._hollow(benchmark_path, "·**已核实**", "·凭记忆", count=-1)
+        self.assertTrue(any("已核实" in issue for issue in issues), issues)
+
+
+class DeclaredCheckBindingTests(unittest.TestCase):
+    """A check a project declares must bind, or declaring it is theatre.
+
+    Narrative-led builds record extra assertions (branch reachability, flag
+    consumption, ...). Before this, only the profile's required set was inspected,
+    so one of those could sit at FAIL under an overall PASS.
+    """
+
+    def _fixture(self, root: Path, extra: dict) -> Path:
+        helper = RepositoryValidationTests()
+        example = helper.make_compact_verification_fixture(root)
+        path = example / "qa/verification.json"
+        verification = json.loads(path.read_text(encoding="utf-8"))
+        verification["checks"].update(extra)
+        path.write_text(json.dumps(verification), encoding="utf-8")
+        return example
+
+    def test_failing_narrative_assertion_blocks_overall_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            example = self._fixture(
+                Path(tmp),
+                {"branchReachability": {"status": "FAIL", "evidence": []}},
+            )
+            issues = validate_assurance(example, "smoke")
+            self.assertTrue(
+                any("branchReachability" in issue and "FAIL" in issue for issue in issues),
+                issues,
+            )
+
+    def test_passing_narrative_assertion_still_needs_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            example = self._fixture(
+                Path(tmp), {"flagConsumption": {"status": "PASS", "evidence": []}}
+            )
+            issues = validate_assurance(example, "smoke")
+            self.assertTrue(
+                any("flagConsumption" in issue and "evidence" in issue for issue in issues),
+                issues,
+            )
+
+    def test_well_formed_narrative_assertions_are_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            example = self._fixture(
+                Path(tmp),
+                {
+                    "branchIsolation": {
+                        "status": "PASS",
+                        "evidence": ["qa/evidence/run.json"],
+                    }
+                },
+            )
+            self.assertEqual(validate_assurance(example, "smoke"), [])
+
+    def test_contract_documents_the_machine_key_names(self) -> None:
+        contract = (ROOT / "skills/game-qa/references/qa-contract.md").read_text(
+            encoding="utf-8"
+        )
+        for key in (
+            "branchReachability",
+            "flagConsumption",
+            "branchIsolation",
+            "characterKnowledge",
+            "delayedEcho",
+            "endingDistinction",
+        ):
+            with self.subTest(key=key):
+                self.assertIn(key, contract)
 
 
 if __name__ == "__main__":

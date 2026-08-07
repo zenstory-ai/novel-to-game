@@ -155,6 +155,86 @@ MINIMAL_EVIDENCE_REQUIREMENTS = {
         "玩家实际体验",
         "损坏文件",
         "静音和缺音",
+        # Narrative-track assertions. Without these, a text-driven build can pass QA
+        # while its branches are unreachable and its flags are never read.
+        "分支可达",
+        "旗标被消费",
+        "未选事实不串线",
+        "人物知识边界",
+        "回响存在",
+        "结局区分",
+    ),
+    # --- Cross-genre rigor and the narrative track ------------------------------
+    # Everything below has been deleted wholesale at least once by a refactor that
+    # meant to help interactive fiction and instead removed the standards for every
+    # genre. These markers make that class of regression fail the build instead of
+    # passing silently. Each rule must keep BOTH its system-track form and its
+    # narrative-track form: the fix for a text game is never to lower the bar for an
+    # RPG, and never to exempt a text game from a bar an RPG has to clear.
+    "skills/game-concept/references/concept-method.md": (
+        "硬否决",
+        "无先例",
+        "无弧线",
+        "因果权",
+        "结算权",
+        "能动性造假",
+        "互动叙事这条线",
+        "主干加瓶颈",
+    ),
+    "skills/game-concept/SKILL.md": (
+        "同玩法",
+        "三段弧",
+        "experienceProfile",
+        "成熟打法包含互动叙事",
+        "能动性合同",
+    ),
+    "skills/game-world-design/SKILL.md": (
+        "三段弧",
+        "只写不读",
+        "数值预算表",
+        "决策深度示例",
+        "品类保真",
+        "能动性合同",
+        "叙事承载附件",
+        "narrative-design-method.md",
+        "dialogue-design-method.md",
+        "game-writing-craft.md",
+    ),
+    "skills/game-world-design/references/narrative-design-method.md": (
+        "因果权",
+        "结算权",
+        "可跟随性四问",
+        "巧合有方向性",
+        "写入 → 第一次读取 → 延迟读取 → 玩家感知",
+        "前提装置",
+    ),
+    "skills/game-world-design/references/dialogue-design-method.md": (
+        "交换说话者测试",
+        "世界事实",
+        "未决推断",
+        "禁科普嘴",
+    ),
+    "skills/game-world-design/references/numeric-design-method.md": (
+        "只写不读",
+        "隐藏旗标",
+        "限制行动广度",
+    ),
+    "skills/game-world-design/references/world-design-method.md": (
+        "血墙",
+        "叙事承载时的对应说法",
+    ),
+    "skills/game-world-design/references/game-writing-craft.md": (
+        "深度限知",
+        "系统腔",
+    ),
+    "skills/novel-to-game/references/intake-benchmark-reference.md": (
+        "互动叙事",
+        "已核实",
+        "主干加瓶颈",
+    ),
+    "skills/novel-game-analyze/references/gameability-protocol.md": (
+        "知识权限图",
+        "铺垫与回收表",
     ),
 }
 EXAMPLE_PLANNING_FILES = {
@@ -588,6 +668,35 @@ def validate_assurance(
                 if issue:
                     issues.append(issue)
 
+    # Checks beyond the required set are how a project records its own concept promises
+    # (narrative-led builds add branch reachability, flag consumption, and so on). They
+    # were previously ignored entirely, so a declared check could sit at FAIL while the
+    # file still claimed an overall PASS. Anything declared has to bind.
+    for name in sorted(set(checks) - required):
+        check = checks.get(name)
+        if not isinstance(check, dict):
+            issues.append(f"{label}: checks.{name} must be an object")
+            continue
+        check_status = check.get("status")
+        if check_status not in GATE_STATUSES:
+            issues.append(
+                f"{label}: checks.{name}.status must be one of {sorted(GATE_STATUSES)}"
+            )
+        elif check_status == "FAIL" and status == "PASS":
+            issues.append(
+                f"{label}: checks.{name} is FAIL, so the overall status cannot PASS"
+            )
+        evidence = check.get("evidence")
+        if check_status == "PASS" and (not isinstance(evidence, list) or not evidence):
+            issues.append(f"{label}: checks.{name}.evidence must not be empty")
+        elif isinstance(evidence, list):
+            for index, raw in enumerate(evidence):
+                issue = _compact_evidence_issue(
+                    example_dir, raw, f"checks.{name}.evidence[{index}]"
+                )
+                if issue:
+                    issues.append(issue)
+
     limitations = verification.get("limitations")
     if not isinstance(limitations, list):
         issues.append(f"{label}: limitations must be a list")
@@ -989,6 +1098,164 @@ def validate_minimal_evidence_contract(root: Path) -> list[str]:
     return issues
 
 
+# A marker string proves a rule was not deleted. It does not prove the rule still bites:
+# a refactor can keep every heading and hollow out the body. These checks assert on the
+# *shape* of the highest-value rules, so "narrative projects may skip this" fails the build
+# the same way deleting the section does.
+# Phrases that GRANT an exemption. Deliberately not the bare word 豁免 — the rules
+# legitimately use it to deny one ("文学契合度不构成豁免"), and a substring check cannot
+# tell the two apart.
+ESCAPE_HATCH_PHRASES = (
+    "豁免本条",
+    "可以豁免",
+    "本条豁免",
+    "可跳过",
+    "可略过",
+    "不适用本条",
+    "无需提供",
+    "自行判断",
+    "不强制取证",
+    "写个大概",
+    # Self-attestation: the rule survives as a sentence but stops being falsifiable.
+    "自己把握",
+    "自行把握",
+    "团队自己",
+    "就满足本条",
+    "不必照搬",
+)
+# Blocklists are enumerable and therefore evadable. Where a rule's whole value is one
+# falsifiable predicate, assert that the predicate itself is still there: a paraphrase
+# into "the team confirms an arc exists" has to delete these words to succeed, whereas
+# it can dodge any phrase list. Keyed by veto name -> words the test cannot lose.
+VETO_FALSIFIABLE_PREDICATES = {
+    "无弧线": ("可达空间", ("从头到尾不变", "与第一拍相同")),
+    "无先例": ("已发行", ("≥2", ">=2")),
+}
+# The narrative track is an alternative judging criterion, never an exemption. Every place
+# that introduces one must say what replaces the system-track criterion.
+NARRATIVE_SWITCH_MARKERS = ("**叙事主导取**", "叙事主导形态")
+NARRATIVE_SWITCH_REQUIRED = ("换成", "改取", "同判", "同样", "同一", "取其一")
+# GAME_DESIGN checklist items whose criterion differs by track. Binding the check to the
+# item — rather than to a character window after a marker — is what stops an exemption from
+# hiding a few sentences away, and makes deleting the narrative clause fail like any other
+# deleted rule. Keyed by the item's leading text so renumbering does not silently disarm it.
+TRACK_SPLIT_CHECKLIST_ITEMS = (
+    "三段弧",
+    "世界规则与状态",
+    "数值预算表",
+    "决策深度示例",
+    "品类保真",
+    "关卡节拍",
+)
+NUMBERED_ITEM_RE = re.compile(r"^(\d+)\.\s", re.MULTILINE)
+
+
+def _numbered_items(section: str) -> list[str]:
+    """Split a markdown ordered list into one string per item, continuations included."""
+    boundaries = [match.start() for match in NUMBERED_ITEM_RE.finditer(section)]
+    if not boundaries:
+        return []
+    boundaries.append(len(section))
+    return [
+        section[boundaries[index] : boundaries[index + 1]]
+        for index in range(len(boundaries) - 1)
+    ]
+
+
+def validate_rule_shape(root: Path) -> list[str]:
+    """Reject hollowed-out rules that still contain their marker strings.
+
+    A marker proves a rule was not deleted; it does not prove the rule still bites.
+
+    Scope, stated honestly so nobody over-trusts this: these checks catch the shapes a
+    hollowing regression has actually taken here — granting an exemption in recognizable
+    words, and dropping a track's clause from a checklist item. They cannot catch a
+    paraphrase that keeps the marker while turning a falsifiable test into a
+    self-attestation ("团队确认弧线成立即可"), because that needs a reader, not a
+    substring. A determined author can always evade a phrase list. Treat this as a floor
+    against silent drift; the real gate is the design-stage acceptance checklist and human
+    review of the diff.
+    """
+    issues: list[str] = []
+
+    design_path = "skills/game-world-design/SKILL.md"
+    design = root / design_path
+    if design.is_file():
+        output_section = markdown_section(design.read_text(encoding="utf-8"), "输出")
+        if output_section is None:
+            issues.append(f"{design_path}: missing 输出 checklist")
+        else:
+            items = _numbered_items(output_section)
+            for name in TRACK_SPLIT_CHECKLIST_ITEMS:
+                body = next((item for item in items if name in item[:40]), None)
+                if body is None:
+                    issues.append(
+                        f"{design_path}: 输出 checklist is missing the {name!r} item"
+                    )
+                    continue
+                if not any(marker in body for marker in NARRATIVE_SWITCH_MARKERS):
+                    issues.append(
+                        f"{design_path}: checklist item {name!r} must state its "
+                        "narrative-track form, not only the system-track one"
+                    )
+                elif not any(word in body for word in NARRATIVE_SWITCH_REQUIRED):
+                    issues.append(
+                        f"{design_path}: checklist item {name!r} must name the "
+                        "replacing criterion, not merely announce a switch"
+                    )
+                for phrase in ESCAPE_HATCH_PHRASES:
+                    if phrase in body:
+                        issues.append(
+                            f"{design_path}: checklist item {name!r} must not grant "
+                            f"an exemption ({phrase!r})"
+                        )
+
+    # Hard vetoes are the concept gate. An exempted veto is a deleted veto.
+    method_path = "skills/game-concept/references/concept-method.md"
+    method = root / method_path
+    if method.is_file():
+        veto_section = markdown_section(method.read_text(encoding="utf-8"), "硬否决")
+        if veto_section is None:
+            issues.append(f"{method_path}: missing 硬否决 section")
+        else:
+            for phrase in ESCAPE_HATCH_PHRASES:
+                if phrase in veto_section:
+                    issues.append(
+                        f"{method_path}: 硬否决 must not grant an exemption ({phrase!r})"
+                    )
+            for veto, (required, alternatives) in VETO_FALSIFIABLE_PREDICATES.items():
+                bullet = next(
+                    (
+                        item
+                        for item in veto_section.split("\n- ")
+                        if item.strip().removeprefix("- ").startswith(f"**{veto}**")
+                    ),
+                    None,
+                )
+                if bullet is None:
+                    issues.append(f"{method_path}: 硬否决 is missing the {veto!r} veto")
+                    continue
+                if required not in bullet or not any(
+                    alternative in bullet for alternative in alternatives
+                ):
+                    issues.append(
+                        f"{method_path}: the {veto!r} veto lost its falsifiable test "
+                        f"(needs {required!r} plus one of {alternatives!r})"
+                    )
+
+    # The precedent table exists to supply citable evidence. A bare 已核实 substring is
+    # satisfied forever by the file's own disclaimer sentence, so assert the tag form.
+    benchmark = root / "skills/novel-to-game/references/intake-benchmark-reference.md"
+    if benchmark.is_file():
+        tagged = benchmark.read_text(encoding="utf-8").count("·**已核实**")
+        if tagged < 5:
+            issues.append(
+                "skills/novel-to-game/references/intake-benchmark-reference.md: "
+                f"expected at least 5 '·**已核实**' tagged figures, found {tagged}"
+            )
+    return issues
+
+
 def validate_repository(root: Path) -> list[str]:
     issues: list[str] = []
     for required in ("README.md", "README_ZH.md", "LICENSE", "AGENTS.md", "VERSION"):
@@ -1023,6 +1290,7 @@ def validate_repository(root: Path) -> list[str]:
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     issues.extend(validate_agent_adapters(root, version))
     issues.extend(validate_minimal_evidence_contract(root))
+    issues.extend(validate_rule_shape(root))
     return issues
 
 

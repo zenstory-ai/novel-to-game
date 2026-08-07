@@ -1,6 +1,6 @@
 ---
 name: game-concept
-description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_BRIEF, generate three genuinely different directions on the dimensions still unlocked, then pick the most worthwhile playable prototype using hard vetoes and explicit trade-offs. Use for what game should this novel become, compare game concepts, choose a game direction for this book. 小说游戏概念设计。根据 SOURCE_BIBLE 与 PRODUCT_BRIEF 在未锁定维度上生成三个真正不同的方案，用硬否决和关键取舍选择最值得做的可玩原型。用于判断小说适合做成什么游戏、比较游戏方案等需求。"
+description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_BRIEF, generate three genuinely different directions on the dimensions still unlocked, then pick the most worthwhile playable prototype using hard vetoes and explicit trade-offs. Use for what game should this novel become, compare game concepts, choose a game direction for this book, decide whether this novel should become an interactive story. 小说游戏概念设计。根据 SOURCE_BIBLE 与 PRODUCT_BRIEF 在未锁定维度上生成三个真正不同的方案，用硬否决和关键取舍选择最值得做的可玩原型。用于判断小说适合做成什么游戏、该不该做成互动叙事、比较游戏方案等需求。"
 ---
 # 游戏概念设计
 
@@ -31,6 +31,14 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 玩法取自已被大量玩家玩过的成熟打法，小说只做 IP 皮：创新落在世界、人物、剧情、题材与
 美术，不落在动词集。选定方向必须有 **≥2 款「同玩法」对标**——核心动词与循环结构就是
 它们那一套——并逐条列出共有项；凑不出就换打法，不靠文学契合度豁免。
+
+**成熟打法包含互动叙事。** 连续场景、对白、证词与关键选择是有几十年发行史、动词集明确、
+先例充足的一类成熟玩法，不是"没有玩法"。原著价值主要在人物、关系、悬念或道德困境时，
+它常常是比放置／抽卡更贴的落点。选它**不降低任何一条标准**：同样要 ≥2 款同玩法先例、
+同样要带来源与日期的凭据、同样要三段弧、同样过硬否决与能动性合同；变的只是这些判据的
+说法（对照表与可用先例名单见 concept-method.md「互动叙事这条线」）。反过来，选了叙事主导
+也不得省略结构选型：主干加瓶颈 / 任务簇 / 长廊 / 分院帽 / 树洞，选一个并说明理由；`hybrid`
+的叙事层同样要选。
 
 对标组合必须同时覆盖玩法问题和文化市场问题：研究原作文化中的题材表达，也研究目标
 语言市场的玩家预期、类型惯例、内容敏感点和传播语境。一款游戏可以同时承担两种证据，
@@ -73,7 +81,10 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
   卖点、玩家身份和独特幻想；子类型窄到没有已发行作品占据它即不成立，回去换更宽的说法；
 - 核心动词、循环、压力和熟练度差异；
 - 三段弧：探索期在发现什么、成长期什么在复利、成熟期玩家做得到什么新手做不到的事——
-  每期必须改变玩家**做的事**（新动词 / 新可达空间），只有数字变大、或多一个对白选项不算；
+  每期必须改变玩家**做的事**（新动词 / 新可达空间）。**只有数字变大、或多一个对白选项
+  不算——这条对所有品类一律成立。** 叙事主导按同样强度判，差集换成：新的可问对象与话题、
+  新的质证或施压手段、因先前行为而改变的人物态度、只有知情者才走得到的场景与结局；
+  多一段文本同样不算差集；
 - 本作独有规则转换点：它如何把原作的规则**或情感 / 伦理张力**变成玩家行动——**先例动词集
   里的哪一个可重复核心动词让玩家亲手做出这份幻想**（禁用 finisher 脚本 / 一次性道具
   代劳）；独有的是这个动词作用在什么上、要付什么代价、世界怎么回应，不是动词本身；
@@ -94,12 +105,18 @@ concept-method.md 的比较维度比较。不要计算总分。`quick` 选择证
 
 生成一个 `concepts/CONCEPT.md`，含以下小节：
 
-1. 一页产品定义，含选定方向的目标语言与文化市场；
+1. 一页产品定义，含选定方向的目标语言与文化市场，以及**选定方向的** `experienceProfile`
+   （`system-led` / `narrative-led` / `hybrid`）。`PRODUCT_BRIEF` 给的是起草值，**三个方向
+   可以各取不同档**——拿一个系统主导方向和一个叙事主导方向正面比较，正是本阶段的价值。
+   选定值与 brief 起草值不同时，在本节写一句修订理由即可，不算 scope 冲突。下游（设计、
+   美术、构建、QA）继承的是**选定方向**这一个值；叙事主导与 `hybrid` 的叙事层还要写明
+   所选分支结构（主干加瓶颈 / 任务簇 / 长廊 / 分院帽 / 树洞）；
 2. 体验支柱 ×3，每条配可观察试玩证据与否决它的失败现象；
 3. 行业对标矩阵，含「核实状态」与「借用层级」（同玩法 / 仅原则）两列，未核实条目不得
    作为选择依据被引用；同玩法条目须附共有的核心动词、循环结构与“玩过的人很多”凭据；
 4. 三个紧凑概念卡；
-5. 比较结论、推荐理由与选择状态，含每方向一行硬否决检查结果；
+5. 比较结论、推荐理由与选择状态，含每方向一行硬否决检查结果，以及一行**能动性合同**
+   （玩家做了什么使这件事只能这样发展，结果怎样看得出是他的）；
 6. 不可妥协项：只能是体验层承诺，出现调参数字即回改；
 7. 最小验证问题；
 8. 开放问题。

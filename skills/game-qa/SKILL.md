@@ -1,6 +1,6 @@
 ---
 name: game-qa
-description: "Verify a game with evidence on its selected target runtime. Launch the actual build and check logs, real rendering, input and state changes, the core loop, designed outcomes, restart, target display modes, interface language, first-time onboarding, and whether the core fantasy is actually performed — without dressing subjective fun up as a certain verdict. Use for test a generated game, QA a game build, check whether the game is fully playable, verify the build. 游戏证据化质量验证。在选定的目标运行环境中启动实际构建，检查日志、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标显示模式、界面语言、首次上手与核心幻想是否真正出现，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩等需求。"
+description: "Verify a game with evidence on its selected target runtime. Launch the actual build and check logs, real rendering, input and state changes, the core loop, designed outcomes, restart, target display modes, interface language, first-time onboarding, and whether the core fantasy is actually performed — without dressing subjective fun up as a certain verdict. Use for test a generated game, QA a game build, check whether the game is fully playable, verify the build, check that story branches are reachable and choices are consumed. 游戏证据化质量验证。在选定的目标运行环境中启动实际构建，检查日志、真实画面、输入与状态变化、核心循环、设计要求的结果、重开、目标显示模式、界面语言、首次上手与核心幻想是否真正出现，不把主观趣味包装成确定性结论。用于测试生成游戏、检查游戏能否完整游玩、验证叙事分支与选择后果等需求。"
 ---
 # 游戏质量验证
 
@@ -20,7 +20,9 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 - `delivery`：smoke + 目标运行时、目标显示模式、首次上手。
 - `release`：delivery + 目标设备性能、必要资产失败降级和独立试玩。
 
-不为 finish/profile 组合另写分支。公网、提交身份、证据哈希、生成任务和营销材料不影响游戏效果，
+不为 finish/`assuranceProfile` 组合另写分支——那说的是**证据强度**。`experienceProfile`
+（体验承载）是另一个字段，它不改变必需检查的档位，只决定在必需项之外还要追踪哪些设计
+承诺，见下文同名小节。公网、提交身份、证据哈希、生成任务和营销材料不影响游戏效果，
 不进入本 QA。
 
 ## 执行
@@ -42,6 +44,19 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 
 优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种
 框架、测试库或调试接口。
+
+## 按 experienceProfile 追踪
+
+从 `BUILD_BRIEF` 读取 `experienceProfile`（它逐字继承 `GAME_DESIGN` 第 1 节）；与 GAME_DESIGN
+冲突时按第 1 步的规则先报错，不由 QA 猜值。`narrative-led` 或 `hybrid` 时，除核心六项外还要
+按 qa-contract.md「按 experienceProfile 增加断言」验证：分支可达、旗标被消费、未选事实
+不串线、人物知识边界、回响存在、结局区分。关键分支走正向与反向两条路径取证。
+
+`coreLoop` 的机器键名与 schema 不变；叙事主导时它指"场景 → 介入 → 人物与世界回应 →
+下一场"这个闭环，同样要求完整跑通并到达设计结果。
+
+台词自然度、人物魅力、沉浸与选择重量不由这些断言证明，写入 `PLAYTEST_PROTOCOL.md`
+交给独立审查或目标玩家；所有者自检只标 provisional。
 
 ## 输出
 

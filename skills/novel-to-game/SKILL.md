@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story or text adventure from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏等需求。"
 ---
 # NovelToGame 总入口
 
@@ -60,6 +60,13 @@ brief 已批准的替代运行时；替代结果不证明目标平台已通过�
 ## 不可删除的判断
 
 - 剧情必须转成玩家动词、选择和世界反馈，而非逐章复演。
+- `experienceProfile`（`system-led` / `narrative-led` / `hybrid`）由 brief 起草、概念阶段确认，
+  之后贯穿设计、美术、构建与 QA。它决定各阶段读哪几份方法文件，**不降低任何一档标准**：
+  先例、三段弧、硬否决、只写不读审计、决策深度对三档一律成立，只换判据说法。连续场景与
+  对白是一类成熟玩法，不是"没有玩法"，同样要拿出先例与凭据。
+- **能动性合同**：玩家的选择要决定事件为什么发生、朝哪转（因果权），结果要看得出是他的
+  （结算权）。两项都不成立时，即使界面上有卡牌、回合和资源条也不算玩家有能动性——那正是
+  最常见的伪装。
 - 概念、体验/关卡设计、美术方向分别拥有自己的批准边界；构建只能实现，不能暗中重选方向。
 - 玩家第一分钟应从屏幕知道自己是谁、要做什么、什么会终结这一局。
 - 验证切片必须在目标运行形态中完整走通；范围服从 brief，不默认扩成长篇全量游戏。

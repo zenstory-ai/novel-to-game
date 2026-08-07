@@ -44,11 +44,15 @@ game-adaptations/{project}/
 
 | 检查 | 成立条件 |
 |---|---|
-| `scope` | `PRODUCT_BRIEF`、`SOURCE_BIBLE` 和三份设计交接存在；范围、原作事实、目标运行形态与 finish/profile 不冲突 |
+| `scope` | `PRODUCT_BRIEF`、`SOURCE_BIBLE` 和三份设计交接存在；范围、原作事实、目标运行形态与 finish/profile 不冲突；选定方向的 `experienceProfile` 从 `CONCEPT` 起在设计、构建说明与 QA 中一致（brief 的起草值不同时，`CONCEPT` 写明修订理由即成立） |
 | `playable` | `qa/verification.json` 对当前 profile 必需的玩家效果给出真实运行证据 |
 
 `_progress.md` 只记录来源、模式、当前阶段、未确认假设、回流和这两项结果。详细测试状态留在
 `qa/verification.json`，不要复制到多份状态表。
+
+早于 `experienceProfile` 的工作区没有这个字段。`resume` 时由总入口按已存在的 `CONCEPT.md`
+补记一次（承载主要体验的是动作规则就记 `system-led`，是连续场景与对白就记 `narrative-led`，
+两者分层就记 `hybrid`），记完继续，**不因缺字段判 scope 不成立，也不据此重做已批准的概念**。
 
 ## 证据角色
 

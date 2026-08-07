@@ -15,11 +15,16 @@ publicationTier: [当前准备对外声明的等级]
 
 # 必须保真
 - 玩家承诺与核心幻想
+- experienceProfile: [system-led / narrative-led / hybrid，逐字继承 GAME_DESIGN 第 1 节]
 - 3–5 个核心动词及各自输入、可观察状态变化
 - 会改变结果的规则、三段弧结束标记
 - 每个界面/模式的招牌时刻
 - 第一故事分钟上屏文本：我是谁、要什么、什么会终结这一局
 - 界面语言、人物声口和禁用句式
+- [narrative-led / hybrid 追加] 分支结构语法与全部主要路径、结局条件
+- [narrative-led / hybrid 追加] 持久旗标清单，每条写 写入点 / 读取点 / 玩家感知方式
+- [narrative-led / hybrid 追加] 知识表：每名人物在每场已获得的信息边界
+- [narrative-led / hybrid 追加] 每处延迟回响的触发条件与它必须点名的那件事
 
 # 范围
 [必须包含；明确排除；最终范围差异]
