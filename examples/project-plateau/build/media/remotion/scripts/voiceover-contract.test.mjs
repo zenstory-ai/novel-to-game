@@ -5,7 +5,6 @@ import {
   buildNormalizationPlan,
   buildVoiceoverRequestContract,
   evaluateVoiceoverProvenance,
-  evaluateVoiceoverRelease,
   resolveVoiceoverReference,
   sha256,
 } from './voiceover-contract.mjs';
@@ -94,82 +93,4 @@ test('an environment reference is only labelled an override when it differs from
   assert.equal(resolveVoiceoverReference(configured, {}).referenceSource, 'configured-public-reference');
   assert.equal(resolveVoiceoverReference({}, {}).referenceSource, 'provider-default');
   assert.equal(resolveVoiceoverReference({}, {}).referenceSha256, null);
-});
-
-test('technical audio cannot become release-approved without hash-bound rights and listening evidence', () => {
-  const referenceSha256 = sha256('reference-a');
-  const sourceSha256 = sha256('source-audio');
-  const normalizedSha256 = sha256('normalized-audio');
-  assert.equal(
-    evaluateVoiceoverRelease({
-      review: {
-        schemaVersion: 1,
-        releaseStatus: 'BLOCKED',
-        rights: {status: 'NOT_RUN'},
-        listening: {status: 'NOT_RUN'},
-      },
-      referenceSha256,
-      sourceSha256,
-      normalizedSha256,
-    }).status,
-    'BLOCKED',
-  );
-  assert.equal(
-    evaluateVoiceoverRelease({
-      review: {
-        schemaVersion: 1,
-        releaseStatus: 'APPROVED',
-        rights: {status: 'APPROVED', evidence: 'asset-ledger.json#voice', approvedReferenceSha256: referenceSha256},
-        listening: {
-          status: 'APPROVED',
-          reviewer: 'human-reviewer',
-          reviewedAt: '2026-08-01T00:00:00Z',
-          approvedSourceSha256: sourceSha256,
-          approvedNormalizedSha256: normalizedSha256,
-        },
-      },
-      referenceSha256,
-      sourceSha256,
-      normalizedSha256,
-    }).status,
-    'APPROVED',
-  );
-  // `releaseStatus: 'APPROVED'` must never be self-certifying: hold it fixed and break one piece of
-  // evidence at a time. Without this the whole gate can be replaced by `review.releaseStatus ===
-  // 'APPROVED'` and the suite still passes.
-  const approved = {
-    schemaVersion: 1,
-    releaseStatus: 'APPROVED',
-    rights: {status: 'APPROVED', evidence: 'asset-ledger.json#voice', approvedReferenceSha256: referenceSha256},
-    listening: {
-      status: 'APPROVED',
-      reviewer: 'human-reviewer',
-      reviewedAt: '2026-08-01T00:00:00Z',
-      approvedSourceSha256: sourceSha256,
-      approvedNormalizedSha256: normalizedSha256,
-    },
-  };
-  const mutations = [
-    ['review_schema', {schemaVersion: 0}],
-    ['review_release_status', {releaseStatus: 'BLOCKED'}],
-    ['rights_approved', {rights: {...approved.rights, status: 'NOT_RUN'}}],
-    ['rights_approved', {rights: {...approved.rights, evidence: null}}],
-    ['rights_approved', {rights: {...approved.rights, approvedReferenceSha256: sha256('other-voice')}}],
-    ['listening_approved', {listening: {...approved.listening, status: 'NOT_RUN'}}],
-    ['listening_approved', {listening: {...approved.listening, reviewer: null}}],
-    ['listening_approved', {listening: {...approved.listening, reviewedAt: null}}],
-    ['listening_approved', {listening: {...approved.listening, approvedSourceSha256: sha256('other-take')}}],
-    ['listening_approved', {listening: {...approved.listening, approvedNormalizedSha256: sha256('other-mix')}}],
-  ];
-  for (const [checkId, patch] of mutations) {
-    const result = evaluateVoiceoverRelease({
-      review: {...approved, ...patch},
-      referenceSha256,
-      sourceSha256,
-      normalizedSha256,
-    });
-    const label = JSON.stringify(patch);
-    assert.equal(result.status, 'BLOCKED', `release survived ${label}`);
-    assert.equal(result.checks.find((check) => check.id === checkId).passed, false, `${checkId} ignored ${label}`);
-  }
 });

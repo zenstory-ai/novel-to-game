@@ -1,10 +1,7 @@
 {
   "language": "zh-Hans",
   "title": "西游记 · 三借芭蕉扇",
-  "publicationTier": "graybox",
-  "demonstratedTier": "graybox",
   "targetFinish": "playable-prototype",
-  "assuranceProfile": "smoke",
   "source": {
     "chapters": 100,
     "headingPattern": "^\\s*第([〇零○一二三四五六七八九十百]+)回\\s+(.+?)\\s*$",

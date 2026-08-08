@@ -1,16 +1,23 @@
 {
   "schemaVersion": 2,
-  "assuranceProfile": "smoke",
   "status": "PASS",
   "verify": {
-    "command": "node test/battle.mjs && python3 test/qa_browser.py",
-    "exitCode": 0
+    "command": "python3 test/verify.py",
+    "exitCode": 0,
+    "suites": [
+      {
+        "id": "browser:complete-run",
+        "executed": true,
+        "passed": true,
+        "exitCode": 0
+      }
+    ]
   },
   "completeRun": {
     "id": "journey-to-the-west-current-complete-run",
     "cleanContext": true,
-    "terminal": "campaign-ending",
-    "restart": "title-or-loaded-campaign",
+    "terminal": "ending: 三借芭蕉扇 · 完",
+    "restart": "btn-restart -> title: 西游记 · 三借芭蕉扇 (new campaign)",
     "evidence": "qa/evidence/automated.json"
   },
   "checks": {
@@ -53,12 +60,8 @@
   },
   "limitations": [
     {
-      "scope": "first-time human comprehension",
-      "reason": "Automation proves the playable path, not unassisted first-use comprehension.",
-      "blocksProfiles": [
-        "delivery",
-        "release"
-      ]
+      "scope": "tested runtime",
+      "reason": "The recorded browser run used local Chromium automation; other browsers and device classes were not exercised."
     }
   ]
 }

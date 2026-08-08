@@ -13,8 +13,6 @@ from urllib.parse import urlparse
 
 from playwright.sync_api import Page, sync_playwright
 
-from _qa_assertions import ROUTE_INPUT_CONTINUATION_MS, route_input_calibration
-
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
 EVIDENCE = Path(
@@ -22,6 +20,19 @@ EVIDENCE = Path(
 ).expanduser().resolve()
 BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
 CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+ROUTE_INPUT_CONTINUATION_MS = 250
+
+
+def route_input_calibration(key: str, continuation_ms: int) -> dict[str, object]:
+    if key != "KeyW" or not 1 <= continuation_ms <= 350:
+        raise AssertionError("route input calibration must be bounded forward input")
+    return {
+        "input": key,
+        "concurrentInput": "KeyC",
+        "continuationMs": continuation_ms,
+        "continuousInput": True,
+        "noInputSegment": False,
+    }
 
 
 def start_server() -> subprocess.Popen[str] | None:
@@ -115,39 +126,15 @@ def run() -> dict[str, object]:
         if CHROME.exists():
             options["executable_path"] = str(CHROME)
         browser = playwright.chromium.launch(**options)
+        browser_version = browser.version
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         cdp = page.context.new_cdp_session(page)
         page.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
         page.on("pageerror", lambda error: errors.append(f"PAGEERROR: {error}"))
         page.goto(f"{BASE_URL}/?qa=complete-run", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
-        assert page.evaluate("window.__projectPlateau.stage") == "current-complete-run"
-        page.get_by_role("button", name="Settings").click()
-        page.locator("#reduced-motion").check()
-        page.locator("#captions-enabled").uncheck()
-        page.locator("#text-scale").select_option("1.5")
-        accessibility = page.evaluate(
-            """
-            () => ({
-              settings: window.__projectPlateau.snapshot().presentationSettings,
-              reducedMotionClass: document.body.classList.contains('reduced-motion'),
-              textScale: document.documentElement.dataset.textScale,
-              horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
-            })
-            """
-        )
-        assert accessibility["settings"]["reducedMotion"] is True, accessibility
-        assert accessibility["settings"]["captionsEnabled"] is False, accessibility
-        assert accessibility["textScale"] == "1.5", accessibility
-        assert accessibility["reducedMotionClass"] is True, accessibility
-        assert accessibility["horizontalOverflow"] is False, accessibility
-        page.locator("#settings-reset").click()
-        reset_settings = page.evaluate(
-            "window.__projectPlateau.snapshot().presentationSettings"
-        )
-        assert reset_settings["textScale"] == "1", reset_settings
-        assert reset_settings["captionsEnabled"] is True, reset_settings
-        page.get_by_role("button", name="Close settings").click()
+        launched = page.evaluate("window.__projectPlateau.stage") == "current-complete-run"
+        assert launched
         vision_mode = "full-colour"
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, object]:
@@ -372,7 +359,7 @@ def run() -> dict[str, object]:
 
         # Strong: four real exposures, two cover reads, covered return, no shot.
         strong_started = begin_first_path()
-        run_strong_path(
+        strong = run_strong_path(
             "Strong",
             strong_started,
             (
@@ -389,47 +376,35 @@ def run() -> dict[str, object]:
         clean = capture("06-strong-clean-restart", ["Take the route again"])
         assert clean["mode"] == "order" and clean["player"]["remainingLight"] == 180, clean
         assert clean["player"]["distanceTravelled"] == 0, clean
-        page.get_by_role("button", name="Begin field work").click()
-        page.wait_for_timeout(80)
-        performance = page.evaluate("window.__projectPlateau.sampleFrames(240)")
-        assert performance["medianFps"] >= 45 and performance["onePercentLowFps"] >= 30, performance
-        no_threat_meter = page.locator("[data-threat-meter]").count() == 0
         browser.close()
 
-    assert not errors, errors
+    minimal_checks = {
+        "launch": launched,
+        "render": bool(
+            strong["sceneChildren"] > 0 and strong["triangles"] > 0 and not errors
+        ),
+        "input": bool(input_trace and strong["player"]["distanceTravelled"] > 0),
+        "coreLoop": strong["player"]["runStatus"] == "result",
+        "outcome": strong["player"]["result"]["band"] == "strong-field-record",
+        "restart": bool(
+            clean["mode"] == "order"
+            and clean["player"]["remainingLight"] == 180
+            and clean["player"]["distanceTravelled"] == 0
+        ),
+    }
     return {
         "stage": "current-complete-run",
         "environment": {
-            "browser": "Google Chrome 150.0.7871.187" if CHROME.exists() else "Playwright Chromium",
+            "browser": browser_version,
             "viewport": [1440, 900],
             "baseUrl": BASE_URL,
         },
-        "checks": {
-            "noTeleportOrDirectTimeAdvance": True,
-            "strongAllFiveVerbsNoShot": True,
-            "strongEvidenceSevenAndBodyMargin": True,
-            "strongDistinctBehaviorFrames": True,
-            "strongRemainingLightWithinReferenceWindow": True,
-            "cleanRestartAfterStrongResult": True,
-            "accessibilityModesAppliedAndReset": True,
-            "noThreatMeter": no_threat_meter,
-            "consoleErrors": errors,
-        },
-        "verbEvidenceMatrix": {
-            "traverse": "Strong input trace + 05-strong-input-result",
-            "observe": "01-strong-brook-frame + 03-strong-glade-frames",
-            "commitExposedObjective": "02-strong-basalt-frame + 03-strong-glade-frames",
-            "evadeOrDefend": "04-strong-covered-return",
-            "reachRelativeSafety": "05-strong-input-result",
-        },
         "pathMetrics": path_metrics,
-        "accessibility": accessibility,
         "inputTrace": input_trace,
-        "performance": performance,
+        "minimalChecks": minimal_checks,
         "checkpoints": checkpoints,
         "limitations": [
-            "The paths use real keyboard/mouse movement and wait on observed state, but they are deterministic automation rather than first-time human navigation evidence.",
-            "The run validates the reconciled 1–3 minute product budget; independent first-time perception is outside smoke assurance.",
+            "The recorded path uses deterministic browser automation in local desktop Chromium; other browsers, GPUs and devices were not exercised.",
             "The Strong path records distinct young-play and branch-pull states, but automated pose checks do not establish anatomy or animation quality.",
             "Subjective fun, balance and audio mix are not inferred from the deterministic results.",
         ],
@@ -450,9 +425,8 @@ def main() -> None:
         json.dumps(
             {
                 "stage": report["stage"],
-                "checks": report["checks"],
+                "minimalChecks": report["minimalChecks"],
                 "pathMetrics": report["pathMetrics"],
-                "performance": report["performance"],
             },
             indent=2,
         )

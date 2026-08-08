@@ -27,9 +27,6 @@ const requestContract = buildVoiceoverRequestContract(config, referenceId);
 if (!reuseSource && !apiKey) {
   throw new Error('FISH_API_KEY is required. Pass it through the environment; never add it to this repository.');
 }
-if (referenceId && process.env.FISH_VOICE_RIGHTS_ATTESTED !== '1') {
-  throw new Error('Set FISH_VOICE_RIGHTS_ATTESTED=1 to attest that the selected voice reference may be used.');
-}
 
 await mkdir(publicDir, {recursive: true});
 

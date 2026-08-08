@@ -38,11 +38,11 @@ prototype exists to answer that question before adding breadth.
 
 ## Experience pillars
 
-| Pillar | Observable playtest evidence | Veto signal |
+| Pillar | Observable run evidence | Veto signal |
 |---|---|---|
-| **Read the living route** — water, tracks, calls, cover and silhouettes tell the player where to move and what may happen. | A first-time player reaches the observation site and later retraces a safe route by using world signals, without following a continuous objective line. | Testers move by trial-and-error wall hugging or a HUD arrow because the world itself is unreadable. |
-| **Proof is an exposed action** — a useful record requires position, framing and time, then remains vulnerable while carried. | The player changes position or waits for a clearer behavior before recording, and can explain why one recovered record is stronger than another. | Recording is a single safe button press, or players cannot see any connection between framing/risk and the ending. |
-| **Defense creates escape, not dominance** — cover, fire and a scarce loud tool alter pursuit without making wildlife targets to clear. | Players use terrain first, spend defense to recover a route, and continue toward extraction rather than turning back to hunt. | The reliable strategy is to kill or stun every creature before documenting at leisure. |
+| **Read the living route** — water, tracks, calls, cover and silhouettes tell the player where to move and what may happen. | A complete run reaches the observation site and later retraces a safe route by using world signals, without following a continuous objective line. | The route only works through trial-and-error wall hugging or a HUD arrow because the world itself is unreadable. |
+| **Proof is an exposed action** — a useful record requires position, framing and time, then remains vulnerable while carried. | The run changes position or waits for a clearer behavior before recording, and the recovered record visibly reflects the stronger capture. | Recording is a single safe button press, or framing/risk has no visible connection to the ending. |
+| **Defense creates escape, not dominance** — cover, fire and a scarce loud tool alter pursuit without making wildlife targets to clear. | The run uses terrain first, spends defense to recover a route, and continues toward extraction rather than turning back to hunt. | The reliable strategy is to kill or stun every creature before documenting at leisure. |
 
 ## Locked dimensions inherited from intake
 

@@ -22,7 +22,7 @@ Three playable adaptations, each available in a browser right now and linked to 
 
 Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read the five-element wheel, set a formation, transform your way in where force will not work, and turn a demon king who outclasses you into a rainstorm over the Mountain of Flames.
 
-**[Play in browser](https://xiyouji.vibecoco.ai)** · [Read the case study](examples/journey-to-the-west/) · design estimate: 45–90 min · all ages · graybox
+**[Play in browser](https://xiyouji.vibecoco.ai)** · [Read the case study](examples/journey-to-the-west/) · design estimate: 45–90 min · all ages · playable prototype
 
 ### Jin Ping Mei · Ledger of Desire
 
@@ -32,7 +32,7 @@ Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read
 
 Six nights, three courtyards. Spend each day converting silver, standing and secrets into the right to choose — then wake up and settle what the other two are owed.
 
-**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 20–30 min · 18+ · graybox
+**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 20–30 min · 18+ · playable prototype
 
 ### Project Plateau · The Lost World · 3D
 
@@ -42,7 +42,7 @@ Play the full expedition on desktop, or watch the 15-second gameplay preview on 
 
 #### 36-second Remotion launch trailer
 
-The trailer follows [the verified same-take gameplay route](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md) and uses an approved Fish Audio synthetic narration. Captions preserve the complete story when muted.
+The trailer follows [the verified same-take gameplay route](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md) and uses Fish Audio synthetic narration. Captions preserve the complete story when muted.
 
 https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
 
@@ -55,8 +55,8 @@ A one-line “turn this book into a game” prompt often produces a generic resk
 - **Source-grounded adaptation:** extract rules, spaces, character agency, conflicts, and visual anchors with citations;
 - **Real game design:** turn source evidence into player verbs, systems, levels, feedback, failure, and outcomes;
 - **Target-runtime delivery:** build for the approved platform or engine without implementation silently redesigning the game;
-- **Optional, restrained voice:** synthesize only approved high-value lines at build time, keep subtitles and mute fallbacks, and never send the whole novel to a TTS provider by default;
-- **Evidence-based QA:** verify startup, input, state changes, complete runs, outcomes, restart, and target display modes and devices.
+- **Optional, restrained voice:** synthesize only selected high-value lines at build time, keep subtitles and mute fallbacks, and never send the whole novel to a TTS provider by default;
+- **Evidence-based QA:** verify startup, rendering, input, the core loop, an outcome, restart, and explicit limitations in the tested runtime.
 
 ## Quick Start
 
@@ -101,7 +101,7 @@ player-scale figure, still needs the three-phase arc, and still faces the same h
 of those criteria changes -- new people to question, new ways to press a contradiction, attitudes that shifted
 because of what you did earlier.
 
-`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. It defaults to **smoke assurance**—real startup, rendering, input, a complete loop, an outcome, and restart. Choose `director` to pick the concept yourself, `delivery` assurance for a handoff or target-device check, or `release` assurance to add target-device performance, required-asset fallback, and independent playtesting.
+`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. Every project uses the same minimum QA contract: real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. Choose `director` when you want to pick the concept yourself.
 
 <details>
 <summary><strong>Native plugin installation</strong></summary>
@@ -133,13 +133,13 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## Workflow
 
-The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Concept, experience/level design, and art direction remain distinct, while acceptance checks only scope consistency and the playable experience required by the selected assurance profile.
+The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Concept, experience/level design, and art direction remain distinct, while acceptance checks only scope consistency and the six-effect minimum playable contract.
 
 ```text
 Novel → Source analysis → Concept → World design → Art direction → Build ⇄ QA → Playable game
 ```
 
-Build targets the chosen runtime; QA verifies player-visible effects in that runtime with real execution evidence. Smoke, delivery, and release assurance are monotonic presets rather than separate workflows. Capability-specific checks run only when that capability is actually adopted; source identity, public hosting, marketing, rights, and secret reviews are not game-effect QA gates.
+Build targets the chosen runtime; QA verifies the six minimum player-visible effects there with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
 
 ## Skills
 

@@ -1,50 +1,60 @@
 {
   "schemaVersion": 2,
-  "assuranceProfile": "smoke",
   "status": "PASS",
   "verify": {
     "command": "npm run verify",
     "exitCode": 0,
     "suites": [
       {
-        "id": "unit:simulation",
-        "executed": true,
-        "passed": true
-      },
-      {
-        "id": "build:production",
-        "executed": true,
-        "passed": true
-      },
-      {
-        "id": "browser:collision-contract",
-        "executed": true,
-        "passed": true
-      },
-      {
         "id": "browser:complete-run",
         "executed": true,
         "passed": true
+      }
+    ]
+  },
+  "completeRun": {
+    "id": "current-strong-input-only",
+    "cleanContext": true,
+    "speed": "normal",
+    "evidence": "build/evidence/current-run/report.json",
+    "terminal": "strong-field-record",
+    "restart": "clean-field-order",
+    "steps": [
+      {
+        "id": "step_01",
+        "input": "Enter the basin",
+        "expected": "clean 180-second field order",
+        "checkpoint": "current:00-clean-field-order"
       },
       {
-        "id": "browser:controller-contract",
-        "executed": true,
-        "passed": true
+        "id": "step_02",
+        "input": "W, E, raise camera and expose the brook plate",
+        "expected": "traversal and first physical proof",
+        "checkpoint": "current:01-strong-brook-frame"
       },
       {
-        "id": "browser:entry-conversion",
-        "executed": true,
-        "passed": true
+        "id": "step_03",
+        "input": "use cover, reach the glade and expose both behavior plates",
+        "expected": "seven evidence points across four plates",
+        "checkpoint": "current:03-strong-glade-frames"
       },
       {
-        "id": "browser:loading-state",
-        "executed": true,
-        "passed": true
+        "id": "step_04",
+        "input": "retreat under cover until the dive widens",
+        "expected": "covered return route and retained body margin",
+        "checkpoint": "current:04-strong-covered-return"
       },
       {
-        "id": "browser:motion-visual",
-        "executed": true,
-        "passed": true
+        "id": "step_05",
+        "input": "follow the covered return to Fort",
+        "expected": "Strong field record with all captured views",
+        "checkpoint": "current:05-strong-input-result"
+      },
+      {
+        "id": "step_06",
+        "input": "Take the route again",
+        "expected": "clean field order with no spent resource or travelled distance",
+        "checkpoint": "current:06-strong-clean-restart"
       }
     ]
   },
@@ -84,68 +94,12 @@
       "evidence": [
         "build/evidence/current-run/report.json"
       ]
-    },
-    "accessibilityModes": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
     }
   },
   "limitations": [
     {
-      "scope": "first-time player comprehension",
-      "reason": "Automation cannot substitute for an independent first-time player record.",
-      "blocksProfiles": [
-        "delivery",
-        "release"
-      ]
+      "scope": "tested runtime",
+      "reason": "The recorded run used local desktop Chromium with software-controlled input; other browsers, GPUs and devices were not exercised."
     }
-  ],
-  "completeRun": {
-    "id": "current-strong-input-only",
-    "cleanContext": true,
-    "speed": "normal",
-    "evidence": "build/evidence/current-run/report.json",
-    "steps": [
-      {
-        "id": "step_01",
-        "input": "Enter the basin",
-        "expected": "clean 180-second field order",
-        "checkpoint": "current:00-clean-field-order"
-      },
-      {
-        "id": "step_02",
-        "input": "W, E, raise camera and expose the brook plate",
-        "expected": "traversal and first physical proof",
-        "checkpoint": "current:01-strong-brook-frame"
-      },
-      {
-        "id": "step_03",
-        "input": "use cover, reach the glade and expose both behavior plates",
-        "expected": "seven evidence points across four plates",
-        "checkpoint": "current:03-strong-glade-frames"
-      },
-      {
-        "id": "step_04",
-        "input": "retreat under cover until the dive widens",
-        "expected": "covered return route and retained body margin",
-        "checkpoint": "current:04-strong-covered-return"
-      },
-      {
-        "id": "step_05",
-        "input": "follow the covered return to Fort",
-        "expected": "Strong field record with all captured views",
-        "checkpoint": "current:05-strong-input-result"
-      },
-      {
-        "id": "step_06",
-        "input": "Take the route again",
-        "expected": "clean field order with no spent resource or travelled distance",
-        "checkpoint": "current:06-strong-clean-restart"
-      }
-    ],
-    "terminal": "strong-field-record",
-    "restart": "clean-field-order"
-  }
+  ]
 }

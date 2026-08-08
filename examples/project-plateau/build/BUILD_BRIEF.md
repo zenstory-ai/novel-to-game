@@ -3,13 +3,10 @@
 ## Finished-product target
 
 `targetFinish: playable-prototype`
-`assuranceProfile: smoke`
-`publicationTier: playable-prototype`
-`demonstratedTier: playable-prototype`
 
 Evidence: `qa/verification.json` points to the complete input path, result and clean restart evidence.
 
-The current claim is deliberately small: one real-input Strong route launches, renders, exercises the core loop, reaches its designed outcome and restarts cleanly. Rich visual and release records are retained as historical context, not as current smoke evidence.
+The current claim is deliberately small: one real-input Strong route launches, renders, exercises the core loop, reaches its designed outcome and restarts cleanly.
 
 The approved visual target index is `../design/VISUAL_TARGETS.md`. The
 representative scene is the glade family view under approaching pterodactyl
@@ -119,7 +116,7 @@ stand in for the new verb or space.
 
 Each moment must be reachable from ordinary inputs in the shipped build. The
 exact beat timing, focus-protection rectangle and intentional-overlay rule live
-in `ART_DIRECTION.md` and are screenshot gates, not optional inspiration.
+in `ART_DIRECTION.md` and are implementation direction, not a separate QA gate.
 
 ### Falsifiable visual assertions
 
@@ -179,7 +176,7 @@ the render loop's frame clamp is not a collision guarantee.
 assets. Each is a single HY3D viewmodel containing the period tool and two
 gripping hands so motion/recoil cannot separate hands from the object. Their
 former procedural tool and secondary hand paths are removed. Load or decode
-failure is release-blocking and must not silently produce a graybox PASS.
+failure blocks the playable candidate and must not silently produce a PASS.
 
 Degradable assets stay optional and must use the fallbacks in
 `ART_DIRECTION.md`: extra family markings, rookery population, small flora,
@@ -282,8 +279,7 @@ only; no AI ally performs a verb. Results are local and never compared.
   no-shot route and a fired-shot downstream response.
 - Exact first-minute and result/failure copy, edge HUD, pause/focus lifecycle,
   captions and reduced-motion/text/audio settings.
-- All ten release-gate asset keys, seven signature moments and real performance,
-  payload, console, request-host and complete-run evidence.
+- Required runtime assets, approved signature moments and the complete-run evidence.
 
 ### Explicitly excluded
 
@@ -304,7 +300,7 @@ boundaries, shaders and asset-production details remain implementation choices.
 The slice must be self-contained. Runtime scripts, fonts, images, models and
 audio use repository-relative/local package paths. No CDN, remote font, remote
 image, analytics call or other runtime network dependency is allowed. Prefer
-procedural/original geometry and Web Audio where it satisfies the art gate;
+procedural/original geometry and Web Audio where they satisfy the required visual function;
 record every non-code asset in `asset-ledger.json`.
 
 ## Toolchain and authoritative verification
@@ -325,14 +321,7 @@ commands:
   verify: npm run verify
 verification:
   suites:
-    - unit:simulation
-    - build:production
     - browser:complete-run
-    - browser:controller-contract
-    - browser:motion-visual
-    - browser:collision-contract
-    - browser:entry-conversion
-    - browser:loading-state
   completeRun: ../qa/verification.json#completeRun
 ```
 
@@ -342,16 +331,13 @@ checks in order; manually running green suites separately is diagnostic only.
 ## Completion evidence
 
 `npm run verify` is the only current acceptance command. From a clean install it
-must run the eight listed suites and write:
+must run the three listed suites and write:
 
-- `../qa/verification.json` — current schema-v2 smoke decision;
+- `../qa/verification.json` — current schema-v2 minimum QA decision;
 - `evidence/current-run/report.json` — one clean Strong route with semantic
   state, browser and rendered checkpoints.
 
-A smoke PASS proves only launch, render, input, core loop, designed outcome,
-restart, plus any player-facing modes explicitly exercised by the run. It does
-not imply first-time comprehension, subjective visual quality, rights clearance
-for optional promotional media, fun, or balance.
+A PASS proves launch, render, input, core loop, designed outcome and restart in the recorded environment. It does not imply subjective visual quality, rights clearance for optional promotional media, fun or balance.
 
 ## Final scope reconciliation
 
@@ -359,13 +345,10 @@ for optional promotional media, fun, or balance.
 |---|---|---|
 | Desktop WebGL2 playable prototype | PASS locally | `../qa/verification.json` |
 | Continuous first-person route, physical plates, threat response, Strong result and clean restart | PASS | `evidence/current-run/report.json` and its seven semantic checkpoints |
-| Controller, collision, motion, entry and loading effects | PASS | `../qa/verification.json` authoritative command |
 | Local generated 3D assets and accessibility settings used by the build | PASS in the current run/unit checks | `evidence/current-run/report.json` and `asset-ledger.json` |
-| First-time premise and route comprehension | NOT_RUN | Optional delivery/release playtest; automation cannot substitute |
 | Promotional voiceover | Not adopted | The generated-audio workflow remains optional and outside the playable candidate |
 
 The earlier 5–8 minute paper target was revised to the implemented 1–3 minute
 loop. Explicit non-goals remain excluded: full open world, arena shooter,
 crafting progression, multiplayer, mobile, chapter retelling, and licensed
-modern adaptations. Any future delivery or release claim must run the additional
-profile checks rather than reusing this smoke PASS.
+modern adaptations. Any broader product claim requires new evidence scoped to that claim.

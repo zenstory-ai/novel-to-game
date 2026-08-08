@@ -3,7 +3,6 @@ import {createHash} from 'node:crypto';
 import {FISH_TTS_ENDPOINT, requestFingerprint} from './fish-tts-client.mjs';
 
 export const VOICEOVER_METADATA_SCHEMA = 4;
-export const VOICEOVER_REVIEW_SCHEMA = 1;
 
 export function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -116,38 +115,4 @@ export function evaluateVoiceoverProvenance({
     evidence: `${metadata?.[field] ?? 'missing'} == ${value ?? 'null'}`,
   }));
   return {status: checks.every((check) => check.passed) ? 'RECORDED' : 'INVALID', checks};
-}
-
-export function evaluateVoiceoverRelease({review, referenceSha256, sourceSha256, normalizedSha256}) {
-  const checks = [
-    {
-      id: 'review_schema',
-      passed: review?.schemaVersion === VOICEOVER_REVIEW_SCHEMA,
-      evidence: `${review?.schemaVersion ?? 'missing'} == ${VOICEOVER_REVIEW_SCHEMA}`,
-    },
-    {
-      id: 'review_release_status',
-      passed: review?.releaseStatus === 'APPROVED',
-      evidence: review?.releaseStatus || 'missing',
-    },
-    {
-      id: 'rights_approved',
-      passed:
-        review?.rights?.status === 'APPROVED' &&
-        Boolean(review.rights.evidence) &&
-        review.rights.approvedReferenceSha256 === referenceSha256,
-      evidence: review?.rights?.status || 'missing',
-    },
-    {
-      id: 'listening_approved',
-      passed:
-        review?.listening?.status === 'APPROVED' &&
-        Boolean(review.listening.reviewer) &&
-        Boolean(review.listening.reviewedAt) &&
-        review.listening.approvedSourceSha256 === sourceSha256 &&
-        review.listening.approvedNormalizedSha256 === normalizedSha256,
-      evidence: review?.listening?.status || 'missing',
-    },
-  ];
-  return {status: checks.every((check) => check.passed) ? 'APPROVED' : 'BLOCKED', checks};
 }

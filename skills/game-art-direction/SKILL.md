@@ -16,7 +16,7 @@ description: "Direct game art and creative vision. Turn GAME_DESIGN into a produ
 
 画风、`targetFinish` 与目标平台已由 `PRODUCT_BRIEF.md` 在 intake 锁定（像素/2.5D/写实3D/水墨工笔…、
 客户端/网页/小程序/移动、竖屏或横屏、内容分级）。在这个既定画风与平台内定义视觉语言，
-不静默换风格、完成度或 publication tier，也不做超出目标平台可行性的画风。
+不静默换风格或完成度，也不做超出目标平台可行性的画风。
 
 概念阶段的游戏对标只证明交互原则，不自动成为美术参考。视觉参考必须另行说明借鉴
 维度、来源与授权边界，现代作品的角色、地图、界面和资产不可复用。
@@ -41,7 +41,7 @@ description: "Direct game art and creative vision. Turn GAME_DESIGN into a produ
    路径；画面中部瞬时文字（含敌方意图、状态标签等构建可能新增的类别）必填三元组
    **芯色 + 描边或底衬 + 验证帧**。同时定义**声音与音乐方向**（核心动作 / 命中 / 状态变化 /
    转场 / 胜负各自的声音形制：音色来源、文化依据、功能层级、与画风同源）——运动与声音
-   都是一等交付，不推给构建即兴补。先按 art-direction-method.md 的**采用门禁**判断是否需要
+   都是一等交付，不推给构建即兴补。先按 art-direction-method.md 的**采用判断**决定是否需要
    角色语音、旁白或 TTS，不能因为供应商可用、免费或效果好就默认加入；通过后再追加**语音策略**：
    用途、覆盖范围、角色级 `casting_id`、性别呈现 / 年龄感、语言 / 声口 / 情绪、字幕、静音与缺音
    降级、音色权利边界；不同角色不得只按语言复用通用音色。本阶段不写供应商、
@@ -92,4 +92,4 @@ description: "Direct game art and creative vision. Turn GAME_DESIGN into a produ
 是否服务当前决策，且没有售卖未兑现的深度；清单里每条动态媒体都有体验角色、fallback、
 分级与两端边界，相邻镜头边界接得上；采用语音时逐句有字幕、静音 / 缺音降级与音色权利
 记录；目标包三类视图、量表、失败例和持久路径是否齐全。任一项不过就补方向，不计算自评分；
-除 `graybox` 外，缺失或 `NOT_RUN` 直接阻止 art gate；只有 graybox 可以保留视觉 major 或灰盒资产。
+除 `graybox` 外，缺失或 `NOT_RUN` 都表示方向尚未完成。

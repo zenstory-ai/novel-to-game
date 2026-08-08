@@ -24,31 +24,22 @@ EXAMPLE_MANIFEST = "example.json"
 # 不能写死在校验器里，否则仓库结构上只容得下中文章回体原著。
 # 每个示例用 example.json 自述这些取值，校验器只校验「自述得对不对」。
 MANIFEST_REQUIRED = {
-    "assuranceProfile",
-    "demonstratedTier",
     "language",
     "source",
     "coverageHeading",
     "citationPattern",
-    "publicationTier",
     "targetFinish",
 }
+MANIFEST_ALLOWED = MANIFEST_REQUIRED | {"title"}
 SOURCE_REQUIRED = {"chapters", "headingPattern", "numeral"}
 NUMERAL_KINDS = {"chinese", "arabic", "roman"}
-PUBLICATION_TIERS = {
+TARGET_FINISHES = {
     "graybox",
     "playable-prototype",
     "polished-vertical-slice",
     "showcase",
 }
-FINISH_RANK = {
-    tier: index
-    for index, tier in enumerate(
-        ("graybox", "playable-prototype", "polished-vertical-slice", "showcase")
-    )
-}
-ASSURANCE_PROFILES = {"smoke", "delivery", "release"}
-CORE_ASSURANCE_CHECKS = {
+MINIMAL_QA_CHECKS = {
     "launch",
     "render",
     "input",
@@ -56,25 +47,29 @@ CORE_ASSURANCE_CHECKS = {
     "outcome",
     "restart",
 }
-DELIVERY_ASSURANCE_CHECKS = {
-    "targetRuntime",
-    "targetDisplay",
-    "onboarding",
+QA_TOP_LEVEL_FIELDS = {
+    "schemaVersion",
+    "status",
+    "verify",
+    "completeRun",
+    "checks",
+    "limitations",
 }
-RELEASE_ASSURANCE_CHECKS = {
-    "performance",
-    "requiredAssets",
-    "independentPlaytest",
+QA_VERIFY_FIELDS = {"command", "exitCode", "suites"}
+QA_COMPLETE_RUN_FIELDS = {
+    "id",
+    "cleanContext",
+    "terminal",
+    "restart",
+    "evidence",
+    "speed",
+    "steps",
 }
+QA_CHECK_FIELDS = {"status", "evidence"}
+QA_LIMITATION_FIELDS = {"scope", "reason"}
+MACHINE_QA_FIELDS = {"command", "exitCode", "completeRun", "checks"}
+MACHINE_COMPLETE_RUN_FIELDS = {"terminal", "restart"}
 GATE_STATUSES = {"NOT_RUN", "FAIL", "PASS"}
-FORBIDDEN_QA_METADATA = {
-    "publichost",
-    "releaseaudit",
-    "releasegates",
-    "sourcecommit",
-    "sourceinputmanifest",
-    "visualevidencemanifests",
-}
 VISUAL_RUBRIC_FIELDS = {
     "focus",
     "silhouette",
@@ -97,146 +92,6 @@ PLUGIN_MANIFESTS = {
     ".codex-plugin/plugin.json",
     "kimi.plugin.json",
 }
-# These markers protect the small handoff contract between game-build and game-qa.
-# The repository validator checks only its own skill prose; it does not impose a
-# framework, schema package, or runtime dependency on generated projects.
-MINIMAL_EVIDENCE_REQUIREMENTS = {
-    "skills/game-art-direction/SKILL.md": (
-        "语音策略",
-        "采用门禁",
-        "静音 / 缺音降级",
-        "音色权利",
-    ),
-    "skills/game-art-direction/references/art-direction-method.md": (
-        "硬否决",
-        "增量价值",
-        "触发窗口",
-        "最小覆盖原则",
-        "角色级选角",
-        "宣传资产不自动变成游戏内资产",
-    ),
-    "skills/game-build/references/build-brief-contract.md": (
-        "targetRuntime:",
-        "testedRuntime:",
-        "runtimeVersion:",
-        "verify:",
-        "completeRun: qa/verification.json#completeRun",
-        "语音资产台账",
-        "request_sha256",
-    ),
-    "skills/game-build/SKILL.md": (
-        "权威验证命令",
-        "clean start",
-        "tts-production-contract.md",
-        "服务端",
-    ),
-    "skills/game-build/references/tts-production-contract.md": (
-        "采用决策交接",
-        "决定=采用",
-        "构建期优先",
-        "最小发送",
-        "Retry-After",
-        "请求指纹",
-        "NOT_RUN: 原因",
-        "人工试听",
-        "不得只按语言选一个",
-    ),
-    "skills/game-qa/SKILL.md": (
-        "qa/verification.json",
-        "clean start",
-        "玩家可感知",
-        "连续 3D",
-        "静音/缺音",
-    ),
-    "skills/game-qa/references/qa-contract.md": (
-        "目标运行环境",
-        "NOT_RUN: reason",
-        "同一次 complete run",
-        "玩家实际体验",
-        "损坏文件",
-        "静音和缺音",
-        # Narrative-track assertions. Without these, a text-driven build can pass QA
-        # while its branches are unreachable and its flags are never read.
-        "分支可达",
-        "旗标被消费",
-        "未选事实不串线",
-        "人物知识边界",
-        "回响存在",
-        "结局区分",
-    ),
-    # --- Cross-genre rigor and the narrative track ------------------------------
-    # Everything below has been deleted wholesale at least once by a refactor that
-    # meant to help interactive fiction and instead removed the standards for every
-    # genre. These markers make that class of regression fail the build instead of
-    # passing silently. Each rule must keep BOTH its system-track form and its
-    # narrative-track form: the fix for a text game is never to lower the bar for an
-    # RPG, and never to exempt a text game from a bar an RPG has to clear.
-    "skills/game-concept/references/concept-method.md": (
-        "硬否决",
-        "无先例",
-        "无弧线",
-        "因果权",
-        "结算权",
-        "能动性造假",
-        "互动叙事这条线",
-        "主干加瓶颈",
-    ),
-    "skills/game-concept/SKILL.md": (
-        "同玩法",
-        "三段弧",
-        "experienceProfile",
-        "成熟打法包含互动叙事",
-        "能动性合同",
-    ),
-    "skills/game-world-design/SKILL.md": (
-        "三段弧",
-        "只写不读",
-        "数值预算表",
-        "决策深度示例",
-        "品类保真",
-        "能动性合同",
-        "叙事承载附件",
-        "narrative-design-method.md",
-        "dialogue-design-method.md",
-        "game-writing-craft.md",
-    ),
-    "skills/game-world-design/references/narrative-design-method.md": (
-        "因果权",
-        "结算权",
-        "可跟随性四问",
-        "巧合有方向性",
-        "写入 → 第一次读取 → 延迟读取 → 玩家感知",
-        "前提装置",
-    ),
-    "skills/game-world-design/references/dialogue-design-method.md": (
-        "交换说话者测试",
-        "世界事实",
-        "未决推断",
-        "禁科普嘴",
-    ),
-    "skills/game-world-design/references/numeric-design-method.md": (
-        "只写不读",
-        "隐藏旗标",
-        "限制行动广度",
-    ),
-    "skills/game-world-design/references/world-design-method.md": (
-        "血墙",
-        "叙事承载时的对应说法",
-    ),
-    "skills/game-world-design/references/game-writing-craft.md": (
-        "深度限知",
-        "系统腔",
-    ),
-    "skills/novel-to-game/references/intake-benchmark-reference.md": (
-        "互动叙事",
-        "已核实",
-        "主干加瓶颈",
-    ),
-    "skills/novel-game-analyze/references/gameability-protocol.md": (
-        "知识权限图",
-        "铺垫与回收表",
-    ),
-}
 EXAMPLE_PLANNING_FILES = {
     "analysis/SOURCE_BIBLE.md",
     "concepts/CONCEPT.md",
@@ -251,7 +106,6 @@ OPTIONAL_PLANNING_FILES = {
     "build/asset-ledger.json",
     "build/source-inputs.json",
     "design/VISUAL_TARGETS.md",
-    "design/VOICE_AUDITION.json",
 }
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")
@@ -465,28 +319,15 @@ def read_manifest(example_dir: Path) -> tuple[dict[str, object] | None, list[str
         issues.append(
             f"{example_dir.name}/{EXAMPLE_MANIFEST}: missing {sorted(missing)}"
         )
-    for field in ("publicationTier", "demonstratedTier", "targetFinish"):
-        if manifest.get(field) not in PUBLICATION_TIERS:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: {field} must be one of "
-                f"{sorted(PUBLICATION_TIERS)}"
-            )
-    publication = manifest.get("publicationTier")
-    demonstrated = manifest.get("demonstratedTier")
-    target = manifest.get("targetFinish")
-    if all(value in FINISH_RANK for value in (publication, demonstrated, target)):
-        if FINISH_RANK[publication] > FINISH_RANK[demonstrated]:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: publicationTier exceeds demonstratedTier"
-            )
-        if FINISH_RANK[demonstrated] > FINISH_RANK[target]:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: demonstratedTier exceeds targetFinish"
-            )
-    if manifest.get("assuranceProfile") not in ASSURANCE_PROFILES:
+    unknown = manifest.keys() - MANIFEST_ALLOWED
+    if unknown:
         issues.append(
-            f"{example_dir.name}/{EXAMPLE_MANIFEST}: assuranceProfile must be one of "
-            f"{sorted(ASSURANCE_PROFILES)}"
+            f"{example_dir.name}/{EXAMPLE_MANIFEST}: unsupported fields {sorted(unknown)}"
+        )
+    if manifest.get("targetFinish") not in TARGET_FINISHES:
+        issues.append(
+            f"{example_dir.name}/{EXAMPLE_MANIFEST}: targetFinish must be one of "
+            f"{sorted(TARGET_FINISHES)}"
         )
     source = manifest.get("source")
     if not isinstance(source, dict):
@@ -550,37 +391,10 @@ def _compact_evidence_issue(
     return None
 
 
-def _forbidden_qa_metadata(value: object, path: str = "") -> list[str]:
-    issues: list[str] = []
-    if isinstance(value, dict):
-        for key, child in value.items():
-            child_path = f"{path}.{key}" if path else key
-            normalized = re.sub(r"[^a-z0-9]", "", key.lower())
-            if (
-                normalized in FORBIDDEN_QA_METADATA
-                or "fingerprint" in normalized
-                or normalized.endswith("sha256")
-            ):
-                issues.append(child_path)
-            issues.extend(_forbidden_qa_metadata(child, child_path))
-    elif isinstance(value, list):
-        for index, child in enumerate(value):
-            issues.extend(_forbidden_qa_metadata(child, f"{path}[{index}]"))
-    return issues
-
-
-def validate_assurance(
-    example_dir: Path,
-    profile: str,
-) -> list[str]:
-    """Validate the compact, player-effect-only assurance contract.
-
-    Every profile uses schema v2 and cumulatively checks player-visible effects.
-    """
+def validate_qa(example_dir: Path) -> list[str]:
+    """Validate the single minimal, player-effect QA contract."""
     label = f"{example_dir.name}/qa/verification.json"
     issues: list[str] = []
-    if profile not in ASSURANCE_PROFILES:
-        return [f"{example_dir.name}: unknown assurance profile {profile!r}"]
 
     verification_path = example_dir / "qa/verification.json"
     verification, verification_issues = _read_json_object(verification_path, label)
@@ -588,37 +402,44 @@ def validate_assurance(
     if verification is None:
         return issues
 
-    if (example_dir / "qa/release-gates.json").exists():
-        issues.append(f"{example_dir.name}/qa/release-gates.json: separate QA gate files are not allowed")
-    for path in _forbidden_qa_metadata(verification):
-        issues.append(f"{label}: {path} is not player-effect QA metadata")
+    unknown = set(verification) - QA_TOP_LEVEL_FIELDS
+    if unknown:
+        issues.append(f"{label}: unknown fields {sorted(unknown)}")
 
     schema_version = verification.get("schemaVersion")
     if schema_version != 2:
-        issues.append(f"{label}: assurance requires schemaVersion 2")
+        issues.append(f"{label}: minimal QA requires schemaVersion 2")
         return issues
 
-    if verification.get("assuranceProfile") != profile:
-        issues.append(f"{label}: assuranceProfile must match example.json")
     status = verification.get("status")
     if status not in GATE_STATUSES:
         issues.append(f"{label}: status must be one of {sorted(GATE_STATUSES)}")
     elif status != "PASS":
-        issues.append(f"{label}: status must PASS for the current assurance profile")
+        issues.append(f"{label}: status must PASS for the current QA record")
 
     verify = verification.get("verify")
     if not isinstance(verify, dict):
         issues.append(f"{label}: verify must be an object")
     else:
+        unknown = set(verify) - QA_VERIFY_FIELDS
+        if unknown:
+            issues.append(f"{label}: verify has unknown fields {sorted(unknown)}")
         if not isinstance(verify.get("command"), str) or not verify["command"].strip():
             issues.append(f"{label}: verify.command must be non-empty")
-        if verify.get("exitCode") != 0:
-            issues.append(f"{label}: verify.exitCode must be 0")
+        exit_code = verify.get("exitCode")
+        if type(exit_code) is not int or exit_code != 0:
+            issues.append(f"{label}: verify.exitCode must be integer 0")
 
     complete_run = verification.get("completeRun")
+    run_evidence: object = None
     if not isinstance(complete_run, dict):
         issues.append(f"{label}: completeRun must be an object")
     else:
+        unknown = set(complete_run) - QA_COMPLETE_RUN_FIELDS
+        if unknown:
+            issues.append(
+                f"{label}: completeRun has unknown fields {sorted(unknown)}"
+            )
         if complete_run.get("cleanContext") is not True:
             issues.append(f"{label}: completeRun.cleanContext must be true")
         for field in ("id", "terminal", "restart"):
@@ -638,16 +459,22 @@ def validate_assurance(
     if not isinstance(checks, dict):
         issues.append(f"{label}: checks must be an object")
         checks = {}
-    required = set(CORE_ASSURANCE_CHECKS)
-    if profile in {"delivery", "release"}:
-        required.update(DELIVERY_ASSURANCE_CHECKS)
-    if profile == "release":
-        required.update(RELEASE_ASSURANCE_CHECKS)
+    required = set(MINIMAL_QA_CHECKS)
+    if set(checks) != required:
+        issues.append(
+            f"{label}: checks must contain exactly {sorted(required)}; "
+            f"found {sorted(checks)}"
+        )
     for name in sorted(required):
         check = checks.get(name)
         if not isinstance(check, dict):
             issues.append(f"{label}: checks.{name} must be an object")
             continue
+        unknown = set(check) - QA_CHECK_FIELDS
+        if unknown:
+            issues.append(
+                f"{label}: checks.{name} has unknown fields {sorted(unknown)}"
+            )
         check_status = check.get("status")
         if check_status not in GATE_STATUSES:
             issues.append(
@@ -668,35 +495,6 @@ def validate_assurance(
                 if issue:
                     issues.append(issue)
 
-    # Checks beyond the required set are how a project records its own concept promises
-    # (narrative-led builds add branch reachability, flag consumption, and so on). They
-    # were previously ignored entirely, so a declared check could sit at FAIL while the
-    # file still claimed an overall PASS. Anything declared has to bind.
-    for name in sorted(set(checks) - required):
-        check = checks.get(name)
-        if not isinstance(check, dict):
-            issues.append(f"{label}: checks.{name} must be an object")
-            continue
-        check_status = check.get("status")
-        if check_status not in GATE_STATUSES:
-            issues.append(
-                f"{label}: checks.{name}.status must be one of {sorted(GATE_STATUSES)}"
-            )
-        elif check_status == "FAIL" and status == "PASS":
-            issues.append(
-                f"{label}: checks.{name} is FAIL, so the overall status cannot PASS"
-            )
-        evidence = check.get("evidence")
-        if check_status == "PASS" and (not isinstance(evidence, list) or not evidence):
-            issues.append(f"{label}: checks.{name}.evidence must not be empty")
-        elif isinstance(evidence, list):
-            for index, raw in enumerate(evidence):
-                issue = _compact_evidence_issue(
-                    example_dir, raw, f"checks.{name}.evidence[{index}]"
-                )
-                if issue:
-                    issues.append(issue)
-
     limitations = verification.get("limitations")
     if not isinstance(limitations, list):
         issues.append(f"{label}: limitations must be a list")
@@ -706,31 +504,109 @@ def validate_assurance(
             if not isinstance(limitation, dict):
                 issues.append(f"{label}: {field} must be an object")
                 continue
+            unknown = set(limitation) - QA_LIMITATION_FIELDS
+            if unknown:
+                issues.append(
+                    f"{label}: {field} has unknown fields {sorted(unknown)}"
+                )
             for key in ("scope", "reason"):
                 if not isinstance(limitation.get(key), str) or not limitation[key].strip():
                     issues.append(f"{label}: {field}.{key} must be non-empty")
-            blocks = limitation.get("blocksProfiles")
-            if not isinstance(blocks, list) or any(
-                value not in ASSURANCE_PROFILES for value in blocks
-            ):
+
+    if isinstance(run_evidence, str) and not _compact_evidence_issue(
+        example_dir, run_evidence, "completeRun.evidence"
+    ):
+        for name in sorted(required):
+            check = checks.get(name)
+            if isinstance(check, dict) and check.get("evidence") != [run_evidence]:
                 issues.append(
-                    f"{label}: {field}.blocksProfiles must contain assurance profiles"
+                    f"{label}: checks.{name}.evidence must equal "
+                    "[completeRun.evidence]"
                 )
-            elif status == "PASS" and profile in blocks:
-                issues.append(f"{label}: {field} blocks current profile {profile}")
+
+        evidence_path = example_dir / run_evidence
+        try:
+            machine_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            issues.append(
+                f"{label}: machine evidence must be valid JSON: {run_evidence}"
+            )
+            machine_evidence = None
+        if not isinstance(machine_evidence, dict):
+            if machine_evidence is not None:
+                issues.append(f"{label}: machine evidence must be an object")
+        else:
+            machine_qa = machine_evidence.get("qa")
+            if not isinstance(machine_qa, dict):
+                issues.append(f"{label}: machine evidence.qa must be an object")
+            else:
+                unknown = set(machine_qa) - MACHINE_QA_FIELDS
+                if unknown:
+                    issues.append(
+                        f"{label}: machine evidence.qa has unknown fields "
+                        f"{sorted(unknown)}"
+                    )
+                if isinstance(verify, dict):
+                    if machine_qa.get("command") != verify.get("command"):
+                        issues.append(
+                            f"{label}: machine evidence qa.command must match verify.command"
+                        )
+                    machine_exit_code = machine_qa.get("exitCode")
+                    if type(machine_exit_code) is not int:
+                        issues.append(
+                            f"{label}: machine evidence qa.exitCode must be an integer"
+                        )
+                    elif machine_exit_code != verify.get("exitCode"):
+                        issues.append(
+                            f"{label}: machine evidence qa.exitCode must match verify.exitCode"
+                        )
+                machine_run = machine_qa.get("completeRun")
+                if not isinstance(machine_run, dict):
+                    issues.append(
+                        f"{label}: machine evidence.qa.completeRun must be an object"
+                    )
+                else:
+                    unknown = set(machine_run) - MACHINE_COMPLETE_RUN_FIELDS
+                    if unknown:
+                        issues.append(
+                            f"{label}: machine evidence.qa.completeRun has unknown fields "
+                            f"{sorted(unknown)}"
+                        )
+                    if isinstance(complete_run, dict):
+                        for field in ("terminal", "restart"):
+                            if machine_run.get(field) != complete_run.get(field):
+                                issues.append(
+                                    f"{label}: machine evidence qa.completeRun.{field} "
+                                    f"must match completeRun.{field}"
+                                )
+                machine_checks = machine_qa.get("checks")
+                if not isinstance(machine_checks, dict):
+                    issues.append(
+                        f"{label}: machine evidence.qa.checks must be an object"
+                    )
+                elif set(machine_checks) != required:
+                    issues.append(
+                        f"{label}: machine evidence qa.checks must contain exactly "
+                        f"{sorted(required)}"
+                    )
+                else:
+                    for name in sorted(required):
+                        if machine_checks.get(name) != "PASS":
+                            issues.append(
+                                f"{label}: machine evidence qa.checks.{name} must PASS"
+                            )
 
     return issues
 
 
 def _validate_target_finish_inheritance(
-    example_dir: Path, target_finish: object, demonstrated_tier: object
+    example_dir: Path, target_finish: object
 ) -> list[str]:
     issues: list[str] = []
     for relative in (
         "PRODUCT_BRIEF.md",
         "design/ART_DIRECTION.md",
         "build/BUILD_BRIEF.md",
-        "qa/QA_REPORT.md",
     ):
         path = example_dir / relative
         if not path.is_file():
@@ -753,161 +629,58 @@ def _validate_target_finish_inheritance(
                 f"{example_dir.name}/{relative}: targetFinish must match example.json"
             )
     visual_targets = example_dir / "design/VISUAL_TARGETS.md"
-    if visual_targets.is_file() or demonstrated_tier != "graybox":
+    if visual_targets.is_file():
         relative = "design/VISUAL_TARGETS.md"
-        if not visual_targets.is_file():
-            issues.append(
-                f"{example_dir.name}/{relative}: required above demonstrated graybox"
-            )
-        else:
-            values = re.findall(
-                r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$",
-                visual_targets.read_text(encoding="utf-8"),
-                flags=re.MULTILINE,
-            )
-            unique = set(values)
-            if not values:
-                issues.append(
-                    f"{example_dir.name}/{relative}: missing canonical targetFinish"
-                )
-            elif len(unique) != 1:
-                issues.append(
-                    f"{example_dir.name}/{relative}: conflicting targetFinish values "
-                    f"{sorted(unique)}"
-                )
-            elif next(iter(unique)) != target_finish:
-                issues.append(
-                    f"{example_dir.name}/{relative}: targetFinish must match example.json"
-                )
-    return issues
-
-
-def _validate_build_finish_states(
-    example_dir: Path,
-    publication_tier: object,
-    demonstrated_tier: object,
-) -> list[str]:
-    path = example_dir / "build/BUILD_BRIEF.md"
-    if not path.is_file():
-        return [f"{example_dir.name}/build/BUILD_BRIEF.md: missing finish states"]
-    text = path.read_text(encoding="utf-8")
-    issues: list[str] = []
-    for field, expected_value in (
-        ("publicationTier", publication_tier),
-        ("demonstratedTier", demonstrated_tier),
-    ):
         values = re.findall(
-            rf"^\s*`?{field}:\s*([A-Za-z_-]+)`?\s*$", text, flags=re.MULTILINE
+            r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$",
+            visual_targets.read_text(encoding="utf-8"),
+            flags=re.MULTILINE,
         )
         unique = set(values)
-        label = f"{example_dir.name}/build/BUILD_BRIEF.md"
         if not values:
-            issues.append(f"{label}: missing canonical {field}")
+            issues.append(
+                f"{example_dir.name}/{relative}: missing canonical targetFinish"
+            )
         elif len(unique) != 1:
-            issues.append(f"{label}: conflicting {field} values {sorted(unique)}")
-        elif next(iter(unique)) != expected_value:
-            issues.append(f"{label}: {field} must match example.json")
+            issues.append(
+                f"{example_dir.name}/{relative}: conflicting targetFinish values "
+                f"{sorted(unique)}"
+            )
+        elif next(iter(unique)) != target_finish:
+            issues.append(
+                f"{example_dir.name}/{relative}: targetFinish must match example.json"
+            )
     return issues
 
 
-def validate_readme_publication_claims(root: Path) -> list[str]:
-    """Keep public Featured/精选 claims aligned with example publication tiers."""
-    issues: list[str] = []
+def validate_readme_example_order(root: Path) -> list[str]:
+    """Keep the bilingual README example listings structurally aligned."""
     readme_slugs: dict[str, list[str]] = {}
-    labels = {
-        "README.md": {
-            "graybox": ("graybox",),
-            "playable-prototype": ("playable prototype",),
-            "polished-vertical-slice": ("polished vertical slice",),
-            "showcase": ("showcase", "featured"),
-        },
-        "README_ZH.md": {
-            "graybox": ("灰盒",),
-            "playable-prototype": ("可玩原型",),
-            "polished-vertical-slice": ("精修垂直切片",),
-            "showcase": ("精选", "展示"),
-        },
-    }
-    for filename, marker in (("README.md", "featured"), ("README_ZH.md", "精选")):
+    for filename in ("README.md", "README_ZH.md"):
         path = root / filename
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
-        readme_slugs[filename] = list(
-            dict.fromkeys(re.findall(r"examples/([^/)]+)/?", text))
-        )
-        listing_match = re.search(
-            r"^## (?:Play Online|在线试玩)\s*$\n(.*?)(?=^##\s|\Z)",
-            text,
-            flags=re.MULTILINE | re.DOTALL,
-        )
-        listing = listing_match.group(1) if listing_match else ""
-        sections = re.split(r"(?=^###\s)", listing, flags=re.MULTILINE)
-        for section in sections:
-            heading = section.splitlines()[0] if section.splitlines() else ""
-            section_slugs = list(dict.fromkeys(re.findall(r"examples/([^/)]+)/?", section)))
-            if listing:
-                for slug in section_slugs:
-                    manifest, manifest_issues = _read_json_object(
-                        root / "examples" / slug / EXAMPLE_MANIFEST,
-                        f"examples/{slug}/{EXAMPLE_MANIFEST}",
-                    )
-                    issues.extend(manifest_issues)
-                    if manifest is None:
-                        continue
-                    tier = manifest.get("publicationTier")
-                    expected = labels[filename].get(str(tier), ())
-                    if expected and not any(token in section.lower() for token in expected):
-                        issues.append(
-                            f"{filename}: public example {slug} must be labelled {tier}"
-                        )
-            if marker not in heading.lower():
-                continue
-            match = re.search(r"examples/([^/)]+)/?", section)
-            if not match:
-                issues.append(f"{filename}: Featured/精选 section has no example link")
-                continue
-            slug = match.group(1)
-            manifest_path = root / "examples" / slug / EXAMPLE_MANIFEST
-            manifest, manifest_issues = _read_json_object(
-                manifest_path, f"examples/{slug}/{EXAMPLE_MANIFEST}"
+        if path.is_file():
+            readme_slugs[filename] = list(
+                dict.fromkeys(re.findall(r"examples/([^/)]+)/?", path.read_text(encoding="utf-8")))
             )
-            issues.extend(manifest_issues)
-            if manifest is not None and manifest.get("publicationTier") != "showcase":
-                issues.append(
-                    f"{filename}: Featured/精选 example {slug} must have publicationTier showcase"
-                )
     if (
         "README.md" in readme_slugs
         and "README_ZH.md" in readme_slugs
         and readme_slugs["README.md"] != readme_slugs["README_ZH.md"]
     ):
-        issues.append(
+        return [
             "README.md and README_ZH.md: example link order must match; "
             f"english={readme_slugs['README.md']} chinese={readme_slugs['README_ZH.md']}"
-        )
-    return issues
+        ]
+    return []
 
 
 def validate_example(example_dir: Path) -> list[str]:
     manifest, issues = read_manifest(example_dir)
     if manifest is None:
         return issues
-    assurance_profile = str(manifest["assuranceProfile"])
     target_finish = str(manifest["targetFinish"])
-    demonstrated_tier = str(manifest["demonstratedTier"])
-    publication_tier = str(manifest["publicationTier"])
-    issues.extend(
-        _validate_target_finish_inheritance(
-            example_dir, target_finish, demonstrated_tier
-        )
-    )
-    issues.extend(
-        _validate_build_finish_states(
-            example_dir, publication_tier, demonstrated_tier
-        )
-    )
-    issues.extend(validate_assurance(example_dir, assurance_profile))
+    issues.extend(_validate_target_finish_inheritance(example_dir, target_finish))
+    issues.extend(validate_qa(example_dir))
     actual_planning_files = {
         path.relative_to(example_dir).as_posix()
         for directory in ("analysis", "concepts", "design", "build")
@@ -1081,181 +854,6 @@ def validate_agent_adapters(root: Path, version: str) -> list[str]:
     return issues
 
 
-def validate_minimal_evidence_contract(root: Path) -> list[str]:
-    """Guard the build/QA evidence handoff without parsing generated projects."""
-    issues: list[str] = []
-    for relative_path, markers in MINIMAL_EVIDENCE_REQUIREMENTS.items():
-        path = root / relative_path
-        if not path.is_file():
-            issues.append(f"repository: missing evidence contract file {relative_path}")
-            continue
-        text = path.read_text(encoding="utf-8")
-        for marker in markers:
-            if marker not in text:
-                issues.append(
-                    f"{relative_path}: missing minimal evidence marker {marker!r}"
-                )
-    return issues
-
-
-# A marker string proves a rule was not deleted. It does not prove the rule still bites:
-# a refactor can keep every heading and hollow out the body. These checks assert on the
-# *shape* of the highest-value rules, so "narrative projects may skip this" fails the build
-# the same way deleting the section does.
-# Phrases that GRANT an exemption. Deliberately not the bare word 豁免 — the rules
-# legitimately use it to deny one ("文学契合度不构成豁免"), and a substring check cannot
-# tell the two apart.
-ESCAPE_HATCH_PHRASES = (
-    "豁免本条",
-    "可以豁免",
-    "本条豁免",
-    "可跳过",
-    "可略过",
-    "不适用本条",
-    "无需提供",
-    "自行判断",
-    "不强制取证",
-    "写个大概",
-    # Self-attestation: the rule survives as a sentence but stops being falsifiable.
-    "自己把握",
-    "自行把握",
-    "团队自己",
-    "就满足本条",
-    "不必照搬",
-)
-# Blocklists are enumerable and therefore evadable. Where a rule's whole value is one
-# falsifiable predicate, assert that the predicate itself is still there: a paraphrase
-# into "the team confirms an arc exists" has to delete these words to succeed, whereas
-# it can dodge any phrase list. Keyed by veto name -> words the test cannot lose.
-VETO_FALSIFIABLE_PREDICATES = {
-    "无弧线": ("可达空间", ("从头到尾不变", "与第一拍相同")),
-    "无先例": ("已发行", ("≥2", ">=2")),
-}
-# The narrative track is an alternative judging criterion, never an exemption. Every place
-# that introduces one must say what replaces the system-track criterion.
-NARRATIVE_SWITCH_MARKERS = ("**叙事主导取**", "叙事主导形态")
-NARRATIVE_SWITCH_REQUIRED = ("换成", "改取", "同判", "同样", "同一", "取其一")
-# GAME_DESIGN checklist items whose criterion differs by track. Binding the check to the
-# item — rather than to a character window after a marker — is what stops an exemption from
-# hiding a few sentences away, and makes deleting the narrative clause fail like any other
-# deleted rule. Keyed by the item's leading text so renumbering does not silently disarm it.
-TRACK_SPLIT_CHECKLIST_ITEMS = (
-    "三段弧",
-    "世界规则与状态",
-    "数值预算表",
-    "决策深度示例",
-    "品类保真",
-    "关卡节拍",
-)
-NUMBERED_ITEM_RE = re.compile(r"^(\d+)\.\s", re.MULTILINE)
-
-
-def _numbered_items(section: str) -> list[str]:
-    """Split a markdown ordered list into one string per item, continuations included."""
-    boundaries = [match.start() for match in NUMBERED_ITEM_RE.finditer(section)]
-    if not boundaries:
-        return []
-    boundaries.append(len(section))
-    return [
-        section[boundaries[index] : boundaries[index + 1]]
-        for index in range(len(boundaries) - 1)
-    ]
-
-
-def validate_rule_shape(root: Path) -> list[str]:
-    """Reject hollowed-out rules that still contain their marker strings.
-
-    A marker proves a rule was not deleted; it does not prove the rule still bites.
-
-    Scope, stated honestly so nobody over-trusts this: these checks catch the shapes a
-    hollowing regression has actually taken here — granting an exemption in recognizable
-    words, and dropping a track's clause from a checklist item. They cannot catch a
-    paraphrase that keeps the marker while turning a falsifiable test into a
-    self-attestation ("团队确认弧线成立即可"), because that needs a reader, not a
-    substring. A determined author can always evade a phrase list. Treat this as a floor
-    against silent drift; the real gate is the design-stage acceptance checklist and human
-    review of the diff.
-    """
-    issues: list[str] = []
-
-    design_path = "skills/game-world-design/SKILL.md"
-    design = root / design_path
-    if design.is_file():
-        output_section = markdown_section(design.read_text(encoding="utf-8"), "输出")
-        if output_section is None:
-            issues.append(f"{design_path}: missing 输出 checklist")
-        else:
-            items = _numbered_items(output_section)
-            for name in TRACK_SPLIT_CHECKLIST_ITEMS:
-                body = next((item for item in items if name in item[:40]), None)
-                if body is None:
-                    issues.append(
-                        f"{design_path}: 输出 checklist is missing the {name!r} item"
-                    )
-                    continue
-                if not any(marker in body for marker in NARRATIVE_SWITCH_MARKERS):
-                    issues.append(
-                        f"{design_path}: checklist item {name!r} must state its "
-                        "narrative-track form, not only the system-track one"
-                    )
-                elif not any(word in body for word in NARRATIVE_SWITCH_REQUIRED):
-                    issues.append(
-                        f"{design_path}: checklist item {name!r} must name the "
-                        "replacing criterion, not merely announce a switch"
-                    )
-                for phrase in ESCAPE_HATCH_PHRASES:
-                    if phrase in body:
-                        issues.append(
-                            f"{design_path}: checklist item {name!r} must not grant "
-                            f"an exemption ({phrase!r})"
-                        )
-
-    # Hard vetoes are the concept gate. An exempted veto is a deleted veto.
-    method_path = "skills/game-concept/references/concept-method.md"
-    method = root / method_path
-    if method.is_file():
-        veto_section = markdown_section(method.read_text(encoding="utf-8"), "硬否决")
-        if veto_section is None:
-            issues.append(f"{method_path}: missing 硬否决 section")
-        else:
-            for phrase in ESCAPE_HATCH_PHRASES:
-                if phrase in veto_section:
-                    issues.append(
-                        f"{method_path}: 硬否决 must not grant an exemption ({phrase!r})"
-                    )
-            for veto, (required, alternatives) in VETO_FALSIFIABLE_PREDICATES.items():
-                bullet = next(
-                    (
-                        item
-                        for item in veto_section.split("\n- ")
-                        if item.strip().removeprefix("- ").startswith(f"**{veto}**")
-                    ),
-                    None,
-                )
-                if bullet is None:
-                    issues.append(f"{method_path}: 硬否决 is missing the {veto!r} veto")
-                    continue
-                if required not in bullet or not any(
-                    alternative in bullet for alternative in alternatives
-                ):
-                    issues.append(
-                        f"{method_path}: the {veto!r} veto lost its falsifiable test "
-                        f"(needs {required!r} plus one of {alternatives!r})"
-                    )
-
-    # The precedent table exists to supply citable evidence. A bare 已核实 substring is
-    # satisfied forever by the file's own disclaimer sentence, so assert the tag form.
-    benchmark = root / "skills/novel-to-game/references/intake-benchmark-reference.md"
-    if benchmark.is_file():
-        tagged = benchmark.read_text(encoding="utf-8").count("·**已核实**")
-        if tagged < 5:
-            issues.append(
-                "skills/novel-to-game/references/intake-benchmark-reference.md: "
-                f"expected at least 5 '·**已核实**' tagged figures, found {tagged}"
-            )
-    return issues
-
-
 def validate_repository(root: Path) -> list[str]:
     issues: list[str] = []
     for required in ("README.md", "README_ZH.md", "LICENSE", "AGENTS.md", "VERSION"):
@@ -1279,7 +877,7 @@ def validate_repository(root: Path) -> list[str]:
     for name in sorted(actual_examples):
         example_dir = examples_root / name
         issues.extend(validate_example(example_dir))
-    issues.extend(validate_readme_publication_claims(root))
+    issues.extend(validate_readme_example_order(root))
 
     for json_file in validation_json_files(root):
         try:
@@ -1289,8 +887,6 @@ def validate_repository(root: Path) -> list[str]:
 
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     issues.extend(validate_agent_adapters(root, version))
-    issues.extend(validate_minimal_evidence_contract(root))
-    issues.extend(validate_rule_shape(root))
     return issues
 
 

@@ -1,6 +1,6 @@
 # Project Plateau release copy
 
-Use only after the public URL passes its anonymous smoke check. Replace
+Use only after the public URL passes its anonymous load check. Replace
 `<PUBLIC_URL>` and `<REPOSITORY_URL>` at publication time.
 
 ## Headline
@@ -57,6 +57,5 @@ camp light board marked “Strong field record.”
   voice; the credential and generated audio remain outside Git.
 - The public URL loads anonymously and reaches the field order.
 - Repository and source-provenance links resolve without authentication.
-- Copy does not claim independent review until its raw record exists.
 - Any subjective visual or play-quality statement is presented as opinion, not
   as a deterministic QA result.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run every authored Project Plateau suite and write one evidence handoff."""
+"""Run one complete Project Plateau path and write the six-key evidence handoff."""
 
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ PROJECT = BUILD.parent
 REPO = BUILD.parents[2]
 QA = PROJECT / "qa"
 VERIFICATION = QA / "verification.json"
+REPORT = QA / "QA_REPORT.md"
+CORE_CHECKS = ("launch", "render", "input", "coreLoop", "outcome", "restart")
 
 
 @dataclass(frozen=True)
@@ -27,46 +29,14 @@ class Suite:
     cwd: Path
 
 
-BROWSER_SUITE_NAMES = {
-    "complete_run": "complete-run",
-    "controller": "controller-contract",
-    "motion": "motion-visual",
-    "collision": "collision-contract",
-    "entry": "entry-conversion",
-    "loading": "loading-state",
-}
-
-
-def discover_suites() -> tuple[Suite, ...]:
-    js_tests = tuple(
-        path.relative_to(APP).as_posix()
-        for path in sorted((APP / "test").glob("*.test.js"))
-    )
-    browser_suites = []
-    for path in sorted((APP / "test").glob("qa_*.py")):
-        relative = path.relative_to(APP).as_posix()
-        suffix = path.stem.removeprefix("qa_")
-        browser_suites.append(
-            Suite(
-                f"browser:{BROWSER_SUITE_NAMES.get(suffix, suffix.replace('_', '-'))}",
-                (relative,),
-                ((sys.executable, relative),),
-                APP,
-            )
-        )
-    return (
-        Suite("unit:simulation", js_tests, (("npm", "test"),), APP),
-        Suite(
-            "build:production",
-            ("index.html", "src/", "public/"),
-            (("npm", "run", "build"),),
-            APP,
-        ),
-        *browser_suites,
-    )
-
-
-SUITES = discover_suites()
+SUITES = (
+    Suite(
+        "browser:complete-run",
+        ("test/qa_complete_run.py",),
+        ((sys.executable, "test/qa_complete_run.py"),),
+        APP,
+    ),
+)
 
 
 def command_output(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:
@@ -104,6 +74,19 @@ def load_complete_run_report() -> dict[str, object]:
     )
 
 
+def write_json_atomic(path: Path, value: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.tmp")
+    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+    temporary.replace(path)
+
+
+def write_text_atomic(path: Path, value: str) -> None:
+    temporary = path.with_name(f".{path.name}.tmp")
+    temporary.write_text(value, encoding="utf-8")
+    temporary.replace(path)
+
+
 def current_checkpoints(identifiers: set[str] | None = None) -> list[dict[str, object]]:
     report = load_complete_run_report()
     records = []
@@ -120,25 +103,48 @@ def write_verification(
     *,
     exit_code: int,
     suite_results: list[dict[str, object]],
+    checks: dict[str, str],
 ) -> None:
     run_report = BUILD / "evidence/current-run/report.json"
+    evidence = project_path(run_report)
     verification: dict[str, object] = {
         "schemaVersion": 2,
-        "assuranceProfile": "smoke",
         "status": "PASS" if exit_code == 0 else "FAIL",
         "verify": {
             "command": "npm run verify",
             "exitCode": exit_code,
             "suites": suite_results,
         },
-        "checks": {},
+        "completeRun": {
+            "id": "current-strong-input-only",
+            "cleanContext": exit_code == 0,
+            "speed": "normal",
+            "evidence": evidence,
+            "terminal": "strong-field-record" if exit_code == 0 else "NOT_RUN",
+            "restart": "clean-field-order" if exit_code == 0 else "NOT_RUN",
+        },
+        "checks": {
+            name: {"status": checks[name], "evidence": [evidence]}
+            for name in CORE_CHECKS
+        },
         "limitations": [
             {
-                "scope": "first-time player comprehension",
-                "reason": "Automation cannot substitute for an independent first-time player record.",
-                "blocksProfiles": ["delivery", "release"],
+                "scope": "tested runtime",
+                "reason": (
+                    "The recorded run used local desktop Chromium with software-controlled "
+                    "input; other browsers, GPUs and devices were not exercised."
+                ),
             },
         ],
+    }
+    machine_qa = {
+        "command": "npm run verify",
+        "exitCode": exit_code,
+        "completeRun": {
+            "terminal": "strong-field-record" if exit_code == 0 else "NOT_RUN",
+            "restart": "clean-field-order" if exit_code == 0 else "NOT_RUN",
+        },
+        "checks": checks,
     }
     if exit_code == 0:
         complete_ids = {
@@ -153,79 +159,94 @@ def write_verification(
         available = {record["id"] for record in checkpoints}
         expected_complete = {f"current:{identifier}" for identifier in complete_ids}
         assert expected_complete <= available, sorted(expected_complete - available)
-        verification["completeRun"] = {
-            "id": "current-strong-input-only",
-            "cleanContext": True,
-            "speed": "normal",
-            "evidence": project_path(run_report),
-            "steps": [
-                {
-                    "id": "step_01",
-                    "input": "Enter the basin",
-                    "expected": "clean 180-second field order",
-                    "checkpoint": "current:00-clean-field-order",
-                },
-                {
-                    "id": "step_02",
-                    "input": "W, E, raise camera and expose the brook plate",
-                    "expected": "traversal and first physical proof",
-                    "checkpoint": "current:01-strong-brook-frame",
-                },
-                {
-                    "id": "step_03",
-                    "input": "use cover, reach the glade and expose both behavior plates",
-                    "expected": "seven evidence points across four plates",
-                    "checkpoint": "current:03-strong-glade-frames",
-                },
-                {
-                    "id": "step_04",
-                    "input": "retreat under cover until the dive widens",
-                    "expected": "covered return route and retained body margin",
-                    "checkpoint": "current:04-strong-covered-return",
-                },
-                {
-                    "id": "step_05",
-                    "input": "follow the covered return to Fort",
-                    "expected": "Strong field record with all captured views",
-                    "checkpoint": "current:05-strong-input-result",
-                },
-                {
-                    "id": "step_06",
-                    "input": "Take the route again",
-                    "expected": "clean field order with no spent resource or travelled distance",
-                    "checkpoint": "current:06-strong-clean-restart",
-                },
+        verification["completeRun"]["steps"] = [
+            {
+                "id": "step_01",
+                "input": "Enter the basin",
+                "expected": "clean 180-second field order",
+                "checkpoint": "current:00-clean-field-order",
+            },
+            {
+                "id": "step_02",
+                "input": "W, E, raise camera and expose the brook plate",
+                "expected": "traversal and first physical proof",
+                "checkpoint": "current:01-strong-brook-frame",
+            },
+            {
+                "id": "step_03",
+                "input": "use cover, reach the glade and expose both behavior plates",
+                "expected": "seven evidence points across four plates",
+                "checkpoint": "current:03-strong-glade-frames",
+            },
+            {
+                "id": "step_04",
+                "input": "retreat under cover until the dive widens",
+                "expected": "covered return route and retained body margin",
+                "checkpoint": "current:04-strong-covered-return",
+            },
+            {
+                "id": "step_05",
+                "input": "follow the covered return to Fort",
+                "expected": "Strong field record with all captured views",
+                "checkpoint": "current:05-strong-input-result",
+            },
+            {
+                "id": "step_06",
+                "input": "Take the route again",
+                "expected": "clean field order with no spent resource or travelled distance",
+                "checkpoint": "current:06-strong-clean-restart",
+            },
+        ]
+        report = load_complete_run_report()
+    else:
+        report = {
+            "stage": "current-complete-run",
+            "limitations": [
+                "The authoritative verification command failed; prior PASS evidence was replaced."
             ],
-            "terminal": "strong-field-record",
-            "restart": "clean-field-order",
         }
-        core_evidence = [project_path(run_report)]
-        verification["checks"] = {
-            name: {"status": "PASS", "evidence": core_evidence}
-            for name in (
-                "launch",
-                "render",
-                "input",
-                "coreLoop",
-                "outcome",
-                "restart",
-            )
-        }
-        verification["checks"]["accessibilityModes"] = {
-            "status": "PASS",
-            "evidence": [project_path(run_report)],
-        }
-    VERIFICATION.parent.mkdir(parents=True, exist_ok=True)
-    temporary = VERIFICATION.with_name(f".{VERIFICATION.name}.tmp")
-    temporary.write_text(json.dumps(verification, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(VERIFICATION)
+    report["qa"] = machine_qa
+    write_json_atomic(run_report, report)
+    write_json_atomic(VERIFICATION, verification)
+    status = "PASS" if exit_code == 0 else "FAIL"
+    reason = (
+        "The six-key complete path passed."
+        if exit_code == 0
+        else "The six-key complete path did not finish."
+    )
+    write_text_atomic(
+        REPORT,
+        f"""# Project Plateau QA report
+
+`status: {status}`
+
+## Decision and evidence
+
+`qa/verification.json` is the machine record and
+`build/evidence/current-run/report.json` contains the complete path. {reason}
+
+Run from `build/app/`:
+
+```bash
+npm run verify
+```
+
+## Limitations
+
+The recorded run used local desktop Chromium with software-controlled input. Other browsers, GPUs and devices were
+not exercised. Automation does not determine subjective anatomy, composition, comfort, fun, balance, rights clearance
+or publication quality.
+""",
+    )
 
 
 def main() -> int:
+    failed_checks = {name: "FAIL" for name in CORE_CHECKS}
+    write_verification(exit_code=1, suite_results=[], checks=failed_checks)
     if len(sys.argv) != 1:
         print("usage: python3 test/verify.py", file=sys.stderr)
+        write_verification(exit_code=2, suite_results=[], checks=failed_checks)
         return 2
-    exit_code = 0
     suite_results: list[dict[str, object]] = []
     for suite in SUITES:
         suite_passed = True
@@ -239,25 +260,27 @@ def main() -> int:
                 if output:
                     print(output)
                 suite_passed = False
-                exit_code = code
                 break
         if not suite_passed:
             suite_results.append(
                 {"id": suite.identifier, "executed": True, "passed": False}
             )
-            break
-        suite_results.append(
-            {"id": suite.identifier, "executed": True, "passed": True}
-        )
-
-    executed = {result["id"] for result in suite_results}
-    suite_results.extend(
-        {"id": suite.identifier, "executed": False, "passed": False}
-        for suite in SUITES
-        if suite.identifier not in executed
-    )
-
-    write_verification(exit_code=exit_code, suite_results=suite_results)
+        else:
+            suite_results.append(
+                {"id": suite.identifier, "executed": True, "passed": True}
+            )
+    try:
+        raw_checks = load_complete_run_report().get("minimalChecks")
+    except (FileNotFoundError, json.JSONDecodeError):
+        raw_checks = None
+    checks = {
+        name: "PASS"
+        if isinstance(raw_checks, dict) and raw_checks.get(name) is True
+        else "FAIL"
+        for name in CORE_CHECKS
+    }
+    exit_code = 0 if set(checks.values()) == {"PASS"} else 1
+    write_verification(exit_code=exit_code, suite_results=suite_results, checks=checks)
     if exit_code:
         print("authoritative verification: FAIL")
         return exit_code

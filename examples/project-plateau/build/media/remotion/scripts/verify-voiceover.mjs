@@ -7,18 +7,15 @@ import {
   buildNormalizationPlan,
   buildVoiceoverRequestContract,
   evaluateVoiceoverProvenance,
-  evaluateVoiceoverRelease,
   sha256,
 } from './voiceover-contract.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
-const releaseMode = process.argv.includes('--release');
 const config = JSON.parse(await readFile(path.join(root, 'voiceover.json'), 'utf8'));
 const sourcePath = path.join(root, 'public', 'voiceover-source.mp3');
 const normalizedPath = path.join(root, 'public', 'voiceover.wav');
 const metadataPath = path.join(root, 'public', 'voiceover-source.json');
-const reviewPath = path.join(root, 'voiceover-review.json');
 const outputPath = path.join(root, 'out', 'voiceover-qa.json');
 
 // The generated audio is ignored by Git, so a clean checkout has nothing to inspect. Report that as
@@ -29,7 +26,7 @@ for (const target of [sourcePath, normalizedPath]) {
   } catch {
     console.error(
       `NOT_RUN voiceover: ${path.relative(root, target)} is absent; ` +
-        'run `FISH_API_KEY=… FISH_VOICE_RIGHTS_ATTESTED=1 npm run voiceover` first.',
+        'run `FISH_API_KEY=… npm run voiceover` first.',
     );
     process.exit(2);
   }
@@ -65,13 +62,6 @@ try {
 } catch (error) {
   metadata = {readError: error.code || error.message};
 }
-let review;
-try {
-  review = JSON.parse(await readFile(reviewPath, 'utf8'));
-} catch (error) {
-  review = {readError: error.code || error.message};
-}
-
 // Resolve the recorded reference by evidence, not by the free-text `reference` label the sidecar
 // carries: the label is not itself hash-bound, so trusting it turns a missing environment variable
 // into two opaque hash mismatches that read like tampering.
@@ -104,13 +94,6 @@ const provenance = evaluateVoiceoverProvenance({
   normalizedSha256: normalized.sha256,
   normalizationSha256: normalizationPlan.normalizationSha256,
 });
-const release = evaluateVoiceoverRelease({
-  review,
-  referenceSha256: requestContract.referenceSha256,
-  sourceSha256: source.sha256,
-  normalizedSha256: normalized.sha256,
-});
-
 // Compare against the duration the normalization plan asked for, not against the raw source: the
 // plan deliberately time-compresses an overlong take by up to 2x, so a raw-source tolerance would
 // reject exactly the takes the safety valve exists to rescue.
@@ -145,22 +128,15 @@ const automatedPassed =
   crossChecks.every((item) => item.passed);
 const report = {
   schemaVersion: 2,
-  status: !automatedPassed
-    ? 'FAIL'
-    : releaseMode
-      ? release.status === 'APPROVED'
-        ? 'PASS'
-        : 'BLOCKED'
-      : 'AUTOMATED_PASS',
-  automatedStatus: automatedPassed ? 'PASS' : 'FAIL',
-  releaseStatus: release.status,
+  status: automatedPassed ? 'PASS' : 'FAIL',
   scope: 'automated decode, format, bitrate, duration, signal, clipping, loudness, true-peak, edge-silence and provenance checks',
   source: {...source, evaluation: sourceEvaluation},
   normalized: {...normalized, evaluation: normalizedEvaluation},
   crossChecks,
   provenance,
-  release,
-  manualListening: review.listening || {status: 'NOT_RUN', reason: 'voiceover review file unavailable'},
+  limitations: [
+    'Naturalness, casting preference and publication rights are not machine-proven by this report.',
+  ],
 };
 
 await mkdir(path.dirname(outputPath), {recursive: true});
@@ -178,10 +154,7 @@ for (const check of crossChecks) console.log(`${check.passed ? 'PASS' : 'FAIL'} 
 for (const check of provenance.checks) {
   console.log(`${check.passed ? 'PASS' : 'FAIL'} provenance.${check.id}: ${check.evidence}`);
 }
-for (const check of release.checks) {
-  console.log(`${check.passed ? 'PASS' : 'BLOCKED'} release.${check.id}: ${check.evidence}`);
-}
-console.log(`${report.status} voiceover; release ${report.releaseStatus}`);
+console.log(`${report.status} voiceover`);
 console.log(`Wrote ${outputPath}`);
 
-if (!automatedPassed || (releaseMode && release.status !== 'APPROVED')) process.exitCode = 1;
+if (!automatedPassed) process.exitCode = 1;

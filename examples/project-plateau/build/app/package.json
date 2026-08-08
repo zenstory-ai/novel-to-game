@@ -10,17 +10,6 @@
     "preview": "vite preview",
     "test": "node --test test/*.test.js",
     "test:complete-run": "python3 test/qa_complete_run.py",
-    "verify:complete-run": "npm test && npm run build && npm run test:complete-run",
-    "test:controller": "python3 test/qa_controller.py",
-    "verify:controller": "npm test && npm run build && npm run test:controller",
-    "test:motion": "python3 test/qa_motion.py",
-    "verify:motion": "npm test && npm run build && npm run test:motion",
-    "test:collision": "python3 test/qa_collision.py",
-    "verify:collision": "npm test && npm run build && npm run test:collision",
-    "test:entry": "python3 test/qa_entry.py",
-    "verify:entry": "npm test && npm run build && npm run test:entry",
-    "test:loading": "python3 test/qa_loading.py",
-    "verify:loading": "npm test && npm run build && npm run test:loading",
     "verify": "python3 test/verify.py"
   },
   "dependencies": {

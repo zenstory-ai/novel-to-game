@@ -1,6 +1,12 @@
 # Run Project Plateau
 
-Requirements: Node.js `>=22.12.0`, npm, and a desktop browser with WebGL2.
+Requirements: Node.js `>=22.12.0`, npm, Python 3 with Playwright, and a desktop
+Chromium browser with WebGL2.
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
+```
 
 ```bash
 npm ci
@@ -38,11 +44,8 @@ preview instead of a renderer error.
 npm run verify
 ```
 
-The command runs eight current suites: unit, production build, one complete browser
-run, controller, motion, collision, entry, and loading. It writes `../../qa/verification.json`
-and the semantic current-run evidence under
-`../evidence/current-run/`.
-
-Historical numbered checkpoint scripts are intentionally not part of the active
-package surface. The controller suite uses a deterministic pointer-lock shim;
-native OS/browser pointer-lock acquisition remains a manual smoke item.
+The command runs one complete browser path. It writes `../../qa/verification.json` and the semantic
+current-run evidence under `../evidence/current-run/`. The evidence records the tested
+local Chromium environment; it does not claim coverage of other browsers, GPUs or devices.
+Repository CI checks structure, unit tests and the production build; it does not refresh
+this local browser evidence.

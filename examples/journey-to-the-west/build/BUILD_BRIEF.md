@@ -1,11 +1,6 @@
 # 成品目标
 
 `targetFinish: playable-prototype`
-`assuranceProfile: smoke`
-`publicationTier: graybox`
-`demonstratedTier: graybox`
-`grayboxReady: PASS`
-`visualPromotion: NOT_RUN`
 
 构建《西游记 · 三借芭蕉扇》：一段约 45-90 分钟、桌面浏览器可玩的单人**回合制指令 RPG 完整战役**，
 《梦幻西游》《问道》那样一眼就认出的回合制西游——指令出招、速度行动顺序、五行相克、
@@ -91,12 +86,7 @@
 运行：`cd build/app && python3 -m http.server 5173`，浏览器打开 `http://127.0.0.1:5173/`
 （可选 `?seed=42&fast=1` 用于可复现自测）。
 
-- `node test/battle.mjs`：纯引擎自测，固定种子逐字节可复现，覆盖五行系数、伤害/暴击序列、
-  速度行动顺序、阵型修正、全战役六场战斗胜负、化虫入腹彩蛋、法力消耗与防御回蓝、假扇反噬、
-  真扇三段、Boss 阶段转换、逃跑规则、升级解锁与召唤兽收服。
-- `python3 test/qa_browser.py`：playwright 走通 标题→序幕→全战役六场战斗→结局→读档，
-  断言控制台 0 报错并保存过程截图。
-- 手动验证：战役可通关且 Boss 有挑战不劝退；智取路线（技能/相克/变化/携宠/真扇）明显优于无脑普攻。
+- `python3 test/verify.py`：Playwright 走通标题→序幕→全战役→结局→重开，并写回唯一六键记录。
 
 本示例已交付可运行游戏（`build/app/`）与本构建说明。运行命令、验证结果与已知限制见
 `build/app/RUN.md`。
@@ -105,13 +95,11 @@
 
 ## 打磨记录（第二轮）
 
-- **资产瘦身**：19MB → **3.8MB**(31 个文件）。封面与 6 张背景（实测无 alpha）转
-  JPEG q88;18 张立绘保留透明通道做 256 色调色板量化（量化前后逐张目视对比无掉质）。
+- **资产瘦身**：19MB → **3.8MB**(31 个文件）。封面与 6 张背景转 JPEG q88；
+  18 张立绘保留透明通道并量化为 256 色。
   `js/assets.js` 路径已同步，皮肤层缺图回退不受影响。
 - **部署**：新增 `.vercelignore` 与 `vercel.json`(assets 长缓存、js/css 短缓存）。
-- **回归**:`node test/battle.mjs` 146 项全过；`python3 test/qa_browser.py` 64 项断言
-  全过、控制台 0 报错、46 张截图逐张目检——战斗界面的飘字、血条、指令台、行动顺序条
-  无互相遮挡，未发现 blocker/major。
+- **验证**：当前机器事实由 `python3 test/verify.py` 重建，不保留独立目检结论。
 - 本轮未改动玩法、数值与视觉方向。
 
 ## 最终范围对照（2026-07-26 回写）

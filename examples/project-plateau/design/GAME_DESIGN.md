@@ -86,10 +86,10 @@ larger counter alone never advances the arc.
 
 ## Experience pillars
 
-| Pillar | Observable playtest evidence | Veto signal |
+| Pillar | Observable run evidence | Veto signal |
 |---|---|---|
-| Read the living route | A first-time player reaches the glade and later chooses a return route using brook sound, cover and animal cues without a continuous objective line. | The tester wall-hugs, follows a HUD arrow or cannot explain why one route is safer. |
-| Proof is an exposed action | The tester changes angle or timing to improve a plate and understands that the held frame increased exposure. | Shutter presses are safe collectibles, or plate grades feel unrelated to the image and behavior seen. |
+| Read the living route | A complete run reaches the glade and later chooses a return route using brook sound, cover and animal cues without a continuous objective line. | The run only succeeds by wall-hugging or following a HUD arrow, and route safety is not visible in world signals. |
+| Proof is an exposed action | The run changes angle or timing to improve a plate, and the held frame visibly increases exposure. | Shutter presses are safe collectibles, or plate grades are unrelated to the image and behavior seen. |
 | Defense creates escape, not dominance | Cover is used before ammunition; a shot creates an escape window and a changed downstream problem. | Shooting every visible animal is reliable, cheap or necessary for a strong result. |
 
 ## Two-layer loop and mastery type
@@ -447,32 +447,28 @@ field order establish an expedition outside the current route, but no AI ally
 performs observation, defense or extraction for the player. The result is local
 to the run and is not compared with other players.
 
-## Minimum playtest, scope, non-goals and acceptance
+## Minimum verification, scope, non-goals and acceptance
 
-### Maximum-risk playtest question
+### Maximum-risk verification question
 
-Can a first-time player move from cover into a better observation position,
-create a visibly stronger photographic record, recognize that the commitment
-changed the wildlife threat, and alter the return route or defensive choice so
-the record reaches Fort intact?
+Can one clean complete run move from cover into a better observation position,
+create a visibly stronger photographic record, expose the wildlife threat change,
+and alter the return route or defensive choice so the record reaches Fort intact?
 
 The minimum valid test is the full connected route with four physical plate
 slots, at least two evidence-quality outcomes, all four awareness behaviors,
 two return responses and the Fort submission. A camera sandbox, movement demo
 or isolated chase cannot answer the question.
 
-### Observation protocol
+### Complete-run assertions
 
-Record behavior before asking opinion:
+Record state changes and visible outcomes:
 
-1. Did the tester perform a meaningful examine or camera action within 30
-   seconds of gaining control?
-2. Which world signal did they use to reach and later relocate Fort?
-3. Did they change framing position or timing after seeing a weak plate?
-4. What did they think the pterodactyl was doing in each visible state, and
-   which cue caused their route decision?
-5. Did they use cover before ammunition? If not, what feedback made the shot
-   appear cheaper?
+1. A meaningful examine or camera action occurs after gaining control.
+2. World signals support reaching the observation site and returning to Fort.
+3. Changing framing position or timing produces a visibly different plate.
+4. Pterodactyl state changes expose distinct cues and change the reachable route decision.
+5. Cover works before ammunition, while firing creates an explicit escape window and downstream cost.
 6. Can they distinguish survival, insufficient evidence and a strong field
    record from the result screen alone?
 
@@ -495,46 +491,20 @@ This protocol does not claim to verify fun or balance deterministically.
 
 ### Acceptance conditions
 
-- A cold player can complete one start → observe → record → response → return →
-  result → restart loop in the locked session window.
-- Every same-play verb has observed state-change evidence; none is performed
-  only by text or a cutscene.
-- The first meaningful action is available within 30 seconds and the first
-  plate consequence within 60 seconds.
-- The Strong, Mixed and Panic reference paths reach their declared deterministic
-  result bands; no authored test suite is skipped.
-- The decision-depth table remains true against the final tuned values; any
-  implementation drift is reconciled deliberately rather than accepted
-  silently.
-- The player can read the four wildlife states without a threat meter at target
-  viewport.
-- At least one strong-proof route uses no shot, and firing never awards behavior
-  evidence.
-- Failure identifies the consumed plate/time/body resource and one adjustable
-  next action.
-- Pause, focus loss, submission and restart cannot accidentally spend a plate,
-  advance time or fire.
-- Target viewport, performance, payload and loading thresholds remain those in
-  the approved intake brief and are measured in the heaviest real state.
-- Build verification reports actual toolchain/runtime, discovers all suites,
-  executes one clean complete run and captures state/browser/visual evidence;
-  unavailable channels are marked not run with a reason.
+- One real-input path launches, renders, completes observe → record → response →
+  return, reaches a Strong field record, and restarts to a clean field order.
+- The recorded path preserves its input trace, state checkpoints and tested-runtime
+  limitations. Other paths, devices, performance and subjective quality are not
+  additional QA gates.
 
-### Minimum recorded play paths
+### Recorded play path
 
-QA must capture, not merely describe:
+QA records only the Strong path with all five core verbs, a no-shot return, one
+Strong result and restart to the clean initial order.
 
-1. the Strong reference path with all five core verbs and a no-shot return;
-2. the Mixed path with a timely shot, its brook response and a corroborating
-   result;
-3. the Panic path reaching the declared failure/insufficient outcome;
-4. one recoverable hit that breaks the displayed highest-value plate;
-5. pause/focus loss during a raised camera and during a committed dive;
-6. restart from each terminal state back to a clean field order.
+## Character content boundaries
 
-## Character content levels and upgrade gates
-
-| Content | Current level | Minimum delivery | Upgrade gate |
+| Content | Current level | Included expression | Outside current scope |
 |---|---|---|---|
 | Forward scout | Core player role, not a predefined hero route | Performed verbs, physical equipment, field-note uncertainty and outcome history. | Identity-specific biography is added only if testers need motive after understanding the loop. |
 | Expedition / Fort Challenger | Atmosphere context | Field order, camp silhouette, smoke landmark and plate review point. | Visible companions or dialogue require evidence that absence blocks the proof/extraction premise. |

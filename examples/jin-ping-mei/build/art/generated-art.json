@@ -13,12 +13,30 @@
   "reason": "原 assets/portrait/*.png 与本作 CG 不同源：吴月娘、李瓶儿是正面对称的明代祖宗像风格（体态僵直、面容偏年长），潘金莲则是另一套三分身工笔；三者与 assets/cg/group/banquet_conflict.webp 里的人物互不相认。把 18+ 前奏 CG 从日常界面撤下之后，这批立绘变成全幅背景，身份断裂被放大。因此按 CG 谱系重出三张着装夜间立绘。",
   "identityReference": {
     "source": "examples/jin-ping-mei/build/app/assets/cg/group/banquet_conflict.webp",
-    "sourceSize": [1564, 1006],
+    "sourceSize": [
+      1564,
+      1006
+    ],
     "method": "按人物位置裁出三张身份参考图，作为 image_gen 的参考输入；提示词只写差量（时段、光照、动作、器物、构图），不重描外观，避免与参考图争夺条件。",
     "crops": {
-      "pan_jinlian": [93, 20, 656, 784],
-      "wu_yueniang": [516, 0, 1094, 784],
-      "li_pinger": [969, 20, 1532, 784]
+      "pan_jinlian": [
+        93,
+        20,
+        656,
+        784
+      ],
+      "wu_yueniang": [
+        516,
+        0,
+        1094,
+        784
+      ],
+      "li_pinger": [
+        969,
+        20,
+        1532,
+        784
+      ]
     }
   },
   "sharedPromptContract": {
@@ -75,24 +93,17 @@
         "ref_li_pinger（同上）"
       ],
       "bytes": 286184,
-      "size": [1536, 1024]
+      "size": [
+        1536,
+        1024
+      ]
     }
   ],
   "postProcessing": {
     "nightImages": "三张夜间立绘由 PNG 1536×1024 转为 WebP 1280×853，quality 88，method 6",
     "titleImage": "标题群像保留 1536×1024，转为 WebP，未缩放",
     "totalBytes": 752354,
-    "rationale": "夜间立绘沿用 examples/journey-to-the-west 的 q88 压缩约定。与原图逐张目视对照面部、金饰线脚与纸纹，无可见劣化；原始 PNG 不入库。",
+    "rationale": "三张夜间立绘由同一源规格转换为 WebP 1280×853，quality 88，method 6；原始 PNG 不入库。",
     "bundleImpact": "四张新增 WebP 合计 752354 bytes；实测运行目录 6244598 → 7012282 bytes（代码与资产合计 +767684 bytes）"
-  },
-  "executionReview": {
-    "status": "observed",
-    "reviewer": "本次改动的执行方逐张开图目视核对",
-    "checked": [
-      "三张夜间立绘与 banquet_conflict.webp 中对应人物面孔一致",
-      "三张夜间立绘彼此光照、构图、谱系一致，且着装完整，可用于非 18+ 界面与公开截图",
-      "标题群像包含三名对应人物，视线集中到玩家位置，右侧留有题字暗区，无分栏硬边、文字、水印或奖励 CG 复用"
-    ],
-    "notChecked": "未做第三方独立美术复核；本记录只说明本次逐图检查，不冒充独立美术结论。"
   }
 }

@@ -1,30 +1,42 @@
 {
-  "url": "http://127.0.0.1:5173/?seed=42&fast=1",
+  "url": "http://127.0.0.1:56237/?seed=42&fast=1",
   "viewport": "1440x900",
-  "passed": 138,
+  "passed": 94,
   "failed": 0,
   "console_errors": 0,
-  "frame_ms": {
-    "battle3_whitebull": {
-      "p50": 8.3,
-      "p95": 9.8,
-      "max": 10.3,
-      "n": 90
+  "build_bytes": 4245472,
+  "generated_screenshots": 37,
+  "screenshots_retained_in_git": false,
+  "minimalChecks": {
+    "launch": true,
+    "render": true,
+    "input": true,
+    "coreLoop": true,
+    "outcome": true,
+    "restart": true
+  },
+  "qa": {
+    "command": "python3 test/verify.py",
+    "exitCode": 0,
+    "completeRun": {
+      "terminal": "ending: 三借芭蕉扇 · 完",
+      "restart": "btn-restart -> title: 西游记 · 三借芭蕉扇 (new campaign)"
     },
-    "battle3_godassist": {
-      "p50": 8.3,
-      "p95": 16.2,
-      "max": 18.6,
-      "n": 90
+    "checks": {
+      "launch": "PASS",
+      "render": "PASS",
+      "input": "PASS",
+      "coreLoop": "PASS",
+      "outcome": "PASS",
+      "restart": "PASS"
     }
   },
-  "frame_budget_ms": null,
-  "stall_gate_ms": 200.0,
-  "request_hosts": [
-    "127.0.0.1:5173"
-  ],
-  "external_hosts": [],
-  "build_bytes": 4246779,
-  "generated_screenshots": 46,
-  "screenshots_retained_in_git": false
+  "suites": [
+    {
+      "id": "browser:complete-run",
+      "executed": true,
+      "passed": true,
+      "exitCode": 0
+    }
+  ]
 }

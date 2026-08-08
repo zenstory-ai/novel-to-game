@@ -9,7 +9,7 @@ substitute render.
 | Artifact | Purpose | Evidence boundary |
 |---|---|---|
 | `project-plateau-github.jpg` | 1280×640 repository/share card | Crop and resize of a retained current-run browser frame only |
-| `RELEASE_COPY.md` | English copy and alt text tied to the captured build | Does not claim public hosting or independent approval |
+| `RELEASE_COPY.md` | English copy and alt text tied to the captured build | Does not claim public hosting or subjective quality certification |
 | `remotion/` | Reproducible 36-second English launch-video project | Wraps the full 30-second capture with captions, CTA, Fish Audio narration and original procedural sound |
 
 The reproducible `clip/` directory is ignored by Git. Raw takes, encodes, marks,
@@ -45,12 +45,11 @@ To render the captioned 1920×1080 launch version:
 ```bash
 cd examples/project-plateau/build/media/remotion
 npm install
-npm run render:frames
 npm run render
 npm run verify
 ```
 
-The Remotion source is tracked; prepared inputs, review frames and output MP4s
+The Remotion source is tracked; prepared inputs and output MP4s
 are ignored derived artifacts. Its delivery command emits H.264 `yuv420p`
 BT.709 limited-range video with AAC stereo and fast-start metadata.
 
@@ -67,4 +66,4 @@ The Remotion project also produces a two-pass 1080p H.264 GitHub delivery under
 - The current-run report proves browser states and player-visible effects; it
   does not prove subjective visual quality.
 - The captioned launch video adds claims and motion graphics around the recorded
-  run; it does not upgrade the run into independent QA evidence.
+  run; it is not part of the minimum game QA evidence.

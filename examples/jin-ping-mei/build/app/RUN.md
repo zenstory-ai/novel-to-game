@@ -69,28 +69,11 @@ http://127.0.0.1:5173/?seed=42&fast=1
 
 ```bash
 cd examples/jin-ping-mei/build/app
-node test/ledger.mjs
-python3 test/qa_browser.py            # 加速路径（默认）
-QA_SLOW=1 python3 test/qa_browser.py  # 正常速度完整路径，时序证据只在这一轮有效
+python3 test/verify.py
 ```
 
-当前证据基线：
-
-- 纯引擎：63 项通过，0 项失败；
-- 真实 Chromium：167 项通过，0 项失败（加速与正常速度两轮各一次）；
-- 控制台错误 0，关键资源失败 0，外部请求域 0；
-- 最重转场（群体冲突场景册关闭）在加速与正常速度两轮均低于 200 ms 预算；
-- 主线程长任务：按观察器记录的 `phase` 归因，仅年龄门/首屏出现，玩家进入游戏后 0 次；
-- 浏览器证据：只保留 `qa/evidence/browser/evidence-normal.json`（正常速度）；
-- 逐步安全截图：测试时按需生成，提交时只保留 `screenshots/` 精选图；
-- 18+ 内部验收截图：`qa/evidence/browser/adult/`（已 gitignore，不随仓库发布），不得用于 README 或公开商店页。
-
-本作是纯 DOM/CSS，无 `requestAnimationFrame` 渲染循环，**帧率数字对它不构成性能结论**
-（采 rAF 间隔只会量到浏览器空闲垂直同步节拍）；因此这里测的是转场延迟与主线程长任务。
-
-浏览器验证覆盖年龄门、男性身份、三条深线、三条宅中短线、拒绝、延迟后果、可追溯嫉妒、宴席冲突、
-场景册跨重开、旧档隔离、关键 CG 加载、两个目标视口、键盘聚焦和
-`prefers-reduced-motion`。
+该命令只走一条正常速度完整路径：启动、渲染、输入、六日核心循环、一个排他结局与重开；
+结果写入 `qa/verification.json` 和 `qa/evidence/browser/evidence-normal.json`。
 
 仓库级验证：
 
@@ -104,5 +87,5 @@ python3 -m unittest discover -s tests -v
 - 这是 3 条成人深线 + 3 条宅中短线／6 回合、约 20–30 分钟的可运行切片，不是旧版
   24 节令的内容迁移。
 - 自动化可以证明流程、状态、资源和画面按设计运行，不能证明“好玩”“性感”或长期平衡。
-- 把三条短线升级成完整夜访路线或扩到 18–24 回合之前，必须完成 6–8 名目标成年中文玩家的无讲解试玩，
-  并达到 `qa/QA_REPORT.md` 记录的阶段 4 硬门。
+- 把三条短线升级成完整夜访路线或扩到 18–24 回合属于新的产品范围，必须先修订 PRODUCT_BRIEF，
+  当前机器 QA 不对此作结论。

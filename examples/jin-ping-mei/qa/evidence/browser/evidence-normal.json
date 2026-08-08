@@ -1,62 +1,24 @@
 {
   "url": "http://127.0.0.1:5173/?seed=42",
   "normal_speed_run": true,
-  "viewports": [
-    "1280x800",
-    "1920x1080"
-  ],
-  "scaled_age_gate_viewports": [
-    "1280x800@200%-text",
-    "1920x1080@200%-text"
-  ],
-  "passed": 167,
+  "passed": 55,
   "failed": 0,
   "console_errors": [],
   "network_errors": [],
   "http_errors": [],
-  "performance": {
-    "note": "纯 DOM/CSS，无 rAF 渲染循环；帧率对本作无意义，改测转场延迟与主线程长任务",
-    "local_load_ms": 32.1,
-    "transitions": {
-      "banquet_conflict_close": {
-        "transition_to_paint_ms": 4.7
-      }
-    },
-    "transition_budget_ms": 200.0,
-    "longtasks_over_50ms": [
-      {
-        "ms": 170,
-        "at": 957,
-        "phase": "?"
-      }
-    ],
-    "stall_gate_ms": 200.0,
-    "build_bytes": 7012450
-  },
-  "request_hosts": [
-    "127.0.0.1:5173"
-  ],
-  "external_hosts": [],
+  "build_bytes": 7011176,
   "safe_screenshots": [
     "01_age_gate.jpg",
-    "01_age_gate_200pct_text.jpg",
     "02_title.jpg",
     "03_opening_choice_done.jpg",
     "04_delayed_yue_morning.jpg",
     "06_banquet_conflict.jpg",
     "07_exclusive_ending.jpg",
-    "08_gallery_after_yue.jpg",
-    "09_jealousy_chain.jpg",
     "household_li_jiaoer.jpg",
     "household_meng_yulou.jpg",
     "household_sun_xuee.jpg"
   ],
   "adult_screenshots": [
-    "gallery_replay_yue_prelude.jpg",
-    "pan_explicit.jpg",
-    "pan_prelude.jpg",
-    "pinger_explicit.jpg",
-    "pinger_prelude.jpg",
     "yue_day1_prelude.jpg",
     "yue_day2_prelude.jpg",
     "yue_day3_explicit.jpg",
@@ -64,5 +26,37 @@
     "yue_day5_explicit.jpg",
     "yue_day6_explicit.jpg"
   ],
-  "screenshots_retained_in_git": false
+  "screenshots_retained_in_git": false,
+  "minimalChecks": {
+    "launch": true,
+    "render": true,
+    "input": true,
+    "coreLoop": true,
+    "outcome": true,
+    "restart": true
+  },
+  "qa": {
+    "command": "python3 test/verify.py",
+    "exitCode": 0,
+    "completeRun": {
+      "terminal": "exclusive-ending",
+      "restart": "day-1-opening"
+    },
+    "checks": {
+      "launch": "PASS",
+      "render": "PASS",
+      "input": "PASS",
+      "coreLoop": "PASS",
+      "outcome": "PASS",
+      "restart": "PASS"
+    }
+  },
+  "suites": [
+    {
+      "id": "browser:complete-run",
+      "executed": true,
+      "passed": true,
+      "exitCode": 0
+    }
+  ]
 }

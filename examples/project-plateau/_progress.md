@@ -2,18 +2,16 @@
 
 - source: Arthur Conan Doyle, *The Lost World*
 - mode: quick
-- current stage: smoke-complete
+- current stage: minimum QA complete
 - targetFinish: playable-prototype
-- assuranceProfile: smoke
-- current candidate proof: `qa/verification.json`
+- current machine record: `qa/verification.json`
 
 ## Current result
 
-- Scope complete — all 16 chapters are covered, the field-record survival direction is selected, and the
-  1–3 minute expedition loop plus art direction are frozen.
-- Smoke PASS — the browser candidate builds and one complete route, outcome, and restart run successfully.
+- Scope complete: all 16 chapters are covered, the field-record survival direction is selected, and the 1–3 minute
+  expedition loop plus art direction are frozen.
+- Playable loop complete: the browser candidate builds; real input completes one route, reaches an outcome and
+  restarts from a clean state.
 
-## Claim boundary
-
-The current claim is one playable route, not release readiness. Independent first-time comprehension remains open. Old numbered iteration
-families are available in Git history rather than the working tree.
+The record proves one tested desktop-browser route. It does not prove other browsers, GPUs or devices, subjective
+anatomy, composition, comfort, fun, balance, rights clearance or publication quality.

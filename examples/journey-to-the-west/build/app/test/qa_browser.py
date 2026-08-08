@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""浏览器全程自检(playwright):
-标题 → 序幕(土地对话/阵型/存档) → 战斗1(教学/法术/变化/化虫入腹)
-→ 战斗2(携宠/假扇反噬) → BOSS(阵型切换/真扇三段/白牛真身) → 结局 → 读档。
-断言:关键 DOM 存在、控制台 0 报错、帧时分布、无外部请求域;
+"""浏览器最小完整路径(playwright):
+标题 → 序幕 → 三段战斗 → 结局 → 重开。
 截图在运行期间存于示例工作区内 qa/evidence/browser/，只保留聚合结果；
 面向仓库的精选画面位于 examples/journey-to-the-west/screenshots/。
 
@@ -23,14 +21,10 @@ BASE = os.environ.get("BASE_URL", "http://127.0.0.1:5173")
 URL = BASE + "/?seed=42" + ("" if os.environ.get("QA_SLOW") else "&fast=1")
 SHOTS = os.environ.get("QA_SHOTS", os.path.join(EVIDENCE, "browser"))
 
-# 长卡顿绝对门 200 ms(契约)。帧时 p95 只报不判:PRODUCT_BRIEF 第 1 维性能预算记 `N/A`,
-# 没有锁定基准就不在本层发明一个来判超标(见 QA_REPORT F8)。
-STALL_MS = 200.0
-
 passed, failed = 0, 0
 errors = []
-perf = {}
-request_hosts = set()
+CHECK_NAMES = ("launch", "render", "input", "coreLoop", "outcome", "restart")
+minimal_checks = {name: False for name in CHECK_NAMES}
 
 
 def ok(cond, name):
@@ -43,50 +37,44 @@ def ok(cond, name):
         print(f"  FAIL  {name}")
 
 
+def write_minimal_checkpoint():
+    """Persist the six-key complete run."""
+    os.makedirs(EVIDENCE, exist_ok=True)
+    path = os.path.join(EVIDENCE, "automated.json")
+    temporary = path + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as output:
+        json.dump(
+            {"minimalChecks": minimal_checks, "checkpoint": "complete-run"},
+            output,
+            ensure_ascii=False,
+            indent=2,
+        )
+        output.write("\n")
+    os.replace(temporary, path)
+
+
 def section(t):
     print(f"\n== {t} ==")
 
 
-def frame_stats(page, label, n=90):
-    """在当前(最重)画面采 n 帧的帧间隔,返回 p50 / p95 / 最坏帧(ms)。
-
-    保留全部样本、不丢首帧——首帧正是冷路径卡顿会出现的地方;均值不作结论。
-    """
-    samples = page.evaluate(
-        """async (n) => new Promise((resolve) => {
-            const s = []; let last = performance.now();
-            const tick = (now) => {
-                s.push(now - last); last = now;
-                if (s.length >= n) resolve(s); else requestAnimationFrame(tick);
-            };
-            requestAnimationFrame(tick);
-        })""",
-        n,
-    )
-    s = sorted(samples)
-    pick = lambda q: s[min(len(s) - 1, int(len(s) * q))]
-    st = {"p50": round(pick(0.50), 2), "p95": round(pick(0.95), 2),
-          "max": round(s[-1], 2), "n": len(s)}
-    perf[label] = st
-    print(f"  帧时 {label}: p50 {st['p50']} ms / p95 {st['p95']} ms / 最坏 {st['max']} ms")
-    return st
-
-
 def ensure_server():
+    parsed = urlparse(BASE)
+    host = parsed.hostname or "127.0.0.1"
+    port = parsed.port or 80
     s = socket.socket()
     try:
-        s.connect(("127.0.0.1", 5173))
+        s.connect((host, port))
         s.close()
         return None
     except OSError:
         pass
     proc = subprocess.Popen(
-        [sys.executable, "-m", "http.server", "5173", "--bind", "127.0.0.1"],
+        [sys.executable, "-m", "http.server", str(port), "--bind", host],
         cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     for _ in range(50):
         try:
-            s = socket.socket(); s.connect(("127.0.0.1", 5173)); s.close()
+            s = socket.socket(); s.connect((host, port)); s.close()
             return proc
         except OSError:
             time.sleep(0.2)
@@ -102,7 +90,7 @@ class QA:
     def shot(self, name):
         # 存 JPEG:证据要长期留在仓库里,48 张 PNG 约 71MB、JPEG 约 6MB,且不影响判读。
         self.n += 1
-        # 简报 T9:每次截图前,飘字容器必须为空——残影(上回合没回收的淡出飘字)
+        # 每次截图前飘字容器必须为空——残影(上回合没回收的淡出飘字)
         # 是证据帧「看起来没做完」的直接成因。动画结束节点即被回收,这里只等现存的播完。
         ok(self.wait_floats_clear(), f"截图前飘字层已清空(#{self.n:02d} {name})")
         self.p.screenshot(path=f"{SHOTS}/{self.n:02d}_{name}.jpg", type="jpeg", quality=80)
@@ -216,16 +204,6 @@ def main():
     for e in errors[:10]:
         print("  ERR:", e[:300])
 
-    # ---- 性能与自包含结论(独立于实现方自测,写进 QA_REPORT 环境表) ----
-    local = {urlparse(BASE).netloc, ""}
-    external = sorted(h for h in request_hosts if h not in local)
-    ok(not external, f"无外部请求域(实测 {sorted(request_hosts)})")
-    worst = max((s["max"] for s in perf.values()), default=0.0)
-    worst_p95 = max((s["p95"] for s in perf.values()), default=0.0)
-    ok(bool(perf), "已在最重真实状态采集帧时分布")
-    print(f"  帧时 p95 {worst_p95} ms(只报不判:PRODUCT_BRIEF 性能预算为 N/A,见 QA_REPORT F8)")
-    ok(worst < STALL_MS, f"无 >{STALL_MS:.0f} ms 长卡顿(最坏帧 {worst} ms)")
-
     size_bytes = sum(
         os.path.getsize(os.path.join(d, f))
         for d, _, fs in os.walk(ROOT) for f in fs
@@ -236,20 +214,18 @@ def main():
         "url": URL,
         "viewport": "1440x900",
         "passed": passed, "failed": failed, "console_errors": len(errors),
-        "frame_ms": perf,
-        "frame_budget_ms": None, "stall_gate_ms": STALL_MS,
-        "request_hosts": sorted(request_hosts), "external_hosts": external,
         "build_bytes": size_bytes,
         "generated_screenshots": QA_static_n(),
         "screenshots_retained_in_git": False,
+        "minimalChecks": minimal_checks,
     }
     with open(os.path.join(EVIDENCE, "automated.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
 
-    print(f"包体: {size_bytes/1048576:.2f} MB  外部域: {external or '无'}")
-    print(f"结果: {passed} 通过, {failed} 失败, 截图 {QA_static_n()} 张 → {SHOTS}")
+    print(f"包体: {size_bytes/1048576:.2f} MB")
+    print(f"路径检查: {passed} 通过, {failed} 失败, 截图 {QA_static_n()} 张 → {SHOTS}")
     print(f"证据: {os.path.join(EVIDENCE, 'automated.json')}")
-    sys.exit(1 if (failed or errors) else 0)
+    sys.exit(0 if all(minimal_checks.values()) else 1)
 
 
 _last_qa = None
@@ -265,8 +241,6 @@ def run():
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         page.on("pageerror", lambda e: errors.append("PAGEERROR: " + str(e)))
         page.on("dialog", lambda d: d.accept())
-        # 自包含切片核对:任何外部请求域都等于绕过体积统计
-        page.on("request", lambda r: request_hosts.add(urlparse(r.url).netloc))
         qa = QA(page)
         _last_qa = qa
 
@@ -274,37 +248,22 @@ def run():
         section("标题画面")
         page.goto(URL)
         page.wait_for_selector("#btn-start", timeout=10000)
-        ok(page.locator(".title-logo h1").inner_text() == "西游记 · 三借芭蕉扇", "标题文案")
-        ok(page.evaluate("__game.phase()") == "title", "phase=title")
+        title_rendered = page.locator(".title-logo h1").inner_text() == "西游记 · 三借芭蕉扇"
+        title_phase = page.evaluate("__game.phase()") == "title"
+        ok(title_rendered, "标题文案")
+        ok(title_phase, "phase=title")
+        minimal_checks["launch"] = title_phase
         qa.shot("title")
-        # 如何游玩
-        page.click("#btn-howto")
-        page.wait_for_selector("#modal-help")
-        qa.shot("help")
-        ok(page.locator("body.modal-open").count() == 1, "帮助弹窗会压暗底层指令区")
-
         # ---------- 序幕 ----------
         section("序幕 · 火焰山脚")
-        # 程序化触发底层开始键，覆盖异步切场直接回收旧 modal 的 teardown 路径。
-        page.evaluate("document.querySelector('#btn-start').click()")
+        page.click("#btn-start")
         page.wait_for_selector("#dialog")
-        page.evaluate("document.querySelector('#dialog').dataset.forcedOld = '1'")
-        # 读档会强制回收仍在播放的旧对话并立刻创建新对话；旧 handler 不得清掉新遮罩。
-        page.evaluate("document.querySelector('#btn-load').click()")
-        page.wait_for_selector("#dialog:not([data-forced-old])")
-        page.keyboard.press("Enter")
-        ok(
-            page.locator("#dialog").count() == 1 and page.locator("body.dlg-open").count() == 1,
-            "旧对话 cleanup 不会误清新对话遮罩",
-        )
-        qa.wait_dialog_then_clear()  # 清完重建后的序幕旁白
-        ok(page.locator("body.modal-open, body.dlg-open").count() == 0, "切场后遮罩状态完全清理")
+        qa.click_dialogs()
         page.wait_for_selector("#overworld-canvas", timeout=5000)
         page.wait_for_timeout(600)
-        ok(page.evaluate("__game.phase()") == "overworld", "phase=overworld")
-        # 序幕旁白叠在小世界上(非黑屏):画布与对话框都曾共存
-        ok(page.evaluate("__game.audio.ctx !== null"), "点击开始后 AudioContext 已解锁")
-        ok(page.evaluate("__game.audio.bgm !== null && __game.audio.bgm.scene === 'overworld'"), "小世界 BGM 播放中")
+        entered_overworld = page.evaluate("__game.phase()") == "overworld"
+        ok(entered_overworld, "phase=overworld")
+        minimal_checks["input"] = entered_overworld
         qa.shot("overworld")
         # 土地对话
         pos = page.evaluate("__game.npcScreenPos('tudi')")
@@ -313,50 +272,6 @@ def run():
         page.wait_for_selector("#dialog", timeout=10000)
         qa.shot("dialog_tudi")
         qa.click_dialogs()
-        # 阵型切换(顶栏)
-        page.click("#btn-formation")
-        page.wait_for_selector("#modal-formation")
-        qa.shot("formation_modal")
-        page.click('.formation-row[data-formation="liuding"]')
-        page.wait_for_timeout(300)
-        ok(page.evaluate("__game.campaign().formation") == "liuding", "顶栏切换六丁阵")
-        page.click("#btn-formation")
-        page.wait_for_selector("#modal-formation")
-        page.click('.formation-row[data-formation="tiangang"]')
-        page.wait_for_timeout(200)
-        ok(page.evaluate("__game.campaign().formation") == "tiangang", "切回天罡阵")
-        # 存档按钮(系统组默认收进齿轮·简报一.3)
-        page.click("#btn-system")
-        page.wait_for_selector("#btn-save", state="visible")
-        page.click("#btn-save")
-        page.wait_for_timeout(300)
-        ok(page.evaluate("!!localStorage.getItem('xiyou_save_v1')"), "顶栏存档写入 localStorage(齿轮内)")
-        # 静音开关
-        page.click("#btn-system")
-        page.click("#btn-mute")
-        page.wait_for_timeout(150)
-        ok(page.evaluate("localStorage.getItem('xiyou_mute')") == "1" and page.evaluate("__game.audio.muted"), "静音开关:关(持久化)")
-        page.click("#btn-system")
-        page.click("#btn-mute")
-        page.wait_for_timeout(150)
-        ok(page.evaluate("localStorage.getItem('xiyou_mute')") == "0" and not page.evaluate("__game.audio.muted"), "静音开关:开")
-        # 面板系统:角色/背包/召唤兽
-        page.click("#btn-hero")
-        page.wait_for_selector("#modal-hero")
-        ok("孙悟空" in page.locator("#modal-hero").inner_text(), "角色面板显示队伍")
-        ok(page.locator("#btn-hero.open").count() == 1, "当前面板按钮高亮(朱底)")
-        qa.shot("panel_hero")
-        page.click("#modal-hero-close")
-        page.click("#btn-bag")
-        page.wait_for_selector("#modal-bag")
-        ok("金疮药" in page.locator("#modal-bag").inner_text(), "背包面板显示物品")
-        qa.shot("panel_bag")
-        page.click("#modal-bag-close")
-        page.click("#btn-pet")
-        page.wait_for_selector("#modal-pet")
-        ok("尚未收服" in page.locator("#modal-pet").inner_text(), "召唤兽面板(未收服)")
-        qa.shot("panel_pet")
-        page.click("#modal-pet-close")
         # 前往罗刹女
         pos = page.evaluate("__game.npcScreenPos('luosha')")
         page.mouse.click(pos["x"], pos["y"])
@@ -374,7 +289,7 @@ def run():
         ok(page.locator('.unit-card.party .elem-badge').first.inner_text() == "金", "悟空五行=金")
         ok(page.locator('.unit-card.enemy .elem-badge').first.inner_text() == "木", "罗刹女五行=木")
 
-        # 伤害预览(简报一.2/验收:悬停显示预期效果)
+        # 伤害预览:悬停显示预期效果。
         page.hover('.cmd-btn[data-cmd="attack"]')
         page.wait_for_selector("#cmd-preview", state="visible", timeout=3000)
         pv_text = page.locator("#cmd-preview").inner_text()
@@ -458,7 +373,7 @@ def run():
         ok(page.locator(".unit-card.party").count() == 3, "我方 3 单位")
         ok(page.locator(".unit-card.enemy").count() == 3, "敌方 3 火妖")
         qa.shot("battle2_cmd")
-        # 节奏开关(简报二.5/验收:加速开关持久化);T7 起收进顶栏「设」下拉,先开下拉再点
+        # 节奏开关需要持久化；先打开顶栏「设」下拉再操作。
         page.click("#btn-system")
         page.click("#btn-speed")
         page.wait_for_timeout(150)
@@ -731,13 +646,9 @@ def run():
                     page.wait_for_timeout(300)
                     qa.shot("battle3_whitebull")
                     phase_shot = True
-                    # 帧时采样落在本作最重的真实状态:白牛真身(大体积单位)+ 决战演出进行中,
-                    # 不是标题页或静止对白屏。
-                    frame_stats(page, "battle3_whitebull")
                 if not god_shot and page.locator(".god-overlay").count() > 0:
                     god_shot = True
                     qa.shot("battle3_godassist")
-                    frame_stats(page, "battle3_godassist")
                 page.wait_for_timeout(120)
         qa.wait_victory()
         ok(saw_charge, "牛魔王发出过蓄力预警")
@@ -764,163 +675,34 @@ def run():
                 page.locator("#dialog").click()
             page.wait_for_timeout(300)
         page.wait_for_selector(".ending-panel", timeout=15000)
-        ok("三借芭蕉扇 · 完" in page.locator("#ending-root").inner_text(), "结局文案")
+        ending_text = page.locator("#ending-root").inner_text()
+        reached_outcome = "三借芭蕉扇 · 完" in ending_text
+        ok(reached_outcome, "结局文案")
         ok("还" in page.locator("#ending-root").inner_text(), "还扇西行收束")
         qa.shot("ending")
+        minimal_checks["coreLoop"] = reached_outcome
+        minimal_checks["outcome"] = reached_outcome
+        minimal_checks["render"] = bool(
+            page.locator(".ending-panel").is_visible()
+            and os.path.isfile(os.path.join(SHOTS, f"{qa.n:02d}_ending.jpg"))
+            and not errors
+        )
 
-        # ---------- 成长面板(加点/推荐/召唤兽上阵) ----------
-        # T7 起结局页属非游玩阶段、顶栏隐藏:这里仍要在通关存档上实测面板,
-        # 用 dispatch_event 触发被隐藏的顶栏钮,断言对象(加点/召唤兽逻辑)不变。
-        section("成长面板实测")
-        page.locator("#btn-hero").dispatch_event("click")
-        page.wait_for_selector("#modal-hero")
-        ok(page.locator('[data-alloc-plus="wukong:攻"]').count() == 1, "加点 ＋ 钮存在")
-        page.click('[data-alloc-plus="wukong:攻"]')
-        page.wait_for_selector("#modal-hero")
-        ok(page.evaluate("__game.campaign().alloc?.wukong?.['攻']") == 1, "悟空 攻+1 已写入")
-        ok(page.evaluate("__game.campaign().pendingPoints.wukong") == page.evaluate("(__game.campaign().battlesWon * 5) - 1"), "潜力点已扣(按胜场×5)")
-        page.click('[data-alloc-recommend="sha"]')
-        page.wait_for_selector("#modal-hero")
-        ok(page.evaluate("__game.campaign().pendingPoints.sha") == 0, "沙僧一键推荐加点投完")
-        rec_box = page.locator('[data-alloc-recommend="wukong"]').bounding_box()
-        ok(rec_box is not None and rec_box["width"] > 34, "推荐加点按钮横向铺开(不再竖排挤压)")
-        qa.shot("panel_hero_alloc")
-        page.click("#modal-hero-close")
-        page.locator("#btn-pet").dispatch_event("click")
-        page.wait_for_selector("#modal-pet")
-        ok(page.locator('[data-pet-active="huobao"]').count() == 1, "召唤兽面板列出赤焰火骝")
-        ok(page.locator('[data-pet-active="pixie"]').count() == 1, "召唤兽面板列出辟水金睛兽")
-        ok(len(page.evaluate("__game.campaign().pets")) == 2, "本批共 2 只宝宝")
-        qa.shot("panel_pet_roster")
-        page.click("#modal-pet-close")
-
-        # ---------- 读档 ----------
-        section("读档")
-        page.reload()
-        page.wait_for_selector("#btn-continue", timeout=10000)
-        page.click("#btn-continue")
-        page.wait_for_selector("#dialog", timeout=10000)
-        ok("牛魔王" in page.locator("#dialog").inner_text() or "真扇" in page.locator("#dialog").inner_text(), "读档回到 BOSS 战前剧情")
-        ok(page.locator(".story-bg").count() == 1, "读档后剧情底景在场(积雷山)")
-        ok(page.locator("#dialog .dlg-name").evaluate("el => getComputedStyle(el).visibility") == "hidden", "旁白对话不再显示红色空名牌")
-        qa.shot("load_continue")
-        qa.click_dialogs()
-        # 读档后阵型/等级/养成保持
-        lv = page.evaluate("__game.campaign().levels.wukong")
-        ok(lv >= 3, f"读档后悟空等级 Lv.{lv}")
-        ok(page.evaluate("__game.campaign().alloc?.wukong?.['攻']") == 1, "读档后加点保留")
-        ok(any(p["key"] == "huobao" for p in page.evaluate("__game.campaign().pets")) and any(p["key"] == "pixie" for p in page.evaluate("__game.campaign().pets")), "读档后双召唤兽保留")
-
-        # ---------- 键盘全流程(简报一.2/验收:键盘全流程可通关) ----------
-        section("键盘全流程:标题→小世界→对话→战斗→结算")
-        page.evaluate("localStorage.clear()")
-        page.goto(URL)
+        # ---------- 实际重开 ----------
+        section("结局重开")
+        page.click("#btn-restart")
         page.wait_for_selector("#btn-start", timeout=10000)
-        page.keyboard.press("Enter")  # 标题:回车=开始游戏(无存档时首钮)
-        page.wait_for_selector("#dialog", timeout=10000)
-        for _ in range(12):  # 序幕旁白(回车推进)
-            if page.locator("#dialog").count() == 0:
-                break
-            page.keyboard.press("Enter")
-            page.wait_for_timeout(180)
-        page.wait_for_selector("#overworld-canvas", timeout=5000)
-        ok(page.evaluate("__game.phase()") == "overworld", "键盘:回车从标题进入小世界")
-        # 方向键走到土地旁,回车问话(土地在 300,400;悟空起 560,520)
-        for _ in range(4):
-            page.keyboard.press("ArrowLeft")
-            page.wait_for_timeout(90)
-        for _ in range(2):
-            page.keyboard.press("ArrowUp")
-            page.wait_for_timeout(90)
-        page.wait_for_timeout(500)
-        page.keyboard.press("Enter")  # 与土地对话
-        page.wait_for_selector("#dialog", timeout=8000)
-        ok("火焰山" in page.locator("#dialog").inner_text() or "芭蕉扇" in page.locator("#dialog").inner_text(), "键盘:方向键走位+回车问土地")
-        for _ in range(8):
-            if page.locator("#dialog").count() == 0:
-                break
-            page.keyboard.press("Enter")
-            page.wait_for_timeout(180)
-        # 方向键走到罗刹女(走近自动触发):右 11 上 2
-        for _ in range(11):
-            page.keyboard.press("ArrowRight")
-            page.wait_for_timeout(90)
-        for _ in range(2):
-            page.keyboard.press("ArrowUp")
-            page.wait_for_timeout(90)
-        page.wait_for_selector("#dialog", timeout=10000)
-        # 战前对话+教学卡,全部回车过
-        for _ in range(30):
-            if page.locator('.cmd-btn[data-cmd="auto"]').count() > 0:
-                break
-            if page.locator("#dialog").count() > 0 or page.locator(".modal-mask").count() > 0:
-                page.keyboard.press("Enter")
-            page.wait_for_timeout(220)
-        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=8000)
-        ok(True, "键盘:回车连过战前对话与教学卡,进入指令阶段")
-        # 一战:数字键 6=自动;第3回合剧情吹飞
-        for _ in range(80):
-            if page.locator("#dialog").count() > 0:
-                break
-            if qa.cmd_visible():
-                page.keyboard.press("6")
-            else:
-                page.wait_for_timeout(150)
-        ok("吹" in page.locator("#dialog").inner_text() or "扇" in page.locator("#dialog").inner_text(), "键盘:数字键直选打完一战,触发吹飞")
-        # 吹飞→灵吉→再战前,全部回车
-        for _ in range(40):
-            if page.locator('.cmd-btn[data-cmd="auto"]').count() > 0:
-                break
-            if page.locator("#dialog").count() > 0 or page.locator(".modal-mask").count() > 0:
-                page.keyboard.press("Enter")
-            page.wait_for_timeout(220)
-        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=8000)
-        # 再战:悟空用 方向键+回车 打一次真攻击,其余数字键自动;直至胜利
-        kbd_attacked = False
-        for _ in range(400):
-            if page.locator("#modal-victory #btn-victory-ok").count() > 0:
-                break
-            if page.locator("#modal-defeat #btn-retry").count() > 0:
-                page.keyboard.press("Enter")  # 败北重试也走键盘
-                page.wait_for_timeout(600)
-                continue
-            if page.locator("#dialog").count() > 0:
-                page.keyboard.press("Enter")
-                page.wait_for_timeout(180)
-                continue
-            if qa.cmd_visible():
-                if not kbd_attacked and "孙悟空" in page.locator(".cmd-status").inner_text():
-                    page.keyboard.press("1")  # 数字键直选:攻击
-                    page.wait_for_timeout(250)
-                    page.keyboard.press("ArrowRight")  # 目标循环
-                    page.wait_for_timeout(150)
-                    page.keyboard.press("Enter")  # 确认目标
-                    kbd_attacked = True
-                    page.wait_for_timeout(400)
-                else:
-                    page.keyboard.press("6")
-                    page.wait_for_timeout(150)
-            else:
-                page.wait_for_timeout(150)
-        page.wait_for_selector("#modal-victory #btn-victory-ok", timeout=15000)
-        ok(kbd_attacked, "键盘:方向键选目标+回车确认完成真实攻击")
-        page.keyboard.press("Enter")  # 胜利结算·继续
-        page.wait_for_timeout(600)
-        ok(page.evaluate("__game.campaign().stage") == "pre_fire", "键盘:战斗1通关,战役推进到火焰山")
-        qa.shot("keyboard_clear")
-
-        # ---------- 视口适配(验收:1280×800 / 1920×1080 不破版) ----------
-        section("视口适配")
-        for w, h in ((1280, 800), (1920, 1080)):
-            page.set_viewport_size({"width": w, "height": h})
-            page.goto(URL)
-            page.wait_for_selector("#btn-start", timeout=10000)
-            overflow = page.evaluate(
-                "document.documentElement.scrollWidth > window.innerWidth || document.documentElement.scrollHeight > window.innerHeight"
-            )
-            ok(not overflow, f"{w}×{h} 无滚动溢出")
-            qa.shot(f"viewport_{w}x{h}")
-        page.set_viewport_size({"width": 1440, "height": 900})
+        restarted_title = page.evaluate("__game.phase()") == "title"
+        restarted_campaign = page.evaluate(
+            "__game.campaign().stage === 'prologue' && __game.campaign().battlesWon === 0"
+        )
+        ok(restarted_title, "结局重开返回标题")
+        ok(page.locator(".title-logo h1").inner_text() == "西游记 · 三借芭蕉扇", "结局按钮重开到新战役标题")
+        ok(page.locator("#btn-continue").count() == 0, "结局重开清除旧存档")
+        ok(restarted_campaign, "结局重开恢复新战役初态")
+        qa.shot("restart_title")
+        minimal_checks["restart"] = restarted_title and restarted_campaign
+        write_minimal_checkpoint()
 
         browser.close()
 

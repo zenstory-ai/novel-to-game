@@ -429,10 +429,10 @@ beats.
 | Dynamic media | Experience role | Duration / rhythm | State position | Fallback | Class |
 |---|---|---|---|---|---|
 | Title live-world loop | Establish plate-to-living-world identity before play. | 8–12 s seamless loop; one smoke rise and one distant wing crossing. | Title / menu only. | Static colour scene behind the plate; title/menu timing unchanged. | Degradable |
-| Connected real-time route | Deliver every core verb and spatial decision under free look. | Full 1–3 minute run; no authored camera cuts or empty travel added to stretch duration. | Active play. | None; a non-interactive substitute fails the product. | Release gate |
-| Plate-exposure sequence | Make commitment, grading and material proof continuous. | 180 ms raise, player-paced settle, 80 ms shutter, two-second commitment, preview. | Camera action. | Reduced-motion static raise/preview with identical lock and world-state timing. | Release gate |
-| Pterodactyl state motion | Expose distant/watch/search/attack and cover/rifle response. | Multi-second continuous cycles; dive must telegraph before contact. | Development/test beats. | Simpler authored silhouette poses and shadow track with full audio/state timing. | Release gate |
-| Iguanodon behaviour loop | Supply living evidence windows and wonder without a cutscene. | Grazing base loop plus young play and branch-pull events, each with readable anticipation/recovery. | Glade combination beat. | One adult + one young with pose/scale reuse; behaviour events remain. | Release gate |
+| Connected real-time route | Deliver every core verb and spatial decision under free look. | Full 1–3 minute run; no authored camera cuts or empty travel added to stretch duration. | Active play. | None; a non-interactive substitute fails the product. | Required |
+| Plate-exposure sequence | Make commitment, grading and material proof continuous. | 180 ms raise, player-paced settle, 80 ms shutter, two-second commitment, preview. | Camera action. | Reduced-motion static raise/preview with identical lock and world-state timing. | Required |
+| Pterodactyl state motion | Expose distant/watch/search/attack and cover/rifle response. | Multi-second continuous cycles; dive must telegraph before contact. | Development/test beats. | Simpler authored silhouette poses and shadow track with full audio/state timing. | Required |
+| Iguanodon behaviour loop | Supply living evidence windows and wonder without a cutscene. | Grazing base loop plus young play and branch-pull events, each with readable anticipation/recovery. | Glade combination beat. | One adult + one young with pose/scale reuse; behaviour events remain. | Required |
 | Result plate review | Read back physical action history without leaving first-person continuity. | 0.4 s gate, 0.26 s per plate, result after last. | Terminal success/partial. | Static board with all exact plates already placed; result order unchanged. | Degradable |
 | Failure transition | Preserve cause frame, then expose actionable copy. | Under 0.6 s before readable card. | Terminal failure. | Direct cut to card after cause audio; last world frame remains as background. | Degradable |
 
@@ -475,13 +475,13 @@ readability are recorded.
 | Fort gate → result | Surviving player carries the exact case; current light/shot history; Fort ambience. | First-person hands place only intact plates; result reads exact points and action-history callback; no unexplained repaired plate. |
 | Contact → failure | Threat direction, nearest unused cover, plate/body state and current light visible. | Last frame retains those facts under the card; restart alone resets them. |
 
-## Asset gates and degradations
+## Asset priorities and degradations
 
-Every item belongs to exactly one tier.
+Every item belongs to exactly one category.
 
-### Release-gate assets
+### Required assets
 
-Missing any item below means the visual build cannot claim the complete slice:
+The complete path needs the following functions to remain visible:
 
 | Asset group | Required visual/sonic function | Rights / originality boundary |
 |---|---|---|
@@ -508,27 +508,24 @@ Missing any item below means the visual build cannot claim the complete slice:
 | Detailed plate chemistry | Subtle emulsion edge and exposure bloom. | Flat silver-black image with cue notches and physical crack. |
 | Secondary result hand motion | Individual placement/finger adjustment. | Plates already arranged on the same board, revealed in order. |
 
-Generated imagery or animation may fail without blocking the build only for the
-degradable tier. A release-gate asset may begin as a readable graybox, but the
-gate remains failed until its required function, originality record and real-
-view evidence exist.
+Generated imagery or animation may fall back only for the degradable category.
+If a required function is absent and the complete path no longer renders, the
+single `render` check fails.
 
-## Visual risks and evidence gates
+## Visual risks and diagnostic evidence
 
 | Risk | Earliest falsifiable check | Fail condition | Direction response |
 |---|---|---|---|
 | The example still reads as text-forward | First public gameplay frame at 1440×900 and thumbnail crop. | Camera, animal, threat and route cannot be understood without reading the field note. | Reduce copy/overlay, widen subject/route silhouette and recapture; do not add explanatory text. |
-| Creature looks like a modern franchise copy or generic stock dinosaur | Silhouette sheet review before textured model. | Reviewers identify a specific modern adaptation or the target/threat cannot be separated at thumbnail size. | Rework proportions/material/pose from source + museum facts; preserve original reference record. |
+| Creature looks like a modern franchise copy or generic stock dinosaur | Silhouette comparison before textured model. | The silhouette matches a specific modern adaptation too closely, or the target/threat cannot be separated at thumbnail size. | Rework proportions/material/pose from source + museum facts; preserve original reference record. |
 | Dense foliage hides decisions or tanks performance | Heaviest glade/return state in real renderer. | Route/cover/threat are unreadable or the product performance floor is missed. | Delete small foliage, merge visual masses and preserve decision-bearing edges first. |
-| Plate grades look arbitrary | Zero/one/two preview comparison without labels, then with labels. | Testers cannot match grade to visible obstruction/scale/behaviour. | Strengthen silhouette/notch/crop differences; do not solve with larger score text. |
+| Plate grades look arbitrary | Zero/one/two preview comparison without labels, then with labels. | Grade cannot be matched to visible obstruction/scale/behaviour. | Strengthen silhouette/notch/crop differences; do not solve with larger score text. |
 | Pterodactyl state depends on colour or audio alone | Grayscale, muted-audio and captioned runs. | Watch/search/attack cannot be ordered from silhouette/motion plus available accessibility channel. | Increase pose/cadence/shadow differences and caption direction. |
 | Camera motion causes discomfort | Walking, camera raise, rifle and impact with motion options. | Horizon roll, persistent bob or FOV kick obscures target/route or remains under reduced motion. | Remove optional movement; retain positional/sound consequence. |
 | Period styling romanticizes colonial conquest | Title, copy, result and reward review. | Trophy, rifle, khaki portraiture or conquest language becomes the aspirational focal point. | Re-centre camera/plates/ecology, subordinate weapon and remove triumphalist copy/music. |
 
-The art gate passes only when real screenshots/video demonstrate all five
-same-play verbs, every release-gate state, the busy-frame contrast triples and
-the seven signature moments at target viewport. Concept art alone cannot pass
-the gate.
+Visual diagnostics may illustrate these risks, but they do not add QA checks.
+Concept art alone does not establish runtime facts.
 
 ## Coverage appendix
 
@@ -547,9 +544,9 @@ state in the approved game design.
 | Distant rookery sightline | Rookery world grammar; pterodactyl palette; degradable population fallback. |
 | Covered thorn return | Cover grammar, awareness motion/audio, route moment 4 and level asset gate. |
 | Exposed creek return | Exposure grammar, decision HUD, rifle feedback, moment 4 and shot-response fallback. |
-| First-person player / camera / plate case / rifle | Tool silhouette; material table; core motion/sound; release-gate player set. |
-| Iguanodon adults and young | Family shape/motion/material; fact separation; dynamic-media and release-gate rows. |
-| Pterodactyl distant/watch/search/attack | Threat grammar; motion/audio; moment 4; dynamic-media and release-gate rows. |
+| First-person player / camera / plate case / rifle | Tool silhouette; material table; core motion/sound; required player set. |
+| Iguanodon adults and young | Family shape/motion/material; fact separation; dynamic-media and required rows. |
+| Pterodactyl distant/watch/search/attack | Threat grammar; motion/audio; moment 4; dynamic-media and required rows. |
 | Examine interaction | Core verb motion, sound, prompt triple and exploration moment. |
 | Camera exposure / zero-one-two plate results | Core verb motion, plate colour/material, moment 3, preview HUD and contrast triple. |
 | Wildlife awareness / cover | Threat grammar, state transition, sound hierarchy, accessibility redundancy. |
@@ -559,4 +556,4 @@ state in the approved game design.
 | No record / insufficient / corroborating / strong results | Result HUD, plate grades, motion/sound and signature moment 6. |
 | Second hit / timeout / boundary recovery | Feedback hierarchy, failure transition and signature moment 7. |
 | Restart | Result/failure moments and continuity reset boundary. |
-| Reduced motion / text scale / captions / colour redundancy | Camera/motion fallbacks, contrast triples, HUD rules and release-gate accessibility set. |
+| Reduced motion / text scale / captions / colour redundancy | Camera/motion fallbacks, contrast triples, HUD rules and required accessibility set. |

@@ -1,10 +1,7 @@
 {
   "language": "en",
   "title": "The Lost World · Project Plateau",
-  "publicationTier": "playable-prototype",
-  "demonstratedTier": "playable-prototype",
   "targetFinish": "playable-prototype",
-  "assuranceProfile": "smoke",
   "source": {
     "chapters": 16,
     "headingPattern": "^\\s*CHAPTER\\s+([IVXLCDM]+)\\s*$",

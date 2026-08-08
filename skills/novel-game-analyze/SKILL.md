@@ -80,7 +80,7 @@ description: "Deconstruct a novel for game adaptation. Compress a raw novel, dec
 写「原文未明确」）。此表是下游交接门的段落级比对基准；下游仍可回原文补证，发现出入时
 回上游修正此表，不得各自改写。追加这类原作事实与证据是概念选定后对 SOURCE_BIBLE 的
 唯一允许更新——SOURCE_BIBLE 不得包含下游发明物，游戏状态键名、回合或日程编号、
-scene_id、Hub/界面结构、试玩与发行计划只属于 GAME_DESIGN，不得把既有事实改写成
+scene_id、Hub/界面结构、QA 与范围计划只属于 GAME_DESIGN，不得把既有事实改写成
 切片说辞。
 
 来源范围只记录会影响复核的版本、覆盖范围和授权边界。下载日期、字节数、校验值和

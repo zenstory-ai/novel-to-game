@@ -1,11 +1,6 @@
 # 成品目标
 
 `targetFinish: playable-prototype`
-`assuranceProfile: smoke`
-`publicationTier: graybox`
-`demonstratedTier: graybox`
-`grayboxReady: PASS`
-`visualPromotion: NOT_RUN`
 
 构建《金瓶梅·风月总账》桌面网页垂直切片：成年中文玩家以西门庆的主观视角，在 6 天／6 回合内经营银钱、官势与家宅，推进吴月娘、潘金莲、李瓶儿三条关系深线，并处理孟玉楼、孙雪娥、李娇儿三段宅中短线；经历黄昏拜访、夜间亲密、次晨嫉妒／索取和公开宴席，最终得到专一、平衡或权谋三种可观察收束。
 
@@ -95,7 +90,6 @@ python3 -m http.server 5173
 - 纯引擎：路线前置／互斥、`qing/yu/du` 边界、3 策略可达性、7 个场景 schema、成年白名单、未成年隔离、场景册、旧存档隔离、seed 复现、flag 消费。
 - 集成：白天资源 → 女主选择 → 亲密节点 → 次晨嫉妒 → 新白天选项闭环；三人交叉事件不读错关系；发布模式缺 CG 失败。
 - 浏览器：年龄门 → 身份 → 三条路线完整路径；拒绝；嫉妒升级；场景册跨重开；1280×800 与 1920×1080；控制台 0 错误；安全截图与 18+ 清单隔离。
-- 人工：6–8 名目标成年中文玩家 20–30 分钟无讲解试玩记录。没有这项只能称“可运行切片”，不能声称已证明好玩、性感、长期平衡或可扩完整流程。
 
 # 构建完成记录
 
@@ -132,34 +126,21 @@ assets/cg/group/banquet_conflict.webp
 25 MB 包体预算。README 只引用
 `screenshots/title.jpg`、`household.jpg`、`morning.jpg`、`banquet.jpg`、`ending.jpg`
 五张安全截图；
-关系终段画面当时只留在 `/tmp/jpm_qa/adult/` 内部证据目录——该临时目录已失效，按现行
-契约视为无证据；复跑时改落 `qa/evidence/adult/` 受限子目录。
+关系终段画面不用于公开 README；当前机器事实只保留完整路径汇总。
 
 ### 验证
 
 ```bash
 cd examples/jin-ping-mei/build/app
-node test/ledger.mjs
-# 38 通过，0 失败
-
-python3 test/qa_browser.py
-# 124 通过，0 失败
-# 控制台错误 0；关键资源失败 0
+python3 test/verify.py
 ```
-
-浏览器证据当时为 `/tmp/jpm_qa/evidence.json`，安全／18+ 导出清单由同一文件分别记录；
-视觉迭代第 5 轮聚合分 97/100 的逐项量表在外部工具状态
-`.omx/state/jinpingmei/ralph-progress.json`。两处均为工作区外路径、现已失效，按现行
-契约视为无证据，聚合分不再作为裁决引用；复跑证据改落 `qa/evidence/`。完整结论与复审
-降级见 `qa/QA_REPORT.md`。
 
 ### 已知限制
 
 - 自动化只能证明可运行、可观察和规则可达，不能证明好玩、性感、长期平衡或商业完成度。
-- 6–8 名目标成年中文玩家无讲解试玩尚未执行；因此当前只能称“可运行垂直切片”，不得扩到
-  6 名女主或 18–24 回合。
+- 扩到 6 名完整女主或 18–24 回合属于新的产品范围，当前 QA 不授权自动扩面。
 - 当前关系终段 CG 采用强亲密、主观内寝构图，不展示器官特写；成人强度是否匹配目标受众
-  仍必须在阶段 4 试玩中单独询问。
+  不由机器 QA 判断。
 
 ## 2026-07-25：自然文案与宅中短线
 
@@ -176,13 +157,5 @@ python3 test/qa_browser.py
 ### 验证
 
 ```bash
-node test/ledger.mjs
-# 46 通过，0 失败
-
-python3 test/qa_browser.py
-# 130 通过，0 失败
-# 控制台错误 0；关键资源失败 0
+python3 test/verify.py
 ```
-
-视觉迭代第 6 轮裁决为 94/100、`pass`。三张新增立绘在 1280×800 与 1920×1080 均能完整
-加载，左侧宅中人名单未挤坏三条深线人物账。

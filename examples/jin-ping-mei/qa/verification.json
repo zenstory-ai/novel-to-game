@@ -1,10 +1,17 @@
 {
   "schemaVersion": 2,
-  "assuranceProfile": "smoke",
   "status": "PASS",
   "verify": {
-    "command": "node test/ledger.mjs && python3 test/qa_browser.py && QA_SLOW=1 python3 test/qa_browser.py",
-    "exitCode": 0
+    "command": "python3 test/verify.py",
+    "exitCode": 0,
+    "suites": [
+      {
+        "id": "browser:complete-run",
+        "executed": true,
+        "passed": true,
+        "exitCode": 0
+      }
+    ]
   },
   "completeRun": {
     "id": "jin-ping-mei-current-complete-run",
@@ -49,22 +56,12 @@
       "evidence": [
         "qa/evidence/browser/evidence-normal.json"
       ]
-    },
-    "accessibilityModes": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
     }
   },
   "limitations": [
     {
-      "scope": "first-time human comprehension",
-      "reason": "Automation proves the playable path, not unassisted first-use comprehension.",
-      "blocksProfiles": [
-        "delivery",
-        "release"
-      ]
+      "scope": "tested runtime",
+      "reason": "The recorded run used local Chromium automation; other browsers and device classes were not exercised."
     }
   ]
 }
