@@ -34,7 +34,7 @@ planning artifacts and browser evidence: <REPOSITORY_URL>
 The gameplay comes from one continuous input-only Strong-result run: cross the
 plateau, commit evidence, read two dives, spend both limited defensive shots, take
 the exposed return and deliver the record. The 30-second delivery uses disclosed
-same-take cuts and speed changes to keep those decisions readable. The
+same-take cuts at natural 1× playback to keep those decisions readable. The
 premise/CTA cards, captions, original procedural sound bed and Fish Audio
 synthetic English narration were added in Remotion. No teleport, fabricated
 state, cloned real-person voice or generated substitute gameplay. Uncut

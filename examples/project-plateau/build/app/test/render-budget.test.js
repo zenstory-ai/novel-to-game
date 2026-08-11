@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  CONTACT_OCCLUSION_PROFILE,
   MAX_RENDER_PIXEL_RATIO,
   QUALITY_PROFILES,
   advanceRenderSchedule,
@@ -38,6 +39,20 @@ test('quality profiles expose bounded fill-rate and active cadence budgets', () 
   assert.equal(qualityRenderPixelRatio(2, 'high'), MAX_RENDER_PIXEL_RATIO);
   assert.equal(QUALITY_PROFILES.low.activeFps, 45);
   assert.equal(QUALITY_PROFILES.balanced.activeFps, 60);
+});
+
+test('contact occlusion is world-scaled to grounding geometry rather than a fake scene vignette', () => {
+  assert.equal(CONTACT_OCCLUSION_PROFILE.radiusMeters, 0.72);
+  assert.ok(CONTACT_OCCLUSION_PROFILE.radiusMeters < 1);
+  assert.ok(CONTACT_OCCLUSION_PROFILE.thicknessMeters >= CONTACT_OCCLUSION_PROFILE.radiusMeters);
+  assert.ok(CONTACT_OCCLUSION_PROFILE.blendIntensity <= 0.3);
+  assert.ok(CONTACT_OCCLUSION_PROFILE.samples <= 6);
+  assert.equal(
+    CONTACT_OCCLUSION_PROFILE.role,
+    'world-space-local-contact-occlusion-of-indirect-light',
+  );
+  assert.equal(QUALITY_PROFILES.low.gtao, false);
+  assert.equal(QUALITY_PROFILES.balanced.gtao, true);
 });
 
 test('render cadence saves power on title and pause while preserving active play', () => {

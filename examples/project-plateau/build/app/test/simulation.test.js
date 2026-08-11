@@ -5,6 +5,7 @@ import {
   EXPOSURE_SECONDS,
   INITIAL_LIGHT_SECONDS,
   INITIAL_PLAYER,
+  NAVIGATION,
   applyThreatContact,
   createPlayerState,
   examine,
@@ -190,12 +191,16 @@ test('a solid obstacle blocks penetration and permits axis sliding', () => {
 });
 
 test('a long simulation step cannot tunnel through a circular obstacle', () => {
+  const boulder = NAVIGATION.obstacles.find((collider) => collider.id === 'brook-boulder');
   const player = createPlayerState();
   player.position = { x: -7.5, z: 38 };
   player.lastStablePosition = { ...player.position };
   const after = stepPlayer(player, { forward: 1, sprint: true }, 1);
 
-  assert.ok(after.position.z >= 37.45 - 1e-6, after.position);
+  assert.ok(
+    after.position.z >= boulder.z + boulder.radius + NAVIGATION.playerRadius - 1e-6,
+    after.position,
+  );
   assert.ok(after.collisions > 0, after);
 });
 

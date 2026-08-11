@@ -1,8 +1,9 @@
 # Project Plateau launch video
 
 This Remotion project turns the recorded 30-second Strong-result gameplay route into a 36-second English launch
-video. The edit uses disclosed cuts and speed changes between real gameplay segments. Captions and the procedural
-sound bed keep the sequence understandable without narration.
+video. The edit uses disclosed cuts between natural-speed gameplay segments; it does not accelerate traversal or
+slow action beats. The source take includes multi-axis movement and eased mouse turns rather than a fixed forward/
+backward route. Captions and the procedural sound bed keep the sequence understandable without narration.
 
 ## Generate narration
 

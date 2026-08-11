@@ -33,12 +33,17 @@ The capture performs one continuous input-only Strong-result run at `1280×800`:
 field order, traversal, two observation sites, four committed plates, two
 limited defensive shots, exposed extraction and the final result all happen through real
 browser input. The delivery versions use disclosed cuts between segments from
-that same take and measured per-segment speed changes so the camera commitment,
-winged dive, first rifle response, branch proof and result remain legible. They use no teleport,
-direct time advance, fabricated state, substitute render or synthetic frame. The
+that same take at natural 1x playback, using short observation and traversal
+slices instead of speed ramps. Camera commitment, the winged dive, first rifle
+response, branch proof and result remain legible without distorting player motion.
+They use no teleport, direct time advance, fabricated state, substitute render or synthetic frame. The
 30-second and 15-second encodes are H.264 High Profile, `yuv420p`, progressive,
 30 FPS, square-pixel, fast-start MP4s with exact 30/15-second durations, a
 non-black first frame and no audio track.
+
+The recorded route uses multi-axis key combinations, eased mouse turns and
+brief observation pauses. Its visible path crosses laterally as well as forward
+and backward instead of replaying a fixed-axis automation line.
 
 To render the captioned 1920×1080 launch version:
 

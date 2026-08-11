@@ -18,12 +18,19 @@ import { createPterodactyl } from '../src/pterodactyl.js';
 function templateWithMesh() {
   const template = new THREE.Group();
   const geometry = new THREE.BoxGeometry(1, 0.4, 0.8);
+  const surfaceMap = new THREE.DataTexture(new Uint8Array([128, 192, 0, 255]), 1, 1);
+  surfaceMap.needsUpdate = true;
   // Give the fixture a central, low appendage vertex so the dive pose must
   // prove it tucks legs as well as narrowing the outer wing span.
   geometry.getAttribute('position').setXYZ(0, 0, -0.2, 0.08);
   template.add(new THREE.Mesh(
     geometry,
-    new THREE.MeshStandardMaterial({ roughness: 0.3, metalness: 0.4 }),
+    new THREE.MeshStandardMaterial({
+      roughness: 0.3,
+      metalness: 0.4,
+      roughnessMap: surfaceMap,
+      metalnessMap: surfaceMap,
+    }),
   ));
   return template;
 }
@@ -63,8 +70,12 @@ test('pterodactyl loader caches one matte template with shared flight morphs', a
     mesh.geometry.userData.silhouetteRefinement,
     'integrated-torso-wing-root-volume',
   );
-  assert.equal(mesh.material.roughness, 0.86);
+  assert.ok(mesh.material.roughness >= 0.95);
   assert.equal(mesh.material.metalness, 0);
+  assert.ok(mesh.material.roughnessMap?.isTexture);
+  assert.equal(mesh.material.metalnessMap, null);
+  assert.ok(mesh.material.envMapIntensity >= 0.38 && mesh.material.envMapIntensity <= 0.46);
+  assert.ok(mesh.material.emissiveIntensity <= 0.03);
   const positions = mesh.geometry.getAttribute('position');
   const diveFold = mesh.geometry.morphAttributes.position[
     mesh.morphTargetDictionary.diveFold

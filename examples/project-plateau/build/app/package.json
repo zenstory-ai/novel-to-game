@@ -6,6 +6,13 @@
   "description": "A first-person 3D field-record survival slice inspired by Arthur Conan Doyle's The Lost World.",
   "scripts": {
     "start": "vite",
+    "generate:basalt-shelf": "node scripts/generate-basalt-shelf-library.mjs",
+    "generate:brook-boulder": "node scripts/generate-brook-boulder.mjs",
+    "generate:fern-library": "node scripts/generate-fern-library.mjs",
+    "generate:ground-cover-library": "node scripts/generate-ground-cover-library.mjs",
+    "generate:hero-gingko": "node scripts/generate-hero-gingko.mjs",
+    "generate:tree-fern-library": "node scripts/generate-tree-fern-library.mjs",
+    "generate:canopy-tree-library": "node scripts/generate-canopy-tree-library.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test test/*.test.js",

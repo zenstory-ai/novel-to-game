@@ -11,6 +11,7 @@ import {
   stepPlayer,
 } from '../src/simulation.js';
 import { terrainHeight, terrainGradient } from '../src/terrain.js';
+import { HABITAT_TREE_LAYOUT, VEGETATION_LAYOUT } from '../src/environment-layout.js';
 
 function orientedPoint(obstacle, localX, localZ) {
   const cosine = Math.cos(obstacle.rotation);
@@ -60,6 +61,33 @@ test('every solid collider is finite, uniquely identified and tied to a visible 
   }
 });
 
+test('tree-fern collision follows the solid trunk instead of the pliable crown', () => {
+  const colliders = NAVIGATION.obstacles.filter(({ id }) => id.startsWith('habitat-tree-'));
+  assert.equal(colliders.length, HABITAT_TREE_LAYOUT.length);
+  colliders.forEach((collider, index) => {
+    const [x, z, scale] = HABITAT_TREE_LAYOUT[index];
+    assert.equal(collider.x, x);
+    assert.equal(collider.z, z);
+    assert.equal(collider.height, scale * 3.5);
+    assert.equal(collider.radius, Math.max(0.42, scale * 0.48));
+    assert.equal(collider.visualAnchor, 'world.connected_route.tree-fern-sentinels');
+    assert.equal(collider.visualIndex, index);
+  });
+});
+
+test('canopy-tree collision stays registered to shared placement anchors', () => {
+  const colliders = NAVIGATION.obstacles.filter(({ id }) => id.startsWith('vegetation-tree-'));
+  assert.ok(colliders.length > 0);
+  colliders.forEach((collider) => {
+    const tree = VEGETATION_LAYOUT.trees[collider.visualIndex];
+    assert.ok(tree, collider.id);
+    assert.equal(collider.x, tree.x);
+    assert.equal(collider.z, tree.z);
+    assert.equal(collider.visualAnchor, 'world.connected_route.canopy-tree-sentinels');
+    assert.equal(collider.height, tree.trunkScale[1] * 6);
+  });
+});
+
 test('spawn and authored route checkpoints are outside all solid geometry', () => {
   const checkpoints = [
     INITIAL_PLAYER.position,
@@ -73,8 +101,12 @@ test('spawn and authored route checkpoints are outside all solid geometry', () =
 });
 
 test('circle contact follows the curved surface instead of axis-sticking', () => {
-  const start = { x: -5, z: 35 };
-  const resolved = resolveObstacleStep(start, { x: -0.22, z: -0.5 });
+  const boulder = NAVIGATION.obstacles.find((collider) => collider.id === 'brook-boulder');
+  const start = {
+    x: boulder.x + boulder.radius + NAVIGATION.playerRadius + 0.18,
+    z: boulder.z,
+  };
+  const resolved = resolveObstacleStep(start, { x: -0.34, z: -0.5 });
   assert.equal(resolved.collision, 'brook-boulder');
   assert.ok(resolved.position.z < start.z, resolved);
   assert.ok(resolved.position.x < start.x, resolved);

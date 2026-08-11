@@ -6,7 +6,11 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
-import { createAtmosphere } from './atmosphere.js';
+import {
+  SUN_DIRECTION,
+  applyAtmosphereEnvironment,
+  createAtmosphere,
+} from './atmosphere.js';
 import { FieldAudio, captionForCue } from './audio.js';
 import {
   PALETTE,
@@ -16,7 +20,10 @@ import {
   percentile,
 } from './config.js';
 import { applyLookDelta, shouldCaptureGameplayKey } from './controller.js';
+import { DAYLIGHT_ENERGY_PROFILE, daylightEnergyRatios } from './daylight-energy.js';
+import { createHeightFogController } from './height-fog.js';
 import {
+  CONTACT_OCCLUSION_PROFILE,
   MAX_RENDER_PIXEL_RATIO,
   QUALITY_PROFILES,
   advanceRenderSchedule,
@@ -111,23 +118,31 @@ renderer.setPixelRatio(qualityRenderPixelRatio(window.devicePixelRatio, presenta
 renderer.setSize(window.innerWidth, window.innerHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.94;
+renderer.toneMappingExposure = DAYLIGHT_ENERGY_PROFILE.toneMappingExposure;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x122c34);
-scene.fog = new THREE.FogExp2(0x496a69, 0.0086);
-createAtmosphere(scene);
+scene.fog = new THREE.FogExp2(0x58716f, DAYLIGHT_ENERGY_PROFILE.fogDensityPerMeter);
+const atmosphere = createAtmosphere(scene);
+const atmosphereEnvironment = applyAtmosphereEnvironment(scene, renderer);
 
 const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 320);
 const titleCameraPosition = new THREE.Vector3(18, 7.6, 55);
 const titleCameraTarget = new THREE.Vector3(-1, 3.2, -34);
 
-const ambient = new THREE.AmbientLight(0x718889, 0.1);
-const hemisphere = new THREE.HemisphereLight(0x82aab1, 0x20342d, 0.46);
-const sun = new THREE.DirectionalLight(0xffc276, 5.25);
-sun.position.set(-46, 58, 76);
+const ambient = new THREE.AmbientLight(
+  0x718889,
+  DAYLIGHT_ENERGY_PROFILE.ambientIntensity,
+);
+const hemisphere = new THREE.HemisphereLight(
+  0x91aaa9,
+  0x2b372e,
+  DAYLIGHT_ENERGY_PROFILE.hemisphereIntensity,
+);
+const sun = new THREE.DirectionalLight(0xffbd70, DAYLIGHT_ENERGY_PROFILE.sunIntensity);
+sun.position.copy(SUN_DIRECTION).multiplyScalar(106);
 sun.target.position.set(1, 0, 10);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -139,14 +154,31 @@ sun.shadow.camera.near = 8;
 sun.shadow.camera.far = 230;
 sun.shadow.bias = -0.00045;
 sun.shadow.normalBias = 0.028;
-const gladeFill = new THREE.PointLight(0xe9a85f, 2.25, 48, 2.05);
+sun.shadow.radius = 2.4;
+const gladeFill = new THREE.PointLight(
+  0xe9a85f,
+  DAYLIGHT_ENERGY_PROFILE.gladeBounceIntensity,
+  48,
+  2.05,
+);
 gladeFill.position.set(-4, 13, -18);
-const canopyRim = new THREE.DirectionalLight(0x82b6bc, 0.62);
+const canopyRim = new THREE.DirectionalLight(
+  0x82b6bc,
+  DAYLIGHT_ENERGY_PROFILE.canopyRimIntensity,
+);
 canopyRim.position.set(32, 24, -36);
-const subjectFill = new THREE.DirectionalLight(0xd8c3a0, 0.4);
+const subjectFill = new THREE.DirectionalLight(
+  0xd8c3a0,
+  DAYLIGHT_ENERGY_PROFILE.subjectFillIntensity,
+);
 subjectFill.position.set(-12, 15, 36);
 subjectFill.target.position.set(1, 2.2, -33);
-const basaltBounce = new THREE.PointLight(0x8a7770, 1.12, 56, 2.15);
+const basaltBounce = new THREE.PointLight(
+  0x8a7770,
+  DAYLIGHT_ENERGY_PROFILE.basaltBounceIntensity,
+  56,
+  2.15,
+);
 basaltBounce.position.set(23, 11, -21);
 scene.add(
   ambient,
@@ -161,6 +193,9 @@ scene.add(
 );
 
 const world = createWorld(scene);
+const heightFog = createHeightFogController(camera, SUN_DIRECTION);
+heightFog.applyTo(scene);
+atmosphere.userData.applyCloudShadowsTo(scene);
 const gtaoExcluded = [world.fieldCamera, world.rifle];
 scene.traverse((object) => {
   if (!object.isMesh && !object.isSprite) return;
@@ -178,10 +213,17 @@ gtaoExcluded.forEach((object) => { object.userData.gtaoExcluded = true; });
 let hy3dVisualPromise = null;
 function ensureHy3dVisuals() {
   if (!hy3dVisualPromise) {
-    hy3dVisualPromise = world.enableHy3dVisuals().catch((error) => {
-      hy3dVisualPromise = null;
-      throw error;
-    });
+    hy3dVisualPromise = world.enableHy3dVisuals()
+      .then((result) => {
+        heightFog.applyTo(scene);
+        atmosphere.userData.applyCloudShadowsTo(scene);
+        world.requestBrookReflectionRefresh();
+        return result;
+      })
+      .catch((error) => {
+        hy3dVisualPromise = null;
+        throw error;
+      });
   }
   return hy3dVisualPromise;
 }
@@ -196,23 +238,15 @@ const gtaoPass = new GTAOPass(
   window.innerHeight,
   undefined,
   {
-    radius: 0.18,
-    distanceExponent: 1.25,
-    thickness: 1.15,
-    distanceFallOff: 0.9,
-    scale: 0.82,
-    samples: 4,
+    radius: CONTACT_OCCLUSION_PROFILE.radiusMeters,
+    distanceExponent: CONTACT_OCCLUSION_PROFILE.distanceExponent,
+    thickness: CONTACT_OCCLUSION_PROFILE.thicknessMeters,
+    distanceFallOff: CONTACT_OCCLUSION_PROFILE.distanceFallOff,
+    scale: CONTACT_OCCLUSION_PROFILE.scale,
+    samples: CONTACT_OCCLUSION_PROFILE.samples,
     screenSpaceRadius: false,
   },
-  {
-    lumaPhi: 8,
-    depthPhi: 2,
-    normalPhi: 3,
-    radius: 6,
-    radiusExponent: 2,
-    rings: 2,
-    samples: 4,
-  },
+  CONTACT_OCCLUSION_PROFILE.denoise,
 );
 const renderGtao = gtaoPass.render.bind(gtaoPass);
 gtaoPass.render = (...args) => {
@@ -224,7 +258,11 @@ gtaoPass.render = (...args) => {
     gtaoExcluded.forEach((object, index) => { object.visible = visibility[index]; });
   }
 };
-gtaoPass.blendIntensity = 0.28;
+gtaoPass.blendIntensity = CONTACT_OCCLUSION_PROFILE.blendIntensity;
+gtaoPass.userData = {
+  radiusMeters: CONTACT_OCCLUSION_PROFILE.radiusMeters,
+  role: CONTACT_OCCLUSION_PROFILE.role,
+};
 composer.addPass(gtaoPass);
 const fieldGradePass = new ShaderPass({
   name: 'ProjectPlateauFieldGrade',
@@ -313,6 +351,125 @@ let firstRenderedAt = null;
 let visualElapsed = 0;
 let visualTimeFrozen = false;
 let visualThreatOverride = null;
+let environmentReviewShot = null;
+
+const ENVIRONMENT_REVIEW_SHOTS = Object.freeze({
+  brook: Object.freeze({
+    position: Object.freeze([8.5, 5.45, 52]),
+    target: Object.freeze([-10.5, 1.8, 16]),
+    fov: 52,
+  }),
+  brookDetail: Object.freeze({
+    position: Object.freeze([2, 1, 43]),
+    target: Object.freeze([-9, -1.2, 31]),
+    fov: 48,
+  }),
+  brookObstacleDetail: Object.freeze({
+    position: Object.freeze([-5.2, 0.3, 41.3]),
+    target: Object.freeze([-9.7, -1.3, 36.7]),
+    fov: 34,
+  }),
+  brookSurfaceProfileDetail: Object.freeze({
+    position: Object.freeze([-5.8, -0.6, 38.3]),
+    target: Object.freeze([-9.6, -1.35, 35.4]),
+    fov: 42,
+  }),
+  boulderDetail: Object.freeze({
+    position: Object.freeze([-2.8, 0.25, 39.8]),
+    target: Object.freeze([-7.5, -0.86, 35]),
+    fov: 40,
+  }),
+  fernDetail: Object.freeze({
+    position: Object.freeze([-40.4, 1.25, 53.7]),
+    target: Object.freeze([-43.35, 0.66, 51]),
+    fov: 32,
+  }),
+  groundCoverDetail: Object.freeze({
+    position: Object.freeze([-23.1, 0.9, 66.2]),
+    target: Object.freeze([-20, 0.18, 63.1]),
+    fov: 30,
+  }),
+  detritusDetail: Object.freeze({
+    position: Object.freeze([-19.4, 1.28, 59.1]),
+    target: Object.freeze([-24.8, 0.05, 53.1]),
+    fov: 37,
+  }),
+  bryophyteDetail: Object.freeze({
+    position: Object.freeze([55, 1.7, 36]),
+    target: Object.freeze([43, 0.3, 30]),
+    fov: 30,
+  }),
+  routeSurfaceDetail: Object.freeze({
+    position: Object.freeze([17.4, 1.35, 28.8]),
+    target: Object.freeze([8.2, -0.35, 13.4]),
+    fov: 39,
+  }),
+  treeFernDetail: Object.freeze({
+    position: Object.freeze([-17.8, 2.35, 59.4]),
+    target: Object.freeze([-25, 2.05, 53]),
+    fov: 39,
+  }),
+  canopyTreeDetail: Object.freeze({
+    position: Object.freeze([-8.6, 3.25, 59.2]),
+    target: Object.freeze([-15.9, 3.35, 51.8]),
+    fov: 41,
+  }),
+  coverDetail: Object.freeze({
+    position: Object.freeze([2.5, 4.15, 36.5]),
+    target: Object.freeze([-14.2, 3.35, 9.5]),
+    fov: 44,
+  }),
+  gingko: Object.freeze({
+    position: Object.freeze([30, 6.4, 51]),
+    target: Object.freeze([16, 5.4, 37]),
+    fov: 48,
+  }),
+  gingkoRoot: Object.freeze({
+    position: Object.freeze([21.8, 0.35, 42.2]),
+    target: Object.freeze([16, -0.72, 37]),
+    fov: 46,
+  }),
+  basalt: Object.freeze({
+    position: Object.freeze([29, 7.4, 20]),
+    target: Object.freeze([14, 3.8, -17]),
+    fov: 49,
+  }),
+  basaltDetail: Object.freeze({
+    position: Object.freeze([19, 6, 15]),
+    target: Object.freeze([36.5, 5, -5]),
+    fov: 48,
+  }),
+  terrainDetail: Object.freeze({
+    position: Object.freeze([13, 4.2, 8]),
+    target: Object.freeze([23.5, 2.5, -3]),
+    fov: 48,
+  }),
+  escarpmentDetail: Object.freeze({
+    position: Object.freeze([19, 1.2, 8]),
+    target: Object.freeze([31.6, 2, -3]),
+    fov: 44,
+  }),
+  escarpmentSlopeDetail: Object.freeze({
+    position: Object.freeze([18, 2.2, -14]),
+    target: Object.freeze([31.4, 1.15, -26]),
+    fov: 40,
+  }),
+  glade: Object.freeze({
+    position: Object.freeze([17.5, 6.1, -1]),
+    target: Object.freeze([1, 2.9, -34]),
+    fov: 47,
+  }),
+  ridgeVolume: Object.freeze({
+    position: Object.freeze([-20, 12, 46]),
+    target: Object.freeze([-20, 5, -164]),
+    fov: 46,
+  }),
+  forestBoundaryDetail: Object.freeze({
+    position: Object.freeze([0, 7.5, -44]),
+    target: Object.freeze([0, 4.2, -100]),
+    fov: 44,
+  }),
+});
 let visualThreatPose = null;
 let visualPterodactylMorphPose = null;
 let boundaryNoticeUntil = 0;
@@ -608,6 +765,7 @@ function setCameraToPlayer(now = performance.now()) {
 
 function setView(view) {
   visualReviewOrbit = null;
+  environmentReviewShot = null;
   world.family.forEach((animal) => { animal.visible = true; });
   world.pterodactyls.forEach((animal) => { animal.visible = true; });
   cameraMode = view;
@@ -632,6 +790,15 @@ function setView(view) {
     camera.lookAt(titleCameraTarget);
     camera.fov = 58;
   }
+  camera.updateProjectionMatrix();
+}
+
+function setEnvironmentReviewCamera() {
+  if (!environmentReviewShot) return;
+  const review = ENVIRONMENT_REVIEW_SHOTS[environmentReviewShot];
+  camera.position.fromArray(review.position);
+  camera.lookAt(new THREE.Vector3(...review.target));
+  camera.fov = review.fov;
   camera.updateProjectionMatrix();
 }
 
@@ -856,8 +1023,14 @@ function update(deltaSeconds, now) {
     reducedMotion || player.paused || cameraMode === 'terminal',
     worldRuntime(visualTimeFrozen ? 0 : deltaSeconds),
   );
+  atmosphere.userData.update(
+    visualElapsed,
+    reducedMotion || player.paused || cameraMode === 'terminal',
+    presentationSettings.quality,
+  );
 
   if (cameraMode === 'visual-review-orbit') setVisualReviewOrbitCamera();
+  if (cameraMode === 'environment-review') setEnvironmentReviewCamera();
 
   if (cameraMode === 'field' || cameraMode === 'order') {
     setCameraToPlayer(now);
@@ -892,6 +1065,12 @@ function animate(frameTime) {
     world.fieldCamera.visible = false;
     world.rifle.visible = false;
   }
+  world.prepareBrookRender(
+    renderer,
+    camera,
+    presentationSettings.quality,
+    renderedFrameCount,
+  );
   composer.render();
   if (firstRenderedAt === null) hideLoading();
   if (capture) {
@@ -1134,6 +1313,64 @@ async function sampleFrames(count = 180) {
   };
 }
 
+function frameHealthForTest() {
+  if (!query.has('qa')) throw new Error('frameHealthForTest requires a qa query');
+  composer.render();
+  const gl = renderer.getContext();
+  const crop = [0.04, 0.04, 0.84, 0.8];
+  const x = Math.floor(gl.drawingBufferWidth * crop[0]);
+  const y = Math.floor(gl.drawingBufferHeight * (1 - crop[3]));
+  const width = Math.max(1, Math.floor(gl.drawingBufferWidth * (crop[2] - crop[0])));
+  const height = Math.max(1, Math.floor(gl.drawingBufferHeight * (crop[3] - crop[1])));
+  const pixels = new Uint8Array(width * height * 4);
+  gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+  const histogram = new Uint32Array(256);
+  let lumaTotal = 0;
+  for (let index = 0; index < pixels.length; index += 4) {
+    const luma = Math.round(
+      pixels[index] * 0.2126 + pixels[index + 1] * 0.7152 + pixels[index + 2] * 0.0722,
+    );
+    histogram[luma] += 1;
+    lumaTotal += luma;
+  }
+  const sampleCount = width * height;
+  const histogramTotal = (start, end) => {
+    let total = 0;
+    for (let value = start; value < end; value += 1) total += histogram[value];
+    return total;
+  };
+  const histogramPercentile = (fraction) => {
+    const target = sampleCount * fraction;
+    let total = 0;
+    for (let value = 0; value < histogram.length; value += 1) {
+      total += histogram[value];
+      if (total >= target) return value;
+    }
+    return 255;
+  };
+  const meanLuma = lumaTotal / sampleCount;
+  const p05 = histogramPercentile(0.05);
+  const p95 = histogramPercentile(0.95);
+  const deepShadowRatio = histogramTotal(0, 18) / sampleCount;
+  const clippedHighlightRatio = histogramTotal(246, 256) / sampleCount;
+  const passed = meanLuma >= 38
+    && meanLuma <= 165
+    && p95 - p05 >= 58
+    && deepShadowRatio <= 0.22
+    && clippedHighlightRatio <= 0.01;
+  return {
+    passed,
+    crop,
+    meanLuma: Number(meanLuma.toFixed(2)),
+    p05,
+    p95,
+    dynamicRange: p95 - p05,
+    deepShadowRatio: Number(deepShadowRatio.toFixed(5)),
+    clippedHighlightRatio: Number(clippedHighlightRatio.toFixed(5)),
+    scope: 'mechanical framebuffer exposure/readability guard; not a subjective quality score',
+  };
+}
+
 function playerSnapshot() {
   return {
     ...player,
@@ -1169,6 +1406,7 @@ window.__projectPlateau = {
   sceneBudget: SCENE_BUDGET,
   setView,
   sampleFrames,
+  frameHealthForTest,
   renderFrameForTest() {
     if (!query.has('qa')) throw new Error('renderFrameForTest requires a qa query');
     composer.render();
@@ -1212,6 +1450,34 @@ window.__projectPlateau = {
     world.pterodactyls.forEach((animal, index) => { animal.visible = subject === 'pterodactyl' && index === 0; });
     setVisualReviewOrbitCamera();
     return { ...visualReviewOrbit };
+  },
+  setEnvironmentReviewForTest({ shot }) {
+    if (!query.has('qa')) throw new Error('setEnvironmentReviewForTest requires a qa query');
+    if (!Object.hasOwn(ENVIRONMENT_REVIEW_SHOTS, shot)) {
+      throw new Error(`Unsupported environment-review shot: ${shot}`);
+    }
+    visualReviewOrbit = null;
+    environmentReviewShot = shot;
+    cameraMode = 'environment-review';
+    document.body.dataset.mode = 'review';
+    document.body.dataset.camera = 'folded';
+    document.body.dataset.rifle = 'lowered';
+    fieldHud.hidden = true;
+    world.fieldCamera.visible = false;
+    world.rifle.visible = false;
+    world.family.forEach((animal) => { animal.visible = true; });
+    world.pterodactyls.forEach((animal) => { animal.visible = true; });
+    visualElapsed = 14.75;
+    visualTimeFrozen = true;
+    world.update(visualElapsed, reducedMotion, worldRuntime(0));
+    atmosphere.userData.update(visualElapsed, reducedMotion, presentationSettings.quality);
+    setEnvironmentReviewCamera();
+    return {
+      shot,
+      position: [...ENVIRONMENT_REVIEW_SHOTS[shot].position],
+      target: [...ENVIRONMENT_REVIEW_SHOTS[shot].target],
+      fov: ENVIRONMENT_REVIEW_SHOTS[shot].fov,
+    };
   },
   setPterodactylMorphPoseForTest(pose = {}) {
     if (!query.has('qa')) throw new Error('setPterodactylMorphPoseForTest requires a qa query');
@@ -1272,6 +1538,7 @@ window.__projectPlateau = {
       mode: document.body.dataset.mode,
       cameraMode,
       visualReviewOrbit,
+      environmentReviewShot,
       runActive,
       pointerLock: {
         active: document.pointerLockElement === canvas,
@@ -1288,7 +1555,11 @@ window.__projectPlateau = {
       threatVisual: world.threatSnapshot(),
       familyVisual: world.familySnapshot(),
       brookResponseVisual: world.brookResponseSnapshot(),
-      assets: world.assetSnapshot(),
+      assets: {
+        ...world.assetSnapshot(),
+        cloudField: atmosphere.userData.cloudFieldSnapshot(),
+        ridgeForest: atmosphere.userData.ridgeForestSnapshot(),
+      },
       collision: collisionContractSnapshot(),
       audio: fieldAudio.snapshot(),
       presentationSettings: {
@@ -1342,8 +1613,38 @@ window.__projectPlateau = {
         hiddenFpsCap: 4,
         powerPreference: 'default',
         preserveDrawingBuffer: false,
-        gtaoSamples: 4,
+        gtaoSamples: CONTACT_OCCLUSION_PROFILE.samples,
         antialiasing: presentationSettings.quality === 'high' ? 'smaa' : 'single-pass-fxaa',
+      },
+      rendering: {
+        outputColorSpace: 'srgb',
+        toneMapping: 'ACESFilmicToneMapping',
+        toneMappingExposure: renderer.toneMappingExposure,
+        daylightEnergy: {
+          version: DAYLIGHT_ENERGY_PROFILE.version,
+          fogDensityPerMeter: scene.fog.density,
+          environmentIntensity: scene.environmentIntensity,
+          ambientIntensity: ambient.intensity,
+          hemisphereIntensity: hemisphere.intensity,
+          sunIntensity: sun.intensity,
+          ratios: daylightEnergyRatios(),
+          sources: DAYLIGHT_ENERGY_PROFILE.energySources,
+          aerialPerspective: heightFog.snapshot(),
+        },
+        shadowMap: {
+          enabled: renderer.shadowMap.enabled,
+          type: 'PCFSoftShadowMap',
+          resolution: sun.shadow.mapSize.x,
+        },
+        contactOcclusion: {
+          enabled: gtaoPass.enabled,
+          radiusMeters: CONTACT_OCCLUSION_PROFILE.radiusMeters,
+          thicknessMeters: CONTACT_OCCLUSION_PROFILE.thicknessMeters,
+          samples: CONTACT_OCCLUSION_PROFILE.samples,
+          blendIntensity: CONTACT_OCCLUSION_PROFILE.blendIntensity,
+          screenSpaceRadius: false,
+          role: CONTACT_OCCLUSION_PROFILE.role,
+        },
       },
       firstRenderedAt,
       recentMedianFrameMs: Number(percentile(frameSamples, 0.5).toFixed(2)),

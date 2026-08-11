@@ -8,6 +8,7 @@ import {
   applyHy3dIguanodonPose,
   HY3D_IGUANODON_ASSET,
   HY3D_POSE_TARGETS,
+  IGUANODON_SKIN_SURFACE,
   attachHy3dIguanodonVisual,
   createCachedHy3dIguanodonLoader,
   createHy3dIguanodonInstance,
@@ -17,9 +18,16 @@ import { createIguanodon } from '../src/iguanodon.js';
 
 function templateWithMesh() {
   const template = new THREE.Group();
+  const surfaceMap = new THREE.DataTexture(new Uint8Array([128, 192, 0, 255]), 1, 1);
+  surfaceMap.needsUpdate = true;
   template.add(new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.3 }),
+    new THREE.MeshStandardMaterial({
+      roughness: 0.4,
+      metalness: 0.3,
+      roughnessMap: surfaceMap,
+      metalnessMap: surfaceMap,
+    }),
   ));
   return template;
 }
@@ -75,10 +83,40 @@ test('cached loader fetches once and reuses a prepared template', async () => {
   const mesh = first.children[0];
   assert.equal(mesh.castShadow, true);
   assert.equal(mesh.receiveShadow, true);
-  assert.ok(mesh.material.roughness >= 0.72);
-  assert.ok(mesh.material.metalness <= 0.08);
+  assert.equal(mesh.material.isMeshPhysicalMaterial, true);
+  assert.equal(mesh.material.roughness, 1);
+  assert.equal(mesh.material.metalness, 0);
+  assert.ok(mesh.material.roughnessMap?.isTexture);
+  assert.deepEqual(mesh.material.userData.roughnessRemap.range, [0.72, 0.94]);
+  assert.equal(
+    mesh.material.userData.roughnessRemap.source,
+    'authored-packed-map-green-channel',
+  );
+  assert.match(mesh.material.customProgramCacheKey(), /bounded-dry-skin-roughness-v1/);
+  const shader = {
+    vertexShader: '',
+    fragmentShader: '#include <roughnessmap_fragment>',
+  };
+  mesh.material.onBeforeCompile(shader, {});
+  assert.match(shader.fragmentShader, /mix\(0\.72, 0\.94/);
+  assert.equal(mesh.material.metalnessMap, null);
+  assert.equal(mesh.material.ior, IGUANODON_SKIN_SURFACE.approximateIndexOfRefraction);
+  assert.equal(mesh.material.specularIntensity, IGUANODON_SKIN_SURFACE.specularIntensity);
+  assert.equal(mesh.material.clearcoat, 0);
+  assert.equal(mesh.material.transmission, 0);
+  assert.equal(mesh.material.envMapIntensity, IGUANODON_SKIN_SURFACE.environmentIntensity);
+  assert.equal(mesh.material.emissive.getHex(), 0x000000);
+  assert.equal(mesh.material.emissiveIntensity, 0);
+  assert.deepEqual(mesh.material.color.toArray(), IGUANODON_SKIN_SURFACE.albedoMultiplierLinear);
+  assert.deepEqual(mesh.material.normalScale.toArray(), IGUANODON_SKIN_SURFACE.normalScale);
+  assert.deepEqual(mesh.material.userData.skinSurface, IGUANODON_SKIN_SURFACE);
   assert.deepEqual(mesh.geometry.userData.hy3dPoseTargets, [...HY3D_POSE_TARGETS]);
   assert.equal(mesh.geometry.userData.silhouetteRefinement, 'narrow-integrated-beak');
+  assert.equal(
+    mesh.geometry.userData.normalContinuity.model,
+    'crease-bounded-coincident-position-average-across-uv-seams',
+  );
+  assert.equal(mesh.geometry.userData.normalContinuity.creaseDegrees, 52);
   assert.deepEqual(Object.keys(mesh.morphTargetDictionary), [...HY3D_POSE_TARGETS]);
 });
 

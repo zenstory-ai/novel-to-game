@@ -1,5 +1,28 @@
 export const MAX_RENDER_PIXEL_RATIO = 1.25;
 
+export const CONTACT_OCCLUSION_PROFILE = Object.freeze({
+  // World-space radius: broad enough to connect an adult animal foot, tree
+  // buttress or shelf-rock base to the ground, but shorter than the metre-scale
+  // gaps that must remain visibly open.
+  radiusMeters: 0.72,
+  distanceExponent: 1.35,
+  thicknessMeters: 0.82,
+  distanceFallOff: 1.05,
+  scale: 0.94,
+  samples: 6,
+  blendIntensity: 0.3,
+  denoise: Object.freeze({
+    lumaPhi: 8,
+    depthPhi: 2,
+    normalPhi: 3,
+    radius: 6,
+    radiusExponent: 2,
+    rings: 2,
+    samples: 4,
+  }),
+  role: 'world-space-local-contact-occlusion-of-indirect-light',
+});
+
 export const QUALITY_PROFILES = Object.freeze({
   low: Object.freeze({ maxPixelRatio: 0.85, activeFps: 45, gtao: false, shadowMapSize: 1024 }),
   balanced: Object.freeze({ maxPixelRatio: 1, activeFps: 60, gtao: true, shadowMapSize: 2048 }),

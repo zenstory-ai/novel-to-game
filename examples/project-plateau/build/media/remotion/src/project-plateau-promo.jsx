@@ -216,11 +216,11 @@ const Opener = () => {
 };
 
 const storyBeats = [
-  {start: 0, end: 165, kicker: '01 · EXPLORE', title: 'Enter the connected plateau.'},
-  {start: 165, end: 360, kicker: '02 · RECORD', title: 'Expose evidence on glass.'},
-  {start: 360, end: 465, kicker: '03 · OBSERVE', title: 'Read a living dinosaur family.'},
-  {start: 465, end: 705, kicker: '04 · DEFEND', title: 'Break the dive. Keep the plates.'},
-  {start: 705, end: 900, kicker: '05 · RETURN', title: 'Bring home what survived.'},
+  {start: 0, end: 135, kicker: '01 · EXPLORE', title: 'Enter the connected plateau.'},
+  {start: 135, end: 336, kicker: '02 · RECORD', title: 'Expose evidence on glass.'},
+  {start: 336, end: 582, kicker: '03 · OBSERVE', title: 'Read a living dinosaur family.'},
+  {start: 582, end: 696, kicker: '04 · DEFEND', title: 'Break the dive. Keep the plates.'},
+  {start: 696, end: 900, kicker: '05 · RETURN', title: 'Bring home what survived.'},
 ];
 
 const BeatCaption = ({beat, frame}) => {

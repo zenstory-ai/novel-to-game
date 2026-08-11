@@ -1,11 +1,13 @@
 import {
   BROOK_BOULDER,
-  COVER_ARCH_LAYOUT,
+  COVER_RIPARIAN_TREE_LAYOUT,
   FAMILY_LAYOUT,
   FEEDING_BRANCH,
   FORT_FIREPIT,
   FORT_TENT_LAYOUT,
   HABITAT_TREE_LAYOUT,
+  HERO_GINGKO_LAYOUT,
+  NON_COLUMNAR_ROCK_LAYOUT,
   VEGETATION_LAYOUT,
 } from './environment-layout.js';
 
@@ -117,25 +119,25 @@ const tentColliders = FORT_TENT_LAYOUT.map((tent, index) => orientedBox({
   visualIndex: index,
 }));
 
-const archTrunkColliders = COVER_ARCH_LAYOUT.flatMap((arch, archIndex) => (
-  [-1, 1].map((side, sideIndex) => circle({
-    id: `cover-arch-${archIndex + 1}-${side < 0 ? 'left' : 'right'}-trunk`,
-    x: arch.centerX + arch.spread * side,
-    z: arch.z,
-    radius: 0.72,
-    height: 6.2,
-    category: 'tree-trunk',
-    visualAnchor: 'world.connected_route.cover_arches',
-    visualIndex: archIndex * 7 + sideIndex,
-  }))
-));
+const archTrunkColliders = COVER_RIPARIAN_TREE_LAYOUT.map((tree) => circle({
+  id: `cover-arch-${tree.pairIndex + 1}-${tree.side}-trunk`,
+  x: tree.x,
+  z: tree.z,
+  radius: 0.72,
+  height: 6.2,
+  category: 'tree-trunk',
+  visualAnchor: 'world.connected_route.cover_arches',
+  visualIndex: tree.pairIndex * 7 + (tree.side === 'left' ? 0 : 1),
+}));
 
 const habitatTreeColliders = HABITAT_TREE_LAYOUT.map(([x, z, scale], index) => circle({
   id: `habitat-tree-${index + 1}`,
   x,
   z,
   radius: Math.max(0.42, scale * 0.48),
-  height: scale * 5.6,
+  // Only the fibrous trunk is solid; pliable fronds do not create an invisible
+  // cylinder above the actual load-bearing stem.
+  height: scale * 3.5,
   category: 'tree-trunk',
   visualAnchor: 'world.connected_route.tree-fern-sentinels',
   visualIndex: index,
@@ -155,9 +157,30 @@ const vegetationTreeColliders = VEGETATION_LAYOUT.trees
     radius: Math.max(0.42, Math.max(tree.trunkScale[0], tree.trunkScale[2]) * 0.72),
     height: tree.trunkScale[1] * 6,
     category: 'tree-trunk',
-    visualAnchor: 'world.connected_route.tree_trunks',
+    visualAnchor: 'world.connected_route.canopy-tree-sentinels',
     visualIndex: tree.index,
   }));
+
+const authoredRockColliders = NON_COLUMNAR_ROCK_LAYOUT
+  .filter(({ solid }) => solid)
+  .map((rock) => {
+    const familyPlacements = NON_COLUMNAR_ROCK_LAYOUT.filter(
+      ({ family }) => family === rock.family,
+    );
+    const visualAnchor = rock.family === 'fluvial-cobble'
+      ? 'world.connected_route.rock-family.fluvial-cobbles'
+      : 'world.connected_route.rock-family.bedded-glade-slabs';
+    return circle({
+      id: rock.id,
+      x: rock.x,
+      z: rock.z,
+      radius: rock.collisionRadius,
+      height: rock.collisionHeight,
+      category: rock.family === 'fluvial-cobble' ? 'historical-flood-lag' : 'bedded-slab',
+      visualAnchor,
+      visualIndex: familyPlacements.findIndex(({ id }) => id === rock.id),
+    });
+  });
 
 const familyColliders = FAMILY_LAYOUT.map((animal, index) => {
   const centreOffset = -1.05 * animal.scale;
@@ -189,15 +212,23 @@ export const STATIC_COLLIDERS = Object.freeze([
     visualAnchor: 'world.connected_route.fort-firepit',
   }),
   circle({
+    ...HERO_GINGKO_LAYOUT,
+    radius: HERO_GINGKO_LAYOUT.collisionRadius,
+    height: HERO_GINGKO_LAYOUT.collisionHeight,
+    category: 'tree-trunk',
+    visualAnchor: 'world.landmark.fort-gingko',
+  }),
+  circle({
     ...BROOK_BOULDER,
-    radius: 1.85,
-    height: 2.7,
+    radius: BROOK_BOULDER.collisionRadius,
+    height: BROOK_BOULDER.collisionHeight,
     category: 'boulder',
     visualAnchor: 'world.connected_route.brook-boulder',
   }),
   ...archTrunkColliders,
   ...habitatTreeColliders,
   ...vegetationTreeColliders,
+  ...authoredRockColliders,
   circle({
     ...FEEDING_BRANCH,
     radius: 0.66,
@@ -209,7 +240,14 @@ export const STATIC_COLLIDERS = Object.freeze([
 ]);
 
 export const NON_SOLID_COLLISION_POLICY = Object.freeze({
-  lowDecor: Object.freeze(['ferns', 'ground-stones', 'driftwood', 'basalt-rubble']),
+  lowDecor: Object.freeze([
+    'ferns',
+    'ground-stones',
+    'brook-stones',
+    'driftwood',
+    'basalt-rubble',
+    'ridge-foot-talus-beyond-navigation-boundary',
+  ]),
   traversableSurface: Object.freeze(['brook-water', 'route-ribbons']),
   airborneThreat: 'state-driven-contact; no ground capsule',
   canopy: 'visual cover only; trunks remain solid',

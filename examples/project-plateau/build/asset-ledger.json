@@ -4,65 +4,365 @@
     {
       "key": "world.connected_route",
       "status": "adopted",
-      "source": ["app/src/world.js", "app/src/atmosphere.js"],
+      "source": [
+        "app/src/world.js",
+        "app/src/atmosphere.js"
+      ],
       "fallback": "Readable primitive geometry with the same route, collision, cover, and landmarks."
+    },
+    {
+      "key": "world.atmosphere.anti_solar_double_depth_cloud_field",
+      "status": "adopted",
+      "source": [
+        "app/src/atmosphere.js",
+        "app/src/overhead-cloud-field.js",
+        "app/src/main.js"
+      ],
+      "provenance": "Project-original deterministic participating-medium cloud field. Balanced/high quality retains eleven bounded Beer-Lambert raymarched volumes in two anti-solar northern-horizon depth bands: six near and five far, with 12/18-step quality and a 56-puff low fallback. It now also uses one deterministic 256 x 256 density texture over a 2,048 m domain for a 620–840 m overhead layer. The visible deck and terrain direct-light attenuation sample that same advected world-space density along the approved sun vector; two sun-path samples use Beer-Lambert extinction 0.00155/m with minimum direct transmittance 0.58 while indirect sky/IBL remains unchanged. The overhead layer replaces the prior deck draw call, patches 200 materials, adds no draw call or collision authority, and disables visible/cloud-shadow influence on low quality.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "Low quality disables the overhead deck and its direct-light attenuation while retaining the eleven-bank system's 56 bounded lit cloud puffs; terrain lighting, navigation and collision remain authoritative."
+    },
+    {
+      "key": "world.connected_route.brook_hydrology",
+      "status": "adopted",
+      "source": [
+        "app/src/brook-hydrology.js",
+        "app/src/terrain.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original deterministic shallow-water model. Two mapped headwater reaches lose gravitational head toward the existing interior saturated hollow; rendered base cross-sections remain gravity-level, measured downstream grade drives bounded surface energy, and nineteen local reflection reaches derive their height, tangent, normal and validity extent from the same water levels. The free-surface carrier is a 289-row x 13-cross-sample grid with 3,757 vertices and 6,912 triangles. Its base optical depth is the measured 0.002–0.288 m difference between interpolated water levels and the shared rendered terrain heightfield. The surface uses fresh-water IOR 1.333/F0 0.02037, Beer–Lambert absorption coefficients [0.72, 0.22, 0.13]/m, 0.11–0.34 roughness and deterministic non-periodic broad/fine normal slope fields. The rendered-clast flow pass measures the exact settled world bounds of 56 bed/bar stones plus six historical flood-lag clasts: 25 candidates outside the wetted channel are rejected, 37 upper-column contacts qualify, and the strongest twelve feed a bounded 4/8/12 low/balanced/high uniform budget. The same local cylinder field drives both shading and centimetre-scale geometry, bounded to +3.2 cm stagnation rise, -1.2 cm shoulder drawdown, 1.8 cm alternating wake and ±3.8 cm aggregate displacement. The 56 small stones now use one closed monotonic support-ring-to-crown shell with a separately wound downward cap, 21 measured terrain contacts and no collapsed support rings. Spherical UV texture sampling is retired from that carrier; seam-free vertex mineral variation, #858e89 bounded colour, 0.96 roughness and zero metalness remove the former black latitude belt. Forty-eight non-advecting torus overlays remain retired. All bank wetness, point-bar, floodplain, cut-bank, relief and collision response stays on one shared terrain heightfield with zero bank overlay geometry or draws. This bounded visual free surface does not claim exact discharge, CFD, velocity, volume conservation, transport competence or a physical wave spectrum.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The scene-layout reflection probe, channel-bed transmission and low-quality non-capture path preserve a readable shallow creek if planar reflection or scene-depth refraction is unavailable. The shared terrain remains the only visible bank surface at every quality level."
+    },
+    {
+      "key": "world.connected_route.brook_driftwood",
+      "status": "adopted",
+      "source": [
+        "app/src/world.js",
+        "app/src/terrain.js"
+      ],
+      "provenance": "Project-original deterministic brook-bank driftwood. Ten non-solid logs use three 696–912-triangle families made from seven to nine closed overlapping trunk, branch and fibre-splinter volumes. Curved twelve-sided bark rings, jagged broken ends, distinct end-grain colour and the existing project-authored bark albedo/roughness/height channels replace the former flat-shaded six/seven-sided pale cylinders. Each log follows the sampled terrain tangent and is settled along gravity from 41 underside samples; the accepted range is -0.0342 to +0.008 m clearance across slopes up to 0.136. Wet-bank material response remains opaque, non-emissive, zero-metalness and lower-reflection than live bark.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The same deterministic geometry and terrain support remain available without texture channels; the logs never gain navigation or collision authority."
+    },
+    {
+      "key": "world.connected_route.brook_boulder",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/brook-boulder-original-v6.glb",
+        "app/scripts/generate-brook-boulder.mjs",
+        "app/src/brook-boulder.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored residual bank erratic with a broad buried support polygon, offset crown, five load-bearing fracture constraints and five independently sediment-supported spall fragments. V6 replaces the visible 12-sector/144-triangle main-mass silhouette with 48 sectors, 14 surface rings and 1,344 authored triangles; more than 90% of coincident geometric vertices share continuous normals while 50 vertices preserve only the actual fracture transitions above the 42-degree crease gate. Its closed 1.82 m3 local volume retains the approved 2.48 m world-space main-mass long axis and remains explicitly immobile under the present shallow brook; 1.06–1.315 m solid brook rocks are historical high-flow lag, while only the 0.16–0.55 m non-solid bed/bar batch is classed as present mobile material. Coordinate/porosity-driven weathering, restrained iron/lichen variation and a darker irregular capillary front replace normal-facing chalk/slate albedo. The main mass is embedded 8.5 cm, all 570 measured mass/spall support samples remain terrain-supported, and collision authority stays restricted to the supported load-bearing volume.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The former procedural weathered rock preserves the solid route obstacle and shallow terrain contact if the GLB cannot load."
+    },
+    {
+      "key": "world.connected_route.non_columnar_rock_families",
+      "status": "adopted",
+      "source": [
+        "app/src/environment-layout.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original deterministic code-authored fluvial-cobble, bedded-slab and angular-talus families. Historical fluvial lag clasts now use one closed indexed shell with a single broad support ring, unique-height rounded crown courses, a non-overlapping bottom cap and split side-course/downward-cap normals. Zero support rings collapse, minimum local triangle area is 0.012756 m2, and each of the six terrain-normal-aligned solid placements exposes 29 measured support vertices while retaining the exact 1.06–1.315 m long-axis range, 0.387 maximum brook-width fraction and matching collision authority. The accepted bedded slab replaces a vertically compressed sphere that read as a pale capsule. Its 2.1064 x 0.6265 x 1.599 m local mass is one closed irregular ring stack with a broad coplanar support cap, two physically connected bedding ledges and 31-degree crease-preserved joint normals. Six slab placements retain shallow burial and matching solid collision authority; the formerly dominant eastern review instance uses a 0.78 x 0.72 x 0.64 scale with a 0.8 m radius and 0.44 m collision height. Angular talus remains non-solid beyond navigation. Large materials are opaque non-emissive zero-metalness dielectrics with correlated triplanar albedo, roughness and optical relief.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "If the detailed family material is unavailable, the same closed geometry, terrain support, burial and solid collision anchors remain authoritative."
+    },
+    {
+      "key": "world.connected_route.terrain_ecology",
+      "status": "adopted",
+      "source": [
+        "app/src/terrain.js",
+        "app/src/world.js",
+        "app/src/environment-layout.js"
+      ],
+      "provenance": "Project-authored deterministic ground-process field. Humus and bryophyte establishment now derive from all 128 rendered main-canopy sources plus twelve habitat tree ferns, five cover arches and the hero Ginkgo, combined with hollow retention, wet-bank moisture, slope stability and the shared route/mineral/point-bar/cut-bank disturbance fields. Route compaction, mineral exposure and active fluvial surfaces exclude establishment; no random mask is authoritative. The same ecology remains packed into the shared terrain material, where correlated albedo, roughness, height-derived normal relief and bounded cavity response use the same collision heightfield and source fields. Humus mean rises from the previously under-sourced 0.0084 to 0.1009 because the calculation now includes the actual rendered canopy rather than only eighteen secondary sources; the open glade and route remain bryophyte-free. The accepted near-field surface pass reuses the existing soil albedo, roughness and height alpha channels for a 1.282 m world-space detail sample. Deterministic sparse occupancy and variable feature radius replace the rejected one-candidate-per-cell pattern; measured above-0.5 channel coverage is 1.262% stone, 1.579% organic and 0.325% pore. Wet alluvium, route compaction, established bryophyte and geological source masks suppress incompatible inclusions. Universal fine height is absent: only source-gated mineral candidates contribute at most 2.5 mm of optical normal relief, with no change to collision height, texture-object count or terrain draw count.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The shared collision heightfield, route wear, hydrology and geological surfaces remain authoritative if bryophyte response or its non-solid ground layer is disabled."
+    },
+    {
+      "key": "world.connected_route.terrain_integrated_route_surface",
+      "status": "adopted",
+      "source": [
+        "app/src/terrain.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original deterministic terrain-integrated route surface. The main route and both forks reuse the three authored navigation control lines to suppress litter, compact colour and optical relief, and change roughness inside the same rendered heightfield material. The former three transparent route ribbons are retired: runtime evidence records zero route overlay geometries and zero route overlay draw calls. Navigation, collision, hydrology and terrain height remain unchanged, so visual path wear cannot drift above or below the physical ground.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The shared terrain and navigation control lines remain authoritative if the route-wear material response is disabled; no duplicate surface or collision layer is introduced."
+    },
+    {
+      "key": "world.vegetation_albedo",
+      "status": "adopted",
+      "source": [
+        "app/src/vegetation-albedo.js",
+        "app/src/canopy-tree-library.js",
+        "app/src/tree-fern-library.js",
+        "app/src/fern-library.js",
+        "app/src/ground-cover-library.js"
+      ],
+      "provenance": "Project-authored deterministic shared albedo contract. Family pigment remains in separately bounded material and correlated texture layers; near-neutral instance multipliers respond only to habitat wetness, local slope and bounded individual age, preventing repeated saturated pigment multiplication.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "Each original vegetation library retains its non-emissive dielectric material, correlated surface maps, physical support and shadow-coupled motion if the shared habitat variation is bypassed."
+    },
+    {
+      "key": "world.forest_succession_boundary",
+      "status": "adopted",
+      "source": [
+        "app/src/forest-succession.js",
+        "app/src/world.js",
+        "app/public/assets/canopy-tree-library-original-v7.glb"
+      ],
+      "provenance": "Project-authored deterministic twelve-cohort forest-boundary layout. All 144 boundary members reuse the complete v7 project-original canopy asset across the six southern and six west/east cohorts; the 72 mature, 36 submature and 36 pioneer instances derive height, diameter, crown scale and damage from actual terrain height, wetness, slope and boundary exposure. V7 retains the same 3,942 attached leaves and 594 physical anchors but redistributes the broadleaf crown into vertical scaffold layers, replaces one complete primary limb per broadleaf family with a closed wind-fractured stump, and replaces two Araucaria whorl limbs with closed splintered stubs and supported leader twigs. Rounded six-triangle laminae, stable bark scars, missing margins, rare perforations and complete-leaf retention remain shared between colour and depth-shadow passes with no camera- or time-dependent popping. Runtime evidence retains 4,080/4,080 root-support samples settled along world gravity, all load-bearing radii outside navigation and the simplified four-draw-call allometric batch hidden after successful original-asset attachment.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The complete 144-tree simplified allometric batch activates only if the original canopy asset cannot attach; its trunks retain the same inaccessible terrain-supported boundary anchors and introduce no reachable visual-only obstacle."
+    },
+    {
+      "key": "world.connected_route.tree_fern_library",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/tree-fern-library-original-v1.glb",
+        "app/scripts/generate-tree-fern-library.mjs",
+        "app/src/tree-fern-library.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored library of three mature tree-fern families with closed buried root mantles, gravitropically vertical fibrous trunks, closed overlapping rachises, indexed cambered pinnate leaflets, habitat classification and identical colour/depth wind displacement.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The former procedural ring-scarred trunks and three umbrella-crown variants remain at the same twelve solid collision anchors if the original GLB cannot load."
+    },
+    {
+      "key": "world.connected_route.canopy_tree_library",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/canopy-tree-library-original-v7.glb",
+        "app/scripts/generate-canopy-tree-library.mjs",
+        "app/src/canopy-tree-library.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored v7 library of humid buttressed broadleaf, open asymmetric broadleaf, plate-barked compound broadleaf and layered Araucaria families. Buried root mantles, continuous tapered trunks and closed branch load paths remain authoritative. The 3,942 branch-rooted eight-vertex/six-triangle cambered leaves and 594 anchors stay inside the accepted foliage budget. Instead of adding density, v7 reallocates the leaves removed with one wind-broken primary limb in each broadleaf family into four paired upper scaffold levels, producing a vertically occupied crown rather than one horizontal shelf. Araucaria similarly replaces two complete whorl limbs with closed fracture stubs and redistributes their anchors onto supported leader twigs. All five broken limbs terminate in 15 closed fracture splinters; the asset stays manifold, adds only 0.82% triangles over v6 (33,102 total), and renders 1,081,758 triangles across the 128 main-world instances in the same eight instanced draws. Rounded lamina damage, per-tree healed bark scars, habitat classification, non-emissive dielectric surfaces, root support and identical colour/depth wind displacement remain coupled.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The former nine procedural trunk, branch, crown and leaf-detail layers remain at the same 128 placement and collision anchors if the original GLB cannot load."
+    },
+    {
+      "key": "world.connected_route.riparian_cover_canopy",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/canopy-tree-library-original-v7.glb",
+        "app/src/canopy-tree-library.js",
+        "app/src/environment-layout.js",
+        "app/src/collision-layout.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original reuse of the complete v7 canopy-tree library at the ten approved cover-corridor root and collision anchors. Five former paired arches remain ten independently rooted trees spanning all four silhouette families with bounded mature/submature/pioneer scale, yaw and wind-history variation. Their eight instanced draws render 80,478 triangles with vertically stratified crowns, closed wind-fractured limb stubs, rounded cambered leaf silhouettes, stable partial-lamina loss and per-tree healed bark scars while retaining 286/286 root-support samples below the shared terrain surface, the original minimum 3.5 m route half-clearance and collision on visible trunks only. No structure crosses between trunks: each fallback bough begins inside one trunk fork, cantilevers at most 2.34 m and terminates in an attached non-solid crown. Overlap provides cover visually without inventing a load-bearing pergola or disconnected shadow volume.",
+      "rights": "Project-original code-authored output and project-original asset reuse.",
+      "fallback": "Ten independent buttressed trunks, single-root-supported asymmetric boughs and attached closed crown proxies preserve the same roots, collision and cover reading if the complete GLB cannot load; the rejected cross-trunk bridge geometry is absent."
+    },
+    {
+      "key": "world.connected_route.fern_library",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/fern-library-original-v1.glb",
+        "app/scripts/generate-fern-library.mjs",
+        "app/src/fern-library.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored library of three pinnate understory fern families, each with a buried closed rhizome, overlapping closed rachises, attached leaflets, independent flex coordinates and terrain-normal support evidence. The same source replaces 132 primary/foreground plants, a quality-gated 88-instance static tree-fern-skirt/wetland/route-margin batch, and the five-plant brook-response stand without duplicating the GLB. The interaction stand replaces a screen-dominating pale procedural triangle cluster with five humid-bank ferns capped at 0.9155 m diameter and 0.2365 m height; all 65 rhizome support samples lie at -0.0301 to -0.0299 m, and its independent colour/depth wind uniforms rise only for the authored brook response.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The former three procedural instanced fern families, twelve foreground-depth fronds, twenty-four tree-fern skirts and sixty-four degradable wetland/margin accents remain available if an original instance batch cannot attach. The brook-response fallback is separately bounded to five dark 0.31–0.345-scale fronds rather than restoring the former oversized pale cluster."
+    },
+    {
+      "key": "world.environment_density.ground_cover_library",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/ground-cover-library-original-v3.glb",
+        "app/scripts/generate-ground-cover-library.mjs",
+        "app/src/ground-cover-library.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored v3 library of brook arrowhead, shade rosette and slope sedge families. Fourteen-sided closed rhizomes widen only below grade, taper before emergence and remain buried 5.2 cm; all 5,400/5,400 support samples remain between -5.35 and -5.05 cm of the rendered terrain. Nine, ten and eighteen attached cambered leaves now form mixed juvenile-to-mature asymmetric hierarchies rather than equal-height radial umbrellas. Six-sided closed petioles are capped at 1.10/0.95/0.80 cm in source geometry, 39–44% below v2, while every petiole-to-lamina centroid gap remains under 0.1 mm. A shared uv1 leaf phase adds bounded per-instance yaw, radial and vertical variation to both colour and depth shaders without increasing the six total instanced draw calls across all 360 ecological placements. Render-aware mature maximum diameter/height is reduced from 0.9755/0.3912, 0.7891/0.2069 and 0.7796/0.5728 m to 0.7420/0.3112, 0.4865/0.1760 and 0.7075/0.4746 m. Materials remain non-emissive zero-metalness dielectrics with bounded 0.12/0.18 structure/leaf environment response, a darker herbaceous support tint and shadow-aware thin-leaf transmission.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The former three procedural instanced ground-cover families remain available if the original GLB cannot load."
+    },
+    {
+      "key": "world.environment_density.forest_floor_detritus",
+      "status": "adopted",
+      "source": [
+        "app/src/forest-floor-detritus.js",
+        "app/src/terrain.js",
+        "app/src/environment-layout.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original deterministic code-authored v2 forest-floor layer. The original three closed manifold families retain 360 canopy-habitat placements for curled broadleaf litter, twig-and-bark fall, and cone/husk/leaf scatter. A fourth closed family adds 30 finite-thickness bilobed Ginkgo fan-leaf/petiole clusters in one additional instanced draw. These placements originate from the actual hero anchor at [16, 37], occupy 1.45–4.85 m inter-root sectors defined by the seven authored root angles and stay at least 0.18 rad from a root axis. All candidates pass the shared terrain-ecology disturbance gates and align to the local terrain tangent; runtime evidence records 79,560/79,560 support samples within -0.8 to +1.47 cm of the rendered heightfield. Materials are opaque, non-emissive, zero-metalness dry/decaying organic dielectrics. The layer is non-solid and compressible, so it adds no obstacle or load-bearing collision authority.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The shared terrain humus and canopy-source ecology remain visible if low quality disables the instanced detritus layer; collision, hydrology and route truth are unchanged."
+    },
+    {
+      "key": "world.environment_density.deadfall",
+      "status": "adopted",
+      "source": [
+        "app/src/world.js",
+        "app/src/terrain.js"
+      ],
+      "provenance": "Project-original deterministic weathered deadfall layer. Eighteen non-solid branched logs are rejected from terrain steeper than the accepted local support envelope, aligned to the sampled terrain tangent and vertically settled from multipoint underside measurements. Three 696–912-triangle families now use seven to nine closed overlapping trunk, branch and tapered fibre-splinter volumes, curved twelve-sided bark rings, jagged fracture faces, distinct end grain and correlated project-authored bark albedo/roughness/height. Runtime evidence records 78 underside samples at -0.0238 to +0.012 m clearance and a maximum accepted terrain slope of 0.1189. This replaces both centre-point-only placement and the later flat-shaded pale-cylinder silhouette.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The deadfall layer is a non-solid visual accent and may be disabled without changing terrain, navigation, collision or ecology truth."
+    },
+    {
+      "key": "world.environment_density.bryophyte_ground_layer",
+      "status": "adopted",
+      "source": [
+        "app/src/bryophyte-ground-layer.js",
+        "app/src/terrain.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original deterministic code-authored v2 low ground succession layer. Six hundred forty instances are ecology-gated from the shared canopy-shade, humus, moisture, hollow, slope and disturbance fields: 387 creeping moss sprays, 196 clubmoss sprays and 57 humid grass tufts in three instanced draw calls. Every rhizome samples the rendered terrain height and is buried 2.6 cm; runtime evidence records 640/640 supported roots with no positive clearance. The humid-grass family no longer uses a visible seven-sided flattened sphere plus blunt cylinders: each 752-triangle closed tuft contains twelve tapered/cambered blade volumes emerging from a compact subgrade rhizome, with maximum instance width/height reduced to 0.42/0.48 m. Opaque non-emissive zero-metalness matte organic dielectrics cap environment response at 0.12–0.18. Route, excessive mineral exposure, active point bar, cut bank, saturation and steep slope remain excluded. The layer is non-solid and compressible and adds no navigation or collision authority.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The canopy-sourced humus and bryophyte response remain in the shared terrain material if the three instanced ground-vegetation draws are disabled; collision, navigation and hydrology are unchanged."
+    },
+    {
+      "key": "world.landmark.fort_gingko",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/hero-gingko-original-v2.glb",
+        "app/scripts/generate-hero-gingko.mjs",
+        "app/src/hero-gingko.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored v2 geometry, currently 3,878,144 bytes. Seven curved buttress roots terminate at least 0.20 m below grade; a 35-ring/24-sector tapered trunk supports ten collared curved scaffold branches, twenty secondaries, 68 fine twigs, 88 leaf-bearing shoots and four sealed pruning stubs. Child branch collars overlap their parent centreline and the maximum recorded daughter/parent area ratio is 0.9248. The same two draw calls carry 1,971 closed 0.205–0.30 m bilobed fan leaves with zero recorded support gap. Two deterministic 128² correlated bark textures bound roughness to 0.86–0.98 and optical relief to 8 mm. A secondary UV channel records stiffness-ordered flex: root/trunk 0, scaffold 0.05–0.32, secondary 0.28–0.56, twig 0.52–0.82 and leaf 0.40–1.00. World-direction wind caps tip motion at 0.12 m horizontal / 0.024 m vertical, shares one displacement function and uniforms between colour and depth-shadow passes, and becomes a zero-strength fixed pose under reduced motion. The world anchor, terrain height, trunk collision and navigation authority are unchanged.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "Original procedural trunk, visible crown branches, and bounded non-emissive crown masses preserve the landmark when the v2 GLB cannot load."
+    },
+    {
+      "key": "world.connected_route.red_basalt_shelf",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/basalt-shelf-original-v2.glb",
+        "app/scripts/generate-basalt-shelf-library.mjs",
+        "app/src/basalt-shelf.js"
+      ],
+      "provenance": "Project-original deterministic offline-authored library of three distinct closed formations, each with a buried plinth-to-wall-to-mineral-bench load path and supported spalls.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The terrain-conforming bedrock apron, buried procedural cooling columns, attached seams and settled talus preserve the red-basalt landmark if the GLB cannot load."
+    },
+    {
+      "key": "world.connected_route.red_basalt_rubble",
+      "status": "adopted",
+      "source": [
+        "app/src/world.js",
+        "app/src/terrain.js"
+      ],
+      "provenance": "Project-original deterministic source-coupled basalt talus. Forty-four fragments reuse the joint-bounded angular-talus family instead of repeated dodecahedral dice and remain distributed downslope from the existing eighteen cooling pillars in one instanced draw. Every closed flat footprint aligns to the sampled terrain normal and settles by eighteen support vertices with 1.8–3.97 cm shallow burial. Runtime evidence records 44/44 supported placements, -3.97 to +1.30 cm support clearance, at least eighteen contact vertices, minimum world x 32.0028 and a complete non-solid footprint beyond navigation. The accepted dark weathered oxidized-basalt material is opaque, non-emissive and zero-metalness; a bright salmon integration was rejected.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "If the detailed talus material is unavailable, the same closed support geometry, sourced distribution, terrain settlement and non-solid navigation policy remain authoritative."
+    },
+    {
+      "key": "world.east_escarpment.stability_limited_surface",
+      "status": "adopted",
+      "source": [
+        "app/src/terrain.js",
+        "app/src/world.js"
+      ],
+      "provenance": "Project-original continuous heightfield escarpment. The former 0.5 m run lifted 3.15 m and produced a pasted near-vertical red wall despite a declared 55-degree intact-bedrock limit. The accepted 3.35 m smoothstep run has a measured maximum analytic gradient of 1.410448, below the 1.428148 limit, remains wholly outside navigation, and carries the upper basalt shoulder through the same render/collision terrain. World-height bed contacts are gated by measured source-bedrock exposure with at most 11% albedo reduction and bounded optical relief; they add zero overlay geometry. Three decorative closed exposure assets were rejected and removed because their visible top faces read as unsupported timber-like slabs even when their hidden backs were structurally buried.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The stability-limited shared heightfield remains authoritative if stratification detail is disabled; collision, navigation and upper-shoulder support are unchanged."
     },
     {
       "key": "tool.field_camera",
       "status": "adopted",
-      "source": ["app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb", "app/src/hy3d-field-camera.js"],
+      "source": [
+        "app/public/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb",
+        "app/src/hy3d-field-camera.js"
+      ],
       "provenance": "Project-specific ImageGen reference reconstructed with Tencent Hunyuan 3D and locally optimized.",
       "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "tool.plate_case",
       "status": "adopted",
-      "source": ["app/src/main.js", "app/src/simulation.js", "app/src/styles.css"],
+      "source": [
+        "app/src/main.js",
+        "app/src/simulation.js",
+        "app/src/styles.css"
+      ],
       "fallback": "Geometric tabs and crack marks preserve plate state."
     },
     {
       "key": "tool.period_rifle",
       "status": "adopted",
-      "source": ["app/public/assets/expedition-rifle-hands-hy3d-v31-50k-v1-1k.glb", "app/src/hy3d-rifle.js"],
+      "source": [
+        "app/public/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb",
+        "app/src/hy3d-rifle.js"
+      ],
       "provenance": "Project-specific ImageGen reference reconstructed with Tencent Hunyuan 3D and locally optimized.",
       "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "subject.iguanodon_family",
       "status": "adopted",
-      "source": ["app/public/assets/iguanodon-family-hy3d-v31.glb", "app/src/hy3d-iguanodon.js"],
-      "provenance": "Project-specific generated creature mesh with locally authored family posing.",
+      "source": [
+        "app/public/assets/iguanodon-hy3d-v35-stylized.glb",
+        "app/src/hy3d-iguanodon.js"
+      ],
+      "provenance": "Project-specific generated creature mesh with locally authored family posing, juvenile proportion and species-readable hand/foot silhouettes. The accepted skin path preserves the source albedo, tangent-space normal and packed roughness maps under an opaque non-emissive biological-dielectric material: zero metalness, clearcoat, transmission and emission; approximate IOR 1.42; bounded neutral-olive albedo calibration; and restored unit normal strength. The source packed roughness green channel measures 0.0078–0.9020 with a 0.4301 mean, which previously overrode the nominal scalar roughness and produced polished white back highlights. A shader-local linear remap now preserves the authored relative pattern inside a 0.72–0.94 dry-scaled-skin range without changing textures, exposure or lighting. A 52-degree crease gate averages normals only among coincident source positions, closing UV-seam shading discontinuities without smoothing anatomical hard edges. This material contract is not a claim about exact extinct-species pigmentation.",
       "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "threat.pterodactyl",
       "status": "adopted",
-      "source": ["app/public/assets/pterodactyl-hy3d-v31.glb", "app/src/hy3d-pterodactyl.js"],
+      "source": [
+        "app/public/assets/pterodactyl-hy3d-v35-stylized.glb",
+        "app/src/hy3d-pterodactyl.js"
+      ],
       "provenance": "Project-specific generated creature mesh with locally authored flight posing.",
       "rights": "Project-generated reference and mesh; keep the applicable provider output-rights records."
     },
     {
       "key": "ui.field_system",
       "status": "adopted",
-      "source": ["app/index.html", "app/src/main.js", "app/src/styles.css"],
+      "source": [
+        "app/index.html",
+        "app/src/main.js",
+        "app/src/styles.css"
+      ],
       "fallback": "Plain CSS geometry preserves orders, prompts, plate state, resources, captions, and results."
+    },
+    {
+      "key": "world.atmosphere.ridge_forest",
+      "status": "adopted",
+      "source": [
+        "app/src/atmosphere.js",
+        "app/src/main.js"
+      ],
+      "provenance": "Project-original deterministic v5 distant ridge forest and process-coupled ridge surface v2. Two stratified samples per rendered surface cell establish 1,203 non-solid background trunks plus 400 terrain-gated juvenile/shrub crowns: far/near layers carry 555/648 trunks and 176/224 understory crowns, or 1,603 crowns total. Every mature and understory root is sampled barycentrically on its exact rendered ridge triangle and embedded 6/4.5 cm with zero positive clearance. Each shared 520-triangle broad crown contains eleven closed leaf cohorts and nine closed tapered structural branches; each 500-triangle narrow crown contains four closed whorls around one closed tapered leader. Height/age, rendered slope, drainage, exposed stone and stable position phase still drive three nonempty architecture bands plus bounded damage and lean. Surface v2 uses stable 37/13/9 m world-space detail sourced from rendered normal, slope, solar aspect, drainage, exposed stone and height. Humus, vegetated-soil, slope-substrate and stone blends are bounded to 0.38/0.46/0.36/0.45 over grounded gray-green far/near source colours #394840/#3c4a35. The denser forest retains the original six total instanced draw calls and adds no navigation or collision authority.",
+      "rights": "Project-original code-authored output.",
+      "fallback": "The eroded lit ridge volumes remain visible if distant vegetation is disabled; no support, navigation or collision surface changes."
     },
     {
       "key": "light.functional_arc",
       "status": "adopted",
-      "source": ["app/src/atmosphere.js", "app/src/world.js"],
-      "fallback": "Directional light, hemisphere light, and depth fog preserve route and threat readability."
+      "source": [
+        "app/src/daylight-energy.js",
+        "app/src/height-fog.js",
+        "app/src/atmosphere.js",
+        "app/src/overhead-cloud-field.js",
+        "app/src/main.js",
+        "app/src/world.js"
+      ],
+      "fallback": "Directional sun, hemisphere light and FogExp2 preserve route and threat readability if PMREM or analytic height fog is unavailable; low quality disables the overhead cloud deck and its direct-light attenuation.",
+      "provenance": "Project-original bounded late-humid daylight energy profile. The approved sun direction and direct intensity remain fixed; directional sky/ground irradiance, physical-sky PMREM response, residual multiple-scattering ambient, per-metre humid extinction and ACES encoding exposure are recorded separately. The v2 aerial profile analytically integrates exponential-height extinction from each camera-to-fragment world segment at base height -4 m, scale height 22 m and base extinction 0.0058/m; the same sun vector supplies bounded Henyey-Greenstein forward scattering at anisotropy 0.58. A separate shared-density overhead-cloud patch now projects physical-material world positions through the 620–840 m cloud field along that same sun vector and applies two-sample Beer-Lambert attenuation to direct lighting only, clamped to minimum transmittance 0.58. Runtime evidence records 225 height-fog-patched physical materials and 200 cloud-shadow-patched materials. The cloud layer replaces the previous deck draw call, adds one texture object, no extra draw call, and no geometry or collision authority."
     },
     {
       "key": "audio.core_world",
       "status": "adopted-with-caption-fallback",
-      "source": ["app/src/audio.js", "app/src/main.js"],
+      "source": [
+        "app/src/audio.js",
+        "app/src/main.js"
+      ],
       "fallback": "Authored captions and visible state changes preserve every gameplay cue when audio is muted or unavailable."
     },
     {
       "key": "accessibility.presentation",
       "status": "adopted",
-      "source": ["app/index.html", "app/src/main.js", "app/src/styles.css"],
+      "source": [
+        "app/index.html",
+        "app/src/main.js",
+        "app/src/styles.css"
+      ],
       "fallback": "Core route remains playable at default presentation settings."
     }
   ]

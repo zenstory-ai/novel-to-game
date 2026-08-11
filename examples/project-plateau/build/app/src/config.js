@@ -27,6 +27,11 @@ export const PALETTE = Object.freeze({
 export const SCENE_BUDGET = Object.freeze({
   trees: 128,
   ferns: 120,
+  groundCover: 360,
+  bryophyteGround: 640,
+  forestFloorDetritus: 390,
+  distantTrees: 144,
+  deadfall: 18,
   basaltPillars: 18,
   adultIguanodons: 2,
   youngIguanodons: 3,

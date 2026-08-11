@@ -111,17 +111,17 @@ function addSharedPoseTargets(geometry) {
 
 function prepareMaterial(material) {
   if (!material) return material;
-  material.roughnessMap = null;
   material.metalnessMap = null;
-  material.roughness = 0.86;
+  material.roughness = 0.98;
   material.metalness = 0;
-  material.envMapIntensity = Math.min(material.envMapIntensity ?? 1, 0.42);
-  material.color?.offsetHSL(0, -0.055, 0.065);
+  material.envMapIntensity = 0.42;
+  material.color?.offsetHSL(0.006, 0.02, -0.04);
   if (material.emissive) {
-    material.emissive.set(0x334244);
-    material.emissiveIntensity = 0.28;
+    material.emissive.set(0x161d1c);
+    material.emissiveIntensity = 0.028;
   }
-  if (material.normalScale) material.normalScale.multiplyScalar(0.58);
+  if (material.normalScale) material.normalScale.multiplyScalar(0.76);
+  material.userData.surface = 'high-roughness-membrane-with-authored-breakup-and-soft-sky-response';
   material.needsUpdate = true;
   return material;
 }

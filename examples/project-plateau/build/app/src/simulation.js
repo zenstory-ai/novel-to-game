@@ -837,6 +837,7 @@ export function collisionContractSnapshot() {
       restrictedByTools: true,
     },
     capsule: { ...PLAYER_CAPSULE },
+    navigationBounds: { ...NAVIGATION_BOUNDS },
     colliderCount: STATIC_COLLIDERS.length,
     categories,
     nonSolidPolicy: NON_SOLID_COLLISION_POLICY,

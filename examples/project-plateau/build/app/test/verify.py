@@ -279,7 +279,10 @@ def main() -> int:
         else "FAIL"
         for name in CORE_CHECKS
     }
-    exit_code = 0 if set(checks.values()) == {"PASS"} else 1
+    suites_passed = bool(suite_results) and all(
+        result.get("passed") is True for result in suite_results
+    )
+    exit_code = 0 if suites_passed and set(checks.values()) == {"PASS"} else 1
     write_verification(exit_code=exit_code, suite_results=suite_results, checks=checks)
     if exit_code:
         print("authoritative verification: FAIL")

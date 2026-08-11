@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import redirect_stderr, redirect_stdout
 import importlib.util
+import hashlib
 import io
 import json
 import re
@@ -635,8 +636,8 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertTrue(marketplace["metadata"]["description"][0].isascii())
         self.assertTrue(marketplace["plugins"][0]["description"][0].isascii())
 
-    def test_asset_ledgers_reference_existing_evidence(self) -> None:
-        missing_evidence = []
+    def test_asset_ledgers_reference_existing_sources_and_evidence(self) -> None:
+        missing_targets = []
         ledgers = sorted(
             ledger
             for parent in (ROOT / "game-adaptations", ROOT / "examples")
@@ -645,15 +646,48 @@ class RepositoryValidationTests(unittest.TestCase):
         for ledger in ledgers:
             data = json.loads(ledger.read_text(encoding="utf-8"))
             for entry in data.get("entries", []):
-                for target in entry.get("evidence", []):
-                    if "://" in target:
-                        continue
-                    if not (ledger.parent / target).is_file():
-                        missing_evidence.append(
-                            f"{ledger.relative_to(ROOT)}:{entry.get('key')} -> {target}"
-                        )
+                for field in ("source", "evidence"):
+                    for target in entry.get(field, []):
+                        if "://" in target:
+                            continue
+                        if not (ledger.parent / target).is_file():
+                            missing_targets.append(
+                                f"{ledger.relative_to(ROOT)}:{entry.get('key')} "
+                                f"{field} -> {target}"
+                            )
 
-        self.assertEqual([], missing_evidence)
+        self.assertEqual([], missing_targets)
+
+    def test_plateau_machine_evidence_matches_runtime_fingerprint(self) -> None:
+        build = ROOT / "examples/project-plateau/build"
+        app = build / "app"
+        report = json.loads(
+            (build / "evidence/current-run/report.json").read_text(encoding="utf-8")
+        )
+        source = report.get("runtimeSource")
+        self.assertIsInstance(source, dict)
+        self.assertEqual(
+            "interactive inputs: index/package manifests, src and public assets; "
+            "generated conversion-preview outputs excluded",
+            source.get("scope"),
+        )
+
+        excluded_prefix = "public/media/project-plateau-preview"
+        paths = [app / "index.html", app / "package.json", app / "package-lock.json"]
+        paths += sorted((app / "public").rglob("*"))
+        paths += sorted((app / "src").rglob("*"))
+        digest = hashlib.sha256()
+        for path in paths:
+            if not path.is_file():
+                continue
+            relative = path.relative_to(app).as_posix()
+            if relative.startswith(excluded_prefix):
+                continue
+            digest.update(relative.encode())
+            digest.update(b"\0")
+            digest.update(path.read_bytes())
+            digest.update(b"\0")
+        self.assertEqual(digest.hexdigest(), source.get("sha256"))
 
     def test_skill_validator_rejects_chinese_first_description(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

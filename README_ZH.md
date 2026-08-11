@@ -42,9 +42,9 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 #### 36 秒 Remotion 宣发片
 
-宣发片采用[已经验证的同场实机路线](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md)与 Fish Audio 合成旁白；静音播放时也可通过字幕看完整流程。
+宣发片采用[已经验证的同场实机路线](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md)，所有实机片段保持 1× 原速，包含斜向移动与平滑转身，并配有 Fish Audio 合成旁白；静音播放时也可通过字幕看完整流程。
 
-https://github.com/user-attachments/assets/edde9933-c932-4bd9-9b4c-4587bbc516f7
+https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 **[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [查看改编案例](examples/project-plateau/) · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 分钟一局 · 桌面 WebGL2 · 可玩原型
 

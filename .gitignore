@@ -32,6 +32,10 @@ examples/project-plateau/build/evidence/entry/
 examples/project-plateau/build/evidence/loading/
 examples/project-plateau/build/evidence/motion/
 
+# Project Plateau visual iteration history is reproducible working evidence.
+# The authoritative complete capture lives in build/evidence/current-run/.
+examples/project-plateau/build/evidence/visual-upgrade/
+
 # 短片的录像与成片都不入库:未剪原片和 20 秒成片各 8MB 上下,合计比全仓游戏资产
 # (9.7MB)还重,而两者都能由示例自己的捕获脚本重建。
 # 留在库里的是挑刀的证据——首帧、时标 marks.json、抽帧联络表,加起来不到 700KB。

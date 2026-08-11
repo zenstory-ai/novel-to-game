@@ -10,6 +10,25 @@ export const HY3D_IGUANODON_ASSET = Object.freeze({
   approximateSharedGpuMiB: 19,
 });
 
+export const IGUANODON_SKIN_SURFACE = Object.freeze({
+  model: 'opaque-non-emissive-biological-dielectric',
+  baseColourSource: 'authored-hy3d-albedo-with-neutral-olive-calibration',
+  albedoMultiplierLinear: Object.freeze([0.7, 0.64, 0.52]),
+  roughnessSource: 'authored-packed-map-green-channel',
+  roughnessFactor: 1,
+  roughnessRange: Object.freeze([0.72, 0.94]),
+  roughnessRemap: 'authored-green-linearly-remapped-into-dry-scaled-skin-range',
+  approximateIndexOfRefraction: 1.42,
+  specularIntensity: 0.92,
+  environmentIntensity: 0.48,
+  normalSource: 'authored-tangent-space-map-with-restored-unit-strength',
+  normalScale: Object.freeze([1, 1]),
+  clearcoat: 0,
+  transmission: 0,
+  emission: 0,
+  evidenceBoundary: 'bounded-skin-optics-not-a-claim-about-extinct-species-pigmentation',
+});
+
 const ADULT_MODEL_SCALE = 8.25;
 const THUMB_SPIKE_MATERIAL = new THREE.MeshStandardMaterial({
   color: 0xb2a272,
@@ -138,6 +157,57 @@ function refineIguanodonSilhouette(geometry) {
   geometry.userData.silhouetteRefinement = 'narrow-integrated-beak';
 }
 
+function smoothCoincidentVertexNormals(geometry, creaseDegrees = 52, tolerance = 1e-5) {
+  const position = geometry.getAttribute('position');
+  const normal = geometry.getAttribute('normal');
+  if (!position || !normal || geometry.userData.normalContinuity) return;
+
+  const groups = new Map();
+  const keyScale = 1 / tolerance;
+  for (let index = 0; index < position.count; index += 1) {
+    const key = `${Math.round(position.getX(index) * keyScale)}:`
+      + `${Math.round(position.getY(index) * keyScale)}:`
+      + `${Math.round(position.getZ(index) * keyScale)}`;
+    const group = groups.get(key);
+    if (group) group.push(index);
+    else groups.set(key, [index]);
+  }
+
+  const creaseCosine = Math.cos(THREE.MathUtils.degToRad(creaseDegrees));
+  const original = Array.from({ length: normal.count }, (_, index) => (
+    new THREE.Vector3(normal.getX(index), normal.getY(index), normal.getZ(index)).normalize()
+  ));
+  let duplicateGroups = 0;
+  let smoothedVertices = 0;
+  groups.forEach((indices) => {
+    if (indices.length < 2) return;
+    duplicateGroups += 1;
+    for (const index of indices) {
+      const reference = original[index];
+      const averaged = new THREE.Vector3();
+      let contributors = 0;
+      for (const candidateIndex of indices) {
+        const candidate = original[candidateIndex];
+        if (reference.dot(candidate) < creaseCosine) continue;
+        averaged.add(candidate);
+        contributors += 1;
+      }
+      if (contributors < 2 || averaged.lengthSq() < 1e-8) continue;
+      averaged.normalize();
+      normal.setXYZ(index, averaged.x, averaged.y, averaged.z);
+      smoothedVertices += 1;
+    }
+  });
+  normal.needsUpdate = true;
+  geometry.userData.normalContinuity = {
+    model: 'crease-bounded-coincident-position-average-across-uv-seams',
+    creaseDegrees,
+    tolerance,
+    duplicateGroups,
+    smoothedVertices,
+  };
+}
+
 function bendHead(x, y, angle, influence) {
   const pivotX = -0.075;
   const pivotY = 0.285;
@@ -242,6 +312,7 @@ function prepareTemplate(source) {
     if (!preparedGeometries.has(sourceGeometry)) {
       const preparedGeometry = sourceGeometry.clone();
       refineIguanodonSilhouette(preparedGeometry);
+      smoothCoincidentVertexNormals(preparedGeometry);
       addSharedPoseTargets(preparedGeometry);
       preparedGeometries.set(sourceGeometry, preparedGeometry);
     }
@@ -259,22 +330,63 @@ function prepareTemplate(source) {
 
 function prepareMaterial(material) {
   if (!material) return material;
-  // HY3D's baked PBR maps are useful for previews but too glossy beside the
-  // authored matte world. Keep color/normal detail while removing the
-  // metallic-roughness map's photoreal highlights.
-  material.roughnessMap = null;
-  material.metalnessMap = null;
-  material.roughness = 0.92;
-  material.metalness = 0;
-  material.envMapIntensity = Math.min(material.envMapIntensity ?? 1, 0.34);
-  material.color?.offsetHSL(0.008, -0.02, 0.1);
-  if (material.emissive) {
-    material.emissive.set(0x2a2114);
-    material.emissiveIntensity = 0.18;
-  }
-  if (material.normalScale) material.normalScale.multiplyScalar(0.58);
-  material.needsUpdate = true;
-  return material;
+  // The generated source already contains useful albedo, tangent-space normal and
+  // packed roughness data. Preserve those measurements, but put them under an
+  // opaque dielectric energy model instead of lifting the animal with emissive
+  // fill. The neutral multiplier lowers the source's broad white shoulder without
+  // inventing a new extinct-species colour reconstruction.
+  const prepared = new THREE.MeshPhysicalMaterial({
+    name: material.name,
+    map: material.map ?? null,
+    color: new THREE.Color().setRGB(...IGUANODON_SKIN_SURFACE.albedoMultiplierLinear),
+    roughness: IGUANODON_SKIN_SURFACE.roughnessFactor,
+    roughnessMap: material.roughnessMap ?? null,
+    metalness: 0,
+    metalnessMap: null,
+    normalMap: material.normalMap ?? null,
+    normalMapType: material.normalMapType,
+    normalScale: new THREE.Vector2(...IGUANODON_SKIN_SURFACE.normalScale),
+    ior: IGUANODON_SKIN_SURFACE.approximateIndexOfRefraction,
+    specularIntensity: IGUANODON_SKIN_SURFACE.specularIntensity,
+    envMapIntensity: IGUANODON_SKIN_SURFACE.environmentIntensity,
+    clearcoat: 0,
+    transmission: 0,
+    emissive: 0x000000,
+    emissiveIntensity: 0,
+    side: material.side,
+    opacity: material.opacity,
+    transparent: material.transparent,
+    alphaTest: material.alphaTest,
+    depthTest: material.depthTest,
+    depthWrite: material.depthWrite,
+    vertexColors: material.vertexColors,
+    fog: material.fog,
+  });
+  prepared.userData = {
+    ...material.userData,
+    surface: 'calibrated-opaque-dielectric-skin-with-bounded-authored-roughness',
+    skinSurface: IGUANODON_SKIN_SURFACE,
+    roughnessRemap: Object.freeze({
+      version: 'bounded-dry-skin-roughness-v1',
+      source: IGUANODON_SKIN_SURFACE.roughnessSource,
+      range: [...IGUANODON_SKIN_SURFACE.roughnessRange],
+      model: IGUANODON_SKIN_SURFACE.roughnessRemap,
+    }),
+  };
+  const previousOnBeforeCompile = prepared.onBeforeCompile.bind(prepared);
+  prepared.onBeforeCompile = (shader, renderer) => {
+    previousOnBeforeCompile(shader, renderer);
+    shader.fragmentShader = shader.fragmentShader.replace(
+      '#include <roughnessmap_fragment>',
+      `
+        #include <roughnessmap_fragment>
+        roughnessFactor = mix(0.72, 0.94, clamp(roughnessFactor, 0.0, 1.0));
+      `,
+    );
+  };
+  prepared.customProgramCacheKey = () => 'bounded-dry-skin-roughness-v1';
+  prepared.needsUpdate = true;
+  return prepared;
 }
 
 export function createCachedHy3dIguanodonLoader({
@@ -312,6 +424,7 @@ export function createHy3dIguanodonInstance(template, { scale = ADULT_MODEL_SCAL
   visual.userData.staticSourceMesh = true;
   visual.userData.runtimeMorphPose = true;
   visual.userData.speciesHandSilhouette = 'paired-thumb-spikes';
+  visual.userData.skinSurface = IGUANODON_SKIN_SURFACE;
   model.name = 'subject.iguanodon_family.hy3d_model';
   model.rotation.y = Math.PI;
   model.scale.setScalar(scale);
