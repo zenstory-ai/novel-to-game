@@ -136,6 +136,7 @@ import {
   BROOK_HYDROLOGY_PROFILE,
   BROOK_OBSTACLE_FLOW_PROFILE,
   BROOK_REFLECTION_PROFILE,
+  BROOK_SURFACE_DRAW_PROFILE,
   buildBrookObstacleFlowField,
   buildBrookHydrology,
 } from './brook-hydrology.js';
@@ -6039,6 +6040,12 @@ function makeRouteAndBrook(scene) {
       'bounded-local-free-surface-does-not-claim-discharge-cfd-volume-proof-or-exact-wave-spectrum',
   });
   brook.name = 'world.connected_route.brook';
+  // Draw the channel ahead of every standing transparent element. See
+  // BROOK_SURFACE_DRAW_PROFILE: the ribbon's world-space vertices leave the mesh
+  // origin at (0, 0, 0), so the default transparent sort could place the water
+  // in front of the campfire flames it should sit behind.
+  brook.renderOrder = BROOK_SURFACE_DRAW_PROFILE.surfaceRenderOrder;
+  brook.material.userData.drawOrderProfile = BROOK_SURFACE_DRAW_PROFILE.version;
   const leftWetEdge = makeBankAnchor('world.connected_route.brook-left-wet-edge', 'left');
   const rightWetEdge = makeBankAnchor('world.connected_route.brook-right-wet-edge', 'right');
   scene.add(brookBank, leftWetEdge, rightWetEdge, brook);

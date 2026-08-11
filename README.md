@@ -40,10 +40,6 @@ A real-time **first-person 3D field-photography game** adapted from Arthur Conan
 
 Play the full expedition on desktop, or watch the 15-second gameplay preview on other devices.
 
-#### 36-second Remotion launch trailer
-
-The trailer follows [the verified same-take gameplay route](examples/project-plateau/build/media/remotion/LAUNCH_TRAILER.md) at natural 1× speed, with diagonal movement and eased turns, and uses Fish Audio synthetic narration. Captions preserve the complete story when muted.
-
 https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 **[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Read the case study](examples/project-plateau/) · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 min run · desktop WebGL2 · playable prototype

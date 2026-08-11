@@ -8,6 +8,7 @@ import {
   BROOK_HYDROLOGY_PROFILE,
   BROOK_OBSTACLE_FLOW_PROFILE,
   BROOK_REFLECTION_PROFILE,
+  BROOK_SURFACE_DRAW_PROFILE,
   brookFlowFrameAt,
   buildBrookObstacleFlowField,
   buildBrookHydrology,
@@ -176,4 +177,29 @@ test('brook obstacle flow directions converge from both headwaters and remain bu
   );
   assert.match(BROOK_FREE_SURFACE_PROFILE.volumeContract, /zero-mean-oscillatory-wake/);
   assert.match(BROOK_FREE_SURFACE_PROFILE.evidenceBoundary, /not-shallow-water-cfd/);
+});
+
+test('brook surface is ordered ahead of standing transparent scene elements', () => {
+  // The campfire flames keep three.js' default render order and write no depth,
+  // so the channel cannot rely on the whole-object transparent sort to stay
+  // behind them: the ribbon's world-space vertices leave its origin at (0, 0, 0),
+  // up to 88 m from the water on screen. Pin the contract against the default a
+  // standing transparent mesh actually gets.
+  const standingTransparent = new THREE.Mesh(
+    new THREE.BufferGeometry(),
+    new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false }),
+  );
+  assert.equal(
+    standingTransparent.renderOrder,
+    BROOK_SURFACE_DRAW_PROFILE.standingTransparentRenderOrder,
+  );
+  assert.ok(
+    BROOK_SURFACE_DRAW_PROFILE.surfaceRenderOrder
+      < BROOK_SURFACE_DRAW_PROFILE.standingTransparentRenderOrder,
+  );
+  assert.match(BROOK_SURFACE_DRAW_PROFILE.sortHazard, /origin-does-not-track-visible-water/);
+  assert.match(
+    BROOK_SURFACE_DRAW_PROFILE.evidenceBoundary,
+    /not-per-fragment-depth-sorting/,
+  );
 });

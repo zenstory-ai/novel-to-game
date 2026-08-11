@@ -60,6 +60,24 @@ export const BROOK_FREE_SURFACE_PROFILE = Object.freeze({
     'centimetre-bounded-visual-free-surface-not-shallow-water-cfd-or-volume-conservation-proof',
 });
 
+// The channel ribbon bakes its centreline into world-space vertices, so the mesh
+// origin stays at (0, 0, 0) while the geometry reaches z = ±88. three.js sorts
+// transparent objects by the view-space depth of that origin, which describes a
+// point up to 88 m away from the water actually on screen. At Fort Challenger,
+// facing west, the brook therefore sorted nearer than the campfire flames; both
+// materials leave depthWrite off, so the water blended over the fire instead of
+// behind it. Ordering the channel explicitly makes it a ground surface again: it
+// is drawn before every standing transparent element rather than racing them on
+// a sort key that does not describe where the water is.
+export const BROOK_SURFACE_DRAW_PROFILE = Object.freeze({
+  version: 'explicit-ground-surface-transparent-draw-order-v1',
+  surfaceRenderOrder: -1,
+  standingTransparentRenderOrder: 0,
+  sortHazard: 'world-space-baked-ribbon-origin-does-not-track-visible-water',
+  evidenceBoundary:
+    'fixes-whole-object-transparent-draw-order-only-not-per-fragment-depth-sorting',
+});
+
 function horizontalDistance(start, end) {
   return Math.hypot(end.x - start.x, end.z - start.z);
 }
