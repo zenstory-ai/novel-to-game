@@ -142,7 +142,7 @@ still requires reading the current state.
 | Threat information | Awareness is hidden numerically. Calls, head/gaze direction, wing cadence, shadow speed and dive posture expose its four states in the world. |
 | Defensive timing | The rifle can interrupt a committed dive only before contact. It is inaccurate as a killing tool and its report changes the direct return route. |
 | Spatial counterplay | Dense canopy blocks a clean aerial dive but also obstructs photographs. Open basalt gives scale and framing at the cost of visibility. |
-| Submission points | A shutter release permanently spends one plate. Entering either return route commits its time/cost profile. Crossing the Fort gate submits the run. |
+| Submission points | A shutter release permanently spends one plate. Entering either return route commits its time/cost profile. Holding the case release drops the plate case where the scout stands; the drop is irreversible and its plates no longer count for the ending. Crossing the Fort gate submits the run. |
 | Randomness | P0 uses no outcome-changing randomness. The same state and action yield the same result; small ambient animation variation may not change windows, damage or route timing. |
 | Failure and recovery | A second unblocked strike, expiration of remaining light outside the Fort, or leaving the navigable world ends the run. Restart returns to the field order with the same initial state in one action. |
 | Pause / focus | Pause freezes the world and reveals controls. Losing browser focus also freezes input and time; returning never spends a plate or fires a shot. |
@@ -193,9 +193,10 @@ There is one core system and two supporting systems.
 | Wildlife awareness | How directly the pterodactyl has localized the player. | Cover plate +1; open plate +2; exposed sprint +1. | Six seconds of cover -1; timely shot -2; bounded from zero to three. | Not an inventory resource; both increases and decreases occur in every intended line. | Distant / watch / search / attack behavior and route strike. |
 | Body margin | One recoverable contact before the next contact ends the run. | One at start; never restored. | An unblocked dive consumes it. | One available / two authored potential contacts = 0.5. | Contact consequence, danger feedback and death condition. |
 | A shot was fired | Persistent action-history flag, not a score. | Set by any rifle discharge. | Never cleared during the run. | N/A; one write is sufficient. | Brook-route response and field-report callback at extraction. |
+| The case was abandoned | Persistent action-history flag (`caseAbandoned`), not a score. | Set by a 0.8-second held case release during an active run. | Never cleared during the run. | N/A; one write is sufficient. | Return-route cost (8 s), creek case-strike removal, camera availability, plate-rail visibility and the extraction report. |
 
 No stamina, hunger, crafting, general health bar, inventory grid, XP, kill count
-or currency exists. Route confidence is communicated, not accumulated. The
+or currency exists. Route confidence is communicated, not accumulated. Each
 action-history flag is read later and therefore is not orphan state.
 
 ## Numeric budget
@@ -254,7 +255,7 @@ return fork. Remaining light, intact plate previews and cartridges are all
 visible. Outcome priority is survival first, then recovered evidence band,
 then retained resources/time. Route costs are deterministic.
 
-| Visible state | Covered thorn route: 28 s, no plate loss | Exposed creek: 12 s, best plate breaks at attack | Warning shot + creek: 18 s, 1 cartridge, no plate loss | Drop case + sprint: 8 s, all proof lost | Best action and why |
+| Visible state | Covered thorn route: 28 s, no plate loss | Exposed creek: 12 s, best plate breaks at attack | Warning shot + creek: 18 s, 1 cartridge, no plate loss | Drop case + sprint: 8 s, all proof lost (implemented) | Best action and why |
 |---|---|---|---|---|---|
 | 40 s; evidence 7 on 4 plates; 1 cartridge | Alive, evidence 7, 12 s left | Alive, evidence 5, 28 s left | Alive, evidence 7, 22 s left, no cartridge, gunshot callback | Alive, evidence 0, 32 s left | **Covered route** preserves the top band without noise. |
 | 20 s; evidence 7 on 4 plates; 1 cartridge | Timeout before Fort | Alive, evidence 5, 8 s left | Alive, evidence 7, 2 s left, gunshot callback | Alive, evidence 0, 12 s left | **Warning shot + creek** is the only strong-record finish. |
@@ -263,6 +264,12 @@ then retained resources/time. Route costs are deterministic.
 
 No action is best in more than one of the four representative states. “Always
 take the biggest number” and “always save ammunition” both fail.
+
+Build note: all four responses are implemented. The drop is a 0.8-second held
+release available anywhere during an active run; once the case is down, either
+committed return route costs 8 s, the creek case-strike cannot fire and the
+camera can no longer be raised. Every cost in the fourth column matches the
+measured build values.
 
 ## Genre-fidelity go / no-go
 
@@ -432,6 +439,7 @@ Every core input closes within the same beat:
 | Remaining light expires outside Fort | `The basin went dark. The brook was no longer enough.` | `Leave the last frame, or take the shorter return while it is still usable.` |
 | Leaves navigable terrain | `The red cliff gives no path here.` | Camera returns to the last stable ground; this is recovery, not a run-ending skill judgment. |
 | Alive, no evidence | `You returned with a story. Stories are what they came to dispute.` | `Expose a plate, then keep the case with you.` |
+| Alive, case abandoned | `The case stayed in the basin. The plates stayed with it.` | The result states the exact count of exposed plates left in the basin. |
 | Insufficient evidence | `The plates survived. The animal never stands clear.` | The result lays out the exact occluded/unstable previews. |
 | Corroborating record | `Living form, more than one angle. The argument can begin again.` | Shows which missing cue—scale or behavior—kept the record below strong. |
 | Strong field record | `Scale. Living form. Behavior. The field record holds.` | No deterministic claim about public belief or subjective fun. |
@@ -501,6 +509,15 @@ This protocol does not claim to verify fun or balance deterministically.
 
 QA records only the Strong path with all five core verbs, a no-shot return, one
 Strong result and restart to the clean initial order.
+
+The fourth return response is covered by deterministic unit tests rather than a
+second recorded browser path: hold threshold and early-release cancel, the
+eight-second cost on both routes including after a shot, suppression of the
+creek case-strike, the result band and its copy, and a clean restart. Its
+on-screen presentation — the dropped case in the world, the withdrawn camera and
+plate HUD, the low-light prompt — is not browser-recorded. A second recorded
+path was judged to cost more than it returns; this limitation is the cheaper
+honest answer.
 
 ## Character content boundaries
 

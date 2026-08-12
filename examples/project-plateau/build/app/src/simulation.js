@@ -25,6 +25,14 @@ export const NAVIGATION = Object.freeze({
 export const EXPOSURE_SECONDS = 2;
 export const CONTACT_SECONDS = 3;
 export const INITIAL_LIGHT_SECONDS = 180;
+export const ABANDON_HOLD_SECONDS = 0.8;
+export const RETURN_ROUTE_SECONDS = Object.freeze({
+  covered: 28,
+  exposed: 12,
+  exposedAfterShot: 18,
+  abandoned: 8,
+});
+export const ABANDONED_RECORD_COPY = 'The case stayed in the basin. The plates stayed with it.';
 export const JUMP = Object.freeze({ speed: 5.8, gravity: 15 });
 
 export const RESULT_BANDS = Object.freeze([
@@ -85,6 +93,7 @@ function emptyPlate(index) {
     lostPoints: 0,
     label: null,
     frameKey: null,
+    recoverable: true,
   };
 }
 
@@ -141,6 +150,11 @@ export function createPlayerState() {
     returnRoute: null,
     returnCostSeconds: 0,
     returnStrike: false,
+    caseAbandoned: false,
+    caseDropPosition: null,
+    abandonHoldSeconds: 0,
+    abandonedPlates: 0,
+    abandonedEvidence: 0,
     runStatus: 'active',
     result: null,
   };
@@ -219,10 +233,22 @@ export function frameForState(state) {
 }
 
 export function intactEvidence(state) {
+  if (state.caseAbandoned) return 0;
   return state.plates.reduce(
     (total, plate) => total + (plate.status === 'exposed' ? plate.points : 0),
     0,
   );
+}
+
+export function abandonAvailable(state) {
+  return state.runStatus === 'active' && !state.paused && !state.failed && !state.caseAbandoned;
+}
+
+export function abandonPromptDue(state) {
+  return abandonAvailable(state)
+    && state.reachedGlade
+    && !state.returnRoute
+    && state.remainingLight < RETURN_ROUTE_SECONDS.covered;
 }
 
 export function resultBandForEvidence(points) {
@@ -234,6 +260,7 @@ export function setCameraRaised(state, raised) {
   if (state.pendingExposure) return copyState(state, { cameraRaised: true, rifleRaised: false });
   const canRaise = !state.paused
     && !state.failed
+    && !state.caseAbandoned
     && state.plates.some((plate) => plate.status === 'unexposed');
   const cameraRaised = Boolean(raised && canRaise);
   return copyState(state, {
@@ -341,7 +368,8 @@ export function applyThreatContact(state) {
   }
 
   const plates = state.plates.map(clonePlate);
-  const crackedIndex = highestValueIntactPlateIndex(plates);
+  // With the case left in the basin there is no case strapped to the scout to strike.
+  const crackedIndex = state.caseAbandoned ? -1 : highestValueIntactPlateIndex(plates);
   if (crackedIndex >= 0) {
     plates[crackedIndex] = {
       ...plates[crackedIndex],
@@ -378,12 +406,44 @@ function crackHighestValuePlate(state) {
   return { plates, crackedIndex };
 }
 
+const PLATE_COUNT_WORDS = Object.freeze(['No', 'One', 'Two', 'Three', 'Four']);
+
+function commitCaseAbandon(state) {
+  const abandonedPlates = state.plates.filter((plate) => plate.status === 'exposed').length;
+  const abandonedEvidence = state.plates.reduce(
+    (total, plate) => total + (plate.status === 'exposed' ? plate.points : 0),
+    0,
+  );
+  // Keep every plate's recorded state; the drop only marks the case unrecoverable.
+  const plates = state.plates.map((plate) => ({ ...plate, recoverable: false }));
+  return copyState(state, {
+    caseAbandoned: true,
+    caseDropPosition: clonePosition(state.position),
+    plates,
+    abandonedPlates,
+    abandonedEvidence,
+    abandonHoldSeconds: 0,
+    cameraRaised: false,
+    pendingExposure: null,
+    lastObservation: abandonedPlates > 0
+      ? `The case is down. ${PLATE_COUNT_WORDS[abandonedPlates]} recorded plate${abandonedPlates === 1 ? ' stays' : 's stay'} in the basin.`
+      : 'The case is down. Nothing was exposed on its plates.',
+    lastEvent: 'case:abandoned',
+  });
+}
+
 function commitReturnRoute(state, zone) {
   if (state.returnRoute || !state.reachedGlade) return state;
   if (zone !== 'covered-return' && zone !== 'exposed-creek') return state;
 
   const route = zone === 'covered-return' ? 'covered' : 'exposed';
-  const cost = route === 'covered' ? 28 : state.gunshotFired ? 18 : 12;
+  const cost = state.caseAbandoned
+    ? RETURN_ROUTE_SECONDS.abandoned
+    : route === 'covered'
+      ? RETURN_ROUTE_SECONDS.covered
+      : state.gunshotFired
+        ? RETURN_ROUTE_SECONDS.exposedAfterShot
+        : RETURN_ROUTE_SECONDS.exposed;
   let next = copyState(state, {
     returnRoute: route,
     returnCostSeconds: cost,
@@ -392,7 +452,7 @@ function commitReturnRoute(state, zone) {
     brookResponse: route === 'exposed' && state.gunshotFired ? 'brush-moving' : state.brookResponse,
   });
 
-  if (route === 'exposed' && state.threatAwareness === 3 && !state.gunshotFired) {
+  if (route === 'exposed' && state.threatAwareness === 3 && !state.gunshotFired && !state.caseAbandoned) {
     const strike = crackHighestValuePlate(next);
     next = copyState(next, {
       plates: strike.plates,
@@ -421,12 +481,16 @@ function submitAtFort(state) {
       kind: 'alive',
       band: band.key,
       title: band.title,
-      copy: band.copy,
+      copy: state.caseAbandoned ? ABANDONED_RECORD_COPY : band.copy,
       evidence,
-      survivingPlates: state.plates.filter((plate) => plate.status === 'exposed').length,
+      survivingPlates: state.caseAbandoned
+        ? 0
+        : state.plates.filter((plate) => plate.status === 'exposed').length,
       route: state.returnRoute,
       brookResponse: state.brookResponse,
       remainingLight: Number(state.remainingLight.toFixed(1)),
+      caseAbandoned: state.caseAbandoned,
+      abandonedPlates: state.abandonedPlates,
       gunshotCallback: state.gunshotFired
         ? 'The report carried. Something answered by the brook.'
         : null,
@@ -960,6 +1024,16 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
 
   if (pendingExposure && pendingExposure.remainingSeconds <= 0) {
     next = copyState(next, finalizeExposure(next, pendingExposure, threat));
+  }
+
+  // The case release is a held input, not a tap: an accidental touch must never
+  // destroy a run's record, and releasing early cancels with no cost.
+  const abandonHoldSeconds = input.abandon && !state.caseAbandoned
+    ? state.abandonHoldSeconds + deltaSeconds
+    : 0;
+  next = copyState(next, { abandonHoldSeconds });
+  if (abandonHoldSeconds >= ABANDON_HOLD_SECONDS && !next.caseAbandoned) {
+    next = commitCaseAbandon(next);
   }
 
   next = commitReturnRoute(next, zone);

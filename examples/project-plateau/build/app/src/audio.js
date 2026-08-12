@@ -10,6 +10,7 @@ export const AUDIO_CAPTIONS = Object.freeze({
   cover: '[branches scrape the camera; wingbeats widen]',
   rifle: '[rifle report; echo runs toward the brook]',
   contact: '[case strike; glass cracks]',
+  'case-drop': '[the plate case hits the ground; glass settles inside]',
   'brook-response': '[brush thrashes beside the brook]',
   result: '[glass plates settle on the light board]',
   failure: '[the field sound narrows to wind and brook]',
@@ -132,6 +133,9 @@ export class FieldAudio {
     } else if (name === 'contact') {
       this.tone(110, 0.2, 'effects', 0.2, 'square');
       this.tone(1280, 0.28, 'effects', 0.11, 'triangle', 0.04);
+    } else if (name === 'case-drop') {
+      this.tone(130, 0.16, 'effects', 0.14, 'triangle');
+      this.tone(1120, 0.2, 'effects', 0.035, 'sine', 0.06);
     } else if (name === 'brook-response') {
       this.tone(132, 0.42, 'ambience', 0.06, 'sawtooth');
       this.tone(178, 0.35, 'ambience', 0.04, 'triangle', 0.19);

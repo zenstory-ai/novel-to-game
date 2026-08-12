@@ -39,7 +39,9 @@ import {
   saveSettings,
 } from './settings.js';
 import {
+  ABANDON_HOLD_SECONDS,
   EXPOSURE_SECONDS,
+  abandonPromptDue,
   collisionContractSnapshot,
   createPlayerState,
   examine,
@@ -542,6 +544,52 @@ function clearPlateImages() {
   terminalBoardSlots.forEach((slot) => applyPlateImage(slot, null));
 }
 
+let droppedCase = null;
+
+function hideDroppedCase() {
+  if (!droppedCase) return;
+  scene.remove(droppedCase);
+  droppedCase.traverse((object) => {
+    if (object.isMesh) {
+      object.geometry.dispose();
+      object.material.dispose();
+    }
+  });
+  droppedCase = null;
+}
+
+function showDroppedCase(position, heading) {
+  hideDroppedCase();
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.62, 0.2, 0.44),
+    new THREE.MeshStandardMaterial({ color: 0x4a3524, roughness: 0.88, metalness: 0.04 }),
+  );
+  body.position.y = 0.1;
+  const lid = new THREE.Mesh(
+    new THREE.BoxGeometry(0.64, 0.05, 0.46),
+    new THREE.MeshStandardMaterial({ color: 0x5a422c, roughness: 0.82, metalness: 0.04 }),
+  );
+  lid.position.y = 0.225;
+  const latch = new THREE.Mesh(
+    new THREE.BoxGeometry(0.1, 0.05, 0.03),
+    new THREE.MeshStandardMaterial({ color: 0xa8874e, roughness: 0.42, metalness: 0.6 }),
+  );
+  latch.position.set(0, 0.18, 0.24);
+  group.add(body, lid, latch);
+  group.traverse((object) => {
+    if (object.isMesh) object.castShadow = true;
+  });
+  // The scout casts the case forward off the shoulder so the drop lands inside
+  // a level first-person view (the eye sits ~3.45m above the ground plane).
+  const landingX = position.x - Math.sin(heading) * 5.6;
+  const landingZ = position.z - Math.cos(heading) * 5.6;
+  group.position.set(landingX, terrainHeight(landingX, landingZ) + 0.02, landingZ);
+  group.rotation.y = heading + 0.45;
+  scene.add(group);
+  droppedCase = group;
+}
+
 function queuePlateCapture(plateIndex) {
   pendingPlateCapture = {
     plateIndex,
@@ -621,10 +669,15 @@ function emitCue(cue, duration) {
   showCaption(cue, duration);
 }
 
+const ABANDON_PROMPT_COPY = 'Drop the case and run [Hold G] — the plates stay in the basin.';
+
 function contextualCopy() {
   if (player.pendingExposure) return 'Hold steady.';
   if (player.cameraRaised) return 'Hold steady. Release the shutter [Left Mouse]';
   if (player.threatState === 'attack') return 'Hold rifle [F] · Fire before contact [Left Mouse]';
+  // A held release must always show its progress, even where the prompt is not due.
+  if (!player.caseAbandoned && player.abandonHoldSeconds > 0) return ABANDON_PROMPT_COPY;
+  if (abandonPromptDue(player)) return ABANDON_PROMPT_COPY;
   if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Examine the track [E]';
   if (player.zone === 'brook-blind') return 'Hold camera [Right Mouse]';
   if (player.zone === 'iguanodon-glade' && !player.observedBehavior) return 'Read the family [E]';
@@ -657,6 +710,10 @@ function updateFieldHud(now) {
   const prompt = contextualCopy();
   contextPrompt.textContent = prompt;
   contextPrompt.hidden = !prompt || player.failed;
+  const holdProgress = !player.caseAbandoned && player.abandonHoldSeconds > 0
+    ? Math.min(1, player.abandonHoldSeconds / ABANDON_HOLD_SECONDS)
+    : 0;
+  contextPrompt.style.setProperty('--hold-progress', `${(holdProgress * 100).toFixed(1)}%`);
   // The complete legend is onboarding, not a permanent debug bar. Keep it on
   // the first controllable metres, then let contextual prompts own the HUD.
   const controlsLearned = player.distanceTravelled >= 5
@@ -680,7 +737,7 @@ function updateFieldHud(now) {
     slot.classList.toggle('spent', index >= player.cartridges);
   });
 
-  plateRail.hidden = !player.plateRailRevealed;
+  plateRail.hidden = !player.plateRailRevealed || player.caseAbandoned;
   plateSlots.forEach((slot, index) => {
     const plate = player.plates[index];
     slot.dataset.status = plate.status;
@@ -700,6 +757,7 @@ function updateFieldHud(now) {
     ? player.plates[player.lastProofEvent.plateIndex]
     : null;
   const showPreview = player.previewSeconds > 0
+    && !player.caseAbandoned
     && player.lastProofEvent
     && previewPlate?.status === 'exposed';
   platePreview.hidden = !showPreview;
@@ -721,7 +779,8 @@ function updateFieldHud(now) {
   world.fieldCamera.visible = runActive
     && !player.failed
     && !player.rifleRaised
-    && !player.cameraRaised;
+    && !player.cameraRaised
+    && !player.caseAbandoned;
   world.rifle.visible = runActive && !player.failed && player.rifleRaised;
   updateViewmodelPose(now);
 }
@@ -828,6 +887,7 @@ function inputSnapshot() {
     right: Number(pressed.has('KeyD')) - Number(pressed.has('KeyA')),
     sprint: pressed.has('ShiftLeft') || pressed.has('ShiftRight'),
     crouch: pressed.has('KeyC') || pressed.has('ControlLeft') || pressed.has('ControlRight'),
+    abandon: pressed.has('KeyG'),
     jump: jumpQueued,
     heading: player.heading,
     pitch: player.pitch,
@@ -878,13 +938,16 @@ function presentTerminal() {
 
   terminalBoardSlots.forEach((slot, index) => {
     const plate = player.plates[index];
-    slot.dataset.status = plate.status;
+    const leftInBasin = player.result.caseAbandoned === true;
+    slot.dataset.status = leftInBasin ? 'abandoned' : plate.status;
     slot.dataset.frame = plate.frameKey ?? 'empty';
-    slot.dataset.cues = plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
-    applyPlateImage(slot, plate.status === 'exposed' ? plateImages[index] : null);
+    slot.dataset.cues = !leftInBasin && plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
+    applyPlateImage(slot, !leftInBasin && plate.status === 'exposed' ? plateImages[index] : null);
     slot.setAttribute(
       'aria-label',
-      `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.label ? ` — ${plate.label}` : ''}`,
+      leftInBasin
+        ? `Plate ${ROMAN_PLATES[index]}: left in the basin${plate.label ? ` — ${plate.label}` : ''}`
+        : `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.label ? ` — ${plate.label}` : ''}`,
     );
   });
 
@@ -892,7 +955,9 @@ function presentTerminal() {
     terminalEyebrow.textContent = 'WHAT REACHED CAMP';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
-    terminalDetail.textContent = `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
+    terminalDetail.textContent = player.result.caseAbandoned
+      ? `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.abandonedPlates} exposed plate${player.result.abandonedPlates === 1 ? '' : 's'} left in the basin · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`
+      : `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
     terminalCallback.hidden = !player.result.gunshotCallback;
     terminalCallback.textContent = player.result.gunshotCallback ?? '';
   } else {
@@ -909,6 +974,7 @@ function returnToFieldOrder() {
   clearTransientInput();
   player = createPlayerState();
   clearPlateImages();
+  hideDroppedCase();
   runActive = false;
   terminalPanel.hidden = true;
   closePanels();
@@ -921,6 +987,7 @@ function beginRun() {
   clearTransientInput();
   player = restartPlayer(player);
   clearPlateImages();
+  hideDroppedCase();
   fieldAudio.resetRun();
   runActive = true;
   observedBoundaryRecoveries = 0;
@@ -993,6 +1060,7 @@ function update(deltaSeconds, now) {
     const previousProofPlate = player.lastProofEvent?.plateIndex ?? -1;
     const previousRoute = player.returnRoute;
     const previousBrookResponse = player.brookResponse;
+    const previousCaseAbandoned = player.caseAbandoned;
     player = stepPlayer(player, inputSnapshot(), deltaSeconds);
     if (player.threatState !== previousThreatState) {
       fieldAudio.setThreatState(player.threatState);
@@ -1002,6 +1070,11 @@ function update(deltaSeconds, now) {
       emitCue('plate-slide');
     }
     if (player.returnRoute !== previousRoute && player.returnRoute === 'covered') emitCue('cover');
+    if (!previousCaseAbandoned && player.caseAbandoned) {
+      emitCue('case-drop', 3000);
+      observationNoticeUntil = now + 3400;
+      showDroppedCase(player.caseDropPosition ?? player.position, player.heading);
+    }
     if (player.brookResponse !== previousBrookResponse && player.brookResponse === 'brush-moving') {
       emitCue('brook-response', 3000);
     }

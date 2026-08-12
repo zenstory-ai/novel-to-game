@@ -14,6 +14,7 @@ const CORE_CUES = [
   'cover',
   'rifle',
   'contact',
+  'case-drop',
   'brook-response',
   'result',
   'failure',

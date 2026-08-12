@@ -5,6 +5,7 @@ const GAMEPLAY_KEY_CODES = new Set([
   'KeyA',
   'KeyS',
   'KeyD',
+  'KeyG',
   'ShiftLeft',
   'ShiftRight',
   'KeyC',
