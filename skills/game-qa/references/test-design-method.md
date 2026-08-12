@@ -4,8 +4,7 @@
 
 ## 一、从六项结果反推
 
-为 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 各选择一条最小证据。项目自己的
-回归与诊断放进 suites/evidence；若失败确实破坏六项之一就映射到该键，不复制平行验收矩阵。
+为 launch、render、input、coreLoop、outcome、restart 各选择一条最小证据，不为项目自己的回归与诊断复制平行验收矩阵。
 
 ## 二、从设计承诺写断言
 
@@ -23,10 +22,7 @@
 时序、动效、碰撞和连续镜头证据必须在正常速度下采集；慢放只用于定位，不能证明体验正常。
 
 ## 四、证据要求
-
-- **持久**：使用工作区相对路径，文件真实存在；不引用临时目录、缓存或个人桌面。
-- **互补**：状态、runtime 和 visual 各证明自己的层，不互相冒充。
-- **诚实**：目标运行时与实际环境不同就写 limitation；未知或未运行用 NOT_RUN，不增加模糊状态。
+证据用工作区相对路径且文件真实存在（不引用临时目录、缓存或个人桌面）；状态、runtime 和 visual 各证明自己的层，不互相冒充；其余状态取值与 limitation 按 qa-contract.md 记录。
 
 大型录屏、逐点击截图、raw trace 和可重建 contact sheet 不长期进 Git；保留当前声明真正引用的最小
 代表证据。问题按 product/design/art/build 归属，主观体验不计入机器 PASS 数量。

@@ -250,6 +250,52 @@ def chapter_citation_coverage(
     return coverage
 
 
+# Skill weight budget.
+#
+# Prompt files only ever grow: adding a rule always reads as diligence and removing
+# one always reads as risk, so nothing ever comes out and the model's attention gets
+# spread thinner every iteration. A ceiling converts that silent ratchet into a
+# deliberate choice — to add a rule you either cut one, or you raise the number here
+# in a diff someone has to justify.
+#
+# These are attention budgets, not style limits. Raising them is allowed; raising
+# them without saying why in the commit message is the thing to catch in review.
+SKILL_TOTAL_LINE_BUDGET = 3100
+SKILL_MD_LINE_BUDGET = 170
+REFERENCE_LINE_BUDGET = 250
+
+
+def markdown_line_count(path: Path) -> int:
+    return len(path.read_text(encoding="utf-8").splitlines())
+
+
+def validate_skill_budget(skills_root: Path) -> list[str]:
+    issues: list[str] = []
+    total = 0
+    for markdown in sorted(skills_root.rglob("*.md")):
+        lines = markdown_line_count(markdown)
+        total += lines
+        relative = markdown.relative_to(skills_root)
+        if markdown.name == "SKILL.md":
+            if lines > SKILL_MD_LINE_BUDGET:
+                issues.append(
+                    f"skills/{relative}: {lines} lines exceeds the {SKILL_MD_LINE_BUDGET}-line "
+                    "SKILL.md budget; move depth into references/ or cut a rule"
+                )
+        elif lines > REFERENCE_LINE_BUDGET:
+            issues.append(
+                f"skills/{relative}: {lines} lines exceeds the {REFERENCE_LINE_BUDGET}-line "
+                "reference budget; split the file or cut a rule"
+            )
+    if total > SKILL_TOTAL_LINE_BUDGET:
+        issues.append(
+            f"skills: {total} lines exceeds the {SKILL_TOTAL_LINE_BUDGET}-line total budget "
+            f"by {total - SKILL_TOTAL_LINE_BUDGET}; cut an equivalent amount, or raise "
+            "SKILL_TOTAL_LINE_BUDGET in scripts/validate_repo.py and say why in the commit"
+        )
+    return issues
+
+
 def validate_skill(skill_dir: Path) -> list[str]:
     issues: list[str] = []
     skill_md = skill_dir / "SKILL.md"
@@ -869,6 +915,7 @@ def validate_repository(root: Path) -> list[str]:
         )
     for name in sorted(EXPECTED_SKILLS & actual):
         issues.extend(validate_skill(skills_root / name))
+    issues.extend(validate_skill_budget(skills_root))
 
     examples_root = root / "examples"
     actual_examples = visible_directories(examples_root)

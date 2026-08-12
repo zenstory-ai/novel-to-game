@@ -20,6 +20,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from validate_repo import (  # noqa: E402
     EXAMPLE_MANIFEST,
+    REFERENCE_LINE_BUDGET,
+    SKILL_MD_LINE_BUDGET,
+    SKILL_TOTAL_LINE_BUDGET,
+    validate_skill_budget,
     EXAMPLE_PLANNING_FILES,
     OPTIONAL_PLANNING_FILES,
     EXPECTED_SKILLS,
@@ -726,6 +730,52 @@ class RepositoryValidationTests(unittest.TestCase):
                     for issue in validate_skill(skill)
                 )
             )
+
+    def test_skill_budget_rejects_growth_past_the_ceilings(self) -> None:
+        """预算要真的撑住：单文件超重与总量超重各报一条。"""
+        with tempfile.TemporaryDirectory() as temporary:
+            skills_root = Path(temporary)
+            lean = skills_root / "lean"
+            lean.mkdir()
+            (lean / "SKILL.md").write_text("x\n" * 10, encoding="utf-8")
+            self.assertEqual(validate_skill_budget(skills_root), [])
+
+            (lean / "SKILL.md").write_text(
+                "x\n" * (SKILL_MD_LINE_BUDGET + 1), encoding="utf-8"
+            )
+            self.assertTrue(
+                any(
+                    "SKILL.md budget" in issue
+                    for issue in validate_skill_budget(skills_root)
+                )
+            )
+
+            (lean / "references").mkdir()
+            (lean / "references/deep.md").write_text(
+                "x\n" * (REFERENCE_LINE_BUDGET + 1), encoding="utf-8"
+            )
+            self.assertTrue(
+                any(
+                    "reference budget" in issue
+                    for issue in validate_skill_budget(skills_root)
+                )
+            )
+
+            bulk = skills_root / "bulk"
+            (bulk / "references").mkdir(parents=True)
+            for index in range(SKILL_TOTAL_LINE_BUDGET // REFERENCE_LINE_BUDGET + 1):
+                (bulk / f"references/part{index}.md").write_text(
+                    "x\n" * REFERENCE_LINE_BUDGET, encoding="utf-8"
+                )
+            self.assertTrue(
+                any(
+                    "total budget" in issue
+                    for issue in validate_skill_budget(skills_root)
+                )
+            )
+
+    def test_shipped_skills_stay_inside_the_budget(self) -> None:
+        self.assertEqual(validate_skill_budget(ROOT / "skills"), [])
 
     def test_runtime_markdown_headings_match_the_declared_language(self) -> None:
         """\u6280\u80fd\u4e0e references \u6052\u4e3a\u7b80\u4f53\u4e2d\u6587\uff1b\u793a\u4f8b\u6309\u81ea\u5df1 manifest \u58f0\u660e\u7684\u8bed\u8a00\u5224\u3002"""

@@ -18,8 +18,7 @@ description: "Build the game for its approved target runtime. Compress GAME_DESI
 目标工具链不可用时不得自动改做网页；只有 brief 已批准替代运行时才可使用，并分开记录
 `targetRuntime`、`testedRuntime` 与未覆盖项。
 
-BUILD_BRIEF 只压缩玩家承诺、核心循环、会改变结果的不变量、招牌时刻、范围/非目标、运行方式、
-`targetFinish` 和完成证据。架构、文件拆分、渲染技术与资产管线由实现模型决定。
+BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式与完成证据，实现细节交给实现模型。
 
 当前会话能编码时直接实现；外部模型不可用时只交付构建说明，不声称游戏已生成。不要发送与原型
 无关的完整受版权保护原文。
@@ -51,8 +50,7 @@ BUILD_BRIEF 只压缩玩家承诺、核心循环、会改变结果的不变量�
    不会生成 PASS。
 
 连续 3D、语音、生成媒体、多语言与无障碍仅在实际采用时增加项目自己的回归检查。必需异步资产
-加载或解码失败不得静默换灰盒仍宣称通过；只有 ledger 预先批准且保持核心动作、状态、结果、可读
-反馈与重开的 fallback 才能继续。
+加载或解码失败不得静默换灰盒仍宣称通过；可继续的 fallback 条件见 build-brief-contract.md。
 
 ## 输出
 

@@ -140,58 +140,18 @@ build 不改写玩法，QA 不把"好看"写成通过。
 - **结果不是资产**：返回的视频 URL 约 24 小时有效、任务记录约保留 7 天——必须当场
   下载进 `build/media/evidence/<shot_key>/` 并记哈希，临时 URL 不得进游戏、不得当证据。
 
-## 六、提交、轮询与下载（可执行）
+## 六、提交、轮询与下载
 
-提交任务并轮询到完成（`jq` 解析；状态枚举以官方文档为准）：
+流程固定，但**字段名、参考图 role 枚举、状态枚举和分辨率参数怎么传，开工前按第九节复核官方
+文档，不照抄记忆值**：向创建任务端点提交提示词与参考图 / 首帧（Authorization: Bearer
+$ARK_API_KEY，密钥只从环境读，不进任何证据文件），先要 720p；请求体形如 {model,
+content:[{type:"text", text:"<提示词> --resolution 720p"}, {type:"image_url",
+image_url:{url:"data:…"}, role:"first_frame"}]}；用返回的任务 ID 轮询到终态；到终态后把第七节
+要求的证据落进 build/media/evidence/<shot_key>/，并当场下载视频与尾帧记 SHA256（结果 URL 约
+24 小时失效）。
 
-```bash
-set -euo pipefail
-: "${ARK_API_KEY:?export ARK_API_KEY first}"
-API="https://ark.cn-beijing.volces.com/api/v3/contents/generations/tasks"
-SHOT_KEY="${1:?shot key}"; PROMPT_FILE="${2:?prompt file}"; FIRST_FRAME="${3:?first frame path}"
-
-payload="$(jq -n --arg prompt "$(cat "$PROMPT_FILE")" --arg img "data:image/jpeg;base64,$(base64 -i "$FIRST_FRAME")" '{
-  model: "doubao-seedance-2-0-260128",
-  content: [
-    {type: "text", text: ($prompt + " --resolution 720p")},
-    {type: "image_url", image_url: {url: $img}, role: "first_frame"}
-  ]
-}')"
-
-task_id="$(curl -sS -X POST "$API" -H "Authorization: Bearer $ARK_API_KEY" \
-  -H "Content-Type: application/json" -d "$payload" | jq -r '.id')"
-echo "$task_id"
-
-while true; do
-  status="$(curl -sS "$API/$task_id" -H "Authorization: Bearer $ARK_API_KEY")"
-  state="$(echo "$status" | jq -r '.status')"
-  case "$state" in
-    succeeded) echo "$status" > "response_$SHOT_KEY.json"; break ;;
-    failed|cancelled) echo "$status" >&2; exit 1 ;;
-    *) sleep 5 ;;
-  esac
-done
-```
-
-下载视频与尾帧并落哈希（响应字段名以官方文档为准，下载链接是临时 URL）：
-
-```bash
-set -euo pipefail
-: "${ARK_API_KEY:?export ARK_API_KEY first}"
-SHOT_KEY="${1:?shot key}"; OUT_DIR="${2:?evidence dir}"
-mkdir -p "$OUT_DIR"
-
-resp="response_$SHOT_KEY.json"
-video_url="$(jq -r '.content.video_url // .video_url' "$resp")"
-last_frame_url="$(jq -r '.content.last_frame_url // .last_frame_url // empty' "$resp")"
-
-curl -sS "$video_url" -o "$OUT_DIR/$SHOT_KEY.mp4"
-[ -n "$last_frame_url" ] && curl -sS "$last_frame_url" -o "$OUT_DIR/${SHOT_KEY}_lastframe.jpg" || true
-shasum -a 256 "$OUT_DIR/$SHOT_KEY.mp4" | awk '{print $1}' > "$OUT_DIR/$SHOT_KEY.sha256"
-```
-
-失败处理：`failed` / 审核拒绝 / 超时（按官方建议上限，一般分钟级）都把完整去密钥响应
-落进证据目录，标记该镜**待产**，继续下一镜——生成不返回不阻断构建，同图片层的纪律。
+失败处理：failed / 审核拒绝 / 超时（分钟级上限，以官方建议为准）都把完整去密钥响应落进
+证据目录，标记该镜**待产**，继续下一镜。
 
 ## 七、逐镜证据与连续性门
 
@@ -221,7 +181,7 @@ shasum -a 256 "$OUT_DIR/$SHOT_KEY.mp4" | awk '{print $1}' > "$OUT_DIR/$SHOT_KEY.
 以下为快变信息，本文只是 2026-07 的快照，**实际开工前必须重新核实官方文档**：
 
 - Model ID 与模型列表（遇无效 ID 先刷新官方模型列表，**不得猜测替代值**）；
-- 请求字段、参考图角色枚举、首尾帧与多参考的互斥规则、`seed` / `camera_fixed` 支持矩阵；
+- 请求字段、响应字段与任务状态枚举、参考图角色枚举、首尾帧与多参考的互斥规则、`seed` / `camera_fixed` 支持矩阵；
 - 请求体与参考图大小上限、真人脸审核策略、价格与限流；
 - 结果 URL 时效与任务记录保留期。
 

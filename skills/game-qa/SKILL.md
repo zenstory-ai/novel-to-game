@@ -22,14 +22,10 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 1. 读取 `targetRuntime`、`testedRuntime` 和权威 verify；与 PRODUCT_BRIEF/BUILD_BRIEF 冲突时先报错，
    不由 QA 猜值。
 2. 独立运行权威 verify，记录 command、exit code、环境和实际失败。
-3. 在 `testedRuntime` 从 `clean start → 核心动作 → 设计结果 → restart` 走一条完整路径，证明画面
-   非空且变化、真实输入改变状态、结果可达、重开恢复定义的初态。
+3. 在 testedRuntime 从 clean start → 核心动作 → 设计结果 → restart 走一条完整路径，按合同的最小可玩闭环逐项取证。
 4. 对照 GAME_DESIGN 中会改变结果的不变量和三段弧结束标记；只验证批准的设计承诺，不遍历所有
    代码路径。
-5. 替代运行时只证明实际覆盖；目标独有输入、打包、性能和设备行为写 limitation。
-6. 对游戏实际采用的连续 3D、多语言、无障碍、媒体或语音，可运行项目回归诊断；若失败确实破坏
-   六项之一就映射到该项，否则只进入 suites/evidence/limitation，不建立额外 gate。
-7. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
+5. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
    未验证风险，不给确定性 PASS。
 
 优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种
