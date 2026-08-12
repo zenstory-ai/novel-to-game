@@ -87,6 +87,13 @@ function mixedCommands(state, round) {
   return round % 2 === 1 ? awareCommands(state, round) : blindCommands(state);
 }
 
+// ---------- 全程「自动」:战斗内 aiCommand 代打(玩家全程点「自动」钮的等价物) ----------
+function autoCommands(state) {
+  const cmds = {};
+  for (const u of aliveUnits(state, 'party')) cmds[u.id] = { type: 'auto' };
+  return cmds;
+}
+
 function playBattle(battleId, party, seed, policy, items) {
   const state = createBattle({ battleId, party, seed, formation: 'tiangang', items: { ...items } });
   let round = 0;
@@ -137,6 +144,7 @@ const POLICIES = [
   ['纯普攻·无视相克', (s, r) => blindCommands(s, r)],
   ['相克优先·用满体系', (s, r) => awareCommands(s, r)],
   ['混合·隔回合切换', (s, r) => mixedCommands(s, r)],
+  ['全程自动', (s) => autoCommands(s)],
 ];
 
 const results = {};
@@ -168,15 +176,45 @@ for (const [name] of POLICIES) {
 out.push('');
 out.push('## 逐场明细（种子 42）');
 out.push('');
-out.push('| 战斗 | 纯普攻 | 相克优先 | 混合 |');
-out.push('|---|---|---|---|');
+out.push('| 战斗 | 纯普攻 | 相克优先 | 混合 | 全程自动 |');
+out.push('|---|---|---|---|---|');
 const byId = (name) => Object.fromEntries(results[name][0].log.map((x) => [x.battleId, x]));
-const a = byId('纯普攻·无视相克'), b = byId('相克优先·用满体系'), c = byId('混合·隔回合切换');
+const a = byId('纯普攻·无视相克'), b = byId('相克优先·用满体系'), c = byId('混合·隔回合切换'), d = byId('全程自动');
 for (const id of CAMPAIGN_BATTLES) {
   const f = (x) => (x ? `${x.rounds} 回合 · ${x.winner === 'party' ? '胜' : x.winner === 'enemy' ? '败' : x.winner}` : '未到达');
-  out.push(`| ${BATTLES[id].name}${BATTLES[id].storyExit ? '（剧情退出）' : ''} | ${f(a[id])} | ${f(b[id])} | ${f(c[id])} |`);
+  out.push(`| ${BATTLES[id].name}${BATTLES[id].storyExit ? '（剧情退出）' : ''} | ${f(a[id])} | ${f(b[id])} | ${f(c[id])} | ${f(d[id])} |`);
 }
 out.push('');
+
+// ---------- 战场态势聚焦:两场杂兵战「全程自动」的代价 ----------
+out.push('## 战场态势：杂兵战「全程自动」的代价');
+out.push('');
+out.push('两场杂兵战各有一条常驻战场规则：火焰山·火口「地火炙烤」（回合末灼烧我方非水系单位');
+out.push('最大体力 4%，水系免疫，避火锦减 25%）、积雷山·摩云洞前「妖将结阵」（双妖将同在，');
+out.push('敌方全体防御 +30%，折其一即解）。下表为这五场种子在该两战的逐种子回合数。');
+out.push('');
+out.push('| 战斗 | 全程自动 | 相克优先·用满体系 | 纯普攻·无视相克 |');
+out.push('|---|---|---|---|');
+const ruled = {};
+for (const id of ['firemobs', 'yumian']) {
+  const cell = (name) => {
+    const rs = results[name].map((r) => r.log.find((x) => x.battleId === id)).filter(Boolean);
+    const rounds = rs.map((x) => x.rounds).sort((x, y) => x - y);
+    const med = rounds.length ? rounds[Math.floor(rounds.length / 2)] : null;
+    return { text: `${rs.map((x) => x.rounds).join(' / ')}（中位 ${med ?? '—'}）`, med };
+  };
+  const auto = cell('全程自动'), aware = cell('相克优先·用满体系'), blind = cell('纯普攻·无视相克');
+  ruled[id] = { auto: auto.med, aware: aware.med, blind: blind.med };
+  out.push(`| ${BATTLES[id].name} | ${auto.text} | ${aware.text} | ${blind.text} |`);
+}
+out.push('');
+if (ruled.firemobs.auto !== null && ruled.firemobs.aware !== null) {
+  out.push(`火口一役：全程自动中位 ${ruled.firemobs.auto} 回合，相克优先中位 ${ruled.firemobs.aware} 回合——`
+    + `${ruled.firemobs.auto > ruled.firemobs.aware ? '地火炙烤惩罚拖延，自动明显更慢。' : '两者接近，地火压力未拉开差距(如实记录)。'}`);
+  out.push(`摩云洞前一役：全程自动中位 ${ruled.yumian.auto} 回合，相克优先中位 ${ruled.yumian.aware} 回合——`
+    + `${ruled.yumian.auto > ruled.yumian.aware ? '结阵惩罚不换目标的打法，自动明显更慢。' : '两者接近:结阵减伤在这一场的战役编成下拉不开整回合差(该战约 4 回合即决,如实记录)。'}`);
+  out.push('');
+}
 
 const blind = results['纯普攻·无视相克'];
 const aware = results['相克优先·用满体系'];

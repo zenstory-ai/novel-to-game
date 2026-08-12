@@ -18,6 +18,12 @@ const bgPaths = {
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
 };
+// 法宝物件图:灵吉授宝二选一那一屏用。两张是一组互斥选项,主色与母题各不相犯——
+// 定风丹走朱与墨(风线截断),避火锦走水青与金线(火舌偏开),并排一眼看出是两样东西。
+const treasurePaths = {
+  dingfengdan: 'assets/treasure/dingfengdan.jpg',
+  bihuojin: 'assets/treasure/bihuojin.jpg',
+};
 
 // 回退色块配色(按立绘键)
 const fallbackColors = {
@@ -55,6 +61,7 @@ export async function loadAssets() {
   for (const [k, p] of Object.entries(unitPaths)) jobs.push(loadOne(p).then((i) => (images[`u:${k}`] = i)));
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
+  for (const [k, p] of Object.entries(treasurePaths)) jobs.push(loadOne(p).then((i) => (images[`t:${k}`] = i)));
   jobs.push(loadOne('assets/cover.jpg').then((i) => (images['cover'] = i)));
   await Promise.all(jobs);
   return images;
@@ -92,6 +99,11 @@ export function unitImage(key) {
 
 export function sceneImage(key) {
   return images[`s:${key}`] ?? null;
+}
+
+// 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里,没美术照样能选。
+export function treasureURL(key) {
+  return images[`t:${key}`]?.src ?? null;
 }
 
 export function bgStyle(key) {

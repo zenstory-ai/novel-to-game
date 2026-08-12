@@ -1,12 +1,12 @@
 // 入口:标题画面 → 战役流程编排(序幕/战斗1/战斗2/BOSS/结局)、存档读档、顶栏。
 
 import { TEXT } from './text.js';
-import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES } from './data.js';
+import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES, GROWTH } from './data.js';
 import { audio } from './audio.js';
-import { loadAssets, coverURL, bgURL, unitURL, bgStyle } from './assets.js';
+import { loadAssets, coverURL, bgURL, unitURL, bgStyle, treasureURL } from './assets.js';
 import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard, resetOverlayShading } from './ui.js';
-import { unitLevelStats, skillsAtLevel } from './engine.js';
-import { settleLevelUp, allocatePoint, applyRecommend } from './growth.js';
+import { unitLevelStats, skillsAtLevel, effectiveSkill } from './engine.js';
+import { settleLevelUp, allocatePoint, applyRecommend, allocateSkillPoint, applyRecommendSkills } from './growth.js';
 import { runBattleScreen } from './battle_ui.js';
 import { runOverworld } from './overworld.js';
 import { runBibotan } from './bibotan.js';
@@ -35,7 +35,7 @@ function newCampaign() {
     version: SAVE_VERSION,
     stage: 'prologue', // prologue → pre_fire → pre_boss
     levels: { wukong: 1, bajie: 1, sha: 1, pixie: 1 },
-    alloc: {}, skillLevels: {}, pendingPoints: {},
+    alloc: {}, skillLevels: {}, pendingPoints: {}, skillPoints: {},
     equips: {}, treasure: null,
     pets: [], // [{key, active}]
     petJoined: false,
@@ -79,6 +79,45 @@ function loadGameData() {
   } catch {
     return null;
   }
+}
+
+// ---------- 抉择弹窗(授宝/缴获等;与反骗选择同构) ----------
+// 正文逐条列名物与后果,底部署名按钮落定;键盘方向键/数字键可走(showModal 自带)。
+function pickModal({ id = 'modal-choice', title, rows }) {
+  return new Promise((resolve) => {
+    const body = rows.map((r) => {
+      const row = el('div', 'formation-row');
+      if (r.img) {
+        const art = el('div', 'pick-art');
+        art.style.backgroundImage = `url(${r.img})`;
+        art.setAttribute('role', 'img');
+        art.setAttribute('aria-label', r.name);
+        row.append(art);
+      }
+      row.append(el('div', 'formation-name', r.name), el('div', 'formation-desc', r.desc));
+      return row;
+    });
+    showModal(app, {
+      id,
+      title,
+      bodyNodes: body,
+      buttons: rows.map((r) => ({ label: r.name, id: r.btnId, onClick: () => resolve(r.key) })),
+    });
+  });
+}
+
+// 法宝二选一/改选共用:rows 取 TEXT.story.treasureChoice,数值描述取 TREASURES
+function pickTreasure() {
+  return pickModal({
+    title: TEXT.story.treasureChoice.title,
+    rows: TEXT.story.treasureChoice.options.map((o) => ({
+      key: o.key,
+      name: `${TREASURES[o.key].name}${o.key === campaign.treasure ? '(当前)' : ''}`,
+      desc: o.fore,
+      img: treasureURL(o.key),
+      btnId: `choice-${o.key}`,
+    })),
+  });
 }
 
 // ---------- 面板系统(背包/召唤兽/角色/阵型 复用) ----------
@@ -144,6 +183,45 @@ function statCells(key, onChange) {
   return wrap;
 }
 
+const SKILL_RANK_LABELS = ['一重', '二重', '三重'];
+
+// 法术修炼行:每个已习得法术显示当前修为与投点后的具体变化(威力/耗蓝),+ 木钮投修炼点
+function skillCells(key, onChange) {
+  const def = PARTY[key];
+  const lv = campaign.levels[key] ?? 1;
+  const pending = campaign.skillPoints[key] ?? 0;
+  const wrap = el('div', 'hero-skills');
+  for (const sk of skillsAtLevel(def, lv)) {
+    const raw = SKILLS[sk];
+    if (!raw) continue;
+    const cur = campaign.skillLevels[key]?.[sk] ?? 1;
+    const capped = cur >= GROWTH.skillRankCap;
+    let delta = '已至三重·圆满';
+    if (!capped) {
+      const now = effectiveSkill({ skillLevels: { [sk]: cur } }, sk, raw);
+      const nxt = effectiveSkill({ skillLevels: { [sk]: cur + 1 } }, sk, raw);
+      const parts = [];
+      if ((raw.mul ?? 0) > 0) parts.push(`威力 ${now.mul.toFixed(2)}→${nxt.mul.toFixed(2)}`);
+      if (raw.heal) parts.push(`回复 ${(now.heal ?? 0).toFixed(2)}→${(nxt.heal ?? 0).toFixed(2)}`);
+      if ((raw.mp ?? 0) > 0) parts.push(`耗蓝 ${now.mp}→${nxt.mp}`);
+      if (parts.length > 0) delta = parts.join(' · ');
+    }
+    const row = el('div', 'skill-cell');
+    row.dataset.skillRow = `${key}:${sk}`;
+    row.append(
+      el('span', 'skill-cell-name', `${raw.name} · ${SKILL_RANK_LABELS[cur - 1] ?? `${cur}重`}`),
+      el('span', 'skill-cell-delta', delta),
+    );
+    const plus = el('button', `btn stat-btn${pending > 0 && !capped ? '' : ' disabled'}`, '＋');
+    plus.dataset.skillPlus = `${key}:${sk}`;
+    plus.title = pending <= 0 ? '没有可用修炼点' : capped ? '已至三重' : `投 1 修炼点于${raw.name}(剩余 ${pending})`;
+    plus.addEventListener('click', () => { if (allocateSkillPoint(campaign, key, sk)) onChange(); });
+    row.appendChild(plus);
+    wrap.appendChild(row);
+  }
+  return wrap;
+}
+
 function showHeroPanel(onClose) {
   const rebuild = () => {
     saveGame(true);
@@ -160,31 +238,55 @@ function showHeroPanel(onClose) {
     const info = el('div', 'hero-info');
     const nm = el('div', 'hero-name');
     nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
-    nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[key] ?? 0}`));
+    nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[key] ?? 0} · 修炼点 ${campaign.skillPoints[key] ?? 0}`));
     const rec = el('button', `btn stat-btn wide${(campaign.pendingPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommend);
     rec.dataset.allocRecommend = key;
     rec.title = '按推荐权重投入全部可用点';
     rec.addEventListener('click', () => { if (applyRecommend(campaign, key) > 0) rebuild(); });
     nm.appendChild(rec);
-    info.append(nm, statCells(key, rebuild));
+    const recSkill = el('button', `btn stat-btn wide${(campaign.skillPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommendSkill);
+    recSkill.dataset.skillRecommend = key;
+    recSkill.title = '按推荐权重投入全部修炼点';
+    recSkill.addEventListener('click', () => { if (applyRecommendSkills(campaign, key) > 0) rebuild(); });
+    nm.appendChild(recSkill);
+    info.append(nm, statCells(key, rebuild), skillCells(key, rebuild));
     const eq = campaign.equips[key];
     info.appendChild(el('div', 'panel-note', `武器:${eq ? EQUIPS[eq].name : '——'}`));
     row.append(face, info);
     rows.push(row);
   }
-  rows.push(el('p', 'panel-note', '每场胜利 +5 潜力点;熟练随等级自动进阶(威力+6%/级,耗蓝-2)。'));
+  rows.push(el('p', 'panel-note', TEXT.panels.growthNote));
   return showPanel(app, { id: 'modal-hero', title: TEXT.panels.hero, bodyNodes: rows, onClose });
 }
 
 const ITEM_ICONS = { jinchuang: '药', falidan: '丹', fakefan: '扇', truefan: '扇' };
 
 function showBagPanel(onClose) {
+  const rebuild = () => {
+    saveGame(true);
+    closeOpenPanel?.();
+    togglePanel('bag');
+  };
   const nodes = [];
-  // 法宝位(规则型,1件/全队)
+  // 法宝位(规则型,1件/全队;战斗外可改选,不耗资源)
   const trRow = el('div', 'list-row');
   trRow.append(iconBadge('宝', { sm: true }), el('span', '', campaign.treasure
     ? `法宝:${TREASURES[campaign.treasure]?.name ?? campaign.treasure} — ${TREASURES[campaign.treasure]?.desc ?? ''}`
     : '法宝:——(尚未获得)'));
+  if (campaign.treasure) {
+    const swap = el('button', 'btn stat-btn wide', TEXT.panels.treasureSwap);
+    swap.id = 'btn-treasure-swap';
+    swap.title = TEXT.panels.treasureSwapTip;
+    swap.addEventListener('click', async () => {
+      if (phase === 'battle') { toast(app, TEXT.panels.treasureSwapInBattle); return; }
+      const pick = await pickTreasure();
+      if (!pick || pick === campaign.treasure) return;
+      campaign.treasure = pick;
+      toast(app, `换持法宝 · ${TREASURES[pick].name}`);
+      rebuild();
+    });
+    trRow.appendChild(swap);
+  }
   nodes.push(trRow);
   const grid = el('div', 'bag-grid');
   const owned = Object.entries(campaign.items).filter(([, n]) => n > 0);
@@ -228,7 +330,7 @@ function showPetPanel(onClose) {
       const info = el('div', 'hero-info');
       const nm = el('div', 'hero-name');
       nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
-      nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[pet.key] ?? 0}`));
+      nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[pet.key] ?? 0} · 修炼点 ${campaign.skillPoints[pet.key] ?? 0}`));
       const up = el('button', `btn stat-btn wide${pet.active ? ' disabled' : ''}`, pet.active ? '已上阵' : '上阵');
       up.dataset.petActive = pet.key;
       up.title = pet.active ? '当前上阵召唤兽' : '下次战斗由此召唤兽出战';
@@ -237,10 +339,7 @@ function showPetPanel(onClose) {
         rebuild();
       });
       nm.appendChild(up);
-      info.append(nm, statCells(pet.key, rebuild));
-      const skills = el('div', 'panel-note');
-      skills.textContent = `技能:${skillsAtLevel(def, lv).map((k) => SKILLS[k].name).join('、')}`;
-      info.appendChild(skills);
+      info.append(nm, statCells(pet.key, rebuild), skillCells(pet.key, rebuild));
       row.append(face, info);
       nodes.push(row);
     }
@@ -433,7 +532,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
 
 function applyLevelUps(ups) {
   for (const [k, v] of Object.entries(ups)) campaign.levels[k] = v.level;
-  settleLevelUp(campaign, ups); // 发潜力点+法术熟练(定值,不占战斗 rng)
+  settleLevelUp(campaign, ups); // 发潜力点+修炼点(定值,不占战斗 rng)
 }
 
 // 捕捉成功的新宝宝入队(一生一次)
@@ -477,12 +576,13 @@ async function startPrologue() {
         // winner === 'story':被芭蕉扇吹飞(演出);战斗画面留作过场底景
         await showDialog(app, TEXT.story.blowAway);
         await showDialog(app, TEXT.story.lingji);
-        campaign.treasure = 'dingfengdan';
+        // 灵吉授宝二选一(定风丹/避火锦,规则型,全队法宝位 1 个;战斗外可在背包改选)
+        campaign.treasure = await pickTreasure();
         campaign.luosha1Done = true;
         saveGame(true);
-        toast(app, '获得法宝 · 定风丹');
+        toast(app, `获得法宝 · ${TREASURES[campaign.treasure].name}`);
         await showChapter('c2'); // 第二借 · 化虫入腹
-        await showDialog(app, TEXT.story.luoshaPre2);
+        await showDialog(app, campaign.treasure === 'dingfengdan' ? TEXT.story.luoshaPre2 : TEXT.story.luoshaPre2b);
       } else {
         await showChapter('c2');
         await showDialog(app, TEXT.story.luoshaPre2);
@@ -542,10 +642,18 @@ async function startPreYumian() {
   applyLevelUps(r.levelUps);
   applyCaught(r.caught);
   campaign.battlesWon += 1;
-  // 装备首件掉落:如意金箍棒·精
+  // 摩云洞缴获:悟空装备三选一(输出/生存/节奏;选定不二退换)
   if (!campaign.equips.wukong) {
-    campaign.equips.wukong = 'ruyibang_jing';
-    toast(app, '获得装备 · 如意金箍棒·精(悟空 攻+12 暴击+5%)');
+    campaign.equips.wukong = await pickModal({
+      title: TEXT.story.equipChoice.title,
+      rows: TEXT.story.equipChoice.options.map((o) => ({
+        key: o.key,
+        name: EQUIPS[o.key].name,
+        desc: o.fore,
+        btnId: `equip-${o.key}`,
+      })),
+    });
+    toast(app, `获得装备 · ${EQUIPS[campaign.equips.wukong].name}(${EQUIPS[campaign.equips.wukong].desc})`);
   }
   saveGame(true);
   await showDialog(app, TEXT.story.postYumian);

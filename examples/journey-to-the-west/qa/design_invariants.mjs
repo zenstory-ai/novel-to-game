@@ -15,7 +15,7 @@ const APP = resolve(HERE, '../build/app');
 
 const {
   ELEMENTS, ELEMENT_COEF, SKILLS, BASIC_ATTACK, FORMS, PARTY, ENEMIES,
-  FORMATIONS, ITEMS, BATTLES, GROWTH, TREASURES, CAMPAIGN_BATTLES,
+  FORMATIONS, ITEMS, BATTLES, GROWTH, TREASURES, CAMPAIGN_BATTLES, EQUIPS,
 } = await import(`${APP}/js/data.js`);
 const engineSource = await import('node:fs').then((fs) =>
   fs.readFileSync(`${APP}/js/engine.js`, 'utf8'));
@@ -134,6 +134,23 @@ check('G2', '升级养成', '法术熟练上限', 3, GROWTH.skillRankCap);
 check('G3', '升级养成', '定风丹 速度加成', 6, TREASURES.dingfengdan.mods.spd);
 check('G4', '升级养成', '避火锦 火伤减免', 0.25, TREASURES.bihuojin.resist['火']);
 check('G5', '升级养成', '捕妖绳 血气门槛描述', true, /40%/.test(ITEMS.buyaosheng.desc));
+check('G6', '升级养成', '每级修炼点(取代自动熟练进阶)', 1, GROWTH.skillPointsPerLevel);
+check('G7', '升级养成', '法宝二选一两件均为规则型(不含 atk/mag/mp 加成)', [],
+  Object.values(TREASURES).flatMap((t) => Object.keys(t.mods ?? {}).filter((m) => ['atk', 'mag', 'mp'].includes(m))));
+check('G8', '升级养成', '装备三选一定位(输出/生存/节奏)',
+  { ruyibang_jing: { atk: 12 }, suozijia: { def: 12, hp: 40 }, fengchiguan: { spd: 8 } },
+  { ruyibang_jing: EQUIPS.ruyibang_jing.mods, suozijia: EQUIPS.suozijia.mods, fengchiguan: EQUIPS.fengchiguan.mods });
+
+// ---------- 战场态势(杂兵战具名规则) ----------
+check('R1', '战场态势', '火焰山·火口「地火炙烤」:回合末非水系 4%、水系免疫',
+  { kind: 'roundEndBurn', pct: 0.04, element: '火', immuneElement: '水' },
+  { kind: BATTLES.firemobs.fieldRule?.kind, pct: BATTLES.firemobs.fieldRule?.pct,
+    element: BATTLES.firemobs.fieldRule?.element, immuneElement: BATTLES.firemobs.fieldRule?.immuneElement });
+check('R2', '战场态势', '摩云洞前「妖将结阵」:双妖将同在,敌全体受伤−8%',
+  { kind: 'pairGuard', unitKey: 'yaojiang', count: 2, reduce: 0.08 },
+  { kind: BATTLES.yumian.fieldRule?.kind, unitKey: BATTLES.yumian.fieldRule?.unitKey,
+    count: BATTLES.yumian.fieldRule?.count, reduce: BATTLES.yumian.fieldRule?.reduce });
+check('R3', '敌人表', '芭蕉扇风附带减速(定风丹可免)', 'spd_down', SKILLS.shanfeng.buff?.id);
 
 // ---------- 2026-07-28 补记入设计文档的机制(原为未记载的反向漂移) ----------
 check('U1', '伤害公式·连击', '连击触发概率 25%', 0.25,

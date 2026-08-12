@@ -86,6 +86,26 @@ export async function runBattleScreen(ctx) {
   field.append(orderBar, roundTag, banner, formBtn);
   if (sysDrop) sysDrop.appendChild(toggles);
   else field.appendChild(toggles); // 无顶栏的独立挂载场景兜底
+  // 战场态势常驻条(地火炙烤/妖将结阵等,数据驱动):名字+一句话效果,开场起挂在回合签下
+  const fieldRule = state.def.fieldRule ?? null;
+  let ruleChip = null;
+  if (fieldRule) {
+    ruleChip = el('div', 'field-rule');
+    ruleChip.id = 'field-rule';
+    ruleChip.title = fieldRule.desc;
+    field.appendChild(ruleChip);
+  }
+  function refreshRuleChip() {
+    if (!ruleChip) return;
+    if (fieldRule.kind === 'pairGuard') {
+      const n = aliveUnits(state, 'enemy').filter((u) => u.defKey === fieldRule.unitKey).length;
+      const active = n >= (fieldRule.count ?? 2);
+      ruleChip.classList.toggle('broken', !active);
+      ruleChip.textContent = active ? `${fieldRule.name}:${fieldRule.short}` : `${fieldRule.name}:已破`;
+    } else {
+      ruleChip.textContent = `${fieldRule.name}:${fieldRule.short}`;
+    }
+  }
   const bottom = el('div', 'battle-bottom');
   const cmdStatus = el('div', 'cmd-status');
   const cmdMenu = el('div', 'cmd-menu');
@@ -297,6 +317,7 @@ export async function runBattleScreen(ctx) {
   function refreshAll() {
     for (const u of state.units) refreshUnit(u);
     roundTag.textContent = TEXT.ui.round.replace('{n}', state.round);
+    refreshRuleChip();
   }
 
   // ---------- 行动顺序条(时间轴) ----------
@@ -908,6 +929,7 @@ export async function runBattleScreen(ctx) {
 
   async function playEvents(events) {
     const done = [];
+    let burnFxPlayed = false; // 地火灼伤同回合可能连跳多人,音效只播一记
     for (const ev of events) {
       switch (ev.t) {
         case 'round':
@@ -1270,6 +1292,32 @@ export async function runBattleScreen(ctx) {
           break;
         }
         case 'buff_end': refreshAll(); break;
+        case 'field_burn': {
+          // 战场态势·地火炙烤:与「克!」同一套反馈语言——数字+印章+受击抖动
+          const uc = cardOf(ev.target);
+          if (uc) {
+            const slot = nextSlot(ev.target);
+            floatText(uc.anchor, `${ev.amount}`, 'burn', slot);
+            stampText(uc.anchor, state.def.fieldRule?.name ?? '地火', 'burn-stamp');
+            shake(ev.target);
+            flashHit(ev.target);
+            const u = getUnit(state, ev.target);
+            if (u) pushLog(`${state.def.fieldRule?.name ?? '地火'} · ${u.name} -${ev.amount}`);
+          }
+          if (!burnFxPlayed) { audio.sfx('firefx'); burnFxPlayed = true; }
+          refreshAll();
+          await sleep(260 * D);
+          break;
+        }
+        case 'field_break': {
+          // 结阵被破:横幅+常驻条变灰,敌方防御回落当场可见
+          pushLog(`${ev.name} 已破`);
+          audio.sfx('ke');
+          await showBanner(`${ev.name} · 破!`, 'phase-banner');
+          refreshAll();
+          await sleep(240 * D);
+          break;
+        }
         case 'battle_end': break;
       }
       if (ev.t !== 'round' && ev.t !== 'battle_end') {
@@ -1310,6 +1358,8 @@ export async function runBattleScreen(ctx) {
   if (state.units.some((u) => u.id === 'p0' && u.buffs.some((b) => b.id === 'atk_down' && b.turns === 1))) {
     toast(root, '悟空中了反骗之计!首回合攻击-15%');
   }
+  // 战场态势开场明牌:规则全文(含对双方的诚实表述)先亮一次,常驻条随后一直在场
+  if (fieldRule) toast(root, fieldRule.desc, 4600);
 
   try {
     if (ctx.showTutorial) {

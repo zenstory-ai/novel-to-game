@@ -43,7 +43,8 @@ export const SKILLS = {
   jiaoman: { name: '娇蛮', kind: 'mag', mul: 0, mp: 0, target: 'enemy', buff: { id: 'atk_down', val: 0.25, turns: 2 }, desc: '' },
   tiebi: { name: '铁臂横扫', kind: 'phy', mul: 0.9, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
   kanxi: { name: '看守重击', kind: 'phy', mul: 1.45, mp: 0, target: 'enemy', hit: 0.9, desc: '' },
-  shanfeng: { name: '芭蕉扇风', kind: 'phy', mul: 0.85, mp: 0, target: 'enemies', hit: 0.9, desc: '' },
+  // 扇风卷人:命中附带减速(定风丹可免,见 TREASURES.dingfengdan)
+  shanfeng: { name: '芭蕉扇风', kind: 'phy', mul: 0.85, mp: 0, target: 'enemies', hit: 0.9, buff: { id: 'spd_down', val: 0.15, turns: 2 }, desc: '' },
   huoqiu: { name: '火弹', kind: 'mag', mul: 1.25, mp: 0, target: 'enemy', hit: 0.92, desc: '' },
   lieyan: { name: '烈焰喷吐', kind: 'mag', mul: 1.0, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
   // —— Lv4-6 解锁(批0 技能表补齐) ——
@@ -118,15 +119,18 @@ export const PARTY = {
   },
 };
 
-// 成长系统
-export const GROWTH = { pointsPerLevel: 5, skillRankCap: 3, statCap: 40 };
+// 成长系统(修炼点:每级 1 点,投给已习得法术换熟练;不再自动进阶)
+export const GROWTH = { pointsPerLevel: 5, skillRankCap: 3, statCap: 40, skillPointsPerLevel: 1 };
 export const POINT_GAINS = {
   体: { hp: 8 }, 攻: { atk: 2 }, 防: { def: 2 }, 速: { spd: 2 }, 灵: { mag: 2, mp: 1 },
 };
 
 // 武器装备(1件/角色,小幅 flat 属性,剧情掉落)
+// 摩云洞后授宝三选一(悟空):输出/生存/节奏三种定位,选后不二退换
 export const EQUIPS = {
   ruyibang_jing: { key: 'ruyibang_jing', name: '如意金箍棒·精', slot: 'weapon', mods: { atk: 12 }, crit: 0.05, desc: '攻击+12,暴击+5%' },
+  suozijia: { key: 'suozijia', name: '锁子黄金甲', slot: 'armor', mods: { def: 12, hp: 40 }, desc: '防御+12,体力+40' },
+  fengchiguan: { key: 'fengchiguan', name: '凤翅紫金冠', slot: 'helm', mods: { spd: 8 }, crit: 0.03, desc: '速度+8,暴击+3%' },
   qinjingpa: { key: 'qinjingpa', name: '上宝沁金耙', slot: 'weapon', mods: { atk: 10, hp: 40 }, desc: '攻击+10,体力+40' },
   xiangyao_jia: { key: 'xiangyao_jia', name: '降妖宝甲', slot: 'armor', mods: { def: 12, hp: 30 }, desc: '防御+12,体力+30' },
 };
@@ -226,10 +230,25 @@ export const BATTLES = {
   firemobs: {
     id: 'firemobs', name: '火焰山·火口', bg: 'huoyan', boss: false, enemyLevel: 2,
     enemies: ['firemob1', 'firemob1', 'firemob2'],
+    // 战场态势·地火炙烤(数据驱动,engine 通用执行):回合末灼烧我方非水系单位;
+    // 敌方本是火中妖,自不受害;避火锦的火抗对灼伤同样减免
+    fieldRule: {
+      kind: 'roundEndBurn', id: 'dihuo', name: '地火炙烤',
+      pct: 0.04, element: '火', immuneElement: '水',
+      short: '回合末灼烧我方非水系,最大体力 4%',
+      desc: '地火炙烤:每回合末,地火灼烧我方非水系单位(最大体力 4%);彼辈火妖生于火中,自不受害。水系不侵,避火锦可减四分之一。',
+    },
   },
   yumian: {
     id: 'yumian', name: '积雷山·摩云洞前', bg: 'moyundong', boss: false, enemyLevel: 3,
     enemies: ['yumian', 'yaojiang', 'yaojiang'],
+    // 战场态势·妖将结阵:两名妖将同时在场,敌方全体防御+30%;折其一即解
+    fieldRule: {
+      kind: 'pairGuard', id: 'yaozhen', name: '妖将结阵',
+      unitKey: 'yaojiang', count: 2, reduce: 0.08,
+      short: '双妖将同在,敌方全体受伤 −8%',
+      desc: '妖将结阵:两名摩云洞妖将同时在场,互成犄角,敌方全体受伤 −8%;折损其一,结阵立解。',
+    },
   },
   niu1: {
     id: 'niu1', name: '摩云洞·激战牛魔王', bg: 'moyundong', boss: false, enemyLevel: 4,

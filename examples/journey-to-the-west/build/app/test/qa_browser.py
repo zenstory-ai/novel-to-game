@@ -141,7 +141,7 @@ class QA:
         self.p.wait_for_timeout(60)
 
     def battle_state(self):
-        return self.p.evaluate("window.__game.battle ? {round: __game.battle.round, formation: __game.battle.formation, items: __game.battle.items, caught: __game.battle.caught ?? [], units: __game.battle.units.map(u => ({id: u.id, key: u.defKey, hp: u.hp, maxHp: u.maxHp, alive: u.alive, element: u.element, charge: u.charge ?? 0}))} : null")
+        return self.p.evaluate("window.__game.battle ? {round: __game.battle.round, formation: __game.battle.formation, items: __game.battle.items, caught: __game.battle.caught ?? [], units: __game.battle.units.map(u => ({id: u.id, key: u.defKey, hp: u.hp, maxHp: u.maxHp, alive: u.alive, element: u.element, charge: u.charge ?? 0, form: u.form ? u.form.id : null}))} : null")
 
     def defeat_retry(self):
         """若出现败北面板则点重试;返回是否重试。"""
@@ -319,7 +319,7 @@ def run():
         page.wait_for_selector("#dialog", timeout=15000)
         ok("吹" in page.locator("#dialog").inner_text() or "扇" in page.locator("#dialog").inner_text(), "第3回合剧情吹飞(非失败)")
         qa.shot("battle1_blowaway")
-        # 吹飞过场 → 灵吉授定风丹
+        # 吹飞过场 → 灵吉授宝(二选一:定风丹/避火锦)
         shot_lingji = False
         for _ in range(20):
             if page.locator("#dialog").count() == 0:
@@ -329,7 +329,12 @@ def run():
                 qa.shot("battle1_lingji")  # 只截一次:这段对白跨多屏,原来会存三张同名重复帧
                 shot_lingji = True
             page.locator("#dialog").click()
-        ok(page.evaluate("__game.campaign().treasure") == "dingfengdan", "获得法宝·定风丹")
+        page.wait_for_selector("#choice-dingfengdan", timeout=5000)
+        ok("避火锦" in page.locator("#modal-choice").inner_text(), "灵吉授宝为二选一(定风丹/避火锦)")
+        qa.shot("battle1_treasure_choice")
+        page.click("#choice-dingfengdan")
+        page.wait_for_timeout(300)
+        ok(page.evaluate("__game.campaign().treasure") == "dingfengdan", "选定法宝·定风丹")
         # 再战前对话 → 再战
         ok(qa.dialogs_until_battle(), "灵吉之后进入再战")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=10000)
@@ -360,6 +365,51 @@ def run():
         qa.shot("battle1_victory")
         ok("等级提升" in page.locator("#modal-victory").inner_text(), "胜利结算含升级")
         page.click("#btn-victory-ok")
+        # 战后整备:角色面板投修炼点(手动+推荐)
+        page.wait_for_selector("#dialog", timeout=15000)  # 交扇对白(此间阶段仍为战斗,修炼投点不限阶段)
+        page.click("#btn-hero")
+        page.wait_for_selector("#modal-hero")
+        ok("修炼点 1" in page.locator("#modal-hero").inner_text(), "角色面板显示修炼点余额(每场胜利 +1)")
+        page.click('[data-skill-plus="wukong:ruyibang"]')
+        page.wait_for_selector('[data-skill-plus="wukong:ruyibang"]')  # 投点后面板重建
+        ok(page.evaluate("__game.campaign().skillLevels?.wukong?.ruyibang") == 2, "投修炼点:金箍棒一重→二重")
+        ok(page.evaluate("__game.campaign().skillPoints?.wukong") == 0, "修炼点余额扣减")
+        ok(page.evaluate("__game.campaign().skillLevels?.sha?.xiangyaozhang ?? 1") == 1, "不投点熟练停留一重(自动进阶已删)")
+        page.click('[data-skill-recommend="bajie"]')
+        page.wait_for_timeout(250)
+        ok(page.evaluate("__game.campaign().skillPoints?.bajie") == 0, "推荐修炼一次投完八戒修炼点")
+        ok(page.evaluate("Object.values(__game.campaign().skillLevels?.bajie ?? {}).reduce((a,b)=>a+b,0)") == 2, "推荐修炼集中投入一门(二重)")
+        qa.shot("hero_skillpoints")
+        page.click("#modal-hero-close")
+        # 点交扇对白,直到阶段转为小世界(startPreFire 接管,火焰山前对白将起;此时方可换宝)
+        for _ in range(12):
+            if page.evaluate("__game.phase()") == "overworld":
+                break
+            if page.locator("#dialog").count() > 0:
+                page.locator("#dialog").click()
+            page.wait_for_timeout(250)
+        page.wait_for_selector("#dialog", timeout=10000)  # 火焰山前对白
+        # 背包改选法宝:定风丹 → 避火锦(战斗外可改选,不耗资源)
+        page.click("#btn-bag")
+        page.wait_for_selector("#modal-bag")
+        page.click("#btn-treasure-swap")
+        page.wait_for_selector("#choice-bihuojin")
+        qa.shot("bag_treasure_swap")
+        page.click("#choice-bihuojin")
+        page.wait_for_selector("#modal-bag")  # 换宝后背包重建
+        ok(page.evaluate("__game.campaign().treasure") == "bihuojin", "战斗外改选法宝·避火锦")
+        page.click("#modal-bag-close")
+        # 顶栏存档 → 整页重开 → 继续:法宝/熟练随存档还原(读档回到火焰山前)
+        page.click("#btn-system")
+        page.click("#btn-save")
+        page.wait_for_timeout(200)
+        page.evaluate("localStorage.removeItem('xiyou_card_fakefan')")  # 重开后战斗2假扇小卡片仍要出现
+        page.reload()
+        page.wait_for_selector("#btn-continue", timeout=10000)
+        page.click("#btn-continue")
+        page.wait_for_selector("#dialog", timeout=15000)
+        ok(page.evaluate("__game.campaign().treasure") == "bihuojin", "存档/读档后法宝不丢(避火锦)")
+        ok(page.evaluate("__game.campaign().skillLevels?.wukong?.ruyibang") == 2, "存档/读档后法术熟练保留")
         ok(qa.dialogs_until_battle(), "战斗1后剧情推进到战斗2")
 
         # ---------- 战斗2 ----------
@@ -372,6 +422,8 @@ def run():
         ok(len(page.evaluate("__game.campaign().pets")) == 0, "本幕尚无召唤兽(金睛兽移批2)")
         ok(page.locator(".unit-card.party").count() == 3, "我方 3 单位")
         ok(page.locator(".unit-card.enemy").count() == 3, "敌方 3 火妖")
+        ok(page.locator("#field-rule").count() == 1 and "地火炙烤" in page.locator("#field-rule").inner_text(), "战场态势常驻条:地火炙烤")
+        ok(bool(page.evaluate("__game.battle.units.filter(u=>u.side==='party').every(u=>u.resist && u.resist['火']===0.25)")), "避火锦随队入战:全队火抗 25%")
         qa.shot("battle2_cmd")
         # 节奏开关需要持久化；先打开顶栏「设」下拉再操作。
         page.click("#btn-system")
@@ -395,10 +447,12 @@ def run():
         page.wait_for_timeout(150)
         ok(page.evaluate("localStorage.getItem('xiyou_speed')") == "1", "加速开关复位常速并写回 localStorage")
         ok("常速" in page.locator("#btn-speed").inner_text(), "加速钮显示常速状态")
-        # 先集火火兵·甲至 ≤40% → 捕妖绳收服;再假扇演示;危急用金疮药;败北重试
+        # 地火炙烤下不能站着对拼:悟空先变玄甲龟将(水系,免疫地火,克全场火妖,引走火力);
+        # 八戒/沙僧集火火兵·甲至 ≤40% → 捕妖绳收服;悟空收棒防误杀;危急用金疮药;败北重试
         caught = False
         fan_used = False
         healed = False
+        xuangui_shot = False
         # 注意:假扇反噬不在这条通关路径里演示。实测把它插进战斗二会让火敌攻击 +30%,
         # 直接把该战翻成必败重试循环——反噬强度本身是设计意图。规则层由
         # test/battle.mjs 的固定种子断言覆盖;浏览器证据帧缺失记 QA_REPORT F9。
@@ -419,24 +473,35 @@ def run():
                 uid = qa.prompt_unit_id()
                 low = qa.lowest_party(st)
                 e0 = next((u for u in st["units"] if u["id"] == "e0"), None)
+                wk = next((u for u in st["units"] if u["id"] == "p0"), None)
                 e0_low = e0 and e0["alive"] and e0["hp"] / e0["maxHp"] <= 0.4
                 if "huobao" in (st.get("caught") if st else []):
                     caught = True
-                if uid == "p0" and e0_low and not caught and st["items"].get("buyaosheng", 0) > 0:
-                    # 捕妖绳收服(剧情门控捕捉)
+                if uid == "p0" and wk and not wk.get("form"):
+                    # 玄甲龟将:水系,免疫地火,被火攻反遭克扣——地火炙烤的对症解法
+                    page.click('.cmd-btn[data-cmd="special"]')
+                    page.wait_for_selector('[data-form="xuangui"]')
+                    page.click('[data-form="xuangui"]')
+                    page.wait_for_timeout(500)
+                    if not xuangui_shot:
+                        xuangui_shot = True
+                        qa.shot("battle2_xuangui")
+                elif e0_low and not caught and st["items"].get("buyaosheng", 0) > 0:
+                    # 捕妖绳收服(剧情门控捕捉,任意在场单位可掷绳)
                     page.click('.cmd-btn[data-cmd="item"]')
                     page.wait_for_selector('[data-item="buyaosheng"]')
                     page.click('[data-item="buyaosheng"]')
                     page.wait_for_timeout(200)
                     page.locator('.unit-card[data-unit-id="e0"]').click()
                     page.wait_for_timeout(400)
-                elif not caught and uid in ("p0", "p1") and e0 and e0["alive"]:
+                elif not caught and e0 and e0["alive"] and uid in ("p1", "p2"):
+                    # 八戒/沙僧把火兵·甲压到捕捉线
                     page.click('.cmd-btn[data-cmd="attack"]')
                     page.wait_for_timeout(200)
                     page.locator('.unit-card[data-unit-id="e0"]').click()
                     page.wait_for_timeout(200)
-                elif not caught and uid in ("p2", "p3"):
-                    # 捕捉前队友守势,防误杀
+                elif not caught and uid == "p0":
+                    # 悟空收棒守势:龟将一击会直接把火兵打死,误了捕捉
                     page.click('.cmd-btn[data-cmd="defend"]')
                     page.wait_for_timeout(150)
                 elif uid == "p0" and low and low["hp"] / low["maxHp"] < 0.35 and st["items"].get("jinchuang", 0) > 0:
@@ -474,6 +539,7 @@ def run():
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
         ok(page.locator(".unit-card.enemy").count() == 3, "玉面公主+妖将×2")
         ok(page.locator(".unit-card.party").count() == 4, "我方 4 单位(赤焰火骝上阵)")
+        ok("妖将结阵" in page.locator("#field-rule").inner_text(), "战场态势常驻条:妖将结阵")
         qa.shot("yumian_cmd")
         for _ in range(500):
             if qa.defeat_retry():
@@ -502,8 +568,14 @@ def run():
         qa.wait_victory()
         qa.shot("yumian_victory")
         page.click("#btn-victory-ok")
+        # 摩云洞缴获:悟空装备三选一(输出/生存/节奏,选定不二退换)
+        page.wait_for_selector("#equip-ruyibang_jing", timeout=8000)
+        ok("锁子黄金甲" in page.locator("#modal-choice").inner_text()
+           and "凤翅紫金冠" in page.locator("#modal-choice").inner_text(), "装备三选一界面(输出/生存/节奏)")
+        qa.shot("equip_choice")
+        page.click("#equip-ruyibang_jing")
         page.wait_for_timeout(300)
-        ok(page.evaluate("__game.campaign().equips?.wukong") == "ruyibang_jing", "装备首件掉落:如意金箍棒·精")
+        ok(page.evaluate("__game.campaign().equips?.wukong") == "ruyibang_jing", "装备选定:如意金箍棒·精")
         # 初战牛魔王:3 回合自动 → 赴宴而走
         ok(qa.dialogs_until_battle(), "进入初战牛魔王")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)

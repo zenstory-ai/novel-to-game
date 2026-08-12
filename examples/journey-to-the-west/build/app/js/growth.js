@@ -1,10 +1,11 @@
-// 成长结算(纯函数,node 可测):升级发点、熟练进阶、加点/推荐加点。
+// 成长结算(纯函数,node 可测):升级发点、修炼点投法、加点/推荐加点。
 // 决定论:全部定值或按权重整数分配,不引入新随机;捕捉判定在 engine 走独立 catchRng。
 
-import { GROWTH, PARTY } from './data.js';
+import { GROWTH, PARTY, SKILLS } from './data.js';
 import { skillsAtLevel } from './engine.js';
 
-// 升级结算:每位 +N 潜力点;已习得法术熟练+1(上限 GROWTH.skillRankCap)
+// 升级结算:每位 +N 潜力点、+1 修炼点。法术熟练不再自动进阶——
+// 修炼点由玩家在「角色」面板投给某一个已习得法术(见 allocateSkillPoint)。
 // ups: levelUpParty 的返回 {key:{level,newSkills}};campaign 就地修改
 export function settleLevelUp(campaign, ups) {
   const granted = {};
@@ -12,14 +13,56 @@ export function settleLevelUp(campaign, ups) {
     campaign.pendingPoints[key] = (campaign.pendingPoints[key] ?? 0) + GROWTH.pointsPerLevel;
     const def = PARTY[key];
     if (!def) continue;
-    campaign.skillLevels[key] = campaign.skillLevels[key] ?? {};
-    for (const sk of skillsAtLevel(def, up.level)) {
-      const cur = campaign.skillLevels[key][sk] ?? 1;
-      campaign.skillLevels[key][sk] = Math.min(GROWTH.skillRankCap, cur + 1);
-    }
-    granted[key] = { points: GROWTH.pointsPerLevel };
+    campaign.skillPoints = campaign.skillPoints ?? {};
+    campaign.skillPoints[key] = (campaign.skillPoints[key] ?? 0) + (GROWTH.skillPointsPerLevel ?? 1);
+    granted[key] = { points: GROWTH.pointsPerLevel, skillPoints: GROWTH.skillPointsPerLevel ?? 1 };
   }
   return granted;
+}
+
+// 修炼点投法:投给某已习得法术,熟练 +1(上限 GROWTH.skillRankCap);不洗点
+export function allocateSkillPoint(campaign, key, skillId) {
+  const def = PARTY[key];
+  campaign.skillPoints = campaign.skillPoints ?? {};
+  const pending = campaign.skillPoints[key] ?? 0;
+  if (!def || pending <= 0) return false;
+  const learned = skillsAtLevel(def, campaign.levels?.[key] ?? 1);
+  if (!learned.includes(skillId)) return false;
+  campaign.skillLevels[key] = campaign.skillLevels[key] ?? {};
+  const cur = campaign.skillLevels[key][skillId] ?? 1;
+  if (cur >= GROWTH.skillRankCap) return false;
+  campaign.skillLevels[key][skillId] = cur + 1;
+  campaign.skillPoints[key] = pending - 1;
+  return true;
+}
+
+// 推荐修炼选法:与推荐加点同一套确定性权重——该单位 攻/灵 权重决定偏物理还是偏法术,
+// 候选按(方向相符 → 倍率 → 回复)排序、键名兜底,取未满级者之首。定值排序,不引入新随机。
+export function recommendSkillPick(campaign, key) {
+  const def = PARTY[key];
+  if (!def) return null;
+  const levels = campaign.skillLevels?.[key] ?? {};
+  const learned = skillsAtLevel(def, campaign.levels?.[key] ?? 1)
+    .filter((k) => (levels[k] ?? 1) < GROWTH.skillRankCap);
+  if (learned.length === 0) return null;
+  const w = def.recommendedAlloc ?? {};
+  const preferKind = (w['灵'] ?? 0) > (w['攻'] ?? 0) ? 'mag' : 'phy';
+  const score = (k) => {
+    const s = SKILLS[k] ?? {};
+    return (s.kind === preferKind ? 1000 : 0) + (s.mul ?? 0) * 100 + (s.heal ?? 0) * 50;
+  };
+  return [...learned].sort((a, b) => score(b) - score(a) || (a < b ? -1 : 1))[0];
+}
+
+// 一键推荐修炼:把某单位全部修炼点按上述权重逐点投完(受熟练上限保护)
+export function applyRecommendSkills(campaign, key) {
+  let used = 0;
+  for (;;) {
+    const pickKey = recommendSkillPick(campaign, key);
+    if (!pickKey || !allocateSkillPoint(campaign, key, pickKey)) break;
+    used += 1;
+  }
+  return used;
 }
 
 // 推荐加点:按 PARTY.recommendedAlloc 权重整数分配(确定、可复现)

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "note": "生成式美术资产的来源记录。此文件不是 build/asset-ledger.json（那份有严格 schema，只在 graybox 以上要求）；这里只诚实记录法宝二选一用的两张物件图是怎么来的、由什么条件出来的、以及可否复现。",
+  "generatedAt": "2026-08-11",
+  "generator": {
+    "tool": "codex-cli built-in imagegen skill",
+    "toolVersion": "codex-cli 0.147.0",
+    "skillPath": "$CODEX_HOME/skills/.system/imagegen",
+    "mode": "built-in tool mode",
+    "reproducible": false,
+    "reproducibilityNote": "图像模型不保证逐字节可复现。重跑同一提示词会得到风格一致但不同的图；替换资产时必须重新做视觉验收，不能假设等价。"
+  },
+  "reason": "灵吉菩萨授宝节点由「固定发定风丹」改为「定风丹 / 避火锦 二选一」后，出现了一个此前不存在的选择画面。两件法宝的差别是规则差别（免疫减速 vs 火伤减免），不是数值大小，因此必须一眼看出选的是两样不同的东西；纯文字按钮承担不了这个区分。",
+  "sharedPromptContract": {
+    "constant": [
+      "明代木刻套印（明代绣像版画质感）：刀刻线、墨骨描边、套色与描边轻微错位",
+      "平涂色块，无渐变、无渲染、无摄影光",
+      "限定矿物色板：宣纸米 #f2e8d5 底、墨 #2b2118 描边、朱 #a8322a、金线 #c9a227、暗木 #4a3423",
+      "单物件居中，占满大部分画面，宣纸米底，细墨边框线",
+      "物件本身要让规则一眼可读，不靠文字说明"
+    ],
+    "forbidden": [
+      "文字、字符、印章、落款、水印",
+      "通用仙侠辉光或泛光",
+      "水墨笔触",
+      "塑料感或 3D 描边",
+      "现代影视 / 游戏奇幻风格",
+      "Q 版",
+      "投影、渐变背景"
+    ]
+  },
+  "pairwiseExclusion": {
+    "why": "两张图是同一个二选一里的兄弟图，必须互相排除身份标记。第一版 dingfengdan 被否决：它把碟子摆在一块蓝金织锦上，而蓝金织锦正是 bihuojin 的本体；同时把「风」画成了水青色的浪卷母题，与五行里的水撞色。逐张看都合格，并排看才发现两张在讲同一样东西。",
+    "rejectedAttempt": {
+      "asset": "dingfengdan（第一版）",
+      "defects": [
+        "画面内含折叠蓝金织锦 —— 与兄弟图 bihuojin 的本体重复",
+        "风被画成水青色卷浪，与五行功能色「水」撞色，且与 bihuojin 的主色重复"
+      ],
+      "disposition": "废弃重出，未入库"
+    },
+    "allocation": {
+      "dingfengdan": {
+        "leadColour": "朱 + 墨 + 暗木",
+        "motif": "风线撞上无形之壁戛然而止",
+        "excludedInPrompt": ["任何布料 / 织物", "水青色"]
+      },
+      "bihuojin": {
+        "leadColour": "水青 + 金线",
+        "motif": "火舌自下方逼近后向两侧偏开",
+        "excludedInPrompt": ["丹药 / 碟盏"]
+      }
+    },
+    "acceptance": "两张并排验收，确认主色不相交、母题不相交、不含对方本体。"
+  },
+  "assets": [
+    {
+      "path": "app/assets/treasure/dingfengdan.jpg",
+      "treasure": "定风丹",
+      "rule": "速度 +6，免疫减速",
+      "subject": "青瓷浅碟里一粒朱红丹药，碟子置于暗木座上；风线自左上斜入，在碟前齐齐截断",
+      "bytes": 89828,
+      "size": [512, 512]
+    },
+    {
+      "path": "app/assets/treasure/bihuojin.jpg",
+      "treasure": "避火锦",
+      "rule": "全队火系受伤 −25%",
+      "subject": "一方折叠的蓝金织锦，翻起一角露出回纹里子；朱红火舌自下缘逼近后向两侧偏开",
+      "bytes": 163882,
+      "size": [512, 512]
+    }
+  ],
+  "postProcessing": {
+    "method": "原始 PNG 1024×1024 经 sips 缩至 512×512 并转 JPEG quality 85；原始 PNG 不入库。",
+    "totalBytes": 253710,
+    "rationale": "物件图在选择界面以中等尺寸呈现，512 足够；两张合计 253710 bytes，与 assets/units/*.png（76–141KB/张）同阶，不显著抬高包体。",
+    "opaqueGround": "两张均为宣纸米不透明底，无需 alpha，故用 JPEG 而非 PNG。"
+  }
+}

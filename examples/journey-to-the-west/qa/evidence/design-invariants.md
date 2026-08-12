@@ -5,7 +5,7 @@
 本表由 `qa/design_invariants.mjs` 生成，只读 `js/data.js` 与 `js/engine.js` 的导出，
 不引用 `build/app/test/battle.mjs` 的任何断言或常量。
 
-复跑：`node qa/design_invariants.mjs`  ·  结果：78 一致 / 0 漂移
+复跑：`node qa/design_invariants.mjs`  ·  结果：84 一致 / 0 漂移
 
 ## 逐条结果
 
@@ -82,6 +82,12 @@
 | G3 | 升级养成 | 定风丹 速度加成 | `6` | `6` | 一致 |
 | G4 | 升级养成 | 避火锦 火伤减免 | `0.25` | `0.25` | 一致 |
 | G5 | 升级养成 | 捕妖绳 血气门槛描述 | `true` | `true` | 一致 |
+| G6 | 升级养成 | 每级修炼点(取代自动熟练进阶) | `1` | `1` | 一致 |
+| G7 | 升级养成 | 法宝二选一两件均为规则型(不含 atk/mag/mp 加成) | `[]` | `[]` | 一致 |
+| G8 | 升级养成 | 装备三选一定位(输出/生存/节奏) | `{"ruyibang_jing":{"atk":12},"suozijia":{"def":12,"hp":40},"fengchiguan":{"spd":8}}` | `{"ruyibang_jing":{"atk":12},"suozijia":{"def":12,"hp":40},"fengchiguan":{"spd":8}}` | 一致 |
+| R1 | 战场态势 | 火焰山·火口「地火炙烤」:回合末非水系 4%、水系免疫 | `{"kind":"roundEndBurn","pct":0.04,"element":"火","immuneElement":"水"}` | `{"kind":"roundEndBurn","pct":0.04,"element":"火","immuneElement":"水"}` | 一致 |
+| R2 | 战场态势 | 摩云洞前「妖将结阵」:双妖将同在,敌全体受伤−8% | `{"kind":"pairGuard","unitKey":"yaojiang","count":2,"reduce":0.08}` | `{"kind":"pairGuard","unitKey":"yaojiang","count":2,"reduce":0.08}` | 一致 |
+| R3 | 敌人表 | 芭蕉扇风附带减速(定风丹可免) | `"spd_down"` | `"spd_down"` | 一致 |
 | U1 | 伤害公式·连击 | 连击触发概率 25% | `0.25` | `0.25` | 一致 |
 | U2 | 决战门控 | 众神围剿 触发线 / 削血比例 / 防御减益 | `{"hpBelow":0.5,"amount":0.15,"def_down":0.3}` | `{"hpBelow":0.5,"amount":0.15,"def_down":0.3}` | 一致 |
 | U3 | 决战门控 | 八戒·土地接力 全队回复比例 | `0.3` | `0.3` | 一致 |

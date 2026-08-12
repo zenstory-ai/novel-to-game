@@ -7,7 +7,7 @@ import {
 } from '../js/engine.js';
 import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
-import { settleLevelUp, recommendAlloc, applyRecommend, allocatePoint } from '../js/growth.js';
+import { settleLevelUp, recommendAlloc, applyRecommend, allocatePoint, allocateSkillPoint, applyRecommendSkills } from '../js/growth.js';
 
 let passed = 0, failed = 0;
 function ok(cond, name, extra = '') {
@@ -423,17 +423,18 @@ section('武器装备与规则型法宝');
   target.resist = null;
 }
 
-// ---------- 21. 升级结算:发点+熟练,推荐加点确定 ----------
-section('升级结算(发点/熟练/推荐加点)');
+// ---------- 21. 升级结算:发点+修炼点,推荐加点确定 ----------
+section('升级结算(发点/修炼点/推荐加点)');
 {
-  const mkCampaign = () => ({ pendingPoints: {}, skillLevels: {}, alloc: {} });
+  const mkCampaign = () => ({ pendingPoints: {}, skillLevels: {}, skillPoints: {}, alloc: {}, levels: { wukong: 1, bajie: 1, sha: 1 } });
   const c1 = mkCampaign(), c2 = mkCampaign();
   const ups = levelUpParty({ wukong: 1, bajie: 1, sha: 1 });
   settleLevelUp(c1, ups);
   settleLevelUp(c2, ups);
   ok(JSON.stringify(c1) === JSON.stringify(c2), '同 ups 两次结算完全一致');
   ok(c1.pendingPoints.wukong === GROWTH.pointsPerLevel, `每人 +${GROWTH.pointsPerLevel} 潜力点`);
-  ok(c1.skillLevels.wukong.ruyibang === 2, '已习得法术熟练+1');
+  ok(c1.skillPoints.wukong === GROWTH.skillPointsPerLevel, `每人 +${GROWTH.skillPointsPerLevel} 修炼点`);
+  ok(!(c1.skillLevels.wukong?.ruyibang > 1), '自动进阶已删除:不投点熟练停留 1 级');
   const plan = recommendAlloc(PARTY.wukong, 10);
   const total = Object.values(plan).reduce((a, b) => a + b, 0);
   ok(total === 10, `推荐加点分配总额=投入 (${total})`);
@@ -449,6 +450,21 @@ section('升级结算(发点/熟练/推荐加点)');
   ok(allocatePoint(c4, 'sha', '防', -1) && c4.pendingPoints.sha === 5, '洗回 +1');
   ok(!allocatePoint(c4, 'sha', '防', 1) || true, '空点不炸');
   ok(!allocatePoint({ pendingPoints: { sha: 0 }, alloc: {} }, 'sha', '防', 1), '无点时投点被拒');
+  // 修炼点:手动投法
+  const c5 = mkCampaign();
+  c5.levels.wukong = 2; c5.skillPoints.wukong = 2;
+  ok(allocateSkillPoint(c5, 'wukong', 'ruyibang') && c5.skillLevels.wukong.ruyibang === 2 && c5.skillPoints.wukong === 1, '投修炼点:熟练 1→2');
+  ok(allocateSkillPoint(c5, 'wukong', 'ruyibang') && c5.skillLevels.wukong.ruyibang === 3, '再投:2→3');
+  c5.skillPoints.wukong = 1;
+  ok(!allocateSkillPoint(c5, 'wukong', 'ruyibang') && c5.skillPoints.wukong === 1, '上限三重:再投被拒且不耗点');
+  ok(!allocateSkillPoint(c5, 'wukong', 'qitian'), '未习得法术投点被拒');
+  ok(!allocateSkillPoint(mkCampaign(), 'sha', 'xiangyaozhang'), '无修炼点投点被拒');
+  // 推荐修炼:与推荐加点同一套确定性权重,两次结算逐字节一致
+  const c6 = mkCampaign(); c6.levels.wukong = 3; c6.skillPoints.wukong = 2;
+  const c7 = mkCampaign(); c7.levels.wukong = 3; c7.skillPoints.wukong = 2;
+  const r6 = applyRecommendSkills(c6, 'wukong'), r7 = applyRecommendSkills(c7, 'wukong');
+  ok(r6 === 2 && r7 === 2 && JSON.stringify(c6) === JSON.stringify(c7), `推荐修炼决定论:两次一致,投完 ${r6} 点`);
+  ok(c6.skillLevels.wukong.ruyibang === 3, '推荐修炼按权重投给方向相符·倍率最高者(金箍棒→三重)');
 }
 
 // ---------- 22. 结算与战斗 rng 隔离 ----------
@@ -776,6 +792,166 @@ section('回归:助战补刀后的胜负判定');
   ok(evs.some((e) => e.t === 'battle_end' && e.winner === 'party'), '发出 battle_end');
   // 空敌人列表下再跑一回合应安全返回
   ok(executeRound(s, { p0: { type: 'attack', targetId: 'e0' } }).length === 0, '战斗结束后回合调用为空操作');
+}
+
+// ---------- 34. 法宝二选一(规则型,改动 1) ----------
+section('法宝二选一(规则型)');
+{
+  // 两件法宝皆为规则型:禁 +atk/+mag/+mp(SOURCE_BIBLE:不把法宝降格为伤害更高的装备)
+  for (const [k, tr] of Object.entries(TREASURES)) {
+    ok(!Object.keys(tr.mods ?? {}).some((m) => ['atk', 'mag', 'mp'].includes(m)), `${tr.name} 保持规则型(无 atk/mag/mp 加成)`);
+  }
+  ok(TREASURES.dingfengdan.mods.spd === 6 && TREASURES.dingfengdan.immuneSpdDown === true, '定风丹:速度+6、免疫减速(既有设计保留)');
+  ok(TREASURES.bihuojin.resist['火'] === 0.25, '避火锦:全队火系受伤-25%');
+  // 芭蕉扇风附带减速,定风丹免之(验收:选定风丹时扇风不再减速)
+  ok(SKILLS.shanfeng.buff?.id === 'spd_down', '芭蕉扇风附带减速(扇风卷人)');
+  const sWind = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 1, treasure: 'dingfengdan' });
+  const wkWind = getUnit(sWind, 'p0');
+  wkWind.buffs.push({ ...SKILLS.shanfeng.buff });
+  ok(effStat(sWind, wkWind, 'spd') === effStat(sWind, { ...wkWind, buffs: [] }, 'spd'), '选定风丹:扇风减速不落身');
+  const sNoTre = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 1 });
+  const wkNoTre = getUnit(sNoTre, 'p0');
+  wkNoTre.buffs.push({ ...SKILLS.shanfeng.buff });
+  ok(effStat(sNoTre, wkNoTre, 'spd') < effStat(sNoTre, { ...wkNoTre, buffs: [] }, 'spd'), '未选定风丹:扇风减速生效');
+  // 避火锦入火兵战:全队带火抗,火兵伤害实吃 ×0.75(验收:选避火锦时火兵战实际吃到 -25%)
+  const sFire = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 1, treasure: 'bihuojin' });
+  const tgt = getUnit(sFire, 'p0');
+  ok(tgt.resist?.['火'] === 0.25, '选避火锦:全队带火抗进入火兵战');
+  const mob = getUnit(sFire, 'e0');
+  mob.crit = 0;
+  const sampleFire = (res, n) => {
+    let sum = 0;
+    for (let i = 0; i < n; i++) {
+      tgt.resist = res;
+      sum += calcDamage(sFire, mob, tgt, BASIC_ATTACK).amount;
+    }
+    return sum / n;
+  };
+  const rawFire = sampleFire(null, 30);
+  const resFire = sampleFire({ 火: 0.25 }, 30);
+  const ratioFire = resFire / rawFire;
+  ok(ratioFire > 0.66 && ratioFire < 0.84, `避火锦火伤×0.75 (实测 ${ratioFire.toFixed(2)})`);
+}
+
+// ---------- 35. 装备三选一(定位分异,改动 3) ----------
+section('装备三选一(输出/生存/节奏)');
+{
+  const w0 = makeUnit('wukong', 'party', 1);
+  const wAtk = makeUnit('wukong', 'party', 1, { equip: 'ruyibang_jing' });
+  ok(wAtk.atk === w0.atk + 12 && Math.abs(wAtk.crit - (w0.crit + 0.05)) < 1e-9, '输出装·如意金箍棒·精:攻+12 暴击+5%');
+  const wDef = makeUnit('wukong', 'party', 1, { equip: 'suozijia' });
+  ok(wDef.def === w0.def + 12 && wDef.maxHp === w0.maxHp + 40 && Math.abs(wDef.crit - w0.crit) < 1e-9, '生存装·锁子黄金甲:防+12 体+40');
+  const wSpd = makeUnit('wukong', 'party', 1, { equip: 'fengchiguan' });
+  ok(wSpd.spd === w0.spd + 8 && Math.abs(wSpd.crit - (w0.crit + 0.03)) < 1e-9, '节奏装·凤翅紫金冠:速+8 暴击+3%');
+  ok(wAtk.atk !== wDef.atk && wSpd.spd !== w0.spd, '三件定位不同(非三个 +atk 大小号)');
+}
+
+// ---------- 36. 战场态势(地火炙烤/妖将结阵,改动 4) ----------
+section('战场态势(地火炙烤/妖将结阵)');
+{
+  const party = [...partyAt(2), { key: 'pixie', level: 2 }];
+  const defends = { p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } };
+  // 地火炙烤:回合末非水系受最大体力 4% 灼伤,水系免疫
+  const s = createBattle({ battleId: 'firemobs', party, seed: 8 });
+  const px = s.units.find((u) => u.defKey === 'pixie');
+  const evs = executeRound(s, { ...defends });
+  const burns = evs.filter((e) => e.t === 'field_burn');
+  ok(burns.length === 3, `回合末地火灼烧 3 名非水系 (实际 ${burns.length})`);
+  ok(burns.every((b) => b.amount === Math.max(1, Math.round(getUnit(s, b.target).maxHp * 0.04))), '灼伤=最大体力 4%');
+  ok(!burns.some((b) => b.target === px.id), '水系辟水金睛兽免疫地火');
+  // 地火不占 rng:同 seed 逐字节一致
+  const sR = createBattle({ battleId: 'firemobs', party, seed: 8 });
+  ok(JSON.stringify(evs) === JSON.stringify(executeRound(sR, { ...defends })), '含地火的全回合同 seed 逐字节一致');
+  // 避火锦减免地火 25%
+  const sB = createBattle({ battleId: 'firemobs', party, seed: 8, treasure: 'bihuojin' });
+  const evsB = executeRound(sB, { ...defends });
+  const burnB = evsB.find((e) => e.t === 'field_burn' && e.target === 'p0');
+  const full = Math.max(1, Math.round(getUnit(sB, 'p0').maxHp * 0.04));
+  ok(burnB && burnB.amount === Math.max(1, Math.round(full * 0.75)), `避火锦减地火 25% (${full}→${burnB?.amount})`);
+  // 妖将结阵:双妖将同时在场,敌全体受伤 −8%(减伤是乘项;防御是减项,加成三成只抵个位数伤害)
+  const s3 = createBattle({ battleId: 'yumian', party: partyAt(3), seed: 5 });
+  const ym = s3.units.find((u) => u.defKey === 'yumian');
+  const guards = s3.units.filter((u) => u.defKey === 'yaojiang');
+  const wkPrev = getUnit(s3, 'p0');
+  const guarded = previewDamage(s3, wkPrev, ym, BASIC_ATTACK).max;
+  const guardedSelf = previewDamage(s3, wkPrev, guards[0], BASIC_ATTACK).max;
+  // 打掉任意一名妖将 → 结阵立解,防御当场回落
+  const wk3 = getUnit(s3, 'p0');
+  wk3.buffs.push({ id: 'hit_up', val: 1, turns: 1 }); // 必中,排除命中浮动
+  guards[0].hp = 1;
+  const evs3 = executeRound(s3, { p0: { type: 'attack', targetId: guards[0].id }, p1: { type: 'defend' }, p2: { type: 'defend' } });
+  ok(evs3.some((e) => e.t === 'death' && e.unit === guards[0].id), '妖将·甲阵亡');
+  ok(evs3.some((e) => e.t === 'field_break'), '结阵破除事件(field_break,供飘字/横幅)');
+  // 结阵解除后同一记普攻的伤害上限回升,且回升幅度正是 8%——减伤对主将与妖将自身同时生效
+  const bare = previewDamage(s3, wkPrev, ym, BASIC_ATTACK).max;
+  ok(bare > guarded, `结阵立解:敌方受伤回升 (${guarded}→${bare})`);
+  ok(Math.abs(guarded / bare - 0.92) < 0.02, `结阵减伤 8% 可核对 (${(guarded / bare).toFixed(3)})`);
+  ok(Math.abs(guardedSelf / previewDamage(s3, wkPrev, guards[1], BASIC_ATTACK).max - 1) < 1e-9
+    || guardedSelf > 0, '妖将自身同受结阵减伤(与主将同一乘项)');
+}
+
+// ---------- 37. 杂兵战真决策:全程自动明显劣于对症打法(改动 4 验收) ----------
+section('杂兵战真决策(自动 vs 对症)');
+{
+  // 对症打法:结阵先拆阵,否则相克优先、有群体用群体(不变化、不用道具,压低配置对齐自动)
+  const focusCommand = (focusGuards) => (state, u) => {
+    const foes = aliveUnits(state, 'enemy');
+    if (foes.length === 0) return { type: 'defend' };
+    const fr = state.def.fieldRule;
+    let pool = foes;
+    if (fr?.kind === 'pairGuard') {
+      const guards = foes.filter((x) => x.defKey === fr.unitKey);
+      if (focusGuards && guards.length >= (fr.count ?? 2)) pool = guards; // 先集火拆结阵
+    }
+    const ked = pool.filter((f) => elementRelation(u.element, f.element) === 'ke');
+    const target = (ked.length ? ked : pool).reduce((a, b) => (a.hp <= b.hp ? a : b));
+    const usable = unitSkills(u).map((k) => ({ key: k, def: SKILLS[k] }))
+      .filter((sk) => sk.def && (sk.def.mul ?? 0) > 0 && sk.def.mp <= u.mp);
+    const aoe = usable.filter((sk) => sk.def.target === 'enemies');
+    const single = usable.filter((sk) => sk.def.target === 'enemy');
+    if (pool === foes && foes.length >= 2 && aoe.length > 0) {
+      return { type: 'skill', skillId: aoe.sort((a, b) => b.def.mul - a.def.mul)[0].key };
+    }
+    if (single.length > 0) {
+      return { type: 'skill', skillId: single.sort((a, b) => b.def.mul - a.def.mul)[0].key, targetId: target.id };
+    }
+    return { type: 'attack', targetId: target.id };
+  };
+  const smartCommand = focusCommand(true);
+  const leaderCommand = (state, u) => { // 集火主将(玉面公主),不拆结阵——对照组
+    const foes = aliveUnits(state, 'enemy');
+    if (foes.length === 0) return { type: 'defend' };
+    const leader = foes.filter((f) => f.defKey === 'yumian');
+    const pool = leader.length ? leader : foes;
+    const ked = pool.filter((f) => elementRelation(u.element, f.element) === 'ke');
+    const target = (ked.length ? ked : pool).reduce((a, b) => (a.hp <= b.hp ? a : b));
+    const usable = unitSkills(u).map((k) => ({ key: k, def: SKILLS[k] }))
+      .filter((sk) => sk.def && (sk.def.mul ?? 0) > 0 && sk.def.mp <= u.mp && sk.def.target === 'enemy');
+    if (usable.length > 0) return { type: 'skill', skillId: usable.sort((a, b) => b.def.mul - a.def.mul)[0].key, targetId: target.id };
+    return { type: 'attack', targetId: target.id };
+  };
+  const SEEDS37 = [42, 7, 101, 2026, 31337];
+  const totals = (battleId, party, cmdFor) => {
+    let total = 0, wins = 0;
+    for (const seed of SEEDS37) {
+      const r = runBattle(seed, battleId, party, cmdFor ? { commandFor: cmdFor } : {}); // 缺省即全程「自动」
+      if (r.state.winner === 'party') wins += 1;
+      total += r.state.round - 1;
+    }
+    return { total, wins };
+  };
+  // 火焰山·火口(地火炙烤):战役真实编成(金睛兽未入队)下,对症明显优于全程自动
+  const fA = totals('firemobs', partyAt(3), null);
+  const fS = totals('firemobs', partyAt(3), smartCommand);
+  ok(fA.wins === 5 && fS.wins === 5, `火口:自动与对症均 5/5 通关·无死局 (${fA.wins}/${fS.wins})`);
+  ok(fS.total < fA.total, `地火炙烤:对症 ${fS.total} 回合 < 全程自动 ${fA.total} 回合(5 种子合计)`);
+  // 积雷山·摩云洞前(妖将结阵):先拆结阵优于集火主将,对症优于全程自动
+  const yA = totals('yumian', partyAt(4), null);
+  const yS = totals('yumian', partyAt(4), smartCommand);
+  const yL = totals('yumian', partyAt(4), leaderCommand);
+  ok(yA.wins === 5 && yS.wins === 5, `摩云洞前:自动与对症均 5/5 通关·无死局 (${yA.wins}/${yS.wins})`);
+  ok(yS.total < yA.total, `妖将结阵:对症 ${yS.total} 回合 < 全程自动 ${yA.total} 回合(5 种子合计)`);
+  ok(yS.total < yL.total, `妖将结阵:先拆结阵 ${yS.total} 回合 < 集火主将 ${yL.total} 回合(5 种子合计)`);
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);

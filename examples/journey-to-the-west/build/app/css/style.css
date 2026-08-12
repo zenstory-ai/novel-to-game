@@ -300,6 +300,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 .formation-row:hover { border-color: var(--zhu); background: rgba(201, 162, 39, 0.12); }
 .formation-row.current { border-color: var(--gold); background: rgba(201, 162, 39, 0.2); }
+/* 法宝二选一的木刻物件图:压在名目左侧。缺图时这一格根本不渲染,不留空位。 */
+.pick-art {
+  flex: 0 0 auto; width: 84px; height: 84px;
+  border: 1px solid var(--wood); box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.45);
+  background-size: cover; background-position: center;
+}
 .formation-name { font-size: 17px; font-weight: bold; letter-spacing: 2px; }
 .formation-desc { font-size: 13px; color: #5a4a38; margin-top: 3px; }
 
@@ -418,6 +424,16 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3);
   padding: 4px 12px; font-size: 14px; letter-spacing: 2px;
 }
+
+/* 战场态势常驻条(回合签之下):规则名字+一句话效果,全场可见;结阵被破后转灰 */
+.field-rule {
+  position: absolute; top: 86px; right: 14px; z-index: 5; max-width: 320px;
+  color: #ffb37a; background: rgba(48, 22, 12, 0.88);
+  border: 1px solid rgba(255, 138, 90, 0.65); border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255, 179, 122, 0.25);
+  padding: 4px 10px; font-size: 13px; letter-spacing: 1px;
+}
+.field-rule.broken { color: #b9b2a4; border-color: rgba(185, 178, 164, 0.5); background: rgba(36, 24, 18, 0.8); }
 
 .order-bar {
   position: absolute; top: 0; left: 0; right: 0; z-index: 6;
@@ -734,6 +750,13 @@ button { font-family: inherit; cursor: pointer; }
 .float-text.mpup { color: #6aaad0; font-size: 15px; }
 .float-text.info { color: var(--text-hi); font-size: 17px; letter-spacing: 3px; }
 .float-text.combo-dmg { color: #ffe9b0; font-size: 24px; }
+/* 战场态势·地火灼伤:焰色下沉飘字,与「被克」同向(坠)以区别于攻击伤害 */
+.float-text.burn {
+  color: #ff9a4a; font-size: 20px; animation: floatSink 1.1s ease-out forwards;
+  text-shadow:
+    0 0 10px rgba(255, 120, 40, 0.7),
+    -1px -1px 0 var(--ink), 1px -1px 0 var(--ink), -1px 1px 0 var(--ink), 1px 1px 0 var(--ink);
+}
 
 /* 「克!」「暴击」「连击」印章 */
 .float-stamp {
@@ -754,6 +777,7 @@ button { font-family: inherit; cursor: pointer; }
 .crit-stamp { color: #ff5a3a; font-size: 24px; }
 .combo-stamp { color: #ffe9b0; font-size: 20px; }
 .heavy-stamp { color: #ff8a5a; font-size: 24px; letter-spacing: 4px; }
+.burn-stamp { color: #ff9a4a; font-size: 20px; letter-spacing: 2px; }
 
 /* 技能名横幅 */
 .skill-banner {

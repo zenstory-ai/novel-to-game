@@ -1,11 +1,11 @@
 {
-  "url": "http://127.0.0.1:56237/?seed=42&fast=1",
+  "url": "http://127.0.0.1:57377/?seed=42&fast=1",
   "viewport": "1440x900",
-  "passed": 94,
+  "passed": 113,
   "failed": 0,
   "console_errors": 0,
-  "build_bytes": 4245472,
-  "generated_screenshots": 37,
+  "build_bytes": 4516088,
+  "generated_screenshots": 42,
   "screenshots_retained_in_git": false,
   "minimalChecks": {
     "launch": true,

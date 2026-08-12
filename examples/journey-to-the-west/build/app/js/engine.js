@@ -165,6 +165,16 @@ export function effStat(state, unit, key) {
   return Math.max(1, v);
 }
 
+// 战场态势·结阵类(pairGuard):指定敌方单位凑够数目同时在场,敌方全体减伤;折损其一立解。
+// 走减伤而非加防:伤害公式里防御是减项(atk×倍率 − def×0.5),对 def 加成三成只抵掉个位数
+// 伤害,玩家根本看不出结阵在起作用。减伤是乘项,才撑得起「先拆结阵还是先打主将」这个选择。
+function pairGuardReduce(state, defender) {
+  const fr = state.def?.fieldRule;
+  if (defender.side !== 'enemy' || fr?.kind !== 'pairGuard') return 0;
+  const standing = aliveUnits(state, 'enemy').filter((u) => u.defKey === fr.unitKey).length;
+  return standing >= (fr.count ?? 2) ? (fr.reduce ?? 0) : 0;
+}
+
 // 行动队列:速度降序;同速我方先、id 小先(完全确定)
 export function buildActionQueue(state) {
   return state.units
@@ -193,6 +203,7 @@ export function calcDamage(state, attacker, defender, skill) {
   dmg *= rfloat(rng, 0.9, 1.1);
   if (defender.defending) dmg *= 0.5;
   dmg *= 1 - buffVal(defender, 'dmg_reduce');
+  dmg *= 1 - pairGuardReduce(state, defender); // 战场态势·结阵:双妖将同在则敌方全体减伤
   dmg *= 1 + buffVal(defender, 'vulnerable'); // 真扇落雨破绽:受伤+40%
   if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) dmg *= 0.5; // 玄甲龟将:被克减半
   const res = defender.resist?.[attacker.element] ?? 0; // 法宝五行抗性(可选入参)
@@ -224,6 +235,7 @@ export function previewDamage(state, attacker, defender, skill) {
   let m = 1;
   if (defender.defending) m *= 0.5;
   m *= 1 - buffVal(defender, 'dmg_reduce');
+  m *= 1 - pairGuardReduce(state, defender);
   m *= 1 + buffVal(defender, 'vulnerable');
   if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) m *= 0.5;
   const res = defender.resist?.[attacker.element] ?? 0;
@@ -313,6 +325,12 @@ function checkDeath(state, events, unit) {
     }
     unit.alive = false;
     events.push({ t: 'death', unit: unit.id });
+    // 战场态势·结阵类:结阵单位阵亡致数目不足,结阵立解(飘字/横幅由界面播)
+    const fr = state.def?.fieldRule;
+    if (fr?.kind === 'pairGuard' && unit.side === 'enemy' && unit.defKey === fr.unitKey
+      && aliveUnits(state, 'enemy').filter((u) => u.defKey === fr.unitKey).length < (fr.count ?? 2)) {
+      events.push({ t: 'field_break', name: fr.name });
+    }
   }
 }
 
@@ -782,6 +800,21 @@ export function executeRound(state, commands) {
         u.element = u.baseElement;
       }
     }
+  }
+  // 战场态势·地火炙烤类(roundEndBurn):回合末灼烧我方非豁免五行单位;
+  // 定值结算不占 rng;法宝五行抗性(避火锦)对灼伤同样减免
+  const fieldRule = state.def.fieldRule;
+  if (!state.over && fieldRule?.kind === 'roundEndBurn') {
+    for (const u of aliveUnits(state, 'party')) {
+      if (u.element === fieldRule.immuneElement) continue;
+      let amount = Math.max(1, Math.round(u.maxHp * fieldRule.pct));
+      const res = u.resist?.[fieldRule.element] ?? 0;
+      if (res) amount = Math.max(1, Math.round(amount * (1 - res)));
+      u.hp = Math.max(0, u.hp - amount);
+      events.push({ t: 'field_burn', target: u.id, amount });
+      checkDeath(state, events, u);
+    }
+    settleOutcome(state); // 灼伤可能终结残血队伍
   }
   if (state.over && state.winner) events.push({ t: 'battle_end', winner: state.winner, fled: state.fled });
   state.round += 1;
