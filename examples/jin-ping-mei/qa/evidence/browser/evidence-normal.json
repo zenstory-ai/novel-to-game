@@ -1,12 +1,12 @@
 {
   "url": "http://127.0.0.1:5173/?seed=42",
   "normal_speed_run": true,
-  "passed": 55,
+  "passed": 58,
   "failed": 0,
   "console_errors": [],
   "network_errors": [],
   "http_errors": [],
-  "build_bytes": 7011176,
+  "build_bytes": 7467723,
   "safe_screenshots": [
     "01_age_gate.jpg",
     "02_title.jpg",

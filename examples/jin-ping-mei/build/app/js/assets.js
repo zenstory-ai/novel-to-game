@@ -7,6 +7,9 @@ export const ASSET_PATHS = Object.freeze({
   // 它不占用任何奖励位,右三分之一留暗给标题栏。
   cover: 'assets/cg/group/title_three.webp',
   compound: 'assets/bg/compound_act1.jpg',
+  // 催账到期那两个早晨的门前画面:同一谱系的界画白描,人在门外等，院里还没开门。
+  // 不进 CRITICAL_CG_KEYS——报条文字已经把账说清楚,缺图不该拦住一局。
+  'scene/gate_collector': 'assets/scene/gate_collector.jpg',
   'heroine/yue': 'assets/portrait/wu_yueniang.png',
   'heroine/pan': 'assets/portrait/pan_jinlian.png',
   'heroine/pinger': 'assets/portrait/li_pinger.png',

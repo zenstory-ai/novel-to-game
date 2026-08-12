@@ -92,7 +92,9 @@ export const HOUSEHOLD_EVENTS = Object.freeze({
     text: '雪娥拎着一只空米袋，手上还沾着面：“厨房少米，铺里少货，偏偏管钥匙的那位吃得最香。你去不去看？”',
     choices: [
       householdChoice('xuee_check_storehouse', '跟她去后仓', '追回一点货，雪娥也肯认你这回', '你跟她进了后仓。雪娥踢开最里头那只箱子：“喏，老鼠还会扎绳结呢。”', { silver: 25, house: 4, secrets: ['kitchen_witness'], household: { id: 'sun_xuee', regard: 16 } }),
-      householdChoice('xuee_pay_shortfall', '叫她先赔上', '眼前添些银子，灶上从此少一句好话', '雪娥把围裙一扯，铜钱拍在桌上：“拿去。今晚谁吃夹生饭，别来问我。”', { silver: 15, house: -6, household: { id: 'sun_xuee', regard: -16 } }),
+      // 她把攒下的私房一次掏干净:眼前的银子比后仓那点货多，代价是灶上从此没有好脸。
+      // 手头紧到接不住第四日那笔账时，这四十两是唯一来得及的一笔。
+      householdChoice('xuee_pay_shortfall', '叫她先赔上', '眼前多出四十两，灶上从此少一句好话', '雪娥把围裙一扯，攒了几年的私房尽数拍在桌上：“拿去。今晚谁吃夹生饭，别来问我。”', { silver: 40, house: -6, household: { id: 'sun_xuee', regard: -16 } }),
     ],
   },
   4: {

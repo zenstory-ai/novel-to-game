@@ -312,6 +312,10 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .phase-header h2 { margin: 0 0 .65rem; color: #f0e4cf; font-size: clamp(1.45rem, 2.3vw, 2.5rem); letter-spacing: .08em; }
 .phase-header > p:last-child { margin: 0; color: #c1b29c; font: .9rem/1.75 var(--sans); }
 .phase-lead { margin: .8rem 0; color: #d9c49c; font: .78rem/1.6 var(--sans); }
+/* 晨间结转报条:用度、催账都落在这行现场画面上,墨边一杠与正文分开。 */
+.morning-note { margin: .55rem 0 0; padding-left: .6rem; border-left: 2px solid rgba(224,198,146,.42); color: #d9c49c; font: .8rem/1.6 var(--sans); }
+/* 催账的早晨:门前画面压在报条上方,取院门那一带的横条,人在门外站着。 */
+.morning-scene { margin: .7rem 0 .1rem; height: 6.2rem; border: 1px solid rgba(224,198,146,.3); background-position: center 38%; background-size: 118%; background-repeat: no-repeat; filter: saturate(.92); }
 .decision-panel { position: absolute; z-index: 5; border: 1px solid rgba(224,198,146,.38); color: #eee1cc; background: linear-gradient(150deg, rgba(25,18,15,.96), rgba(45,28,22,.93)); box-shadow: 0 18px 45px rgba(0,0,0,.34), inset 0 0 0 6px rgba(10,7,5,.18); }
 .decision-panel::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(226,196,136,.11); pointer-events: none; }
 

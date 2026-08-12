@@ -6,7 +6,7 @@ import {
   OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, SCENES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 // 破裂规则(GAME_DESIGN 第 5 节「拒绝／破裂」):公开越过她两次、或宅门 house<30,
 // 路线冷却一天。此前实现用单次失信旗标永久锁死明确场景,既漏了计数与 house 触发,
@@ -31,8 +31,36 @@ export const EXPOSURE_STREET = 25;
 export const EXPOSURE_HOUSEHOLD = 40;
 export const EXPOSURE_LEDGERED = 55;
 export const MAX_DAY = 6;
+// 宅中用度(银钱经济收紧):家声越高,日子越贵。每日结转扣一笔,次晨报在现场画面上;
+// 银子不够扣到 0 为止,摆不起的场面自己塌——宅门与家声跟着掉,不许出现负银。
+export const UPKEEP_BASE = 6;
+export const UPKEEP_PER_REPUTE = 3;
+// 第 4 日催账硬到期:第 3 日晨间先给一句可见口风,第 4 日结转时收账,不是无预告的惩罚。
+export const COLLECTOR_WARNING_DAY = 3;
+export const COLLECTOR_DUE_DAY = 4;
+export const COLLECTOR_PRICE = 40;
+// 安抚按妒分档:妒越拖越贵,按钮要报当前实价,不写死「二十两」。
+export const APPEASE_BASE = 20;
+export const APPEASE_DU_FLOOR = 40;
+// 权谋收束的银钱门槛:收紧后的实测值(test/bench_silver.mjs,实测记录见 GAME_DESIGN 第 10 节)——
+// 不用资源侧选项实测封顶 181,全采封顶 350;240 要求至少为银子动一处真格的。
+export const INTRIGUE_SILVER = 240;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const cap100 = (value) => clamp(value, 0, 100);
+
+// 银钱在市井文案里用汉字报数:十五两、四十两。
+const CN_NUM = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+export function silverText(n) {
+  if (n <= 10) return CN_NUM[n];
+  if (n < 20) return `十${CN_NUM[n - 10]}`;
+  const ones = n % 10;
+  return `${CN_NUM[Math.floor(n / 10)]}十${ones ? CN_NUM[ones] : ''}`;
+}
+
+// 安抚实价:妒过四十两起步价之后,每多一点妒加一两。
+export function appeaseCost(state, heroineId) {
+  return APPEASE_BASE + Math.max(0, (state.relations[heroineId]?.du ?? 0) - APPEASE_DU_FLOOR);
+}
 
 const makeRel = () => ({ qing: 8, yu: 6, du: 0, ignored: 0, reasons: [] });
 const makeHousehold = () => Object.fromEntries(HOUSEHOLD_IDS.map((id) => [id, { regard: 0, reasons: [] }]));
@@ -46,7 +74,7 @@ export function newGame(seed = 42) {
     seed: Number.isFinite(Number(seed)) ? Number(seed) : 42,
     day: 1,
     phase: 'opening',
-    resources: { silver: 180, power: 2, repute: 3, exposure: 0, strain: 0, house: 65 },
+    resources: { silver: 120, power: 2, repute: 3, exposure: 0, strain: 0, house: 65 },
     relations,
     household: makeHousehold(),
     secrets: [],
@@ -252,7 +280,7 @@ export function chooseDayAction(state, actionId) {
   const r = state.resources;
   switch (actionId) {
     case 'ledger': {
-      const gain = 35 + (state.flags.pinger_same_chest ? 25 : 0) + (state.day === 6 ? 20 : 0);
+      const gain = 22 + (state.flags.pinger_same_chest ? 16 : 0) + (state.day === 6 ? 12 : 0);
       changeResources(state, { silver: gain });
       if (state.day === 3) addSecret(state, 'steward_gap');
       text = `你把账翻过一遍，追回 ${gain} 两。`;
@@ -538,9 +566,54 @@ function advanceAfterNight(state) {
     return;
   }
   state.day += 1;
+  const notes = [applyUpkeep(state)];
+  if (state.day === COLLECTOR_WARNING_DAY) notes.push({ type: 'collector_warning' });
+  if (state.day === COLLECTOR_DUE_DAY + 1) notes.push(settleCollector(state));
   applyExposurePressure(state);
-  state.morning = buildMorning(state, visited);
+  state.morning = buildMorning(state, visited, notes);
   state.phase = 'morning';
+}
+
+// 每日结转先扣宅中用度:6 + 声望×3。家声从此是要养的资产——
+// 整席面添的每一点声望,都让后面每一天更贵。
+function applyUpkeep(state) {
+  const r = state.resources;
+  const cost = UPKEEP_BASE + r.repute * UPKEEP_PER_REPUTE;
+  const paid = Math.min(r.silver, cost);
+  r.silver -= paid;
+  if (paid < cost) {
+    changeResources(state, { house: -4, repute: -1 });
+    record(state, 'upkeep_short', { cost, paid });
+  }
+  state.log.push(upkeepText(cost, paid));
+  return { type: 'upkeep', cost, paid };
+}
+
+// 第 4 日结转收账:四十两了结;拿不出,他就闹上门,宅门、暴露与三人的妒一起涨。
+function settleCollector(state) {
+  if (state.resources.silver >= COLLECTOR_PRICE) {
+    state.resources.silver -= COLLECTOR_PRICE;
+    record(state, 'collector', { paid: true });
+    state.log.push(collectorText(true));
+    return { type: 'collector', paid: true };
+  }
+  changeResources(state, { house: -8, exposure: 10 });
+  for (const id of HEROINE_IDS) changeRel(state, id, { du: 5 }, '催账人闹上门，全院都听见了');
+  record(state, 'collector', { paid: false });
+  state.log.push(collectorText(false));
+  return { type: 'collector', paid: false };
+}
+
+function upkeepText(cost, paid) {
+  if (paid >= cost) return `灶上、门房、针线，昨日又去了${silverText(cost)}两。`;
+  if (paid > 0) return `灶上、门房、针线，昨日要${silverText(cost)}两，柜上只抹出${silverText(paid)}两。撑不起的场面，自己塌了一角。`;
+  return `灶上、门房、针线，昨日要${silverText(cost)}两，柜上一两也抹不出来。撑不起的场面，自己塌了一角。`;
+}
+
+function collectorText(paid) {
+  return paid
+    ? `门外那人点走${silverText(COLLECTOR_PRICE)}两，说了句“两讫”，掸掸袖子走了。`
+    : '门外那人见不着银子，拍着门框骂了半条街，邻里都探出头来看。';
 }
 
 // 曝光每日结转(F3):高曝光从这夜起开始咬人,三档全部落在场面上。
@@ -557,7 +630,24 @@ function applyExposurePressure(state) {
   }
 }
 
-function buildMorning(state, visited) {
+// 晨间画面 = 昨夜回响 + 结转报条。报条落在现场画面上(灶上、门房、门外的人),
+// 不写账单术语;玩家在第 3 日晨就能看见催账口风,还有机会用白日动作备银。
+function buildMorning(state, visited, notes = []) {
+  const event = pickMorningEvent(state, visited);
+  event.notes = notes.map((note) => {
+    if (note.type === 'upkeep') return upkeepText(note.cost, note.paid);
+    if (note.type === 'collector') return collectorText(note.paid);
+    return '门外那收账的今日又来问了一回，说这笔账拖不过明日。';
+  });
+  // 催账的那两个早晨给一张门前画面:预告那天他还在门外等,到期那天门已经开过。
+  // 一句报条说得清数目,说不清"有人正站在门口"——那是玩家该提前两天看见的压力。
+  if (notes.some((note) => note.type === 'collector_warning' || note.type === 'collector')) {
+    event.scene = 'scene/gate_collector';
+  }
+  return event;
+}
+
+function pickMorningEvent(state, visited) {
   const candidates = HEROINE_IDS.filter((id) => id !== visited).sort((a, b) => state.relations[b].du - state.relations[a].du);
   const actor = candidates[0];
   const rel = state.relations[actor];
@@ -596,11 +686,15 @@ function buildMorning(state, visited) {
 
 export function morningOptions(state) {
   if (state.phase !== 'morning' || !state.morning) return [];
-  if (state.morning.id === 'jealousy' || state.morning.id === 'pan_claim') return [
-    { id: 'appease', label: '带她去挑首饰', hint: '花二十两，先让她把门让开', disabled: state.resources.silver < 20 },
-    { id: 'explain', label: '关门跟她说', hint: '院里会猜，至少她能听见实话' },
-    { id: 'stand', label: '由她生气', hint: '你不改口，这两日也别指望她消气' },
-  ];
+  if (state.morning.id === 'jealousy' || state.morning.id === 'pan_claim') {
+    // 按钮报当前实价:妒越深,哄她开门越贵,拖着不安抚只会更贵。
+    const cost = appeaseCost(state, state.morning.actor);
+    return [
+      { id: 'appease', label: '带她去挑首饰', hint: `花${silverText(cost)}两，先让她把门让开`, disabled: state.resources.silver < cost },
+      { id: 'explain', label: '关门跟她说', hint: '院里会猜，至少她能听见实话' },
+      { id: 'stand', label: '由她生气', hint: '你不改口，这两日也别指望她消气' },
+    ];
+  }
   return [
     { id: 'accept', label: '把东西收下', hint: '她肯帮，你也当面领这份情' },
     { id: 'note', label: '只道一声知道了', hint: '不欠新话，照旧办今日的事' },
@@ -614,8 +708,9 @@ export function resolveMorning(state, choiceId) {
   if (event.id === 'jealousy' || event.id === 'pan_claim') {
     if (!['appease', 'explain', 'stand'].includes(choiceId)) return { ok: false, error: '她还在等你的回答。' };
     if (choiceId === 'appease') {
-      if (state.resources.silver < 20) return { ok: false, error: '手里连哄人的二十两都没有。' };
-      changeResources(state, { silver: -20, house: 3 });
+      const cost = appeaseCost(state, actor);
+      if (state.resources.silver < cost) return { ok: false, error: `手里连哄人的${silverText(cost)}两都没有。` };
+      changeResources(state, { silver: -cost, house: 3 });
       changeRel(state, actor, { qing: 4, du: -18 }, '你带她出去挑了一件东西');
     } else if (choiceId === 'explain') {
       changeResources(state, { exposure: 5 });
@@ -676,7 +771,7 @@ export function determineEnding(state) {
     id = 'balanced';
   } else if (qing[top] >= 60 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 50)) {
     id = 'exclusive';
-  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= 250)) {
+  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= INTRIGUE_SILVER)) {
     // 曝光不再是权谋的达成条件(F3:高曝光是代价,不是奖励),它只决定这一局的成色。
     id = 'intrigue';
   }
@@ -759,6 +854,12 @@ export function deserialize(raw) {
           state.visits[entry.heroine] += 1;
         }
       }
+    }
+    // v6 → v7:晨间画面新增结转报条(notes)。旧档的在途晨间没有这页,补空报条,
+    // 已结转的用度与催账不重扣——报条只是呈现,账在结转当刻已经落清。
+    if (state.version === 6) {
+      state.version = 7;
+      if (state.morning && !Array.isArray(state.morning.notes)) state.morning.notes = [];
     }
     if (state.version !== SAVE_VERSION || !HOUSEHOLD_IDS.every((id) => state.household?.[id])) return null;
     if (!state.publicOverrides || !state.routeReopensOn || !state.visits) return null;

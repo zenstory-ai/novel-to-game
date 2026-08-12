@@ -235,6 +235,14 @@ def main() -> int:
                 "yue_ask_backing", "yue_offer_seat", "yue_share_keys",
             ]
             for day_num, route in enumerate(routes, start=1):
+                # 银钱收紧后的晨间报条:用度每日照实报,第 3 日给催账口风,第 5 日交代收账结果。
+                notes = page.locator(".morning-note").all_inner_texts()
+                if day_num == 2:
+                    check(any("灶上、门房、针线" in t for t in notes), "次晨照实报宅中用度")
+                if day_num == 3:
+                    check(any("收账的今日又来问了一回" in t for t in notes), "第 3 日晨间先给催账口风")
+                if day_num == 5:
+                    check(any("门外那人" in t for t in notes), "第 4 日催账结算在次晨有现场交代")
                 resolve_morning(page, "explain")
                 choose_day(page, "ledger")
                 night = "prelude" if day_num < 3 else "explicit"

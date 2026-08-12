@@ -319,6 +319,10 @@ function ledgerLine(entry) {
     }
     case 'route_break':
       return entry.heroine ? `${HEROINES[entry.heroine]?.short ?? '她'}门冷一日` : '各门冷一日';
+    case 'upkeep_short':
+      return '场面塌一角';
+    case 'collector':
+      return entry.paid ? '打发收账人' : '收账人闹上门';
     default:
       return '记下一笔';
   }
@@ -447,6 +451,8 @@ function renderMorning() {
       <div class="morning-cg" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}次晨近景"></div>
       <div class="decision-panel morning-panel">
         ${phaseHeader(`第 ${state.day} 日 · 天刚亮`, event.title, event.text)}
+        ${event.scene ? `<div class="morning-scene" style="background-image:url('${urlFor(event.scene)}')" role="img" aria-label="院门外，收账人抱着账册等着"></div>` : ''}
+        ${(event.notes ?? []).map((note) => `<p class="morning-note">${escapeHtml(note)}</p>`).join('')}
         <p class="phase-lead">${TEXT.morningLead}</p>
         <div class="choice-stack">${E.morningOptions(state).map((choice) => choiceButton(choice, 'morning')).join('')}</div>
       </div>
