@@ -17,32 +17,3 @@ examples/*/build/app/node_modules/
 .idea/
 .vscode/
 *.iml
-
-# 成人向内部验收截图:落在项目内的受限子目录以便本地复核,但不进版本库。
-# 契约只要求证据不在系统临时目录、且可复跑重建;18+ 画面本身已由
-# examples/*/build/app/assets/cg/ 承载,QA 截图再入库只是重复暴露面。
-examples/*/qa/evidence/browser/adult/
-
-# 浏览器验收会重建这些逐步截图；版本库只保留紧凑验证记录或当前完整路径。
-examples/jin-ping-mei/qa/evidence/browser/safe/
-examples/journey-to-the-west/qa/evidence/browser/
-examples/project-plateau/build/evidence/collision/
-examples/project-plateau/build/evidence/controller/
-examples/project-plateau/build/evidence/entry/
-examples/project-plateau/build/evidence/loading/
-examples/project-plateau/build/evidence/motion/
-
-# Project Plateau visual iteration history is reproducible working evidence.
-# The authoritative complete capture lives in build/evidence/current-run/.
-examples/project-plateau/build/evidence/visual-upgrade/
-
-# 短片的录像与成片都不入库:未剪原片和 20 秒成片各 8MB 上下,合计比全仓游戏资产
-# (9.7MB)还重,而两者都能由示例自己的捕获脚本重建。
-# 留在库里的是挑刀的证据——首帧、时标 marks.json、抽帧联络表,加起来不到 700KB。
-examples/*/screenshots/clip/raw_take.webm
-examples/*/screenshots/clip/raw/
-examples/*/screenshots/clip/*.mp4
-
-# Project Plateau delivery clips, marks, manifests and contact sheets are all
-# reproducible from the retained capture script; none are game QA evidence.
-examples/project-plateau/build/media/clip/

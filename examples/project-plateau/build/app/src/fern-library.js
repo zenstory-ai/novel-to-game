@@ -9,12 +9,9 @@ import {
 
 export const FERN_LIBRARY_ASSET = Object.freeze({
   url: '/assets/fern-library-original-v1.glb',
-  version: 'original-fern-library-v1',
   bytes: 551_328,
   triangles: 6_594,
-  trianglesByVariant: Object.freeze([2_094, 2_160, 2_340]),
   drawCalls: 6,
-  drawCallsPerVariant: 2,
   variantCount: 3,
   variantIds: Object.freeze([
     'brook-arch-fern',
@@ -23,11 +20,6 @@ export const FERN_LIBRARY_ASSET = Object.freeze({
   ]),
   supportPlaneY: -0.12,
   sha256: '15fb84b00565da300a8a0b2a50769eb787bc27cf15cb5d028cdf3a4b765ea2f3',
-  provenance: 'project-original-deterministic-offline-authored-mesh-library',
-  generator: 'app/scripts/generate-fern-library.mjs',
-  rights: 'project-original-code-authored-output',
-  supportModel: 'buried-rhizome-to-closed-rachis-to-attached-pinnate-leaflets',
-  collisionRole: 'non-solid-pliable-understory',
 });
 
 export const FERN_WIND_PROFILE = Object.freeze({
@@ -60,13 +52,9 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.fern-library.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -75,10 +63,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = FERN_LIBRARY_ASSET.provenance;
-  template.userData.supportModel = FERN_LIBRARY_ASSET.supportModel;
   return template;
 }
 
@@ -118,7 +102,6 @@ function makeTexture(name, data, size, colorSpace = THREE.NoColorSpace) {
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 8;
-  texture.userData.source = 'deterministic-original-code-authored-correlated-leaf-surface';
   texture.needsUpdate = true;
   return texture;
 }
@@ -310,7 +293,6 @@ function createFernDepthMaterial(sourceMaterial) {
     `fern-library-depth-v1-${sourceMaterial.userData.family}`
   );
   material.userData.windUniforms = uniforms;
-  material.userData.shadowModel = FERN_WIND_PROFILE.shadowModel;
   return material;
 }
 
@@ -405,7 +387,7 @@ function fernInstanceMatrix(placement, geometry, terrainHeight, terrainGradient)
   position.y = requiredY.reduce((sum, value) => sum + value, 0) / requiredY.length
     - FERN_BURIAL_DEPTH;
   matrix.compose(position, quaternion, scale);
-  let clearances = localSupport.map((point) => {
+  const clearances = localSupport.map((point) => {
     const world = point.clone().applyMatrix4(matrix);
     return world.y - terrainHeight(world.x, world.z);
   });
@@ -426,23 +408,7 @@ function fernInstanceMatrix(placement, geometry, terrainHeight, terrainGradient)
   );
   position.y += settlementAdjustment;
   matrix.compose(position, quaternion, scale);
-  clearances = localSupport.map((point) => {
-    const world = point.clone().applyMatrix4(matrix);
-    return world.y - terrainHeight(world.x, world.z);
-  });
-  const supportedVertexCount = clearances.filter((clearance) => (
-    clearance >= SUPPORT_CLEARANCE_RANGE[0]
-      && clearance <= SUPPORT_CLEARANCE_RANGE[1]
-  )).length;
-  return Object.freeze({
-    matrix,
-    normal: normal.toArray(),
-    supportVertexCount: localSupport.length,
-    supportedVertexCount,
-    supportRatio: supportedVertexCount / localSupport.length,
-    minimumClearance: Math.min(...clearances),
-    maximumClearance: Math.max(...clearances),
-  });
+  return Object.freeze({ matrix });
 }
 
 export function attachFernLibraryVisual(anchor, template, placements, {
@@ -485,20 +451,12 @@ export function attachFernLibraryVisual(anchor, template, placements, {
       mesh.customDepthMaterial = createFernDepthMaterial(material);
       mesh.userData.variantId = variant.id;
       mesh.userData.role = roleIndex === 0 ? 'load-bearing-structure' : 'attached-leaflets';
-      mesh.userData.collisionRole = FERN_LIBRARY_ASSET.collisionRole;
-      mesh.userData.supportModel = FERN_LIBRARY_ASSET.supportModel;
       group.add(mesh);
       return mesh;
     });
     return meshes;
   });
   const instanceIndices = counts.map(() => 0);
-  const supportEvidence = [];
-  const habitatCounts = {
-    'humid-brook-margin': 0,
-    'drained-upland-slope': 0,
-    'sheltered-low-understory': 0,
-  };
   const leafTint = new THREE.Color();
   const structureTint = new THREE.Color();
   classified.forEach(({ placement, habitat }) => {
@@ -564,28 +522,6 @@ export function attachFernLibraryVisual(anchor, template, placements, {
         mesh.userData.role === 'load-bearing-structure' ? structureTint : leafTint,
       );
     });
-    supportEvidence.push(Object.freeze({
-      index: placement.index,
-      variantId: variants[variantIndex].id,
-      niche: habitat.niche,
-      slope: habitat.slope,
-      wetness: habitat.wetness,
-      sourceRole: placement.sourceRole ?? 'primary-understory',
-      diameter: Math.max(worldSize.x, worldSize.z),
-      height: worldSize.y,
-      maxDiameterMeters: placement.maxDiameterMeters ?? null,
-      maxHeightMeters: placement.maxHeightMeters ?? null,
-      matureEnvelopeScaleFactor: envelopeScale,
-      dimensionEnvelopePass: (
-        placement.maxDiameterMeters === undefined
-        || Math.max(worldSize.x, worldSize.z) <= placement.maxDiameterMeters
-      ) && (
-        placement.maxHeightMeters === undefined
-        || worldSize.y <= placement.maxHeightMeters
-      ),
-      ...evidence,
-    }));
-    habitatCounts[habitat.niche] += 1;
     instanceIndices[variantIndex] += 1;
   });
   instancedByVariant.flat().forEach((mesh) => {
@@ -593,56 +529,12 @@ export function attachFernLibraryVisual(anchor, template, placements, {
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
   });
-  const supportedVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportedVertexCount,
-    0,
-  );
-  const supportVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportVertexCount,
-    0,
-  );
-  const dimensionSummary = Object.freeze(Object.fromEntries(
-    [...new Set(supportEvidence.map((evidence) => evidence.sourceRole))].map((sourceRole) => {
-      const matching = supportEvidence.filter((evidence) => evidence.sourceRole === sourceRole);
-      return [sourceRole, Object.freeze({
-        instanceCount: matching.length,
-        maximumDiameterMeters: Math.max(...matching.map((evidence) => evidence.diameter)),
-        maximumHeightMeters: Math.max(...matching.map((evidence) => evidence.height)),
-        maxDiameterMeters: matching[0].maxDiameterMeters,
-        maxHeightMeters: matching[0].maxHeightMeters,
-        envelopePassCount: matching.filter(
-          (evidence) => evidence.dimensionEnvelopePass,
-        ).length,
-      })];
-    }),
-  ));
   group.userData = {
-    assetVersion: FERN_LIBRARY_ASSET.version,
-    supportModel: FERN_LIBRARY_ASSET.supportModel,
-    collisionRole: FERN_LIBRARY_ASSET.collisionRole,
-    energyModel: 'non-emissive-dielectric-plant-surfaces',
-    albedoProfile: VEGETATION_ALBEDO_PROFILE.version,
     instanceCount: placements.length,
-    drawCalls: FERN_LIBRARY_ASSET.drawCalls,
-    counts,
-    habitatCounts,
-    supportEvidence,
-    dimensionSummary,
-    supportSummary: Object.freeze({
-      supportVertexCount,
-      supportedVertexCount,
-      supportRatio: supportedVertexCount / supportVertexCount,
-      minimumClearance: Math.min(...supportEvidence.map((evidence) => evidence.minimumClearance)),
-      maximumClearance: Math.max(...supportEvidence.map((evidence) => evidence.maximumClearance)),
-      burialDepth: FERN_BURIAL_DEPTH,
-      clearanceRange: [...SUPPORT_CLEARANCE_RANGE],
-    }),
     materials,
   };
   anchor.add(group);
   anchor.userData.assetVisual = group;
-  anchor.userData.visualSource = FERN_LIBRARY_ASSET.version;
-  anchor.userData.supportEvidence = group.userData.supportSummary;
   const fallbackMeshes = anchor.userData.fallbackMeshes ?? [];
   fallbackMeshes.forEach((mesh) => { mesh.visible = false; });
   return group;

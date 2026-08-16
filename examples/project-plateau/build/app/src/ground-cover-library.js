@@ -9,26 +9,17 @@ import {
 
 export const GROUND_COVER_LIBRARY_ASSET = Object.freeze({
   url: '/assets/ground-cover-library-original-v3.glb',
-  version: 'original-ground-cover-library-v3',
   bytes: 127_188,
   triangles: 2_712,
-  trianglesByVariant: Object.freeze([760, 832, 1_120]),
   drawCalls: 6,
-  drawCallsPerVariant: 2,
   variantCount: 3,
   variantIds: Object.freeze([
     'brook-arrowhead-colony',
     'shade-elliptic-rosette',
     'slope-sedge-fan',
   ]),
-  leafCounts: Object.freeze([9, 10, 18]),
   supportPlaneY: -0.08,
   sha256: '344a899894b845aa0c5fce5057ac1b9c4b0c006c3bb87b1aaafe7b81b8b3a264',
-  provenance: 'project-original-deterministic-offline-authored-mesh-library',
-  generator: 'app/scripts/generate-ground-cover-library.mjs',
-  rights: 'project-original-code-authored-output',
-  supportModel: 'subgrade-rhizome-crown-to-mixed-age-closed-petiole-to-attached-cambered-leaf-surface',
-  collisionRole: 'non-solid-pliable-ground-cover',
 });
 
 export const GROUND_COVER_ARCHITECTURE_PROFILE = Object.freeze({
@@ -89,13 +80,9 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.ground-cover-library.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -103,10 +90,6 @@ function prepareTemplate(source) {
       ? object.material.map(prepareMaterial)
       : prepareMaterial(object.material);
   });
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = GROUND_COVER_LIBRARY_ASSET.provenance;
-  template.userData.supportModel = GROUND_COVER_LIBRARY_ASSET.supportModel;
   return template;
 }
 
@@ -146,7 +129,6 @@ function makeTexture(name, data, size, colorSpace = THREE.NoColorSpace) {
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 8;
-  texture.userData.source = 'deterministic-original-code-authored-correlated-ground-cover-surface-v3';
   texture.needsUpdate = true;
   return texture;
 }
@@ -370,7 +352,6 @@ function createGroundCoverDepthMaterial(sourceMaterial) {
     `ground-cover-library-depth-v3-${sourceMaterial.userData.family}`
   );
   material.userData.windUniforms = uniforms;
-  material.userData.shadowModel = GROUND_COVER_WIND_PROFILE.shadowModel;
   return material;
 }
 
@@ -484,7 +465,7 @@ function instanceMatrix(placement, geometry, terrainHeight, terrainGradient, var
   const localSupport = supportPoints(geometry);
   if (localSupport.length === 0) throw new Error('Ground-cover structure has no support vertices');
 
-  function settleAt(x, z, horizontalSettlement) {
+  function settleAt(x, z) {
     const gradient = terrainGradient(x, z);
     const normal = new THREE.Vector3(-gradient.x, 1, -gradient.z).normalize();
     const tilt = new THREE.Quaternion().setFromUnitVectors(
@@ -501,7 +482,7 @@ function instanceMatrix(placement, geometry, terrainHeight, terrainGradient, var
     position.y = requiredY.reduce((sum, value) => sum + value, 0) / requiredY.length
       - BURIAL_DEPTH;
     matrix.compose(position, quaternion, scale);
-    let clearances = localSupport.map((point) => {
+    const clearances = localSupport.map((point) => {
       const world = point.clone().applyMatrix4(matrix);
       return world.y - terrainHeight(world.x, world.z);
     });
@@ -514,44 +495,25 @@ function instanceMatrix(placement, geometry, terrainHeight, terrainGradient, var
     );
     position.y += adjustment;
     matrix.compose(position, quaternion, scale);
-    clearances = localSupport.map((point) => {
-      const world = point.clone().applyMatrix4(matrix);
-      return world.y - terrainHeight(world.x, world.z);
-    });
-    const supportedVertexCount = clearances.filter((clearance) => (
-      clearance >= SUPPORT_CLEARANCE_RANGE[0]
-        && clearance <= SUPPORT_CLEARANCE_RANGE[1]
-    )).length;
-    return Object.freeze({
-      matrix,
-      normal: normal.toArray(),
-      settledPosition: position.toArray(),
-      horizontalSettlement,
-      supportVertexCount: localSupport.length,
-      supportedVertexCount,
-      supportRatio: supportedVertexCount / localSupport.length,
-      minimumClearance: Math.min(...clearances),
-      maximumClearance: Math.max(...clearances),
-    });
+    return Object.freeze({ matrix });
   }
 
   // An analytic escarpment can put a generated point exactly across a sharp
   // break. A plant cannot bridge that unsupported crease, so try the smallest
   // deterministic move onto adjacent continuous soil instead of enlarging the
   // allowed clearance or pretending the root crown can float.
-  const candidates = [{ x: placement.x, z: placement.z, distance: 0 }];
+  const candidates = [{ x: placement.x, z: placement.z }];
   for (const distance of [0.12, 0.24, 0.36, 0.48]) {
     for (let step = 0; step < 12; step += 1) {
       const angle = (step / 12) * Math.PI * 2 + placement.index * 0.37;
       candidates.push({
         x: placement.x + Math.cos(angle) * distance,
         z: placement.z + Math.sin(angle) * distance,
-        distance,
       });
     }
   }
   for (const candidate of candidates) {
-    const settled = settleAt(candidate.x, candidate.z, candidate.distance);
+    const settled = settleAt(candidate.x, candidate.z);
     if (settled) return settled;
   }
   throw new Error(
@@ -598,15 +560,11 @@ export function attachGroundCoverLibraryVisual(anchor, template, placements, {
       mesh.customDepthMaterial = createGroundCoverDepthMaterial(material);
       mesh.userData.variantId = variant.id;
       mesh.userData.role = roleIndex === 0 ? 'load-bearing-structure' : 'attached-leaves';
-      mesh.userData.collisionRole = GROUND_COVER_LIBRARY_ASSET.collisionRole;
-      mesh.userData.supportModel = GROUND_COVER_LIBRARY_ASSET.supportModel;
       group.add(mesh);
       return mesh;
     });
   });
   const instanceIndices = counts.map(() => 0);
-  const supportEvidence = [];
-  const habitatCounts = {};
   const leafTint = new THREE.Color();
   const structureTint = new THREE.Color();
   classified.forEach(({ placement, habitat }) => {
@@ -643,7 +601,6 @@ export function attachGroundCoverLibraryVisual(anchor, template, placements, {
       );
       worldSize = transformedVariantSize(variants[variantIndex], evidence.matrix);
     }
-    const diameter = Math.max(worldSize.x, worldSize.z);
     const individual = THREE.MathUtils.clamp(placement.color[2], 0, 1);
     const habitatWetness = habitat.niche.startsWith('brook-margin')
       ? 0.34
@@ -676,19 +633,6 @@ export function attachGroundCoverLibraryVisual(anchor, template, placements, {
         mesh.userData.role === 'load-bearing-structure' ? structureTint : leafTint,
       );
     });
-    supportEvidence.push(Object.freeze({
-      index: placement.index,
-      variantId: variants[variantIndex].id,
-      niche: habitat.niche,
-      slope: habitat.slope,
-      diameter,
-      height: worldSize.y,
-      matureEnvelopeScaleFactor: envelopeScale,
-      dimensionEnvelopePass: diameter <= dimensionProfile.maxDiameterMeters
-        && worldSize.y <= dimensionProfile.maxHeightMeters,
-      ...evidence,
-    }));
-    habitatCounts[habitat.niche] = (habitatCounts[habitat.niche] ?? 0) + 1;
     instanceIndices[variantIndex] += 1;
   });
   instancedByVariant.flat().forEach((mesh) => {
@@ -696,54 +640,12 @@ export function attachGroundCoverLibraryVisual(anchor, template, placements, {
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
   });
-  const supportVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportVertexCount,
-    0,
-  );
-  const supportedVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportedVertexCount,
-    0,
-  );
-  const dimensionSummary = GROUND_COVER_DIMENSION_PROFILE.map((profile, variantIndex) => {
-    const matching = supportEvidence.filter((evidence) => (
-      evidence.variantId === GROUND_COVER_LIBRARY_ASSET.variantIds[variantIndex]
-    ));
-    return Object.freeze({
-      ...profile,
-      maximumDiameterMeters: Math.max(...matching.map((evidence) => evidence.diameter)),
-      maximumHeightMeters: Math.max(...matching.map((evidence) => evidence.height)),
-      envelopePassCount: matching.filter((evidence) => evidence.dimensionEnvelopePass).length,
-      instanceCount: matching.length,
-    });
-  });
   group.userData = {
-    assetVersion: GROUND_COVER_LIBRARY_ASSET.version,
-    supportModel: GROUND_COVER_LIBRARY_ASSET.supportModel,
-    collisionRole: GROUND_COVER_LIBRARY_ASSET.collisionRole,
-    energyModel: 'non-emissive-dielectric-plant-surfaces',
-    albedoProfile: VEGETATION_ALBEDO_PROFILE.version,
-    architectureProfile: GROUND_COVER_ARCHITECTURE_PROFILE,
     instanceCount: placements.length,
-    drawCalls: GROUND_COVER_LIBRARY_ASSET.drawCalls,
-    counts,
-    habitatCounts,
-    supportEvidence,
-    dimensionSummary,
-    supportSummary: Object.freeze({
-      supportVertexCount,
-      supportedVertexCount,
-      supportRatio: supportedVertexCount / supportVertexCount,
-      minimumClearance: Math.min(...supportEvidence.map((evidence) => evidence.minimumClearance)),
-      maximumClearance: Math.max(...supportEvidence.map((evidence) => evidence.maximumClearance)),
-      burialDepth: BURIAL_DEPTH,
-      clearanceRange: [...SUPPORT_CLEARANCE_RANGE],
-    }),
     materials,
   };
   anchor.add(group);
   anchor.userData.assetVisual = group;
-  anchor.userData.visualSource = GROUND_COVER_LIBRARY_ASSET.version;
-  anchor.userData.supportEvidence = group.userData.supportSummary;
   (anchor.userData.fallbackMeshes ?? []).forEach((mesh) => { mesh.visible = false; });
   return group;
 }

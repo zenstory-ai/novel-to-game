@@ -12,7 +12,6 @@ game-adaptations/{project}/
 ├── build/BUILD_BRIEF.md
 ├── build/app/
 ├── qa/verification.json
-├── qa/QA_REPORT.md
 └── _progress.md
 ```
 
@@ -37,9 +36,12 @@ game-adaptations/{project}/
 
 ## 证据角色
 
-`qa/verification.json` 是唯一机器事实源。schema v2 只写整体状态、权威命令、一次 complete run、
+`qa/verification.json` 是唯一 QA 事实源。schema v3 只写整体状态、权威命令、一次 complete run、
 六项游戏效果 checks 和包含 `scope` / `reason` 的 limitations。目标运行环境与实际环境不同就如实
 记录，不能用替代运行结果冒充目标平台通过。
+
+构建只准备候选与 verify 入口，QA 只运行一次完整路径；不要求真人试玩、逐项人工批准、重复机器
+证据对象或第二份 QA 报告。
 
 `targetFinish` 描述成色，不改变最小 QA。预算或工具耗尽只会留下 `NOT_RUN` / `FAIL`、缩小范围或
 延期，不会生成 PASS。主观趣味、平衡、权利合规和发布质量不由机器事实确定。

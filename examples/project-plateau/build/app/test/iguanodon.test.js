@@ -32,7 +32,6 @@ test('adult Iguanodon is a grounded articulated loft model rather than a primiti
   const rig = adult.userData.rig;
 
   assert.equal(adult.name, 'subject.iguanodon_family.adult');
-  assert.equal(adult.userData.assetVersion, 'procedural-loft-v7.1');
   assert.ok(stats.meshes >= 45, stats);
   assert.ok(stats.triangles >= 1900, stats);
   assert.ok(stats.minY >= -0.03 && stats.minY <= 0.03, stats);

@@ -292,8 +292,6 @@ test('cached brook boulder loader enforces dielectric material bounds', async ()
   const [first, second] = await Promise.all([load(), load()]);
   assert.equal(first, second);
   assert.equal(loads, 1);
-  assert.equal(first.userData.meshes, 6);
-  assert.equal(first.userData.triangles, 72);
   first.traverse((object) => {
     if (!object.isMesh) return;
     assert.equal(object.castShadow, true);
@@ -325,7 +323,6 @@ test('brook boulder attaches once with correlated surface maps and hides its fal
   const second = attachBrookBoulderVisual(anchor, template, textures);
   assert.equal(first, second);
   assert.equal(fallback.visible, false);
-  assert.equal(first.userData.assetVersion, BROOK_BOULDER_ASSET.version);
   assert.equal(first.userData.supportModel, BROOK_BOULDER_ASSET.supportModel);
   assert.equal(first.userData.collisionRole, BROOK_BOULDER_ASSET.collisionRole);
   assert.equal(first.userData.transportClass, BROOK_BOULDER_ASSET.transportClass);

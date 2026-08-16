@@ -1,62 +1,91 @@
 {
-  "url": "http://127.0.0.1:5173/?seed=42",
-  "normal_speed_run": true,
-  "passed": 58,
-  "failed": 0,
-  "console_errors": [],
-  "network_errors": [],
-  "http_errors": [],
-  "build_bytes": 7467723,
-  "safe_screenshots": [
-    "01_age_gate.jpg",
-    "02_title.jpg",
-    "03_opening_choice_done.jpg",
-    "04_delayed_yue_morning.jpg",
-    "06_banquet_conflict.jpg",
-    "07_exclusive_ending.jpg",
-    "household_li_jiaoer.jpg",
-    "household_meng_yulou.jpg",
-    "household_sun_xuee.jpg"
-  ],
-  "adult_screenshots": [
-    "yue_day1_prelude.jpg",
-    "yue_day2_prelude.jpg",
-    "yue_day3_explicit.jpg",
-    "yue_day4_explicit.jpg",
-    "yue_day5_explicit.jpg",
-    "yue_day6_explicit.jpg"
-  ],
-  "screenshots_retained_in_git": false,
-  "minimalChecks": {
-    "launch": true,
-    "render": true,
-    "input": true,
-    "coreLoop": true,
-    "outcome": true,
-    "restart": true
+  "schemaVersion": 1,
+  "runId": "jin-ping-mei-main-path",
+  "environment": {
+    "browser": "145.0.7632.6",
+    "viewport": [
+      1280,
+      800
+    ],
+    "url": "http://127.0.0.1:5173/?seed=42",
+    "normalSpeedRun": true,
+    "buildBytes": 7468497
   },
-  "qa": {
-    "command": "python3 test/verify.py",
-    "exitCode": 0,
-    "completeRun": {
-      "terminal": "exclusive-ending",
-      "restart": "day-1-opening"
+  "inputTrace": [
+    "confirm the 18+ age gate",
+    "start a new ledger and choose the respectful opening",
+    "complete six household and relationship days",
+    "reach the exclusive ending",
+    "restart to the day-one opening"
+  ],
+  "observations": {
+    "launch": {
+      "id": "age-gate-ready",
+      "inputs": [
+        "navigate to the seeded run"
+      ],
+      "state": {
+        "ageGateReady": true,
+        "url": "http://127.0.0.1:5173/?seed=42"
+      },
+      "visual": "qa/evidence/browser/safe/01_age_gate.jpg"
     },
-    "checks": {
-      "launch": "PASS",
-      "render": "PASS",
-      "input": "PASS",
-      "coreLoop": "PASS",
-      "outcome": "PASS",
-      "restart": "PASS"
+    "input": {
+      "id": "opening-choice-accepted",
+      "inputs": [
+        "click start",
+        "choose respect_yue"
+      ],
+      "state": {
+        "phase": "day",
+        "choice": "respect_yue"
+      }
+    },
+    "render": {
+      "id": "exclusive-ending-rendered",
+      "inputs": [
+        "complete the sixth day"
+      ],
+      "state": {
+        "phase": "ending",
+        "consoleErrors": [],
+        "networkErrors": [],
+        "httpErrors": []
+      },
+      "visual": "qa/evidence/browser/safe/07_exclusive_ending.jpg"
+    },
+    "coreLoop": {
+      "id": "six-day-loop-complete",
+      "inputs": [
+        "complete six day and night decisions"
+      ],
+      "state": {
+        "phase": "ending",
+        "day": 6
+      }
+    },
+    "outcome": {
+      "id": "exclusive-ending",
+      "inputs": [
+        "resolve the sixth night"
+      ],
+      "state": {
+        "terminal": "exclusive-ending",
+        "phase": "ending"
+      },
+      "visual": "qa/evidence/browser/safe/07_exclusive_ending.jpg"
+    },
+    "restart": {
+      "id": "clean-day-one-restart",
+      "inputs": [
+        "click restart"
+      ],
+      "state": {
+        "restart": "day-1-opening",
+        "day": 1,
+        "phase": "opening"
+      },
+      "visual": "qa/evidence/browser/safe/08_restart.jpg"
     }
-  },
-  "suites": [
-    {
-      "id": "browser:complete-run",
-      "executed": true,
-      "passed": true,
-      "exitCode": 0
-    }
-  ]
+  }
 }

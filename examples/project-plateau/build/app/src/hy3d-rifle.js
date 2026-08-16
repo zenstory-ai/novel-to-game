@@ -40,11 +40,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  const bounds = new THREE.Box3().setFromObject(template);
-  template.userData.sourceBounds = {
-    min: bounds.min.toArray(),
-    max: bounds.max.toArray(),
-  };
   return template;
 }
 
@@ -78,13 +73,9 @@ export function createHy3dRifleInstance(template, { scale = MODEL_SCALE } = {}) 
   const visual = new THREE.Group();
   const model = template.clone(true);
   visual.name = 'tool.period_rifle_hands.hy3d_visual';
-  visual.userData.assetVersion = HY3D_RIFLE_ASSET.version;
-  visual.userData.singleAssetPath = true;
   model.name = 'tool.period_rifle_hands.hy3d_model';
   model.scale.setScalar(scale);
   visual.add(model);
-  visual.userData.integratedHands = HY3D_RIFLE_ASSET.integratedHands;
-  visual.userData.gripRoles = [...HY3D_RIFLE_ASSET.gripRoles];
   return visual;
 }
 
@@ -93,6 +84,5 @@ export function attachHy3dRifleVisual(mount, template) {
   const visual = createHy3dRifleInstance(template);
   mount.add(visual);
   mount.userData.hy3dVisual = visual;
-  mount.userData.visualSource = HY3D_RIFLE_ASSET.version;
   return visual;
 }

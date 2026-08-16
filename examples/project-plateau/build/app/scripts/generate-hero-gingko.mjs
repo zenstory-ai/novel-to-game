@@ -1,32 +1,9 @@
 import { createHash } from 'node:crypto';
-import { writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-
-class NodeFileReader {
-  result = null;
-
-  onloadend = null;
-
-  readAsArrayBuffer(blob) {
-    blob.arrayBuffer().then((result) => {
-      this.result = result;
-      this.onloadend?.();
-    });
-  }
-
-  readAsDataURL(blob) {
-    blob.arrayBuffer().then((result) => {
-      this.result = `data:${blob.type};base64,${Buffer.from(result).toString('base64')}`;
-      this.onloadend?.();
-    });
-  }
-}
-
-globalThis.FileReader = NodeFileReader;
+import { writeBinaryGlb } from './gltf-export.mjs';
 
 const APP = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = resolve(APP, 'public/assets/hero-gingko-original-v2.glb');
@@ -677,14 +654,7 @@ leaves.castShadow = true;
 leaves.receiveShadow = true;
 root.add(bark, leaves);
 
-const exporter = new GLTFExporter();
-const result = await exporter.parseAsync(root, {
-  binary: true,
-  onlyVisible: true,
-  truncateDrawRange: true,
-});
-const buffer = Buffer.from(result);
-await writeFile(OUTPUT, buffer);
+const buffer = await writeBinaryGlb(root, OUTPUT);
 
 const triangles = [barkGeometry, leafGeometry].reduce((total, geometry) => (
   total + (geometry.index ? geometry.index.count : geometry.attributes.position.count) / 3
@@ -692,7 +662,7 @@ const triangles = [barkGeometry, leafGeometry].reduce((total, geometry) => (
 const bounds = new THREE.Box3().setFromObject(root);
 console.log(JSON.stringify({
   output: OUTPUT,
-  bytes: result.byteLength,
+  bytes: buffer.byteLength,
   sha256: createHash('sha256').update(buffer).digest('hex'),
   triangles,
   drawCalls: root.children.length,

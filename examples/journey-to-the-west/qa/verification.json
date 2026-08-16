@@ -1,67 +1,29 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "status": "PASS",
   "verify": {
     "command": "python3 test/verify.py",
-    "exitCode": 0,
-    "suites": [
-      {
-        "id": "browser:complete-run",
-        "executed": true,
-        "passed": true,
-        "exitCode": 0
-      }
-    ]
+    "exitCode": 0
   },
   "completeRun": {
-    "id": "journey-to-the-west-current-complete-run",
+    "id": "journey-to-the-west-main-path",
     "cleanContext": true,
     "terminal": "ending: 三借芭蕉扇 · 完",
-    "restart": "btn-restart -> title: 西游记 · 三借芭蕉扇 (new campaign)",
+    "restart": "new campaign title",
     "evidence": "qa/evidence/automated.json"
   },
   "checks": {
-    "launch": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    },
-    "render": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    },
-    "input": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    },
-    "coreLoop": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    },
-    "outcome": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    },
-    "restart": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/automated.json"
-      ]
-    }
+    "launch": "PASS",
+    "render": "PASS",
+    "input": "PASS",
+    "coreLoop": "PASS",
+    "outcome": "PASS",
+    "restart": "PASS"
   },
   "limitations": [
     {
       "scope": "tested runtime",
-      "reason": "The recorded browser run used local Chromium automation; other browsers and device classes were not exercised."
+      "reason": "The run used local Chromium automation; other browsers and device classes were not exercised."
     }
   ]
 }

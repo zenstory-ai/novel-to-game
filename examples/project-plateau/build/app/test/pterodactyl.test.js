@@ -24,7 +24,6 @@ test('pterodactyl is an articulated thick-membrane creature rather than a paper 
   const membraneMeshes = meshes.filter((part) => part.name.endsWith('.membrane.continuous-skin'));
 
   assert.equal(animal.userData.silhouette, 'continuous-skinned-membrane-wing');
-  assert.equal(animal.userData.assetVersion, 'procedural-pterodactyl-v5');
   assert.equal(animal.userData.forwardAxis, '-Z');
   assert.ok(meshes.length >= 45);
   assert.ok(triangles >= 1200 && triangles <= 3000);

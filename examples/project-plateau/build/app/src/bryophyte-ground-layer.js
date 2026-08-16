@@ -298,7 +298,6 @@ export function createBryophyteGroundLayer({
       flatShading: false,
       fog: true,
     });
-    material.userData.surface = 'opaque-matte-ground-organic-dielectric';
     material.userData.energyModel = BRYOPHYTE_GROUND_LAYER_PROFILE.energyModel;
     return material;
   });
@@ -369,12 +368,9 @@ export function createBryophyteGroundLayer({
   group.userData.counts = Object.freeze(Object.fromEntries(
     BRYOPHYTE_GROUND_LAYER_PROFILE.variantIds.map((variantId, index) => [variantId, counts[index]]),
   ));
-  group.userData.drawCalls = BRYOPHYTE_GROUND_LAYER_PROFILE.drawCalls;
   group.userData.placements = Object.freeze(placements.map((placement) => Object.freeze(placement)));
   group.userData.supportEvidence = supportEvidence;
-  group.userData.distributionModel = BRYOPHYTE_GROUND_LAYER_PROFILE.sourceModel;
   group.userData.collisionRole = BRYOPHYTE_GROUND_LAYER_PROFILE.collisionRole;
   group.userData.energyModel = BRYOPHYTE_GROUND_LAYER_PROFILE.energyModel;
-  group.userData.geometries = Object.freeze(geometries);
   return group;
 }

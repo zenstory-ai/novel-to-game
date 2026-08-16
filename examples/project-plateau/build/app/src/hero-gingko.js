@@ -264,8 +264,6 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.hero-gingko.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.geometry = object.geometry.clone();
@@ -277,8 +275,6 @@ function prepareTemplate(source) {
         2,
       ),
     );
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -291,14 +287,6 @@ function prepareTemplate(source) {
   });
   template.updateMatrixWorld(true);
   const productionRoot = template.getObjectByName('hero-gingko-original-v2');
-  const bounds = new THREE.Box3().setFromObject(template);
-  template.userData.sourceBounds = {
-    min: bounds.min.toArray(),
-    max: bounds.max.toArray(),
-  };
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = HERO_GINGKO_ASSET.provenance;
   template.userData.supportSnapshot = productionRoot?.userData.supportSnapshot
     ? structuredClone(productionRoot.userData.supportSnapshot)
     : null;
@@ -336,7 +324,6 @@ export function attachHeroGingkoVisual(anchor, template) {
   const visual = template.clone(true);
   visual.name = 'world.landmark.fort-gingko.asset-visual';
   visual.position.y = 0.022;
-  visual.userData.assetVersion = HERO_GINGKO_ASSET.version;
   visual.userData.supportModel = 'terrain-root-flare-to-collared-scaffold-to-short-shoot-fan-leaf';
   visual.userData.energyModel = 'non-emissive-dielectric-bark-and-leaf-albedo';
   visual.userData.supportSnapshot = template.userData.supportSnapshot
@@ -348,7 +335,6 @@ export function attachHeroGingkoVisual(anchor, template) {
   anchor.add(visual);
   anchor.userData.fallback.visible = false;
   anchor.userData.assetVisual = visual;
-  anchor.userData.visualSource = HERO_GINGKO_ASSET.version;
   return visual;
 }
 
@@ -363,13 +349,4 @@ export function updateHeroGingkoWind(anchor, elapsed, reducedMotion = false) {
   uniforms.verticalStrength.value = reducedMotion
     ? 0
     : HERO_GINGKO_WIND_PROFILE.verticalTipDisplacementMeters;
-  visual.userData.windSnapshot = {
-    time: uniforms.time.value,
-    strength: uniforms.strength.value,
-    verticalStrength: uniforms.verticalStrength.value,
-    reducedMotion,
-    rootAndTrunkFlex: [...HERO_GINGKO_WIND_PROFILE.hierarchy.rootAndTrunk],
-    maximumFlex: HERO_GINGKO_WIND_PROFILE.hierarchy.leaf[1],
-    shadowModel: HERO_GINGKO_WIND_PROFILE.shadowModel,
-  };
 }

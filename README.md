@@ -92,12 +92,11 @@ Keep variables as hidden causal tags rather than a visible stat panel.
 Key choices must change later scenes, character attitudes, and the ending, and be named back in later text.
 ```
 
-The narrative track **lowers no standard**: it still needs >=2 same-gameplay precedents with a verifiable
-player-scale figure, still needs the three-phase arc, and still faces the same hard vetoes. Only the wording
-of those criteria changes -- new people to question, new ways to press a contradiction, attitudes that shifted
-because of what you did earlier.
+The narrative track **lowers no standard**: it still needs a recognizable gameplay precedent, the same
+three-phase arc, and the same hard vetoes. Only the expression changes -- new people to question, new ways to
+press a contradiction, and attitudes that shifted because of what you did earlier.
 
-`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. Every project uses the same minimum QA contract: real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. Choose `director` when you want to pick the concept yourself.
+`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. Every project runs one minimum QA path covering real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. It does not require a human playtest or a separate approval report. Choose `director` when you want to pick the concept yourself.
 
 <details>
 <summary><strong>Native plugin installation</strong></summary>
@@ -132,10 +131,10 @@ codex plugin add novel-to-game@novel-to-game-skills
 The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Concept, experience/level design, and art direction remain distinct, while acceptance checks only scope consistency and the six-effect minimum playable contract.
 
 ```text
-Novel → Source analysis → Concept → World design → Art direction → Build ⇄ QA → Playable game
+Novel → Source analysis → Concept → World design → Art direction → Build → QA → Playable game
 ```
 
-Build targets the chosen runtime; QA verifies the six minimum player-visible effects there with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
+Build targets the chosen runtime and prepares one verification entry point; QA runs it once and records the six minimum player-visible effects with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. No human-playtest gate or duplicate QA report is required. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
 
 ## Skills
 
@@ -163,7 +162,6 @@ game-adaptations/<project>/
   build/BUILD_BRIEF.md
   build/app/
   qa/verification.json
-  qa/QA_REPORT.md
   _progress.md
 ```
 

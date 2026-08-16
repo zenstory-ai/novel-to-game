@@ -11,5 +11,5 @@
 - 可玩闭环：成年确认、六日关系循环、结果、场景册和重开由真实浏览器路径证明。
 - 机器事实源：`qa/verification.json`；常速证据：`qa/evidence/browser/evidence-normal.json`。
 
-逐步骤截图不长期提交，需要时由 `build/app/test/qa_browser.py` 重建；README 只使用 `screenshots/`
+逐步骤截图不长期提交，需要时由 `build/app/test/qa_browser.py` 重建；README 只使用 `screenshots/title.jpg`
 下的公开安全画面。自动化不证明主观趣味、节奏、长期平衡、商业价值或权利合规。

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
-  <defs><linearGradient id="p" x2="0" y2="1"><stop stop-color="#516d78"/><stop offset=".62" stop-color="#bd875d"/><stop offset="1" stop-color="#20382c"/></linearGradient></defs><rect width="1440" height="900" fill="url(#p)"/>
-  <path d="M720 100L1120 265 790 245 720 510 650 245 320 265Z" fill="#4b4641" stroke="#86776c" stroke-width="12"/><path d="M720 100L750 310 720 510 690 310Z" fill="#302f2c"/>
-  <path d="M0 410L160 300 330 460 450 900H0ZM1440 420L1260 280 1080 470 980 900H1440Z" fill="#173226"/><path d="M600 900L670 585 775 585 870 900Z" fill="#2d2924"/><circle cx="720" cy="650" r="95" fill="none" stroke="#e6d7b7" stroke-width="2" opacity=".7"/>
-  <text x="52" y="75" fill="#f0dfbd" font-family="sans-serif" font-size="24" letter-spacing="5">SILHOUETTE + VELOCITY BEFORE COLOUR OR LABEL</text>
-</svg>

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
-import { classifyEntryMode, isKnownInAppBrowser } from '../src/entry-mode.js';
+import { classifyEntryMode } from '../src/entry-mode.js';
 
 const DESKTOP = {
   hasWebGL2: true,
@@ -8,7 +9,6 @@ const DESKTOP = {
   height: 900,
   coarsePointer: false,
   canHover: true,
-  userAgent: 'Mozilla/5.0 Chrome/140 Safari/537.36',
 };
 
 test('supported desktop environments enter the interactive WebGL2 build', () => {
@@ -18,18 +18,14 @@ test('supported desktop environments enter the interactive WebGL2 build', () => 
   });
 });
 
-test('missing WebGL2 always routes to the local preview', () => {
+test('missing WebGL2 reports an unsupported runtime', () => {
   assert.deepEqual(classifyEntryMode({ ...DESKTOP, hasWebGL2: false }), {
-    mode: 'preview',
+    mode: 'unsupported',
     reason: 'webgl2-unavailable',
   });
-  assert.deepEqual(
-    classifyEntryMode({ ...DESKTOP, hasWebGL2: false, forceInteractive: true }),
-    { mode: 'preview', reason: 'webgl2-unavailable' },
-  );
 });
 
-test('touch-only and undersized devices route to the conversion preview', () => {
+test('touch-only and undersized devices report the desktop runtime boundary', () => {
   assert.equal(
     classifyEntryMode({
       ...DESKTOP,
@@ -46,26 +42,9 @@ test('touch-only and undersized devices route to the conversion preview', () => 
   );
 });
 
-test('known social in-app browsers route to preview even at a desktop viewport', () => {
-  const userAgent = 'Mozilla/5.0 MicroMessenger/8.0.55';
-  assert.equal(isKnownInAppBrowser(userAgent), true);
-  assert.deepEqual(classifyEntryMode({ ...DESKTOP, userAgent }), {
-    mode: 'preview',
-    reason: 'in-app-browser',
-  });
-});
-
-test('explicit preview is deterministic while interactive override still requires WebGL2', () => {
-  assert.equal(classifyEntryMode({ ...DESKTOP, forcePreview: true }).mode, 'preview');
-  assert.equal(
-    classifyEntryMode({
-      ...DESKTOP,
-      width: 390,
-      height: 844,
-      coarsePointer: true,
-      canHover: false,
-      forceInteractive: true,
-    }).mode,
-    'interactive',
-  );
+test('the app shell contains no promotional media or cross-demo navigation', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.doesNotMatch(html, /<video|\/media\/|vibecoco|github\.com/i);
+  assert.equal(existsSync(new URL('../src/preview-gateway.js', import.meta.url)), false);
+  assert.equal(existsSync(new URL('../public/media', import.meta.url)), false);
 });

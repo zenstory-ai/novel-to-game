@@ -41,13 +41,9 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.brook-boulder.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -56,14 +52,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  const bounds = new THREE.Box3().setFromObject(template);
-  template.userData.sourceBounds = {
-    min: bounds.min.toArray(),
-    max: bounds.max.toArray(),
-  };
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = BROOK_BOULDER_ASSET.provenance;
   template.userData.supportModel = BROOK_BOULDER_ASSET.supportModel;
   template.userData.normalModel = BROOK_BOULDER_ASSET.normalModel;
   return template;
@@ -273,7 +261,6 @@ export function attachBrookBoulderVisual(anchor, template, surfaceTextures) {
       ? object.material.map((material) => applySurfaceTextures(material, surfaceTextures, object.name))
       : applySurfaceTextures(object.material, surfaceTextures, object.name);
   });
-  visual.userData.assetVersion = BROOK_BOULDER_ASSET.version;
   visual.userData.supportModel = BROOK_BOULDER_ASSET.supportModel;
   visual.userData.energyModel = 'non-emissive-dielectric-rock-albedo';
   visual.userData.collisionRole = BROOK_BOULDER_ASSET.collisionRole;
@@ -281,7 +268,6 @@ export function attachBrookBoulderVisual(anchor, template, surfaceTextures) {
   visual.userData.normalModel = BROOK_BOULDER_ASSET.normalModel;
   anchor.add(visual);
   anchor.userData.assetVisual = visual;
-  anchor.userData.visualSource = BROOK_BOULDER_ASSET.version;
   if (anchor.userData.fallback) anchor.userData.fallback.visible = false;
   return visual;
 }

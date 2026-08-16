@@ -884,7 +884,6 @@ export function createIguanodon({ young = false, materialVariant = 'slate' } = {
     eyeSockets: eyes,
   };
   root.userData = {
-    assetVersion: 'procedural-loft-v7.1',
     young,
     facingAxis: '+X',
     groundY: 0,

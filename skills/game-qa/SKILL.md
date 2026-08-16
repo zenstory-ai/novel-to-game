@@ -17,15 +17,18 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 `targetFinish` 描述成色，不改变这组六项。`checks` 恰好只含六键；项目回归与诊断只能映射回其中
 一项、写入 `verify.suites` / evidence，或作为 limitation，不得生成第七道门。
 
+这是一条自动化或代理可执行的运行验证，不要求真人试玩、主观评分或逐项人工批准。需要真人研究时
+另立产品研究任务，不得把它变成当前候选 PASS 的隐藏前置条件。
+
 ## 执行
 
 1. 读取 `targetRuntime`、`testedRuntime` 和权威 verify；与 PRODUCT_BRIEF/BUILD_BRIEF 冲突时先报错，
    不由 QA 猜值。
-2. 独立运行权威 verify，记录 command、exit code、环境和实际失败。
-3. 在 testedRuntime 从 clean start → 核心动作 → 设计结果 → restart 走一条完整路径，按合同的最小可玩闭环逐项取证。
-4. 对照 GAME_DESIGN 中会改变结果的不变量和三段弧结束标记；只验证批准的设计承诺，不遍历所有
+2. 只运行一次权威 verify：它在 testedRuntime 从 clean start → 核心动作 → 设计结果 → restart
+   完成整条路径，并记录 command、exit code、环境、六项结果、最小证据和实际失败。
+3. 对照 GAME_DESIGN 中会改变结果的不变量和三段弧结束标记；只验证批准的设计承诺，不遍历所有
    代码路径。
-5. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
+4. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
    未验证风险，不给确定性 PASS。
 
 优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种
@@ -33,9 +36,9 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 
 ## 输出
 
-- `qa/verification.json`：唯一机器事实源，包含三态 status、权威命令、complete run、六项 checks 和
-  limitations；
-- `qa/QA_REPORT.md`：从机器事实生成的简短摘要，说明环境、命令、结论和未测试范围。
+- `qa/verification.json`：唯一 QA 事实源，包含三态 status、权威命令、complete run、六项 checks、
+  一条证据路径和 limitations。证据文件保留运行细节，不再复制一份 `qa` 结论对象，也不再生成
+  重复的人工可读 QA 报告。
 
 状态只取 `NOT_RUN` / `FAIL` / `PASS`。缺口写结构化 limitation，不发明 `PASS_WITH_GAPS`；未运行或
 失败的必需项不能满足整体 PASS。

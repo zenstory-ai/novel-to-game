@@ -9,31 +9,17 @@ import {
 
 export const TREE_FERN_LIBRARY_ASSET = Object.freeze({
   url: '/assets/tree-fern-library-original-v1.glb',
-  version: 'original-tree-fern-library-v1',
   bytes: 883_332,
   triangles: 19_788,
-  trianglesByVariant: Object.freeze([6_652, 5_872, 7_264]),
   drawCalls: 9,
-  drawCallsPerVariant: 3,
   variantCount: 3,
   variantIds: Object.freeze([
     'humid-arch-tree-fern',
     'storm-swept-tree-fern',
     'sheltered-tier-tree-fern',
   ]),
-  frondCounts: Object.freeze([15, 12, 18]),
   supportPlaneY: -0.18,
   sha256: '23b8f4f2ccac9797bd0a00038962dd30b01c935d465543b22ca4813db0bd9b6e',
-  provenance: 'project-original-deterministic-offline-authored-mesh-library',
-  generator: 'app/scripts/generate-tree-fern-library.mjs',
-  rights: 'project-original-code-authored-output',
-  supportModel: 'buried-root-flare-to-fibrous-trunk-to-closed-rachis-to-attached-leaflet',
-  collisionRole: 'solid-fibrous-trunk-with-non-solid-pliable-fronds-and-sub-step-roots',
-  growthModel: 'gravitropic-vertical-trunk-with-gravity-settled-root-mantle',
-  matureEnvelope: Object.freeze({
-    maximumCrownDiameterMeters: 6.15,
-    maximumHeightMeters: 6.15,
-  }),
 });
 
 export const TREE_FERN_WIND_PROFILE = Object.freeze({
@@ -67,13 +53,9 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.tree-fern-library.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -82,10 +64,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = TREE_FERN_LIBRARY_ASSET.provenance;
-  template.userData.supportModel = TREE_FERN_LIBRARY_ASSET.supportModel;
   return template;
 }
 
@@ -115,7 +93,7 @@ export function createCachedTreeFernLibraryLoader({
 
 export const loadTreeFernLibraryTemplate = createCachedTreeFernLibraryLoader();
 
-function makeTexture(name, data, size, source, colorSpace = THREE.NoColorSpace, repeat = false) {
+function makeTexture(name, data, size, colorSpace = THREE.NoColorSpace, repeat = false) {
   const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
   texture.name = name;
   texture.colorSpace = colorSpace;
@@ -125,14 +103,12 @@ function makeTexture(name, data, size, source, colorSpace = THREE.NoColorSpace, 
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 8;
-  texture.userData.source = source;
   texture.needsUpdate = true;
   return texture;
 }
 
 function createCorrelatedTextures({
   size,
-  source,
   prefix,
   repeat,
   sample,
@@ -161,23 +137,20 @@ function createCorrelatedTextures({
   }
   return Object.freeze({
     albedo: makeTexture(
-      `world.material.${prefix}-albedo`, albedo, size, source, THREE.SRGBColorSpace, repeat,
+      `world.material.${prefix}-albedo`, albedo, size, THREE.SRGBColorSpace, repeat,
     ),
     roughness: makeTexture(
-      `world.material.${prefix}-roughness`, roughness, size, source, THREE.NoColorSpace, repeat,
+      `world.material.${prefix}-roughness`, roughness, size, THREE.NoColorSpace, repeat,
     ),
     height: makeTexture(
-      `world.material.${prefix}-height`, height, size, source, THREE.NoColorSpace, repeat,
+      `world.material.${prefix}-height`, height, size, THREE.NoColorSpace, repeat,
     ),
   });
 }
 
 export function createTreeFernSurfaceTextures(size = 64) {
-  const barkSource = 'deterministic-original-code-authored-correlated-tree-fern-bark';
-  const leafSource = 'deterministic-original-code-authored-correlated-tree-fern-leaf';
   const bark = createCorrelatedTextures({
     size,
-    source: barkSource,
     prefix: 'tree-fern-fibrous-bark',
     repeat: true,
     sample(u, v) {
@@ -196,7 +169,6 @@ export function createTreeFernSurfaceTextures(size = 64) {
   });
   const leaf = createCorrelatedTextures({
     size,
-    source: leafSource,
     prefix: 'tree-fern-leaf',
     repeat: false,
     sample(u, v) {
@@ -377,7 +349,6 @@ function createTreeFernDepthMaterial(sourceMaterial) {
     `tree-fern-library-depth-v1-${sourceMaterial.userData.family}`
   );
   material.userData.windUniforms = uniforms;
-  material.userData.shadowModel = TREE_FERN_WIND_PROFILE.shadowModel;
   return material;
 }
 
@@ -442,19 +413,6 @@ function supportPoints(geometry) {
   return points;
 }
 
-function transformedTreeFernSize(variant, matrix) {
-  const bounds = new THREE.Box3();
-  const point = new THREE.Vector3();
-  for (const geometry of [variant.rootTrunk, variant.rachises, variant.leaflets]) {
-    const positions = geometry.getAttribute('position');
-    for (let index = 0; index < positions.count; index += 1) {
-      point.fromBufferAttribute(positions, index).applyMatrix4(matrix);
-      bounds.expandByPoint(point);
-    }
-  }
-  return bounds.getSize(new THREE.Vector3());
-}
-
 function treeFernInstanceMatrix(placement, geometry, terrainHeight) {
   const quaternion = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(0, 1, 0),
@@ -487,14 +445,10 @@ function treeFernInstanceMatrix(placement, geometry, terrainHeight) {
   return Object.freeze({
     matrix,
     position: position.clone(),
-    rotation: placement.rotation,
-    supportVertexCount: localSupport.length,
-    supportedVertexCount,
     supportRatio: supportedVertexCount / localSupport.length,
     minimumClearance: Math.min(...clearances),
     maximumClearance: Math.max(...clearances),
     matureTerrainFitScale: placement.scale,
-    verticalAxis: [0, 1, 0],
   });
 }
 
@@ -574,18 +528,10 @@ export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
     mesh.customDepthMaterial = createTreeFernDepthMaterial(role.material);
     mesh.userData.variantId = variant.id;
     mesh.userData.role = role.label;
-    mesh.userData.supportModel = TREE_FERN_LIBRARY_ASSET.supportModel;
-    mesh.userData.collisionRole = TREE_FERN_LIBRARY_ASSET.collisionRole;
     group.add(mesh);
     return mesh;
   }));
   const instanceIndices = counts.map(() => 0);
-  const supportEvidence = [];
-  const habitatCounts = {
-    'humid-retentive-margin': 0,
-    'wind-exposed-drained-margin': 0,
-    'sheltered-humus-margin': 0,
-  };
   const tints = [new THREE.Color(), new THREE.Color(), new THREE.Color()];
   classified.forEach(({ placement, habitat }) => {
     const variant = variants[habitat.variantIndex];
@@ -594,7 +540,6 @@ export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
       variant.rootTrunk,
       terrainHeight,
     );
-    const worldSize = transformedTreeFernSize(variant, evidence.matrix);
     const individual = (placement.index % 7) / 6;
     const structureAlbedo = vegetationStructureTint({
       hue: 0.075,
@@ -627,30 +572,13 @@ export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
       mesh.setMatrixAt(instanceIndex, evidence.matrix);
       mesh.setColorAt(instanceIndex, tints[roleIndex]);
     });
-    const diameter = Math.max(worldSize.x, worldSize.z);
-    const height = worldSize.y;
-    supportEvidence.push(Object.freeze({
-      index: placement.index,
-      variantId: variant.id,
-      niche: habitat.niche,
-      slope: habitat.slope,
-      wetness: habitat.wetness,
-      diameter,
-      height,
-      dimensionEnvelopePass: diameter <= TREE_FERN_LIBRARY_ASSET.matureEnvelope
-        .maximumCrownDiameterMeters
-        && height <= TREE_FERN_LIBRARY_ASSET.matureEnvelope.maximumHeightMeters,
-      ...evidence,
-    }));
     const placementAnchor = anchor.children[placement.index];
     if (placementAnchor?.userData.treeFernPlacementAnchor) {
       placementAnchor.position.copy(evidence.position);
       placementAnchor.rotation.set(0, placement.rotation, 0);
       placementAnchor.scale.setScalar(evidence.matureTerrainFitScale);
       placementAnchor.userData.variantId = variant.id;
-      placementAnchor.userData.supportEvidence = evidence;
     }
-    habitatCounts[habitat.niche] += 1;
     instanceIndices[habitat.variantIndex] += 1;
   });
   instancedByVariant.flat().forEach((mesh) => {
@@ -658,51 +586,12 @@ export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
   });
-  const supportVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportVertexCount, 0,
-  );
-  const supportedVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportedVertexCount, 0,
-  );
   group.userData = {
-    assetVersion: TREE_FERN_LIBRARY_ASSET.version,
-    supportModel: TREE_FERN_LIBRARY_ASSET.supportModel,
-    collisionRole: TREE_FERN_LIBRARY_ASSET.collisionRole,
-    growthModel: TREE_FERN_LIBRARY_ASSET.growthModel,
-    energyModel: 'non-emissive-dielectric-plant-surfaces',
-    albedoProfile: VEGETATION_ALBEDO_PROFILE.version,
     instanceCount: placements.length,
-    drawCalls: TREE_FERN_LIBRARY_ASSET.drawCalls,
-    counts,
-    habitatCounts,
-    supportEvidence,
-    dimensionSummary: Object.freeze({
-      instanceCount: supportEvidence.length,
-      maximumDiameterMeters: Math.max(...supportEvidence.map((evidence) => evidence.diameter)),
-      maximumHeightMeters: Math.max(...supportEvidence.map((evidence) => evidence.height)),
-      maximumCrownDiameterMeters: TREE_FERN_LIBRARY_ASSET.matureEnvelope
-        .maximumCrownDiameterMeters,
-      maximumMatureHeightMeters: TREE_FERN_LIBRARY_ASSET.matureEnvelope.maximumHeightMeters,
-      envelopePassCount: supportEvidence.filter(
-        (evidence) => evidence.dimensionEnvelopePass,
-      ).length,
-    }),
-    supportSummary: Object.freeze({
-      supportVertexCount,
-      supportedVertexCount,
-      supportRatio: supportedVertexCount / supportVertexCount,
-      minimumClearance: Math.min(...supportEvidence.map((evidence) => evidence.minimumClearance)),
-      maximumClearance: Math.max(...supportEvidence.map((evidence) => evidence.maximumClearance)),
-      burialDepth: ROOT_BURIAL_DEPTH,
-      clearanceRange: [...SUPPORT_CLEARANCE_RANGE],
-      settlementAxis: 'world-gravity-only',
-    }),
     materials,
   };
   anchor.add(group);
   anchor.userData.assetVisual = group;
-  anchor.userData.visualSource = TREE_FERN_LIBRARY_ASSET.version;
-  anchor.userData.supportEvidence = group.userData.supportSummary;
   (anchor.userData.fallbackMeshes ?? []).forEach((mesh) => { mesh.visible = false; });
   return group;
 }

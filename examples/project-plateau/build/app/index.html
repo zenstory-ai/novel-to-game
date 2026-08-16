@@ -26,36 +26,11 @@
         </div>
       </section>
       <canvas id="game-canvas" aria-label="A live three-dimensional plateau at late afternoon"></canvas>
-      <section id="preview-gateway" hidden aria-labelledby="preview-title">
-        <video
-          id="preview-video"
-          muted
-          loop
-          playsinline
-          controls
-          preload="none"
-          data-poster="/media/project-plateau-preview-poster.jpg"
-          aria-label="Fifteen seconds of real Project Plateau gameplay"
-        >
-          <source data-src="/media/project-plateau-preview-15s.mp4" type="video/mp4" />
-        </video>
-        <div class="preview-copy">
-          <p class="eyebrow">Project Plateau preview</p>
-          <h1 id="preview-title">A 15-second glimpse of the plateau.</h1>
-          <p class="preview-detail"></p>
-          <div class="preview-actions" aria-label="Continue exploring NovelToGame">
-            <a class="preview-primary" href="https://xiyouji.vibecoco.ai">Play a mobile-ready 2D game</a>
-            <a href="https://jinpingmei.vibecoco.ai">Try the second 2D demo</a>
-            <a href="https://github.com/worldwonderer/novel-to-game/tree/main/examples/project-plateau">Explore the 3D case study</a>
-          </div>
-          <p class="preview-footnote">Full 3D controls: desktop WebGL2 · mouse · WASD</p>
-        </div>
-      </section>
-      <section id="required-assets-error" class="card" hidden aria-labelledby="required-assets-title">
-        <p class="eyebrow">Required field equipment unavailable</p>
-        <h1 id="required-assets-title">The expedition cannot begin.</h1>
-        <p id="required-assets-copy">A required local 3D asset could not be loaded.</p>
-        <button id="retry-assets" type="button">Retry equipment load</button>
+      <section id="runtime-error" class="card" hidden aria-labelledby="runtime-error-title">
+        <p class="eyebrow">Expedition unavailable</p>
+        <h1 id="runtime-error-title">The expedition cannot begin.</h1>
+        <p id="runtime-error-copy">A required local 3D asset could not be loaded.</p>
+        <button id="retry-runtime" type="button">Retry equipment load</button>
       </section>
 
       <section id="title-screen" aria-labelledby="game-title">

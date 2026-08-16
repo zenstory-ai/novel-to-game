@@ -5,6 +5,9 @@ class Expedition:
     """Tiny deterministic loop used only to exercise the evidence contract."""
 
     def __init__(self) -> None:
+        self.phase: str
+        self.proof: bool
+        self.outcome: str | None
         self.restart()
 
     def snapshot(self) -> dict[str, object]:

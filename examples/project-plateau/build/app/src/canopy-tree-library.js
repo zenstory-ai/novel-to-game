@@ -9,12 +9,9 @@ import {
 
 export const CANOPY_TREE_LIBRARY_ASSET = Object.freeze({
   url: '/assets/canopy-tree-library-original-v7.glb',
-  version: 'original-canopy-tree-library-v7',
   bytes: 2_134_992,
   triangles: 33_102,
-  trianglesByVariant: Object.freeze([7_896, 6_930, 7_896, 10_380]),
   drawCalls: 8,
-  drawCallsPerVariant: 2,
   variantCount: 4,
   variantIds: Object.freeze([
     'humid-buttress-broadleaf',
@@ -22,43 +19,8 @@ export const CANOPY_TREE_LIBRARY_ASSET = Object.freeze({
     'plate-barked-compound-broadleaf',
     'layered-araucaria',
   ]),
-  leafCounts: Object.freeze([924, 798, 924, 1_296]),
-  damagedLeafCounts: Object.freeze([249, 240, 243, 370]),
-  branchAnchorCounts: Object.freeze([132, 114, 132, 216]),
-  supportVertexCounts: Object.freeze([29, 29, 29, 25]),
   supportPlaneY: -0.22,
   sha256: '16f105bc453d588fe2b2335e9a29736e0f19e9a766c11ef4945c8740993a5858',
-  provenance: 'project-original-deterministic-offline-authored-mesh-library',
-  generator: 'app/scripts/generate-canopy-tree-library.mjs',
-  rights: 'project-original-code-authored-output',
-  supportModel: 'buried-root-mantle-to-trunk-to-closed-branches-to-attached-leaves',
-  collisionRole: 'solid-visible-trunk-with-non-solid-branches-and-pliable-leaves',
-  growthModel: 'gravitropic-vertical-trunk-with-gravity-settled-root-mantle',
-  leafAttachmentDistribution:
-    'distributed-nodes-along-closed-primary-secondary-and-tertiary-branch-axes',
-  leafCoverageModel:
-    'higher-node-density-with-bounded-nine-point-five-percent-leaf-growth',
-  leafNodeHierarchy: 'primary-secondary-tertiary-and-araucaria-whorl-axes',
-  leafCountGrowthPercent: 9.5,
-  assetTriangleGrowthPercent: 0.82,
-  assetTriangleGrowthBaseline: 'v6-to-v7-stratified-crown-and-fractured-limb-architecture',
-  roundedLaminaTriangleGrowthPercent: 92.41,
-  roundedLaminaTriangleGrowthBaseline: 'v5-to-v6-rounded-lamina-topology',
-  trianglesPerLeaf: 6,
-  verticesPerLeaf: 8,
-  leafSurfaceTriangleMultiplier: 3,
-  partialLaminaDamage:
-    'stable-one-sided-missing-margin-plus-colour-depth-shared-rare-perforation',
-  crownArchitecture:
-    'vertical-crown-volume-with-closed-upper-scaffolds-and-wind-fractured-limb-stubs',
-  brokenBranchCounts: Object.freeze([1, 1, 1, 2]),
-  fractureSplinterCounts: Object.freeze([3, 3, 3, 6]),
-  crownBudgetModel:
-    'existing-leaf-budget-reallocated-from-broken-horizontal-limbs-to-supported-upper-scaffolds',
-  matureEnvelope: Object.freeze({
-    maximumCrownDiameterMeters: 10,
-    maximumHeightMeters: 9.9,
-  }),
 });
 
 export const CANOPY_TREE_WIND_PROFILE = Object.freeze({
@@ -111,7 +73,6 @@ export const CANOPY_TREE_SURFACE_VARIATION_PROFILE = Object.freeze({
 
 const ROOT_BURIAL_DEPTH = 0.025;
 const SUPPORT_CONTACT_CEILING = CANOPY_TREE_LIBRARY_ASSET.supportPlaneY + 0.036;
-const SUPPORT_CLEARANCE_RANGE = Object.freeze([-0.82, 0]);
 
 function prepareMaterial(material) {
   if (!material) return material;
@@ -129,13 +90,9 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.canopy-tree-library.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -144,10 +101,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = CANOPY_TREE_LIBRARY_ASSET.provenance;
-  template.userData.supportModel = CANOPY_TREE_LIBRARY_ASSET.supportModel;
   return template;
 }
 
@@ -177,7 +130,7 @@ export function createCachedCanopyTreeLibraryLoader({
 
 export const loadCanopyTreeLibraryTemplate = createCachedCanopyTreeLibraryLoader();
 
-function makeTexture(name, data, size, source, colorSpace = THREE.NoColorSpace, repeat = false) {
+function makeTexture(name, data, size, colorSpace = THREE.NoColorSpace, repeat = false) {
   const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
   texture.name = name;
   texture.colorSpace = colorSpace;
@@ -187,12 +140,11 @@ function makeTexture(name, data, size, source, colorSpace = THREE.NoColorSpace, 
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
   texture.anisotropy = 8;
-  texture.userData.source = source;
   texture.needsUpdate = true;
   return texture;
 }
 
-function correlatedTextures({ size, prefix, source, repeat, sample }) {
+function correlatedTextures({ size, prefix, repeat, sample }) {
   const albedo = new Uint8Array(size * size * 4);
   const roughness = new Uint8Array(size * size * 4);
   const height = new Uint8Array(size * size * 4);
@@ -211,13 +163,13 @@ function correlatedTextures({ size, prefix, source, repeat, sample }) {
   }
   return Object.freeze({
     albedo: makeTexture(
-      `world.material.${prefix}-albedo`, albedo, size, source, THREE.SRGBColorSpace, repeat,
+      `world.material.${prefix}-albedo`, albedo, size, THREE.SRGBColorSpace, repeat,
     ),
     roughness: makeTexture(
-      `world.material.${prefix}-roughness`, roughness, size, source, THREE.NoColorSpace, repeat,
+      `world.material.${prefix}-roughness`, roughness, size, THREE.NoColorSpace, repeat,
     ),
     height: makeTexture(
-      `world.material.${prefix}-height`, height, size, source, THREE.NoColorSpace, repeat,
+      `world.material.${prefix}-height`, height, size, THREE.NoColorSpace, repeat,
     ),
   });
 }
@@ -226,7 +178,6 @@ export function createCanopyTreeSurfaceTextures(size = 64) {
   const wetBark = correlatedTextures({
     size,
     prefix: 'canopy-tree-wet-furrowed-bark',
-    source: 'deterministic-original-code-authored-correlated-wet-furrowed-bark',
     repeat: true,
     sample(u, v) {
       const furrow = Math.abs(Math.sin((u * 9.2 + Math.sin(v * 4.8) * 0.35) * Math.PI));
@@ -238,7 +189,6 @@ export function createCanopyTreeSurfaceTextures(size = 64) {
   const plateBark = correlatedTextures({
     size,
     prefix: 'canopy-tree-plate-bark',
-    source: 'deterministic-original-code-authored-correlated-plate-bark',
     repeat: true,
     sample(u, v) {
       const vertical = Math.abs(Math.sin((u * 6.1 + Math.sin(v * 3.2) * 0.24) * Math.PI));
@@ -250,7 +200,6 @@ export function createCanopyTreeSurfaceTextures(size = 64) {
   const leaf = correlatedTextures({
     size,
     prefix: 'canopy-tree-leaf',
-    source: 'deterministic-original-code-authored-correlated-canopy-leaf',
     repeat: false,
     sample(u, v) {
       const midrib = Math.exp(-((u - 0.5) ** 2) / 0.003);
@@ -491,7 +440,6 @@ function createCanopyTreeMaterials() {
       bumpScale: barkFamily === 'plate-barked' ? 0.024 : 0.02,
       metalness: 0,
     });
-    material.userData.textureChannels = bark;
     return material;
   }
   function leafMaterial(family) {
@@ -508,7 +456,6 @@ function createCanopyTreeMaterials() {
       metalness: 0,
       side: THREE.DoubleSide,
     });
-    material.userData.textureChannels = textures.leaf;
     return material;
   }
   const structures = Object.freeze({
@@ -584,7 +531,6 @@ function createCanopyTreeDepthMaterial(sourceMaterial) {
     `canopy-tree-library-depth-v7-${sourceMaterial.userData.family}`
   );
   material.userData.windUniforms = uniforms;
-  material.userData.shadowModel = CANOPY_TREE_WIND_PROFILE.shadowModel;
   return material;
 }
 
@@ -689,19 +635,6 @@ function supportPoints(geometry) {
   return points;
 }
 
-function transformedCanopyTreeSize(variant, matrix) {
-  const bounds = new THREE.Box3();
-  const point = new THREE.Vector3();
-  for (const geometry of [variant.structure, variant.leaves]) {
-    const positions = geometry.getAttribute('position');
-    for (let index = 0; index < positions.count; index += 1) {
-      point.fromBufferAttribute(positions, index).applyMatrix4(matrix);
-      bounds.expandByPoint(point);
-    }
-  }
-  return bounds.getSize(new THREE.Vector3());
-}
-
 function canopyTreeInstanceMatrix(tree, geometry, terrainHeight) {
   const quaternion = new THREE.Quaternion().setFromAxisAngle(
     new THREE.Vector3(0, 1, 0),
@@ -720,23 +653,9 @@ function canopyTreeInstanceMatrix(tree, geometry, terrainHeight) {
   });
   position.y = Math.min(...requiredY) - ROOT_BURIAL_DEPTH;
   matrix.compose(position, quaternion, scale);
-  const clearances = localSupport.map((point) => {
-    const world = point.clone().applyMatrix4(matrix);
-    return world.y - terrainHeight(world.x, world.z);
-  });
-  const supportedVertexCount = clearances.filter((clearance) => (
-    clearance >= SUPPORT_CLEARANCE_RANGE[0]
-      && clearance <= SUPPORT_CLEARANCE_RANGE[1]
-  )).length;
   return Object.freeze({
     matrix,
     position: position.clone(),
-    supportVertexCount: localSupport.length,
-    supportedVertexCount,
-    supportRatio: supportedVertexCount / localSupport.length,
-    minimumClearance: Math.min(...clearances),
-    maximumClearance: Math.max(...clearances),
-    verticalAxis: [0, 1, 0],
   });
 }
 
@@ -799,27 +718,16 @@ export function attachCanopyTreeLibraryVisual(anchor, template, trees, {
       mesh.customDepthMaterial = createCanopyTreeDepthMaterial(role.material);
       mesh.userData.variantId = variant.id;
       mesh.userData.role = role.label;
-      mesh.userData.supportModel = CANOPY_TREE_LIBRARY_ASSET.supportModel;
-      mesh.userData.collisionRole = CANOPY_TREE_LIBRARY_ASSET.collisionRole;
       group.add(mesh);
       return mesh;
     });
   });
   const instanceIndices = counts.map(() => 0);
-  const supportEvidence = [];
-  const leafRetentionEvidence = [];
-  const habitatCounts = {
-    'humid-retentive-broadleaf': 0,
-    'drained-open-broadleaf': 0,
-    'plate-barked-compound-margin': 0,
-    'raised-araucaria-tier': 0,
-  };
   const structureTint = new THREE.Color();
   const leafTint = new THREE.Color();
   classified.forEach(({ tree, habitat }) => {
     const variant = variants[habitat.variantIndex];
     const evidence = canopyTreeInstanceMatrix(tree, variant.structure, terrainHeight);
-    const worldSize = transformedCanopyTreeSize(variant, evidence.matrix);
     const individual = (tree.index % 7) / 6;
     const structureAlbedo = vegetationStructureTint({
       hue: variant.barkFamily === 'plate-barked' ? 0.055 : 0.09,
@@ -864,37 +772,13 @@ export function attachCanopyTreeLibraryVisual(anchor, template, trees, {
           .setX(instanceIndex, surfaceVariation);
       }
     });
-    const diameter = Math.max(worldSize.x, worldSize.z);
-    const height = worldSize.y;
-    supportEvidence.push(Object.freeze({
-      index: tree.index,
-      variantId: variant.id,
-      niche: habitat.niche,
-      slope: habitat.slope,
-      wetness: habitat.wetness,
-      diameter,
-      height,
-      dimensionEnvelopePass: diameter <= CANOPY_TREE_LIBRARY_ASSET.matureEnvelope
-        .maximumCrownDiameterMeters
-        && height <= CANOPY_TREE_LIBRARY_ASSET.matureEnvelope.maximumHeightMeters,
-      ...evidence,
-    }));
-    leafRetentionEvidence.push(Object.freeze({
-      index: tree.index,
-      variantId: variant.id,
-      niche: habitat.niche,
-      ...leafRetention,
-    }));
     const placementAnchor = anchor.children[tree.index];
     if (placementAnchor?.userData.canopyTreePlacementAnchor) {
       placementAnchor.position.copy(evidence.position);
       placementAnchor.rotation.set(0, tree.trunkYaw, 0);
       placementAnchor.scale.setScalar(tree.scale);
       placementAnchor.userData.variantId = variant.id;
-      placementAnchor.userData.supportEvidence = evidence;
-      placementAnchor.userData.leafRetentionEvidence = leafRetention;
     }
-    habitatCounts[habitat.niche] += 1;
     instanceIndices[habitat.variantIndex] += 1;
   });
   instancedByVariant.flat().forEach((mesh) => {
@@ -908,75 +792,12 @@ export function attachCanopyTreeLibraryVisual(anchor, template, trees, {
     }
     mesh.computeBoundingSphere();
   });
-  const supportVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportVertexCount, 0,
-  );
-  const supportedVertexCount = supportEvidence.reduce(
-    (sum, evidence) => sum + evidence.supportedVertexCount, 0,
-  );
-  const dimensionSummary = variants.map((variant, variantIndex) => {
-    const matching = supportEvidence.filter((evidence) => evidence.variantId === variant.id);
-    return Object.freeze({
-      id: variant.id,
-      instanceCount: matching.length,
-      maximumDiameterMeters: Math.max(...matching.map((evidence) => evidence.diameter)),
-      maximumHeightMeters: Math.max(...matching.map((evidence) => evidence.height)),
-      maximumCrownDiameterMeters: CANOPY_TREE_LIBRARY_ASSET.matureEnvelope
-        .maximumCrownDiameterMeters,
-      maximumMatureHeightMeters: CANOPY_TREE_LIBRARY_ASSET.matureEnvelope.maximumHeightMeters,
-      envelopePassCount: matching.filter((evidence) => evidence.dimensionEnvelopePass).length,
-      variantIndex,
-    });
-  });
   group.userData = {
-    assetVersion: CANOPY_TREE_LIBRARY_ASSET.version,
-    supportModel: CANOPY_TREE_LIBRARY_ASSET.supportModel,
-    collisionRole: CANOPY_TREE_LIBRARY_ASSET.collisionRole,
-    growthModel: CANOPY_TREE_LIBRARY_ASSET.growthModel,
-    energyModel: 'non-emissive-dielectric-plant-surfaces',
-    albedoProfile: VEGETATION_ALBEDO_PROFILE.version,
     instanceCount: trees.length,
-    drawCalls: CANOPY_TREE_LIBRARY_ASSET.drawCalls,
-    counts,
-    habitatCounts,
-    supportEvidence,
-    leafRetentionEvidence,
-    leafRetentionSummary: Object.freeze({
-      version: CANOPY_TREE_LEAF_RETENTION_PROFILE.version,
-      sourceModel: CANOPY_TREE_LEAF_RETENTION_PROFILE.sourceModel,
-      temporalModel: CANOPY_TREE_LEAF_RETENTION_PROFILE.temporalModel,
-      shadowModel: CANOPY_TREE_LEAF_RETENTION_PROFILE.shadowModel,
-      minimumRetention: Math.min(...leafRetentionEvidence.map(({ retention }) => retention)),
-      maximumRetention: Math.max(...leafRetentionEvidence.map(({ retention }) => retention)),
-      meanRetention: leafRetentionEvidence.reduce(
-        (sum, { retention }) => sum + retention, 0,
-      ) / leafRetentionEvidence.length,
-      damagedInstanceCount: leafRetentionEvidence.filter(
-        ({ retention }) => retention < 0.9,
-      ).length,
-      ageCounts: Object.freeze(leafRetentionEvidence.reduce((countsByAge, { ageClass }) => ({
-        ...countsByAge,
-        [ageClass]: (countsByAge[ageClass] ?? 0) + 1,
-      }), {})),
-    }),
-    surfaceVariation: CANOPY_TREE_SURFACE_VARIATION_PROFILE,
-    dimensionSummary,
-    supportSummary: Object.freeze({
-      supportVertexCount,
-      supportedVertexCount,
-      supportRatio: supportedVertexCount / supportVertexCount,
-      minimumClearance: Math.min(...supportEvidence.map((evidence) => evidence.minimumClearance)),
-      maximumClearance: Math.max(...supportEvidence.map((evidence) => evidence.maximumClearance)),
-      burialDepth: ROOT_BURIAL_DEPTH,
-      clearanceRange: [...SUPPORT_CLEARANCE_RANGE],
-      settlementAxis: 'world-gravity-only',
-    }),
     materials,
   };
   anchor.add(group);
   anchor.userData.assetVisual = group;
-  anchor.userData.visualSource = CANOPY_TREE_LIBRARY_ASSET.version;
-  anchor.userData.supportEvidence = group.userData.supportSummary;
   (anchor.userData.fallbackMeshes ?? []).forEach((mesh) => { mesh.visible = false; });
   return group;
 }

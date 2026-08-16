@@ -124,7 +124,7 @@ assets/cg/group/banquet_conflict.webp
 
 旧模式不再引用的背景、服丧立绘、仆役与封面资产已删除；应用目录约 4.6 MB，低于
 25 MB 包体预算。README 只引用
-`screenshots/title.jpg`、`household.jpg`、`morning.jpg`、`banquet.jpg`、`ending.jpg`
+仓库展示只保留 `screenshots/title.jpg`；运行过程帧由验证脚本按需临时生成。
 五张安全截图；
 关系终段画面不用于公开 README；当前机器事实只保留完整路径汇总。
 

@@ -27,33 +27,27 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 
 - 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。TTS
   优先构建期生成成本地资产；运行时远程合成须在 brief 批准，密钥只留受信服务端。
-- 有动态媒体台账时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。已有批准
-  参考图时以图约束，不把供应商写成跨项目默认。
-- 批准实时生成式 3D 生物时读取
-  [generated-3d-creature-pipeline.md](references/generated-3d-creature-pipeline.md)，先做一个代表资产 spike。
-- 常规生产技法按需读取 [production-techniques.md](references/production-techniques.md)，不要全部变成
-  当前项目门禁。
+- 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。已有批准
+  参考图时以图约束；工具与模型按当前环境选择，不写成跨项目默认。
 
 ## 最小完成循环
 
 1. 先实现一个最小但完整的核心循环：启动、真实输入、状态变化、结果和重开。范围不足时修范围，
    不先堆审计材料。
 2. 回写实际工具链、install/build/start 命令和版本；未知值写 `NOT_AVAILABLE: 原因`，不猜。
-3. 定义并运行一条权威验证命令，在 `qa/verification.json` 记录 command 和 exit code。
-4. 从 `clean start → 核心动作 → 设计结果 → restart` 跑一条完整路径，用最少语义 checkpoint 记录
-   状态、runtime 和必要画面。取不到写 limitation，不用截图证明隐藏状态。
-5. 在 `testedRuntime` 启动真实游戏，修复构建失败、阻断日志、资源失败和崩溃；替代运行时未覆盖的
+3. 提供一条权威验证命令和最小可观察状态，使 `game-qa` 能一次走完
+   `clean start → 核心动作 → 设计结果 → restart`；构建阶段不预写 QA 结论或重复跑完整验收。
+4. 运行最窄的开发检查与启动 smoke，修复构建失败、阻断日志、资源失败和崩溃；替代运行时未覆盖的
    目标平台输入、性能、打包或设备项写入 limitation。
-6. 达到 brief 的 `targetFinish`；更高完成度只处理已批准的焦点资产和招牌时刻，不制造与可玩闭环
+5. 达到 brief 的 `targetFinish`；更高完成度只处理已批准的焦点资产和招牌时刻，不制造与可玩闭环
    无关的发布审计。
-7. 复跑权威命令和完整路径，更新当前限制。时间、预算或生成调用用尽只会留下 FAIL/NOT_RUN，
-   不会生成 PASS。
+6. 交给 `game-qa` 只运行一次权威命令并写最终事实。时间、预算或生成调用用尽只会留下
+   FAIL/NOT_RUN，不会生成 PASS。
 
 连续 3D、语音、生成媒体、多语言与无障碍仅在实际采用时增加项目自己的回归检查。必需异步资产
 加载或解码失败不得静默换灰盒仍宣称通过；可继续的 fallback 条件见 build-brief-contract.md。
 
 ## 输出
 
-生成 `build/BUILD_BRIEF.md`、实际游戏和紧凑 `qa/verification.json`。机器事实固定覆盖 `launch`、
-`render`、`input`、`coreLoop`、`outcome`、`restart`。证据必须位于工作区持久路径；截图、录制与 raw
-trace 只保留当前声明引用的最小集合。构建阶段只交候选和事实，最终裁决由 `game-qa` 完成。
+生成 `build/BUILD_BRIEF.md`、实际游戏和权威验证入口，不生成最终 QA 结论。截图、录制与 raw trace
+只保留调试所需的最小集合；`game-qa` 是完整路径与 `qa/verification.json` 的唯一 owner。

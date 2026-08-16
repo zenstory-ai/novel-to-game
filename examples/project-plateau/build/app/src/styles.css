@@ -56,7 +56,7 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .plate-wing { left: 38%; top: 16%; width: 29%; height: 14%; background: linear-gradient(180deg, rgba(14,22,22,.94), rgba(72,84,80,.76)); clip-path: polygon(0 46%, 39% 9%, 49% 43%, 58% 8%, 100% 42%, 60% 62%, 51% 100%, 42% 61%); filter: grayscale(1) drop-shadow(0 4px 5px rgba(0,0,0,.45)); animation: plateWing 8s ease-in-out infinite; }
 
 .card { position: absolute; z-index: 5; left: 6vw; top: 50%; width: min(34rem, 88vw); transform: translateY(-50%); padding: 1.7rem 1.9rem; background: rgba(23, 32, 29, .96); border: 1px solid var(--brass); box-shadow: 0 22px 60px rgba(0,0,0,.45); color: var(--ivory); }
-#required-assets-error { z-index: 9; }
+#runtime-error { z-index: 9; }
 .card p { line-height: 1.5; }
 .order-condition { color: #c8c9bd; }
 .panel { left: auto; right: 6vw; width: min(29rem, 88vw); }
@@ -68,17 +68,6 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 .pause-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .pause-actions button { min-width: 11rem; }
 .pause-actions .secondary { background: transparent; border-color: #617067; }
-
-#preview-gateway { position: absolute; z-index: 12; inset: 0; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(22rem, .75fr); background: #111a18; }
-#preview-video { width: 100%; height: 100%; min-height: 0; object-fit: cover; background: #101816; }
-.preview-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(1.4rem, 4vw, 4.5rem); background: linear-gradient(145deg, rgba(25,60,43,.92), #17201d 68%); border-left: 1px solid rgba(176,139,79,.65); box-shadow: -20px 0 60px rgba(0,0,0,.25); }
-.preview-copy h1 { font-size: clamp(2.2rem, 4.4vw, 4.8rem); line-height: .96; }
-.preview-detail { max-width: 35rem; margin: 1.3rem 0 1.6rem; color: #d5d6ca; line-height: 1.55; }
-.preview-actions { display: flex; flex-direction: column; align-items: stretch; gap: .7rem; }
-.preview-actions a { padding: .78rem 1rem; border: 1px solid #657169; color: var(--ivory); text-decoration: none; }
-.preview-actions a:hover, .preview-actions a:focus-visible { background: var(--ivory); color: var(--charcoal); }
-.preview-actions .preview-primary { border-color: var(--brass); background: #e7dcc1; color: #18211e; font-weight: 750; }
-.preview-footnote { margin: 1.4rem 0 0; color: #aeb5aa; font-size: .78rem; letter-spacing: .05em; text-transform: uppercase; }
 
 #field-hud { position: absolute; z-index: 3; inset: 0; pointer-events: none; }
 #reticle { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); border: 1px solid rgba(241,232,208,.82); border-radius: 50%; box-shadow: 0 0 0 2px rgba(23,32,29,.4); }
@@ -153,8 +142,7 @@ h1 { margin: 0; font-size: clamp(2.8rem, 5.4vw, 6.4rem); line-height: .9; letter
 body[data-mode="field"] #title-screen,
 body[data-mode="order"] #title-screen,
 body[data-mode="paused"] #title-screen,
-body[data-mode="asset-error"] #title-screen,
-body[data-mode="preview"] #title-screen,
+body[data-mode="runtime-error"] #title-screen,
 body[data-mode="terminal"] #title-screen,
 body[data-mode="review"] #title-screen { display: none; }
 body[data-mode="field"] #field-hud,
@@ -177,13 +165,6 @@ body[data-contact="true"] #app::after { background: radial-gradient(circle, tran
 @keyframes fieldLoad { from { left: -42%; } to { left: 104%; } }
 @media (prefers-reduced-motion: reduce) { .plate-wing, .loading-track span { animation: none; opacity: .8; } .loading-track span { left: 31%; } }
 @media (max-width: 1100px) { #title-screen { grid-template-columns: 55% 45%; } .glass-plate { width: 52%; } }
-@media (max-width: 900px), (pointer: coarse) and (hover: none) {
-  #preview-gateway { grid-template-columns: 1fr; grid-template-rows: minmax(13rem, 46vh) minmax(0, 1fr); overflow-y: auto; }
-  #preview-video { min-height: 13rem; max-height: 46vh; }
-  .preview-copy { justify-content: flex-start; padding: 1.35rem 1.2rem 2rem; border-left: 0; border-top: 1px solid rgba(176,139,79,.65); }
-  .preview-copy h1 { font-size: clamp(2rem, 9vw, 3.5rem); }
-  .preview-detail { margin: .9rem 0 1.1rem; }
-}
 @media (max-width: 1300px) {
   #context-prompt { left: 1rem; bottom: 4.25rem; max-width: min(21rem, 32vw); transform: rotate(-.45deg); }
   #caption-line { left: auto; right: calc(3vw + 12rem); bottom: 1rem; transform: none; max-width: min(30rem, max(12rem, calc(54vw - 14rem))); }

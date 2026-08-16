@@ -420,9 +420,6 @@ export function createHy3dIguanodonInstance(template, { scale = ADULT_MODEL_SCAL
   const visual = new THREE.Group();
   const model = template.clone(true);
   visual.name = 'subject.iguanodon_family.hy3d_visual';
-  visual.userData.assetVersion = HY3D_IGUANODON_ASSET.version;
-  visual.userData.staticSourceMesh = true;
-  visual.userData.runtimeMorphPose = true;
   visual.userData.speciesHandSilhouette = 'paired-thumb-spikes';
   visual.userData.skinSurface = IGUANODON_SKIN_SURFACE;
   model.name = 'subject.iguanodon_family.hy3d_model';
@@ -471,8 +468,6 @@ export function attachHy3dIguanodonVisual(animal, template) {
   fallbackMeshes.forEach((mesh) => { mesh.visible = false; });
   animal.userData.fallbackMeshes = fallbackMeshes;
   animal.userData.hy3dVisual = visual;
-  animal.userData.visualSource = HY3D_IGUANODON_ASSET.version;
-  animal.userData.visualStaticPose = false;
   return visual;
 }
 

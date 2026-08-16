@@ -121,7 +121,6 @@ function prepareMaterial(material) {
     material.emissiveIntensity = 0.028;
   }
   if (material.normalScale) material.normalScale.multiplyScalar(0.76);
-  material.userData.surface = 'high-roughness-membrane-with-authored-breakup-and-soft-sky-response';
   material.needsUpdate = true;
   return material;
 }
@@ -188,8 +187,6 @@ export function createHy3dPterodactylInstance(template, { scale = MODEL_SCALE } 
   const model = template.clone(true);
   const sourceCenter = new THREE.Vector3().fromArray(template.userData.sourceCenter ?? [0, 0, 0]);
   visual.name = 'threat.pterodactyl.hy3d_visual';
-  visual.userData.assetVersion = HY3D_PTERODACTYL_ASSET.version;
-  visual.userData.runtimeMorphPose = true;
   orientation.name = 'threat.pterodactyl.hy3d_orientation';
   orientation.rotation.y = Math.PI;
   orientation.scale.setScalar(scale);
@@ -226,9 +223,7 @@ export function attachHy3dPterodactylVisual(pterodactyl, template) {
   const visual = createHy3dPterodactylInstance(template);
   pterodactyl.add(visual);
   fallbackMeshes.forEach((mesh) => { mesh.visible = false; });
-  pterodactyl.userData.hy3dFallbackMeshes = fallbackMeshes;
   pterodactyl.userData.hy3dVisual = visual;
-  pterodactyl.userData.visualSource = HY3D_PTERODACTYL_ASSET.version;
   return visual;
 }
 

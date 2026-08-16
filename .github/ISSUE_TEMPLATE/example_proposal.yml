@@ -62,7 +62,7 @@ body:
     id: evidence_plan
     attributes:
       label: Evidence plan / 证据计划
-      description: List source citations, verification command, complete-run path, state/browser/visual checkpoints, and known subjective gates.
+      description: List source citations, one verification command, one complete-run evidence path, and known limitations. Do not add a separate subjective or human-approval gate.
     validations:
       required: true
 

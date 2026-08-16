@@ -1,105 +1,29 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "status": "PASS",
   "verify": {
     "command": "npm run verify",
-    "exitCode": 0,
-    "suites": [
-      {
-        "id": "browser:complete-run",
-        "executed": true,
-        "passed": true
-      }
-    ]
+    "exitCode": 0
   },
   "completeRun": {
-    "id": "current-strong-input-only",
+    "id": "project-plateau-main-path",
     "cleanContext": true,
-    "speed": "normal",
     "evidence": "build/evidence/current-run/report.json",
     "terminal": "strong-field-record",
-    "restart": "clean-field-order",
-    "steps": [
-      {
-        "id": "step_01",
-        "input": "Enter the basin",
-        "expected": "clean 180-second field order",
-        "checkpoint": "current:00-clean-field-order"
-      },
-      {
-        "id": "step_02",
-        "input": "W, E, raise camera and expose the brook plate",
-        "expected": "traversal and first physical proof",
-        "checkpoint": "current:01-strong-brook-frame"
-      },
-      {
-        "id": "step_03",
-        "input": "use cover, reach the glade and expose both behavior plates",
-        "expected": "seven evidence points across four plates",
-        "checkpoint": "current:03-strong-glade-frames"
-      },
-      {
-        "id": "step_04",
-        "input": "retreat under cover until the dive widens",
-        "expected": "covered return route and retained body margin",
-        "checkpoint": "current:04-strong-covered-return"
-      },
-      {
-        "id": "step_05",
-        "input": "follow the covered return to Fort",
-        "expected": "Strong field record with all captured views",
-        "checkpoint": "current:05-strong-input-result"
-      },
-      {
-        "id": "step_06",
-        "input": "Take the route again",
-        "expected": "clean field order with no spent resource or travelled distance",
-        "checkpoint": "current:06-strong-clean-restart"
-      }
-    ]
+    "restart": "clean-field-order"
   },
   "checks": {
-    "launch": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    },
-    "render": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    },
-    "input": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    },
-    "coreLoop": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    },
-    "outcome": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    },
-    "restart": {
-      "status": "PASS",
-      "evidence": [
-        "build/evidence/current-run/report.json"
-      ]
-    }
+    "launch": "PASS",
+    "render": "PASS",
+    "input": "PASS",
+    "coreLoop": "PASS",
+    "outcome": "PASS",
+    "restart": "PASS"
   },
   "limitations": [
     {
       "scope": "tested runtime",
-      "reason": "The recorded run used local desktop Chromium with software-controlled input; other browsers, GPUs and devices were not exercised."
+      "reason": "The run used local desktop Chromium; other browsers, GPUs and devices were not exercised."
     }
   ]
 }

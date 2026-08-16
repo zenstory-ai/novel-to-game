@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
-  <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#607b89"/><stop offset=".55" stop-color="#d6a66d"/><stop offset="1" stop-color="#263d35"/></linearGradient></defs>
-  <rect width="1440" height="900" fill="url(#sky)"/><path d="M0 500L190 390 330 455 475 315 620 460 810 350 1030 440 1210 330 1440 450V900H0Z" fill="#704437" opacity=".72"/>
-  <path d="M0 0H270L360 900H0ZM1440 0H1230L1100 900H1440Z" fill="#132c22"/><path d="M595 900Q690 610 745 470Q790 650 875 900Z" fill="#71968b" opacity=".9"/>
-  <rect x="820" y="95" width="510" height="640" fill="#18231f" opacity=".82"/><text x="875" y="265" fill="#f1e8d0" font-family="Georgia" font-size="78">PROOF</text><text x="875" y="345" fill="#f1e8d0" font-family="Georgia" font-size="78">BEFORE DARK</text>
-  <text x="875" y="415" fill="#d7bd83" font-family="sans-serif" font-size="20" letter-spacing="5">ROUTE BEFORE INTERFACE</text>
-</svg>

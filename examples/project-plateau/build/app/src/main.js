@@ -1,30 +1,16 @@
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import {
   SUN_DIRECTION,
   applyAtmosphereEnvironment,
   createAtmosphere,
 } from './atmosphere.js';
 import { FieldAudio, captionForCue } from './audio.js';
-import {
-  PALETTE,
-  PRODUCT_BUDGET,
-  SCENE_BUDGET,
-  onePercentLowFps,
-  percentile,
-} from './config.js';
 import { applyLookDelta, shouldCaptureGameplayKey } from './controller.js';
-import { DAYLIGHT_ENERGY_PROFILE, daylightEnergyRatios } from './daylight-energy.js';
+import { DAYLIGHT_ENERGY_PROFILE } from './daylight-energy.js';
+import { createFieldLighting } from './field-lighting.js';
+import { createFieldPostprocessing } from './field-postprocessing.js';
 import { createHeightFogController } from './height-fog.js';
 import {
-  CONTACT_OCCLUSION_PROFILE,
-  MAX_RENDER_PIXEL_RATIO,
   QUALITY_PROFILES,
   advanceRenderSchedule,
   qualityRenderPixelRatio,
@@ -32,7 +18,6 @@ import {
   shouldRenderFrame,
 } from './render-budget.js';
 import {
-  SETTINGS_STORAGE_KEY,
   clearSettings,
   loadSettings,
   normalizeSettings,
@@ -42,7 +27,6 @@ import {
   ABANDON_HOLD_SECONDS,
   EXPOSURE_SECONDS,
   abandonPromptDue,
-  collisionContractSnapshot,
   createPlayerState,
   examine,
   fireDefensiveShot,
@@ -56,13 +40,13 @@ import {
   stepPlayer,
 } from './simulation.js';
 import { terrainHeight } from './terrain.js';
-import { PTERODACTYL_ATTACK_CYCLE_SECONDS, createWorld } from './world.js';
-import { showPreviewGateway } from './preview-gateway.js';
-import { hideLoading, loadingScreenSnapshot, showLoading } from './loading-screen.js';
+import { createViewmodelController } from './viewmodel.js';
+import { createWorld } from './world.js';
+import { hideLoading, showLoading } from './loading-screen.js';
 
 const canvas = document.querySelector('#game-canvas');
-const requiredAssetsError = document.querySelector('#required-assets-error');
-const requiredAssetsCopy = document.querySelector('#required-assets-copy');
+const runtimeError = document.querySelector('#runtime-error');
+const runtimeErrorCopy = document.querySelector('#runtime-error-copy');
 const enterButton = document.querySelector('#enter-button');
 const pausePanel = document.querySelector('#pause-panel');
 const pauseLabel = document.querySelector('#pause-label');
@@ -106,7 +90,6 @@ const explicitContext = canvas.getContext('webgl2', {
 });
 
 if (!explicitContext) {
-  showPreviewGateway('webgl2-unavailable');
   throw new Error('WebGL2 is required for Project Plateau.');
 }
 
@@ -134,84 +117,11 @@ const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerH
 const titleCameraPosition = new THREE.Vector3(18, 7.6, 55);
 const titleCameraTarget = new THREE.Vector3(-1, 3.2, -34);
 
-const ambient = new THREE.AmbientLight(
-  0x718889,
-  DAYLIGHT_ENERGY_PROFILE.ambientIntensity,
-);
-const hemisphere = new THREE.HemisphereLight(
-  0x91aaa9,
-  0x2b372e,
-  DAYLIGHT_ENERGY_PROFILE.hemisphereIntensity,
-);
-const sun = new THREE.DirectionalLight(0xffbd70, DAYLIGHT_ENERGY_PROFILE.sunIntensity);
-sun.position.copy(SUN_DIRECTION).multiplyScalar(106);
-sun.target.position.set(1, 0, 10);
-sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -58;
-sun.shadow.camera.right = 58;
-sun.shadow.camera.top = 74;
-sun.shadow.camera.bottom = -74;
-sun.shadow.camera.near = 8;
-sun.shadow.camera.far = 230;
-sun.shadow.bias = -0.00045;
-sun.shadow.normalBias = 0.028;
-sun.shadow.radius = 2.4;
-const gladeFill = new THREE.PointLight(
-  0xe9a85f,
-  DAYLIGHT_ENERGY_PROFILE.gladeBounceIntensity,
-  48,
-  2.05,
-);
-gladeFill.position.set(-4, 13, -18);
-const canopyRim = new THREE.DirectionalLight(
-  0x82b6bc,
-  DAYLIGHT_ENERGY_PROFILE.canopyRimIntensity,
-);
-canopyRim.position.set(32, 24, -36);
-const subjectFill = new THREE.DirectionalLight(
-  0xd8c3a0,
-  DAYLIGHT_ENERGY_PROFILE.subjectFillIntensity,
-);
-subjectFill.position.set(-12, 15, 36);
-subjectFill.target.position.set(1, 2.2, -33);
-const basaltBounce = new THREE.PointLight(
-  0x8a7770,
-  DAYLIGHT_ENERGY_PROFILE.basaltBounceIntensity,
-  56,
-  2.15,
-);
-basaltBounce.position.set(23, 11, -21);
-scene.add(
-  ambient,
-  hemisphere,
-  sun,
-  sun.target,
-  gladeFill,
-  canopyRim,
-  subjectFill,
-  subjectFill.target,
-  basaltBounce,
-);
-
+const { sun } = createFieldLighting(scene);
 const world = createWorld(scene);
 const heightFog = createHeightFogController(camera, SUN_DIRECTION);
 heightFog.applyTo(scene);
 atmosphere.userData.applyCloudShadowsTo(scene);
-const gtaoExcluded = [world.fieldCamera, world.rifle];
-scene.traverse((object) => {
-  if (!object.isMesh && !object.isSprite) return;
-  if (gtaoExcluded.some((root) => root === object || root.getObjectById?.(object.id))) return;
-  if (object.userData.gtaoExcluded) {
-    gtaoExcluded.push(object);
-    return;
-  }
-  const materials = Array.isArray(object.material) ? object.material : [object.material];
-  if (materials.some((material) => material?.transparent || material?.opacity < 1)) {
-    gtaoExcluded.push(object);
-  }
-});
-gtaoExcluded.forEach((object) => { object.userData.gtaoExcluded = true; });
 let hy3dVisualPromise = null;
 function ensureHy3dVisuals() {
   if (!hy3dVisualPromise) {
@@ -229,316 +139,60 @@ function ensureHy3dVisuals() {
   }
   return hy3dVisualPromise;
 }
-const composer = new EffectComposer(renderer);
-composer.setPixelRatio(qualityRenderPixelRatio(window.devicePixelRatio, presentationSettings.quality));
-composer.setSize(window.innerWidth, window.innerHeight);
-composer.addPass(new RenderPass(scene, camera));
-const gtaoPass = new GTAOPass(
+const {
+  composer,
+  gtaoPass,
+  fxaaPass,
+  smaaPass,
+} = createFieldPostprocessing({
+  renderer,
   scene,
   camera,
-  window.innerWidth,
-  window.innerHeight,
-  undefined,
-  {
-    radius: CONTACT_OCCLUSION_PROFILE.radiusMeters,
-    distanceExponent: CONTACT_OCCLUSION_PROFILE.distanceExponent,
-    thickness: CONTACT_OCCLUSION_PROFILE.thicknessMeters,
-    distanceFallOff: CONTACT_OCCLUSION_PROFILE.distanceFallOff,
-    scale: CONTACT_OCCLUSION_PROFILE.scale,
-    samples: CONTACT_OCCLUSION_PROFILE.samples,
-    screenSpaceRadius: false,
-  },
-  CONTACT_OCCLUSION_PROFILE.denoise,
-);
-const renderGtao = gtaoPass.render.bind(gtaoPass);
-gtaoPass.render = (...args) => {
-  const visibility = gtaoExcluded.map((object) => object.visible);
-  gtaoExcluded.forEach((object) => { object.visible = false; });
-  try {
-    return renderGtao(...args);
-  } finally {
-    gtaoExcluded.forEach((object, index) => { object.visible = visibility[index]; });
-  }
-};
-gtaoPass.blendIntensity = CONTACT_OCCLUSION_PROFILE.blendIntensity;
-gtaoPass.userData = {
-  radiusMeters: CONTACT_OCCLUSION_PROFILE.radiusMeters,
-  role: CONTACT_OCCLUSION_PROFILE.role,
-};
-composer.addPass(gtaoPass);
-const fieldGradePass = new ShaderPass({
-  name: 'ProjectPlateauFieldGrade',
-  uniforms: {
-    tDiffuse: { value: null },
-  },
-  vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    varying vec2 vUv;
-    uniform sampler2D tDiffuse;
-
-    float fieldHash(vec2 p) {
-      return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
-    }
-
-    void main() {
-      vec4 source = texture2D(tDiffuse, vUv);
-      float luma = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-      vec3 color = mix(vec3(luma), source.rgb, 1.035);
-      float shadowWeight = 1.0 - smoothstep(0.12, 0.52, luma);
-      float highlightWeight = smoothstep(0.46, 0.9, luma);
-      color = mix(color, color * vec3(0.94, 1.0, 1.045), shadowWeight * 0.045);
-      color = mix(color, color * vec3(1.035, 1.0, 0.955), highlightWeight * 0.03);
-      vec2 centred = (vUv - 0.5) * vec2(1.0, 0.82);
-      float vignette = smoothstep(0.34, 0.76, dot(centred, centred));
-      color *= 1.0 - vignette * 0.055;
-      float grain = fieldHash(gl_FragCoord.xy) - 0.5;
-      color += grain * 0.002;
-      gl_FragColor = vec4(max(color, 0.0), source.a);
-    }
-  `,
+  excludedRoots: [world.fieldCamera, world.rifle],
+  width: window.innerWidth,
+  height: window.innerHeight,
+  pixelRatio: qualityRenderPixelRatio(window.devicePixelRatio, presentationSettings.quality),
 });
-fieldGradePass.material.name = 'Project Plateau restrained field grade';
-composer.addPass(fieldGradePass);
-const fxaaPass = new ShaderPass(FXAAShader);
-fxaaPass.material.name = 'Project Plateau single-pass FXAA';
-composer.addPass(fxaaPass);
-const smaaPass = new SMAAPass(window.innerWidth, window.innerHeight);
-smaaPass.name = 'Project Plateau balanced/high SMAA';
-composer.addPass(smaaPass);
-composer.addPass(new OutputPass());
 scene.add(camera);
 camera.add(world.fieldCamera);
 camera.add(world.rifle);
-const FIELD_CAMERA_VIEWMODEL = Object.freeze({
-  position: Object.freeze([0.59, -0.91, -1.52]),
-  rotation: Object.freeze([-0.14, 0.16, -0.065]),
-  scale: 0.39,
+const viewmodel = createViewmodelController({
+  fieldCamera: world.fieldCamera,
+  rifle: world.rifle,
 });
-const RIFLE_VIEWMODEL = Object.freeze({
-  position: Object.freeze([0.72, -0.91, -1.14]),
-  rotation: Object.freeze([-0.025, 0.15, -0.09]),
-  scale: 0.205,
-});
-world.fieldCamera.position.fromArray(FIELD_CAMERA_VIEWMODEL.position);
-world.fieldCamera.rotation.set(...FIELD_CAMERA_VIEWMODEL.rotation);
-world.fieldCamera.scale.setScalar(FIELD_CAMERA_VIEWMODEL.scale);
-world.rifle.position.fromArray(RIFLE_VIEWMODEL.position);
-world.rifle.rotation.set(...RIFLE_VIEWMODEL.rotation);
-world.rifle.scale.setScalar(RIFLE_VIEWMODEL.scale);
 const clock = new THREE.Clock();
 const fieldAudio = new FieldAudio();
 const pressed = new Set();
 let jumpQueued = false;
 let player = createPlayerState();
-let pointerLockStatus = 'idle';
-let pointerLockError = null;
 let smoothedEyeHeight = 3.45;
 let lastCameraMotionAt = null;
 let runActive = false;
 let cameraMode = 'title';
-let visualReviewOrbit = null;
-let frameSamples = [];
-let lastFrame = performance.now();
-let lastRenderedAt = 0;
 let renderScheduleAt = 0;
 let renderedFrameCount = 0;
-let skippedFrameCount = 0;
 let firstRenderedAt = null;
 let visualElapsed = 0;
-let visualTimeFrozen = false;
-let visualThreatOverride = null;
-let environmentReviewShot = null;
 
-const ENVIRONMENT_REVIEW_SHOTS = Object.freeze({
-  brook: Object.freeze({
-    position: Object.freeze([8.5, 5.45, 52]),
-    target: Object.freeze([-10.5, 1.8, 16]),
-    fov: 52,
-  }),
-  brookDetail: Object.freeze({
-    position: Object.freeze([2, 1, 43]),
-    target: Object.freeze([-9, -1.2, 31]),
-    fov: 48,
-  }),
-  brookObstacleDetail: Object.freeze({
-    position: Object.freeze([-5.2, 0.3, 41.3]),
-    target: Object.freeze([-9.7, -1.3, 36.7]),
-    fov: 34,
-  }),
-  brookSurfaceProfileDetail: Object.freeze({
-    position: Object.freeze([-5.8, -0.6, 38.3]),
-    target: Object.freeze([-9.6, -1.35, 35.4]),
-    fov: 42,
-  }),
-  boulderDetail: Object.freeze({
-    position: Object.freeze([-2.8, 0.25, 39.8]),
-    target: Object.freeze([-7.5, -0.86, 35]),
-    fov: 40,
-  }),
-  fernDetail: Object.freeze({
-    position: Object.freeze([-40.4, 1.25, 53.7]),
-    target: Object.freeze([-43.35, 0.66, 51]),
-    fov: 32,
-  }),
-  groundCoverDetail: Object.freeze({
-    position: Object.freeze([-23.1, 0.9, 66.2]),
-    target: Object.freeze([-20, 0.18, 63.1]),
-    fov: 30,
-  }),
-  detritusDetail: Object.freeze({
-    position: Object.freeze([-19.4, 1.28, 59.1]),
-    target: Object.freeze([-24.8, 0.05, 53.1]),
-    fov: 37,
-  }),
-  bryophyteDetail: Object.freeze({
-    position: Object.freeze([55, 1.7, 36]),
-    target: Object.freeze([43, 0.3, 30]),
-    fov: 30,
-  }),
-  routeSurfaceDetail: Object.freeze({
-    position: Object.freeze([17.4, 1.35, 28.8]),
-    target: Object.freeze([8.2, -0.35, 13.4]),
-    fov: 39,
-  }),
-  treeFernDetail: Object.freeze({
-    position: Object.freeze([-17.8, 2.35, 59.4]),
-    target: Object.freeze([-25, 2.05, 53]),
-    fov: 39,
-  }),
-  canopyTreeDetail: Object.freeze({
-    position: Object.freeze([-8.6, 3.25, 59.2]),
-    target: Object.freeze([-15.9, 3.35, 51.8]),
-    fov: 41,
-  }),
-  coverDetail: Object.freeze({
-    position: Object.freeze([2.5, 4.15, 36.5]),
-    target: Object.freeze([-14.2, 3.35, 9.5]),
-    fov: 44,
-  }),
-  gingko: Object.freeze({
-    position: Object.freeze([30, 6.4, 51]),
-    target: Object.freeze([16, 5.4, 37]),
-    fov: 48,
-  }),
-  gingkoRoot: Object.freeze({
-    position: Object.freeze([21.8, 0.35, 42.2]),
-    target: Object.freeze([16, -0.72, 37]),
-    fov: 46,
-  }),
-  basalt: Object.freeze({
-    position: Object.freeze([29, 7.4, 20]),
-    target: Object.freeze([14, 3.8, -17]),
-    fov: 49,
-  }),
-  basaltDetail: Object.freeze({
-    position: Object.freeze([19, 6, 15]),
-    target: Object.freeze([36.5, 5, -5]),
-    fov: 48,
-  }),
-  terrainDetail: Object.freeze({
-    position: Object.freeze([13, 4.2, 8]),
-    target: Object.freeze([23.5, 2.5, -3]),
-    fov: 48,
-  }),
-  escarpmentDetail: Object.freeze({
-    position: Object.freeze([19, 1.2, 8]),
-    target: Object.freeze([31.6, 2, -3]),
-    fov: 44,
-  }),
-  escarpmentSlopeDetail: Object.freeze({
-    position: Object.freeze([18, 2.2, -14]),
-    target: Object.freeze([31.4, 1.15, -26]),
-    fov: 40,
-  }),
-  glade: Object.freeze({
-    position: Object.freeze([17.5, 6.1, -1]),
-    target: Object.freeze([1, 2.9, -34]),
-    fov: 47,
-  }),
-  ridgeVolume: Object.freeze({
-    position: Object.freeze([-20, 12, 46]),
-    target: Object.freeze([-20, 5, -164]),
-    fov: 46,
-  }),
-  forestBoundaryDetail: Object.freeze({
-    position: Object.freeze([0, 7.5, -44]),
-    target: Object.freeze([0, 4.2, -100]),
-    fov: 44,
-  }),
-});
-let visualThreatPose = null;
-let visualPterodactylMorphPose = null;
 let boundaryNoticeUntil = 0;
 let observedBoundaryRecoveries = 0;
 let observationNoticeUntil = 0;
 let contactNoticeUntil = 0;
 let captionNoticeUntil = 0;
-let observedViewmodelShotCount = 0;
-let rifleRecoilStartedAt = -Infinity;
 
 const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
 let plateImages = Array(ROMAN_PLATES.length).fill(null);
 let plateCaptureGeneration = 0;
 let pendingPlateCapture = null;
-let plateCaptureStatus = 'idle';
-let plateCaptureDurationMs = null;
-let plateCaptureError = null;
 
 function applyPlateImage(element, image) {
   element.dataset.captured = image ? 'true' : 'false';
   element.style.backgroundImage = image ? `url("${image}")` : '';
 }
 
-function updateViewmodelPose(now) {
-  if ((player.shotCount ?? 0) > observedViewmodelShotCount) {
-    observedViewmodelShotCount = player.shotCount;
-    rifleRecoilStartedAt = now;
-  }
-  const speed = Math.hypot(player.velocity?.x ?? 0, player.velocity?.z ?? 0);
-  const moving = speed > 0.08 && !player.paused;
-  const motion = moving && !reducedMotion ? Math.min(1, speed / 5.2) : 0;
-  const phase = player.distanceTravelled * 3.2;
-  const horizontal = Math.cos(phase * 0.5) * 0.012 * motion;
-  const vertical = Math.sin(phase) * 0.014 * motion;
-  const recoilAge = Math.max(0, now - rifleRecoilStartedAt);
-  const recoil = recoilAge < 150
-    ? Math.sin((recoilAge / 150) * Math.PI) * (1 - recoilAge / 150)
-    : 0;
-
-  world.fieldCamera.position.set(
-    FIELD_CAMERA_VIEWMODEL.position[0] + horizontal,
-    FIELD_CAMERA_VIEWMODEL.position[1] + vertical,
-    FIELD_CAMERA_VIEWMODEL.position[2],
-  );
-  world.fieldCamera.rotation.set(
-    FIELD_CAMERA_VIEWMODEL.rotation[0] + vertical * 0.35,
-    FIELD_CAMERA_VIEWMODEL.rotation[1] - horizontal * 0.55,
-    FIELD_CAMERA_VIEWMODEL.rotation[2] + horizontal * 0.8,
-  );
-  world.rifle.position.set(
-    RIFLE_VIEWMODEL.position[0] + horizontal * 0.65,
-    RIFLE_VIEWMODEL.position[1] + vertical * 0.75 - recoil * 0.015,
-    RIFLE_VIEWMODEL.position[2] + recoil * 0.08,
-  );
-  world.rifle.rotation.set(
-    RIFLE_VIEWMODEL.rotation[0] + vertical * 0.24 + recoil * 0.045,
-    RIFLE_VIEWMODEL.rotation[1] - horizontal * 0.4,
-    RIFLE_VIEWMODEL.rotation[2] + horizontal * 0.62,
-  );
-}
-
 function clearPlateImages() {
   plateCaptureGeneration += 1;
   pendingPlateCapture = null;
-  plateCaptureStatus = 'idle';
-  plateCaptureDurationMs = null;
-  plateCaptureError = null;
   plateImages = Array(ROMAN_PLATES.length).fill(null);
   applyPlateImage(previewImage, null);
   terminalBoardSlots.forEach((slot) => applyPlateImage(slot, null));
@@ -594,27 +248,16 @@ function queuePlateCapture(plateIndex) {
   pendingPlateCapture = {
     plateIndex,
     generation: plateCaptureGeneration,
-    requestedAt: performance.now(),
   };
-  plateCaptureStatus = 'queued';
-  plateCaptureError = null;
 }
 
 function encodeRenderedPlate(capture) {
-  plateCaptureStatus = 'encoding';
   canvas.toBlob((blob) => {
-    if (!blob) {
-      plateCaptureStatus = 'error';
-      plateCaptureError = 'The rendered plate could not be encoded.';
-      return;
-    }
+    if (!blob) return;
     const reader = new FileReader();
     reader.addEventListener('loadend', () => {
       if (capture.generation !== plateCaptureGeneration) return;
       plateImages[capture.plateIndex] = typeof reader.result === 'string' ? reader.result : null;
-      plateCaptureDurationMs = Number((performance.now() - capture.requestedAt).toFixed(2));
-      plateCaptureStatus = plateImages[capture.plateIndex] ? 'ready' : 'error';
-      if (plateCaptureStatus === 'error') plateCaptureError = 'The rendered plate was empty.';
     }, { once: true });
     reader.readAsDataURL(blob);
   }, 'image/jpeg', 0.8);
@@ -719,8 +362,7 @@ function updateFieldHud(now) {
   const controlsLearned = player.distanceTravelled >= 5
     || player.position.z < 60
     || player.threatAwareness >= 1
-    || cameraMode === 'glade'
-    || visualThreatOverride !== null;
+    || cameraMode === 'glade';
   controlHint.hidden = player.zone === 'brook-blind' || controlsLearned;
 
   cameraOverlay.hidden = !player.cameraRaised;
@@ -782,7 +424,7 @@ function updateFieldHud(now) {
     && !player.cameraRaised
     && !player.caseAbandoned;
   world.rifle.visible = runActive && !player.failed && player.rifleRaised;
-  updateViewmodelPose(now);
+  viewmodel.update(now, player, reducedMotion);
 }
 
 function setCameraToPlayer(now = performance.now()) {
@@ -823,8 +465,6 @@ function setCameraToPlayer(now = performance.now()) {
 }
 
 function setView(view) {
-  visualReviewOrbit = null;
-  environmentReviewShot = null;
   world.family.forEach((animal) => { animal.visible = true; });
   world.pterodactyls.forEach((animal) => { animal.visible = true; });
   cameraMode = view;
@@ -852,35 +492,6 @@ function setView(view) {
   camera.updateProjectionMatrix();
 }
 
-function setEnvironmentReviewCamera() {
-  if (!environmentReviewShot) return;
-  const review = ENVIRONMENT_REVIEW_SHOTS[environmentReviewShot];
-  camera.position.fromArray(review.position);
-  camera.lookAt(new THREE.Vector3(...review.target));
-  camera.fov = review.fov;
-  camera.updateProjectionMatrix();
-}
-
-function setVisualReviewOrbitCamera() {
-  if (!visualReviewOrbit) return;
-  const isIguanodon = visualReviewOrbit.subject === 'iguanodon';
-  const subject = isIguanodon ? world.family[0] : world.pterodactyls[0];
-  const target = subject.getWorldPosition(new THREE.Vector3());
-  target.y += isIguanodon ? 2.15 * subject.scale.y : 0.1;
-  const angle = THREE.MathUtils.degToRad(visualReviewOrbit.angleDegrees);
-  const pterodactylWingView = Math.abs(Math.sin(angle)) > 0.7;
-  const radius = isIguanodon ? 13.2 : pterodactylWingView ? 11.8 : 10.4;
-  const lift = isIguanodon ? 2.15 : pterodactylWingView ? 1.2 : 1.05;
-  camera.position.set(
-    target.x + Math.sin(angle) * radius,
-    target.y + lift,
-    target.z + Math.cos(angle) * radius,
-  );
-  camera.lookAt(target);
-  camera.fov = isIguanodon ? 44 : 50;
-  camera.updateProjectionMatrix();
-}
-
 function inputSnapshot() {
   const snapshot = {
     forward: Number(pressed.has('KeyW')) - Number(pressed.has('KeyS')),
@@ -902,22 +513,18 @@ function clearTransientInput() {
   player = releaseTransientTools(player);
 }
 
-function pointerLockUnavailable(error) {
-  pointerLockStatus = 'unavailable';
-  pointerLockError = error instanceof Error ? error.message : String(error || 'Pointer lock unavailable');
+function pointerLockUnavailable() {
   const qaMode = query.get('qa');
   if (qaMode && qaMode !== 'pointer-lock-rejection') return;
   if (runActive && !player.paused) pauseRun('pointer-lock-unavailable');
 }
 
 function requestFieldPointerLock() {
-  pointerLockStatus = 'requesting';
-  pointerLockError = null;
   try {
     const request = canvas.requestPointerLock();
     request?.catch?.(pointerLockUnavailable);
-  } catch (error) {
-    pointerLockUnavailable(error);
+  } catch {
+    pointerLockUnavailable();
   }
 }
 
@@ -1029,24 +636,14 @@ function resumeRun() {
 }
 
 function worldRuntime(deltaSeconds = 0) {
-  const threatAwareness = visualThreatOverride ?? player.threatAwareness;
-  const attackSeconds = visualThreatOverride === null
-    ? player.attackSeconds
-    : visualThreatPose === 'dive'
-      ? 1.1
-      : visualElapsed % PTERODACTYL_ATTACK_CYCLE_SECONDS;
   return {
-    threatAwareness,
-    attackSeconds,
+    threatAwareness: player.threatAwareness,
+    attackSeconds: player.attackSeconds,
     playerPosition: player.position,
     shotCount: player.shotCount,
     brookResponse: player.brookResponse,
     inCover: player.inCover,
-    familyMoment: visualThreatPose === 'family'
-      ? 'glade-young-play'
-      : player.pendingExposure?.key ?? null,
-    captureThreatPose: visualThreatPose,
-    pterodactylMorphPose: visualPterodactylMorphPose,
+    familyMoment: player.pendingExposure?.key ?? null,
     quality: presentationSettings.quality,
     deltaSeconds,
   };
@@ -1087,14 +684,14 @@ function update(deltaSeconds, now) {
         : 'CASE STRIKE — THE NEXT PASS WILL END THE RUN.';
     }
     if (previousRunStatus === 'active' && player.runStatus !== 'active') presentTerminal();
-    if (!visualTimeFrozen) visualElapsed += deltaSeconds;
+    visualElapsed += deltaSeconds;
   } else if (!runActive && cameraMode !== 'terminal') {
-    if (!visualTimeFrozen) visualElapsed += deltaSeconds;
+    visualElapsed += deltaSeconds;
   }
   world.update(
     visualElapsed,
     reducedMotion || player.paused || cameraMode === 'terminal',
-    worldRuntime(visualTimeFrozen ? 0 : deltaSeconds),
+    worldRuntime(deltaSeconds),
   );
   atmosphere.userData.update(
     visualElapsed,
@@ -1102,8 +699,6 @@ function update(deltaSeconds, now) {
     presentationSettings.quality,
   );
 
-  if (cameraMode === 'visual-review-orbit') setVisualReviewOrbitCamera();
-  if (cameraMode === 'environment-review') setEnvironmentReviewCamera();
 
   if (cameraMode === 'field' || cameraMode === 'order') {
     setCameraToPlayer(now);
@@ -1122,12 +717,10 @@ function animate(frameTime) {
     activeFps: QUALITY_PROFILES[presentationSettings.quality].activeFps,
   });
   if (!shouldRenderFrame(frameTime, renderScheduleAt, renderInterval)) {
-    skippedFrameCount += 1;
     requestAnimationFrame(animate);
     return;
   }
   renderScheduleAt = advanceRenderSchedule(frameTime, renderScheduleAt, renderInterval);
-  lastRenderedAt = frameTime;
   const deltaSeconds = Math.min(clock.getDelta(), 0.05);
   const now = performance.now();
   update(deltaSeconds, now);
@@ -1153,9 +746,6 @@ function animate(frameTime) {
     world.rifle.visible = rifleWasVisible;
   }
   renderedFrameCount += 1;
-  frameSamples.push(now - lastFrame);
-  if (frameSamples.length > 360) frameSamples.shift();
-  lastFrame = now;
   firstRenderedAt ??= now;
   requestAnimationFrame(animate);
 }
@@ -1186,7 +776,7 @@ function closePanels() {
 
 async function enterBasin() {
   closePanels();
-  requiredAssetsError.hidden = true;
+  runtimeError.hidden = true;
   enterButton.disabled = true;
   showLoading('Preparing field camera, rifle and wildlife…', 'assets');
   try {
@@ -1199,19 +789,20 @@ async function enterBasin() {
     hideLoading();
     clearTransientInput();
     runActive = false;
-    requiredAssetsCopy.textContent = error instanceof Error
+    runtimeErrorCopy.textContent = error instanceof Error
       ? error.message
       : 'A required local 3D asset could not be loaded.';
     document.querySelector('#field-order').hidden = true;
-    requiredAssetsError.hidden = false;
-    document.body.dataset.mode = 'asset-error';
+    document.querySelector('#retry-runtime').hidden = false;
+    runtimeError.hidden = false;
+    document.body.dataset.mode = 'runtime-error';
   } finally {
     enterButton.disabled = false;
   }
 }
 
 enterButton.addEventListener('click', enterBasin);
-document.querySelector('#retry-assets').addEventListener('click', enterBasin);
+document.querySelector('#retry-runtime').addEventListener('click', enterBasin);
 document.querySelector('#dismiss-order').addEventListener('click', () => {
   document.querySelector('#field-order').hidden = true;
   beginRun();
@@ -1339,17 +930,14 @@ document.addEventListener('mousemove', (event) => {
 });
 document.addEventListener('pointerlockchange', () => {
   if (document.pointerLockElement === canvas) {
-    pointerLockStatus = 'locked';
-    pointerLockError = null;
     return;
   }
   if (runActive && !player.paused && document.pointerLockElement !== canvas) {
-    pointerLockStatus = 'lost';
     pauseRun('pointer-lock');
   }
 });
 document.addEventListener('pointerlockerror', () => {
-  pointerLockUnavailable(new Error('The browser denied pointer lock. Click Resume field work to retry.'));
+  pointerLockUnavailable();
 });
 canvas.addEventListener('click', () => {
   if (runActive && !player.paused && cameraMode === 'field') requestFieldPointerLock();
@@ -1358,91 +946,6 @@ window.addEventListener('blur', () => pauseRun('window-inactive'));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pauseRun('window-inactive');
 });
-
-async function sampleFrames(count = 180) {
-  const samples = [];
-  let previousRenderAt = null;
-  let observedFrameCount = renderedFrameCount;
-  await new Promise((resolve) => {
-    const take = () => {
-      if (renderedFrameCount !== observedFrameCount) {
-        if (previousRenderAt !== null) samples.push(lastRenderedAt - previousRenderAt);
-        previousRenderAt = lastRenderedAt;
-        observedFrameCount = renderedFrameCount;
-      }
-      if (samples.length >= count) resolve();
-      else requestAnimationFrame(take);
-    };
-    requestAnimationFrame(take);
-  });
-  const p50Ms = percentile(samples, 0.5);
-  const lowFps = onePercentLowFps(samples);
-  return {
-    samples: samples.length,
-    medianFrameMs: Number(p50Ms.toFixed(2)),
-    medianFps: Number((1000 / p50Ms).toFixed(1)),
-    onePercentLowFps: Number(lowFps.toFixed(1)),
-    worstFrameMs: Number(Math.max(...samples).toFixed(2)),
-  };
-}
-
-function frameHealthForTest() {
-  if (!query.has('qa')) throw new Error('frameHealthForTest requires a qa query');
-  composer.render();
-  const gl = renderer.getContext();
-  const crop = [0.04, 0.04, 0.84, 0.8];
-  const x = Math.floor(gl.drawingBufferWidth * crop[0]);
-  const y = Math.floor(gl.drawingBufferHeight * (1 - crop[3]));
-  const width = Math.max(1, Math.floor(gl.drawingBufferWidth * (crop[2] - crop[0])));
-  const height = Math.max(1, Math.floor(gl.drawingBufferHeight * (crop[3] - crop[1])));
-  const pixels = new Uint8Array(width * height * 4);
-  gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-  const histogram = new Uint32Array(256);
-  let lumaTotal = 0;
-  for (let index = 0; index < pixels.length; index += 4) {
-    const luma = Math.round(
-      pixels[index] * 0.2126 + pixels[index + 1] * 0.7152 + pixels[index + 2] * 0.0722,
-    );
-    histogram[luma] += 1;
-    lumaTotal += luma;
-  }
-  const sampleCount = width * height;
-  const histogramTotal = (start, end) => {
-    let total = 0;
-    for (let value = start; value < end; value += 1) total += histogram[value];
-    return total;
-  };
-  const histogramPercentile = (fraction) => {
-    const target = sampleCount * fraction;
-    let total = 0;
-    for (let value = 0; value < histogram.length; value += 1) {
-      total += histogram[value];
-      if (total >= target) return value;
-    }
-    return 255;
-  };
-  const meanLuma = lumaTotal / sampleCount;
-  const p05 = histogramPercentile(0.05);
-  const p95 = histogramPercentile(0.95);
-  const deepShadowRatio = histogramTotal(0, 18) / sampleCount;
-  const clippedHighlightRatio = histogramTotal(246, 256) / sampleCount;
-  const passed = meanLuma >= 38
-    && meanLuma <= 165
-    && p95 - p05 >= 58
-    && deepShadowRatio <= 0.22
-    && clippedHighlightRatio <= 0.01;
-  return {
-    passed,
-    crop,
-    meanLuma: Number(meanLuma.toFixed(2)),
-    p05,
-    p95,
-    dynamicRange: p95 - p05,
-    deepShadowRatio: Number(deepShadowRatio.toFixed(5)),
-    clippedHighlightRatio: Number(clippedHighlightRatio.toFixed(5)),
-    scope: 'mechanical framebuffer exposure/readability guard; not a subjective quality score',
-  };
-}
 
 function playerSnapshot() {
   return {
@@ -1475,256 +978,19 @@ window.__projectPlateau = {
   stage: 'current-complete-run',
   ready: true,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
-  productBudget: PRODUCT_BUDGET,
-  sceneBudget: SCENE_BUDGET,
-  setView,
-  sampleFrames,
-  frameHealthForTest,
-  renderFrameForTest() {
-    if (!query.has('qa')) throw new Error('renderFrameForTest requires a qa query');
-    composer.render();
-    return true;
-  },
-  loadHy3dVisualsForTest() {
-    if (!query.has('qa')) throw new Error('loadHy3dVisualsForTest requires a qa query');
-    return ensureHy3dVisuals();
-  },
-  loadingSnapshot() {
-    const navigation = performance.getEntriesByType('navigation')[0];
-    return {
-      timeToFirstFrameMs: firstRenderedAt === null ? null : Number(firstRenderedAt.toFixed(2)),
-      domInteractiveMs: navigation ? Number(navigation.domInteractive.toFixed(2)) : null,
-      loadEventMs: navigation ? Number(navigation.loadEventEnd.toFixed(2)) : null,
-      resourceCount: performance.getEntriesByType('resource').length,
-      ui: loadingScreenSnapshot(),
-    };
-  },
-  pause: pauseRun,
-  resume: resumeRun,
-  restart: beginRun,
-  plateImageForTest(index) {
-    if (!query.has('qa')) throw new Error('plateImageForTest requires a qa query');
-    return plateImages[index] ?? null;
-  },
-  setVisualReviewOrbitForTest({ subject, angleDegrees = 0 }) {
-    if (!query.has('qa')) throw new Error('setVisualReviewOrbitForTest requires a qa query');
-    if (subject !== 'iguanodon' && subject !== 'pterodactyl') {
-      throw new Error(`Unsupported visual-review subject: ${subject}`);
-    }
-    visualReviewOrbit = { subject, angleDegrees: Number(angleDegrees) || 0 };
-    cameraMode = 'visual-review-orbit';
-    document.body.dataset.mode = 'review';
-    document.body.dataset.camera = 'folded';
-    document.body.dataset.rifle = 'lowered';
-    fieldHud.hidden = true;
-    world.fieldCamera.visible = false;
-    world.rifle.visible = false;
-    world.family.forEach((animal, index) => { animal.visible = subject === 'iguanodon' && index === 0; });
-    world.pterodactyls.forEach((animal, index) => { animal.visible = subject === 'pterodactyl' && index === 0; });
-    setVisualReviewOrbitCamera();
-    return { ...visualReviewOrbit };
-  },
-  setEnvironmentReviewForTest({ shot }) {
-    if (!query.has('qa')) throw new Error('setEnvironmentReviewForTest requires a qa query');
-    if (!Object.hasOwn(ENVIRONMENT_REVIEW_SHOTS, shot)) {
-      throw new Error(`Unsupported environment-review shot: ${shot}`);
-    }
-    visualReviewOrbit = null;
-    environmentReviewShot = shot;
-    cameraMode = 'environment-review';
-    document.body.dataset.mode = 'review';
-    document.body.dataset.camera = 'folded';
-    document.body.dataset.rifle = 'lowered';
-    fieldHud.hidden = true;
-    world.fieldCamera.visible = false;
-    world.rifle.visible = false;
-    world.family.forEach((animal) => { animal.visible = true; });
-    world.pterodactyls.forEach((animal) => { animal.visible = true; });
-    visualElapsed = 14.75;
-    visualTimeFrozen = true;
-    world.update(visualElapsed, reducedMotion, worldRuntime(0));
-    atmosphere.userData.update(visualElapsed, reducedMotion, presentationSettings.quality);
-    setEnvironmentReviewCamera();
-    return {
-      shot,
-      position: [...ENVIRONMENT_REVIEW_SHOTS[shot].position],
-      target: [...ENVIRONMENT_REVIEW_SHOTS[shot].target],
-      fov: ENVIRONMENT_REVIEW_SHOTS[shot].fov,
-    };
-  },
-  setPterodactylMorphPoseForTest(pose = {}) {
-    if (!query.has('qa')) throw new Error('setPterodactylMorphPoseForTest requires a qa query');
-    const normalized = Object.fromEntries(['wingUp', 'wingDown', 'diveFold'].map((target) => (
-      [target, THREE.MathUtils.clamp(Number(pose[target]) || 0, 0, 1)]
-    )));
-    visualPterodactylMorphPose = normalized;
-    visualTimeFrozen = true;
-    world.update(visualElapsed, reducedMotion, worldRuntime(0));
-    if (cameraMode === 'visual-review-orbit') setVisualReviewOrbitCamera();
-    return normalized;
-  },
-  teleportForTest(position) {
-    if (!query.has('qa')) throw new Error('teleportForTest requires a qa query');
-    player.position = { x: position.x, z: position.z };
-    player.lastStablePosition = { ...player.position };
-    player.groundY = terrainHeight(player.position.x, player.position.z);
-    player.verticalOffset = 0;
-    player.verticalVelocity = 0;
-    player.grounded = true;
-    player.velocity = { x: 0, z: 0 };
-    if (Number.isFinite(position.heading)) player.heading = position.heading;
-    if (Number.isFinite(position.pitch)) player.pitch = position.pitch;
-    setCameraToPlayer();
-  },
-  advanceTimeForTest(seconds) {
-    if (!query.has('qa')) throw new Error('advanceTimeForTest requires a qa query');
-    let remaining = Math.max(0, Number(seconds) || 0);
-    while (remaining > 0 && player.runStatus === 'active') {
-      const delta = Math.min(1, remaining);
-      player = stepPlayer(player, {}, delta);
-      remaining -= delta;
-    }
-    if (player.runStatus !== 'active') presentTerminal();
-    return playerSnapshot();
-  },
-  freezeVisualForTest(seconds = 4.25, useReducedMotion = true) {
-    if (!query.has('qa')) throw new Error('freezeVisualForTest requires a qa query');
-    visualElapsed = Math.max(0, Number(seconds) || 0);
-    visualTimeFrozen = true;
-    world.update(visualElapsed, Boolean(useReducedMotion), worldRuntime(0));
-    return visualElapsed;
-  },
-  setThreatVisualForTest(awareness = null, pose = null) {
-    if (!query.has('qa')) throw new Error('setThreatVisualForTest requires a qa query');
-    visualThreatOverride = awareness === null
-      ? null
-      : Math.max(0, Math.min(3, Number(awareness) || 0));
-    visualThreatPose = pose;
-    world.update(visualElapsed, true, worldRuntime(0));
-    return visualThreatOverride;
-  },
   snapshot() {
-    camera.updateMatrixWorld();
-    const cameraForward = camera.getWorldDirection(new THREE.Vector3());
     return {
       stage: this.stage,
       mode: document.body.dataset.mode,
       cameraMode,
-      visualReviewOrbit,
-      environmentReviewShot,
       runActive,
-      pointerLock: {
-        active: document.pointerLockElement === canvas,
-        status: pointerLockStatus,
-        error: pointerLockError,
-        cameraForward: {
-          x: Number(cameraForward.x.toFixed(4)),
-          y: Number(cameraForward.y.toFixed(4)),
-          z: Number(cameraForward.z.toFixed(4)),
-        },
-      },
       renderer: this.renderer,
       player: playerSnapshot(),
-      threatVisual: world.threatSnapshot(),
-      familyVisual: world.familySnapshot(),
-      brookResponseVisual: world.brookResponseSnapshot(),
-      assets: {
-        ...world.assetSnapshot(),
-        cloudField: atmosphere.userData.cloudFieldSnapshot(),
-        ridgeForest: atmosphere.userData.ridgeForestSnapshot(),
-      },
-      collision: collisionContractSnapshot(),
-      audio: fieldAudio.snapshot(),
-      presentationSettings: {
-        ...presentationSettings,
-        volumes: { ...presentationSettings.volumes },
-        storageKey: SETTINGS_STORAGE_KEY,
-      },
-      ui: {
-        prompt: contextPrompt.hidden ? null : contextPrompt.textContent,
-        cameraOverlay: !cameraOverlay.hidden,
-        rifleOverlay: player.rifleRaised && world.rifle.visible,
-        plateRail: !plateRail.hidden,
-        platePreview: platePreview.hidden ? null : previewCopy.textContent,
-        capturedPlateImages: plateImages.map(Boolean),
-        fieldNote: fieldNote.hidden ? null : fieldNote.textContent,
-        contactNote: contactNote.hidden ? null : contactNote.textContent,
-        cartridgesVisible: !cartridgeDisplay.hidden,
-        caption: captionLine.hidden ? null : captionLine.textContent,
-        lightWatch: lightWatch.hidden ? null : Number(lightSeconds.textContent),
-        terminal: terminalPanel.hidden
-          ? null
-          : {
-              kind: terminalPanel.dataset.kind,
-              title: terminalTitle.textContent,
-              copy: terminalResultCopy.textContent,
-              detail: terminalDetail.textContent,
-              callback: terminalCallback.hidden ? null : terminalCallback.textContent,
-            },
-      },
-      plateCapture: {
-        status: plateCaptureStatus,
-        durationMs: plateCaptureDurationMs,
-        error: plateCaptureError,
-      },
       sceneChildren: scene.children.length,
-      calls: renderer.info.render.calls,
       triangles: renderer.info.render.triangles,
-      textures: renderer.info.memory.textures,
-      geometries: renderer.info.memory.geometries,
-      viewport: [window.innerWidth, window.innerHeight],
-      renderBudget: {
-        pixelRatio: renderer.getPixelRatio(),
-        maxPixelRatio: MAX_RENDER_PIXEL_RATIO,
-        quality: presentationSettings.quality,
-        activeFpsCap: QUALITY_PROFILES[presentationSettings.quality].activeFps,
-        renderedFrames: renderedFrameCount,
-        skippedFrames: skippedFrameCount,
-        activeFpsPolicy: '60fps-cap-across-refresh-rates',
-        idleFpsCap: 30,
-        pausedFpsCap: 15,
-        hiddenFpsCap: 4,
-        powerPreference: 'default',
-        preserveDrawingBuffer: false,
-        gtaoSamples: CONTACT_OCCLUSION_PROFILE.samples,
-        antialiasing: presentationSettings.quality === 'high' ? 'smaa' : 'single-pass-fxaa',
-      },
-      rendering: {
-        outputColorSpace: 'srgb',
-        toneMapping: 'ACESFilmicToneMapping',
-        toneMappingExposure: renderer.toneMappingExposure,
-        daylightEnergy: {
-          version: DAYLIGHT_ENERGY_PROFILE.version,
-          fogDensityPerMeter: scene.fog.density,
-          environmentIntensity: scene.environmentIntensity,
-          ambientIntensity: ambient.intensity,
-          hemisphereIntensity: hemisphere.intensity,
-          sunIntensity: sun.intensity,
-          ratios: daylightEnergyRatios(),
-          sources: DAYLIGHT_ENERGY_PROFILE.energySources,
-          aerialPerspective: heightFog.snapshot(),
-        },
-        shadowMap: {
-          enabled: renderer.shadowMap.enabled,
-          type: 'PCFSoftShadowMap',
-          resolution: sun.shadow.mapSize.x,
-        },
-        contactOcclusion: {
-          enabled: gtaoPass.enabled,
-          radiusMeters: CONTACT_OCCLUSION_PROFILE.radiusMeters,
-          thicknessMeters: CONTACT_OCCLUSION_PROFILE.thicknessMeters,
-          samples: CONTACT_OCCLUSION_PROFILE.samples,
-          blendIntensity: CONTACT_OCCLUSION_PROFILE.blendIntensity,
-          screenSpaceRadius: false,
-          role: CONTACT_OCCLUSION_PROFILE.role,
-        },
-      },
-      firstRenderedAt,
-      recentMedianFrameMs: Number(percentile(frameSamples, 0.5).toFixed(2)),
     };
   },
 };
 
-setView(query.get('view') === 'glade' || query.get('qa') === 's0' ? 'glade' : 'title');
-if (query.has('qa')) void ensureHy3dVisuals();
+setView(query.get('view') === 'glade' ? 'glade' : 'title');
 requestAnimationFrame(animate);

@@ -1,0 +1,239 @@
+
+/* ---------- 序幕小世界 ---------- */
+.overworld-root { position: absolute; inset: 44px 0 0 0; background: #1a1008; }
+.overworld-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; }
+.overworld-tip {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  z-index: 5; color: var(--text-hi);
+  background: rgba(36, 24, 18, 0.85);
+  border: 1px solid var(--gold); border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.25);
+  padding: 6px 18px; font-size: 14px; letter-spacing: 1px; pointer-events: none;
+}
+.overworld-loc {
+  position: absolute; left: 14px; bottom: 12px; z-index: 5;
+  color: var(--text-hi); background: rgba(36, 24, 18, 0.85);
+  border: 1px solid var(--gold); border-radius: 4px;
+  padding: 5px 14px; font-size: 14px; letter-spacing: 2px; pointer-events: none;
+}
+
+/* ---------- 结局 ---------- */
+.ending-root {
+  position: absolute; inset: 44px 0 0 0;
+  background: linear-gradient(180deg, #1e2a38, #2a4a5a 60%, #3a6a5a);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+/* 结局底图独立一层:huoyan + 雨后退色(简报 T1),滤镜不波及上方面板 */
+.ending-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: saturate(0.55) brightness(1.12);
+}
+.ending-root.raining::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image: repeating-linear-gradient(105deg, transparent 0 14px, rgba(180, 220, 240, 0.14) 14px 15px);
+  animation: rain 0.6s linear infinite;
+}
+@keyframes rain { to { background-position: -24px 60px; } }
+.ending-panel {
+  position: relative; z-index: 2; width: min(680px, 88%);
+  border: 3px solid var(--wood);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--gold), 0 10px 40px rgba(0, 0, 0, 0.6);
+  background:
+    repeating-linear-gradient(0deg, rgba(58, 42, 28, 0.04) 0 2px, transparent 2px 6px),
+    linear-gradient(180deg, var(--paper), var(--paper-dim));
+  padding: 26px 34px;
+}
+.ending-panel p { font-size: 16px; line-height: 1.9; margin: 8px 0; }
+.ending-title { text-align: center; color: var(--zhu); font-size: 24px; letter-spacing: 6px; margin: 14px 0 4px; font-weight: bold; }
+
+/* 真扇三段与四十九扇 */
+.fan-stage {
+  position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 8; max-width: 76%;
+  color: var(--text-hi); font-size: 30px; letter-spacing: 8px; text-align: center;
+  background: rgba(36, 24, 18, 0.9);
+  border: 2px solid var(--gold); border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.4), 0 8px 30px rgba(0, 0, 0, 0.55);
+  padding: 16px 40px; text-shadow: 0 2px 4px #000;
+  animation: bannerIn 0.3s ease;
+}
+.fan-counter {
+  position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 8;
+  color: var(--gold-hi); font-size: 52px; font-weight: bold; letter-spacing: 10px;
+  text-shadow: 0 0 18px rgba(201, 162, 39, 0.8), 0 3px 0 #5a1408, 0 5px 10px #000;
+}
+.fan-counter.done { color: #7ad76a; animation: bannerIn 0.4s ease; }
+
+/* ================= POLISH v1 新增 ================= */
+
+/* ---------- 顶栏系统组齿轮下拉(简报一.3) ---------- */
+.topbar-sys { position: relative; }
+.topbar-dropdown {
+  position: absolute; top: 38px; right: 0; z-index: 50;
+  display: flex; flex-direction: column; gap: 6px;
+  min-width: 136px; padding: 10px;
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.06) 0 3px, transparent 3px 7px),
+    linear-gradient(180deg, #4a3626, var(--wood-deep));
+  border: 1.5px solid var(--gold);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3), 0 8px 22px rgba(0, 0, 0, 0.6);
+}
+.topbar-dropdown .topbar-btn { justify-content: flex-start; width: 100%; }
+
+/* ---------- 指令面板:悬停/聚焦盖朱印(简报一.2) ---------- */
+.icon-badge { transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease; }
+.cmd-btn:hover, .cmd-btn.kbd-focus,
+.cmd-item:hover, .cmd-item.kbd-focus {
+  box-shadow:
+    inset 0 0 0 1px var(--gold),
+    inset 0 0 0 3px rgba(168, 50, 42, 0.55),
+    0 2px 0 var(--wood-deep);
+}
+.cmd-btn:hover .icon-badge, .cmd-btn.kbd-focus .icon-badge,
+.cmd-item:hover .icon-badge, .cmd-item.kbd-focus .icon-badge {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 200, 160, 0.3), transparent 60%),
+    linear-gradient(160deg, var(--zhu-hi), var(--zhu));
+  border-color: var(--gold-hi);
+  color: #ffe9d0;
+  transform: rotate(-8deg) scale(1.14);
+  box-shadow: 0 0 0 2px rgba(168, 50, 42, 0.35), 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* 键盘聚焦环(菜单/模态通用) */
+.kbd-focus { outline: 2px solid var(--zhu-hi); outline-offset: 1px; filter: brightness(1.07); }
+
+/* 键盘选目标:当前目标金朱描边 */
+.unit-card.kbd-target .unit-portrait {
+  outline: 3px solid var(--zhu-hi); outline-offset: 2px;
+  animation: pulse 0.8s infinite alternate;
+}
+
+/* ---------- 预期效果预览面板(简报一.2) ---------- */
+.cmd-preview {
+  position: absolute; left: 292px; bottom: 186px; z-index: 30;
+  min-width: 320px; max-width: 48%;
+  padding: 8px 14px;
+  color: var(--text-hi);
+  background:
+    repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.06) 0 4px, transparent 4px 10px),
+    rgba(36, 24, 18, 0.94);
+  border: 1.5px solid var(--gold); border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3), 0 4px 14px rgba(0, 0, 0, 0.5);
+  font-size: 14px; letter-spacing: 1px;
+  pointer-events: none;
+  animation: bannerIn 0.15s ease;
+}
+.pv-line { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 1px 0; }
+.pv-main { color: var(--text-hi); }
+.pv-side { font-size: 13px; white-space: nowrap; }
+.pv-side.good { color: #7ad76a; }
+.pv-side.bad { color: #ff7a5a; }
+.pv-side.none { color: #cfc8ba; }
+
+/* 窄视口适配(1280×800 不破版):预览条缩短、指令台状态牌收窄 */
+@media (max-width: 1360px) {
+  .cmd-status { width: 220px; }
+  .cmd-preview { left: 240px; min-width: 280px; max-width: 52%; }
+}
+
+/* ================= POLISH v1 · 战斗手感 ================= */
+
+/* 「金克木」三字印:克制命中时盖在目标身上(简报二.3) */
+.wuxing-stamp {
+  color: var(--gold-hi); font-size: 22px; letter-spacing: 4px;
+  border-width: 2.5px;
+  text-shadow: 0 0 10px rgba(201, 162, 39, 0.7), 0 2px 2px #000;
+}
+
+/* ---------- 演出层(简报二.4) ---------- */
+.fx-canvas {
+  position: absolute; inset: 0; z-index: 14;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.fx-tint {
+  position: absolute; inset: 0; z-index: 13;
+  pointer-events: none; opacity: 0;
+}
+.fx-tint.on { opacity: 1; }
+
+/* ---------- 节奏开关组(简报二.5):收进顶栏「设」下拉(简报 T7) ---------- */
+.battle-toggles {
+  position: absolute; top: 52px; right: 276px; z-index: 6;
+  display: flex; gap: 6px;
+}
+/* 下拉内改竖排,与存档/读档等系统项同列 */
+.topbar-dropdown .battle-toggles {
+  position: static;
+  flex-direction: column;
+  margin-top: 2px; padding-top: 8px;
+  border-top: 1px solid rgba(201, 162, 39, 0.45);
+}
+.topbar-dropdown .battle-toggles .toggle-btn { width: 100%; text-align: left; }
+.toggle-btn {
+  padding: 4px 10px; font-size: 12px; letter-spacing: 1px;
+  color: rgba(244, 234, 210, 0.85);
+  background: linear-gradient(180deg, rgba(84, 64, 44, 0.9), rgba(58, 42, 28, 0.9));
+  border: 1.5px solid rgba(201, 162, 39, 0.6);
+  border-radius: 4px;
+  text-shadow: 0 1px 1px #000;
+}
+.toggle-btn.on {
+  color: #fff;
+  background: linear-gradient(180deg, var(--zhu-hi), var(--zhu));
+  border-color: var(--gold-hi);
+  box-shadow: 0 0 8px rgba(168, 50, 42, 0.5);
+}
+
+/* 窄视口:开关已收进「设」下拉,只收紧按钮本身 */
+@media (max-width: 1360px) {
+  .toggle-btn { padding: 4px 7px; font-size: 11px; }
+}
+
+/* ---------- 非游玩阶段隐藏顶栏(标题/结局,简报 T7) ---------- */
+body.no-topbar #topbar { display: none; }
+body.no-topbar .screen,
+body.no-topbar .overworld-root,
+body.no-topbar .battle-root,
+body.no-topbar .ending-root,
+body.no-topbar .story-bg { inset: 0; }
+
+/* 五行环已常驻指令台右格,预览条不再与它叠字,无需再让位。 */
+.wuxing-ring { transition: opacity 0.15s ease; }
+
+/* ---------- 剧情过场底景(战斗外段落不再落在虚空) ---------- */
+.story-bg {
+  position: absolute; inset: 44px 0 0 0; z-index: 0;
+  background-size: cover; background-position: center;
+}
+.story-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(16, 10, 6, 0.55), rgba(16, 10, 6, 0.35) 45%, rgba(16, 10, 6, 0.62));
+}
+
+/* 结局雨势三档:落雨初起 → 四十九扇中 → 火根断绝大雨 */
+.ending-root.rain-2::after {
+  background-image: repeating-linear-gradient(105deg, transparent 0 10px, rgba(180, 220, 240, 0.22) 10px 11.5px);
+  animation-duration: 0.45s;
+}
+.ending-root.rain-3::after {
+  background-image:
+    repeating-linear-gradient(105deg, transparent 0 10px, rgba(190, 226, 246, 0.24) 10px 11.5px),
+    repeating-linear-gradient(100deg, transparent 0 17px, rgba(160, 205, 235, 0.16) 17px 18px);
+  animation-duration: 0.34s;
+}
+/* 火根断绝后:雨幕转为薄光(雨后晴土),不再是密集雨线 */
+.ending-root.rain-glow::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 50% 16%, rgba(240, 244, 226, 0.30), transparent 55%),
+    linear-gradient(180deg, rgba(228, 238, 228, 0.14), rgba(210, 226, 216, 0.07));
+  animation: none;
+}
+.wuxing-ring { transition: opacity 0.15s ease; }

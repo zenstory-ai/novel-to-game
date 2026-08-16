@@ -56,7 +56,6 @@ test('field-camera loader caches one matte local template', async () => {
   assert.equal(mesh.receiveShadow, false);
   assert.ok(mesh.material.roughness >= 0.74);
   assert.ok(mesh.material.metalness <= 0.72);
-  assert.ok(first.userData.sourceBounds);
 });
 
 test('camera mount receives one integrated HY3D held-camera visual without procedural hands', async () => {
@@ -69,9 +68,6 @@ test('camera mount receives one integrated HY3D held-camera visual without proce
   const second = attachHy3dFieldCameraVisual(mount, template);
   assert.equal(first, second);
   assert.equal(mount.children.length, 1);
-  assert.equal(first.userData.singleAssetPath, true);
-  assert.equal(first.userData.integratedHands, 2);
-  assert.deepEqual(first.userData.gripRoles, ['camera-left-grip', 'camera-right-grip']);
   assert.equal(first.children[0].scale.x, 2.2);
 });
 

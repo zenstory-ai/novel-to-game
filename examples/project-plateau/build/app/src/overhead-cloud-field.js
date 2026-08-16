@@ -285,16 +285,9 @@ function createVisibleCloudLayer(texture, uniforms, sunDirection, profile) {
       }
     `,
   });
-  material.userData.surface = 'shared-density-overhead-cloud-underside';
-  material.userData.densityTexture = texture.name;
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(239, 64, 32), material);
   mesh.name = 'world.atmosphere.cloud-deck';
   mesh.userData.profile = 'world-space-shared-density-overhead-cloud-deck';
-  mesh.userData.altitudeRangeMeters = [
-    profile.altitudeMeters,
-    profile.altitudeMeters + profile.thicknessMeters,
-  ];
-  mesh.userData.domainMeters = profile.domainMeters;
   mesh.frustumCulled = false;
   mesh.renderOrder = -90;
   return mesh;

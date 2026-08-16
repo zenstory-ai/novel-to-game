@@ -17,15 +17,16 @@ intake 的目的不是举行逐项审批会，而是尽早锁住会让下游返�
 
 ## 产品框架
 
-填表前读取 [intake-benchmark-reference.md](intake-benchmark-reference.md) 与
-[intake-engine-reference.md](intake-engine-reference.md)。前者帮助选择同玩法先例、平台与视觉维度，
-后者帮助选择引擎和运行时；它们提供推荐依据，不替代项目判断。
+填表前按需读取 [intake-benchmark-reference.md](intake-benchmark-reference.md)，用它选择同玩法先例、
+平台与视觉维度。引擎由目标交付物、团队现有工程、输入/显示、性能和导出约束决定；frontier 模型已知
+主流框架，不在仓库维护版本、价格或渠道规格目录。只有许可、导出能力或平台限制会实质改变决定时，
+才核实当前官方文档。
 
 | 维度 | 最小锁定内容 |
 |---|---|
 | 平台与形态 | 交付物、目标/最低显示模式、输入方式、性能预算 |
 | 市场与语言 | 目标市场、首发界面语言 |
-| 类型与先例 | 主玩法、2 款同玩法先例、3–5 个核心动词、空间形态 |
+| 类型与先例 | 主玩法、一个主要玩法先例、3–5 个候选核心动词、空间形态 |
 | 主要承载 | `experienceProfile`：`system-led` / `narrative-led` / `hybrid` |
 | 美术与完成度 | 画风、`targetFinish`、参考维度、投入边界 |
 | 内容尺度 | 分级、成人内容范围与平台约束 |

@@ -1,5 +1,12 @@
 import { SCENE_BUDGET, seededRandom } from './config.js';
 
+export const TRACK_IMPRESSION = Object.freeze({
+  x: -1.65,
+  z: 35.75,
+  rotation: 0.44,
+  scale: 2.08,
+});
+
 export const COVER_ARCH_LAYOUT = Object.freeze([
   Object.freeze({ centerX: -7, z: 28, spread: 3.5 }),
   Object.freeze({ centerX: -12, z: 18, spread: 3.82 }),

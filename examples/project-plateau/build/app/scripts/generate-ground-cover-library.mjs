@@ -1,31 +1,8 @@
-import { writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-
-class NodeFileReader {
-  result = null;
-
-  onloadend = null;
-
-  readAsArrayBuffer(blob) {
-    blob.arrayBuffer().then((result) => {
-      this.result = result;
-      this.onloadend?.();
-    });
-  }
-
-  readAsDataURL(blob) {
-    blob.arrayBuffer().then((result) => {
-      this.result = `data:${blob.type};base64,${Buffer.from(result).toString('base64')}`;
-      this.onloadend?.();
-    });
-  }
-}
-
-globalThis.FileReader = NodeFileReader;
+import { triangleCount, writeBinaryGlb } from './gltf-export.mjs';
 
 const APP = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUTPUT = resolve(APP, 'public/assets/ground-cover-library-original-v3.glb');
@@ -592,20 +569,10 @@ root.userData = {
 const variants = VARIANTS.map(buildVariant);
 root.add(...variants);
 
-const exporter = new GLTFExporter();
-const result = await exporter.parseAsync(root, {
-  binary: true,
-  onlyVisible: true,
-  truncateDrawRange: true,
-});
-await writeFile(OUTPUT, Buffer.from(result));
+const result = await writeBinaryGlb(root, OUTPUT);
 
 const variantMetrics = variants.map((variant) => {
-  let triangles = 0;
-  variant.traverse((object) => {
-    if (!object.isMesh) return;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
-  });
+  const triangles = triangleCount(variant);
   const bounds = new THREE.Box3().setFromObject(variant);
   return {
     id: variant.userData.variantId,

@@ -38,16 +38,12 @@ function prepareMaterial(material) {
 function prepareTemplate(source) {
   const template = source.clone(true);
   template.name = 'asset.original.basalt-shelf.template';
-  let meshes = 0;
-  let triangles = 0;
   template.traverse((object) => {
     if (!object.isMesh) return;
     // glTF import de-duplicates repeated node names with numeric suffixes.
     // Each selected variant lives alone at runtime, so restore the authored
     // semantic name used by support measurement after variant pruning.
     object.name = object.userData.name ?? object.name;
-    meshes += 1;
-    triangles += (object.geometry.index?.count ?? object.geometry.attributes.position.count) / 3;
     object.castShadow = true;
     object.receiveShadow = true;
     object.frustumCulled = true;
@@ -56,14 +52,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  const bounds = new THREE.Box3().setFromObject(template);
-  template.userData.sourceBounds = {
-    min: bounds.min.toArray(),
-    max: bounds.max.toArray(),
-  };
-  template.userData.meshes = meshes;
-  template.userData.triangles = triangles;
-  template.userData.provenance = BASALT_SHELF_ASSET.provenance;
   template.userData.supportModel = BASALT_SHELF_ASSET.supportModel;
   return template;
 }
@@ -140,14 +128,12 @@ export function attachBasaltShelfVisual(anchor, template, surfaceTextures) {
       ? object.material.map((material) => applySurfaceTextures(material, surfaceTextures))
       : applySurfaceTextures(object.material, surfaceTextures);
   });
-  visual.userData.assetVersion = BASALT_SHELF_ASSET.version;
   visual.userData.variantId = variantId;
   visual.userData.supportModel = BASALT_SHELF_ASSET.supportModel;
   visual.userData.energyModel = 'non-emissive-dielectric-rock-albedo';
   visual.userData.collisionRole = 'non-solid-outside-navigation-boundary';
   anchor.add(visual);
   anchor.userData.assetVisual = visual;
-  anchor.userData.visualSource = BASALT_SHELF_ASSET.version;
   anchor.userData.variantId = variantId;
   return visual;
 }

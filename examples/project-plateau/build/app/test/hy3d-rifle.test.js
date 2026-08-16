@@ -56,7 +56,6 @@ test('rifle loader caches one matte local template', async () => {
   assert.equal(mesh.receiveShadow, false);
   assert.ok(mesh.material.roughness >= 0.72);
   assert.ok(mesh.material.metalness <= 0.78);
-  assert.ok(first.userData.sourceBounds);
 });
 
 test('rifle mount receives one integrated HY3D held-rifle visual without procedural hands', async () => {
@@ -69,9 +68,6 @@ test('rifle mount receives one integrated HY3D held-rifle visual without procedu
   const second = attachHy3dRifleVisual(mount, template);
   assert.equal(first, second);
   assert.equal(mount.children.length, 1);
-  assert.equal(first.userData.singleAssetPath, true);
-  assert.equal(first.userData.integratedHands, 2);
-  assert.deepEqual(first.userData.gripRoles, ['fore-end-support', 'trigger-grip']);
   assert.equal(first.children[0].scale.x, 4.3);
   assert.equal(first.getObjectByProperty('isMesh', true).geometry.type, 'BoxGeometry');
 });

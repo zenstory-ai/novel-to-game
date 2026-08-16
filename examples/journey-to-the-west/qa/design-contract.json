@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "source": "design/GAME_DESIGN.md",
+  "invariants": {
+    "elementChain": {
+      "金": "木",
+      "木": "土",
+      "土": "水",
+      "水": "火",
+      "火": "金"
+    },
+    "elementCoefficients": {
+      "ke": 1.5,
+      "beike": 0.66,
+      "none": 1
+    },
+    "formations": {
+      "tiangang": { "atk": 1.2, "spd": 1.05, "dmgTaken": 1.15 },
+      "liuding": { "def": 1.18, "spd": 0.95, "dmgTaken": 0.8 }
+    },
+    "fieldRules": {
+      "firemobs": {
+        "kind": "roundEndBurn",
+        "pct": 0.04,
+        "element": "火",
+        "immuneElement": "水"
+      },
+      "yumian": {
+        "kind": "pairGuard",
+        "unitKey": "yaojiang",
+        "count": 2,
+        "reduce": 0.08
+      }
+    },
+    "finalBoss": {
+      "hp": 1300,
+      "element": "土",
+      "previousPhase": "whitebull"
+    },
+    "growth": {
+      "pointsPerLevel": 5,
+      "skillPointsPerLevel": 1,
+      "skillRankCap": 3
+    },
+    "trueFan": {
+      "maxStages": 3,
+      "stageTwoSpeed": 0.3,
+      "stageThreeRegen": 0.08,
+      "stageThreeVulnerability": 0.4
+    }
+  }
+}

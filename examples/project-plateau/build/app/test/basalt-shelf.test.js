@@ -179,10 +179,6 @@ test('cached basalt loader clamps rock materials to dielectric energy bounds', a
   assert.equal(mesh.material.emissive.getHex(), 0);
   assert.equal(mesh.material.emissiveIntensity, 0);
   assert.equal(mesh.material.flatShading, true);
-  assert.equal(first.userData.meshes, 1);
-  assert.equal(first.userData.triangles, 12);
-  assert.deepEqual(first.userData.sourceBounds.min, [-1, -2, -1]);
-  assert.deepEqual(first.userData.sourceBounds.max, [1, 2, 1]);
 });
 
 test('basalt visual attaches once and receives the correlated geological texture set', async () => {
@@ -213,7 +209,6 @@ test('basalt visual attaches once and receives the correlated geological texture
     mesh.material.userData.mapping,
     'authored-face-planar-uv-with-correlated-albedo-roughness-relief',
   );
-  assert.equal(first.userData.assetVersion, BASALT_SHELF_ASSET.version);
   assert.equal(first.userData.supportModel, BASALT_SHELF_ASSET.supportModel);
   assert.equal(first.userData.collisionRole, 'non-solid-outside-navigation-boundary');
 });

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from contextlib import redirect_stderr, redirect_stdout
-import importlib.util
 import hashlib
+import importlib.util
 import io
 import json
 import re
@@ -65,36 +65,55 @@ class RepositoryValidationTests(unittest.TestCase):
         (example / "build/app/index.html").write_text(
             "<!doctype html><title>fixture</title>\n", encoding="utf-8"
         )
+        visual = example / "qa/evidence/frame.ppm"
+        visual.write_text("P3\n1 1\n255\n0 0 0\n", encoding="utf-8")
         evidence = example / "qa/evidence/run.json"
         evidence.write_text(
             json.dumps(
                 {
-                    "qa": {
-                        "command": "fixture verify",
-                        "exitCode": 0,
-                        "completeRun": {
-                            "terminal": "fixture-outcome",
-                            "restart": "fixture-initial-state",
+                    "schemaVersion": 1,
+                    "runId": "fixture-complete-run",
+                    "environment": {"runtime": "fixture"},
+                    "inputTrace": ["launch", "observe", "finish", "restart"],
+                    "observations": {
+                        "launch": {
+                            "id": "launch",
+                            "inputs": ["launch fixture"],
+                            "state": {"phase": "initial"},
                         },
-                        "checks": {
-                            name: "PASS"
-                            for name in (
-                                "launch",
-                                "render",
-                                "input",
-                                "coreLoop",
-                                "outcome",
-                                "restart",
-                            )
+                        "render": {
+                            "id": "render",
+                            "inputs": ["capture frame"],
+                            "state": {"frame": "visible"},
+                            "visual": "qa/evidence/frame.ppm",
+                        },
+                        "input": {
+                            "id": "input",
+                            "inputs": ["observe"],
+                            "state": {"accepted": True},
+                        },
+                        "coreLoop": {
+                            "id": "core-loop",
+                            "inputs": ["finish route"],
+                            "state": {"phase": "complete"},
+                        },
+                        "outcome": {
+                            "id": "outcome",
+                            "inputs": ["finish route"],
+                            "state": {"terminal": "fixture-outcome"},
+                        },
+                        "restart": {
+                            "id": "restart",
+                            "inputs": ["restart fixture"],
+                            "state": {"restart": "fixture-initial-state"},
                         },
                     },
                 }
-            )
-            + "\n",
+            ),
             encoding="utf-8",
         )
         checks = {
-            name: {"status": "PASS", "evidence": ["qa/evidence/run.json"]}
+            name: "PASS"
             for name in (
                 "launch",
                 "render",
@@ -107,7 +126,7 @@ class RepositoryValidationTests(unittest.TestCase):
         (example / "qa/verification.json").write_text(
             json.dumps(
                 {
-                    "schemaVersion": 2,
+                    "schemaVersion": 3,
                     "status": "PASS",
                     "verify": {
                         "command": "fixture verify",
@@ -150,10 +169,7 @@ class RepositoryValidationTests(unittest.TestCase):
             example = self.make_compact_verification_fixture(Path(temporary))
             path = example / "qa/verification.json"
             verification = json.loads(path.read_text(encoding="utf-8"))
-            verification["checks"]["performance"] = {
-                "status": "PASS",
-                "evidence": ["qa/evidence/run.json"],
-            }
+            verification["checks"]["performance"] = "PASS"
             path.write_text(json.dumps(verification), encoding="utf-8")
 
             issues = validate_qa(example)
@@ -172,38 +188,32 @@ class RepositoryValidationTests(unittest.TestCase):
 
             self.assertTrue(any("unknown fields" in issue for issue in issues), issues)
 
-    def test_minimal_qa_binds_machine_evidence_to_the_claim(self) -> None:
+    def test_minimal_qa_rejects_placeholder_or_non_json_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             example = self.make_compact_verification_fixture(Path(temporary))
-            evidence_path = example / "qa/evidence/run.json"
-            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-            evidence["qa"]["command"] = "different command"
-            evidence["qa"]["completeRun"]["restart"] = "different restart"
-            del evidence["qa"]["checks"]["outcome"]
-            evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+            evidence = example / "qa/evidence/run.json"
+            evidence.write_text("complete run captured\n", encoding="utf-8")
 
             issues = validate_qa(example)
 
-            self.assertTrue(any("qa.command must match" in issue for issue in issues), issues)
-            self.assertTrue(any("qa.completeRun.restart must match" in issue for issue in issues), issues)
-            self.assertTrue(any("qa.checks must contain exactly" in issue for issue in issues), issues)
+            self.assertTrue(any("invalid JSON" in issue for issue in issues), issues)
+
+            evidence.write_text("", encoding="utf-8")
+            issues = validate_qa(example)
+            self.assertTrue(any("must not be empty" in issue for issue in issues), issues)
 
     def test_minimal_qa_rejects_non_integer_zero_exit_codes(self) -> None:
         for fake_zero in (False, 0.0, "0"):
             with self.subTest(exit_code=fake_zero), tempfile.TemporaryDirectory() as temporary:
                 example = self.make_compact_verification_fixture(Path(temporary))
                 verification_path = example / "qa/verification.json"
-                evidence_path = example / "qa/evidence/run.json"
                 verification = json.loads(
                     verification_path.read_text(encoding="utf-8")
                 )
-                evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
                 verification["verify"]["exitCode"] = fake_zero
-                evidence["qa"]["exitCode"] = fake_zero
                 verification_path.write_text(
                     json.dumps(verification), encoding="utf-8"
                 )
-                evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
 
                 issues = validate_qa(example)
 
@@ -212,16 +222,28 @@ class RepositoryValidationTests(unittest.TestCase):
                     issues,
                 )
 
-    def test_minimal_qa_rejects_non_json_machine_evidence(self) -> None:
+    def test_minimal_qa_rejects_missing_complete_run_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             example = self.make_compact_verification_fixture(Path(temporary))
-            (example / "qa/evidence/run.json").write_text(
-                "not evidence", encoding="utf-8"
-            )
+            (example / "qa/evidence/run.json").unlink()
 
             issues = validate_qa(example)
 
-            self.assertTrue(any("machine evidence must be valid JSON" in issue for issue in issues), issues)
+            self.assertTrue(any("completeRun.evidence does not exist" in issue for issue in issues), issues)
+
+    def test_minimal_qa_rejects_unbound_or_incomplete_observations(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            example = self.make_compact_verification_fixture(Path(temporary))
+            path = example / "qa/evidence/run.json"
+            evidence = json.loads(path.read_text(encoding="utf-8"))
+            del evidence["observations"]["input"]
+            evidence["observations"]["outcome"]["state"] = {"terminal": "other"}
+            path.write_text(json.dumps(evidence), encoding="utf-8")
+
+            issues = validate_qa(example)
+
+            self.assertTrue(any("observations must contain exactly" in issue for issue in issues), issues)
+            self.assertTrue(any("must record completeRun.terminal" in issue for issue in issues), issues)
 
     def test_minimal_qa_rejects_fake_status_and_bad_limitation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -269,92 +291,54 @@ class RepositoryValidationTests(unittest.TestCase):
             (
                 "examples/jin-ping-mei/build/app/test/verify.py",
                 "jin_verify_failure_test",
+                "EVIDENCE",
             ),
             (
                 "examples/journey-to-the-west/build/app/test/verify.py",
                 "journey_verify_failure_test",
+                "EVIDENCE",
+            ),
+            (
+                "examples/project-plateau/build/app/test/verify.py",
+                "plateau_verify_failure_test",
+                "REPORT",
             ),
         )
-        for relative, name in scripts:
+        for relative, name, evidence_name in scripts:
             with self.subTest(script=relative), tempfile.TemporaryDirectory() as temporary:
                 module = self.load_script(relative, name)
                 root = Path(temporary)
-                module.EVIDENCE = root / "evidence.json"
+                evidence = root / "evidence.json"
+                setattr(module, evidence_name, evidence)
+                if evidence_name == "REPORT":
+                    module.PROJECT = root
                 module.VERIFICATION = root / "verification.json"
-                module.REPORT = root / "QA_REPORT.md"
-                module.EVIDENCE.write_text('{"qa":{"exitCode":0}}\n', encoding="utf-8")
+                evidence.write_text('{"stale":true}\n', encoding="utf-8")
                 module.VERIFICATION.write_text(
                     '{"status":"PASS","verify":{"exitCode":0}}\n',
                     encoding="utf-8",
                 )
-                module.run_suite = mock.Mock(return_value={
-                    "id": "browser:complete-run",
-                    "executed": True,
-                    "passed": False,
-                    "exitCode": 9,
-                })
                 output = io.StringIO()
                 with (
                     mock.patch.object(module.sys, "argv", ["verify.py"]),
+                    mock.patch.object(
+                        module.subprocess,
+                        "run",
+                        return_value=mock.Mock(returncode=9),
+                    ),
                     redirect_stdout(output),
                     redirect_stderr(output),
                 ):
                     self.assertEqual(module.main(), 1)
 
-                evidence = json.loads(module.EVIDENCE.read_text(encoding="utf-8"))
                 verification = json.loads(
                     module.VERIFICATION.read_text(encoding="utf-8")
                 )
-                self.assertEqual(evidence["qa"]["exitCode"], 1)
-                self.assertEqual(set(evidence["qa"]["checks"].values()), {"FAIL"})
+                self.assertEqual(verification["schemaVersion"], 3)
                 self.assertEqual(verification["status"], "FAIL")
                 self.assertEqual(verification["verify"]["exitCode"], 1)
-
-    def test_plateau_wrapper_replaces_stale_pass_on_suite_failure(self) -> None:
-        module = self.load_script(
-            "examples/project-plateau/build/app/test/verify.py",
-            "plateau_verify_failure_test",
-        )
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            module.PROJECT = root
-            module.BUILD = root / "build"
-            module.VERIFICATION = root / "qa/verification.json"
-            module.REPORT = root / "qa/QA_REPORT.md"
-            module.SUITES = (
-                module.Suite(
-                    "fixture:failure",
-                    ("fixture",),
-                    (("fixture-command",),),
-                    root,
-                ),
-            )
-            module.command_output = mock.Mock(return_value=(9, "fixture failure"))
-            module.VERIFICATION.parent.mkdir(parents=True)
-            module.VERIFICATION.write_text(
-                '{"status":"PASS","verify":{"exitCode":0}}\n',
-                encoding="utf-8",
-            )
-            output = io.StringIO()
-            with (
-                mock.patch.object(module.sys, "argv", ["verify.py"]),
-                redirect_stdout(output),
-                redirect_stderr(output),
-            ):
-                self.assertEqual(module.main(), 1)
-
-            evidence = json.loads(
-                (module.BUILD / "evidence/current-run/report.json").read_text(
-                    encoding="utf-8"
-                )
-            )
-            verification = json.loads(
-                module.VERIFICATION.read_text(encoding="utf-8")
-            )
-            self.assertEqual(evidence["qa"]["exitCode"], 1)
-            self.assertEqual(set(evidence["qa"]["checks"].values()), {"FAIL"})
-            self.assertEqual(verification["status"], "FAIL")
-            self.assertEqual(verification["verify"]["exitCode"], 1)
+                self.assertEqual(set(verification["checks"].values()), {"FAIL"})
+                self.assertFalse((root / "QA_REPORT.md").exists())
 
     def test_readme_example_link_order_must_match_between_languages(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -424,7 +408,7 @@ class RepositoryValidationTests(unittest.TestCase):
                 (project / "qa/verification.json").read_text(encoding="utf-8")
             )
             self.assertEqual(validate_qa(project), [])
-            self.assertEqual(verification["schemaVersion"], 2)
+            self.assertEqual(verification["schemaVersion"], 3)
             self.assertEqual(
                 set(verification["checks"]),
                 {"launch", "render", "input", "coreLoop", "outcome", "restart"},
@@ -436,8 +420,14 @@ class RepositoryValidationTests(unittest.TestCase):
             evidence = project / complete_run["evidence"]
             self.assertTrue(evidence.is_file())
             run = json.loads(evidence.read_text(encoding="utf-8"))
-            self.assertEqual(run["states"]["outcome"]["outcome"], "extracted_with_proof")
-            self.assertEqual(run["states"]["restart"], run["states"]["initial"])
+            self.assertEqual(
+                run["observations"]["outcome"]["state"]["outcome"],
+                "extracted_with_proof",
+            )
+            self.assertEqual(
+                run["observations"]["restart"]["state"]["phase"],
+                "arrival",
+            )
 
     def test_native_plugins_expose_one_shared_skill_bundle(self) -> None:
         for relative_path in PLUGIN_MANIFESTS:
@@ -487,6 +477,12 @@ class RepositoryValidationTests(unittest.TestCase):
                 # Coverage state and a build asset ledger are valid supporting
                 # artifacts, but legacy examples may not contain either one.
                 self.assertEqual(actual - OPTIONAL_PLANNING_FILES, EXAMPLE_PLANNING_FILES)
+                line_counts = {
+                    relative: len((example / relative).read_text(encoding="utf-8").splitlines())
+                    for relative in EXAMPLE_PLANNING_FILES
+                }
+                self.assertLessEqual(max(line_counts.values()), 500, line_counts)
+                self.assertLessEqual(sum(line_counts.values()), 1200, line_counts)
 
     def test_example_source_and_citations_are_structurally_valid(self) -> None:
         for name in sorted(visible_directories(ROOT / "examples")):
@@ -662,36 +658,310 @@ class RepositoryValidationTests(unittest.TestCase):
 
         self.assertEqual([], missing_targets)
 
-    def test_plateau_machine_evidence_matches_runtime_fingerprint(self) -> None:
-        build = ROOT / "examples/project-plateau/build"
-        app = build / "app"
-        report = json.loads(
-            (build / "evidence/current-run/report.json").read_text(encoding="utf-8")
+    def test_generated_plateau_assets_keep_minimal_provenance(self) -> None:
+        ledger = json.loads(
+            (ROOT / "examples/project-plateau/build/asset-ledger.json").read_text(
+                encoding="utf-8"
+            )
         )
-        source = report.get("runtimeSource")
-        self.assertIsInstance(source, dict)
-        self.assertEqual(
-            "interactive inputs: index/package manifests, src and public assets; "
-            "generated conversion-preview outputs excluded",
-            source.get("scope"),
+        generated = [
+            entry
+            for entry in ledger["entries"]
+            if "Project-generated" in entry.get("rights", "")
+        ]
+
+        self.assertEqual(4, len(generated))
+        self.assertTrue(
+            all(isinstance(entry.get("provenance"), str) and entry["provenance"].strip()
+                for entry in generated)
         )
 
-        excluded_prefix = "public/media/project-plateau-preview"
-        paths = [app / "index.html", app / "package.json", app / "package-lock.json"]
-        paths += sorted((app / "public").rglob("*"))
-        paths += sorted((app / "src").rglob("*"))
-        digest = hashlib.sha256()
-        for path in paths:
-            if not path.is_file():
-                continue
-            relative = path.relative_to(app).as_posix()
-            if relative.startswith(excluded_prefix):
-                continue
-            digest.update(relative.encode())
-            digest.update(b"\0")
-            digest.update(path.read_bytes())
-            digest.update(b"\0")
-        self.assertEqual(digest.hexdigest(), source.get("sha256"))
+    def test_plateau_machine_evidence_stays_compact(self) -> None:
+        build = ROOT / "examples/project-plateau/build"
+        report_path = build / "evidence/current-run/report.json"
+        report_text = report_path.read_text(encoding="utf-8")
+        report = json.loads(report_text)
+        self.assertEqual(
+            {"schemaVersion", "runId", "environment", "inputTrace", "observations"},
+            set(report),
+        )
+        self.assertEqual(
+            {"launch", "render", "input", "coreLoop", "outcome", "restart"},
+            set(report["observations"]),
+        )
+        self.assertLessEqual(len(report["inputTrace"]), 15)
+        self.assertTrue(all(isinstance(item, str) for item in report["inputTrace"]))
+        visuals = {
+            observation["visual"]
+            for observation in report["observations"].values()
+            if "visual" in observation
+        }
+        self.assertLessEqual(len(visuals), 3)
+        self.assertLessEqual(report_text.count("\n"), 260)
+
+    def test_plateau_world_is_split_by_responsibility(self) -> None:
+        source = ROOT / "examples/project-plateau/build/app/src"
+        budgets = {
+            "world.js": 250,
+            "world-snapshot.js": 150,
+            "world-animation.js": 780,
+            "world-asset-visuals.js": 350,
+            "world-subjects.js": 600,
+            "world-landmarks.js": 600,
+            "world-rendering.js": 200,
+            "vegetation-rendering.js": 950,
+            "vegetation-textures.js": 350,
+            "vegetation-leaf-materials.js": 200,
+            "deadwood-rendering.js": 300,
+            "rock-rendering.js": 150,
+            "rock-geometry.js": 600,
+            "rock-materials.js": 420,
+            "rock-placement.js": 120,
+            "world-terrain.js": 10,
+            "terrain-surface.js": 850,
+            "route-and-brook.js": 750,
+            "world-vegetation.js": 10,
+            "authored-vegetation.js": 550,
+            "environment-density.js": 650,
+            "riparian-cover.js": 320,
+            "world-geology.js": 800,
+            "terrain-material-textures.js": 450,
+            "brook-material.js": 900,
+            "brook-scene-capture.js": 600,
+        }
+        contents = {}
+        for name, maximum_lines in budgets.items():
+            with self.subTest(name=name):
+                contents[name] = (source / name).read_text(encoding="utf-8")
+                self.assertLessEqual(contents[name].count("\n"), maximum_lines)
+
+        self.assertIn("from './world-rendering.js'", contents["world-subjects.js"])
+        self.assertIn("from './world-rendering.js'", contents["world-landmarks.js"])
+        self.assertIn("from './vegetation-rendering.js'", contents["world-animation.js"])
+        self.assertIn("from './rock-rendering.js'", contents["world.js"])
+        self.assertIn("from './world-terrain.js'", contents["world.js"])
+        self.assertIn("from './world-vegetation.js'", contents["world.js"])
+        self.assertIn("from './world-geology.js'", contents["world.js"])
+        self.assertIn("from './brook-material.js'", contents["world.js"])
+        self.assertIn("from './brook-scene-capture.js'", contents["world.js"])
+        self.assertIn("from './world-subjects.js'", contents["world.js"])
+        self.assertIn("from './world-landmarks.js'", contents["world.js"])
+        self.assertIn("from './world-snapshot.js'", contents["world.js"])
+        self.assertIn("from './world-asset-visuals.js'", contents["world.js"])
+        self.assertIn("from './world-animation.js'", contents["world.js"])
+        self.assertIn("export function createWorldAnimationController", contents["world-animation.js"])
+        self.assertIn("export function createWorldAssetVisualLoader", contents["world-asset-visuals.js"])
+        self.assertIn("export async function loadOptionalAssetVisual", contents["world-asset-visuals.js"])
+        self.assertIn("from './terrain-surface.js'", contents["world-terrain.js"])
+        self.assertIn("from './route-and-brook.js'", contents["world-terrain.js"])
+        self.assertIn("from './terrain-material-textures.js'", contents["terrain-surface.js"])
+        self.assertIn("from './brook-material.js'", contents["route-and-brook.js"])
+        self.assertIn("from './vegetation-textures.js'", contents["vegetation-rendering.js"])
+        self.assertIn("from './vegetation-leaf-materials.js'", contents["vegetation-rendering.js"])
+        self.assertIn("from './vegetation-leaf-materials.js'", contents["world-animation.js"])
+        self.assertIn("from './deadwood-rendering.js'", contents["route-and-brook.js"])
+        self.assertIn("from './rock-geometry.js'", contents["rock-rendering.js"])
+        self.assertIn("from './rock-materials.js'", contents["rock-rendering.js"])
+        self.assertIn("from './rock-placement.js'", contents["rock-rendering.js"])
+        self.assertIn("from './authored-vegetation.js'", contents["world-vegetation.js"])
+        self.assertIn("from './environment-density.js'", contents["world-vegetation.js"])
+        self.assertIn("from './riparian-cover.js'", contents["world-vegetation.js"])
+        self.assertIn("from './deadwood-rendering.js'", contents["environment-density.js"])
+        self.assertIn("from './vegetation-textures.js'", contents["riparian-cover.js"])
+        self.assertFalse((source / "terrain-water-rendering.js").exists())
+        self.assertIn("export function createWorld(", contents["world.js"])
+        for name in budgets.keys() - {"world.js"}:
+            self.assertNotIn("from './world.js'", contents[name])
+            self.assertNotIn("export function createWorld(", contents[name])
+
+    def test_plateau_generators_share_one_glb_exporter(self) -> None:
+        scripts = ROOT / "examples/project-plateau/build/app/scripts"
+        helper = (scripts / "gltf-export.mjs").read_text(encoding="utf-8")
+        generators = sorted(scripts.glob("generate-*.mjs"))
+        self.assertEqual(7, len(generators))
+        self.assertIn("class NodeFileReader", helper)
+        self.assertIn("export async function writeBinaryGlb", helper)
+        self.assertIn("export function triangleCount", helper)
+        total_lines = helper.count("\n")
+        for path in generators:
+            with self.subTest(path=path.name):
+                source = path.read_text(encoding="utf-8")
+                total_lines += source.count("\n")
+                self.assertIn("from './gltf-export.mjs'", source)
+                self.assertIn("writeBinaryGlb(root, OUTPUT)", source)
+                self.assertNotIn("class NodeFileReader", source)
+                self.assertNotIn("GLTFExporter", source)
+                self.assertNotIn("writeFile(", source)
+        self.assertLessEqual(total_lines, 4000)
+
+    def test_plateau_atmosphere_is_split_by_responsibility(self) -> None:
+        source = ROOT / "examples/project-plateau/build/app/src"
+        budgets = {
+            "atmosphere.js": 100,
+            "atmosphere-sky.js": 700,
+            "atmosphere-ridges.js": 950,
+            "atmosphere-mist.js": 120,
+        }
+        contents = {}
+        for name, maximum_lines in budgets.items():
+            with self.subTest(name=name):
+                contents[name] = (source / name).read_text(encoding="utf-8")
+                self.assertLessEqual(contents[name].count("\n"), maximum_lines)
+
+        coordinator = contents["atmosphere.js"]
+        self.assertIn("from './atmosphere-sky.js'", coordinator)
+        self.assertIn("from './atmosphere-ridges.js'", coordinator)
+        self.assertIn("from './atmosphere-mist.js'", coordinator)
+        self.assertIn("export function createAtmosphere", coordinator)
+        for name in budgets.keys() - {"atmosphere.js"}:
+            self.assertNotIn("from './atmosphere.js'", contents[name])
+            self.assertNotIn("export function createAtmosphere", contents[name])
+
+    def test_plateau_main_delegates_rendering_setup(self) -> None:
+        source = ROOT / "examples/project-plateau/build/app/src"
+        budgets = {
+            "main.js": 1050,
+            "field-lighting.js": 100,
+            "field-postprocessing.js": 160,
+            "viewmodel.js": 100,
+        }
+        contents = {}
+        for name, maximum_lines in budgets.items():
+            with self.subTest(name=name):
+                contents[name] = (source / name).read_text(encoding="utf-8")
+                self.assertLessEqual(contents[name].count("\n"), maximum_lines)
+
+        main = contents["main.js"]
+        self.assertIn("from './field-lighting.js'", main)
+        self.assertIn("from './field-postprocessing.js'", main)
+        self.assertIn("from './viewmodel.js'", main)
+        self.assertNotIn("three/addons/postprocessing", main)
+        for dead_state in (
+            "pointerLockStatus",
+            "pointerLockError",
+            "plateCaptureStatus",
+            "plateCaptureDurationMs",
+            "plateCaptureError",
+        ):
+            self.assertNotIn(dead_state, main)
+        for name in budgets.keys() - {"main.js"}:
+            self.assertNotIn("from './main.js'", contents[name])
+
+    def test_plateau_simulation_delegates_physics(self) -> None:
+        source = ROOT / "examples/project-plateau/build/app/src"
+        simulation = (source / "simulation.js").read_text(encoding="utf-8")
+        movement = (source / "simulation-movement.js").read_text(encoding="utf-8")
+
+        self.assertLessEqual(simulation.count("\n"), 800)
+        self.assertLessEqual(movement.count("\n"), 450)
+        self.assertIn("from './simulation-movement.js'", simulation)
+        self.assertIn("export function integrateMovement", movement)
+        self.assertIn("export function resolveObstacleStep", movement)
+        self.assertIn("export function collisionContractSnapshot", movement)
+        self.assertNotIn("from './collision-layout.js'", simulation)
+        self.assertNotIn("from './simulation.js'", movement)
+
+    def test_journey_battle_ui_splits_event_animation(self) -> None:
+        source = ROOT / "examples/journey-to-the-west/build/app/js"
+        battle_ui = (source / "battle_ui.js").read_text(encoding="utf-8")
+        commands = (source / "battle_commands.js").read_text(encoding="utf-8")
+        animator = (source / "battle_animator.js").read_text(encoding="utf-8")
+        self.assertLessEqual(battle_ui.count("\n"), 650)
+        self.assertLessEqual(commands.count("\n"), 600)
+        self.assertLessEqual(animator.count("\n"), 650)
+        self.assertIn("from './battle_animator.js'", battle_ui)
+        self.assertIn("from './battle_commands.js'", battle_ui)
+        self.assertIn("export async function runBattleScreen", battle_ui)
+        self.assertIn("export function createBattleCommands", commands)
+        self.assertIn("export function createBattleAnimator", animator)
+        self.assertNotIn("from './battle_ui.js'", commands)
+        self.assertNotIn("from './battle_ui.js'", animator)
+        self.assertNotIn("executeRound", commands)
+        self.assertNotIn("executeRound", animator)
+
+    def test_journey_stylesheet_cascade_is_locked(self) -> None:
+        app = ROOT / "examples/journey-to-the-west/build/app"
+        stylesheets = (
+            app / "css/style.css",
+            app / "css/battle.css",
+            app / "css/presentation.css",
+        )
+        self.assertEqual(
+            "2b29b225592d1a5468769b1e8457084446febed3633d9d2bba7e5d9b2de5eebe",
+            hashlib.sha256(b"".join(path.read_bytes() for path in stylesheets)).hexdigest(),
+        )
+        for stylesheet, line_budget in zip(stylesheets, (450, 550, 300), strict=True):
+            with self.subTest(stylesheet=stylesheet.name):
+                self.assertLessEqual(len(stylesheet.read_text(encoding="utf-8").splitlines()), line_budget)
+
+        index = (app / "index.html").read_text(encoding="utf-8")
+        links = tuple(f'css/{path.name}' for path in stylesheets)
+        self.assertEqual(tuple(sorted(index.index(link) for link in links)), tuple(index.index(link) for link in links))
+
+    def test_journey_design_contract_is_independent_and_executable(self) -> None:
+        project = ROOT / "examples/journey-to-the-west"
+        verifier = project / "qa/verify_design_contract.mjs"
+        source = verifier.read_text(encoding="utf-8")
+
+        self.assertNotIn("battle.mjs", source)
+        result = subprocess.run(
+            ["node", str(verifier)],
+            cwd=project,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_example_verification_does_not_repeat_the_complete_run_as_a_suite(self) -> None:
+        for path in (ROOT / "examples").glob("*/qa/verification.json"):
+            with self.subTest(path=path):
+                verification = json.loads(path.read_text(encoding="utf-8"))
+                self.assertEqual({"command", "exitCode"}, set(verification["verify"]))
+
+    def test_example_run_evidence_does_not_duplicate_qa_verdicts(self) -> None:
+        evidence_paths = (
+            ROOT / "examples/jin-ping-mei/qa/evidence/browser/evidence-normal.json",
+            ROOT / "examples/journey-to-the-west/qa/evidence/automated.json",
+            ROOT / "examples/project-plateau/build/evidence/current-run/report.json",
+        )
+        verdict_fields = {
+            "status",
+            "verify",
+            "completeRun",
+            "checks",
+            "suites",
+            "minimalChecks",
+            "passed",
+            "failed",
+        }
+        for path in evidence_paths:
+            with self.subTest(path=path):
+                evidence = json.loads(path.read_text(encoding="utf-8"))
+                self.assertTrue(verdict_fields.isdisjoint(evidence))
+                self.assertEqual(
+                    {"schemaVersion", "runId", "environment", "inputTrace", "observations"},
+                    set(evidence),
+                )
+
+        jin_ping_mei = json.loads(evidence_paths[0].read_text(encoding="utf-8"))
+        journey = json.loads(evidence_paths[1].read_text(encoding="utf-8"))
+        self.assertLessEqual(
+            len({
+                item["visual"]
+                for item in jin_ping_mei["observations"].values()
+                if "visual" in item
+            }),
+            3,
+        )
+        self.assertLessEqual(
+            len({
+                item["visual"]
+                for item in journey["observations"].values()
+                if "visual" in item
+            }),
+            3,
+        )
 
     def test_skill_validator_rejects_chinese_first_description(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

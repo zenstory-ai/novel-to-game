@@ -174,7 +174,6 @@ function createContinuousMembraneGeometry(side, shoulderOrigin, thickness = 0.07
   geometry.setIndex(indices);
   const finished = finishGeometry(geometry);
   finished.userData.spanStations = stationCount;
-  finished.userData.closedVolume = true;
   return finished;
 }
 
@@ -706,7 +705,6 @@ export function createPterodactyl() {
   };
 
   root.userData = {
-    assetVersion: 'procedural-pterodactyl-v5',
     rig,
     leftWing: leftWing.shoulder,
     rightWing: rightWing.shoulder,

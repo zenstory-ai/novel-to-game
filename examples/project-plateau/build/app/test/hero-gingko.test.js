@@ -157,10 +157,6 @@ test('cached gingko loader enforces matte non-emissive dielectric materials', as
   assert.ok(mesh.customDepthMaterial?.isMeshDepthMaterial);
   assert.equal(mesh.customDepthMaterial.userData.shadowModel,
     HERO_GINGKO_WIND_PROFILE.shadowModel);
-  assert.equal(first.userData.meshes, 1);
-  assert.equal(first.userData.triangles, 12);
-  assert.deepEqual(first.userData.sourceBounds.min, [-0.5, -1, -0.5]);
-  assert.deepEqual(first.userData.sourceBounds.max, [0.5, 1, 0.5]);
 });
 
 test('gingko visual attaches once and preserves grounded fallback behavior', async () => {
@@ -179,27 +175,22 @@ test('gingko visual attaches once and preserves grounded fallback behavior', asy
   assert.equal(anchor.children.filter((child) => child === first).length, 1);
   assert.equal(fallback.visible, false);
   assert.equal(first.position.y, 0.022);
-  assert.equal(first.userData.assetVersion, HERO_GINGKO_ASSET.version);
   assert.equal(first.userData.supportModel,
     'terrain-root-flare-to-collared-scaffold-to-short-shoot-fan-leaf');
   assert.equal(first.userData.energyModel, 'non-emissive-dielectric-bark-and-leaf-albedo');
   assert.equal(first.userData.supportSnapshot, null);
   assert.equal(first.userData.surfaceProfile.version, HERO_GINGKO_SURFACE_PROFILE.version);
   updateHeroGingkoWind(anchor, 8.5, false);
-  assert.deepEqual(first.userData.windSnapshot, {
-    time: 8.5,
-    strength: HERO_GINGKO_WIND_PROFILE.horizontalTipDisplacementMeters,
-    verticalStrength: HERO_GINGKO_WIND_PROFILE.verticalTipDisplacementMeters,
-    reducedMotion: false,
-    rootAndTrunkFlex: [0, 0],
-    maximumFlex: 1,
-    shadowModel: HERO_GINGKO_WIND_PROFILE.shadowModel,
-  });
+  const { windUniforms } = first.userData;
+  assert.equal(windUniforms.time.value, 8.5);
+  assert.equal(
+    windUniforms.strength.value,
+    HERO_GINGKO_WIND_PROFILE.horizontalTipDisplacementMeters,
+  );
   updateHeroGingkoWind(anchor, 12, true);
-  assert.equal(first.userData.windSnapshot.time, 0);
-  assert.equal(first.userData.windSnapshot.strength, 0);
-  assert.equal(first.userData.windSnapshot.verticalStrength, 0);
-  assert.equal(first.userData.windSnapshot.reducedMotion, true);
+  assert.equal(windUniforms.time.value, 0);
+  assert.equal(windUniforms.strength.value, 0);
+  assert.equal(windUniforms.verticalStrength.value, 0);
 });
 
 test('hierarchical gingko wind fixes the root and bounds supported crown motion', () => {

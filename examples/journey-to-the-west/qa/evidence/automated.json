@@ -1,42 +1,87 @@
 {
-  "url": "http://127.0.0.1:57377/?seed=42&fast=1",
-  "viewport": "1440x900",
-  "passed": 113,
-  "failed": 0,
-  "console_errors": 0,
-  "build_bytes": 4516088,
-  "generated_screenshots": 42,
-  "screenshots_retained_in_git": false,
-  "minimalChecks": {
-    "launch": true,
-    "render": true,
-    "input": true,
-    "coreLoop": true,
-    "outcome": true,
-    "restart": true
+  "schemaVersion": 1,
+  "runId": "journey-to-the-west-main-path",
+  "environment": {
+    "browser": "145.0.7632.6",
+    "viewport": [
+      1440,
+      900
+    ],
+    "url": "http://127.0.0.1:56672/?seed=42&fast=1",
+    "buildBytes": 4512533
   },
-  "qa": {
-    "command": "python3 test/verify.py",
-    "exitCode": 0,
-    "completeRun": {
-      "terminal": "ending: 三借芭蕉扇 · 完",
-      "restart": "btn-restart -> title: 西游记 · 三借芭蕉扇 (new campaign)"
+  "inputTrace": [
+    "start a new campaign",
+    "interact with the Earth God and Princess Iron Fan",
+    "complete six command battles and story decisions",
+    "reach the designed ending",
+    "restart to a clean title campaign"
+  ],
+  "observations": {
+    "launch": {
+      "id": "title-ready",
+      "inputs": [
+        "navigate to the seeded title"
+      ],
+      "state": {
+        "phase": "title"
+      },
+      "visual": "qa/evidence/browser/01_title.jpg"
     },
-    "checks": {
-      "launch": "PASS",
-      "render": "PASS",
-      "input": "PASS",
-      "coreLoop": "PASS",
-      "outcome": "PASS",
-      "restart": "PASS"
+    "input": {
+      "id": "overworld-input-accepted",
+      "inputs": [
+        "click start",
+        "advance dialogue"
+      ],
+      "state": {
+        "phase": "overworld"
+      }
+    },
+    "render": {
+      "id": "ending-rendered",
+      "inputs": [
+        "complete the final battle"
+      ],
+      "state": {
+        "phase": "ending",
+        "consoleErrors": []
+      },
+      "visual": "qa/evidence/browser/02_ending.jpg"
+    },
+    "coreLoop": {
+      "id": "campaign-loop-complete",
+      "inputs": [
+        "complete the authored campaign path"
+      ],
+      "state": {
+        "phase": "ending",
+        "battlesWon": 4
+      }
+    },
+    "outcome": {
+      "id": "designed-ending",
+      "inputs": [
+        "resolve the final victory"
+      ],
+      "state": {
+        "terminal": "ending: 三借芭蕉扇 · 完",
+        "phase": "ending"
+      },
+      "visual": "qa/evidence/browser/02_ending.jpg"
+    },
+    "restart": {
+      "id": "clean-restart",
+      "inputs": [
+        "click restart"
+      ],
+      "state": {
+        "restart": "new campaign title",
+        "phase": "title",
+        "stage": "prologue",
+        "battlesWon": 0
+      },
+      "visual": "qa/evidence/browser/03_restart_title.jpg"
     }
-  },
-  "suites": [
-    {
-      "id": "browser:complete-run",
-      "executed": true,
-      "passed": true,
-      "exitCode": 0
-    }
-  ]
+  }
 }

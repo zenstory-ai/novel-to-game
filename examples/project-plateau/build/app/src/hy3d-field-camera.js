@@ -40,11 +40,6 @@ function prepareTemplate(source) {
       : prepareMaterial(object.material);
   });
   template.updateMatrixWorld(true);
-  const bounds = new THREE.Box3().setFromObject(template);
-  template.userData.sourceBounds = {
-    min: bounds.min.toArray(),
-    max: bounds.max.toArray(),
-  };
   return template;
 }
 
@@ -78,15 +73,11 @@ export function createHy3dFieldCameraInstance(template, { scale = MODEL_SCALE } 
   const visual = new THREE.Group();
   const model = template.clone(true);
   visual.name = 'tool.field_camera_hands.hy3d_visual';
-  visual.userData.assetVersion = HY3D_FIELD_CAMERA_ASSET.version;
-  visual.userData.singleAssetPath = true;
   visual.userData.opticalForward = [0, 0, -1];
   visual.userData.playerFacingSide = 'ground-glass-back';
   model.name = 'tool.field_camera_hands.hy3d_model';
   model.scale.setScalar(scale);
   visual.add(model);
-  visual.userData.integratedHands = HY3D_FIELD_CAMERA_ASSET.integratedHands;
-  visual.userData.gripRoles = [...HY3D_FIELD_CAMERA_ASSET.gripRoles];
   return visual;
 }
 
@@ -95,6 +86,5 @@ export function attachHy3dFieldCameraVisual(mount, template) {
   const visual = createHy3dFieldCameraInstance(template);
   mount.add(visual);
   mount.userData.hy3dVisual = visual;
-  mount.userData.visualSource = HY3D_FIELD_CAMERA_ASSET.version;
   return visual;
 }

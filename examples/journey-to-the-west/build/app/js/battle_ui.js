@@ -1,20 +1,19 @@
 // 战斗界面:经典对阵(敌左上斜列、我右下斜列)、行动顺序条、指令菜单、飘字动画。
 // 界面只渲染与收集指令,一切数值结算走 engine。
 
-import { SKILLS, FORMS, FORMATIONS, ITEMS, BASIC_ATTACK } from './data.js';
+import { SKILLS, FORMATIONS } from './data.js';
 import {
   createBattle, executeRound, buildActionQueue, aliveUnits, getUnit,
-  effStat, unitSkills, levelUpParty, elementRelation, switchFormation,
-  previewDamage, effectiveSkill,
+  effStat, levelUpParty, switchFormation,
 } from './engine.js';
 import { TEXT } from './text.js';
-import { el, floatText, stampText, toast, showModal, showDialog, onceCard, iconBadge } from './ui.js';
+import { el, toast, showModal, showDialog, onceCard } from './ui.js';
 import { unitURL, bgStyle } from './assets.js';
 import { audio } from './audio.js';
 import { FxLayer } from './fx.js';
+import { createBattleAnimator } from './battle_animator.js';
+import { createBattleCommands } from './battle_commands.js';
 import { getSpeed, setSpeed, getSkipFx, setSkipFx, getShake, setShake } from './settings.js';
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function runBattleScreen(ctx) {
   // ctx: {root, battleId, partyLevels, petJoined, formation, items, seed, fast, showTutorial, systemControlsHost}
@@ -37,13 +36,7 @@ export async function runBattleScreen(ctx) {
   let skipFx = getSkipFx();
   let shakeOn = getShake();
   let D = (fast ? 0.22 : 1) / speed;
-  let formationNow = ctx.formation;
-  let transformHinted = false;
-  let sawFinisher = false;
-  let sawPhase = false;
-  let prevQueue = []; // 上回合行动顺序(抢位检测)
   let jumpedIds = [];
-  const floatSlots = new Map(); // 飘字错层防叠字
 
   // ---------- DOM 骨架 ----------
   const bRoot = el('div', 'battle-root');
@@ -158,6 +151,31 @@ export async function runBattleScreen(ctx) {
   refreshToggles();
 
   const cardByUnit = new Map();
+  const commandUi = createBattleCommands({
+    root,
+    state,
+    field,
+    cmdStatus,
+    cmdMenu,
+    previewBox,
+    cardByUnit,
+  });
+  const animator = createBattleAnimator({
+    root,
+    state,
+    field,
+    banner,
+    fx,
+    cardByUnit,
+    duration: () => D,
+    skipEffects: () => skipFx,
+    shakeEnabled: () => shakeOn,
+    refreshAll,
+    renderOrderBar,
+    renderUnits,
+    pushLog: commandUi.pushLog,
+    setJumpedIds: (ids) => { jumpedIds = ids; },
+  });
 
   // ---------- 站位(bottom 锚定 + 每场一条地平线) ----------
   // 地平线常量:卡底边在战场高度的百分比(自顶),按背景画里实际可站的地面读。
@@ -381,968 +399,11 @@ export async function runBattleScreen(ctx) {
     const other = Object.values(FORMATIONS).find((f) => f.key !== state.formation);
     const evs = switchFormation(state, other.key);
     if (!evs) return;
-    formationNow = other.key;
     refreshFormationBtn();
     refreshQueueMarks();
-    await showBanner(`${TEXT.commands.formation} · ${other.name}`);
+    await animator.showBanner(`${TEXT.commands.formation} · ${other.name}`);
     refreshAll();
   });
-
-  // ---------- 指令菜单 ----------
-  const CMD_ICONS = { attack: '攻', skill: '法', defend: '防', item: '道', special: '技', auto: '自', flee: '逃', back: '返' };
-
-  function cmdButton(label, cmd, sub) {
-    const b = el('button', 'btn cmd-btn');
-    b.dataset.cmd = cmd;
-    if (sub) b.dataset.sub = sub;
-    b.append(iconBadge(CMD_ICONS[cmd] ?? label[0]), el('span', '', label));
-    return b;
-  }
-
-  // ---------- 预期效果预览(简报一.2:悬停实时显示打谁/伤害区间/五行利弊) ----------
-  function relInfo(rel) {
-    if (rel === 'ke') return { label: `${TEXT.battle.previewKe} · 有利`, cls: 'good' };
-    if (rel === 'beike') return { label: `${TEXT.battle.previewBeike} · 不利`, cls: 'bad' };
-    return { label: TEXT.battle.previewNone, cls: 'none' };
-  }
-
-  function showPreview(rows) {
-    if (!rows || rows.length === 0) { hidePreview(); return; } // 无实据时报空,不挂静态说明(简报 T10)
-    previewBox.innerHTML = '';
-    for (const r of rows) {
-      const line = el('div', 'pv-line');
-      if (typeof r === 'string') {
-        line.textContent = r;
-      } else {
-        line.append(el('span', 'pv-main', r.main));
-        if (r.side) line.append(el('span', `pv-side ${r.cls ?? ''}`, r.side));
-      }
-      previewBox.appendChild(line);
-    }
-    previewBox.style.display = 'block';
-  }
-
-  function hidePreview() {
-    previewBox.style.display = 'none';
-  }
-
-  // 对单目标的预览行:伤害区间 + 双方五行 + 利弊 + 命中
-  function dmgPreviewOn(u, skill, target, label) {
-    const pv = previewDamage(state, u, target, skill);
-    const rel = relInfo(pv.rel);
-    return [{
-      main: `${label} → ${target.name} · 约 ${pv.min}~${pv.max}`,
-      side: `${u.element}→${target.element} ${rel.label} · 命中${Math.round(pv.hit * 100)}%`,
-      cls: rel.cls,
-    }];
-  }
-
-  // 指令默认预览:单体取首个活敌,群体按全体活敌聚合区间
-  function dmgPreviewRows(u, skill, label) {
-    const foes = aliveUnits(state, 'enemy');
-    if (foes.length === 0) return [`${label}:没有可攻击的目标`];
-    if (skill.target === 'enemies') {
-      let lo = Infinity, hi = 0, keN = 0, bkN = 0;
-      for (const f of foes) {
-        const pv = previewDamage(state, u, f, skill);
-        lo = Math.min(lo, pv.min);
-        hi = Math.max(hi, pv.max);
-        if (pv.rel === 'ke') keN += 1;
-        else if (pv.rel === 'beike') bkN += 1;
-      }
-      return [{
-        main: `${label} → 敌方全体 ×${foes.length}`,
-        side: `每敌约 ${lo}~${hi}${keN ? ` · 克 ${keN} 敌` : ''}${bkN ? ` · 被克 ${bkN} 敌` : ''}`,
-        cls: keN ? 'good' : bkN ? 'bad' : 'none',
-      }];
-    }
-    // 单体技的默认预览取首个活敌。这是「悬停预览」而非已确认的出手,必须标明:
-    // 独立 QA 的干净上下文裁决在此处卡住——预览已给出具体敌人与完整数值,
-    // 玩家无法区分它是悬停提示还是这一击已经落定。
-    const rows = dmgPreviewOn(u, skill, foes[0], label);
-    if (foes.length > 1) rows[0].side = `${rows[0].side} · 预览,出手时再选目标`;
-    return rows;
-  }
-
-  function skillPreviewRows(u, eff) {
-    if (eff.mul > 0 && (eff.target === 'enemy' || eff.target === 'enemies')) return dmgPreviewRows(u, eff, eff.name);
-    if (eff.heal) {
-      const amount = Math.max(1, Math.round(effStat(state, u, 'mag') * eff.heal));
-      return [{ main: `${eff.name} → 我方 · 约回复 ${amount}`, side: `MP ${eff.mp}`, cls: 'good' }];
-    }
-    return [`${eff.name}:${eff.desc || '辅助招式'} · MP ${eff.mp}`];
-  }
-
-  // 悬停与键盘聚焦共用同一预览(kbdhover 由键盘导航派发)
-  function attachPreview(btn, rowsFn) {
-    btn.addEventListener('mouseenter', () => showPreview(rowsFn()));
-    btn.addEventListener('mouseleave', hidePreview);
-    btn.addEventListener('kbdhover', () => showPreview(rowsFn()));
-  }
-
-  // ---------- 键盘导航(简报一.2:方向键+回车全流程,数字键 1-6 直选) ----------
-  let kbd = null;      // 当前指令菜单导航 {all, enabled, idx, cols, escBtn}
-  let picking = false; // 目标选择中,键盘由 pickTarget 独占
-
-  function guessCols(items) {
-    if (items.length < 2) return 1;
-    const top = items[0].offsetTop;
-    let c = 0;
-    for (const it of items) {
-      if (it.offsetTop !== top) break;
-      c += 1;
-    }
-    return Math.max(1, c);
-  }
-
-  function bindKbd(container, { escBtn = null } = {}) {
-    unbindKbd();
-    const all = [...container.querySelectorAll('button')];
-    const enabled = all.filter((b) => !b.classList.contains('disabled'));
-    if (all.length === 0) return;
-    kbd = { all, enabled, idx: 0, cols: guessCols(enabled), escBtn };
-    if (enabled.length) focusKbd(0);
-  }
-
-  function unbindKbd() {
-    if (kbd) for (const b of kbd.enabled) b.classList.remove('kbd-focus');
-    kbd = null;
-  }
-
-  function focusKbd(i) {
-    if (!kbd || kbd.enabled.length === 0) return;
-    kbd.enabled[kbd.idx]?.classList.remove('kbd-focus');
-    kbd.idx = ((i % kbd.enabled.length) + kbd.enabled.length) % kbd.enabled.length;
-    const b = kbd.enabled[kbd.idx];
-    b.classList.add('kbd-focus');
-    b.dispatchEvent(new Event('kbdhover'));
-  }
-
-  function onGlobalKey(ev) {
-    if (picking || !kbd) return;
-    // 有模态/对话时,键盘交还给它们自己的处理
-    if (document.querySelector('.modal-mask, .dlg-box')) return;
-    const k = ev.key;
-    if (k === 'ArrowLeft' || k === 'ArrowRight' || k === 'ArrowUp' || k === 'ArrowDown') {
-      const d = k === 'ArrowLeft' ? -1 : k === 'ArrowRight' ? 1 : k === 'ArrowUp' ? -kbd.cols : kbd.cols;
-      focusKbd(kbd.idx + d);
-      ev.preventDefault();
-    } else if (k === 'Enter' || k === ' ') {
-      const b = kbd.enabled[kbd.idx];
-      if (b) {
-        b.click();
-        ev.preventDefault();
-      }
-    } else if (/^[1-9]$/.test(k)) {
-      // 数字键直选:按按钮固定顺序(含禁用位),保证 1攻2法3防4道5特6自7逃 手感稳定
-      const b = kbd.all[Number(k) - 1];
-      if (b) {
-        if (b.classList.contains('disabled')) toast(root, b.title || '不可用');
-        else b.click();
-        ev.preventDefault();
-      }
-    } else if (k === 'Escape' && kbd.escBtn) {
-      kbd.escBtn.click();
-      ev.preventDefault();
-    }
-  }
-  window.addEventListener('keydown', onGlobalKey);
-
-  // 左侧小卷轴牌:当前单位头像+名字+五行徽记+提示
-  function setStatusFor(u) {
-    cmdStatus.innerHTML = '';
-    const avatar = el('img', 'cmd-avatar');
-    avatar.src = unitURL(u.portrait, u.name);
-    avatar.alt = u.name;
-    const who = el('div', 'cmd-who');
-    const nameRow = el('div', 'cmd-who-name');
-    nameRow.append(iconBadge(u.element, { round: true, sm: true }), el('span', '', u.name));
-    const tip = el('div', 'cmd-who-tip', '选择指令');
-    who.append(nameRow, tip);
-    cmdStatus.append(avatar, who);
-  }
-
-  function clearStatus() {
-    cmdStatus.innerHTML = '';
-    const who = el('div', 'cmd-who');
-    who.append(el('div', 'cmd-who-name', '战况'));
-    who.append(el('div', 'cmd-who-tip', '号令已下,观战'));
-    cmdStatus.append(who);
-  }
-
-  // ---------- 战况卷轴(简报 T8) ----------
-  // 结算/对话时段,底部指令台不再是一块带「……」的空白板:
-  // 右格以宣纸木刻排字列出最近 3 条战报。
-  const battleLog = []; // 新条目在前
-  function pushLog(text) {
-    battleLog.unshift(text);
-    if (battleLog.length > 6) battleLog.pop();
-  }
-  function showIdleBottom() {
-    cmdMenu.innerHTML = '';
-    clearStatus();
-    const sc = el('div', 'battle-report');
-    sc.append(el('div', 'battle-report-title', '战况'));
-    const lines = el('div', 'battle-report-lines');
-    if (battleLog.length === 0) lines.append(el('div', 'battle-report-line', '两军对峙,各听号令。'));
-    for (const t of battleLog.slice(0, 3)) lines.append(el('div', 'battle-report-line', t));
-    sc.append(lines);
-    cmdMenu.appendChild(sc);
-  }
-
-  function pickTarget(u, side, skill = BASIC_ATTACK, label = TEXT.commands.attack) {
-    // side: 'enemy' | 'party';悬停目标显示五行预览,键盘方向键循环、回车确认、数字键直选、Esc 取消
-    return new Promise((resolve) => {
-      picking = true;
-      const tipEl = cmdStatus.querySelector('.cmd-who-tip');
-      if (tipEl) tipEl.textContent = TEXT.commands.targetPick;
-      else cmdStatus.textContent = TEXT.commands.targetPick;
-      const valid = aliveUnits(state, side);
-      const cards = valid.map((t) => cardByUnit.get(t.id).card);
-      const badges = new Map();
-      for (const c of cards) c.classList.add('targetable');
-      const showCardPreview = (card) => {
-        const target = getUnit(state, card.dataset.unitId);
-        if (skill.mul > 0) showPreview(dmgPreviewOn(u, skill, target, label));
-        else if (skill.heal) {
-          const amount = Math.max(1, Math.round(effStat(state, u, 'mag') * skill.heal));
-          showPreview([{ main: `${label} → ${target.name} · 约回复 ${amount}`, cls: 'good' }]);
-        } else {
-          showPreview([`${label} → ${target.name}`]);
-        }
-      };
-      let focusIdx = 0;
-      const applyFocus = (i) => {
-        focusIdx = ((i % cards.length) + cards.length) % cards.length;
-        for (const c of cards) c.classList.remove('kbd-target');
-        const card = cards[focusIdx];
-        card.classList.add('kbd-target');
-        showCardPreview(card);
-      };
-      applyFocus(0);
-      const onOver = (ev) => {
-        const card = ev.target.closest('.unit-card');
-        if (!card || !cards.includes(card)) return;
-        if (!badges.has(card)) {
-          const target = getUnit(state, card.dataset.unitId);
-          const rel = elementRelation(u.element, target.element);
-          const b = el('div', `preview-badge ${rel === 'ke' ? 'good' : rel === 'beike' ? 'bad' : 'none'}`,
-            rel === 'ke' ? TEXT.battle.previewKe : rel === 'beike' ? TEXT.battle.previewBeike : TEXT.battle.previewNone);
-          card.appendChild(b);
-          badges.set(card, b);
-        }
-        showCardPreview(card);
-      };
-      const onOut = (ev) => {
-        const card = ev.target.closest('.unit-card');
-        const b = card && badges.get(card);
-        if (b) { b.remove(); badges.delete(card); }
-      };
-      const onClick = (ev) => {
-        const card = ev.target.closest('.unit-card');
-        if (!card || !cards.includes(card)) return;
-        cleanup();
-        resolve(card.dataset.unitId);
-      };
-      const onKey = (ev) => {
-        const k = ev.key;
-        if (k === 'Escape') { cleanup(); resolve(null); }
-        else if (k === 'ArrowLeft' || k === 'ArrowUp') { applyFocus(focusIdx - 1); ev.preventDefault(); }
-        else if (k === 'ArrowRight' || k === 'ArrowDown') { applyFocus(focusIdx + 1); ev.preventDefault(); }
-        else if (k === 'Enter' || k === ' ') {
-          const id = cards[focusIdx].dataset.unitId;
-          cleanup(); resolve(id); ev.preventDefault();
-        } else if (/^[1-9]$/.test(k)) {
-          const n = Number(k) - 1;
-          if (n < cards.length) {
-            const id = cards[n].dataset.unitId;
-            cleanup(); resolve(id); ev.preventDefault();
-          } else return;
-        } else return;
-        ev.stopImmediatePropagation();
-      };
-      function cleanup() {
-        picking = false;
-        hidePreview();
-        for (const c of cards) c.classList.remove('targetable', 'kbd-target');
-        for (const b of badges.values()) b.remove();
-        field.removeEventListener('click', onClick);
-        field.removeEventListener('mouseover', onOver);
-        field.removeEventListener('mouseout', onOut);
-        window.removeEventListener('keydown', onKey, true);
-      }
-      field.addEventListener('click', onClick);
-      field.addEventListener('mouseover', onOver);
-      field.addEventListener('mouseout', onOut);
-      window.addEventListener('keydown', onKey, true);
-    });
-  }
-
-  async function collectCommandFor(u) {
-    for (;;) {
-      setStatusFor(u);
-      highlightCommanding(u.id);
-      const cmd = await menuFor(u);
-      highlightCommanding(null);
-      if (cmd) return cmd;
-    }
-  }
-
-  function highlightCommanding(id) {
-    for (const [, uc] of cardByUnit) uc.card.classList.remove('commanding');
-    if (id) cardByUnit.get(id)?.card.classList.add('commanding');
-  }
-
-  function menuFor(u) {
-    return new Promise((resolve) => {
-      cmdMenu.innerHTML = '';
-      const wrap = el('div', 'cmd-grid');
-
-      // 常驻说明文字已从战场撤掉(简报 T10):预览条只报「这一击/这个菜单现在是什么」,
-      // 静态词条释义收进顶栏「助」帮助面板;防御一条报数值后果,属反馈,保留。
-      const bAtk = cmdButton(TEXT.commands.attack, 'attack');
-      attachPreview(bAtk, () => dmgPreviewRows(u, BASIC_ATTACK, TEXT.commands.attack));
-      bAtk.onclick = async () => {
-        const t = await pickTarget(u, 'enemy', BASIC_ATTACK, TEXT.commands.attack);
-        resolve(t ? { type: 'attack', targetId: t } : null);
-      };
-      const bSkill = cmdButton(TEXT.commands.skill, 'skill');
-      attachPreview(bSkill, () => [`${TEXT.commands.skill} · ${unitSkills(u).length} 招 · ${TEXT.ui.mp} ${u.mp}/${u.maxMp}`]);
-      bSkill.onclick = () => skillMenu(u, resolve);
-      const bDef = cmdButton(TEXT.commands.defend, 'defend');
-      bDef.title = TEXT.battle.defendTip;
-      attachPreview(bDef, () => [TEXT.battle.defendTip]);
-      bDef.onclick = () => resolve({ type: 'defend' });
-      const bItem = cmdButton(TEXT.commands.item, 'item');
-      bItem.title = TEXT.battle.itemTip;
-      attachPreview(bItem, () => [TEXT.battle.itemTip]);
-      bItem.onclick = () => itemMenu(u, resolve);
-      const bSp = cmdButton(TEXT.commands.special, 'special');
-      bSp.title = TEXT.battle.specialTip;
-      attachPreview(bSp, () => [TEXT.battle.specialTip]);
-      if (!u.hasTransform) {
-        bSp.classList.add('disabled');
-        bSp.title = TEXT.battle.specialTip;
-      } else {
-        bSp.onclick = () => specialMenu(u, resolve);
-      }
-      const bAuto = cmdButton(TEXT.commands.auto, 'auto');
-      bAuto.title = TEXT.battle.autoTip;
-      attachPreview(bAuto, () => [TEXT.battle.autoTip]);
-      bAuto.onclick = () => {
-        const tipEl = cmdStatus.querySelector('.cmd-who-tip');
-        if (tipEl) tipEl.textContent = '交给自动';
-        resolve({ type: 'auto' });
-      };
-      const bFlee = cmdButton(TEXT.commands.flee, 'flee');
-      if (state.def.boss) {
-        // 「BOSS 战无效」由按钮变灰来说,不再常驻文案(简报 T10)
-        bFlee.classList.add('disabled');
-        bFlee.title = TEXT.ui.bossNoEscape;
-        attachPreview(bFlee, () => []);
-      } else {
-        bFlee.onclick = () => resolve({ type: 'flee' });
-        attachPreview(bFlee, () => []);
-      }
-
-      wrap.append(bAtk, bSkill, bDef, bItem, bSp, bAuto, bFlee);
-      cmdMenu.appendChild(wrap);
-      bindKbd(wrap);
-    });
-  }
-
-  function backButton(resolve) {
-    const b = cmdButton(TEXT.commands.back, 'back');
-    b.onclick = () => resolve(null);
-    return b;
-  }
-
-  function skillMenu(u, resolve) {
-    cmdMenu.innerHTML = '';
-    const wrap = el('div', 'cmd-list');
-    const keys = unitSkills(u);
-    const targetLabel = { enemy: '单体', enemies: '群体', ally: '友方', party: '全队', self: '自身' };
-    for (const k of keys) {
-      const s = SKILLS[k];
-      const eff = effectiveSkill(u, k, s); // 预览与结算同走熟练强化(简报验收:预览=结算)
-      const item = el('button', 'btn cmd-item');
-      item.dataset.skill = k;
-      const nm = el('span', 'cmd-item-name');
-      nm.append(iconBadge(s.kind === 'mag' ? '法' : '物', { sm: true }), document.createTextNode(' ' + s.name));
-      const meta = el('span', 'cmd-item-meta', `${targetLabel[s.target] ?? ''}${s.kind === 'mag' ? '法术' : '物理'}·${u.element} · MP${eff.mp}`);
-      item.append(nm, meta);
-      if (s.desc) item.title = s.desc;
-      attachPreview(item, () => skillPreviewRows(u, eff));
-      if (eff.mp > u.mp) {
-        item.classList.add('disabled');
-        item.title = TEXT.ui.noMp;
-      } else {
-        item.onclick = async () => {
-          if (s.target === 'enemy') {
-            const t = await pickTarget(u, 'enemy', eff, s.name);
-            resolve(t ? { type: 'skill', skillId: k, targetId: t } : null);
-          } else if (s.target === 'ally') {
-            const t = await pickTarget(u, 'party', eff, s.name);
-            resolve(t ? { type: 'skill', skillId: k, targetId: t } : null);
-          } else {
-            resolve({ type: 'skill', skillId: k });
-          }
-        };
-      }
-      wrap.appendChild(item);
-    }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
-  }
-
-  function itemMenu(u, resolve) {
-    cmdMenu.innerHTML = '';
-    const wrap = el('div', 'cmd-list');
-    const owned = Object.entries(state.items).filter(([, n]) => n > 0);
-    if (owned.length === 0) wrap.appendChild(el('div', 'cmd-empty', '——'));
-    for (const [k, n] of owned) {
-      const it = ITEMS[k];
-      const item = el('button', 'btn cmd-item', `${it.name} ×${n}`);
-      item.dataset.item = k;
-      if (it.desc) item.title = it.desc;
-      attachPreview(item, () => [`${it.name}:${it.desc}`]);
-      item.onclick = async () => {
-        if (it.target === 'ally') {
-          const t = await pickTarget(u, 'party', { mul: 0 }, it.name);
-          resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
-        } else if (it.target === 'enemy') {
-          const t = await pickTarget(u, 'enemy', { mul: 0 }, it.name);
-          resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
-        } else {
-          resolve({ type: 'item', itemId: k });
-        }
-      };
-      wrap.appendChild(item);
-    }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
-  }
-
-  async function specialMenu(u, resolve) {
-    // 首次打开先弹「七十二变」小卡片
-    await onceCard(root, 'transform', TEXT.onceCards.transform.title, TEXT.onceCards.transform.lines);
-    cmdMenu.innerHTML = '';
-    const wrap = el('div', 'cmd-list');
-    const foes = aliveUnits(state, 'enemy');
-    for (const [fk, f] of Object.entries(FORMS)) {
-      // 五行杠杆提示:该形态能克到场上哪个活敌
-      const countered = foes.filter((e) => elementRelation(f.element, e.element) === 'ke');
-      const hint = countered.length > 0 ? ` · 克${countered[0].element}·${countered[0].name}` : '';
-      const item = el('button', 'btn cmd-item');
-      item.dataset.form = fk;
-      const nm = el('span', 'cmd-item-name', `${TEXT.commands.transform} · ${f.name}`);
-      const meta = el('span', 'cmd-item-meta', `${f.element}属性 · 无消耗${hint}`);
-      item.append(nm, meta);
-      item.title = f.desc;
-      attachPreview(item, () => [`${f.name}:${f.desc}${hint}`]);
-      if (countered.length > 0) item.classList.add('counter');
-      item.onclick = () => resolve({ type: 'transform', formId: fk });
-      wrap.appendChild(item);
-    }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
-  }
-
-  // ---------- 事件动画 ----------
-  function cardOf(id) { return cardByUnit.get(id); }
-
-  // 标志性法术 → 演出种类(简报二.4):火/水/金身各有专属粒子+色调,不再共用通用特效。
-  // 只给标志性技能(玩家绝技与 BOSS 大招);小怪的寻常火弹走通用音效,避免场场连播演出拖节奏。
-  const skillKeyByName = Object.fromEntries(Object.entries(SKILLS).map(([k, s]) => [s.name, k]));
-  const SPELL_FX = {
-    lieyan_quan: 'fire', huolian: 'fire', fenye: 'fire', chiyan: 'fire',
-    sihuo: 'fire',
-    pishuijue: 'water', xuanbing_ji: 'water', jinglang: 'water', bingfeng: 'water',
-    luohanjinshen: 'gold', hufa: 'gold', gangtie: 'gold', huoyan: 'gold',
-    douzhan: 'gold', jinjing: 'gold', guiyuan: 'water',
-    shanfeng: 'wind', // 罗刹女招牌·芭蕉扇风(一借核心意象,非小怪寻常技)
-  };
-
-  async function showBanner(text, cls = '') {
-    banner.textContent = text;
-    banner.className = `skill-banner ${cls}`;
-    banner.style.display = 'block';
-    await sleep(520 * D);
-    banner.style.display = 'none';
-  }
-
-  function lunge(actorId, targetId) {
-    const a = cardOf(actorId), t = cardOf(targetId);
-    if (!a || !t) return;
-    const ar = a.card.getBoundingClientRect(), tr = t.card.getBoundingClientRect();
-    const dx = (tr.left - ar.left) * 0.24, dy = (tr.top - ar.top) * 0.24;
-    a.card.style.transform = `translate(${dx}px, ${dy}px)`;
-    setTimeout(() => { a.card.style.transform = ''; }, 200 * D + 60);
-  }
-
-  function shake(id, hard = false) {
-    const uc = cardOf(id);
-    if (!uc) return;
-    uc.card.classList.remove('shake', 'shake-hard');
-    void uc.card.offsetWidth;
-    uc.card.classList.add(hard ? 'shake-hard' : 'shake');
-  }
-
-  function flashHit(id) {
-    const uc = cardOf(id);
-    if (!uc) return;
-    uc.img.classList.remove('hit-flash');
-    void uc.img.offsetWidth;
-    uc.img.classList.add('hit-flash');
-    setTimeout(() => uc.img.classList.remove('hit-flash'), 380);
-  }
-
-  // 屏幕震动:克制幅度(2px),暴击/克制命中更重(4px);可关(简报二.1)
-  function quake(heavy = false) {
-    if (!shakeOn) return;
-    field.classList.remove('quake', 'quake-hi');
-    void field.offsetWidth;
-    field.classList.add(heavy ? 'quake-hi' : 'quake');
-    setTimeout(() => field.classList.remove('quake', 'quake-hi'), 500);
-  }
-
-  // 飘字错层:同一目标同时多个飘字时向下排
-  function nextSlot(id) {
-    const n = (floatSlots.get(id) ?? 0) + 1;
-    floatSlots.set(id, n);
-    setTimeout(() => floatSlots.set(id, 0), 1200);
-    return n - 1;
-  }
-
-  // 回合切换/战斗结束时强制清空飘字层(简报 T9):
-  // 飘字动画是真实时长的 CSS,结算睡眠随 D 缩放——加速模式下回合结束了,
-  // 上一回合的飘字还挂在画面上淡出(残影)。新回合开始前一律不留。
-  function clearFloats() {
-    field.querySelectorAll('.float-text, .float-stamp').forEach((n) => n.remove());
-  }
-
-  async function playEvents(events) {
-    const done = [];
-    let burnFxPlayed = false; // 地火灼伤同回合可能连跳多人,音效只播一记
-    for (const ev of events) {
-      switch (ev.t) {
-        case 'round':
-          // 与上回合顺序比较,标出插到更前的单位(抢位)
-          jumpedIds = prevQueue.length
-            ? ev.queue.filter((id, i) => {
-                const before = prevQueue.indexOf(id);
-                return before > -1 && i < before;
-              })
-            : [];
-          prevQueue = [...ev.queue];
-          refreshAll();
-          renderOrderBar();
-          break;
-        case 'turn':
-          renderOrderBar(ev.unit, done);
-          break;
-        case 'action': {
-          const u = getUnit(state, ev.actor);
-          const uc = u ? cardOf(ev.actor) : null;
-          if (uc) floatText(uc.anchor, ev.name, 'info');
-          if (u) pushLog(`${u.name} · ${ev.name}`);
-          if (ev.skill) {
-            const fxKind = SPELL_FX[skillKeyByName[ev.name]];
-            if (fxKind && uc) {
-              // 标志性法术演出:粒子 + 背景色调突变 + 音效(跳过演出时缩为一道色闪)
-              audio.sfx(fxKind === 'fire' ? 'firefx' : fxKind === 'water' ? 'waterfx' : fxKind === 'wind' ? 'fan2' : 'skill');
-              await fx.play(fxKind, uc.card, { D, skipFx });
-            } else {
-              audio.sfx('skill');
-              await sleep(160 * D);
-            }
-          } else {
-            await sleep(160 * D);
-          }
-          break;
-        }
-        case 'damage': {
-          lunge(ev.actor, ev.target);
-          await sleep(120 * D);
-          const uc = cardOf(ev.target);
-          if (uc) {
-            const slot = nextSlot(ev.target);
-            const hard = !!(ev.crit || ev.rel === 'ke'); // 暴击/克制命中明显更重(简报二.1)
-            if (ev.combo) {
-              stampText(uc.anchor, TEXT.float.combo, 'combo-stamp');
-              floatText(uc.anchor, `${ev.amount}`, 'dmg combo-dmg', slot);
-            } else {
-              let cls = 'dmg';
-              if (ev.crit) cls = 'crit';
-              else if (ev.rel === 'ke') cls = 'ke-big';
-              else if (ev.rel === 'beike') cls = 'beike';
-              if (ev.amount > 200) cls += ' huge';
-              floatText(uc.anchor, `${ev.amount}`, cls, slot);
-              if (ev.crit) stampText(uc.anchor, TEXT.float.crit, 'crit-stamp');
-              // 五行教学:克制命中时在目标身上盖「金克木」三字印(简报二.3)
-              if (ev.rel === 'ke') {
-                const atkU = getUnit(state, ev.actor);
-                const defU = getUnit(state, ev.target);
-                if (atkU && defU) stampText(uc.anchor, `${atkU.element}克${defU.element}`, 'wuxing-stamp');
-              }
-              if (ev.rel === 'beike') floatText(uc.anchor, TEXT.float.beike, 'beike-label', slot + 1);
-            }
-            shake(ev.target, hard);
-            flashHit(ev.target);
-            quake(ev.crit || ev.rel === 'ke'); // 普通命中 2px,暴击/克制 4px
-            if (ev.combo) audio.sfx('combo');
-            else if (ev.crit) audio.sfx('crit');
-            else if (ev.rel === 'ke') audio.sfx('ke');
-            else if (ev.rel === 'beike') audio.sfx('thud');
-            else audio.sfx('hit');
-          }
-          refreshAll();
-          await sleep(300 * D);
-          break;
-        }
-        case 'miss': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.float.miss, 'miss');
-          audio.sfx('thud');
-          await sleep(240 * D);
-          break;
-        }
-        case 'heal': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.float.heal.replace('{n}', ev.amount), 'heal');
-          audio.sfx('heal');
-          refreshAll();
-          await sleep(220 * D);
-          break;
-        }
-        case 'mp': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.float.mpUp.replace('{n}', ev.amount), 'mpup');
-          refreshAll();
-          break;
-        }
-        case 'buff': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.buffNames[ev.buff] ?? ev.buff, 'buff');
-          // 定风丹护体:免疫减速时给出可辨识演出(简报二.4)
-          if (ev.buff === 'spd_down') {
-            const tu = getUnit(state, ev.target);
-            if (tu?.immuneSpdDown && uc) {
-              stampText(uc.anchor, '定风丹', 'ke-stamp');
-              floatText(uc.anchor, TEXT.battle.dingfeng, 'ke');
-              audio.sfx('ke');
-              await fx.play('ward', uc.card, { D, skipFx });
-            }
-          }
-          refreshAll();
-          await sleep(160 * D);
-          break;
-        }
-        case 'resist': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.float.miss, 'miss');
-          break;
-        }
-        case 'defend': {
-          const uc = cardOf(ev.unit);
-          if (uc) floatText(uc.anchor, TEXT.float.defend, 'buff');
-          refreshAll();
-          await sleep(140 * D);
-          break;
-        }
-        case 'stun': {
-          const uc = cardOf(ev.unit);
-          if (uc) floatText(uc.anchor, TEXT.float.stun, 'beike');
-          await sleep(160 * D);
-          break;
-        }
-        case 'transform': {
-          const uc = cardOf(ev.actor);
-          const actorU = getUnit(state, ev.actor);
-          if (actorU) pushLog(`${actorU.name} 变化 · ${ev.name}`);
-          if (uc) {
-            uc.card.classList.add('flash');
-            floatText(uc.anchor, TEXT.float.transform.replace('{name}', ev.name), 'ke');
-            setTimeout(() => uc.card.classList.remove('flash'), 500 * D);
-          }
-          audio.sfx('transform');
-          refreshAll();
-          await sleep(360 * D);
-          break;
-        }
-        case 'form_end': {
-          const uc = cardOf(ev.unit);
-          if (uc) floatText(uc.anchor, TEXT.float.formEnd, 'info');
-          refreshAll();
-          break;
-        }
-        case 'finisher': {
-          sawFinisher = true;
-          const overlay = el('div', 'finisher-overlay');
-          const img = el('img');
-          img.src = unitURL('insect', '虫');
-          const tx = el('div', 'finisher-text', TEXT.story.luoshaMid[0].text);
-          overlay.append(img, tx);
-          field.appendChild(overlay);
-          shake(ev.target);
-          await sleep(1400 * D);
-          overlay.remove();
-          break;
-        }
-        case 'reinforce': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, TEXT.float.heal.replace('{n}', ev.amount), 'heal');
-          refreshAll();
-          break;
-        }
-        case 'phase': {
-          sawPhase = true;
-          renderUnits();
-          pushLog(TEXT.story.phase2[0].text);
-          const uc = cardOf(ev.unit);
-          if (uc) {
-            uc.card.classList.add('flash');
-            setTimeout(() => uc.card.classList.remove('flash'), 600 * D);
-          }
-          audio.sfx('telegraph');
-          await showBanner(TEXT.story.phase2[0].text, 'phase-banner');
-          quake(true);
-          refreshAll();
-          await sleep(300 * D);
-          break;
-        }
-        case 'death': {
-          const uc = cardOf(ev.unit);
-          const deadU = getUnit(state, ev.unit);
-          if (deadU) pushLog(`${deadU.name} 败退`);
-          if (uc) uc.card.classList.add('dead');
-          refreshAll();
-          await sleep(320 * D);
-          break;
-        }
-        case 'telegraph': {
-          const u = getUnit(state, ev.unit);
-          const uc = cardOf(ev.unit);
-          if (uc) uc.card.classList.add('charging');
-          audio.sfx('telegraph');
-          await showBanner(TEXT.battle.telegraph.replace('{name}', u ? u.name : '').replace('{skill}', ev.name), 'telegraph-banner');
-          break;
-        }
-        case 'heavy': {
-          const ac = cardOf(ev.actor);
-          if (ac) ac.card.classList.remove('charging');
-          const uc = cardOf(ev.target);
-          lunge(ev.actor, ev.target);
-          if (uc) {
-            floatText(uc.anchor, `${ev.amount}`, 'heavy', 0);
-            stampText(uc.anchor, ev.name, 'heavy-stamp');
-            if (ev.mitigated) floatText(uc.anchor, TEXT.battle.heavyMitigated, 'buff', 1);
-            shake(ev.target, true);
-            flashHit(ev.target);
-          }
-          quake(true);
-          audio.sfx('heavy');
-          refreshAll();
-          await sleep(420 * D);
-          break;
-        }
-        case 'caught': {
-          const uc = cardOf(ev.target);
-          if (uc) uc.card.classList.add('dead');
-          // 只留 toast 一条通道:同一句提示不再「飘字+顶部横幅」两处绘制(记录缺陷 R2)
-          pushLog(`收服 ${ev.name}`);
-          audio.sfx('levelup');
-          toast(root, `收服了 ${ev.name}!可在「召唤兽」中安排上阵`);
-          await sleep(420 * D);
-          break;
-        }
-        case 'catch_fail': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, '挣脱了!', 'miss');
-          await sleep(240 * D);
-          break;
-        }
-        case 'ward': {
-          const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, '避火!', 'buff');
-          await sleep(200 * D);
-          break;
-        }
-        case 'story_blow': {
-          // 罗刹女祭真扇:悟空被吹飞(演出)——满场风痕,阴风骤起
-          audio.sfx('fan2');
-          const bossUc = ev.actor ? cardOf(ev.actor) : null;
-          if (bossUc) {
-            bossUc.card.classList.add('flash');
-            setTimeout(() => bossUc.card.classList.remove('flash'), 500 * D);
-          }
-          await showBanner('芭蕉扇——!', 'fan-banner');
-          const fxP = fx.play('wind', null, { D, skipFx });
-          const wk = cardOf('p0');
-          if (wk) {
-            wk.card.classList.add('blown');
-            floatText(wk.anchor, '吹飞五万里!', 'heavy');
-          }
-          quake(true);
-          await fxP;
-          await sleep(1400 * D);
-          break;
-        }
-        case 'story_retreat': {
-          // 牛魔王赴宴而走(演出)
-          audio.sfx('telegraph');
-          await showBanner('「罢了!本王还要去碧波潭赴宴——」', 'telegraph-banner');
-          const bossUc = ev.actor ? cardOf(ev.actor) : null;
-          if (bossUc) {
-            bossUc.card.classList.add('retreat');
-            floatText(bossUc.anchor, '扬长而去', 'info');
-          }
-          await sleep(1200 * D);
-          break;
-        }
-        case 'summon': {
-          renderUnits();
-          const uc = cardOf(ev.unit);
-          if (uc) {
-            floatText(uc.anchor, `${ev.name} 来援!`, 'buff');
-            uc.card.classList.add('flash');
-            setTimeout(() => uc.card.classList.remove('flash'), 500 * D);
-          }
-          audio.sfx('telegraph');
-          refreshAll();
-          await sleep(320 * D);
-          break;
-        }
-        case 'rout': {
-          const uc = cardOf(ev.unit);
-          if (uc) {
-            floatText(uc.anchor, '溃散!', 'miss');
-            uc.card.classList.add('dead');
-          }
-          refreshAll();
-          await sleep(240 * D);
-          break;
-        }
-        case 'god_assist': {
-          // 众神围剿:哪吒登场助战(门控演出)
-          audio.sfx('victory');
-          const overlay = el('div', 'god-overlay');
-          const img = el('img');
-          img.src = unitURL('nezha', '哪');
-          const tx = el('div', 'finisher-text', `${ev.name} 率众神前来助战!`);
-          overlay.append(img, tx);
-          field.appendChild(overlay);
-          const uc = cardOf(ev.target);
-          if (uc) {
-            floatText(uc.anchor, `${ev.amount}`, 'heavy');
-            shake(ev.target, true);
-            flashHit(ev.target);
-          }
-          quake(true);
-          await sleep(1600 * D);
-          overlay.remove();
-          refreshAll();
-          break;
-        }
-        case 'flee': {
-          toast(root, ev.success ? TEXT.ui.escaped : (state.def.boss ? TEXT.ui.bossNoEscape : TEXT.ui.escapeFail));
-          await sleep(300 * D);
-          break;
-        }
-        case 'formation': {
-          formationNow = ev.formation;
-          const f = FORMATIONS[ev.formation];
-          await showBanner(`${TEXT.commands.formation} · ${f.name}`);
-          refreshAll();
-          break;
-        }
-        case 'auto': break;
-        case 'item': {
-          const it = ITEMS[ev.item];
-          if (ev.item === 'truefan' && ev.stage) {
-            // 真扇三段专属演出:一息火(灰烬)/二生风(风痕)/三落雨(甘霖),各不相同
-            audio.sfx(`fan${ev.stage}`);
-            await showBanner(it.name, 'fan-banner');
-            await fx.play(`fan${ev.stage}`, null, { D, skipFx });
-          } else if (ev.item === 'fakefan') {
-            audio.sfx('thud');
-            await showBanner(it.name, 'fan-banner');
-            await fx.play('backfire', null, { D, skipFx });
-          } else {
-            await showBanner(it.name, ev.item?.includes('fan') ? 'fan-banner' : '');
-          }
-          break;
-        }
-        case 'info': {
-          if (ev.text === 'fakefan') toast(root, TEXT.fanMsgs.fakefan, 3200);
-          else if (ev.text === 'fan1') toast(root, TEXT.fanMsgs.fan1, 3200);
-          else if (ev.text === 'fan2') toast(root, TEXT.fanMsgs.fan2, 3200);
-          else if (ev.text === 'fan3') toast(root, TEXT.fanMsgs.fan3, 3200);
-          else if (ev.text === 'fallback_attack') {
-            const u = getUnit(state, ev.unit);
-            if (u) toast(root, TEXT.fanMsgs.fallback.replace('{name}', u.name));
-          }
-          await sleep(200 * D);
-          break;
-        }
-        case 'buff_end': refreshAll(); break;
-        case 'field_burn': {
-          // 战场态势·地火炙烤:与「克!」同一套反馈语言——数字+印章+受击抖动
-          const uc = cardOf(ev.target);
-          if (uc) {
-            const slot = nextSlot(ev.target);
-            floatText(uc.anchor, `${ev.amount}`, 'burn', slot);
-            stampText(uc.anchor, state.def.fieldRule?.name ?? '地火', 'burn-stamp');
-            shake(ev.target);
-            flashHit(ev.target);
-            const u = getUnit(state, ev.target);
-            if (u) pushLog(`${state.def.fieldRule?.name ?? '地火'} · ${u.name} -${ev.amount}`);
-          }
-          if (!burnFxPlayed) { audio.sfx('firefx'); burnFxPlayed = true; }
-          refreshAll();
-          await sleep(260 * D);
-          break;
-        }
-        case 'field_break': {
-          // 结阵被破:横幅+常驻条变灰,敌方防御回落当场可见
-          pushLog(`${ev.name} 已破`);
-          audio.sfx('ke');
-          await showBanner(`${ev.name} · 破!`, 'phase-banner');
-          refreshAll();
-          await sleep(240 * D);
-          break;
-        }
-        case 'battle_end': break;
-      }
-      if (ev.t !== 'round' && ev.t !== 'battle_end') {
-        const idx = buildActionQueueDoneIndex(ev);
-        if (idx) done.push(idx);
-      }
-      // 速度变化(生风/变化/换阵/增益到期)后立即重排顺序条
-      if (['buff', 'transform', 'form_end', 'formation', 'buff_end'].includes(ev.t)) renderOrderBar();
-      // 教学提示:罗刹女体弱 → 提示变化
-      if (!transformHinted && state.def.transformFinisher && ev.t === 'damage') {
-        const fin = state.def.transformFinisher;
-        const boss = state.units.find((x) => x.side === 'enemy' && x.defKey === fin.bossKey);
-        if (boss && boss.alive && boss.hp / boss.maxHp <= fin.hpBelow) {
-          transformHinted = true;
-          toast(root, TEXT.tutorial.hintTransform, 4200);
-        }
-      }
-    }
-  }
-
-  function buildActionQueueDoneIndex(ev) {
-    // 行动完成的单位(用于顺序条勾销):在 turn 事件后该单位即视为已行动
-    if (ev.t === 'turn') return ev.unit;
-    return null;
-  }
 
   // ---------- 主循环 ----------
   renderUnits();
@@ -1380,34 +441,34 @@ export async function runBattleScreen(ctx) {
     refreshFormationBtn();
 
     while (!state.over && state.round <= 60) {
-      clearFloats(); // 新回合开始前,上一回合的飘字一律不留(简报 T9)
+      animator.clearFloats(); // 新回合开始前,上一回合的飘字一律不留(简报 T9)
       renderOrderBar();
       commandPhase = true;
       refreshFormationBtn();
-      const commands = {};
+      const roundCommands = {};
       for (const u of aliveUnits(state, 'party')) {
         if (state.over) break;
-        commands[u.id] = await collectCommandFor(u);
+        roundCommands[u.id] = await commandUi.collectCommandFor(u);
         renderOrderBar();
       }
       commandPhase = false;
       refreshFormationBtn();
-      unbindKbd(); // 指令阶段结束,菜单清空前先撤掉键盘导航
-      showIdleBottom(); // 结算期间底栏改展示战况卷轴,不再是空白板
-      hidePreview();
-      const events = executeRound(state, commands);
-      await playEvents(events);
+      commandUi.unbindKeyboard(); // 指令阶段结束,菜单清空前先撤掉键盘导航
+      commandUi.showIdleBottom(); // 结算期间底栏改展示战况卷轴,不再是空白板
+      commandUi.hidePreview();
+      const events = executeRound(state, roundCommands);
+      await animator.playEvents(events);
       refreshAll();
     }
 
     // ---------- 结算 ----------
     root.querySelectorAll('.toast').forEach((n) => n.remove()); // 清掉战斗中的提示,别压在结算面板上
-    clearFloats(); // 结算帧同样不留飘字残影(简报 T9)
+    animator.clearFloats(); // 结算帧同样不留飘字残影(简报 T9)
     if (state.winner === 'story') {
       // 剧情桥段:保留战斗画面作过场底景,由 main 在过场结束后移除
       return { winner: 'story', rounds: state.round - 1 };
     }
-    if (sawFinisher) {
+    if (animator.hadFinisher()) {
       await showDialog(root, TEXT.story.luoshaMid);
     }
 
@@ -1436,9 +497,7 @@ export async function runBattleScreen(ctx) {
     bRoot.remove();
     return { winner: 'enemy', retry };
   } finally {
-    window.removeEventListener('keydown', onGlobalKey);
-    unbindKbd();
-    hidePreview();
+    commandUi.dispose();
     toggles.remove(); // 开关是挂在顶栏「设」下拉里的,随战斗结束一并撤下
     fx.dispose();
   }

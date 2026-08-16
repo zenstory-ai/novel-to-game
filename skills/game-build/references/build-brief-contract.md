@@ -38,7 +38,8 @@ commands:
   start: [命令]
   verify: [一条权威验证命令]
 verification:
-  completeRun: qa/verification.json#completeRun
+  owner: game-qa
+  evidence: [完整运行生成的工作区相对路径]
 
 # 当前限制
 [scope / reason；testedRuntime 与 targetRuntime 不同时列目标独有未测试项]
@@ -46,9 +47,9 @@ verification:
 
 ## 最小完成证据
 
-一次完整路径必须证明：启动成功、非空且变化的真实渲染、真实输入改变状态、核心循环完成、至少一个
-设计结果可达、restart 回到定义初态。状态、runtime、visual 各证明自己的层；证据使用工作区相对
-路径，不能只留临时目录或逐点击截图。
+权威 verify 必须能在一次完整路径中证明：启动成功、非空且变化的真实渲染、真实输入改变状态、核心
+循环完成、至少一个设计结果可达、restart 回到定义初态。构建阶段只准备入口和可观察状态；由
+`game-qa` 实际运行一次并写结论。证据使用工作区相对路径，不能只留临时目录或逐点击截图。
 
 测试环境与目标运行环境不同时，这六项只声明实际覆盖；源码身份、公网、营销、主观趣味、权利
 判断和完成度声明不进入这六项机器事实。
@@ -73,6 +74,6 @@ verification:
 
 ## 权威验证
 
-verify 可以组合现有游戏效果脚本，但必须一次真实运行；在 `qa/verification.json` 回写实际 command、
-exit code、完整路径、六项结果和当前限制。预算、时间或调用上限只会留下 NOT_RUN/FAIL、延期或缩小
-范围，不会替代证据。
+verify 可以组合现有游戏效果脚本，但最终 QA 只运行一次；由 `game-qa` 在 `qa/verification.json`
+回写实际 command、exit code、完整路径、六项结果和当前限制。构建者不得预填 PASS 或另跑一套平行
+验收。预算、时间或调用上限只会留下 NOT_RUN/FAIL、延期或缩小范围，不会替代证据。

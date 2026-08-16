@@ -1,67 +1,29 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "status": "PASS",
   "verify": {
     "command": "python3 test/verify.py",
-    "exitCode": 0,
-    "suites": [
-      {
-        "id": "browser:complete-run",
-        "executed": true,
-        "passed": true,
-        "exitCode": 0
-      }
-    ]
+    "exitCode": 0
   },
   "completeRun": {
-    "id": "jin-ping-mei-current-complete-run",
+    "id": "jin-ping-mei-main-path",
     "cleanContext": true,
     "terminal": "exclusive-ending",
     "restart": "day-1-opening",
     "evidence": "qa/evidence/browser/evidence-normal.json"
   },
   "checks": {
-    "launch": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    },
-    "render": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    },
-    "input": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    },
-    "coreLoop": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    },
-    "outcome": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    },
-    "restart": {
-      "status": "PASS",
-      "evidence": [
-        "qa/evidence/browser/evidence-normal.json"
-      ]
-    }
+    "launch": "PASS",
+    "render": "PASS",
+    "input": "PASS",
+    "coreLoop": "PASS",
+    "outcome": "PASS",
+    "restart": "PASS"
   },
   "limitations": [
     {
       "scope": "tested runtime",
-      "reason": "The recorded run used local Chromium automation; other browsers and device classes were not exercised."
+      "reason": "The run used local Chromium automation; other browsers and device classes were not exercised."
     }
   ]
 }
