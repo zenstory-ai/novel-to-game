@@ -2,14 +2,17 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   CONTACT_SECONDS,
+  FAMILY_BEHAVIOR_CYCLE_SECONDS,
   EXPOSURE_SECONDS,
   INITIAL_LIGHT_SECONDS,
   INITIAL_PLAYER,
+  MAX_STEADY_DRIFT_RADIANS,
   NAVIGATION,
   applyThreatContact,
   createPlayerState,
   examine,
   fireDefensiveShot,
+  familyMomentForState,
   frameForState,
   intactEvidence,
   resultBandForEvidence,
@@ -265,10 +268,115 @@ test('examining the brook makes context eligible without awarding evidence', () 
   assert.equal(frameForState(player).points, 1);
 });
 
-test('successive observed glade plates record young play and branch pull separately', () => {
+test('the live camera direction distinguishes a clear subject, an edge frame and empty forest', () => {
+  let player = createPlayerState();
+  player.position = { x: 8, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, { heading: 0 }, 0.1);
+
+  const clear = frameForState(player);
+  assert.equal(clear.key, 'basalt-scale');
+  assert.equal(clear.points, 2);
+  assert.equal(clear.composition, 'clear');
+
+  const edge = frameForState({ ...player, heading: 0.58 });
+  assert.equal(edge.key, 'family-edge');
+  assert.equal(edge.points, 1);
+  assert.equal(edge.composition, 'edge');
+
+  const empty = frameForState({ ...player, heading: Math.PI });
+  assert.equal(empty.key, 'empty-subject');
+  assert.equal(empty.points, 0);
+  assert.equal(empty.composition, 'empty');
+
+  const highEdge = frameForState(stepPlayer(player, { lookVertical: 1 }, 0.5));
+  assert.equal(highEdge.key, 'family-edge');
+  assert.equal(highEdge.composition, 'edge');
+
+  const groundOnly = frameForState({ ...player, pitch: -1 });
+  assert.equal(groundOnly.key, 'empty-subject');
+  assert.equal(groundOnly.composition, 'empty');
+
+  let wastedPlate = startExposure(setCameraRaised({ ...player, heading: Math.PI }, true));
+  wastedPlate = stepPlayer(wastedPlate, {}, 1);
+  wastedPlate = stepPlayer(wastedPlate, {}, 1);
+  assert.equal(wastedPlate.plates[0].status, 'exposed');
+  assert.equal(wastedPlate.plates[0].frameKey, 'empty-subject');
+  assert.equal(wastedPlate.plates[0].points, 0);
+  assert.equal(wastedPlate.threatAwareness, player.threatAwareness);
+});
+
+test('a committed pterodactyl dive is a risky alternate evidence subject', () => {
   const player = createPlayerState();
-  player.zone = 'iguanodon-glade';
-  player.observedBehavior = true;
+  player.position = { x: 8, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player.zone = 'basalt-shelf';
+  player.heading = 0.28;
+  player.pitch = 0.32;
+  player.threatAwareness = 3;
+  player.threatState = 'attack';
+  player.attackSeconds = 0.7;
+
+  const dive = frameForState(player);
+  assert.equal(dive.key, 'pterodactyl-dive');
+  assert.equal(dive.points, 2);
+  assert.equal(dive.behavior, 'predatory-dive');
+  assert.equal(dive.subject, 'pterodactyl');
+
+  player.plates[0] = {
+    ...player.plates[0],
+    status: 'exposed',
+    points: dive.points,
+    frameKey: dive.key,
+    behavior: dive.behavior,
+  };
+  const repeated = frameForState(player);
+  assert.equal(repeated.key, 'pterodactyl-repeat');
+  assert.equal(repeated.points, 1);
+});
+
+test('camera drift during a live exposure smears high-value evidence', () => {
+  let player = createPlayerState();
+  player.position = { x: 8, z: 18 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  player = startExposure(setCameraRaised(player, true));
+  assert.equal(player.pendingExposure.maxCameraDrift, 0);
+
+  player = stepPlayer(player, { heading: MAX_STEADY_DRIFT_RADIANS * 1.5 }, 1);
+  assert.ok(player.pendingExposure.maxCameraDrift > MAX_STEADY_DRIFT_RADIANS);
+  player = stepPlayer(player, { heading: MAX_STEADY_DRIFT_RADIANS * 1.5 }, 1);
+
+  assert.equal(player.plates[0].status, 'exposed');
+  assert.equal(player.plates[0].frameKey, 'shaken-frame');
+  assert.equal(player.plates[0].sourceFrameKey, 'basalt-scale');
+  assert.equal(player.plates[0].stability, 'shaken');
+  assert.equal(player.plates[0].points, 1);
+
+  let braced = createPlayerState();
+  braced.position = { x: 8, z: 18 };
+  braced.lastStablePosition = { ...braced.position };
+  braced = stepPlayer(braced, { crouch: true }, 0.1);
+  braced = startExposure(setCameraRaised(braced, true));
+  assert.equal(braced.pendingExposure.braced, true);
+  braced = stepPlayer(braced, { crouch: true, heading: MAX_STEADY_DRIFT_RADIANS * 1.5 }, 1);
+  braced = stepPlayer(braced, { crouch: true, heading: MAX_STEADY_DRIFT_RADIANS * 1.5 }, 1);
+  assert.equal(braced.plates[0].frameKey, 'basalt-scale');
+  assert.equal(braced.plates[0].stability, 'steady');
+  assert.equal(braced.plates[0].points, 2);
+});
+
+test('reading the family opens timed young-play and branch-pull windows', () => {
+  let player = createPlayerState();
+  player.position = { x: 0, z: -8 };
+  player.lastStablePosition = { ...player.position };
+  player = stepPlayer(player, {}, 0.1);
+  player = examine(player);
+  assert.equal(player.familyMoment, 'glade-routine');
+
+  player = stepPlayer(player, {}, 1);
+  player = stepPlayer(player, {}, 1);
+  assert.equal(familyMomentForState(player), 'glade-young-play');
   const play = frameForState(player);
   assert.equal(play.key, 'glade-young-play');
   assert.match(play.label, /young play/i);
@@ -280,10 +388,56 @@ test('successive observed glade plates record young play and branch pull separat
     label: play.label,
     frameKey: play.key,
   };
+  const repeated = frameForState(player);
+  assert.equal(repeated.key, 'glade-young-repeat');
+  assert.equal(repeated.points, 1);
+
+  for (let second = 0; second < 6; second += 1) player = stepPlayer(player, {}, 1);
+  assert.ok(player.familyBehaviorSeconds < FAMILY_BEHAVIOR_CYCLE_SECONDS);
+  assert.equal(familyMomentForState(player), 'glade-branch-pull');
   const branch = frameForState(player);
   assert.equal(branch.key, 'glade-branch-pull');
   assert.match(branch.label, /branch/i);
   assert.equal(branch.points, 2);
+});
+
+test('an attacking wing alarms the family and closes the undisturbed behavior window', () => {
+  const player = createPlayerState();
+  player.zone = 'iguanodon-glade';
+  player.reachedGlade = true;
+  player.observedBehavior = true;
+  player.familyBehaviorSeconds = 2;
+  player.familyMoment = 'glade-young-play';
+  player.position = { x: 0, z: -8 };
+  player.lastStablePosition = { ...player.position };
+  player.threatAwareness = 3;
+  player.threatState = 'attack';
+
+  assert.equal(familyMomentForState(player), 'glade-alarm');
+  const alarm = frameForState(player);
+  assert.equal(alarm.key, 'glade-alarm');
+  assert.equal(alarm.points, 1);
+  assert.match(alarm.label, /alarm/i);
+});
+
+test('crouching under canopy actively widens the dive faster than passive waiting', () => {
+  const threatened = createPlayerState();
+  threatened.position = { x: 0, z: 18 };
+  threatened.lastStablePosition = { ...threatened.position };
+  threatened.reachedGlade = true;
+  threatened.zone = 'covered-return';
+  threatened.threatAwareness = 3;
+  threatened.threatState = 'attack';
+
+  let standing = threatened;
+  let crouching = threatened;
+  for (let second = 0; second < 4; second += 1) {
+    standing = stepPlayer(standing, {}, 1);
+    crouching = stepPlayer(crouching, { crouch: true }, 1);
+  }
+  assert.equal(standing.threatState, 'attack');
+  assert.equal(crouching.threatState, 'search');
+  assert.equal(crouching.lastThreatEvent, 'cover-deescalation');
 });
 
 test('camera raise slows movement and shutter commits one physical plate for two live seconds', () => {
@@ -309,6 +463,8 @@ test('camera raise slows movement and shutter commits one physical plate for two
   assert.equal(exposed.plates[0].status, 'exposed');
   assert.equal(exposed.plates[0].points, 1);
   assert.equal(exposed.plates[0].label, 'PARTIAL — foliage hides the flank.');
+  assert.equal(exposed.plates[0].sourceFrameKey, 'brook-partial');
+  assert.equal(exposed.plates[0].stability, 'steady');
   assert.equal(exposed.threatAwareness, 1);
   assert.equal(exposed.cameraRaised, false);
 });
@@ -399,6 +555,7 @@ test('intact evidence and all four result thresholds are deterministic', () => {
   assert.equal(resultBandForEvidence(3).key, 'insufficient-record');
   assert.equal(resultBandForEvidence(5).key, 'corroborating-record');
   assert.equal(resultBandForEvidence(7).key, 'strong-field-record');
+  assert.equal(resultBandForEvidence(8).key, 'strong-field-record');
 });
 
 test('covered return commits its deterministic cost once and submits intact proof at Fort', () => {

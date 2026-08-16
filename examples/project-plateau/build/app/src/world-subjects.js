@@ -2,7 +2,11 @@ import * as THREE from 'three';
 import { createIguanodon } from './iguanodon.js';
 import { createPterodactyl } from './pterodactyl.js';
 import { PALETTE, seededRandom } from './config.js';
-import { FAMILY_LAYOUT, FEEDING_BRANCH } from './environment-layout.js';
+import {
+  FAMILY_LAYOUT,
+  FEEDING_BRANCH,
+  PTERODACTYL_ORBIT_CENTER,
+} from './environment-layout.js';
 import { terrainHeight } from './terrain.js';
 import { createCylinderBetween, primitive } from './world-rendering.js';
 import { shared } from './vegetation-rendering.js';
@@ -44,7 +48,6 @@ export function pterodactylWingBeat(elapsed, phase = 0, awareness = 0, reducedMo
 }
 
 const PTERODACTYL_WORLD_UP = new THREE.Vector3(0, 1, 0);
-const PTERODACTYL_ORBIT_CENTER = Object.freeze({ x: 0, z: -9 });
 const THREAT_TRANSITION_SECONDS = 0.55;
 export const PTERODACTYL_ATTACK_CYCLE_SECONDS = 4.4;
 

@@ -65,21 +65,25 @@ def compact_state(state: dict[str, Any]) -> dict[str, Any]:
     player = state["player"]
     plates = player["plates"]
     result = player["result"]
+    plate_state: dict[str, Any] = {
+        "position": player["position"],
+        "remainingLight": player["remainingLight"],
+        "distanceTravelled": player["distanceTravelled"],
+        "plateStatus": [plate["status"] for plate in plates],
+        "platePoints": [plate["points"] for plate in plates],
+        "bodyMargin": player["bodyMargin"],
+        "returnRoute": player["returnRoute"],
+        "runStatus": player["runStatus"],
+        "resultBand": result["band"] if result else None,
+    }
+    if any(plate["frameKey"] for plate in plates):
+        plate_state["plateFrames"] = [plate["frameKey"] for plate in plates]
+        plate_state["plateBehaviors"] = [plate["behavior"] for plate in plates]
     return {
         "mode": state["mode"],
         "sceneChildren": state["sceneChildren"],
         "triangles": state["triangles"],
-        "player": {
-            "position": player["position"],
-            "remainingLight": player["remainingLight"],
-            "distanceTravelled": player["distanceTravelled"],
-            "plateStatus": [plate["status"] for plate in plates],
-            "platePoints": [plate["points"] for plate in plates],
-            "bodyMargin": player["bodyMargin"],
-            "returnRoute": player["returnRoute"],
-            "runStatus": player["runStatus"],
-            "resultBand": result["band"] if result else None,
-        },
+        "player": plate_state,
     }
 
 
@@ -148,11 +152,21 @@ def run() -> dict[str, Any]:
             input_trace.append(f"Right Mouse + Left Mouse: {purpose}")
 
         def wait_for_cover(purpose: str) -> None:
+            page.keyboard.down("KeyC")
+            try:
+                page.wait_for_function(
+                    "window.__projectPlateau.snapshot().player.threatAwareness <= 2",
+                    timeout=8000,
+                )
+            finally:
+                page.keyboard.up("KeyC")
+            input_trace.append(f"hold KeyC under cover: {purpose}")
+
+        def wait_for_family_moment(moment: str) -> None:
             page.wait_for_function(
-                "window.__projectPlateau.snapshot().player.threatAwareness <= 2",
-                timeout=8000,
+                f"window.__projectPlateau.snapshot().player.familyMoment === '{moment}'",
+                timeout=10000,
             )
-            input_trace.append(f"hold position: {purpose}")
 
         page.get_by_role("button", name="Enter the basin").click()
         page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'")
@@ -186,6 +200,7 @@ def run() -> dict[str, Any]:
             "reach the glade",
         )
         page.keyboard.press("KeyE")
+        wait_for_family_moment("glade-young-play")
         expose_plate(2, "record young at play")
         move_until(
             "KeyS",
@@ -198,6 +213,7 @@ def run() -> dict[str, Any]:
             "window.__projectPlateau.snapshot().player.position.z <= 2",
             "return for the second behavior plate",
         )
+        wait_for_family_moment("glade-branch-pull")
         expose_plate(3, "record branch pulling")
         move_until(
             "KeyS",
@@ -213,6 +229,10 @@ def run() -> dict[str, Any]:
 
         outcome = capture("01-designed-outcome", ["complete the covered route"])
         assert sum(plate["points"] for plate in outcome["player"]["plates"]) == 7
+        assert [plate["behavior"] for plate in outcome["player"]["plates"] if plate["behavior"]] == [
+            "young-play",
+            "branch-pull",
+        ]
         assert outcome["player"]["runStatus"] == "result"
         assert outcome["player"]["result"]["band"] == "strong-field-record"
         assert outcome["player"]["distanceTravelled"] > 0
@@ -270,6 +290,11 @@ def run() -> dict[str, Any]:
                     "evidencePoints": sum(
                         plate["points"] for plate in outcome["player"]["plates"]
                     ),
+                    "distinctBehaviors": [
+                        plate["behavior"]
+                        for plate in outcome["player"]["plates"]
+                        if plate["behavior"]
+                    ],
                 },
             },
             "outcome": outcome_observation,

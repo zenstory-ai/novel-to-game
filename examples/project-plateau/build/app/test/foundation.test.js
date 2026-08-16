@@ -163,6 +163,10 @@ test('the family asset exposes two adults, three young and both authored behavio
 
   world.update(1, false, { familyMoment: 'glade-branch-pull' });
   assert.equal(world.familySnapshot().moment, 'glade-branch-pull');
+  world.update(1.5, false, { familyMoment: 'glade-routine' });
+  assert.equal(world.familySnapshot().moment, 'glade-routine');
+  world.update(2, false, { familyMoment: 'glade-alarm' });
+  assert.equal(world.familySnapshot().moment, 'glade-alarm');
 });
 
 test('family actions remain planted while anatomical pivots and branch contact carry motion', () => {

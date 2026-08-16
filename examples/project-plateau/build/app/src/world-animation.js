@@ -138,8 +138,10 @@ export function createWorldAnimationController({
         orbitBlend,
       );
       const requestedFamilyMoment = runtime.familyMoment;
-      renderedFamilyMoment = requestedFamilyMoment === 'glade-young-play'
+      renderedFamilyMoment = requestedFamilyMoment === 'glade-routine'
+        || requestedFamilyMoment === 'glade-young-play'
         || requestedFamilyMoment === 'glade-branch-pull'
+        || requestedFamilyMoment === 'glade-alarm'
         ? requestedFamilyMoment
         : elapsed % 12 < 6 ? 'glade-young-play' : 'glade-branch-pull';
       const waterFlowTime = elapsed * (reducedMotion ? 0.18 : 1);
@@ -491,6 +493,7 @@ export function createWorldAnimationController({
         } = animal.userData;
         const youngPlay = behaviorRole === 'young-play' && renderedFamilyMoment === 'glade-young-play';
         const branchPull = behaviorRole === 'branch-pull' && renderedFamilyMoment === 'glade-branch-pull';
+        const familyAlarm = renderedFamilyMoment === 'glade-alarm';
         const motion = reducedMotion ? 0.12 : 1;
         const breath = Math.sin(elapsed * 0.82 + phase);
         animal.position.x = baseX;
@@ -527,7 +530,20 @@ export function createWorldAnimationController({
           limb.root.rotation.y = Math.sin(elapsed * 0.42 + phase + limbIndex) * 0.008 * motion;
         });
 
-        if (behaviorRole === 'graze') {
+        if (familyAlarm) {
+          const alarmTurn = animal.userData.young ? 0.18 : 0.1;
+          animal.rotation.y = baseHeading + Math.sin(elapsed * 1.8 + phase) * alarmTurn * motion;
+          rig.neckPivot.rotation.z = restPose.neckZ + (animal.userData.young ? 0.2 : 0.34);
+          rig.headPivot.rotation.z = restPose.headZ - 0.12;
+          rig.jawPivot.rotation.z = restPose.jawZ + Math.max(0, Math.sin(elapsed * 3.2 + phase)) * 0.055;
+          rig.tailPivots.forEach((pivot, tailIndex) => {
+            pivot.rotation.y += Math.sin(elapsed * 1.5 + phase) * (0.02 + tailIndex * 0.018) * motion;
+          });
+          applyHy3dIguanodonPose(animal, {
+            play: animal.userData.young ? 0.18 : 0,
+            reach: animal.userData.young ? 0 : 0.12,
+          });
+        } else if (behaviorRole === 'graze') {
           rig.neckPivot.rotation.z = restPose.neckZ - 0.3 + breath * 0.025 * motion;
           rig.headPivot.rotation.z = restPose.headZ - 0.18 - breath * 0.018 * motion;
           rig.jawPivot.rotation.z = restPose.jawZ + (0.035 + Math.sin(elapsed * 2.1) * 0.022) * motion;

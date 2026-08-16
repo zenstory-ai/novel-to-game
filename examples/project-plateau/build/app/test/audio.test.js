@@ -5,6 +5,8 @@ import { AUDIO_CAPTIONS, FieldAudio, captionForCue } from '../src/audio.js';
 const CORE_CUES = [
   'field-start',
   'examine',
+  'family-play',
+  'family-branch',
   'camera-raise',
   'shutter',
   'plate-slide',

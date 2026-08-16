@@ -15,15 +15,15 @@
     "KeyW: reach the basalt shelf",
     "Right Mouse + Left Mouse: record basalt scale",
     "KeyA: enter canopy cover",
-    "hold position: let the attack widen",
+    "hold KeyC under cover: let the attack widen",
     "KeyW: reach the glade",
     "Right Mouse + Left Mouse: record young at play",
     "KeyS: protect the first behavior plate",
-    "hold position: break the dive",
+    "hold KeyC under cover: break the dive",
     "KeyW: return for the second behavior plate",
     "Right Mouse + Left Mouse: record branch pulling",
     "KeyS: retreat into cover",
-    "hold position: prepare the covered return",
+    "hold KeyC under cover: prepare the covered return",
     "KeyS: return to Fort"
   ],
   "observations": {
@@ -74,11 +74,11 @@
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.379,
-            "z": 62.008
+            "x": 2.389,
+            "z": 62
           },
-          "remainingLight": 93.493,
-          "distanceTravelled": 133.707,
+          "remainingLight": 100.366,
+          "distanceTravelled": 133.982,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -94,7 +94,19 @@
           "bodyMargin": 1,
           "returnRoute": "covered",
           "runStatus": "result",
-          "resultBand": "strong-field-record"
+          "resultBand": "strong-field-record",
+          "plateFrames": [
+            "brook-partial",
+            "basalt-scale",
+            "glade-young-play",
+            "glade-branch-pull"
+          ],
+          "plateBehaviors": [
+            null,
+            null,
+            "young-play",
+            "branch-pull"
+          ]
         },
         "terminal": "strong-field-record"
       },
@@ -108,20 +120,20 @@
         "KeyW: reach the basalt shelf",
         "Right Mouse + Left Mouse: record basalt scale",
         "KeyA: enter canopy cover",
-        "hold position: let the attack widen",
+        "hold KeyC under cover: let the attack widen",
         "KeyW: reach the glade",
         "Right Mouse + Left Mouse: record young at play",
         "KeyS: protect the first behavior plate",
-        "hold position: break the dive",
+        "hold KeyC under cover: break the dive",
         "KeyW: return for the second behavior plate",
         "Right Mouse + Left Mouse: record branch pulling",
         "KeyS: retreat into cover",
-        "hold position: prepare the covered return",
+        "hold KeyC under cover: prepare the covered return",
         "KeyS: return to Fort"
       ],
       "state": {
         "acceptedInputCount": 15,
-        "distanceTravelled": 133.707
+        "distanceTravelled": 133.982
       }
     },
     "coreLoop": {
@@ -132,7 +144,11 @@
       ],
       "state": {
         "runStatus": "result",
-        "evidencePoints": 7
+        "evidencePoints": 7,
+        "distinctBehaviors": [
+          "young-play",
+          "branch-pull"
+        ]
       }
     },
     "outcome": {
@@ -146,11 +162,11 @@
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.379,
-            "z": 62.008
+            "x": 2.389,
+            "z": 62
           },
-          "remainingLight": 93.493,
-          "distanceTravelled": 133.707,
+          "remainingLight": 100.366,
+          "distanceTravelled": 133.982,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -166,7 +182,19 @@
           "bodyMargin": 1,
           "returnRoute": "covered",
           "runStatus": "result",
-          "resultBand": "strong-field-record"
+          "resultBand": "strong-field-record",
+          "plateFrames": [
+            "brook-partial",
+            "basalt-scale",
+            "glade-young-play",
+            "glade-branch-pull"
+          ],
+          "plateBehaviors": [
+            null,
+            null,
+            "young-play",
+            "branch-pull"
+          ]
         },
         "terminal": "strong-field-record"
       },

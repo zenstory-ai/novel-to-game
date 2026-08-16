@@ -1,6 +1,8 @@
 export const AUDIO_CAPTIONS = Object.freeze({
   'field-start': '[brook water and insects under the canopy]',
   examine: '[fern brushes aside; pencil marks the field card]',
+  'family-play': '[young feet drum the glade; one animal chirrs]',
+  'family-branch': '[a heavy bough creaks above the feeding adult]',
   'camera-raise': '[wood frame lifts; bellows opens]',
   shutter: '[shutter releases]',
   'plate-slide': '[glass plate seats in its case]',
@@ -113,6 +115,12 @@ export class FieldAudio {
     if (name === 'examine') {
       this.tone(610, 0.08, 'effects', 0.04, 'square');
       this.tone(420, 0.11, 'effects', 0.03, 'triangle', 0.09);
+    } else if (name === 'family-play') {
+      this.tone(460, 0.16, 'ambience', 0.045, 'triangle');
+      this.tone(620, 0.12, 'ambience', 0.035, 'sine', 0.12);
+    } else if (name === 'family-branch') {
+      this.tone(118, 0.36, 'ambience', 0.05, 'sawtooth');
+      this.tone(174, 0.22, 'ambience', 0.035, 'triangle', 0.18);
     } else if (name === 'camera-raise') {
       this.tone(145, 0.18, 'effects', 0.06, 'sawtooth');
     } else if (name === 'shutter') {

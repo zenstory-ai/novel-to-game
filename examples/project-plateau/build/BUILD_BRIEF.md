@@ -35,9 +35,13 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
 
 1. One continuous Fort → brook → observation fork → glade → two return routes → Fort
    space with readable landmarks, cover and collision.
-2. Four physical plates whose captured obstruction, scale and behaviour determine the
-   visible record; recording remains live and exposed.
-3. Iguanodon adult/young behaviours and pterodactyl distant/watch/search/attack states.
+2. Four physical plates whose two-axis live camera direction, exposure stability, captured
+   obstruction, scale and distinct behaviour determine the visible record; empty, edge, clear
+   and smeared frames remain legible while recording stays live and exposed. Crouching before
+   the shutter braces the camera without removing exposure risk.
+3. Readable iguanodon routine/young-play/branch-pull/alarm windows and pterodactyl
+   distant/watch/search/attack states. Family behaviours and the optional committed-dive plate
+   require distinct timing and framing, not repeated shutters in one zone.
 4. Canopy cover, one recoverable contact, two rifle cartridges and the downstream cost
    of firing.
 5. A 180-second light budget, four alive result bands, deadline/contact failure and one
@@ -45,9 +49,12 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
 6. Edge HUD, contextual prompts, physical result review, captions and accessibility
    settings using the approved expedition-field voice.
 
-The representative Strong path records brook and basalt scale, captures two glade
-behaviours, uses cover for the final dive, returns without firing and reaches the Strong
-field record. A fired-shot route must change later threat or route state.
+The representative Strong path records brook and basalt scale, reads the family, aims at
+young play, crouches under cover to widen the dive, returns for the later branch pull, returns
+without firing and reaches the Strong field record. An off-subject frame and a duplicate
+behaviour must score lower. A second Strong route may replace one family angle with a stable
+committed-dive plate, but must leave only a short camera-to-rifle response window. A fired-shot
+route must change later threat or route state.
 
 ## Required runtime assets
 

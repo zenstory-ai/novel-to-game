@@ -221,6 +221,7 @@ export const NON_COLUMNAR_ROCK_LAYOUT = Object.freeze([
 // foundation.test.js; moving the tree independently recreates the visibly
 // disconnected "tree and dinosaur move together" failure.
 export const FEEDING_BRANCH = Object.freeze({ id: 'feeding-branch', x: 18.35, z: -39.4 });
+export const PTERODACTYL_ORBIT_CENTER = Object.freeze({ x: 0, z: -9 });
 
 export const FAMILY_LAYOUT = Object.freeze([
   Object.freeze({ id: 'iguanodon-adult-graze', x: -8, z: -31, scale: 1.22, heading: -0.32, young: false, behaviorRole: 'graze' }),

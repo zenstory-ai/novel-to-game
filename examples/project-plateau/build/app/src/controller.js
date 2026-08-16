@@ -12,6 +12,10 @@ const GAMEPLAY_KEY_CODES = new Set([
   'ControlLeft',
   'ControlRight',
   'Space',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
 ]);
 
 export function shouldCaptureGameplayKey(code, context) {

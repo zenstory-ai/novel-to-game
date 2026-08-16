@@ -11,6 +11,7 @@ test('gameplay keys are accepted only by an active unpaused field view', () => {
   assert.equal(shouldCaptureGameplayKey('KeyW', activeField), true);
   assert.equal(shouldCaptureGameplayKey('ShiftLeft', activeField), true);
   assert.equal(shouldCaptureGameplayKey('Space', activeField), true);
+  assert.equal(shouldCaptureGameplayKey('ArrowUp', activeField), true);
   assert.equal(shouldCaptureGameplayKey('KeyW', { ...activeField, runActive: false }), false);
   assert.equal(shouldCaptureGameplayKey('KeyW', { ...activeField, paused: true }), false);
   assert.equal(shouldCaptureGameplayKey('KeyW', { ...activeField, cameraMode: 'order' }), false);
