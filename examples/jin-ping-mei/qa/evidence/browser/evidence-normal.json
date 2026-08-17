@@ -3,20 +3,28 @@
   "runId": "jin-ping-mei-main-path",
   "environment": {
     "browser": "145.0.7632.6",
-    "viewport": [
-      1280,
-      800
+    "viewports": [
+      [
+        1280,
+        800
+      ],
+      [
+        1920,
+        1080
+      ]
     ],
     "url": "http://127.0.0.1:5173/?seed=42",
     "normalSpeedRun": true,
-    "buildBytes": 7468497
+    "buildBytes": 8943524
   },
   "inputTrace": [
-    "confirm the 18+ age gate",
-    "start a new ledger and choose the respectful opening",
-    "complete six household and relationship days",
-    "reach the exclusive ending",
-    "restart to the day-one opening"
+    "use keyboard Enter to confirm the 18+ age gate",
+    "use keyboard only to start and choose the respectful opening",
+    "hear Yue's order term, Pan's truth term, and Pinger's safety term",
+    "complete joint_yue_pan and joint_yue_pinger as visible two-woman scenes",
+    "balance the public banquet and invite all three women on night six",
+    "choose shared_divide_roles, view inner_court_accord, and reach 三院同灯",
+    "restart and confirm the earned group page persists in the gallery"
   ],
   "observations": {
     "launch": {
@@ -33,8 +41,8 @@
     "input": {
       "id": "opening-choice-accepted",
       "inputs": [
-        "click start",
-        "choose respect_yue"
+        "focus start and press Enter",
+        "focus respect_yue and press Enter"
       ],
       "state": {
         "phase": "day",
@@ -42,50 +50,72 @@
       }
     },
     "render": {
-      "id": "exclusive-ending-rendered",
+      "id": "pair-action-and-inner-court-rendered-at-both-target-viewports",
       "inputs": [
-        "complete the sixth day"
+        "complete three accords",
+        "complete two pair actions",
+        "choose shared_divide_roles"
       ],
       "state": {
         "phase": "ending",
+        "accordSealsVisible": true,
+        "dayPanelFits1280x800": true,
+        "jointResultScenes": [
+          "joint_yue_pan",
+          "joint_yue_pinger"
+        ],
+        "groupSceneReady": true,
+        "viewport1920x1080Fits": true,
         "consoleErrors": [],
         "networkErrors": [],
         "httpErrors": []
       },
-      "visual": "qa/evidence/browser/safe/07_exclusive_ending.jpg"
+      "visual": "qa/evidence/browser/safe/04_joint_yue_pan.jpg"
     },
     "coreLoop": {
       "id": "six-day-loop-complete",
       "inputs": [
-        "complete six day and night decisions"
+        "complete three agreement nights, two pair-action days, two personal nights, and the sixth shared night"
       ],
       "state": {
         "phase": "ending",
-        "day": 6
+        "day": 6,
+        "accords": {
+          "order": true,
+          "truth": true,
+          "safety": true
+        },
+        "jointActions": [
+          "joint_yue_pan",
+          "joint_yue_pinger"
+        ],
+        "sharedNightChoice": "shared_divide_roles"
       }
     },
     "outcome": {
-      "id": "exclusive-ending",
+      "id": "balanced-inner-court-ending",
       "inputs": [
-        "resolve the sixth night"
+        "resolve shared_divide_roles and close inner_court_accord"
       ],
       "state": {
-        "terminal": "exclusive-ending",
-        "phase": "ending"
+        "terminal": "balanced-ending",
+        "phase": "ending",
+        "haremCoalition": true,
+        "sceneUnlocked": true
       },
-      "visual": "qa/evidence/browser/safe/07_exclusive_ending.jpg"
+      "visual": "qa/evidence/browser/safe/08_balanced_ending.jpg"
     },
     "restart": {
       "id": "clean-day-one-restart",
       "inputs": [
-        "click restart"
+        "focus restart and press Enter"
       ],
       "state": {
         "restart": "day-1-opening",
         "day": 1,
-        "phase": "opening"
-      },
-      "visual": "qa/evidence/browser/safe/08_restart.jpg"
+        "phase": "opening",
+        "galleryKeepsInnerCourtAccord": true
+      }
     }
   }
 }

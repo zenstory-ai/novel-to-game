@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "note": "生成式美术资产的来源记录。此文件不是 build/asset-ledger.json（那份有严格 schema，只在 graybox 以上要求）；这里只诚实记录三张夜间立绘与一张标题群像是怎么来的、由什么条件出来的、以及可否复现。",
+  "note": "生成式美术资产来源记录。它不是 build/asset-ledger.json；这里只记录由生成工具制作的运行资产、输入契约、后处理与验收边界。",
   "generatedAt": "2026-08-06",
   "generator": {
     "tool": "codex-cli built-in image_gen skill",
@@ -117,11 +117,131 @@
         "摄影光、泛光、3D 渲染、日漫风、Q 版"
       ],
       "sizeAndBytes": {
-        "size": [1536, 1024],
+        "size": [
+          1536,
+          1024
+        ],
         "bytes": 449757,
         "method": "PNG 1536×1024 经 sips 转 JPEG；未缩放"
       },
       "acceptance": "与 assets/bg/compound_act1.jpg（316060 bytes，1672×941 的同谱系界画）并置验收：纸底、墨线粗细、饱和度一致；前景空院确认可承载界面文字。"
+    },
+    {
+      "generatedAt": "2026-08-16",
+      "toolVersion": "codex-cli 0.147.0",
+      "path": "app/assets/cg/group/inner_court_accord.webp",
+      "usage": "三条院约齐备后，第六夜“三人各管一头”的安全共同办事群像",
+      "reason": "旧平衡后宫只复用中秋席冲突群像并直接给结局标签，没有画面证明三名女主真的共同解决一件事。新资产把总账、口供、货单和瓶儿自持的钥匙同时放进长案，作为独立结果页；不表现多人成人行为。",
+      "referenceInputs": [
+        "app/assets/cg/group/banquet_conflict.webp（人物身份、服饰、笔触与宅院夜景谱系）"
+      ],
+      "promptContract": {
+        "required": [
+          "同一名成年吴月娘居中核账",
+          "同一名成年潘金莲在左侧持口供发问",
+          "同一名成年李瓶儿在右侧持自己的铜钥匙与货单",
+          "三人完整着装",
+          "第一人称玩家手停在桌边",
+          "夜间长案共同办事而非争宠"
+        ],
+        "forbidden": [
+          "裸露或性行为",
+          "未成年人",
+          "第四名女性",
+          "现代物件",
+          "文字、字幕、签名或水印",
+          "把三人画成普通朋友合照"
+        ]
+      },
+      "sizeAndBytes": {
+        "size": [
+          1564,
+          1006
+        ],
+        "bytes": 394524,
+        "method": "image_gen 输出 PNG 后以 Pillow 转为 WebP quality 88；尺寸不变"
+      },
+      "reproducible": false,
+      "acceptance": "真实浏览器在 1280×800 与 1920×1080 触发 scene_id=inner_court_accord；人物、账簿、口供、货单、钥匙均可辨，底栏不遮共同办事的因果器物。"
+    },
+    {
+      "generatedAt": "2026-08-16",
+      "toolVersion": "codex-cli 0.147.0",
+      "path": "app/assets/cg/joint/{yue_pan,yue_pinger,pan_pinger}.webp",
+      "usage": "三院共约终局前的三种一次性双人联院差事结果图",
+      "reason": "首版联院结果复用旧门卡 PNG，浏览器截图暴露人物年龄、面容与宴席 CG 谱系不一致。改用宴席群像作身份与笔触参考，为三组搭档分别生成实际办事画面；这些图不进入成人场景册，也不表现性行为。",
+      "referenceInputs": [
+        "app/assets/cg/group/banquet_conflict.webp"
+      ],
+      "sharedContract": {
+        "required": [
+          "只出现对应两名成年女主",
+          "完整着装",
+          "两人互看并共同操作因果器物",
+          "明代宅院夜景",
+          "下方约 24% 暗区供字幕栏"
+        ],
+        "pairProps": {
+          "yue_pan": [
+            "总账",
+            "口供纸",
+            "算盘或印泥"
+          ],
+          "yue_pinger": [
+            "公账",
+            "货单",
+            "瓶儿自持铜钥匙",
+            "箱笼"
+          ],
+          "pan_pinger": [
+            "口供纸",
+            "折扇",
+            "货单",
+            "铜钥匙",
+            "拆封货箱"
+          ]
+        },
+        "forbidden": [
+          "裸露或性行为",
+          "未成年人",
+          "第三名女性",
+          "现代物件",
+          "文字、字幕、签名或水印",
+          "两张立绘并排的合照感"
+        ]
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/joint/yue_pan.webp",
+          "usage": "正堂问口供：月娘核账、金莲追问",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 338786
+        },
+        {
+          "path": "app/assets/cg/joint/yue_pinger.webp",
+          "usage": "公账接货单：月娘核数、瓶儿自持钥匙调货",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 374790
+        },
+        {
+          "path": "app/assets/cg/joint/pan_pinger.webp",
+          "usage": "顺话验货车：金莲套话、瓶儿验货",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 343516
+        }
+      ],
+      "postProcessing": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6；未缩放",
+      "reproducible": false,
+      "acceptance": "真实 Chromium 1280×800 全键盘路径逐一进入 joint_yue_pan 与 joint_yue_pinger 结果页；专项截图确认人物身份、手势、器物与底栏无遮挡。第三组由关键资产存在性与同一渲染模板覆盖。"
     }
   ],
   "postProcessing": {

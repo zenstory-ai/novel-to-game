@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import * as E from '../js/engine.js';
 import {
   HEROINE_IDS, HOUSEHOLD_IDS, HOUSEHOLD, HOUSEHOLD_EVENTS,
-  ROUTE_CHOICES, SCENES, DAY_ACTIONS, OPENING_CHOICES, BANQUET_CHOICES,
+  ROUTE_CHOICES, ACCORD_CHOICES, JOINT_ACTIONS, SHARED_NIGHT_CHOICES,
+  SCENES, DAY_ACTIONS, OPENING_CHOICES, BANQUET_CHOICES,
 } from '../js/data.js';
 import { ASSET_PATHS, CRITICAL_CG_KEYS } from '../js/assets.js';
 import { TEXT } from '../js/text.js';
@@ -17,27 +18,26 @@ const section=n=>console.log(`\n== ${n} ==`);
 function test(n,fn){try{fn();passed++;console.log(`  PASS  ${n}`)}catch(e){failed++;console.log(`  FAIL  ${n}`);console.error(`        ${e.message}`)}}
 const ok=(v,m)=>assert.ok(v,m), eq=(a,b,m)=>assert.deepEqual(a,b,m);
 function morning(s,p){if(s.phase!=='morning')return;const o=E.morningOptions(s).find(x=>x.id===p&&!x.disabled)||E.morningOptions(s).find(x=>!x.disabled);const r=E.resolveMorning(s,o.id);assert.equal(r.ok,true,r.error)}
-function day(s,a,banquet='banquet_balance'){const r=E.chooseDayAction(s,a);assert.equal(r.ok,true,r.error);if(s.phase==='household'){const option=E.householdOptions(s).find(x=>!x.disabled);assert.ok(option);assert.equal(E.resolveHouseholdEvent(s,option.id).ok,true)}if(s.phase==='banquet'){let b=E.chooseBanquet(s,banquet);if(!b.ok)b=E.chooseBanquet(s,'banquet_honor_yue');assert.equal(b.ok,true,b.error);E.closeScene(s)}}
+function afterDay(s,banquet='banquet_balance'){if(s.phase==='household'){const option=E.householdOptions(s).find(x=>!x.disabled);assert.ok(option);assert.equal(E.resolveHouseholdEvent(s,option.id).ok,true)}if(s.phase==='banquet'){let b=E.chooseBanquet(s,banquet);if(!b.ok)b=E.chooseBanquet(s,'banquet_honor_yue');assert.equal(b.ok,true,b.error);E.closeScene(s)}}
+function day(s,a,banquet='banquet_balance'){const r=E.chooseDayAction(s,a);assert.equal(r.ok,true,r.error);afterDay(s,banquet)}
+function jointDay(s,a,banquet='banquet_balance'){const r=E.chooseJointAction(s,a);assert.equal(r.ok,true,r.error);assert.equal(s.phase,'joint_result');assert.equal(E.continueJointAction(s).ok,true);afterDay(s,banquet)}
 // 伤害性选项:掉她的情,或公开越过她(置失信旗标)。轮换测试用它证明「有得选」。
 const HARMFUL_FLAGS=new Set(['broken_yue_word','broken_pan_word','pinger_exposed']);
 const harmfulChoice=c=>(c.effects?.rel?.qing??0)<0||(c.effects?.flags??[]).some(f=>HARMFUL_FLAGS.has(f));
 const kindChoice=rows=>rows.find(x=>!x.disabled&&!harmfulChoice(x));
 function visit(s,h,c,n='talk'){assert.equal(E.startVisit(s,h).ok,true);const rows=E.visitChoices(s,h);const rc=rows.find(x=>x.id===c&&!x.disabled)||rows.find(x=>!x.disabled);assert.ok(rc,`no route d${s.day} ${h}`);assert.equal(E.chooseVisit(s,rc.id).ok,true);const nights=E.nightOptions(s);const nc=nights.find(x=>x.id===n&&!x.disabled)||nights.find(x=>x.id==='prelude'&&!x.disabled)||nights.find(x=>x.id==='talk');assert.ok(nc);const r=E.chooseNight(s,nc.id);assert.equal(r.ok,true,r.error);if(s.phase==='scene')E.closeScene(s);return nc.id}
-function strategy(kind){const s=E.newGame(42);if(kind==='exclusive'){E.chooseOpening(s,'respect_yue');const cs=['yue_share_shortfall','yue_show_accounts','yue_keep_word','yue_ask_backing','yue_offer_seat','yue_share_keys'],as=['ledger','ledger','banquet','ledger','ledger','ledger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,as[d-1],'banquet_honor_yue');visit(s,'wu_yueniang',cs[d-1],d>=3?'explicit':'prelude')}}else if(kind==='balanced'){E.chooseOpening(s,'respect_yue');const hs=['li_pinger','pan_jinlian','wu_yueniang','li_pinger','pan_jinlian','li_pinger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,d===5?'banquet':'ledger');assert.equal(E.startVisit(s,hs[d-1]).ok,true);const rc=kindChoice(E.visitChoices(s,hs[d-1]));assert.ok(rc,`balanced d${d} ${hs[d-1]} 无非伤害选项`);assert.equal(E.chooseVisit(s,rc.id).ok,true);assert.equal(E.chooseNight(s,'talk').ok,true)}}else{E.chooseOpening(s,'tease_pan');const hs=['pan_jinlian','pan_jinlian','wu_yueniang','pan_jinlian','li_pinger','wu_yueniang'],cs=['pan_take_cup','pan_take_clue','yue_public_spend','pan_answer_door','pinger_spend_on_pan','yue_last_tea'],as=['listen','listen','office','listen','office','ledger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,as[d-1],'banquet_honor_yue');visit(s,hs[d-1],cs[d-1])}}return s}
+function strategy(kind){const s=E.newGame(42);if(kind==='exclusive'){E.chooseOpening(s,'respect_yue');const cs=['yue_share_shortfall','yue_show_accounts','yue_keep_word','yue_ask_backing','yue_offer_seat','yue_share_keys'],as=['ledger','ledger','banquet','ledger','ledger','ledger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,as[d-1],'banquet_honor_yue');visit(s,'wu_yueniang',cs[d-1],d>=3?'explicit':'prelude')}}else if(kind==='balanced'){E.chooseOpening(s,'respect_yue');day(s,'ledger');visit(s,'wu_yueniang','accord_yue_order','talk');morning(s,'explain');day(s,'ledger');visit(s,'pan_jinlian','accord_pan_truth','talk');morning(s,'explain');jointDay(s,'joint_yue_pan');visit(s,'li_pinger','accord_pinger_key','talk');morning(s,'explain');jointDay(s,'joint_yue_pinger');visit(s,'wu_yueniang','yue_share_shortfall','talk');morning(s,'explain');day(s,'banquet');visit(s,'pan_jinlian','pan_take_cup','talk');morning(s,'explain');day(s,'ledger');assert.equal(E.startSharedNight(s).ok,true);assert.equal(E.chooseSharedNight(s,'shared_divide_roles').ok,true);assert.equal(s.pendingScene,'inner_court_accord');assert.equal(E.closeScene(s).ok,true)}else{E.chooseOpening(s,'tease_pan');const hs=['pan_jinlian','pan_jinlian','wu_yueniang','pan_jinlian','li_pinger','wu_yueniang'],cs=['pan_take_cup','pan_take_clue','yue_public_spend','pan_answer_door','pinger_spend_on_pan','yue_last_tea'],as=['listen','listen','office','listen','office','ledger'];for(let d=1;d<=6;d++){morning(s,'explain');day(s,as[d-1],'banquet_honor_yue');visit(s,hs[d-1],cs[d-1])}}return s}
 function explicit(h){const s=E.newGame(91),p={wu_yueniang:['respect_yue',['yue_share_shortfall','yue_show_accounts','yue_keep_word']],pan_jinlian:['tease_pan',['pan_take_cup','pan_take_clue']],li_pinger:['respect_yue',['pinger_settle_room','pinger_protect_books','pinger_protect_public']]}[h];E.chooseOpening(s,p[0]);for(let i=0;i<p[1].length;i++){morning(s,'explain');const final=i===p[1].length-1;day(s,h==='pan_jinlian'&&final?'listen':'ledger');visit(s,h,p[1][i],final?'explicit':'prelude')}return s}
 function explicitGate(h,action){const s=E.newGame(17),p={wu_yueniang:['respect_yue',['yue_share_shortfall','yue_show_accounts','yue_keep_word']],pan_jinlian:['tease_pan',['pan_take_cup','pan_take_clue']],li_pinger:['respect_yue',['pinger_settle_room','pinger_protect_books','pinger_protect_public']]}[h],choices=p[1];E.chooseOpening(s,p[0]);for(const choice of choices.slice(0,-1)){morning(s,'explain');day(s,'ledger');visit(s,h,choice,'prelude')}morning(s,'explain');day(s,action);E.startVisit(s,h);E.chooseVisit(s,choices.at(-1));return !E.nightOptions(s).find(x=>x.id==='explicit').disabled}
 function directorySize(dir){return fs.readdirSync(dir,{withFileTypes:true}).reduce((sum,entry)=>{const target=path.join(dir,entry.name);return sum+(entry.isDirectory()?directorySize(target):fs.statSync(target).size)},0)}
 
 section('身份与存档');
-test('新局版本 7 且三条成人深线不变',()=>{const s=E.newGame(1);eq(s.version,7);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger']);eq(s.visits,{wu_yueniang:0,pan_jinlian:0,li_pinger:0})});
+test('新局版本 10 且三条成人深线不变',()=>{const s=E.newGame(1);eq(s.version,10);eq(Object.keys(s.relations),['wu_yueniang','pan_jinlian','li_pinger']);eq(s.visits,{wu_yueniang:0,pan_jinlian:0,li_pinger:0});eq(s.accords,{order:false,truth:false,safety:false});eq(s.jointActions,[])});
 test('开场是正堂身份选择',()=>{const s=E.newGame(1);eq(s.phase,'opening');ok(OPENING_CHOICES.some(x=>x.id==='respect_yue'))});
-test('旧 v1/v2 存档拒读',()=>{eq(E.deserialize('{"version":1}'),null);eq(E.deserialize('{"version":2}'),null)});
-test('v3 存档补齐宅中人后迁入 v7',()=>{const old=E.newGame(1);old.version=3;delete old.household;delete old.currentHouseholdEvent;delete old.publicOverrides;delete old.routeReopensOn;delete old.visits;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,7);eq(Object.keys(loaded.household),HOUSEHOLD_IDS);eq(Object.keys(loaded.publicOverrides),['wu_yueniang','pan_jinlian','li_pinger']);eq(loaded.visits,{wu_yueniang:0,pan_jinlian:0,li_pinger:0})});
-test('v4 存档按失信旗标反推越过计数后迁入 v7',()=>{const old=E.newGame(1);old.version=4;old.flags={broken_pan_word:true};delete old.publicOverrides;delete old.routeReopensOn;delete old.visits;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,7);eq(loaded.publicOverrides.pan_jinlian,1);eq(loaded.publicOverrides.wu_yueniang,0);ok(!E.routeCooling(loaded,'pan_jinlian'))});
-test('v5 存档只按已结算 visit_choice 回填拜访次数',()=>{const old=E.newGame(1);old.version=5;delete old.visits;old.history=[{day:1,type:'visit_start',heroine:'li_pinger'},{day:1,type:'visit_choice',heroine:'li_pinger'},{day:2,type:'visit_start',heroine:'li_pinger'},{day:3,type:'visit_start',heroine:'wu_yueniang'}];const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,7);eq(loaded.visits,{wu_yueniang:0,pan_jinlian:0,li_pinger:1})});
-test('v5 中途进门存档迁移后不跳过当前路线拍',()=>{const old=E.newGame(1);old.version=5;delete old.visits;old.phase='visit';old.currentHeroine='li_pinger';old.history=[{day:1,type:'visit_start',heroine:'li_pinger'}];const loaded=E.deserialize(JSON.stringify(old));eq(loaded.visits.li_pinger,0);ok(E.visitChoices(loaded,'li_pinger').some(x=>x.id==='pinger_settle_room'),'未结算进门仍应显示第一拍')});
-test('v5 无历史存档 visits 置 0 重入不崩',()=>{const old=E.newGame(1);old.version=5;delete old.visits;old.history=[];const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,7);eq(loaded.visits,{wu_yueniang:0,pan_jinlian:0,li_pinger:0});loaded.phase='choose_visit';ok(E.visitChoices(loaded,'pan_jinlian').length>0,'置 0 后从第 1 拍重入,有选项可列')});
-test('v6 在途晨间存档补空报条迁入 v7,已结转的账不重扣',()=>{const old=E.newGame(1);old.version=6;old.day=3;old.phase='morning';old.morning={id:'quiet',actor:'li_pinger',tone:'quiet',title:'天亮了',text:'茶'};const silver=old.resources.silver;const loaded=E.deserialize(JSON.stringify(old));eq(loaded.version,7);eq(loaded.morning.notes,[]);eq(loaded.resources.silver,silver,'迁移不得重扣用度或催账')});
+test('旧 schema 一律拒读而不猜测迁移',()=>{for(let version=1;version<10;version+=1){const old=E.newGame(1);old.version=version;eq(E.deserialize(JSON.stringify(old)),null,`v${version}`)}});
+test('当前 schema 缺任一核心状态块时拒读',()=>{for(const field of ['resources','relations','household','flags','history','log','accords','jointActions']){const broken=E.newGame(1);delete broken[field];eq(E.deserialize(JSON.stringify(broken)),null,field)}});
+test('当前 schema 的阶段与在途对象矛盾时拒读',()=>{const scene=E.newGame(1);scene.phase='scene';eq(E.deserialize(JSON.stringify(scene)),null,'scene 无 pendingScene');const joint=E.newGame(1);joint.phase='joint_result';eq(E.deserialize(JSON.stringify(joint)),null,'joint_result 无 currentJointAction');for(const phase of ['visit','night']){const heroine=E.newGame(1);heroine.phase=phase;eq(E.deserialize(JSON.stringify(heroine)),null,`${phase} 无 currentHeroine`)}const morning=E.newGame(1);morning.phase='morning';morning.morning={id:'quiet',actor:'nobody',tone:'quiet',title:'天亮了',text:'茶',notes:[]};eq(E.deserialize(JSON.stringify(morning)),null,'morning actor 不存在');for(const phase of ['banquet','shared_night']){const wrongDay=E.newGame(1);wrongDay.phase=phase;eq(E.deserialize(JSON.stringify(wrongDay)),null,`${phase} 不得出现在第1日`)}const ending=E.newGame(1);ending.phase='ending';eq(E.deserialize(JSON.stringify(ending)),null,'ending 无结算对象')});
+test('结局存档只信过程状态并重建派生展示字段',()=>{const ended=strategy('balanced');ended.ending={id:'balanced'};const loaded=E.deserialize(JSON.stringify(ended));eq(loaded.ending.id,'balanced');eq(loaded.ending.householdResults.length,3);ok(Array.isArray(loaded.ending.unseen))});
 test('F1 破裂规则:公开越过一次不锁,两次才冷却一天',()=>{const s=E.newGame(1);s.day=2;
   s.publicOverrides.wu_yueniang=1;ok(!E.evaluateBreak(s,'wu_yueniang'),'一次不该触发破裂');ok(!E.routeCooling(s,'wu_yueniang'),'一次不该锁');
   s.publicOverrides.wu_yueniang=2;ok(E.evaluateBreak(s,'wu_yueniang'),'两次应触发破裂');ok(E.routeCooling(s,'wu_yueniang'),'两次该冷却');
@@ -71,11 +71,12 @@ test('同 seed 同选择逐字节复现',()=>eq(E.serialize(strategy('exclusive'
 section('成人安全与资产');
 const ADULTS=new Set(['wu_yueniang','pan_jinlian','li_pinger']);
 test('成年白名单与独立期望一致',()=>eq(new Set(HEROINE_IDS),ADULTS));
-test('7 个唯一 scene_id',()=>eq(Object.keys(SCENES).sort(),['banquet_conflict','pan_explicit','pan_prelude','pinger_explicit','pinger_prelude','yue_explicit','yue_prelude']));
-test('成人参与者全是白名单严格子集',()=>{for(const sc of Object.values(SCENES).filter(x=>x.tier!=='public')){ok(sc.participants.length>0&&sc.participants.length<ADULTS.size);ok(sc.participants.every(x=>ADULTS.has(x)));ok(E.sceneIsAdultSafe(sc))}});
-test('成人节点零未成年词',()=>{const p=JSON.stringify(Object.values(SCENES).filter(x=>x.tier!=='public'));for(const t of ['官哥儿','孝哥儿','guan_ge','xiao_ge'])ok(!p.includes(t),t)});
-test('7 个资产键不复用',()=>eq(new Set(Object.values(SCENES).map(x=>x.asset)).size,7));
-test('11 张关键视觉文件全部存在且非占位小图',()=>{eq(new Set(CRITICAL_CG_KEYS),new Set(['cover','heroine/yue/close','heroine/pan/close','heroine/pinger/close','cg/yue/prelude','cg/yue/explicit','cg/pan/prelude','cg/pan/explicit','cg/pinger/prelude','cg/pinger/explicit','cg/group/banquet_conflict']));for(const k of CRITICAL_CG_KEYS){const f=path.join(ROOT,ASSET_PATHS[k]);ok(fs.existsSync(f),f);ok(fs.statSync(f).size>100000,k)}});
+test('8 个唯一 scene_id',()=>eq(Object.keys(SCENES).sort(),['banquet_conflict','inner_court_accord','pan_explicit','pan_prelude','pinger_explicit','pinger_prelude','yue_explicit','yue_prelude']));
+test('成人亲密参与者全是白名单严格子集',()=>{for(const sc of Object.values(SCENES).filter(x=>['prelude','explicit'].includes(x.tier))){ok(sc.participants.length>0&&sc.participants.length<ADULTS.size);ok(sc.participants.every(x=>ADULTS.has(x)));ok(E.sceneIsAdultSafe(sc))}});
+test('三院共约是三名成年人的安全群体协作场景',()=>{const sc=SCENES.inner_court_accord;eq(new Set(sc.participants),ADULTS);eq(sc.tier,'ensemble');ok(E.sceneIsAdultSafe(sc));ok(!['prelude','explicit'].includes(sc.tier))});
+test('成人节点零未成年词',()=>{const p=JSON.stringify(Object.values(SCENES).filter(x=>['prelude','explicit'].includes(x.tier)));for(const t of ['官哥儿','孝哥儿','guan_ge','xiao_ge'])ok(!p.includes(t),t)});
+test('8 个资产键不复用',()=>eq(new Set(Object.values(SCENES).map(x=>x.asset)).size,8));
+test('15 张关键视觉文件全部存在且非占位小图',()=>{eq(new Set(CRITICAL_CG_KEYS),new Set(['cover','heroine/yue/close','heroine/pan/close','heroine/pinger/close','cg/yue/prelude','cg/yue/explicit','cg/pan/prelude','cg/pan/explicit','cg/pinger/prelude','cg/pinger/explicit','cg/group/banquet_conflict','cg/group/inner_court_accord','cg/joint/yue_pan','cg/joint/yue_pinger','cg/joint/pan_pinger']));for(const k of CRITICAL_CG_KEYS){const f=path.join(ROOT,ASSET_PATHS[k]);ok(fs.existsSync(f),f);ok(fs.statSync(f).size>100000,k)}});
 test('运行包体低于 25 MB',()=>ok(directorySize(ROOT)<25*1024*1024,`${directorySize(ROOT)} bytes`));
 
 section('路线与关系');
@@ -92,25 +93,44 @@ section('路线按「她的第几次」走');
 test('拜访结算才计次,拍号钳在最后一拍',()=>{const s=E.newGame(1);E.chooseOpening(s,'respect_yue');day(s,'ledger');E.startVisit(s,'wu_yueniang');eq(s.visits.wu_yueniang,0,'进门未结算不计次');E.chooseVisit(s,'yue_share_shortfall');eq(s.visits.wu_yueniang,1);eq(s.visits.pan_jinlian,0,'别人的门不计')});
 test('同一晚再进她的门走第二拍,与日历无关',()=>{const s=E.newGame(1);E.chooseOpening(s,'respect_yue');day(s,'ledger');E.startVisit(s,'li_pinger');E.chooseVisit(s,'pinger_settle_room');E.chooseNight(s,'talk');morning(s);day(s,'ledger');E.startVisit(s,'li_pinger');const ids=E.visitChoices(s,'li_pinger').map(x=>x.id);ok(ids.includes('pinger_protect_books'),'第二次进门应给第二拍,实际:'+ids)});
 // 这正是设计评审 §3 缺的那条证明:不是「结局在状态机里存在」,而是「玩家能走到」。
-test('六种轮换顺序:没有任何一夜被迫选伤害性选项,平衡结局都可达',()=>{
+test('六种轮换顺序:三条院约不挑顺序,共同分工结局都可达',()=>{
   const PERMS=[['wu_yueniang','pan_jinlian','li_pinger'],['wu_yueniang','li_pinger','pan_jinlian'],['pan_jinlian','wu_yueniang','li_pinger'],['pan_jinlian','li_pinger','wu_yueniang'],['li_pinger','wu_yueniang','pan_jinlian'],['li_pinger','pan_jinlian','wu_yueniang']];
+  const accordByHeroine={wu_yueniang:'accord_yue_order',pan_jinlian:'accord_pan_truth',li_pinger:'accord_pinger_key'};
+  const pairId=(a,b)=>JOINT_ACTIONS.find((choice)=>choice.participants.includes(a)&&choice.participants.includes(b)).id;
   for(const perm of PERMS){
     const s=E.newGame(42);E.chooseOpening(s,'respect_yue');
-    for(let d=1;d<=6;d++){
-      morning(s,'explain');
-      day(s,d===5?'banquet':'ledger');
-      const h=perm[(d-1)%3];
-      assert.equal(E.startVisit(s,h).ok,true);
-      const rows=E.visitChoices(s,h);
-      const kind=kindChoice(rows);
-      assert.ok(kind,`${perm.join('>')} 第${d}日 ${h} 只剩伤害性选项`);
-      assert.equal(E.chooseVisit(s,kind.id).ok,true);
-      assert.equal(E.chooseNight(s,'talk').ok,true);
+    for(let d=1;d<=2;d++){
+      morning(s,'explain');day(s,'ledger');visit(s,perm[d-1],accordByHeroine[perm[d-1]],'talk');
     }
+    morning(s,'explain');jointDay(s,pairId(perm[0],perm[1]));visit(s,perm[2],accordByHeroine[perm[2]],'talk');
+    morning(s,'explain');jointDay(s,pairId(perm[0],perm[2]));
+    assert.equal(E.startVisit(s,perm[0]).ok,true);
+    const fourth=kindChoice(E.visitChoices(s,perm[0]));assert.ok(fourth);assert.equal(E.chooseVisit(s,fourth.id).ok,true);assert.equal(E.chooseNight(s,'talk').ok,true);
+    morning(s,'explain');day(s,'banquet');
+    assert.equal(E.startVisit(s,perm[1]).ok,true);
+    const fifth=kindChoice(E.visitChoices(s,perm[1]));assert.ok(fifth);assert.equal(E.chooseVisit(s,fifth.id).ok,true);assert.equal(E.chooseNight(s,'talk').ok,true);
+    morning(s,'explain');day(s,'ledger');
+    ok(E.sharedNightStatus(s).ready,`${perm.join('>')} 第六夜共同分工应就绪: ${E.sharedNightStatus(s).reason}`);
+    assert.equal(E.startSharedNight(s).ok,true);
+    assert.equal(E.chooseSharedNight(s,'shared_divide_roles').ok,true);
+    assert.equal(E.closeScene(s).ok,true);
     eq(s.ending.id,'balanced',`${perm.join('>')} 应可达平衡结局,实际 ${s.ending.id}`);
     ok(s.flags.banquet_balanced,`${perm.join('>')} 三杯同斟应可斟`);
+    ok(s.flags.harem_coalition,`${perm.join('>')} 应实际完成三人协作`);
   }
 });
+
+section('三院共约');
+test('院约占一夜但不偷走个人路线拍',()=>{const s=E.newGame(8);E.chooseOpening(s,'respect_yue');day(s,'ledger');E.startVisit(s,'wu_yueniang');ok(E.visitChoices(s,'wu_yueniang').some(x=>x.id==='accord_yue_order'));eq(s.visits.wu_yueniang,0);const result=E.chooseVisit(s,'accord_yue_order');ok(result.ok,result.error);eq(s.visits.wu_yueniang,0);eq(s.accords.order,true);ok(s.history.some(x=>x.type==='accord_term'&&x.term==='order'))});
+test('联院差事明示所需院约,每组只能做一次',()=>{const s=E.newGame(8);E.chooseOpening(s,'respect_yue');let option=E.jointActionOptions(s).find(x=>x.id==='joint_yue_pan');ok(option.disabled);ok(option.locked.includes('正堂定账')&&option.locked.includes('去处说真'),option.locked);s.accords.order=true;s.accords.truth=true;option=E.jointActionOptions(s).find(x=>x.id==='joint_yue_pan');ok(!option.disabled);const before=E.snapshot(s);ok(E.chooseJointAction(s,'joint_yue_pan').ok);eq(s.phase,'joint_result');ok(s.resources.power>before.resources.power);ok(s.relations.wu_yueniang.qing>before.relations.wu_yueniang.qing);ok(s.relations.pan_jinlian.qing>before.relations.pan_jinlian.qing);ok(E.continueJointAction(s).ok);s.phase='day';option=E.jointActionOptions(s).find(x=>x.id==='joint_yue_pan');ok(option.disabled);ok(option.locked.includes('不再重复'))});
+test('联院差事结果可中途存读且不能同日再做白天动作',()=>{const s=E.newGame(8);E.chooseOpening(s,'respect_yue');s.accords.order=true;s.accords.truth=true;ok(E.chooseJointAction(s,'joint_yue_pan').ok);eq(E.chooseDayAction(s,'ledger').ok,false);const loaded=E.deserialize(E.serialize(s));eq(loaded.phase,'joint_result');eq(loaded.currentJointAction,'joint_yue_pan');eq(loaded.jointActions,['joint_yue_pan']);ok(E.continueJointAction(loaded).ok);eq(loaded.phase,'choose_visit');eq(loaded.currentJointAction,null)});
+test('三种联院差事覆盖三组不同搭档且回报不同',()=>{eq(new Set(JOINT_ACTIONS.map(x=>x.participants.slice().sort().join('+'))).size,3);eq(new Set(JOINT_ACTIONS.map(x=>JSON.stringify(x.effects))).size,3);ok(JOINT_ACTIONS.every(x=>x.participants.length===2&&x.requires.length===2))});
+test('缺任何院约时共同分工会把具体缺口写在按钮上',()=>{const s=E.newGame(8);s.day=6;s.phase='choose_visit';s.flags.banquet_balanced=true;for(const id of HEROINE_IDS){s.relations[id].qing=50;s.relations[id].du=10}s.accords={order:true,truth:false,safety:true};ok(E.startSharedNight(s).ok);const option=E.sharedNightOptions(s).find(x=>x.id==='shared_divide_roles');ok(option.disabled);ok(option.locked.includes('去处说真'),option.locked)});
+test('院约齐备但少于两桩联院差事时会写出 0/2 缺口',()=>{const s=E.newGame(8);s.day=6;s.phase='choose_visit';s.flags.banquet_balanced=true;s.accords={order:true,truth:true,safety:true};for(const id of HEROINE_IDS){s.relations[id].qing=50;s.relations[id].du=10}const status=E.sharedNightStatus(s);ok(!status.ready);ok(status.reason.includes('0/2'),status.reason)});
+test('重复或伪造的联院 ID 不能冒充两种不同搭档',()=>{const s=E.newGame(8);s.day=6;s.phase='choose_visit';s.flags.banquet_balanced=true;s.flags.harem_coalition=true;s.accords={order:true,truth:true,safety:true};s.jointActions=['joint_yue_pan','joint_yue_pan','joint_forged'];s.unlocked.push('inner_court_accord');for(const id of HEROINE_IDS){s.relations[id].qing=80;s.relations[id].du=0}eq(E.jointActionCount(s),1);const status=E.sharedNightStatus(s);ok(!status.ready);ok(status.reason.includes('1/2'),status.reason);eq(E.determineEnding(s).id,'unstable')});
+test('数值、宴席、旗标与群像齐备仍不能伪造缺过程的后宫结局',()=>{const s=E.newGame(8);for(const id of HEROINE_IDS){s.relations[id].qing=80;s.relations[id].du=0}s.resources.house=80;s.flags.banquet_balanced=true;s.flags.harem_coalition=true;s.unlocked.push('inner_court_accord');eq(E.determineEnding(s).id,'unstable')});
+test('花钱买静与再许人人第一都不会解锁群像或后宫结局',()=>{const make=()=>{const s=E.newGame(8);s.day=6;s.phase='choose_visit';s.flags.banquet_balanced=true;s.accords={order:true,truth:true,safety:true};s.jointActions=['joint_yue_pan','joint_yue_pinger'];s.resources.house=70;s.resources.silver=100;for(const id of HEROINE_IDS){s.relations[id].qing=50;s.relations[id].du=10}E.startSharedNight(s);return s};for(const choice of ['shared_buy_quiet','shared_promise_all']){const s=make();const r=E.chooseSharedNight(s,choice);ok(r.ok,r.error);eq(s.phase,'ending');ok(!s.unlocked.includes('inner_court_accord'));ok(!s.flags.harem_coalition);ok(s.ending.id!=='balanced')}});
+test('共同分工解锁三院同灯并在合页后原子结算',()=>{const s=strategy('balanced');eq(s.jointActions,['joint_yue_pan','joint_yue_pinger']);eq(s.sharedNightChoice,'shared_divide_roles');ok(s.flags.harem_coalition);ok(s.unlocked.includes('inner_court_accord'));eq(s.ending.id,'balanced');ok(s.history.some(x=>x.type==='shared_night'&&x.choice==='shared_divide_roles'))});
 
 section('闭环与延迟后果');
 test('人物秘密可解决次日白天压力',()=>{const s=E.newGame(1);E.chooseOpening(s,'tease_pan');day(s,'listen');visit(s,'pan_jinlian','pan_take_cup');morning(s);day(s,'listen');visit(s,'pan_jinlian','pan_take_clue');morning(s);ok(s.secrets.includes('shop_fraud'));const b=E.snapshot(s.resources);E.chooseDayAction(s,'office');ok(s.secretsUsed.includes('shop_fraud'));ok(s.resources.power>b.power);ok(s.resources.exposure>b.exposure)});
@@ -150,7 +170,7 @@ test('专一深线 6 日可达',()=>eq(ex.ending.id,'exclusive'));
 test('平衡后宫 6 日可达',()=>eq(bal.ending.id,'balanced'));
 test('权谋风月 6 日可达',()=>eq(intr.ending.id,'intrigue'));
 test('脚本 A 张力:第 3 夜解锁月娘明确场景,另两人妒意上桌',()=>{ok(ex.history.some(x=>x.type==='night'&&x.day===3&&x.scene==='yue_explicit'),'第 3 夜应解锁 yue_explicit');for(const id of HEROINE_IDS.filter(h=>h!=='wu_yueniang'))ok(ex.relations[id].du>=30,`${id} du=${ex.relations[id].du}`);ok(ex.history.some(x=>x.type==='morning'&&x.event==='jealousy'),'至少一人触发晨间对质')});
-test('脚本 B 张力:平衡落点,全程无明确场景解锁',()=>{eq(bal.ending.id,'balanced');ok(!['yue_explicit','pan_explicit','pinger_explicit'].some(id=>bal.unlocked.includes(id)),'全程不应解锁明确场景')});
+test('脚本 B 张力:两组联院差事后才落平衡,全程无明确亲密场景',()=>{eq(bal.ending.id,'balanced');eq(bal.jointActions.length,2);ok(bal.unlocked.includes('inner_court_accord'));ok(!['yue_explicit','pan_explicit','pinger_explicit'].some(id=>bal.unlocked.includes(id)),'全程不应解锁明确亲密场景')});
 test('三种策略状态不同',()=>eq(new Set([E.serialize(ex),E.serialize(bal),E.serialize(intr)]).size,3));
 test('专一路线回读理解型结果',()=>{eq(ex.ending.heroineName,'吴月娘');eq(ex.ending.routeResult,'共掌一宅');ok(ex.unlocked.includes('yue_explicit'))});
 test('平衡路线三人情近且无人翻脸',()=>{for(const r of Object.values(bal.relations)){ok(r.qing>=30);ok(r.du<70)}});
@@ -158,8 +178,8 @@ test('权谋路线消费两条人情秘密并留下暴露成色',()=>{ok(intr.se
 test('无白天动作同时抬升全部外账',()=>{for(const a of Object.keys(DAY_ACTIONS)){const s=E.newGame(1);E.chooseOpening(s,'respect_yue');const b=E.snapshot(s.resources);ok(E.chooseDayAction(s,a).ok);ok(['silver','power','repute','house'].filter(k=>s.resources[k]>b[k]).length<4,a)}});
 
 section('声口与数据完整性');
-test('所有主按钮不超过 10 个汉字',()=>{const ls=[...OPENING_CHOICES.map(x=>x.label),...Object.values(DAY_ACTIONS).map(x=>x.label),...Object.values(ROUTE_CHOICES).flat(2).map(x=>x.label),...BANQUET_CHOICES.map(x=>x.label)];for(const l of ls)ok([...l].length<=10,l)});
-test('运行时文本不命中禁用 AI 腔',()=>{const p=JSON.stringify({TEXT,ROUTE_CHOICES,SCENES,OPENING_CHOICES,BANQUET_CHOICES,HOUSEHOLD_EVENTS});for(const x of [/并非.{0,20}而是/,/不是.{0,20}而是/,/真正的.{0,20}从来不是/,/这一刻你终于明白/,/这意味着/,/眼中闪过/,/嘴角勾起/,/仿佛/,/宛若/,/带着一丝/])ok(!x.test(p),x);ok((p.match(/兑现/g)||[]).length<=2,'“兑现”重复过多')});
+test('所有主按钮不超过 10 个汉字',()=>{const ls=[...OPENING_CHOICES.map(x=>x.label),...Object.values(DAY_ACTIONS).map(x=>x.label),...Object.values(ROUTE_CHOICES).flat(2).map(x=>x.label),...Object.values(ACCORD_CHOICES).map(x=>x.label),...JOINT_ACTIONS.map(x=>x.label),...SHARED_NIGHT_CHOICES.map(x=>x.label),...BANQUET_CHOICES.map(x=>x.label)];for(const l of ls)ok([...l].length<=10,l)});
+test('运行时文本不命中禁用 AI 腔',()=>{const p=JSON.stringify({TEXT,ROUTE_CHOICES,ACCORD_CHOICES,JOINT_ACTIONS,SHARED_NIGHT_CHOICES,SCENES,OPENING_CHOICES,BANQUET_CHOICES,HOUSEHOLD_EVENTS});for(const x of [/并非.{0,20}而是/,/不是.{0,20}而是/,/真正的.{0,20}从来不是/,/这一刻你终于明白/,/这意味着/,/眼中闪过/,/嘴角勾起/,/仿佛/,/宛若/,/带着一丝/])ok(!x.test(p),x);ok((p.match(/兑现/g)||[]).length<=2,'“兑现”重复过多')});
 test('玩家界面不再露出策划说明书用语',()=>{const source=fs.readFileSync(path.join(ROOT,'js/main.js'),'utf8');for(const phrase of ['她要：','她能给：','理解型结果','关系终段','成人前奏','这里不替你总结人生'])ok(!source.includes(phrase),phrase)});
 test('六个人各有能听出的声口标记',()=>{const routeText=Object.values(ROUTE_CHOICES).flat(2).map(x=>x.text);ok(routeText.filter(x=>x.includes('官人')).length>=3,'金莲声口');ok(HOUSEHOLD.meng_yulou.voice.includes('笑'),'玉楼声口');ok(HOUSEHOLD.sun_xuee.voice.includes('灶'),'雪娥声口');ok(HOUSEHOLD.li_jiaoer.voice.includes('银'),'娇儿声口')});
 test('三人 6 日每天至少一项不锁死',()=>{for(const id of HEROINE_IDS){eq(ROUTE_CHOICES[id].length,6);for(const d of ROUTE_CHOICES[id])ok(d.some(x=>!x.condition),id)}});

@@ -3,10 +3,20 @@
 import {
   HEROINE_IDS, HEROINES, HOUSEHOLD_IDS, HOUSEHOLD, HOUSEHOLD_EVENTS,
   DAY_NAMES, DAY_PRESSURE, DAY_ACTIONS,
-  OPENING_CHOICES, ROUTE_CHOICES, BANQUET_CHOICES, SCENES, ENDINGS,
+  OPENING_CHOICES, ROUTE_CHOICES, ACCORD_CHOICES, JOINT_ACTIONS, SHARED_NIGHT_CHOICES,
+  BANQUET_CHOICES, SCENES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 10;
+export const ACCORD_KEYS = Object.freeze(['order', 'truth', 'safety']);
+export const JOINT_ACTION_TARGET = 2;
+const JOINT_ACTION_IDS = new Set(JOINT_ACTIONS.map((choice) => choice.id));
+const SAVE_PHASES = new Set([
+  'opening', 'morning', 'day', 'joint_result', 'household', 'banquet',
+  'choose_visit', 'visit', 'night', 'scene', 'shared_night', 'ending',
+]);
+const MORNING_EVENT_IDS = new Set(['jealousy', 'pan_claim', 'yue_delayed', 'yue_help', 'pinger_help', 'quiet']);
+const RESOURCE_KEYS = Object.freeze(['silver', 'power', 'repute', 'exposure', 'strain', 'house']);
 
 // 破裂规则(GAME_DESIGN 第 5 节「拒绝／破裂」):公开越过她两次、或宅门 house<30,
 // 路线冷却一天。此前实现用单次失信旗标永久锁死明确场景,既漏了计数与 house 触发,
@@ -85,6 +95,8 @@ export function newGame(seed = 42) {
     // 每名女主的个人弧线按「她的第几次」走,不按日历天——
     // 轮换顺序不再把任何人的好选项锁死(设计评审 §3)。
     visits: Object.fromEntries(HEROINE_IDS.map((id) => [id, 0])),
+    accords: { order: false, truth: false, safety: false },
+    jointActions: [],
     history: [],
     log: [],
     currentHeroine: null,
@@ -93,6 +105,8 @@ export function newGame(seed = 42) {
     morning: null,
     pendingScene: null,
     sceneReturnPhase: null,
+    sharedNightChoice: null,
+    currentJointAction: null,
     unlocked: [],
     ending: null,
     over: false,
@@ -197,6 +211,7 @@ function applyEffects(state, effects = {}, currentHeroine = null, reason = '') {
     for (const [id, delta] of Object.entries(effects.relAll)) changeRel(state, id, delta, reason);
   }
   if (effects.household) changeHousehold(state, effects.household, reason);
+  if (effects.accord && ACCORD_KEYS.includes(effects.accord)) state.accords[effects.accord] = true;
   for (const secret of effects.secrets ?? []) addSecret(state, secret);
   for (const flag of effects.flags ?? []) addFlag(state, flag);
 }
@@ -322,6 +337,11 @@ export function chooseDayAction(state, actionId) {
   state.selectedDayAction = actionId;
   record(state, 'day_action', { action: actionId, text });
   state.log.push(text);
+  advanceAfterDayAction(state);
+  return { ok: true, text };
+}
+
+function advanceAfterDayAction(state) {
   const householdEvent = HOUSEHOLD_EVENTS[state.day];
   if (householdEvent) {
     state.currentHouseholdEvent = householdEvent.id;
@@ -329,7 +349,59 @@ export function chooseDayAction(state, actionId) {
   } else {
     state.phase = state.day === 5 ? 'banquet' : 'choose_visit';
   }
-  return { ok: true, text };
+}
+
+export function jointActionOptions(state) {
+  const completed = completedJointActions(state);
+  return JOINT_ACTIONS.map((choice) => {
+    const missing = choice.requires.filter((key) => !state.accords?.[key]);
+    const used = completed.has(choice.id);
+    return {
+      ...choice,
+      disabled: state.phase !== 'day' || used || missing.length > 0,
+      locked: used
+        ? '这一组已经合办过一桩，不再重复刷同一件事。'
+        : missing.length
+          ? `还缺院约：${missing.map((key) => accordStatus(state).find((row) => row.key === key)?.label).join('、')}。`
+          : '',
+    };
+  });
+}
+
+function completedJointActions(state) {
+  return new Set((state.jointActions ?? []).filter((id) => JOINT_ACTION_IDS.has(id)));
+}
+
+export function jointActionCount(state) {
+  return completedJointActions(state).size;
+}
+
+export function chooseJointAction(state, actionId) {
+  if (state.phase !== 'day') return { ok: false, error: '眼下不是合办差事的时候。' };
+  const choice = jointActionOptions(state).find((item) => item.id === actionId);
+  if (!choice) return { ok: false, error: '没有这桩联院差事。' };
+  if (choice.disabled) return { ok: false, error: choice.locked };
+  applyEffects(state, choice.effects, null, choice.text);
+  state.jointActions.push(choice.id);
+  state.selectedDayAction = choice.id;
+  state.currentJointAction = choice.id;
+  record(state, 'joint_action', { action: choice.id, participants: [...choice.participants] });
+  state.log.push(choice.text);
+  state.phase = 'joint_result';
+  return { ok: true, text: choice.text };
+}
+
+export function currentJointAction(state) {
+  return JOINT_ACTIONS.find((choice) => choice.id === state.currentJointAction) ?? null;
+}
+
+export function continueJointAction(state) {
+  if (state.phase !== 'joint_result' || !currentJointAction(state)) {
+    return { ok: false, error: '眼下没有待收的联院差事。' };
+  }
+  state.currentJointAction = null;
+  advanceAfterDayAction(state);
+  return { ok: true };
 }
 
 export function currentHouseholdEvent(state) {
@@ -395,6 +467,95 @@ export function chooseBanquet(state, choiceId) {
   return { ok: true, text: choice.text, scene: 'banquet_conflict' };
 }
 
+export function accordStatus(state) {
+  const rows = [
+    { key: 'order', heroine: 'wu_yueniang', label: '正堂定账', glyph: '账' },
+    { key: 'truth', heroine: 'pan_jinlian', label: '去处说真', glyph: '真' },
+    { key: 'safety', heroine: 'li_pinger', label: '私钥在手', glyph: '钥' },
+  ];
+  return rows.map((row) => ({ ...row, complete: !!state.accords?.[row.key] }));
+}
+
+export function sharedNightStatus(state) {
+  const missing = accordStatus(state).filter((row) => !row.complete);
+  const jointComplete = jointActionCount(state);
+  let reason = '';
+  if (!state.flags.banquet_balanced) reason = '中秋那三杯还没一同斟满。';
+  else if (missing.length) reason = `还缺：${missing.map((row) => row.label).join('、')}。`;
+  else if (jointComplete < JOINT_ACTION_TARGET) {
+    reason = `还要让不同院门合办两桩事（${jointComplete}/${JOINT_ACTION_TARGET}）。`;
+  }
+  else {
+    const low = HEROINE_IDS.find((id) => state.relations[id].qing < 30);
+    const angry = HEROINE_IDS.find((id) => state.relations[id].du >= 70);
+    if (low) reason = `${HEROINES[low].short}还没肯把这件事当成三个人的事。`;
+    else if (angry) reason = `${HEROINES[angry].short}的火还没压下去。`;
+    else if (state.resources.house < 45) reason = '宅门还没稳住，三个人谁也不肯替你收外账。';
+  }
+  return {
+    visible: state.day === MAX_DAY && state.phase === 'choose_visit',
+    ready: !reason,
+    reason,
+    complete: ACCORD_KEYS.filter((key) => state.accords?.[key]).length,
+    total: ACCORD_KEYS.length,
+    jointComplete: Math.min(jointComplete, JOINT_ACTION_TARGET),
+    jointTotal: JOINT_ACTION_TARGET,
+  };
+}
+
+export function startSharedNight(state) {
+  if (state.phase !== 'choose_visit' || state.day !== MAX_DAY) {
+    return { ok: false, error: '还没到请三人同席的时候。' };
+  }
+  state.currentHeroine = null;
+  state.phase = 'shared_night';
+  record(state, 'shared_night_start', { accordCount: accordStatus(state).filter((row) => row.complete).length });
+  return { ok: true };
+}
+
+export function sharedNightOptions(state) {
+  if (state.phase !== 'shared_night') return [];
+  const status = sharedNightStatus({ ...state, phase: 'choose_visit' });
+  return SHARED_NIGHT_CHOICES.map((choice) => ({
+    ...choice,
+    disabled: choice.id === 'shared_divide_roles'
+      ? !status.ready
+      : choice.id === 'shared_buy_quiet' && state.resources.silver < 40,
+    locked: choice.id === 'shared_divide_roles' && !status.ready
+      ? status.reason
+      : choice.id === 'shared_buy_quiet' && state.resources.silver < 40
+        ? '手里凑不出四十两。'
+        : '',
+  }));
+}
+
+export function chooseSharedNight(state, choiceId) {
+  if (state.phase !== 'shared_night') return { ok: false, error: '三个人还没坐到同一张桌上。' };
+  const choice = sharedNightOptions(state).find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '没有这个同席选择。' };
+  if (choice.disabled) return { ok: false, error: choice.locked };
+  applyEffects(state, choice.effects, null, choice.text);
+  state.sharedNightChoice = choiceId;
+  record(state, 'shared_night', { choice: choiceId, public: true });
+  state.log.push(choice.text);
+  if (choiceId === 'shared_divide_roles') {
+    unlockScene(state, 'inner_court_accord');
+    state.pendingScene = 'inner_court_accord';
+    state.sceneReturnPhase = 'after_shared_night';
+    state.phase = 'scene';
+    return { ok: true, text: choice.text, scene: 'inner_court_accord' };
+  }
+  finishSharedNight(state);
+  return { ok: true, text: choice.text, scene: null };
+}
+
+function finishSharedNight(state) {
+  state.selectedDayAction = null;
+  state.ending = determineEnding(state);
+  state.phase = 'ending';
+  state.over = true;
+}
+
 // 个人弧线的拍号 = 你第几次进她的门(结算成功才计次),钳在最后一拍。
 // 取代旧的 state.day - 1:按日历天索引会让轮换玩家撞上「好选项被锁、只能选伤害项」。
 function routeStep(state, heroineId) {
@@ -403,7 +564,9 @@ function routeStep(state, heroineId) {
 
 export function visitChoices(state, heroineId) {
   const rows = ROUTE_CHOICES[heroineId]?.[routeStep(state, heroineId)] ?? [];
-  return rows.map((choice) => ({
+  const accord = ACCORD_CHOICES[heroineId];
+  const choices = accord && !state.accords?.[accord.effects.accord] ? [...rows, accord] : rows;
+  return choices.map((choice) => ({
     ...choice,
     disabled: !!choice.condition && !hasToken(state, choice.condition),
   }));
@@ -420,12 +583,16 @@ export function startVisit(state, heroineId) {
 
 export function chooseVisit(state, choiceId) {
   if (state.phase !== 'visit' || !state.currentHeroine) return { ok: false, error: '先选一处院门。' };
-  const choice = (ROUTE_CHOICES[state.currentHeroine]?.[routeStep(state, state.currentHeroine)] ?? []).find((item) => item.id === choiceId);
+  const choice = visitChoices(state, state.currentHeroine).find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个回应。' };
   if (choice.condition && !hasToken(state, choice.condition)) return { ok: false, error: choice.locked || '前面的话还没接上。' };
   applyEffects(state, choice.effects, state.currentHeroine, choice.text);
-  state.visits[state.currentHeroine] = (state.visits[state.currentHeroine] ?? 0) + 1;
-  record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: state.day === 5 });
+  if (choice.effects.accord) {
+    record(state, 'accord_term', { heroine: state.currentHeroine, term: choice.effects.accord, choice: choiceId });
+  } else {
+    state.visits[state.currentHeroine] = (state.visits[state.currentHeroine] ?? 0) + 1;
+    record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: state.day === 5 });
+  }
   state.log.push(choice.text);
   state.phase = 'night';
   return { ok: true, text: choice.text };
@@ -539,6 +706,8 @@ export function closeScene(state) {
   state.sceneReturnPhase = null;
   if (next === 'choose_visit') {
     state.phase = 'choose_visit';
+  } else if (next === 'after_shared_night') {
+    finishSharedNight(state);
   } else {
     advanceAfterNight(state);
   }
@@ -767,7 +936,14 @@ export function determineEnding(state) {
   const sorted = HEROINE_IDS.slice().sort((a, b) => qing[b] - qing[a]);
   const top = sorted[0];
   let id = 'unstable';
-  if (HEROINE_IDS.every((heroine) => qing[heroine] >= 30 && state.relations[heroine].du < 70) && state.resources.house >= 45 && state.flags.banquet_balanced) {
+  if (
+    state.flags.harem_coalition
+    && state.unlocked.includes('inner_court_accord')
+    && jointActionCount(state) >= JOINT_ACTION_TARGET
+    && HEROINE_IDS.every((heroine) => qing[heroine] >= 30 && state.relations[heroine].du < 70)
+    && state.resources.house >= 45
+    && state.flags.banquet_balanced
+  ) {
     id = 'balanced';
   } else if (qing[top] >= 60 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 50)) {
     id = 'exclusive';
@@ -822,47 +998,73 @@ export function serialize(state) {
   return JSON.stringify(state);
 }
 
+const isRecord = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+const hasFiniteFields = (value, keys) => isRecord(value) && keys.every((key) => Number.isFinite(value[key]));
+
+function validCurrentSave(state) {
+  if (!isRecord(state) || state.version !== SAVE_VERSION) return false;
+  if (!Number.isFinite(state.seed) || !Number.isInteger(state.day) || state.day < 1 || state.day > MAX_DAY) return false;
+  if (!SAVE_PHASES.has(state.phase) || typeof state.over !== 'boolean') return false;
+  if (!hasFiniteFields(state.resources, RESOURCE_KEYS)) return false;
+  if (!isRecord(state.flags)) return false;
+  for (const key of ['secrets', 'secretsUsed', 'history', 'log', 'jointActions', 'unlocked']) {
+    if (!Array.isArray(state[key])) return false;
+  }
+  if (!HEROINE_IDS.every((id) => (
+    hasFiniteFields(state.relations?.[id], ['qing', 'yu', 'du', 'ignored'])
+    && Array.isArray(state.relations[id].reasons)
+    && Number.isFinite(state.publicOverrides?.[id])
+    && Number.isFinite(state.routeReopensOn?.[id])
+    && Number.isInteger(state.visits?.[id])
+  ))) return false;
+  if (!HOUSEHOLD_IDS.every((id) => (
+    hasFiniteFields(state.household?.[id], ['regard'])
+    && Array.isArray(state.household[id].reasons)
+  ))) return false;
+  if (!ACCORD_KEYS.every((key) => typeof state.accords?.[key] === 'boolean')) return false;
+  const completed = new Set(state.jointActions);
+  if (completed.size !== state.jointActions.length || [...completed].some((id) => !JOINT_ACTION_IDS.has(id))) return false;
+  if (state.unlocked.some((id) => !SCENES[id])) return false;
+  if (state.phase === 'joint_result' && (!JOINT_ACTION_IDS.has(state.currentJointAction) || !completed.has(state.currentJointAction))) return false;
+  if (state.phase !== 'joint_result' && state.currentJointAction !== null) return false;
+  if (['visit', 'night'].includes(state.phase) && !HEROINE_IDS.includes(state.currentHeroine)) return false;
+  if (state.phase === 'scene') {
+    if (!SCENES[state.pendingScene] || !['choose_visit', 'after_night', 'after_shared_night'].includes(state.sceneReturnPhase)) return false;
+    if (state.sceneReturnPhase === 'after_night' && !HEROINE_IDS.includes(state.currentHeroine)) return false;
+    if (state.sceneReturnPhase === 'after_night' && SCENES[state.pendingScene].heroine !== state.currentHeroine) return false;
+    if (state.sceneReturnPhase === 'choose_visit' && (state.day !== 5 || state.pendingScene !== 'banquet_conflict')) return false;
+    if (state.sceneReturnPhase === 'after_shared_night' && (
+      state.day !== MAX_DAY
+      || state.pendingScene !== 'inner_court_accord'
+      || state.sharedNightChoice !== 'shared_divide_roles'
+      || !state.flags.harem_coalition
+      || jointActionCount(state) < JOINT_ACTION_TARGET
+    )) return false;
+  } else if (state.pendingScene !== null || state.sceneReturnPhase !== null) return false;
+  if (state.phase === 'morning') {
+    if (!isRecord(state.morning)
+      || !MORNING_EVENT_IDS.has(state.morning.id)
+      || !HEROINE_IDS.includes(state.morning.actor)
+      || !['tone', 'title', 'text'].every((key) => typeof state.morning[key] === 'string')
+      || !Array.isArray(state.morning.notes)) return false;
+  } else if (state.morning !== null) return false;
+  if (state.phase === 'household' && state.currentHouseholdEvent !== HOUSEHOLD_EVENTS[state.day]?.id) return false;
+  if (state.phase === 'opening' && state.day !== 1) return false;
+  if (state.phase === 'morning' && state.day < 2) return false;
+  if (state.phase === 'banquet' && state.day !== 5) return false;
+  if (state.phase === 'shared_night' && (state.day !== MAX_DAY || state.sharedNightChoice !== null)) return false;
+  if (state.phase === 'ending') {
+    if (state.day !== MAX_DAY || !state.over || !isRecord(state.ending) || !ENDINGS[state.ending.id]) return false;
+  } else if (state.over || state.ending !== null) return false;
+  return true;
+}
+
 export function deserialize(raw) {
   if (!raw) return null;
   try {
     const state = JSON.parse(raw);
-    if (!HEROINE_IDS.every((id) => state?.relations?.[id])) return null;
-    // v3 → v4:补齐宅中人。
-    if (state.version === 3) {
-      state.version = 4;
-      state.household = makeHousehold();
-      state.currentHouseholdEvent = null;
-    }
-    // v4 → v5:破裂规则从单次永久旗标改为「公开越过计数 + 一天冷却」,
-    // 旧档按已置位的失信旗标反推计数,并从未冷却状态入局。
-    if (state.version === 4) {
-      state.version = 5;
-      state.publicOverrides = { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 };
-      state.routeReopensOn = { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 };
-      for (const [flag, heroine] of Object.entries(OVERRIDE_FLAG_TO_HEROINE)) {
-        if (state.flags?.[flag]) state.publicOverrides[heroine] = 1;
-      }
-    }
-    // v5 → v6:路线索引从日历天改为已结算的拜访次数。旧档按 history 里的
-    // visit_choice 回填；只有 visit_start 的中途存档不计次，继续显示当前一拍。
-    // 取不到历史就置 0——从第 1 拍重入,不许崩。
-    if (state.version === 5) {
-      state.version = 6;
-      state.visits = Object.fromEntries(HEROINE_IDS.map((id) => [id, 0]));
-      for (const entry of state.history ?? []) {
-        if (entry?.type === 'visit_choice' && HEROINE_IDS.includes(entry.heroine)) {
-          state.visits[entry.heroine] += 1;
-        }
-      }
-    }
-    // v6 → v7:晨间画面新增结转报条(notes)。旧档的在途晨间没有这页,补空报条,
-    // 已结转的用度与催账不重扣——报条只是呈现,账在结转当刻已经落清。
-    if (state.version === 6) {
-      state.version = 7;
-      if (state.morning && !Array.isArray(state.morning.notes)) state.morning.notes = [];
-    }
-    if (state.version !== SAVE_VERSION || !HOUSEHOLD_IDS.every((id) => state.household?.[id])) return null;
-    if (!state.publicOverrides || !state.routeReopensOn || !state.visits) return null;
+    if (!validCurrentSave(state)) return null;
+    if (state.phase === 'ending') state.ending = determineEnding(state);
     return state;
   } catch {
     return null;

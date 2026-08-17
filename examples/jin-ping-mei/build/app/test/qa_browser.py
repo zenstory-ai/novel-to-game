@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""用 Playwright 跑《风月总账》一条专一路线并保留三张代表帧。"""
+"""用 Playwright 全键盘跑《风月总账》三院同灯路线并保留三张代表帧。"""
 
 from __future__ import annotations
 
@@ -61,11 +61,12 @@ def state(page: Page) -> dict[str, object]:
     return page.evaluate("__game.state()")
 
 
-def click(page: Page, selector: str) -> None:
+def activate(page: Page, selector: str) -> None:
     node = page.locator(selector)
     if node.count() == 0:
         raise RuntimeError(f"找不到 {selector}（phase={phase(page)}）")
-    node.first.click()
+    node.first.focus()
+    page.keyboard.press("Enter")
     page.wait_for_timeout(80)
 
 
@@ -81,32 +82,52 @@ def resolve_morning(page: Page) -> None:
     option = page.locator('[data-morning="explain"]:not([disabled])')
     if option.count() == 0:
         option = page.locator("[data-morning]:not([disabled])").first
-    option.click()
+    option.focus()
+    page.keyboard.press("Enter")
     page.wait_for_timeout(80)
 
 
-def choose_day(page: Page) -> None:
-    click(page, '[data-day-action="ledger"]')
+def choose_day(
+    page: Page,
+    joint_action: str | None = None,
+    capture_name: str | None = None,
+) -> str | None:
+    joint_result = None
+    if joint_action:
+        activate(page, f'[data-joint-action="{joint_action}"]:not([disabled])')
+        if phase(page) != "joint_result":
+            raise RuntimeError(f"联院差事没有进入结果画面：{joint_action}")
+        result = page.locator(f'[data-joint-result="{joint_action}"]')
+        if result.count() != 1 or not result.is_visible():
+            raise RuntimeError(f"联院结果画面没有渲染：{joint_action}")
+        joint_result = result.get_attribute("data-joint-result")
+        if capture_name:
+            shot(page, capture_name)
+        activate(page, '[data-joint-continue="1"]')
+    else:
+        activate(page, '[data-day-action="ledger"]')
     if phase(page) == "household":
-        page.locator("button[data-household]:not([disabled])").first.click()
+        option = page.locator("button[data-household]:not([disabled])").first
+        option.focus()
+        page.keyboard.press("Enter")
         page.wait_for_timeout(80)
     if phase(page) == "banquet":
-        option = page.locator('[data-banquet="banquet_honor_yue"]:not([disabled])')
-        option.click()
-        page.wait_for_timeout(100)
-        click(page, "#btn-scene-close")
+        activate(page, '[data-banquet="banquet_balance"]:not([disabled])')
+        activate(page, "#btn-scene-close")
+    return joint_result
 
 
-def route_night(page: Page, route: str, night: str) -> None:
-    click(page, '[data-visit="wu_yueniang"]')
-    click(page, f'[data-route-choice="{route}"]')
+def route_night(page: Page, heroine: str, route: str, night: str = "talk") -> None:
+    activate(page, f'[data-visit="{heroine}"]')
+    activate(page, f'[data-route-choice="{route}"]')
     target = page.locator(f'[data-night="{night}"]:not([disabled])')
     if target.count() != 1:
         raise RuntimeError(f"夜间选项未解锁：{night}")
-    target.click()
+    target.focus()
+    page.keyboard.press("Enter")
     page.wait_for_timeout(100)
     if phase(page) == "scene":
-        click(page, "#btn-scene-close")
+        activate(page, "#btn-scene-close")
 
 
 def run_path() -> tuple[
@@ -124,11 +145,13 @@ def run_path() -> tuple[
     http_errors: list[str] = []
     observations: dict[str, object] = {}
     input_trace = [
-        "confirm the 18+ age gate",
-        "start a new ledger and choose the respectful opening",
-        "complete six household and relationship days",
-        "reach the exclusive ending",
-        "restart to the day-one opening",
+        "use keyboard Enter to confirm the 18+ age gate",
+        "use keyboard only to start and choose the respectful opening",
+        "hear Yue's order term, Pan's truth term, and Pinger's safety term",
+        "complete joint_yue_pan and joint_yue_pinger as visible two-woman scenes",
+        "balance the public banquet and invite all three women on night six",
+        "choose shared_divide_roles, view inner_court_accord, and reach 三院同灯",
+        "restart and confirm the earned group page persists in the gallery",
     ]
 
     with sync_playwright() as playwright:
@@ -166,88 +189,158 @@ def run_path() -> tuple[
             "state": {"ageGateReady": age_gate_ready, "url": page.url},
             "visual": age_gate_shot.relative_to(PROJECT).as_posix(),
         }
-        click(page, "#btn-age-yes")
+        activate(page, "#btn-age-yes")
         checks["launch"] = age_gate_ready and bool(page.locator(".title-screen").count())
 
-        click(page, "#btn-start")
-        click(page, '[data-opening="respect_yue"]')
+        activate(page, "#btn-start")
+        activate(page, '[data-opening="respect_yue"]')
         checks["input"] = state(page)["history"][0]["choice"] == "respect_yue"
         observations["input"] = {
             "id": "opening-choice-accepted",
-            "inputs": ["click start", "choose respect_yue"],
+            "inputs": ["focus start and press Enter", "focus respect_yue and press Enter"],
             "state": {
                 "phase": phase(page),
                 "choice": state(page)["history"][0]["choice"],
             },
         }
 
-        routes = (
-            "yue_share_shortfall",
-            "yue_show_accounts",
-            "yue_keep_word",
-            "yue_ask_backing",
-            "yue_offer_seat",
-            "yue_share_keys",
+        day_panel_fits = page.evaluate(
+            "(() => { const p=document.querySelector('.day-panel'); const s=document.querySelector('.phase-stage'); "
+            "if(!p||!s) return false; const a=p.getBoundingClientRect(), b=s.getBoundingClientRect(); "
+            "return a.top>=b.top && a.bottom<=b.bottom; })()"
         )
-        for day, route in enumerate(routes, start=1):
+        visits = (
+            ("wu_yueniang", "accord_yue_order", None),
+            ("pan_jinlian", "accord_pan_truth", None),
+            ("li_pinger", "accord_pinger_key", "joint_yue_pan"),
+            ("wu_yueniang", "yue_share_shortfall", "joint_yue_pinger"),
+            ("pan_jinlian", "pan_take_cup", None),
+        )
+        joint_results: list[str] = []
+        for heroine, route, joint_action in visits:
             resolve_morning(page)
-            choose_day(page)
-            route_night(page, route, "prelude" if day < 3 else "explicit")
+            result = choose_day(
+                page,
+                joint_action,
+                "04_joint_yue_pan" if joint_action == "joint_yue_pan" else None,
+            )
+            if result:
+                joint_results.append(result)
+            route_night(page, heroine, route)
+        resolve_morning(page)
+        choose_day(page)
+        hub_state = state(page)
+        accord_visible = all(
+            page.locator(f'[data-accord="{term}"].complete').count() >= 1
+            for term in ("order", "truth", "safety")
+        )
+        activate(page, '[data-shared-start="1"]')
+        shared_option = page.locator(
+            '[data-shared-night="shared_divide_roles"]:not([disabled])'
+        )
+        if shared_option.count() != 1:
+            raise RuntimeError("三院共同分工未解锁")
+        shared_option.focus()
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(120)
+        accord_scene = state(page)
+        group_scene_ready = bool(
+            phase(page) == "scene"
+            and page.locator('[data-scene-id="inner_court_accord"]').is_visible()
+            and accord_scene["pendingScene"] == "inner_court_accord"
+        )
+        page.set_viewport_size({"width": 1920, "height": 1080})
+        page.wait_for_timeout(100)
+        large_viewport_fits = page.evaluate(
+            "document.documentElement.scrollWidth <= innerWidth && "
+            "document.documentElement.scrollHeight <= innerHeight"
+        )
+        activate(page, "#btn-scene-close")
 
         checks["coreLoop"] = phase(page) == "ending"
         checks["outcome"] = (
-            page.locator("#ending-view").get_attribute("data-ending") == "exclusive"
+            page.locator("#ending-view").get_attribute("data-ending") == "balanced"
         )
-        ending_shot = shot(page, "07_exclusive_ending")
+        ending_shot = shot(page, "08_balanced_ending")
         ending_visual = ending_shot.relative_to(PROJECT).as_posix()
         checks["render"] = bool(
             age_gate_shot.is_file()
+            and (SAFE / "04_joint_yue_pan.jpg").is_file()
             and ending_shot.is_file()
+            and accord_visible
+            and day_panel_fits
+            and joint_results == ["joint_yue_pan", "joint_yue_pinger"]
+            and group_scene_ready
+            and large_viewport_fits
             and page.locator("#ending-view").is_visible()
             and not console_errors
             and not network_errors
             and not http_errors
         )
         observations["render"] = {
-            "id": "exclusive-ending-rendered",
-            "inputs": ["complete the sixth day"],
+            "id": "pair-action-and-inner-court-rendered-at-both-target-viewports",
+            "inputs": [
+                "complete three accords",
+                "complete two pair actions",
+                "choose shared_divide_roles",
+            ],
             "state": {
                 "phase": phase(page),
+                "accordSealsVisible": accord_visible,
+                "dayPanelFits1280x800": day_panel_fits,
+                "jointResultScenes": joint_results,
+                "groupSceneReady": group_scene_ready,
+                "viewport1920x1080Fits": large_viewport_fits,
                 "consoleErrors": console_errors,
                 "networkErrors": network_errors,
                 "httpErrors": http_errors,
             },
-            "visual": ending_visual,
+            "visual": (SAFE / "04_joint_yue_pan.jpg")
+            .relative_to(PROJECT)
+            .as_posix(),
         }
         observations["coreLoop"] = {
             "id": "six-day-loop-complete",
-            "inputs": ["complete six day and night decisions"],
-            "state": {"phase": phase(page), "day": state(page)["day"]},
+            "inputs": [
+                "complete three agreement nights, two pair-action days, two personal nights, and the sixth shared night"
+            ],
+            "state": {
+                "phase": phase(page),
+                "day": state(page)["day"],
+                "accords": hub_state["accords"],
+                "jointActions": hub_state["jointActions"],
+                "sharedNightChoice": state(page)["sharedNightChoice"],
+            },
         }
         observations["outcome"] = {
-            "id": "exclusive-ending",
-            "inputs": ["resolve the sixth night"],
-            "state": {"terminal": "exclusive-ending", "phase": phase(page)},
+            "id": "balanced-inner-court-ending",
+            "inputs": ["resolve shared_divide_roles and close inner_court_accord"],
+            "state": {
+                "terminal": "balanced-ending",
+                "phase": phase(page),
+                "haremCoalition": state(page)["flags"].get("harem_coalition", False),
+                "sceneUnlocked": "inner_court_accord" in state(page)["unlocked"],
+            },
             "visual": ending_visual,
         }
 
-        click(page, "#btn-restart")
-        restart_shot = shot(page, "08_restart")
+        activate(page, "#btn-restart")
         restarted = state(page)
+        gallery = page.evaluate("__game.gallery()")
         checks["restart"] = bool(
             restarted["day"] == 1
             and restarted["phase"] == "opening"
-            and restart_shot.is_file()
+            and "inner_court_accord" in gallery
         )
         observations["restart"] = {
             "id": "clean-day-one-restart",
-            "inputs": ["click restart"],
+            "inputs": ["focus restart and press Enter"],
             "state": {
                 "restart": "day-1-opening",
                 "day": restarted["day"],
                 "phase": restarted["phase"],
+                "galleryKeepsInnerCourtAccord": "inner_court_accord" in gallery,
             },
-            "visual": restart_shot.relative_to(PROJECT).as_posix(),
         }
         browser_version = browser.version
         context.close()
@@ -293,7 +386,7 @@ def main() -> int:
         "runId": "jin-ping-mei-main-path",
         "environment": {
             "browser": browser_version,
-            "viewport": [1280, 800],
+            "viewports": [[1280, 800], [1920, 1080]],
             "url": URL,
             "normalSpeedRun": SLOW,
             "buildBytes": build_bytes,

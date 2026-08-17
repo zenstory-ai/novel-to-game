@@ -30,7 +30,7 @@ Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read
 
 **Choose whose door you enter tonight. Find out whose door knocks in the morning.**
 
-Six nights, three courtyards. Spend each day converting silver, standing and secrets into the right to choose — then wake up and settle what the other two are owed.
+Six nights, three courtyards. Hear each woman's terms, pair them up to solve real household trouble, survive a public banquet, then earn a shared ending where all three combine their strengths.
 
 **[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 20–30 min · 18+ · playable prototype
 

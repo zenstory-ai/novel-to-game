@@ -17,6 +17,7 @@ export const TEXT = Object.freeze({
   muteOff: '静音',
   dayLead: '先办眼前这桩。天黑以后，它还会找上门来。',
   chooseVisit: '暮鼓响了。今晚往哪边走？',
+  sharedNightLead: '三个人都到了。现在要谈的不是谁排第一，是明早这座宅子怎样一起运转。',
   nightLead: '她没有催你。留不留下，由你们两个人说了算。',
   morningLead: '门外的人已经等了一会儿。',
   banquetLead: '杯子都斟满了。第一杯递给谁，满桌人都看着。',

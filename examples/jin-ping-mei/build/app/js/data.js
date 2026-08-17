@@ -78,6 +78,107 @@ const route = (id, label, hint, text, effects = {}, condition = null, locked = '
 const householdChoice = (id, label, hint, text, effects) =>
   Object.freeze({ id, label, hint, text, effects });
 
+// 三院共约不占个人路线拍：玩家分别听完三人的边界，第六夜才有资格请她们同席。
+export const ACCORD_CHOICES = Object.freeze({
+  wu_yueniang: route(
+    'accord_yue_order', '公中归正堂', '公账由她记，各院私房谁也不暗取',
+    '月娘把三把钥匙分开摆好：“公中的归公中。谁屋里的箱子，谁自己收着。官人先答应这一条。”',
+    { rel: { qing: 12, du: -4 }, house: 5, accord: 'order' },
+  ),
+  pan_jinlian: route(
+    'accord_pan_truth', '去处当面说', '可以偏心，不许拿同一句独占话哄三个人',
+    '金莲拿扇骨点着你的手：“今夜去谁屋里，官人只管直说。可别到三处门前，都说人家是第一。”',
+    { rel: { qing: 14, yu: 8, du: -6 }, accord: 'truth' },
+  ),
+  li_pinger: route(
+    'accord_pinger_key', '私钥仍归她', '要她拿钱救急，先把借还写在明处',
+    '瓶儿把钥匙握回掌心：“我肯帮你。只是箱子还由我开，拿多少、还到哪里，咱们当面写下。”',
+    { rel: { qing: 14, yu: 4, du: -5 }, house: 3, accord: 'safety' },
+  ),
+});
+
+// 联院差事是院约的即时读点：每组只做一次，不靠重复刷数值。
+export const JOINT_ACTIONS = Object.freeze([
+  {
+    id: 'joint_yue_pan', participants: ['wu_yueniang', 'pan_jinlian'], asset: 'cg/joint/yue_pan',
+    requires: ['order', 'truth'], label: '正堂问口供',
+    hint: '月娘对账，金莲追话；势 +1，露 +7',
+    text: '月娘把账页翻到缺数那行。金莲没坐，倚着桌角把掌柜方才的话一字字问回去。两个人一对，假账当场露了口。',
+    effects: {
+      power: 1, exposure: 7, house: 2,
+      relAll: {
+        wu_yueniang: { qing: 5, du: -4 },
+        pan_jinlian: { qing: 5, du: -4 },
+      },
+    },
+  },
+  {
+    id: 'joint_yue_pinger', participants: ['wu_yueniang', 'li_pinger'], asset: 'cg/joint/yue_pinger',
+    requires: ['order', 'safety'], label: '公账接货单',
+    hint: '月娘核数，瓶儿调货；银 +32，宅 +5',
+    text: '瓶儿自己开箱取出货单，月娘照公账一笔笔核过。该借的写明归期，该留的仍锁回瓶儿箱里；货车午后便进了门。',
+    effects: {
+      silver: 32, house: 5,
+      relAll: {
+        wu_yueniang: { qing: 5, du: -4 },
+        li_pinger: { qing: 5, du: -4 },
+      },
+    },
+  },
+  {
+    id: 'joint_pan_pinger', participants: ['pan_jinlian', 'li_pinger'], asset: 'cg/joint/pan_pinger',
+    requires: ['truth', 'safety'], label: '顺话验货车',
+    hint: '金莲套话，瓶儿验货；银 +18，势 +1，露 +5',
+    text: '金莲在门房笑着问出车夫前后两套说辞，瓶儿当面拆封验货。少的那箱没进私院，也没混进公账，车主只得照数补来。',
+    effects: {
+      silver: 18, power: 1, exposure: 5,
+      relAll: {
+        pan_jinlian: { qing: 5, du: -4 },
+        li_pinger: { qing: 5, du: -4 },
+      },
+    },
+  },
+]);
+
+export const SHARED_NIGHT_CHOICES = Object.freeze([
+  route(
+    'shared_divide_roles', '三人各管一头', '月娘主账、金莲追人、瓶儿调货；三条院约缺一不可',
+    '月娘合上总账：“数我来对。”金莲把门外那人的口供拍在桌上：“人我问清了。”瓶儿铺开货单：“这一车今晚能到。”',
+    {
+      relAll: {
+        wu_yueniang: { qing: 12, yu: 5, du: -18 },
+        pan_jinlian: { qing: 12, yu: 7, du: -18 },
+        li_pinger: { qing: 12, yu: 5, du: -18 },
+      },
+      silver: 30, house: 10, flags: ['harem_coalition'],
+    },
+  ),
+  route(
+    'shared_buy_quiet', '四十两买清静', '先把醋意压下去；规矩没谈成，明日还会再问',
+    '四十两分作三份。三个人都收了，桌上的账、口供和货单却仍各在各处。',
+    {
+      relAll: {
+        wu_yueniang: { qing: 2, du: -12 },
+        pan_jinlian: { qing: 2, du: -12 },
+        li_pinger: { qing: 2, du: -12 },
+      },
+      silver: -40, house: 2,
+    },
+  ),
+  route(
+    'shared_promise_all', '再许人人第一', '一句话省事，三个人却都听过你怎样对别人说',
+    '“都是第一？”金莲先笑出声。月娘把账往回一收，瓶儿也把钥匙攥紧。三个人谁都没替你圆这句话。',
+    {
+      relAll: {
+        wu_yueniang: { du: 18, qing: -6 },
+        pan_jinlian: { du: 18, qing: -6 },
+        li_pinger: { du: 18, qing: -6 },
+      },
+      house: -10, exposure: 6,
+    },
+  ),
+]);
+
 export const HOUSEHOLD_EVENTS = Object.freeze({
   2: {
     id: 'meng_namecard', actor: 'meng_yulou', title: '玉楼手里有张名帖',
@@ -231,6 +332,12 @@ export const SCENES = Object.freeze({
     title: '三杯都满', asset: 'cg/group/banquet_conflict',
     body: '月娘的手压在账簿上，金莲端着酒等你回话，瓶儿把钥匙藏进袖里。满桌人都停了筷子。',
   },
+  inner_court_accord: {
+    id: 'inner_court_accord', heroine: null,
+    participants: ['wu_yueniang', 'pan_jinlian', 'li_pinger'], tier: 'ensemble',
+    title: '三院同灯', asset: 'cg/group/inner_court_accord',
+    body: '总账、口供、货单在长案上接成一条路。月娘把数合清，金莲挑出门外那句假话，瓶儿只用自己的钥匙开了货箱。三个人都看见了彼此，也都没替你忘掉先前说过的话。',
+  },
 });
 
 export const NIGHT_TEXT = Object.freeze({
@@ -242,7 +349,7 @@ export const NIGHT_TEXT = Object.freeze({
 
 export const ENDINGS = Object.freeze({
   exclusive: { title: '一院灯深', tag: '只留一盏灯', text: '今夜只有一处院门没落闩。桌上放着两把钥匙，旁边那盏茶还冒着热气。' },
-  balanced: { title: '三门未关', tag: '三处都有你的座', text: '三处院门都留着灯，也各留着一句话等你回。月娘先收走了总账，叫你明早去正堂。' },
+  balanced: { title: '三院同灯', tag: '三个人都把话说在前头', text: '三处院门都留着灯。月娘收总账，金莲收口供，瓶儿收自己的钥匙；门外那笔债已有人接住，明早三个人还在同一张桌上等你。' },
   intrigue: {
     title: '人情能办事',
     tag: '拿风月去开门',

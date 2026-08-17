@@ -40,7 +40,7 @@ def write_verification(passed: bool) -> None:
             "completeRun": {
                 "id": "jin-ping-mei-main-path",
                 "cleanContext": passed,
-                "terminal": "exclusive-ending" if passed else "NOT_RUN",
+                "terminal": "balanced-ending" if passed else "NOT_RUN",
                 "restart": "day-1-opening" if passed else "NOT_RUN",
                 "evidence": "qa/evidence/browser/evidence-normal.json",
             },
@@ -49,8 +49,9 @@ def write_verification(passed: bool) -> None:
                 {
                     "scope": "tested runtime",
                     "reason": (
-                        "The run used local Chromium automation; other browsers and "
-                        "device classes were not exercised."
+                        "The run used local Chromium keyboard automation at the two "
+                        "target desktop viewports; other browsers and device classes "
+                        "were not exercised."
                     ),
                 }
             ],

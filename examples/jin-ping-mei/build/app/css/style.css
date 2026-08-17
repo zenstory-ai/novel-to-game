@@ -337,6 +337,18 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .courtyard-caption { position: absolute; z-index: 2; inset: 12% 11% auto; display: flex; justify-content: space-between; color: #3b3026; font-weight: 700; letter-spacing: .2em; text-shadow: 0 1px #eadcbf; }
 .day-panel { left: 4%; right: 4%; bottom: 3.5%; padding: 1.2rem 1.4rem; }
 .day-actions { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .65rem; }
+.joint-offers { margin-top: .75rem; padding-top: .65rem; border-top: 1px solid rgba(220,188,127,.2); }
+.joint-offers > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; color: #d6bd8e; font: .7rem var(--sans); letter-spacing: .1em; }
+.joint-offers > header span { color: #8f8271; font-size: .62rem; letter-spacing: .04em; }
+.joint-actions { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .65rem; }
+.joint-actions .choice-button { min-height: 62px; }
+
+/* 双人合办结果：先让人物在同一画面完成一件事，再回到原有白日流转。 */
+.joint-result-stage::before { background-position: center; filter: saturate(.82) brightness(.86) contrast(1.03); }
+.joint-result-stage::after { background: linear-gradient(0deg, rgba(12,8,7,.94), rgba(12,8,7,.12) 76%); }
+.joint-result-panel { left: 4%; right: 4%; bottom: 4%; padding: 1.1rem 1.35rem; }
+.joint-result-panel .phase-header > p:last-child { max-width: 64rem; }
+.joint-payoff { display: inline-block; margin: .75rem 1rem .75rem 0; padding: .45rem .65rem; border-left: 2px solid var(--gold); color: #c8b38f; font: .72rem var(--sans); }
 
 /* 宅中短线 */
 .household-stage::after { background: linear-gradient(90deg, rgba(16,11,9,.88) 0%, rgba(16,11,9,.18) 58%, rgba(16,11,9,.1)); }
@@ -366,9 +378,22 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .choice-button span { margin-top: .32rem; color: #a89984; font: .68rem/1.45 var(--sans); }
 .choice-button:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(226,171,104,.8); background: rgba(157,45,37,.2); }
 
-/* 拜访 hub */
-.visit-prompt { position: absolute; z-index: 4; top: 4%; left: 5%; width: 52%; padding: 1rem 1.15rem; color: #efe2cb; background: rgba(24,16,13,.84); border-left: 3px solid var(--cinnabar); }
-.heroine-doors { position: absolute; z-index: 4; inset: 24% 4% 4%; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+/* 拜访 hub：三条院约常驻可见；第六夜的共同入口不藏在数字阈值后面。 */
+.visit-prompt { position: absolute; z-index: 4; top: 3%; left: 4%; right: 4%; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(350px,.9fr); gap: 1rem; padding: .85rem 1rem; color: #efe2cb; background: rgba(24,16,13,.88); border-left: 3px solid var(--cinnabar); }
+.accord-panel { min-width: 0; padding-left: 1rem; border-left: 1px solid rgba(220,188,127,.24); }
+.accord-heading { display: flex; align-items: center; justify-content: space-between; color: #ddc79f; font: .72rem var(--sans); letter-spacing: .12em; }
+.accord-heading span { color: var(--gold-bright); }
+.accord-seals { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .4rem; margin-top: .45rem; }
+.accord-seal { display: flex; align-items: center; gap: .35rem; min-width: 0; padding: .38rem .45rem; border: 1px solid rgba(220,188,127,.2); color: #817668; font: .64rem var(--sans); background: rgba(9,7,6,.34); }
+.accord-seal i { flex: none; display: grid; place-content: center; width: 1.25rem; height: 1.25rem; border: 1px solid currentColor; color: #766a5b; font-style: normal; }
+.accord-seal.complete { border-color: rgba(207,72,57,.55); color: #dec39a; background: rgba(117,31,24,.18); }
+.accord-seal.complete i { color: #d75c4d; transform: rotate(-3deg); }
+.accord-panel > small { display: block; margin-top: .45rem; color: #908373; font: .65rem/1.4 var(--sans); }
+.shared-invite { display: flex; width: 100%; flex-direction: column; align-items: flex-start; margin-top: .5rem; padding: .5rem .65rem; border: 1px solid rgba(216,172,95,.5); color: #ead7b7; text-align: left; background: rgba(128,43,31,.3); cursor: pointer; }
+.shared-invite b { font-size: .78rem; letter-spacing: .1em; }
+.shared-invite span { margin-top: .18rem; color: #b8a58a; font: .62rem/1.35 var(--sans); }
+.heroine-doors { position: absolute; z-index: 4; inset: 25% 4% 4%; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.evening.has-shared .heroine-doors { top: 31%; }
 .door-card { position: relative; overflow: hidden; border: 1px solid rgba(229,205,163,.44); color: #f0e2ca; text-align: left; background: linear-gradient(180deg, rgba(27,18,14,.08), rgba(21,14,12,.93)); cursor: pointer; }
 .door-card::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(240,214,169,.14); z-index: 2; pointer-events: none; }
 .door-card > span { position: absolute; z-index: 3; top: .75rem; left: .8rem; padding: .3rem .5rem; background: rgba(24,16,13,.82); color: #dbc397; font-size: .72rem; letter-spacing: .12em; }
@@ -414,6 +439,21 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .banquet-panel .phase-header > p:last-child { max-width: 58rem; }
 .banquet-panel .choice-grid { grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: .8rem; }
 .banquet-panel .choice-button { min-height: 68px; }
+
+/* 第六夜共同议事：选择前仍不泄露奖励 CG，三人立绘与宅院只说明“都到了”。 */
+.shared-stage::before { filter: saturate(.55) brightness(.58) sepia(.22); }
+.shared-stage::after { background: radial-gradient(65% 75% at 50% 24%, rgba(196,123,54,.2), transparent 65%), linear-gradient(0deg, rgba(12,8,7,.95), rgba(12,8,7,.12) 78%); }
+.shared-women { position: absolute; z-index: 2; inset: 0; opacity: .78; }
+.shared-women .heroine-figure { height: 88%; bottom: 7%; }
+.shared-women .heroine-figure.left { left: 8%; }
+.shared-women .heroine-figure.center { left: 50%; height: 94%; }
+.shared-women .heroine-figure.right { right: 7%; }
+.shared-panel { left: 3%; right: 3%; bottom: 3%; padding: 1rem 1.25rem; }
+.shared-panel .phase-header > p:last-child { max-width: 58rem; }
+.shared-panel .shared-seals { max-width: 42rem; margin: .65rem 0; }
+.shared-proof { margin: -.2rem 0 .65rem; color: #c8b38f; font: .68rem var(--sans); }
+.shared-panel .choice-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.shared-panel .choice-button { min-height: 68px; }
 
 /* 场景 CG */
 .scene-view { position: absolute; inset: 0; background: #100d0b; overflow: hidden; }
@@ -488,8 +528,14 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   .phase-header > p:last-child { font-size: .88rem; line-height: 1.55; }
   .choice-button { min-height: 58px; padding: .58rem .68rem; }
   .choice-button b { font-size: .82rem; }
+  .joint-offers { margin-top: .5rem; padding-top: .45rem; }
+  .joint-actions .choice-button { min-height: 52px; }
+  .joint-result-panel { padding: .8rem 1rem; }
   .dialogue-panel { top: 3%; bottom: 3%; padding: 1.1rem; }
-  .heroine-doors { inset-top: 20%; }
+  .heroine-doors { top: 23%; }
+  .evening.has-shared .heroine-doors { top: 34%; }
+  .visit-prompt { padding: .65rem .8rem; }
+  .accord-seal { padding: .28rem .35rem; }
 }
 
 @media (min-width: 1800px) and (min-height: 1000px) {
@@ -532,12 +578,12 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .title-copy h1 { font-size: clamp(2.35rem, 3.35vw, 4.5rem); white-space: nowrap; }
 
 /* 视觉裁决 iteration 2：群像曝光、次晨角色一致性、人物账可读性。 */
-.scene-view[data-scene-tier="public"] .scene-scrim {
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-scrim {
   background: linear-gradient(0deg, rgba(12,8,7,.82) 0%, rgba(12,8,7,.14) 44%, rgba(12,8,7,.03) 72%);
 }
 /* 整宽底栏:说明文字退出 x 34–70%, y 60–84% 的保护区(账簿、两把钥匙、月娘的手),
    任何截图都不会再盖住这一帧的因果器物。 */
-.scene-view[data-scene-tier="public"] .scene-caption {
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption {
   left: 0;
   right: 0;
   bottom: 0;
@@ -551,15 +597,15 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   align-items: end;
   gap: .3rem 1.5rem;
 }
-.scene-view[data-scene-tier="public"] .scene-caption .eyebrow,
-.scene-view[data-scene-tier="public"] .scene-caption h2,
-.scene-view[data-scene-tier="public"] .scene-caption > p { grid-column: 1; }
-.scene-view[data-scene-tier="public"] .scene-caption h2 { margin-bottom: .5rem; font-size: clamp(1.7rem, 2.8vw, 2.9rem); }
-.scene-view[data-scene-tier="public"] .scene-caption .scene-meta { grid-column: 2; grid-row: 1 / span 2; margin: 0; justify-content: flex-end; }
-.scene-view[data-scene-tier="public"] .scene-caption .ink-button { grid-column: 2; }
-.scene-view[data-scene-tier="public"] > img { filter: saturate(.92) brightness(1.08); }
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption .eyebrow,
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption h2,
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption > p { grid-column: 1; }
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption h2 { margin-bottom: .5rem; font-size: clamp(1.7rem, 2.8vw, 2.9rem); }
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption .scene-meta { grid-column: 2; grid-row: 1 / span 2; margin: 0; justify-content: flex-end; }
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption .ink-button { grid-column: 2; }
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) > img { filter: saturate(.92) brightness(1.08); }
 .relation-card p { color: #b9ac99; font-size: .75rem; }
-.scene-view[data-scene-tier="public"] .scene-scrim {
+.scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-scrim {
   background: linear-gradient(0deg, rgba(12,8,7,.54) 0%, rgba(12,8,7,0) 36%);
 }
 
