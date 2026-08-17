@@ -10,15 +10,14 @@ export const ASSET_PATHS = Object.freeze({
   // 催账到期那两个早晨的门前画面:同一谱系的界画白描,人在门外等，院里还没开门。
   // 不进 CRITICAL_CG_KEYS——报条文字已经把账说清楚,缺图不该拦住一局。
   'scene/gate_collector': 'assets/scene/gate_collector.jpg',
-  'heroine/yue': 'assets/portrait/wu_yueniang.png',
-  'heroine/pan': 'assets/portrait/pan_jinlian.png',
-  'heroine/pinger': 'assets/portrait/li_pinger.png',
-  'household/meng': 'assets/portrait/meng_yulou.png',
-  'household/xuee': 'assets/portrait/sun_xuee.png',
-  'household/jiaoer': 'assets/portrait/li_jiaoer.png',
-  // 日常近景用新生成的着装夜间立绘(与宴席群像同一谱系,横构图整版,人物在右侧,
-  // 左三分之一暗部留给对话面板);18+ 前奏 CG 收回解锁之后,只做场景册奖励。
-  // assets/portrait/ 里吴月娘、潘金莲、李瓶儿三张立绘从此只服务门卡与开场群像。
+  // 门卡与对话使用同一张身份母版，旧 portrait PNG 不再进入运行路径。
+  'heroine/yue': 'assets/heroine/yue/night.webp',
+  'heroine/pan': 'assets/heroine/pan/night.webp',
+  'heroine/pinger': 'assets/heroine/pinger/night.webp',
+  'household/meng': 'assets/household/meng_yulou.webp',
+  'household/xuee': 'assets/household/sun_xuee.webp',
+  'household/jiaoer': 'assets/household/li_jiaoer.webp',
+  // 日常近景、门卡与人物身份母版统一到同一批着装夜间横幅；18+ 前奏 CG 只做场景册奖励。
   'heroine/yue/close': 'assets/heroine/yue/night.webp',
   'heroine/pan/close': 'assets/heroine/pan/night.webp',
   'heroine/pinger/close': 'assets/heroine/pinger/night.webp',
@@ -30,16 +29,19 @@ export const ASSET_PATHS = Object.freeze({
   'cg/pinger/explicit': 'assets/cg/pinger/explicit.webp',
   'cg/group/banquet_conflict': 'assets/cg/group/banquet_conflict.webp',
   'cg/group/inner_court_accord': 'assets/cg/group/inner_court_accord.webp',
+  'cg/group/inner_court_afterglow': 'assets/cg/group/inner_court_afterglow.webp',
   'cg/joint/yue_pan': 'assets/cg/joint/yue_pan.webp',
   'cg/joint/yue_pinger': 'assets/cg/joint/yue_pinger.webp',
   'cg/joint/pan_pinger': 'assets/cg/joint/pan_pinger.webp',
 });
 
 export const CRITICAL_CG_KEYS = Object.freeze([
-  'cover', 'heroine/yue/close', 'heroine/pan/close', 'heroine/pinger/close',
+  'cover', 'heroine/yue', 'heroine/pan', 'heroine/pinger',
+  'household/meng', 'household/xuee', 'household/jiaoer',
+  'heroine/yue/close', 'heroine/pan/close', 'heroine/pinger/close',
   'cg/yue/prelude', 'cg/yue/explicit', 'cg/pan/prelude', 'cg/pan/explicit',
   'cg/pinger/prelude', 'cg/pinger/explicit', 'cg/group/banquet_conflict',
-  'cg/group/inner_court_accord',
+  'cg/group/inner_court_accord', 'cg/group/inner_court_afterglow',
   'cg/joint/yue_pan', 'cg/joint/yue_pinger', 'cg/joint/pan_pinger',
 ]);
 

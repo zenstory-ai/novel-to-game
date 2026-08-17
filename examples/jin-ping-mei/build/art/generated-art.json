@@ -130,7 +130,7 @@
       "generatedAt": "2026-08-16",
       "toolVersion": "codex-cli 0.147.0",
       "path": "app/assets/cg/group/inner_court_accord.webp",
-      "usage": "三条院约齐备后，第六夜“三人各管一头”的安全共同办事群像",
+      "usage": "三条院约齐备后，第六夜“今夜谁都别走”的安全共同办事群像",
       "reason": "旧平衡后宫只复用中秋席冲突群像并直接给结局标签，没有画面证明三名女主真的共同解决一件事。新资产把总账、口供、货单和瓶儿自持的钥匙同时放进长案，作为独立结果页；不表现多人成人行为。",
       "referenceInputs": [
         "app/assets/cg/group/banquet_conflict.webp（人物身份、服饰、笔触与宅院夜景谱系）"
@@ -242,6 +242,89 @@
       "postProcessing": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6；未缩放",
       "reproducible": false,
       "acceptance": "真实 Chromium 1280×800 全键盘路径逐一进入 joint_yue_pan 与 joint_yue_pinger 结果页；专项截图确认人物身份、手势、器物与底栏无遮挡。第三组由关键资产存在性与同一渲染模板覆盖。"
+    },
+    {
+      "generatedAt": "2026-08-17",
+      "toolVersion": "codex built-in image_gen",
+      "usage": "统一三名宅中短线人物横幅",
+      "reason": "撤下与主线 CG 断裂的旧透明 PNG；三张新图共用宴席群像的工笔夜画谱系、右侧人物与左侧文案留空合同。",
+      "referenceInputs": [
+        "app/assets/cg/group/banquet_conflict.webp"
+      ],
+      "assets": [
+        {
+          "path": "app/assets/household/meng_yulou.webp",
+          "character": "孟玉楼",
+          "anchor": "名帖与茶盘",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 289326
+        },
+        {
+          "path": "app/assets/household/sun_xuee.webp",
+          "character": "孙雪娥",
+          "anchor": "空米袋与后仓米箱",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 241600
+        },
+        {
+          "path": "app/assets/household/li_jiaoer.webp",
+          "character": "李娇儿",
+          "anchor": "描金匣与银锭",
+          "size": [
+            1586,
+            992
+          ],
+          "bytes": 280502
+        }
+      ],
+      "forbidden": [
+        "未成年人",
+        "裸露或性行为",
+        "现代物件",
+        "文字、字幕、签名或水印"
+      ],
+      "postProcessing": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6；未缩放。",
+      "acceptance": "人物在右侧、因果器物清晰、左侧文本区可读；运行资产表不再引用任何旧 portrait PNG。"
+    },
+    {
+      "generatedAt": "2026-08-17",
+      "toolVersion": "codex built-in image_gen",
+      "path": "app/assets/cg/group/inner_court_afterglow.webp",
+      "usage": "三院共同办事后的成人余夜群像",
+      "reason": "共同分工不再一张协作图后直接结算；两段可交互夜话后，以含蓄香艳但完整着装的群像证明三人确实共同留下。",
+      "referenceInputs": [
+        "app/assets/cg/group/inner_court_accord.webp",
+        "app/assets/cg/group/banquet_conflict.webp"
+      ],
+      "required": [
+        "同一名成年吴月娘、潘金莲、李瓶儿",
+        "三人完整着装并靠近第一人称玩家",
+        "三只酒杯、月娘簪冠、金莲手中流苏、瓶儿自持钥匙",
+        "暖灯、纱帐与同一工笔纸纹谱系"
+      ],
+      "forbidden": [
+        "裸露或性行为",
+        "未成年人",
+        "第四名女性",
+        "现代物件",
+        "文字、字幕、签名或水印"
+      ],
+      "sizeAndBytes": {
+        "size": [
+          1561,
+          1007
+        ],
+        "bytes": 301388,
+        "method": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6"
+      },
+      "reproducible": false,
+      "acceptance": "真实 Chromium 通过两次余夜选择后进入 scene_id=inner_court_afterglow；18+ 证据单独存放于 qa/evidence/browser/adult，不进入 README 公共截图。"
     }
   ],
   "postProcessing": {

@@ -15,7 +15,7 @@
     ],
     "url": "http://127.0.0.1:5173/?seed=42",
     "normalSpeedRun": true,
-    "buildBytes": 8943524
+    "buildBytes": 6705977
   },
   "inputTrace": [
     "use keyboard Enter to confirm the 18+ age gate",
@@ -23,7 +23,7 @@
     "hear Yue's order term, Pan's truth term, and Pinger's safety term",
     "complete joint_yue_pan and joint_yue_pinger as visible two-woman scenes",
     "balance the public banquet and invite all three women on night six",
-    "choose shared_divide_roles, view inner_court_accord, and reach 三院同灯",
+    "choose shared_divide_roles, view inner_court_accord, make two visible afterglow choices, view inner_court_afterglow, choose a dawn outcome, and reach 三院同灯",
     "restart and confirm the earned group page persists in the gallery"
   ],
   "observations": {
@@ -46,7 +46,8 @@
       ],
       "state": {
         "phase": "day",
-        "choice": "respect_yue"
+        "choice": "respect_yue",
+        "responseVisible": true
       }
     },
     "render": {
@@ -60,11 +61,21 @@
         "phase": "ending",
         "accordSealsVisible": true,
         "dayPanelFits1280x800": true,
+        "heroineDoorAssets": [
+          "http://127.0.0.1:5173/assets/heroine/yue/night.webp",
+          "http://127.0.0.1:5173/assets/heroine/pan/night.webp",
+          "http://127.0.0.1:5173/assets/heroine/pinger/night.webp"
+        ],
+        "heroineDoorVisual": "qa/evidence/browser/safe/03_evening_doors.jpg",
         "jointResultScenes": [
           "joint_yue_pan",
           "joint_yue_pinger"
         ],
         "groupSceneReady": true,
+        "afterWorkPhase": "shared_afterglow",
+        "afterglowContinues": true,
+        "intimateSceneReady": true,
+        "dawnReady": true,
         "viewport1920x1080Fits": true,
         "consoleErrors": [],
         "networkErrors": [],
@@ -75,7 +86,7 @@
     "coreLoop": {
       "id": "six-day-loop-complete",
       "inputs": [
-        "complete three agreement nights, two pair-action days, two personal nights, and the sixth shared night"
+        "complete three agreement nights, two pair-action days, two personal nights, the shared work scene, two afterglow choices, the adult ensemble scene, and one dawn choice"
       ],
       "state": {
         "phase": "ending",
@@ -89,19 +100,25 @@
           "joint_yue_pan",
           "joint_yue_pinger"
         ],
-        "sharedNightChoice": "shared_divide_roles"
+        "sharedNightChoice": "shared_divide_roles",
+        "sharedAfterglowChoices": [
+          "afterglow_yue_cup",
+          "afterglow_close_door"
+        ],
+        "sharedDawnChoice": "dawn_same_table"
       }
     },
     "outcome": {
       "id": "balanced-inner-court-ending",
       "inputs": [
-        "resolve shared_divide_roles and close inner_court_accord"
+        "resolve shared_divide_roles, finish both afterglow beats, close inner_court_afterglow, and choose dawn_same_table"
       ],
       "state": {
         "terminal": "balanced-ending",
         "phase": "ending",
         "haremCoalition": true,
-        "sceneUnlocked": true
+        "sceneUnlocked": true,
+        "afterglowSceneUnlocked": true
       },
       "visual": "qa/evidence/browser/safe/08_balanced_ending.jpg"
     },

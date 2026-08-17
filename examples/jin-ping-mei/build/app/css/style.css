@@ -320,12 +320,8 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .decision-panel::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(226,196,136,.11); pointer-events: none; }
 
 /* 开场 */
-.opening-women { position: absolute; z-index: 2; inset: 2% 0 0; }
-.heroine-figure { position: absolute; bottom: -9%; height: 95%; object-fit: contain; filter: drop-shadow(0 16px 13px rgba(0,0,0,.55)); }
-.heroine-figure.left { left: 5%; }
-.heroine-figure.center { left: 50%; transform: translateX(-50%); height: 102%; z-index: 2; }
-.heroine-figure.right { right: 4%; }
-.opening-scene::after { background: linear-gradient(90deg, rgba(18,10,8,.25), transparent 45%, rgba(18,10,8,.2)), linear-gradient(0deg, rgba(16,10,8,.62), transparent 70%); }
+.opening-scene::before { background-position: center; filter: saturate(.78) brightness(.76); }
+.opening-scene::after { background: linear-gradient(90deg, rgba(18,10,8,.1), transparent 48%, rgba(18,10,8,.35)), linear-gradient(0deg, rgba(16,10,8,.76), transparent 64%); }
 .opening-panel { left: 50%; bottom: 3.5%; width: min(780px, 70%); transform: translateX(-50%); padding: 1.35rem 1.55rem; }
 .speaker-line { margin: .7rem 0 1rem; color: #bda98c; font: .8rem var(--sans); }
 .choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; }
@@ -351,8 +347,8 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .joint-payoff { display: inline-block; margin: .75rem 1rem .75rem 0; padding: .45rem .65rem; border-left: 2px solid var(--gold); color: #c8b38f; font: .72rem var(--sans); }
 
 /* 宅中短线 */
-.household-stage::after { background: linear-gradient(90deg, rgba(16,11,9,.88) 0%, rgba(16,11,9,.18) 58%, rgba(16,11,9,.1)); }
-.household-portrait { position: absolute; z-index: 2; right: 4%; bottom: -10%; height: 108%; max-width: 48%; object-fit: contain; filter: drop-shadow(-18px 18px 16px rgba(0,0,0,.48)) saturate(.82); }
+.household-stage::before { background-position: center; filter: saturate(.72) brightness(.78); }
+.household-stage::after { background: linear-gradient(90deg, rgba(16,11,9,.92) 0%, rgba(16,11,9,.34) 48%, rgba(16,11,9,.03) 76%); }
 .household-panel { left: 4%; top: 8%; width: min(620px, 51%); padding: 1.45rem; }
 .household-panel .choice-grid { margin-top: .9rem; }
 .household-voice { margin: .7rem 0 .6rem; color: #a99a85; font: .76rem/1.7 var(--sans); }
@@ -397,7 +393,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .door-card { position: relative; overflow: hidden; border: 1px solid rgba(229,205,163,.44); color: #f0e2ca; text-align: left; background: linear-gradient(180deg, rgba(27,18,14,.08), rgba(21,14,12,.93)); cursor: pointer; }
 .door-card::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(240,214,169,.14); z-index: 2; pointer-events: none; }
 .door-card > span { position: absolute; z-index: 3; top: .75rem; left: .8rem; padding: .3rem .5rem; background: rgba(24,16,13,.82); color: #dbc397; font-size: .72rem; letter-spacing: .12em; }
-.door-card img { position: absolute; z-index: 1; height: 112%; left: 50%; bottom: -17%; transform: translateX(-50%); filter: drop-shadow(0 10px 12px rgba(0,0,0,.45)); transition: transform .25s, filter .25s; }
+.door-card img { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% center; filter: saturate(.78) brightness(.8); transition: transform .25s, filter .25s; }
 .door-card > div { position: absolute; z-index: 3; inset: auto 0 0; padding: 3.6rem 1rem 1rem; background: linear-gradient(transparent, rgba(16,10,8,.96) 50%); }
 .door-card b, .door-card small, .door-card em { display: block; }
 .door-card b { font-size: 1.12rem; letter-spacing: .08em; }
@@ -405,7 +401,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .door-card em { margin-top: .55rem; color: #d7b36b; font: normal .68rem var(--sans); }
 /* 门卡上的拜访次数:让「按她的第几次走」在界面上看得见。 */
 .door-knock { display: block; margin-top: .28rem; color: #9c8b70; font: normal .64rem var(--sans); font-style: normal; letter-spacing: .08em; }
-.door-card:hover img { transform: translateX(-50%) scale(1.035); filter: drop-shadow(0 15px 16px rgba(0,0,0,.55)) brightness(1.08); }
+.door-card:hover img { transform: scale(1.035); filter: saturate(.92) brightness(.92); }
 .door-pan_jinlian { background-color: rgba(100,26,22,.2); }
 .door-li_pinger { background-color: rgba(132,98,44,.16); }
 
@@ -443,17 +439,28 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 /* 第六夜共同议事：选择前仍不泄露奖励 CG，三人立绘与宅院只说明“都到了”。 */
 .shared-stage::before { filter: saturate(.55) brightness(.58) sepia(.22); }
 .shared-stage::after { background: radial-gradient(65% 75% at 50% 24%, rgba(196,123,54,.2), transparent 65%), linear-gradient(0deg, rgba(12,8,7,.95), rgba(12,8,7,.12) 78%); }
-.shared-women { position: absolute; z-index: 2; inset: 0; opacity: .78; }
-.shared-women .heroine-figure { height: 88%; bottom: 7%; }
-.shared-women .heroine-figure.left { left: 8%; }
-.shared-women .heroine-figure.center { left: 50%; height: 94%; }
-.shared-women .heroine-figure.right { right: 7%; }
 .shared-panel { left: 3%; right: 3%; bottom: 3%; padding: 1rem 1.25rem; }
 .shared-panel .phase-header > p:last-child { max-width: 58rem; }
 .shared-panel .shared-seals { max-width: 42rem; margin: .65rem 0; }
 .shared-proof { margin: -.2rem 0 .65rem; color: #c8b38f; font: .68rem var(--sans); }
 .shared-panel .choice-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .shared-panel .choice-button { min-height: 68px; }
+
+/* 三院尾章：共同办事之后保留两拍夜话与一拍次晨，避免按钮后直接结算。 */
+.afterglow-stage::before { background-position: center; filter: saturate(.68) brightness(.58) blur(1px); transform: scale(1.02); }
+.afterglow-stage::after { background: radial-gradient(60% 70% at 65% 30%, rgba(174,83,45,.18), transparent 70%), linear-gradient(90deg, rgba(13,8,7,.94), rgba(13,8,7,.28) 64%, rgba(13,8,7,.5)); }
+.afterglow-panel { left: 4%; top: 10%; width: min(680px, 52%); max-height: 78%; padding: 1.45rem; overflow-y: auto; }
+.afterglow-panel .choice-grid, .shared-dawn-panel .choice-grid { grid-template-columns: 1fr; margin-top: 1rem; }
+.afterglow-panel .choice-button, .shared-dawn-panel .choice-button { min-height: 64px; }
+.shared-dawn-stage::before { background-position: 58% center; filter: saturate(.52) brightness(.72) sepia(.18); }
+.shared-dawn-stage::after { background: linear-gradient(90deg, rgba(20,14,12,.95) 0%, rgba(20,14,12,.48) 52%, rgba(223,185,127,.08)); }
+.shared-dawn-panel { left: 4%; top: 10%; width: min(700px, 54%); max-height: 78%; padding: 1.45rem; overflow-y: auto; }
+
+/* 亲密与尾章进入专注模式：经营账暂时收起，画面和对白拿回舞台。 */
+.game-shell:is([data-phase="scene"], [data-phase="shared_afterglow"], [data-phase="shared_dawn"]) { grid-template-rows: 48px 1fr; }
+.game-shell:is([data-phase="scene"], [data-phase="shared_afterglow"], [data-phase="shared_dawn"]) .topbar { opacity: .72; }
+.game-shell:is([data-phase="scene"], [data-phase="shared_afterglow"], [data-phase="shared_dawn"]) .play-area { grid-template-columns: 1fr; }
+.game-shell:is([data-phase="scene"], [data-phase="shared_afterglow"], [data-phase="shared_dawn"]) .relation-rail { display: none; }
 
 /* 场景 CG */
 .scene-view { position: absolute; inset: 0; background: #100d0b; overflow: hidden; }
@@ -515,6 +522,12 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 
 .toast { position: fixed; z-index: 900; left: 50%; bottom: 4vh; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: .72rem 1rem; border: 1px solid #a9473a; color: #f4dfca; background: rgba(75,24,20,.94); font: .78rem var(--sans); transition: opacity .2s, transform .2s; }
 .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+/* 每次选择后的角色回应必须由玩家主动翻过去，不能只写进隐藏日志。 */
+.result-overlay { position: fixed; z-index: 420; inset: 0; display: grid; place-items: end center; padding: 4vh 5vw; background: linear-gradient(180deg, transparent 35%, rgba(8,5,4,.8)); }
+.result-card { width: min(920px, 88vw); padding: 1.25rem 1.45rem; border: 1px solid rgba(226,191,124,.58); color: #eadcc4; background: linear-gradient(135deg, rgba(35,23,18,.98), rgba(18,13,11,.98)); box-shadow: 0 24px 70px rgba(0,0,0,.68), inset 0 0 0 6px rgba(8,5,4,.22); }
+.result-card h2 { margin: .1rem 0 .55rem; font-size: 1.5rem; letter-spacing: .08em; }
+.result-card > p:not(.eyebrow) { margin: 0 0 .9rem; color: #d5c4aa; font: .86rem/1.8 var(--sans); }
 
 @media (max-height: 830px) {
   .game-shell { grid-template-rows: 60px 1fr; }

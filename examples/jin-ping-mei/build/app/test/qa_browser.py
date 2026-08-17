@@ -23,6 +23,7 @@ SLOW = bool(os.environ.get("QA_SLOW"))
 URL = f"{BASE_URL}/?seed=42" + ("" if SLOW else "&fast=1")
 SHOTS = Path(os.environ.get("JPM_QA_SHOTS", PROJECT / "qa/evidence/browser"))
 SAFE = SHOTS / "safe"
+ADULT = SHOTS / "adult"
 CHECK_NAMES = ("launch", "render", "input", "coreLoop", "outcome", "restart")
 
 
@@ -61,17 +62,36 @@ def state(page: Page) -> dict[str, object]:
     return page.evaluate("__game.state()")
 
 
-def activate(page: Page, selector: str) -> None:
+def activate(page: Page, selector: str, result_contains: str | None = None) -> str:
     node = page.locator(selector)
     if node.count() == 0:
         raise RuntimeError(f"找不到 {selector}（phase={phase(page)}）")
     node.first.focus()
     page.keyboard.press("Enter")
     page.wait_for_timeout(80)
+    response = ""
+    result = page.locator("#result-overlay")
+    if result.count() and result.is_visible():
+        response = result.inner_text()
+        if result_contains and result_contains not in response:
+            raise RuntimeError(f"选择回应未显示 {result_contains!r}：{response}")
+        close = page.locator("#btn-result-continue")
+        close.focus()
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(80)
+    elif result_contains:
+        raise RuntimeError(f"选择后没有可见回应：{result_contains!r}")
+    return response
 
 
 def shot(page: Page, name: str) -> Path:
     output = SAFE / f"{name}.jpg"
+    page.screenshot(path=output, type="jpeg", quality=80)
+    return output
+
+
+def adult_shot(page: Page, name: str) -> Path:
+    output = ADULT / f"{name}.jpg"
     page.screenshot(path=output, type="jpeg", quality=80)
     return output
 
@@ -82,9 +102,7 @@ def resolve_morning(page: Page) -> None:
     option = page.locator('[data-morning="explain"]:not([disabled])')
     if option.count() == 0:
         option = page.locator("[data-morning]:not([disabled])").first
-    option.focus()
-    page.keyboard.press("Enter")
-    page.wait_for_timeout(80)
+    activate(page, f'[data-morning="{option.get_attribute("data-morning")}"]:not([disabled])')
 
 
 def choose_day(
@@ -108,9 +126,7 @@ def choose_day(
         activate(page, '[data-day-action="ledger"]')
     if phase(page) == "household":
         option = page.locator("button[data-household]:not([disabled])").first
-        option.focus()
-        page.keyboard.press("Enter")
-        page.wait_for_timeout(80)
+        activate(page, f'[data-household="{option.get_attribute("data-household")}"]:not([disabled])')
     if phase(page) == "banquet":
         activate(page, '[data-banquet="banquet_balance"]:not([disabled])')
         activate(page, "#btn-scene-close")
@@ -123,9 +139,7 @@ def route_night(page: Page, heroine: str, route: str, night: str = "talk") -> No
     target = page.locator(f'[data-night="{night}"]:not([disabled])')
     if target.count() != 1:
         raise RuntimeError(f"夜间选项未解锁：{night}")
-    target.focus()
-    page.keyboard.press("Enter")
-    page.wait_for_timeout(100)
+    activate(page, f'[data-night="{night}"]:not([disabled])')
     if phase(page) == "scene":
         activate(page, "#btn-scene-close")
 
@@ -150,7 +164,7 @@ def run_path() -> tuple[
         "hear Yue's order term, Pan's truth term, and Pinger's safety term",
         "complete joint_yue_pan and joint_yue_pinger as visible two-woman scenes",
         "balance the public banquet and invite all three women on night six",
-        "choose shared_divide_roles, view inner_court_accord, and reach 三院同灯",
+        "choose shared_divide_roles, view inner_court_accord, make two visible afterglow choices, view inner_court_afterglow, choose a dawn outcome, and reach 三院同灯",
         "restart and confirm the earned group page persists in the gallery",
     ]
 
@@ -193,14 +207,18 @@ def run_path() -> tuple[
         checks["launch"] = age_gate_ready and bool(page.locator(".title-screen").count())
 
         activate(page, "#btn-start")
-        activate(page, '[data-opening="respect_yue"]')
-        checks["input"] = state(page)["history"][0]["choice"] == "respect_yue"
+        opening_response = activate(page, '[data-opening="respect_yue"]', "这会儿知道回来")
+        checks["input"] = bool(
+            state(page)["history"][0]["choice"] == "respect_yue"
+            and "这会儿知道回来" in opening_response
+        )
         observations["input"] = {
             "id": "opening-choice-accepted",
             "inputs": ["focus start and press Enter", "focus respect_yue and press Enter"],
             "state": {
                 "phase": phase(page),
                 "choice": state(page)["history"][0]["choice"],
+                "responseVisible": "这会儿知道回来" in opening_response,
             },
         }
 
@@ -217,7 +235,9 @@ def run_path() -> tuple[
             ("pan_jinlian", "pan_take_cup", None),
         )
         joint_results: list[str] = []
-        for heroine, route, joint_action in visits:
+        door_visual: Path | None = None
+        door_sources: list[str] = []
+        for visit_index, (heroine, route, joint_action) in enumerate(visits):
             resolve_morning(page)
             result = choose_day(
                 page,
@@ -226,6 +246,11 @@ def run_path() -> tuple[
             )
             if result:
                 joint_results.append(result)
+            if visit_index == 0:
+                door_visual = shot(page, "03_evening_doors")
+                door_sources = page.locator(".door-card img").evaluate_all(
+                    "nodes => nodes.map(node => node.getAttribute('src'))"
+                )
             route_night(page, heroine, route)
         resolve_morning(page)
         choose_day(page)
@@ -240,9 +265,7 @@ def run_path() -> tuple[
         )
         if shared_option.count() != 1:
             raise RuntimeError("三院共同分工未解锁")
-        shared_option.focus()
-        page.keyboard.press("Enter")
-        page.wait_for_timeout(120)
+        activate(page, '[data-shared-night="shared_divide_roles"]:not([disabled])', "今夜都不走")
         accord_scene = state(page)
         group_scene_ready = bool(
             phase(page) == "scene"
@@ -257,6 +280,21 @@ def run_path() -> tuple[
         )
         activate(page, "#btn-scene-close")
 
+        after_work_state = state(page)
+        after_work_continues = phase(page) == "shared_afterglow"
+        activate(page, '[data-shared-afterglow="afterglow_yue_cup"]', "她若真想躲")
+        afterglow_shot = shot(page, "06_shared_afterglow")
+        activate(page, '[data-shared-afterglow="afterglow_close_door"]', "门已经关了")
+        intimate_scene_ready = bool(
+            phase(page) == "scene"
+            and page.locator('[data-scene-id="inner_court_afterglow"]').is_visible()
+            and state(page)["pendingScene"] == "inner_court_afterglow"
+        )
+        intimate_shot = adult_shot(page, "07_inner_court_afterglow")
+        activate(page, "#btn-scene-close")
+        dawn_ready = phase(page) == "shared_dawn"
+        activate(page, '[data-shared-dawn="dawn_same_table"]', "四盏茶仍送进同一间屋")
+
         checks["coreLoop"] = phase(page) == "ending"
         checks["outcome"] = (
             page.locator("#ending-view").get_attribute("data-ending") == "balanced"
@@ -269,8 +307,18 @@ def run_path() -> tuple[
             and ending_shot.is_file()
             and accord_visible
             and day_panel_fits
+            and door_visual is not None
+            and door_visual.is_file()
+            and len(door_sources) == 3
+            and len(set(door_sources)) == 3
+            and all("/portrait/" not in source for source in door_sources)
             and joint_results == ["joint_yue_pan", "joint_yue_pinger"]
             and group_scene_ready
+            and after_work_continues
+            and afterglow_shot.is_file()
+            and intimate_scene_ready
+            and intimate_shot.is_file()
+            and dawn_ready
             and large_viewport_fits
             and page.locator("#ending-view").is_visible()
             and not console_errors
@@ -288,8 +336,14 @@ def run_path() -> tuple[
                 "phase": phase(page),
                 "accordSealsVisible": accord_visible,
                 "dayPanelFits1280x800": day_panel_fits,
+                "heroineDoorAssets": door_sources,
+                "heroineDoorVisual": door_visual.relative_to(PROJECT).as_posix() if door_visual else None,
                 "jointResultScenes": joint_results,
                 "groupSceneReady": group_scene_ready,
+                "afterWorkPhase": after_work_state["phase"],
+                "afterglowContinues": after_work_continues,
+                "intimateSceneReady": intimate_scene_ready,
+                "dawnReady": dawn_ready,
                 "viewport1920x1080Fits": large_viewport_fits,
                 "consoleErrors": console_errors,
                 "networkErrors": network_errors,
@@ -302,7 +356,7 @@ def run_path() -> tuple[
         observations["coreLoop"] = {
             "id": "six-day-loop-complete",
             "inputs": [
-                "complete three agreement nights, two pair-action days, two personal nights, and the sixth shared night"
+                "complete three agreement nights, two pair-action days, two personal nights, the shared work scene, two afterglow choices, the adult ensemble scene, and one dawn choice"
             ],
             "state": {
                 "phase": phase(page),
@@ -310,16 +364,19 @@ def run_path() -> tuple[
                 "accords": hub_state["accords"],
                 "jointActions": hub_state["jointActions"],
                 "sharedNightChoice": state(page)["sharedNightChoice"],
+                "sharedAfterglowChoices": state(page)["sharedAfterglowChoices"],
+                "sharedDawnChoice": state(page)["sharedDawnChoice"],
             },
         }
         observations["outcome"] = {
             "id": "balanced-inner-court-ending",
-            "inputs": ["resolve shared_divide_roles and close inner_court_accord"],
+            "inputs": ["resolve shared_divide_roles, finish both afterglow beats, close inner_court_afterglow, and choose dawn_same_table"],
             "state": {
                 "terminal": "balanced-ending",
                 "phase": phase(page),
                 "haremCoalition": state(page)["flags"].get("harem_coalition", False),
                 "sceneUnlocked": "inner_court_accord" in state(page)["unlocked"],
+                "afterglowSceneUnlocked": "inner_court_afterglow" in state(page)["unlocked"],
             },
             "visual": ending_visual,
         }
@@ -359,7 +416,9 @@ def run_path() -> tuple[
 
 def main() -> int:
     shutil.rmtree(SAFE, ignore_errors=True)
+    shutil.rmtree(ADULT, ignore_errors=True)
     SAFE.mkdir(parents=True, exist_ok=True)
+    ADULT.mkdir(parents=True, exist_ok=True)
     server = ensure_server()
     try:
         (

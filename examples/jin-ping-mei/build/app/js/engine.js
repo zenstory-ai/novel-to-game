@@ -4,17 +4,21 @@ import {
   HEROINE_IDS, HEROINES, HOUSEHOLD_IDS, HOUSEHOLD, HOUSEHOLD_EVENTS,
   DAY_NAMES, DAY_PRESSURE, DAY_ACTIONS,
   OPENING_CHOICES, ROUTE_CHOICES, ACCORD_CHOICES, JOINT_ACTIONS, SHARED_NIGHT_CHOICES,
-  BANQUET_CHOICES, SCENES, ENDINGS,
+  SHARED_AFTERGLOW_BEATS, SHARED_DAWN_CHOICES, BANQUET_CHOICES, SCENES,
+  NIGHT_OUTCOMES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 export const ACCORD_KEYS = Object.freeze(['order', 'truth', 'safety']);
 export const JOINT_ACTION_TARGET = 2;
 const JOINT_ACTION_IDS = new Set(JOINT_ACTIONS.map((choice) => choice.id));
 const SAVE_PHASES = new Set([
   'opening', 'morning', 'day', 'joint_result', 'household', 'banquet',
-  'choose_visit', 'visit', 'night', 'scene', 'shared_night', 'ending',
+  'choose_visit', 'visit', 'night', 'scene', 'shared_night', 'shared_afterglow',
+  'shared_dawn', 'ending',
 ]);
+const SHARED_AFTERGLOW_CHOICE_IDS = new Set(SHARED_AFTERGLOW_BEATS.flatMap((beat) => beat.choices.map((choice) => choice.id)));
+const SHARED_DAWN_CHOICE_IDS = new Set(SHARED_DAWN_CHOICES.map((choice) => choice.id));
 const MORNING_EVENT_IDS = new Set(['jealousy', 'pan_claim', 'yue_delayed', 'yue_help', 'pinger_help', 'quiet']);
 const RESOURCE_KEYS = Object.freeze(['silver', 'power', 'repute', 'exposure', 'strain', 'house']);
 
@@ -106,6 +110,8 @@ export function newGame(seed = 42) {
     pendingScene: null,
     sceneReturnPhase: null,
     sharedNightChoice: null,
+    sharedAfterglowChoices: [],
+    sharedDawnChoice: null,
     currentJointAction: null,
     unlocked: [],
     ending: null,
@@ -298,7 +304,7 @@ export function chooseDayAction(state, actionId) {
       const gain = 22 + (state.flags.pinger_same_chest ? 16 : 0) + (state.day === 6 ? 12 : 0);
       changeResources(state, { silver: gain });
       if (state.day === 3) addSecret(state, 'steward_gap');
-      text = `你把账翻过一遍，追回 ${gain} 两。`;
+      text = `你从掌柜的笑脸一直翻到最后一页墨迹，把藏在“损耗”两字里的${silverText(gain)}两挨个抠了回来。`;
       break;
     }
     case 'office': {
@@ -308,10 +314,10 @@ export function chooseDayAction(state, actionId) {
         removeSecret(state, secret);
         state.secretsUsed.push(secret);
         changeResources(state, { power: 1, exposure: 12, silver: state.day === 3 ? 45 : 0 });
-        text = `你把${secretName(secret)}递给门里的人。事情办了，你的名字也跟着传了进去。`;
+        text = `你没递银子，只在守门人耳边放下${secretName(secret)}。他手里的茶盖停了一下，侧身让路。事办成了，你的名字也留在了门里。`;
       } else if (r.silver >= 30) {
         changeResources(state, { silver: -30, power: 1, exposure: 4 });
-        text = '三十两递进去，守门人总算让开。';
+        text = '三十两装得不厚，却足够让守门人的手心沉下去。他掂了掂袖口，终于给你让出半扇门。';
       } else return { ok: false, error: '没话可递，也没银子可送。' };
       break;
     }
@@ -319,16 +325,16 @@ export function chooseDayAction(state, actionId) {
       const secret = ['steward_shortfall', 'gate_mood', 'warehouse_key', 'servant_footsteps', 'banquet_whisper', 'collector_price'][state.day - 1];
       addSecret(state, secret);
       changeResources(state, { exposure: 7 });
-      text = `你问到一句准话：${({
+      text = `你请来的人没敢坐，只把声音压到茶气底下：${({
         steward_shortfall: '短款出在采买', gate_mood: '守门人怕官面', warehouse_key: '赃货藏在后仓',
         servant_footsteps: '昨夜有人停在门外', banquet_whisper: '席上有人等你失约', collector_price: '追账人肯拿消息换银',
-      })[secret]}。`;
+      })[secret]}。话说完，他把凉透的茶一口喝尽，连杯子都没敢多放一会儿。`;
       break;
     }
     case 'banquet': {
       if (r.silver < 35) return { ok: false, error: '三十五两也摆不出一桌像样的。' };
       changeResources(state, { silver: -35, repute: 1, house: 3 });
-      text = '席面订下，先付三十五两。等人坐齐，你才好开口。';
+      text = '酒、果子和三只新杯一起送进宅里。三十五两先从账上抹掉；等人坐齐，你便有机会把一句话当着三个人说清楚。';
       break;
     }
     default:
@@ -381,7 +387,7 @@ export function chooseJointAction(state, actionId) {
   const choice = jointActionOptions(state).find((item) => item.id === actionId);
   if (!choice) return { ok: false, error: '没有这桩联院差事。' };
   if (choice.disabled) return { ok: false, error: choice.locked };
-  applyEffects(state, choice.effects, null, choice.text);
+  applyEffects(state, choice.effects, null, `联院差事：${choice.label}`);
   state.jointActions.push(choice.id);
   state.selectedDayAction = choice.id;
   state.currentJointAction = choice.id;
@@ -426,7 +432,7 @@ export function resolveHouseholdEvent(state, choiceId) {
   if (choice.id === 'jiaoer_buy_name' && state.resources.silver < 20) {
     return { ok: false, error: '二十两凑不齐，娇儿连匣子都没打开。' };
   }
-  applyEffects(state, choice.effects, null, choice.text);
+  applyEffects(state, choice.effects, null, `宅中：${choice.label}`);
   record(state, 'household', { event: event.id, actor: event.actor, choice: choice.id });
   state.log.push(choice.text);
   state.currentHouseholdEvent = null;
@@ -507,6 +513,9 @@ export function startSharedNight(state) {
   if (state.phase !== 'choose_visit' || state.day !== MAX_DAY) {
     return { ok: false, error: '还没到请三人同席的时候。' };
   }
+  if (!state.flags.banquet_balanced) {
+    return { ok: false, error: '中秋那三杯没有同斟，今夜请不齐三个人。' };
+  }
   state.currentHeroine = null;
   state.phase = 'shared_night';
   record(state, 'shared_night_start', { accordCount: accordStatus(state).filter((row) => row.complete).length });
@@ -534,19 +543,63 @@ export function chooseSharedNight(state, choiceId) {
   const choice = sharedNightOptions(state).find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个同席选择。' };
   if (choice.disabled) return { ok: false, error: choice.locked };
-  applyEffects(state, choice.effects, null, choice.text);
+  applyEffects(state, choice.effects, null, `三人同席：${choice.label}`);
   state.sharedNightChoice = choiceId;
   record(state, 'shared_night', { choice: choiceId, public: true });
   state.log.push(choice.text);
   if (choiceId === 'shared_divide_roles') {
     unlockScene(state, 'inner_court_accord');
     state.pendingScene = 'inner_court_accord';
-    state.sceneReturnPhase = 'after_shared_night';
+    state.sceneReturnPhase = 'after_shared_work';
     state.phase = 'scene';
     return { ok: true, text: choice.text, scene: 'inner_court_accord' };
   }
   finishSharedNight(state);
   return { ok: true, text: choice.text, scene: null };
+}
+
+export function sharedAfterglowBeat(state) {
+  if (state.phase !== 'shared_afterglow') return null;
+  return SHARED_AFTERGLOW_BEATS[state.sharedAfterglowChoices.length] ?? null;
+}
+
+export function sharedAfterglowOptions(state) {
+  return sharedAfterglowBeat(state)?.choices ?? [];
+}
+
+export function chooseSharedAfterglow(state, choiceId) {
+  if (state.phase !== 'shared_afterglow') return { ok: false, error: '外账还没办完，灯下的话接不上。' };
+  const beat = sharedAfterglowBeat(state);
+  const choice = beat?.choices.find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '眼下没有这句话。' };
+  applyEffects(state, choice.effects, null, `余夜：${choice.label}`);
+  state.sharedAfterglowChoices.push(choice.id);
+  record(state, 'shared_afterglow', { beat: beat.id, choice: choice.id });
+  state.log.push(choice.text);
+  if (state.sharedAfterglowChoices.length === SHARED_AFTERGLOW_BEATS.length) {
+    unlockScene(state, 'inner_court_afterglow');
+    state.pendingScene = 'inner_court_afterglow';
+    state.sceneReturnPhase = 'after_shared_afterglow';
+    state.phase = 'scene';
+    return { ok: true, text: choice.text, scene: 'inner_court_afterglow' };
+  }
+  return { ok: true, text: choice.text };
+}
+
+export function sharedDawnOptions(state) {
+  return state.phase === 'shared_dawn' ? SHARED_DAWN_CHOICES : [];
+}
+
+export function chooseSharedDawn(state, choiceId) {
+  if (state.phase !== 'shared_dawn') return { ok: false, error: '天还没亮到这一步。' };
+  const choice = SHARED_DAWN_CHOICES.find((item) => item.id === choiceId);
+  if (!choice) return { ok: false, error: '没有这个次晨选择。' };
+  applyEffects(state, choice.effects, null, `次晨：${choice.label}`);
+  state.sharedDawnChoice = choice.id;
+  record(state, 'shared_dawn', { choice: choice.id });
+  state.log.push(choice.text);
+  finishSharedNight(state);
+  return { ok: true, text: choice.text };
 }
 
 function finishSharedNight(state) {
@@ -586,7 +639,10 @@ export function chooseVisit(state, choiceId) {
   const choice = visitChoices(state, state.currentHeroine).find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个回应。' };
   if (choice.condition && !hasToken(state, choice.condition)) return { ok: false, error: choice.locked || '前面的话还没接上。' };
-  applyEffects(state, choice.effects, state.currentHeroine, choice.text);
+  const reason = choice.effects.accord
+    ? `你答应了她：${choice.label}`
+    : `那一夜，你选了“${choice.label}”`;
+  applyEffects(state, choice.effects, state.currentHeroine, reason);
   if (choice.effects.accord) {
     record(state, 'accord_term', { heroine: state.currentHeroine, term: choice.effects.accord, choice: choiceId });
   } else {
@@ -617,14 +673,28 @@ function nightEligibility(state, heroineId) {
   if (heroineId === 'pan_jinlian') return {
     prelude: rel.qing >= 25 && rel.yu >= 40,
     preludeReason: '她还等着一句不躲闪的真话。',
-    explicit: rel.qing >= 40 && rel.yu >= 60 && (state.flags.pan_promised || state.flags.kept_pan_word) && !routeCooling(state, 'pan_jinlian') && state.selectedDayAction === 'listen',
-    explicitReason: routeCooling(state, 'pan_jinlian') ? '“空话留给席上说。”她今日笑着关门。' : '先还她那杯酒。今日问来的口风，也别瞒着她。',
+    explicit: rel.qing >= 40 && rel.yu >= 60 && rel.ignored < 2
+      && !state.flags.broken_pan_word
+      && (state.flags.pan_promised || state.flags.kept_pan_word)
+      && !routeCooling(state, 'pan_jinlian') && state.selectedDayAction === 'listen',
+    explicitReason: state.flags.broken_pan_word
+      ? '“官人那句独占，原来三处都能用。”她笑着把门关上。'
+      : rel.ignored >= 2
+        ? '“两夜不见人，今夜倒想起这扇门？”她没有让开。'
+        : routeCooling(state, 'pan_jinlian')
+          ? '“空话留给席上说。”她今日笑着关门。'
+          : '先还她那杯酒。今日问来的口风，也别瞒着她。',
   };
   return {
     prelude: rel.qing >= 35 && state.flags.pinger_route,
     preludeReason: '那本账，她还没敢交到你手里。',
-    explicit: rel.qing >= 55 && state.flags.protected_pinger && !routeCooling(state, 'li_pinger') && ['ledger', 'office'].includes(state.selectedDayAction),
-    explicitReason: routeCooling(state, 'li_pinger') ? '“你要的是箱子，不是我。”钥匙今日收着。' : '先替她守住那本账。今日的外债，也得亲手办妥。',
+    explicit: rel.qing >= 55 && state.flags.protected_pinger && !state.flags.pinger_exposed
+      && !routeCooling(state, 'li_pinger') && ['ledger', 'office'].includes(state.selectedDayAction),
+    explicitReason: state.flags.pinger_exposed
+      ? '“我的账已经叫人听过一回。”她把钥匙重新系回腰间。'
+      : routeCooling(state, 'li_pinger')
+        ? '“你要的是箱子，不是我。”钥匙今日收着。'
+        : '先替她守住那本账。今日的外债，也得亲手办妥。',
   };
 }
 
@@ -649,11 +719,11 @@ export function chooseNight(state, actionId) {
   if (actionId === 'leave') {
     changeRel(state, heroine, { qing: 2, du: -5 }, '她停下时，你没有再往前');
     changeResources(state, { strain: -STRAIN_REST_RELIEF }); // 不进场景的一夜,身体缓过来一些
-    text = '你替她掩好衣襟，起身时没有闩死房门。';
+    text = NIGHT_OUTCOMES[heroine].leave;
   } else if (actionId === 'talk') {
     changeRel(state, heroine, { qing: 8, yu: 6, du: -5 }, '你留下来听她把话说完');
     changeResources(state, { strain: -STRAIN_REST_RELIEF });
-    text = '更漏响过一声，你仍坐在原处。她又替你添了半盏茶。';
+    text = NIGHT_OUTCOMES[heroine].talk;
   } else if (actionId === 'prelude') {
     unlockScene(state, option.scene);
     changeRel(state, heroine, { qing: 7, yu: 10, du: -4 }, '她点头以后，你才靠近');
@@ -706,8 +776,10 @@ export function closeScene(state) {
   state.sceneReturnPhase = null;
   if (next === 'choose_visit') {
     state.phase = 'choose_visit';
-  } else if (next === 'after_shared_night') {
-    finishSharedNight(state);
+  } else if (next === 'after_shared_work') {
+    state.phase = 'shared_afterglow';
+  } else if (next === 'after_shared_afterglow') {
+    state.phase = 'shared_dawn';
   } else {
     advanceAfterNight(state);
   }
@@ -774,15 +846,15 @@ function settleCollector(state) {
 }
 
 function upkeepText(cost, paid) {
-  if (paid >= cost) return `灶上、门房、针线，昨日又去了${silverText(cost)}两。`;
-  if (paid > 0) return `灶上、门房、针线，昨日要${silverText(cost)}两，柜上只抹出${silverText(paid)}两。撑不起的场面，自己塌了一角。`;
-  return `灶上、门房、针线，昨日要${silverText(cost)}两，柜上一两也抹不出来。撑不起的场面，自己塌了一角。`;
+  if (paid >= cost) return `天还没亮，灶上、门房和针线房已从柜上支走${silverText(cost)}两，这宅子才又像什么都没发生过一样转起来。`;
+  if (paid > 0) return `灶上、门房和针线房一早要${silverText(cost)}两，柜上却只抹出${silverText(paid)}两。锅里少一道菜，门前少一张笑脸，穷先从最看得见的地方露出来。`;
+  return `灶上、门房和针线房一早要${silverText(cost)}两，柜上却连一块碎银都摸不出。门房去了一半，灶火也比往日冷得早。`;
 }
 
 function collectorText(paid) {
   return paid
-    ? `门外那人点走${silverText(COLLECTOR_PRICE)}两，说了句“两讫”，掸掸袖子走了。`
-    : '门外那人见不着银子，拍着门框骂了半条街，邻里都探出头来看。';
+    ? `催账人当着门房的面点走${silverText(COLLECTOR_PRICE)}两，又故意将“两讫”说得满院都听得见，这才掏掏袖子走了。`
+    : '催账人没见到银子，索性坐在门槛上将数目唱了半条街。邻里的窗一扇扇开了，宅里的门却一扇扇关上。';
 }
 
 // 曝光每日结转(F3):高曝光从这夜起开始咬人,三档全部落在场面上。
@@ -792,7 +864,7 @@ function applyExposurePressure(state) {
   const exposure = state.resources.exposure;
   if (exposure >= EXPOSURE_STREET) {
     changeResources(state, { silver: -15 });
-    state.log.push('门房替你打发走一个来打听的人，十五两封口钱先记在账上。');
+    state.log.push('门房今早又拦下一个来问昨夜门灯的人。他没等你开口，先从柜上支走十五两——闲话越香，封口钱越贵。');
   }
   if (exposure >= EXPOSURE_HOUSEHOLD) {
     for (const id of HEROINE_IDS) changeRel(state, id, { du: 4 }, '外头的话，传到院里了');
@@ -823,33 +895,51 @@ function pickMorningEvent(state, visited) {
   if (state.day === 3 && state.flags.yue_respected && !state.flags.yue_delayed_paid) {
     return {
       id: 'yue_delayed', actor: 'wu_yueniang', tone: 'backing',
-      title: '两日前那句话，月娘还记着',
-      text: '月娘把一张名单压在账簿下：“采买短款的人，我叫到正堂了。你自己来问。”',
+      title: '两日前那本账，月娘替你留住了人',
+      text: '月娘把一张名单压在你的早茶下：“短款的那个人，我让他在正堂候着。茶是我替你留的，话得你自己去问。”',
     };
   }
   if (state.flags.yue_morning_help && !state.flags.yue_help_paid) {
     return {
       id: 'yue_help', actor: 'wu_yueniang', tone: 'backing',
-      title: '催账人先被请去了正堂',
-      text: '月娘早已叫人添茶：“外头那笔账，我先替你留住人。官人洗把脸再来。”',
+      title: '催账人先在正堂喝上了茶',
+      text: '月娘连早茶也没喝，先把催账人按在正堂：“我只替你留人，不替你还账。去把身上那股酒气洗了，再来见我。”',
     };
   }
   if (state.flags.pinger_morning_route && !state.flags.pinger_route_paid) {
-    return { id: 'pinger_help', actor: 'li_pinger', tone: 'backing', title: '茶盘下压着一张货单', text: '瓶儿把茶放下，小声道：“拿这张去城门，别再送那三十两。”' };
+    return { id: 'pinger_help', actor: 'li_pinger', tone: 'backing', title: '瓶儿把一条货路压在早茶下', text: '瓶儿放下茶盘，手指在货单上停了停：“拿这张去城门，别再送那三十两。”她走到门边，又回头加了一句：“晚上回来，让我知道它用在了哪里。”' };
   }
   if (state.flags.pan_morning_claim && !state.flags.pan_claim_paid) {
-    return { id: 'pan_claim', actor: 'pan_jinlian', tone: 'jealous', title: '金莲天亮就堵在门口', text: '金莲扶着门框：“昨夜叫得那样亲。怎么见了日头，官人又不认得我了？”' };
+    return { id: 'pan_claim', actor: 'pan_jinlian', tone: 'jealous', title: '金莲拿着你昨夜落下的衣带', text: '金莲用你落下的衣带缠着指尖，把门挡得严严实实：“昨夜还会抱着人不放，今早穿好衣裳，就又只认得账了？”' };
   }
   if (rel.du >= 18) {
+    const jealousy = {
+      wu_yueniang: {
+        title: '月娘抱着账本等在廊下',
+        text: `月娘没朝${HEROINES[visited].house}里看，只将一盏凉茶放到你手边：“人醒了？那便说说，昨夜留下的话，有几句能见日头。”`,
+      },
+      pan_jinlian: {
+        title: '金莲的扇子在门上敲了三下',
+        text: `金莲朝${HEROINES[visited].house}一抬下巴，鼻尖几乎碰到你衣领：“她屋里用的什么香？沾了一身，还敢往我跟前站。”`,
+      },
+      li_pinger: {
+        title: '瓶儿送来一盏没放糖的茶',
+        text: `瓶儿把茶盏递给你，眼睛却看着${HEROINES[visited].house}的门：“我不问昨夜。只是官人今日若再来，别又叫我从别人嘴里才知道。”`,
+      },
+    }[actor];
     return {
       id: 'jealousy', actor, tone: 'jealous',
-      title: `${HEROINES[actor].short}来敲门`,
-      text: `${HEROINES[actor].name}朝${HEROINES[visited].house}那边看了一眼：“昨夜那扇门，关得可真早。”`,
+      ...jealousy,
     };
   }
+  const quiet = {
+    wu_yueniang: '月娘没有叫人来催，只把你落在枕边的钥匙与早茶一起放好。等你醒时，她已经坐在窗下翻完了半本账。',
+    pan_jinlian: '金莲趴在床边看你醒，手里正缠着你的衣带。她不提另两处门，只把凉茶送到你唇边：“喝了。醒了再看你会不会反悔。”',
+    li_pinger: '瓶儿让人送来醒酒茶，自己却还坐在床沿。钥匙已重新系好，她的手却没有从你袖口移开：“再坐一会儿。外头那些人，叫他们等。”',
+  }[visited];
   return {
-    id: 'quiet', actor: visited, tone: 'quiet', title: '天亮了',
-    text: `${HEROINES[visited].name}叫人送来一盏醒酒茶。另两处院门还没开，廊下倒已经有人走过两趟。`,
+    id: 'quiet', actor: visited, tone: 'quiet', title: '醒酒茶还没凉',
+    text: quiet,
   };
 }
 
@@ -859,14 +949,14 @@ export function morningOptions(state) {
     // 按钮报当前实价:妒越深,哄她开门越贵,拖着不安抚只会更贵。
     const cost = appeaseCost(state, state.morning.actor);
     return [
-      { id: 'appease', label: '带她去挑首饰', hint: `花${silverText(cost)}两，先让她把门让开`, disabled: state.resources.silver < cost },
-      { id: 'explain', label: '关门跟她说', hint: '院里会猜，至少她能听见实话' },
-      { id: 'stand', label: '由她生气', hint: '你不改口，这两日也别指望她消气' },
+      { id: 'appease', label: '陪她亲自挑一件', hint: `花${silverText(cost)}两买的不只是首饰，还有你陪她的半日`, disabled: state.resources.silver < cost },
+      { id: 'explain', label: '让她进门，把昨夜说透', hint: '院里会猜，至少她不用靠猜才知道' },
+      { id: 'stand', label: '不哄，也不改口', hint: '你保住了今早的体面，她会把这扇门记更久' },
     ];
   }
   return [
-    { id: 'accept', label: '把东西收下', hint: '她肯帮，你也当面领这份情' },
-    { id: 'note', label: '只道一声知道了', hint: '不欠新话，照旧办今日的事' },
+    { id: 'accept', label: '当着她的面收下', hint: '她给的不只是东西，也在等你认下这份情' },
+    { id: 'note', label: '只点头，不再许新话', hint: '不让这份帮忙变成另一句空话' },
   ];
 }
 
@@ -874,6 +964,7 @@ export function resolveMorning(state, choiceId) {
   if (state.phase !== 'morning' || !state.morning) return { ok: false, error: '眼下没人来敲门。' };
   const event = state.morning;
   const actor = event.actor;
+  let resultText = event.text;
   if (event.id === 'jealousy' || event.id === 'pan_claim') {
     if (!['appease', 'explain', 'stand'].includes(choiceId)) return { ok: false, error: '她还在等你的回答。' };
     if (choiceId === 'appease') {
@@ -881,12 +972,27 @@ export function resolveMorning(state, choiceId) {
       if (state.resources.silver < cost) return { ok: false, error: `手里连哄人的${silverText(cost)}两都没有。` };
       changeResources(state, { silver: -cost, house: 3 });
       changeRel(state, actor, { qing: 4, du: -18 }, '你带她出去挑了一件东西');
+      resultText = ({
+        wu_yueniang: `你没叫下人送匣子，而是陪月娘亲自走了一趟。她挑了一支素簪，只花${silverText(cost)}两，回程却一直没有松开你的袖口：“银子算在你账上，这半日算给我。”`,
+        pan_jinlian: `金莲试了三支簪，偏挑中最贵的那支。你付下${silverText(cost)}两时，她对着铜镜笑：“官人别心疼。今早花的是银子，再晚一日，我要的就不止这个了。”`,
+        li_pinger: `瓶儿原只肯挑一枚便宜的耳坠。你付下${silverText(cost)}两，亲手替她戴好。她对着镜子看了很久，轻声说：“我记得的不是这个，是你今早没让我一个人去。”`,
+      })[actor];
     } else if (choiceId === 'explain') {
       changeResources(state, { exposure: 5 });
       changeRel(state, actor, { qing: 2, du: -10 }, '你关上门，把昨夜的去处说清了');
+      resultText = ({
+        wu_yueniang: '你把月娘请进门，从昨夜第一杯酒说到天亮。她听完才端起那盏凉茶：“好。真话不一定好听，总比叫我从廊下闲话里拼凑强。”',
+        pan_jinlian: '你关上门，当着金莲的面说清昨夜去了哪里、停在哪一步。她的扇子终于不再敲门：“这就对了。我吃醋是我的事，官人撒谎可就是你的错。”',
+        li_pinger: '你让瓶儿进门，将昨夜的去处一句不省地说给她。她沉默片刻，把那盏没放糖的茶换走：“我听了会难过。可总好过他人拿它来笑我。”',
+      })[actor];
     } else {
       changeResources(state, { house: -3 });
       changeRel(state, actor, { du: 10 }, '你由她生气，也没有改口');
+      resultText = ({
+        wu_yueniang: '你越过月娘往前走。她没拦，只把那盏凉茶泼在廊下：“好。既然官人不愿对账，这一页我自己记。”',
+        pan_jinlian: '你伸手拨开金莲的扇子。她立刻让了路，笑得比方才更甜：“官人走好。今日这股香，我保管叫满院都闻见。”',
+        li_pinger: '你只说了一句“别多心”。瓶儿点点头，把没放糖的茶原样端了回去。到门口时，她已经将钥匙换到另一只袖里。',
+      })[actor];
     }
     if (event.id === 'pan_claim') addFlag(state, 'pan_claim_paid');
   } else if (event.id === 'yue_delayed') {
@@ -895,6 +1001,9 @@ export function resolveMorning(state, choiceId) {
       addSecret(state, 'yue_backing');
       changeRel(state, 'wu_yueniang', { qing: 6, du: -6 }, '两日前交给她的账，今日替你找出了人');
       changeResources(state, { house: 5 });
+      resultText = '你端起月娘留的茶，当着她的面喝了：“人我去问，这份情我记你的。”月娘抽走杯底那张名单：“先把人问明白。晚上再来说怎么记。”';
+    } else {
+      resultText = '你收下名单，只向月娘点了点头。她没追问，把那盏茶留在原处。茶气很快散了，这份人情还在。';
     }
     addFlag(state, 'yue_delayed_paid');
   } else if (event.id === 'yue_help') {
@@ -903,17 +1012,25 @@ export function resolveMorning(state, choiceId) {
       addSecret(state, 'yue_backing');
       changeRel(state, 'wu_yueniang', { qing: 4, du: -5 }, '月娘替你把催账人留在正堂');
       changeResources(state, { house: 4 });
+      resultText = '你洗净脸，与月娘一同走进正堂。她没替你开口，只在你坐下时，把已经添过两回的茶推到催账人面前：“现在，和我们官人重新算。”';
+    } else {
+      resultText = '你只说了一声“知道了”，便自己进了正堂。月娘留给你的那盏茶没有动，人却的确替你留住了。';
     }
     addFlag(state, 'yue_help_paid');
   } else if (event.id === 'pinger_help') {
-    if (choiceId === 'accept') addSecret(state, 'merchant_route');
+    if (choiceId === 'accept') {
+      addSecret(state, 'merchant_route');
+      resultText = '你当着瓶儿的面将货单收进怀里。她按住你的袖口：“我不问你能赚多少。只是用完了，把它完整带回来。”你应下，她的手才松开。';
+    } else {
+      resultText = '你看过货单，却没有收，只说自己已有打算。瓶儿把它重新压回茶盘下，轻声道：“好。那你就照自己的路走。”';
+    }
     addFlag(state, 'pinger_route_paid');
   }
   record(state, 'morning', { event: event.id, actor, choice: choiceId });
-  state.log.push(event.text);
+  state.log.push(resultText);
   state.morning = null;
   state.phase = 'day';
-  return { ok: true, text: event.text };
+  return { ok: true, text: resultText };
 }
 
 // 五档刻度:第一格边界压到开局增量能跨过的位置(情 18 / 欲 16 / 妒 4),
@@ -939,6 +1056,9 @@ export function determineEnding(state) {
   if (
     state.flags.harem_coalition
     && state.unlocked.includes('inner_court_accord')
+    && state.unlocked.includes('inner_court_afterglow')
+    && state.sharedAfterglowChoices.length === SHARED_AFTERGLOW_BEATS.length
+    && SHARED_DAWN_CHOICE_IDS.has(state.sharedDawnChoice)
     && jointActionCount(state) >= JOINT_ACTION_TARGET
     && HEROINE_IDS.every((heroine) => qing[heroine] >= 30 && state.relations[heroine].du < 70)
     && state.resources.house >= 45
@@ -1007,7 +1127,7 @@ function validCurrentSave(state) {
   if (!SAVE_PHASES.has(state.phase) || typeof state.over !== 'boolean') return false;
   if (!hasFiniteFields(state.resources, RESOURCE_KEYS)) return false;
   if (!isRecord(state.flags)) return false;
-  for (const key of ['secrets', 'secretsUsed', 'history', 'log', 'jointActions', 'unlocked']) {
+  for (const key of ['secrets', 'secretsUsed', 'history', 'log', 'jointActions', 'sharedAfterglowChoices', 'unlocked']) {
     if (!Array.isArray(state[key])) return false;
   }
   if (!HEROINE_IDS.every((id) => (
@@ -1029,16 +1149,22 @@ function validCurrentSave(state) {
   if (state.phase !== 'joint_result' && state.currentJointAction !== null) return false;
   if (['visit', 'night'].includes(state.phase) && !HEROINE_IDS.includes(state.currentHeroine)) return false;
   if (state.phase === 'scene') {
-    if (!SCENES[state.pendingScene] || !['choose_visit', 'after_night', 'after_shared_night'].includes(state.sceneReturnPhase)) return false;
+    if (!SCENES[state.pendingScene] || !['choose_visit', 'after_night', 'after_shared_work', 'after_shared_afterglow'].includes(state.sceneReturnPhase)) return false;
     if (state.sceneReturnPhase === 'after_night' && !HEROINE_IDS.includes(state.currentHeroine)) return false;
     if (state.sceneReturnPhase === 'after_night' && SCENES[state.pendingScene].heroine !== state.currentHeroine) return false;
     if (state.sceneReturnPhase === 'choose_visit' && (state.day !== 5 || state.pendingScene !== 'banquet_conflict')) return false;
-    if (state.sceneReturnPhase === 'after_shared_night' && (
+    if (state.sceneReturnPhase === 'after_shared_work' && (
       state.day !== MAX_DAY
       || state.pendingScene !== 'inner_court_accord'
       || state.sharedNightChoice !== 'shared_divide_roles'
       || !state.flags.harem_coalition
       || jointActionCount(state) < JOINT_ACTION_TARGET
+    )) return false;
+    if (state.sceneReturnPhase === 'after_shared_afterglow' && (
+      state.day !== MAX_DAY
+      || state.pendingScene !== 'inner_court_afterglow'
+      || state.sharedAfterglowChoices.length !== SHARED_AFTERGLOW_BEATS.length
+      || !state.flags.harem_coalition
     )) return false;
   } else if (state.pendingScene !== null || state.sceneReturnPhase !== null) return false;
   if (state.phase === 'morning') {
@@ -1053,6 +1179,24 @@ function validCurrentSave(state) {
   if (state.phase === 'morning' && state.day < 2) return false;
   if (state.phase === 'banquet' && state.day !== 5) return false;
   if (state.phase === 'shared_night' && (state.day !== MAX_DAY || state.sharedNightChoice !== null)) return false;
+  if (state.sharedAfterglowChoices.some((id) => !SHARED_AFTERGLOW_CHOICE_IDS.has(id))) return false;
+  if (state.sharedAfterglowChoices.length > SHARED_AFTERGLOW_BEATS.length) return false;
+  for (let index = 0; index < state.sharedAfterglowChoices.length; index += 1) {
+    if (!SHARED_AFTERGLOW_BEATS[index].choices.some((choice) => choice.id === state.sharedAfterglowChoices[index])) return false;
+  }
+  if (state.sharedDawnChoice !== null && !SHARED_DAWN_CHOICE_IDS.has(state.sharedDawnChoice)) return false;
+  if (state.phase === 'shared_afterglow' && (
+    state.day !== MAX_DAY
+    || state.sharedNightChoice !== 'shared_divide_roles'
+    || state.sharedAfterglowChoices.length >= SHARED_AFTERGLOW_BEATS.length
+    || state.sharedDawnChoice !== null
+  )) return false;
+  if (state.phase === 'shared_dawn' && (
+    state.day !== MAX_DAY
+    || state.sharedAfterglowChoices.length !== SHARED_AFTERGLOW_BEATS.length
+    || !state.unlocked.includes('inner_court_afterglow')
+    || state.sharedDawnChoice !== null
+  )) return false;
   if (state.phase === 'ending') {
     if (state.day !== MAX_DAY || !state.over || !isRecord(state.ending) || !ENDINGS[state.ending.id]) return false;
   } else if (state.over || state.ending !== null) return false;

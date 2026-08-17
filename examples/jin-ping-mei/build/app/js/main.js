@@ -8,7 +8,7 @@ import * as E from './engine.js';
 import { loadAssets, assetReport, urlFor, assertCriticalAssetSchema } from './assets.js';
 import { audio } from './audio.js';
 
-const SAVE_KEY = 'jpm_fengyue_save_v5';
+const SAVE_KEY = 'jpm_fengyue_save_v6';
 const GALLERY_KEY = 'jpm_fengyue_gallery_v1';
 const AGE_KEY = 'jpm_fengyue_age_session';
 const params = new URLSearchParams(location.search);
@@ -22,6 +22,7 @@ let state = null;
 let assets = null;
 let galleryOpen = false;
 let gallerySceneId = null;
+let resultCard = null;
 let toastTimer = null;
 let audioReady = false;
 
@@ -96,11 +97,12 @@ function restart() {
 
 function sfxForPhase() {
   if (!state) return;
-  const map = { day: 'wang', joint_result: 'submit', household: 'paper', visit: 'paper', night: 'watch', morning: 'plank', scene: 'qing', banquet: 'submit', shared_night: 'submit', ending: 'qing' };
+  const map = { day: 'wang', joint_result: 'submit', household: 'paper', visit: 'paper', night: 'watch', morning: 'plank', scene: 'qing', banquet: 'submit', shared_night: 'submit', shared_afterglow: 'watch', shared_dawn: 'plank', ending: 'qing' };
   audio.sfx(map[state.phase] ?? 'click');
 }
 
-function act(fn) {
+function act(fn, label = '') {
+  resultCard = null;
   const result = fn();
   if (!result?.ok) {
     showToast(result?.error || '这一步走不通。');
@@ -108,6 +110,11 @@ function act(fn) {
   }
   save();
   sfxForPhase();
+  if (result.text && state.phase !== 'scene') {
+    resultCard = { title: label || '这句话落下了', text: result.text };
+  } else if (result.text && result.scene) {
+    resultCard = { title: label || '这一笔有了回声', text: result.text };
+  }
   render();
 }
 
@@ -194,6 +201,7 @@ function renderGame() {
         </section>
       </div>
     </main>`;
+  if (resultCard) appendResultCard();
   if (galleryOpen) appendGallery();
 }
 
@@ -350,6 +358,8 @@ function renderPhase() {
     case 'banquet': return renderBanquet();
     case 'choose_visit': return renderVisitHub();
     case 'shared_night': return renderSharedNight();
+    case 'shared_afterglow': return renderSharedAfterglow();
+    case 'shared_dawn': return renderSharedDawn();
     case 'visit': return renderVisit();
     case 'night': return renderNight();
     case 'morning': return renderMorning();
@@ -361,15 +371,10 @@ function renderPhase() {
 
 function renderOpening() {
   return `
-    <div class="opening-scene visual-stage" style="--scene-bg:url('${urlFor('compound')}')">
-      <div class="opening-women" aria-hidden="true">
-        ${heroineFigure('pan_jinlian', 'left')}
-        ${heroineFigure('wu_yueniang', 'center')}
-        ${heroineFigure('li_pinger', 'right')}
-      </div>
+    <div class="opening-scene visual-stage" style="--scene-bg:url('${urlFor('cover')}')">
       <div class="decision-panel opening-panel">
         ${phaseHeader('第一日 · 正堂', '五十两银子不见了', '月娘守着账簿，金莲把酒送到你手边。两个人都等你先看谁。')}
-        <p class="speaker-line">月娘：“账放下。”　金莲：“官人，酒要凉了。”</p>
+        <p class="speaker-line">月娘：“真账留下。”　金莲：“人也留下，先喝我这杯。”</p>
         <div class="choice-grid">${OPENING_CHOICES.map((choice) => choiceButton(choice, 'opening')).join('')}</div>
       </div>
     </div>`;
@@ -387,7 +392,7 @@ function renderDay() {
         <p class="phase-lead">${TEXT.dayLead}</p>
         <div class="day-actions">${E.dayOptions(state).map((choice) => choiceButton(choice, 'day-action')).join('')}</div>
         <section class="joint-offers" aria-label="联院差事">
-          <header><b>联院差事</b><span>终局协力 ${jointDone}/${E.JOINT_ACTION_TARGET} · 每组只做一次</span></header>
+          <header><b>联院差事</b><span>已合办 ${jointDone}/${E.JOINT_ACTION_TARGET} 桩 · 每组只做一次</span></header>
           <div class="joint-actions">${jointOptions.map((choice) => choiceButton(choice, 'joint-action')).join('')}</div>
         </section>
       </div>
@@ -412,8 +417,7 @@ function renderHousehold() {
   const person = HOUSEHOLD[event.actor];
   const row = state.household[event.actor];
   return `
-    <div class="household-stage visual-stage household-${event.actor}" data-household-event="${event.id}" data-household-actor="${event.actor}" style="--scene-bg:url('${urlFor('compound')}')">
-      <img class="household-portrait" src="${urlFor(person.portrait)}" alt="${person.name}"/>
+    <div class="household-stage visual-stage household-${event.actor}" data-household-event="${event.id}" data-household-actor="${event.actor}" style="--scene-bg:url('${urlFor(person.portrait)}')">
       <div class="decision-panel household-panel">
         ${phaseHeader(`${person.house} · ${person.glyph}`, event.title, event.text)}
         <p class="household-voice">${person.voice}</p>
@@ -431,9 +435,9 @@ function renderVisitHub() {
       <div class="visit-prompt">
         <div>${phaseHeader(`第 ${state.day} 日 · 黄昏`, '院门亮了灯', TEXT.chooseVisit)}</div>
         <aside class="accord-panel" aria-label="三院共约">
-          <div class="accord-heading"><b>三院共约</b><span>院约 ${status.complete}/${status.total} · 协力 ${status.jointComplete}/${status.jointTotal}</span></div>
+          <div class="accord-heading"><b>想让三盏灯一起亮</b><span>边界 ${status.complete}/${status.total} · 同心 ${status.jointComplete}/${status.jointTotal}</span></div>
           <div class="accord-seals">${accordRows.map((row) => `<span class="accord-seal ${row.complete ? 'complete' : ''}" data-accord="${row.key}"><i>${row.glyph}</i>${row.label}</span>`).join('')}</div>
-          ${status.visible ? `<button class="shared-invite" data-shared-start="1"><b>请三人一同留席</b><span>${status.ready ? '三条约都在，今夜可以把事做成。' : status.reason}</span></button>` : '<small>分别听完三个人的边界，第六夜才可同席。</small>'}
+          ${status.visible ? `<button class="shared-invite" data-shared-start="1"><b>请三个人都别走</b><span>${status.ready ? '三句真话、两桩同心事都在，这回她们愿意一起留下。' : status.reason}</span></button>` : '<small>先听清三个人各自要什么，再让她们真的一起做成两件事。</small>'}
         </aside>
       </div>
       <div class="heroine-doors">
@@ -450,14 +454,9 @@ function renderVisitHub() {
 function renderSharedNight() {
   const rows = E.accordStatus(state);
   return `
-    <div class="shared-stage visual-stage" style="--scene-bg:url('${urlFor('compound')}')">
-      <div class="shared-women" aria-hidden="true">
-        ${heroineFigure('wu_yueniang', 'left')}
-        ${heroineFigure('pan_jinlian', 'center')}
-        ${heroineFigure('li_pinger', 'right')}
-      </div>
+    <div class="shared-stage visual-stage" style="--scene-bg:url('${urlFor('cg/group/banquet_conflict')}')">
       <div class="decision-panel shared-panel">
-        ${phaseHeader('第六夜 · 三人同席', '一张桌，三条院约', TEXT.sharedNightLead)}
+        ${phaseHeader('第六夜 · 三人都没走', '账还在桌上，酒已经热了', TEXT.sharedNightLead)}
         <div class="accord-seals shared-seals">${rows.map((row) => `<span class="accord-seal ${row.complete ? 'complete' : ''}" data-accord="${row.key}"><i>${row.glyph}</i>${row.label}</span>`).join('')}</div>
         <p class="shared-proof">白日联院差事：${Math.min(E.jointActionCount(state), E.JOINT_ACTION_TARGET)}/${E.JOINT_ACTION_TARGET}</p>
         <div class="choice-grid">${E.sharedNightOptions(state).map((choice) => choiceButton(choice, 'shared-night')).join('')}</div>
@@ -465,9 +464,27 @@ function renderSharedNight() {
     </div>`;
 }
 
-function heroineFigure(id, position = '') {
-  const h = HEROINES[id];
-  return `<img class="heroine-figure ${position}" src="${urlFor(h.portrait)}" alt="${h.name}"/>`;
+function renderSharedAfterglow() {
+  const beat = E.sharedAfterglowBeat(state);
+  if (!beat) return '<div class="fatal-card">灯下这页断了。</div>';
+  return `
+    <div class="afterglow-stage visual-stage" data-shared-beat="${beat.id}" style="--scene-bg:url('${urlFor('cg/group/inner_court_accord')}')">
+      <div class="decision-panel afterglow-panel">
+        ${phaseHeader(beat.kicker, beat.title, beat.body)}
+        <p class="shared-proof">夜还在往下走 ${state.sharedAfterglowChoices.length + 1}/2 · 每句话都会有人接</p>
+        <div class="choice-grid">${E.sharedAfterglowOptions(state).map((choice) => choiceButton(choice, 'shared-afterglow')).join('')}</div>
+      </div>
+    </div>`;
+}
+
+function renderSharedDawn() {
+  return `
+    <div class="shared-dawn-stage visual-stage" style="--scene-bg:url('${urlFor('cg/group/inner_court_afterglow')}')">
+      <div class="decision-panel shared-dawn-panel">
+        ${phaseHeader('第六日 · 晨光进了纱帐', '天亮以后，昨夜依然算数', '月娘已经披衣坐起，金莲还倚着枕，瓶儿正在重新系钥匙。你现在怎样走出这间屋，决定昨夜是一场酒，还是一个开始。')}
+        <div class="choice-grid">${E.sharedDawnOptions(state).map((choice) => choiceButton(choice, 'shared-dawn')).join('')}</div>
+      </div>
+    </div>`;
 }
 
 function renderVisit() {
@@ -495,7 +512,7 @@ function renderNight() {
       <div class="decision-panel dialogue-panel">
         ${phaseHeader('夜深了', h.name, TEXT.nightLead)}
         <div class="choice-stack">${choices.map((choice) => choiceButton(choice, 'night')).join('')}</div>
-        <p class="consent-note">随时都能停。若她不肯再近，先前哪句话没说到，她会告诉你。</p>
+        <p class="consent-note">她往前一步，才有下一步。她若停下，门便停在这里。</p>
       </div>
     </div>`;
 }
@@ -530,14 +547,14 @@ function renderBanquet() {
 
 function renderScene() {
   const scene = SCENES[state.pendingScene];
-  const adult = scene.tier === 'prelude' || scene.tier === 'explicit';
+  const adult = ['prelude', 'explicit', 'ensemble-intimate'].includes(scene.tier);
   const ensemble = scene.tier === 'ensemble';
   return `
     <article class="scene-view" id="scene-view" data-scene-id="${scene.id}" data-scene-tier="${scene.tier}">
       <img id="scene-image" src="${urlFor(scene.asset)}" alt="${scene.title}"/>
       <div class="scene-scrim"></div>
       <div class="scene-caption">
-        <p class="eyebrow">${adult ? '18+ · 她点了头' : ensemble ? '三院共约 · 三个人都在' : '中秋席 · 满桌人都在'}</p>
+        <p class="eyebrow">${scene.tier === 'ensemble-intimate' ? '18+ · 三个人都点了头' : adult ? '18+ · 她点了头' : ensemble ? '三院共约 · 三个人都在' : '中秋席 · 满桌人都在'}</p>
         <h2>${scene.title}</h2>
         <p>${scene.body}</p>
         <div class="scene-meta"><span>这一页留下了</span><span>${scene.participants.length ? scene.participants.map((id) => HEROINES[id].name).join('、') : '中秋同席'}</span></div>
@@ -549,6 +566,9 @@ function renderScene() {
 function renderEnding() {
   const end = state.ending;
   const top = HEROINE_IDS.slice().sort((a, b) => state.relations[b].qing - state.relations[a].qing)[0];
+  const relationshipSummary = end.id === 'balanced'
+    ? '<span>三院关系 <b>都还在桌上</b></span>'
+    : `<span>最深关系 <b>${HEROINES[top].name} · ${E.relationTier(state.relations[top].qing, 'qing')}</b></span>`;
   // 结局图跟着结局走:专一给该女主的立绘近景,三院同灯用真正协作的群像,
   // 权谋与不稳退回夜色宅院,由 CSS 按 data-ending 分别调色。
   const artUrl = end.id === 'exclusive' && end.heroine
@@ -565,13 +585,13 @@ function renderEnding() {
         <p class="ending-tag">${end.tag}${end.heroineName ? ` · ${end.heroineName}` : ''}${end.routeResult ? ` · ${end.routeResult}` : ''}</p>
         <p>${end.text}</p>
         <div class="ending-ledger">
-          <span>最深关系 <b>${HEROINES[top].name} · ${E.relationTier(state.relations[top].qing, 'qing')}</b></span>
+          ${relationshipSummary}
           <span>已得册页 <b>${loadGallery().length}/${SCENE_TOTAL}</b></span>
           <span>用过秘密 <b>${state.secretsUsed.length}</b></span>
-          <span>未见路线 <b>${end.unseen.length}</b></span>
+          <span>尚有册页 <b>${end.unseen.length} 页未开</b></span>
         </div>
         <div class="household-ending">${end.householdResults.map((item) => `<span><b>${item.name}</b>${item.result}</span>`).join('')}</div>
-        <p class="ending-note">天一亮，正堂那边已经有人翻开账簿。门外又响了两声。</p>
+        <p class="ending-note">天一亮，新的账会来，新的醋也会酿。六日走完，往后的院门才刚打开。</p>
         <div class="button-row"><button class="ink-button primary" id="btn-restart">${TEXT.endingRestart}</button><button class="ink-button" id="btn-gallery">${TEXT.endingGallery}</button></div>
       </div>
     </article>`;
@@ -584,13 +604,26 @@ function choiceButton(choice, dataName) {
   return `<button class="choice-button" data-${dataName}="${id}" ${disabled}><b>${escapeHtml(choice.label || id)}</b><span>${escapeHtml(locked)}</span></button>`;
 }
 
+function appendResultCard() {
+  const overlay = document.createElement('div');
+  overlay.className = 'result-overlay';
+  overlay.id = 'result-overlay';
+  overlay.innerHTML = `<section class="result-card" role="dialog" aria-modal="true" aria-label="${escapeHtml(resultCard.title)}">
+    <p class="eyebrow">她听见了，也给了你回应</p>
+    <h2>${escapeHtml(resultCard.title)}</h2>
+    <p>${escapeHtml(resultCard.text)}</p>
+    <button class="ink-button primary" id="btn-result-continue">接下去</button>
+  </section>`;
+  app.appendChild(overlay);
+}
+
 function appendGallery() {
   const unlocked = new Set(loadGallery());
   const groups = [
     ['吴月娘', ['yue_prelude', 'yue_explicit']],
     ['潘金莲', ['pan_prelude', 'pan_explicit']],
     ['李瓶儿', ['pinger_prelude', 'pinger_explicit']],
-    ['同场', ['banquet_conflict', 'inner_court_accord']],
+    ['同场', ['banquet_conflict', 'inner_court_accord', 'inner_court_afterglow']],
   ];
   const overlay = document.createElement('div');
   overlay.className = 'gallery-overlay';
@@ -605,7 +638,7 @@ function appendGallery() {
 function galleryCard(scene, open) {
   return `<button class="gallery-card ${open ? 'unlocked' : 'locked'}" data-gallery-scene="${scene.id}" ${open ? `data-gallery-open="${scene.id}"` : 'disabled'}>
     ${open ? `<img src="${urlFor(scene.asset)}" alt="${scene.title}"/>` : '<div class="locked-art" aria-label="未解锁">未</div>'}
-    <div><b>${open ? scene.title : '题签未开'}</b><small>${open ? (scene.tier === 'public' ? '中秋同席' : scene.tier === 'ensemble' ? '三院共约' : scene.tier === 'explicit' ? '那夜留宿' : '帘前一步') : lockedHint(scene.id)}</small></div>
+    <div><b>${open ? scene.title : '题签未开'}</b><small>${open ? (scene.tier === 'public' ? '中秋同席' : scene.tier === 'ensemble' ? '三院共约' : scene.tier === 'ensemble-intimate' ? '三院余夜' : scene.tier === 'explicit' ? '那夜留宿' : '帘前一步') : lockedHint(scene.id)}</small></div>
   </button>`;
 }
 
@@ -613,7 +646,7 @@ function galleryReplay(scene) {
   return `<article class="gallery-replay" id="gallery-replay" data-replay-scene="${scene.id}" role="dialog" aria-modal="true" aria-label="重看${scene.title}">
     <img id="gallery-replay-image" src="${urlFor(scene.asset)}" alt="${scene.title}"/>
     <div class="gallery-replay-copy">
-      <p class="eyebrow">${scene.tier === 'public' ? '再看中秋席' : scene.tier === 'ensemble' ? '再看三院同灯' : '18+ · 翻回那一夜'}</p>
+      <p class="eyebrow">${scene.tier === 'public' ? '再看中秋席' : scene.tier === 'ensemble' ? '再看三院同灯' : scene.tier === 'ensemble-intimate' ? '18+ · 再看灯下余夜' : '18+ · 翻回那一夜'}</p>
       <h2>${scene.title}</h2>
       <p>${scene.body}</p>
       <p class="replay-note">这次只看画，不改已经走过的路。</p>
@@ -625,6 +658,7 @@ function galleryReplay(scene) {
 function lockedHint(sceneId) {
   if (sceneId === 'banquet_conflict') return '等中秋开席';
   if (sceneId === 'inner_court_accord') return '听完三条院约，再请三人同席';
+  if (sceneId === 'inner_court_afterglow') return '共同办完外账，再把余夜走完';
   if (sceneId.startsWith('yue_')) return '先把答应月娘的事办了';
   if (sceneId.startsWith('pan_')) return '先还金莲那杯酒';
   return '先护住瓶儿的账';
@@ -651,10 +685,12 @@ function escapeHtml(value) {
 app.addEventListener('click', (event) => {
   const button = event.target.closest('button');
   if (!button) return;
+  const actionLabel = button.querySelector('b')?.textContent?.trim() || button.textContent.trim();
   if (!audioReady) { audioReady = true; audio.unlock(); audio.playBGM(state ? 'act1' : 'title'); }
   audio.sfx('click');
 
-  if (button.id === 'btn-age-yes') {
+  if (button.id === 'btn-result-continue') { resultCard = null; render(); }
+  else if (button.id === 'btn-age-yes') {
     sessionStorage.setItem(AGE_KEY, 'yes');
     render();
   } else if (button.id === 'btn-age-no') {
@@ -667,19 +703,21 @@ app.addEventListener('click', (event) => {
   else if (button.dataset.galleryOpen) { gallerySceneId = button.dataset.galleryOpen; render(); }
   else if (button.id === 'btn-mute') { audio.unlock(); audio.toggleMuted(); render(); }
   else if (button.id === 'btn-restart') restart();
-  else if (button.id === 'btn-scene-close') act(() => E.closeScene(state));
-  else if (button.dataset.opening) act(() => E.chooseOpening(state, button.dataset.opening));
-  else if (button.dataset.dayAction) act(() => E.chooseDayAction(state, button.dataset.dayAction));
-  else if (button.dataset.jointAction) act(() => E.chooseJointAction(state, button.dataset.jointAction));
-  else if (button.dataset.jointContinue) act(() => E.continueJointAction(state));
-  else if (button.dataset.household) act(() => E.resolveHouseholdEvent(state, button.dataset.household));
-  else if (button.dataset.banquet) act(() => E.chooseBanquet(state, button.dataset.banquet));
-  else if (button.dataset.sharedStart) act(() => E.startSharedNight(state));
-  else if (button.dataset.sharedNight) act(() => E.chooseSharedNight(state, button.dataset.sharedNight));
-  else if (button.dataset.visit) act(() => E.startVisit(state, button.dataset.visit));
-  else if (button.dataset.routeChoice) act(() => E.chooseVisit(state, button.dataset.routeChoice));
-  else if (button.dataset.night) act(() => E.chooseNight(state, button.dataset.night));
-  else if (button.dataset.morning) act(() => E.resolveMorning(state, button.dataset.morning));
+  else if (button.id === 'btn-scene-close') act(() => E.closeScene(state), actionLabel);
+  else if (button.dataset.opening) act(() => E.chooseOpening(state, button.dataset.opening), actionLabel);
+  else if (button.dataset.dayAction) act(() => E.chooseDayAction(state, button.dataset.dayAction), actionLabel);
+  else if (button.dataset.jointAction) act(() => E.chooseJointAction(state, button.dataset.jointAction), actionLabel);
+  else if (button.dataset.jointContinue) act(() => E.continueJointAction(state), actionLabel);
+  else if (button.dataset.household) act(() => E.resolveHouseholdEvent(state, button.dataset.household), actionLabel);
+  else if (button.dataset.banquet) act(() => E.chooseBanquet(state, button.dataset.banquet), actionLabel);
+  else if (button.dataset.sharedStart) act(() => E.startSharedNight(state), actionLabel);
+  else if (button.dataset.sharedNight) act(() => E.chooseSharedNight(state, button.dataset.sharedNight), actionLabel);
+  else if (button.dataset.sharedAfterglow) act(() => E.chooseSharedAfterglow(state, button.dataset.sharedAfterglow), actionLabel);
+  else if (button.dataset.sharedDawn) act(() => E.chooseSharedDawn(state, button.dataset.sharedDawn), actionLabel);
+  else if (button.dataset.visit) act(() => E.startVisit(state, button.dataset.visit), actionLabel);
+  else if (button.dataset.routeChoice) act(() => E.chooseVisit(state, button.dataset.routeChoice), actionLabel);
+  else if (button.dataset.night) act(() => E.chooseNight(state, button.dataset.night), actionLabel);
+  else if (button.dataset.morning) act(() => E.resolveMorning(state, button.dataset.morning), actionLabel);
 });
 
 document.addEventListener('keydown', (event) => {
@@ -705,6 +743,8 @@ window.__game = Object.freeze({
   chooseBanquet: (id) => act(() => E.chooseBanquet(state, id)),
   startSharedNight: () => act(() => E.startSharedNight(state)),
   chooseSharedNight: (id) => act(() => E.chooseSharedNight(state, id)),
+  chooseSharedAfterglow: (id) => act(() => E.chooseSharedAfterglow(state, id)),
+  chooseSharedDawn: (id) => act(() => E.chooseSharedDawn(state, id)),
   visit: (id) => act(() => E.startVisit(state, id)),
   chooseVisit: (id) => act(() => E.chooseVisit(state, id)),
   chooseNight: (id) => act(() => E.chooseNight(state, id)),
