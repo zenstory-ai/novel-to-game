@@ -42,6 +42,14 @@
       "skillPointsPerLevel": 1,
       "skillRankCap": 3
     },
+    "treasureHunt": {
+      "outerDigs": 3,
+      "deepDigs": 2,
+      "maxThreat": 4,
+      "deepEntryThreat": 1,
+      "safeSettleItem": "bihuofu",
+      "guides": ["wukong", "bajie", "sha"]
+    },
     "trueFan": {
       "maxStages": 3,
       "stageTwoSpeed": 0.3,

@@ -7,13 +7,14 @@
       1440,
       900
     ],
-    "url": "http://127.0.0.1:56672/?seed=42&fast=1",
-    "buildBytes": 4512533
+    "url": "http://127.0.0.1:56221/?seed=42&fast=1",
+    "buildBytes": 4541376
   },
   "inputTrace": [
     "start a new campaign",
     "interact with the Earth God and Princess Iron Fan",
     "complete six command battles and story decisions",
+    "use keyboard-only input to choose a guide and complete the risky five-element treasure route",
     "reach the designed ending",
     "restart to a clean title campaign"
   ],
@@ -47,7 +48,7 @@
         "phase": "ending",
         "consoleErrors": []
       },
-      "visual": "qa/evidence/browser/02_ending.jpg"
+      "visual": "qa/evidence/browser/03_ending.jpg"
     },
     "coreLoop": {
       "id": "campaign-loop-complete",
@@ -56,8 +57,253 @@
       ],
       "state": {
         "phase": "ending",
-        "battlesWon": 4
-      }
+        "battlesWon": 4,
+        "treasureHunt": {
+          "guide": "wukong",
+          "deepened": true,
+          "forcedRetreat": false,
+          "relics": 4,
+          "items": {
+            "jinchuang": 1,
+            "bihuofu": 1,
+            "dahuandan": 1
+          },
+          "potentialPoints": 4,
+          "skillPoints": 1
+        },
+        "treasureSnapshot": {
+          "guide": "wukong",
+          "layer": "deep",
+          "status": "finished",
+          "deepened": true,
+          "forcedRetreat": false,
+          "threat": 1,
+          "maxThreat": 4,
+          "digsUsed": 2,
+          "digsLimit": 2,
+          "bankedItems": {
+            "jinchuang": 1,
+            "bihuofu": 1,
+            "dahuandan": 1
+          },
+          "carriedItems": {},
+          "bankedRelics": 4,
+          "carriedRelics": 0,
+          "safeSettleReward": {},
+          "tiles": [
+            {
+              "index": 0,
+              "element": "火",
+              "revealed": true,
+              "kind": "supply",
+              "name": "避火符匣",
+              "dangerMarked": false
+            },
+            {
+              "index": 1,
+              "element": "金",
+              "revealed": true,
+              "kind": "relic",
+              "name": "炉砖铭简",
+              "dangerMarked": false
+            },
+            {
+              "index": 2,
+              "element": "火",
+              "revealed": false,
+              "kind": null,
+              "name": null,
+              "dangerMarked": true
+            },
+            {
+              "index": 3,
+              "element": "土",
+              "revealed": false,
+              "kind": null,
+              "name": null,
+              "dangerMarked": false
+            },
+            {
+              "index": 4,
+              "element": "木",
+              "revealed": false,
+              "kind": null,
+              "name": null,
+              "dangerMarked": false
+            },
+            {
+              "index": 5,
+              "element": "金",
+              "revealed": false,
+              "kind": null,
+              "name": null,
+              "dangerMarked": true
+            }
+          ],
+          "canChooseDepth": false,
+          "canFinishDepth": false,
+          "result": {
+            "seed": 302,
+            "guide": "wukong",
+            "deepened": true,
+            "forcedRetreat": false,
+            "items": {
+              "jinchuang": 1,
+              "bihuofu": 1,
+              "dahuandan": 1
+            },
+            "relics": 4,
+            "growth": {
+              "unit": "wukong",
+              "potentialPoints": 4,
+              "skillPoints": 1
+            },
+            "events": [
+              {
+                "type": "reveal",
+                "layer": "outer",
+                "index": 0,
+                "source": "dig",
+                "kind": "relic",
+                "element": "金",
+                "name": "鎏金残简"
+              },
+              {
+                "type": "relic",
+                "layer": "outer",
+                "index": 0,
+                "amount": 1,
+                "name": "鎏金残简"
+              },
+              {
+                "type": "paid_dig",
+                "layer": "outer",
+                "index": 0,
+                "count": 1
+              },
+              {
+                "type": "reveal",
+                "layer": "outer",
+                "index": 1,
+                "source": "dig",
+                "kind": "relic",
+                "element": "金",
+                "name": "五行残简"
+              },
+              {
+                "type": "relic",
+                "layer": "outer",
+                "index": 1,
+                "amount": 1,
+                "name": "五行残简"
+              },
+              {
+                "type": "paid_dig",
+                "layer": "outer",
+                "index": 1,
+                "count": 2
+              },
+              {
+                "type": "reveal",
+                "layer": "outer",
+                "index": 2,
+                "source": "dig",
+                "kind": "vein",
+                "element": "木",
+                "name": "藤纹连脉"
+              },
+              {
+                "type": "vein",
+                "layer": "outer",
+                "index": 2,
+                "chained": 5
+              },
+              {
+                "type": "reveal",
+                "layer": "outer",
+                "index": 5,
+                "source": "vein",
+                "kind": "supply",
+                "element": "水",
+                "name": "清泉药囊"
+              },
+              {
+                "type": "supply",
+                "layer": "outer",
+                "index": 5,
+                "reward": {
+                  "jinchuang": 1
+                },
+                "name": "清泉药囊"
+              },
+              {
+                "type": "paid_dig",
+                "layer": "outer",
+                "index": 2,
+                "count": 3
+              },
+              {
+                "type": "enter_deep",
+                "layer": "deep",
+                "threat": 1
+              },
+              {
+                "type": "reveal",
+                "layer": "deep",
+                "index": 0,
+                "source": "dig",
+                "kind": "supply",
+                "element": "火",
+                "name": "避火符匣"
+              },
+              {
+                "type": "supply",
+                "layer": "deep",
+                "index": 0,
+                "reward": {
+                  "bihuofu": 1
+                },
+                "name": "避火符匣"
+              },
+              {
+                "type": "paid_dig",
+                "layer": "deep",
+                "index": 0,
+                "count": 1
+              },
+              {
+                "type": "reveal",
+                "layer": "deep",
+                "index": 1,
+                "source": "dig",
+                "kind": "relic",
+                "element": "金",
+                "name": "炉砖铭简"
+              },
+              {
+                "type": "relic",
+                "layer": "deep",
+                "index": 1,
+                "amount": 2,
+                "name": "炉砖铭简"
+              },
+              {
+                "type": "paid_dig",
+                "layer": "deep",
+                "index": 1,
+                "count": 2
+              },
+              {
+                "type": "deep_success",
+                "layer": "deep",
+                "threat": 1
+              }
+            ]
+          }
+        },
+        "treasureInput": "keyboard-only"
+      },
+      "visual": "qa/evidence/browser/02_fire_vein_treasure.jpg"
     },
     "outcome": {
       "id": "designed-ending",
@@ -68,7 +314,7 @@
         "terminal": "ending: 三借芭蕉扇 · 完",
         "phase": "ending"
       },
-      "visual": "qa/evidence/browser/02_ending.jpg"
+      "visual": "qa/evidence/browser/03_ending.jpg"
     },
     "restart": {
       "id": "clean-restart",
@@ -80,8 +326,7 @@
         "phase": "title",
         "stage": "prologue",
         "battlesWon": 0
-      },
-      "visual": "qa/evidence/browser/03_restart_title.jpg"
+      }
     }
   }
 }

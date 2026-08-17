@@ -10,9 +10,10 @@ import { settleLevelUp, allocatePoint, applyRecommend, allocateSkillPoint, apply
 import { runBattleScreen } from './battle_ui.js';
 import { runOverworld } from './overworld.js';
 import { runBibotan } from './bibotan.js';
+import { startTreasureHunt } from './treasure_ui.js';
 
 const SAVE_KEY = 'xiyou_save_v1';
-const SAVE_VERSION = 3;
+const SAVE_VERSION = 4;
 const TUT_KEY = 'xiyou_tut_seen';
 
 const params = new URLSearchParams(location.search);
@@ -20,20 +21,21 @@ const FAST = params.get('fast') === '1';
 const SEED = params.has('seed') ? Number(params.get('seed')) : (Date.now() % 100000);
 
 const app = document.getElementById('app');
-let phase = 'boot'; // title | overworld | battle | ending
+let phase = 'boot'; // title | overworld | treasure | battle | ending
 let overworldCtl = null;
+let treasureCtl = null;
 
-// 阶段切换:非游玩阶段(标题/结局)隐藏顶栏——那里角色/背包/召唤兽/阵型一概不可用(简报 T7)
+// 阶段切换:标题/寻宝/结局隐藏顶栏；寻宝在进入与结算时自动存档，中途不开放面板和存读。
 function setPhase(p) {
   phase = p;
-  document.body.classList.toggle('no-topbar', p === 'title' || p === 'ending');
+  document.body.classList.toggle('no-topbar', p === 'title' || p === 'treasure' || p === 'ending');
 }
 
 // ---------- 战役状态 ----------
 function newCampaign() {
   return {
     version: SAVE_VERSION,
-    stage: 'prologue', // prologue → pre_fire → pre_boss
+    stage: 'prologue', // prologue → pre_fire → treasure_fire → pre_yumian → pre_niu1 → pre_boss
     levels: { wukong: 1, bajie: 1, sha: 1, pixie: 1 },
     alloc: {}, skillLevels: {}, pendingPoints: {}, skillPoints: {},
     equips: {}, treasure: null,
@@ -43,6 +45,7 @@ function newCampaign() {
     items: { jinchuang: 2, falidan: 1, buyaosheng: 2 },
     seedBase: SEED,
     battlesWon: 0,
+    hunts: {},
     chaptersSeen: {}, // 三借章节卡各只亮一次(简报三.1)
   };
 }
@@ -461,6 +464,7 @@ function clearScreens() {
   app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .modal-mask, .story-bg').forEach((n) => n.remove());
   resetOverlayShading();
   overworldCtl = null;
+  treasureCtl = null;
 }
 
 // 剧情过场底景:战斗之外的对话段落铺在对应场景图上,不再落在黑虚空
@@ -475,6 +479,7 @@ function setStoryBg(bgKey) {
 function gotoStage() {
   if (campaign.stage === 'prologue') startPrologue();
   else if (campaign.stage === 'pre_fire') startPreFire();
+  else if (campaign.stage === 'treasure_fire') startTreasureFire();
   else if (campaign.stage === 'pre_yumian') startPreYumian();
   else if (campaign.stage === 'pre_niu1') startPreNiu1();
   else startPreBoss();
@@ -623,10 +628,59 @@ async function startPreFire() {
   applyLevelUps(r.levelUps);
   applyCaught(r.caught);
   campaign.battlesWon += 1;
-  campaign.stage = 'pre_yumian';
+  campaign.stage = 'treasure_fire';
   delete campaign.items.fakefan;
   saveGame(true);
   await showDialog(app, TEXT.story.postBattle2);
+  startTreasureFire();
+}
+
+// ---------- 火脉残图：火兵战后的短探索 ----------
+function applyTreasureResult(result) {
+  for (const [key, amount] of Object.entries(result.items)) {
+    campaign.items[key] = (campaign.items[key] ?? 0) + amount;
+  }
+  const growth = result.growth;
+  campaign.pendingPoints[growth.unit] = (campaign.pendingPoints[growth.unit] ?? 0) + growth.potentialPoints;
+  campaign.skillPoints[growth.unit] = (campaign.skillPoints[growth.unit] ?? 0) + growth.skillPoints;
+  campaign.hunts.fire = {
+    guide: result.guide,
+    deepened: result.deepened,
+    forcedRetreat: result.forcedRetreat,
+    relics: result.relics,
+    items: { ...result.items },
+    potentialPoints: growth.potentialPoints,
+    skillPoints: growth.skillPoints,
+  };
+}
+
+async function startTreasureFire() {
+  setPhase('treasure');
+  audio.playBGM('overworld');
+  clearScreens();
+  setStoryBg('huoyan');
+  await showDialog(app, TEXT.story.treasureIntro);
+  clearScreens();
+  treasureCtl = startTreasureHunt(app, {
+    seed: campaign.seedBase + 260,
+  });
+  const result = await treasureCtl.done;
+  applyTreasureResult(result);
+  campaign.stage = 'pre_yumian';
+  saveGame(true);
+
+  setPhase('overworld');
+  clearScreens();
+  setStoryBg('huoyan');
+  const summary = result.forcedRetreat
+    ? TEXT.story.treasureReturn.forced
+    : result.deepened
+      ? TEXT.story.treasureReturn.deep
+      : TEXT.story.treasureReturn.safe;
+  await showDialog(app, [
+    summary,
+    { who: null, text: `归队所得已入背囊；${result.relics} 卷残简化作 ${result.growth.potentialPoints} 点潜力，${result.growth.skillPoints ? '另得一重修炼心得。' : '未取深层心得。'}` },
+  ]);
   startPreYumian();
 }
 
@@ -804,6 +858,7 @@ window.__game = {
   phase: () => phase,
   campaign: () => campaign,
   npcScreenPos: (name) => overworldCtl?.npcScreenPos(name) ?? null,
+  treasure: () => treasureCtl?.snapshot() ?? null,
   fast: FAST,
   seed: SEED,
   audio,

@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const contract = JSON.parse(readFileSync(resolve(here, 'design-contract.json'), 'utf8'));
 const data = await import(resolve(here, '../build/app/js/data.js'));
+const treasure = await import(resolve(here, '../build/app/js/treasure.js'));
 const engine = readFileSync(resolve(here, '../build/app/js/engine.js'), 'utf8');
 
 function number(pattern, label) {
@@ -47,6 +48,14 @@ const actual = {
     skillPointsPerLevel: data.GROWTH.skillPointsPerLevel,
     skillRankCap: data.GROWTH.skillRankCap,
   },
+  treasureHunt: {
+    outerDigs: treasure.HUNT_RULES.outerDigs,
+    deepDigs: treasure.HUNT_RULES.deepDigs,
+    maxThreat: treasure.HUNT_RULES.maxThreat,
+    deepEntryThreat: treasure.HUNT_RULES.deepEntryThreat,
+    safeSettleItem: treasure.HUNT_RULES.safeSettleItem,
+    guides: Object.keys(treasure.HUNT_GUIDES),
+  },
   trueFan: {
     maxStages: number(/state\.fanStage >= (\d+)/, '真扇阶段上限'),
     stageTwoSpeed: number(/fanStage === 2[\s\S]{0,250}?spd_up', val: ([\d.]+)/, '二生风'),
@@ -58,4 +67,4 @@ const actual = {
 assert.equal(contract.schemaVersion, 1);
 assert.equal(contract.source, 'design/GAME_DESIGN.md');
 assert.deepEqual(actual, contract.invariants);
-console.log('设计契约：7 组关键不变量一致');
+console.log('设计契约：8 组关键不变量一致');

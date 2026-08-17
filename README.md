@@ -20,7 +20,7 @@ Three playable adaptations, each available in a browser right now and linked to 
 
 **One wave of a fan blew you fifty thousand li. Take the mountain back one turn at a time.**
 
-Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read the five-element wheel, set a formation, transform your way in where force will not work, and turn a demon king who outclasses you into a rainstorm over the Mountain of Flames.
+Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read the five-element wheel, follow a fire-vein treasure map, decide when to press deeper or bank the haul, transform your way in where force will not work, and turn a demon king who outclasses you into a rainstorm over the Mountain of Flames.
 
 **[Play in browser](https://xiyouji.vibecoco.ai)** · [Read the case study](examples/journey-to-the-west/) · design estimate: 45–90 min · all ages · playable prototype
 

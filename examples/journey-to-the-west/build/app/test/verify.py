@@ -53,7 +53,23 @@ def write_verification(passed: bool) -> None:
                         "The run used local Chromium automation; other browsers and "
                         "device classes were not exercised."
                     ),
-                }
+                },
+                {
+                    "scope": "treasure branches",
+                    "reason": (
+                        "The complete browser run exercised Wukong's successful deep route. "
+                        "Safe settlement, forced retreat, Bajie, and Sha Seng are covered by "
+                        "deterministic rule tests rather than separate browser runs."
+                    ),
+                },
+                {
+                    "scope": "input coverage",
+                    "reason": (
+                        "The complete campaign run used mixed mouse and keyboard input. The "
+                        "new treasure route was exercised keyboard-only; a keyboard-only run "
+                        "of the entire campaign was not recorded."
+                    ),
+                },
             ],
         },
     )

@@ -192,6 +192,7 @@ def run_path() -> tuple[
         "start a new campaign",
         "interact with the Earth God and Princess Iron Fan",
         "complete six command battles and story decisions",
+        "use keyboard-only input to choose a guide and complete the risky five-element treasure route",
         "reach the designed ending",
         "restart to a clean title campaign",
     ]
@@ -335,8 +336,54 @@ def run_path() -> tuple[
         path.drive_battle(decide=cross_fire_mountain)
         path.wait_victory()
         page.click("#btn-victory-ok")
+
+        # 火脉残图：悟空探路，按五行明牌取两处水藏与一处金简，再深入避开火眼标出的妖穴。
+        while page.locator("#hunt-guide-wukong").count() == 0:
+            if page.locator("#dialog").count():
+                page.locator("#dialog").click()
+            page.wait_for_timeout(180)
+        page.keyboard.press("Enter")
+        page.wait_for_selector("#treasure-root", timeout=8000)
+        for _ in range(3):
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(180)
+        page.wait_for_selector("#treasure-deepen", timeout=5000)
+        page.keyboard.press("ArrowRight")
+        page.keyboard.press("Enter")
+        hunt_shot = path.shot("fire_vein_treasure")
+        for _ in range(2):
+            page.keyboard.press("Enter")
+            page.wait_for_timeout(180)
+        page.wait_for_selector("#treasure-finish", timeout=5000)
+        page.keyboard.press("Enter")
+        page.wait_for_selector("#modal-hunt-result", timeout=5000)
+        hunt_state = page.evaluate("__game.treasure()")
+        hunt_result = hunt_state.get("result") if hunt_state else None
+        if not (
+            hunt_result
+            and hunt_result.get("deepened") is True
+            and hunt_result.get("forcedRetreat") is False
+            and hunt_result.get("relics") == 4
+            and hunt_result.get("growth", {}).get("potentialPoints") == 4
+            and hunt_result.get("growth", {}).get("skillPoints") == 1
+            and hunt_result.get("items", {}).get("dahuandan") == 1
+        ):
+            raise RuntimeError(f"寻宝深层结算未满足合同：{hunt_result}")
+        page.keyboard.press("Enter")
+
         path.dialogs_until_battle()
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
+        hunt_campaign = page.evaluate("__game.campaign().hunts.fire")
+        next_battle = path.battle_state()
+        if not (
+            hunt_campaign
+            and hunt_campaign.get("potentialPoints") == 4
+            and hunt_campaign.get("skillPoints") == 1
+            and next_battle.get("items", {}).get("dahuandan") == 1
+        ):
+            raise RuntimeError(
+                f"寻宝奖励未写入下一战：campaign={hunt_campaign}, items={next_battle.get('items')}"
+            )
 
         def heal_party(state: dict[str, object], unit_id: str | None) -> bool:
             low = path.lowest_party(state)
@@ -469,7 +516,11 @@ def run_path() -> tuple[
             "state": {
                 "phase": page.evaluate("__game.phase()"),
                 "battlesWon": page.evaluate("__game.campaign().battlesWon"),
+                "treasureHunt": page.evaluate("__game.campaign().hunts.fire"),
+                "treasureSnapshot": hunt_state,
+                "treasureInput": "keyboard-only",
             },
+            "visual": hunt_shot.relative_to(PROJECT).as_posix(),
         }
         observations["outcome"] = {
             "id": "designed-ending",
@@ -483,7 +534,6 @@ def run_path() -> tuple[
 
         page.click("#btn-restart")
         page.wait_for_selector("#btn-start", timeout=10000)
-        restart_shot = path.shot("restart_title")
         checks["restart"] = bool(
             page.evaluate(
                 "__game.phase() === 'title' && "
@@ -500,7 +550,6 @@ def run_path() -> tuple[
                 "stage": page.evaluate("__game.campaign().stage"),
                 "battlesWon": page.evaluate("__game.campaign().battlesWon"),
             },
-            "visual": restart_shot.relative_to(PROJECT).as_posix(),
         }
         browser_version = browser.version
         browser.close()

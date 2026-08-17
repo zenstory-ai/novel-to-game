@@ -1,0 +1,98 @@
+/* 火脉残图：沿用宣纸、暗木、朱金与五行徽，背景复用火焰山木刻。 */
+
+.treasure-root {
+  position: absolute; inset: 44px 0 0;
+  display: flex; align-items: center; justify-content: center;
+  background-size: cover; background-position: center;
+  overflow: hidden;
+}
+.treasure-veil {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(43, 33, 24, 0.15), rgba(20, 12, 6, 0.72) 72%),
+    linear-gradient(180deg, rgba(90, 28, 14, 0.28), rgba(20, 12, 6, 0.58));
+}
+.treasure-panel {
+  position: relative; z-index: 2;
+  width: min(980px, 90vw); min-height: 620px;
+  padding: 24px 30px 22px;
+  color: var(--ink);
+  border: 4px solid var(--wood); border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--gold), inset 0 0 38px rgba(90, 52, 24, 0.18), 0 14px 48px rgba(0, 0, 0, 0.68);
+  background:
+    repeating-linear-gradient(0deg, rgba(90, 52, 24, 0.045) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, rgba(244, 233, 205, 0.98), rgba(224, 204, 162, 0.98));
+}
+.treasure-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 20px;
+  border-bottom: 2px solid var(--gold); padding-bottom: 10px;
+}
+.treasure-title { color: var(--zhu); font-size: 26px; font-weight: bold; letter-spacing: 6px; }
+.treasure-guide { color: var(--zhe); font-size: 15px; font-weight: bold; letter-spacing: 2px; }
+.treasure-status {
+  display: grid; grid-template-columns: 110px 210px 1fr; align-items: center; gap: 16px;
+  min-height: 48px; margin: 10px 0 8px; padding: 7px 12px;
+  color: var(--text-hi); background: rgba(43, 33, 24, 0.9);
+  border: 1px solid var(--gold); border-radius: 4px;
+}
+.treasure-digs { font-weight: bold; letter-spacing: 2px; }
+.treasure-meter { display: flex; align-items: center; gap: 5px; }
+.treasure-meter span { margin-right: 5px; }
+.treasure-meter i {
+  width: 26px; height: 12px; display: block;
+  border: 1px solid rgba(230, 199, 102, 0.65); background: rgba(244, 233, 205, 0.12);
+}
+.treasure-meter i.on { background: linear-gradient(90deg, var(--zhu), #d35a24); box-shadow: 0 0 7px rgba(211, 90, 36, 0.65); }
+.treasure-haul { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.treasure-legend { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 10px 0 14px; }
+.treasure-legend-item {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; color: var(--ink); background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(125, 90, 52, 0.45); border-radius: 16px; font-size: 13px;
+}
+.treasure-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  width: min(720px, 82%); margin: 0 auto;
+}
+.treasure-grid.deep { width: min(660px, 76%); margin-top: 46px; }
+.treasure-tile {
+  min-height: 108px; display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto auto;
+  align-items: center; column-gap: 10px; padding: 13px 15px;
+  color: var(--text-hi); text-align: left;
+  border: 2px solid var(--wood); border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.75), 0 3px 0 rgba(43, 33, 24, 0.75);
+  background:
+    repeating-linear-gradient(135deg, rgba(201, 162, 39, 0.05) 0 5px, transparent 5px 11px),
+    linear-gradient(160deg, #59432e, #332318);
+  cursor: pointer; transition: transform 0.14s ease, filter 0.14s ease, box-shadow 0.14s ease;
+}
+.treasure-tile:hover, .treasure-tile:focus-visible {
+  transform: translateY(-2px); filter: brightness(1.12);
+  outline: 3px solid var(--gold-hi); outline-offset: 2px;
+}
+.treasure-tile:active { transform: translateY(1px); }
+.treasure-tile .icon-badge { grid-row: 1 / span 2; width: 38px; height: 38px; font-size: 19px; }
+.treasure-tile-title { font-size: 16px; font-weight: bold; letter-spacing: 2px; }
+.treasure-tile-sub { color: rgba(244, 234, 210, 0.75); font-size: 12px; letter-spacing: 1px; }
+.treasure-tile.revealed { cursor: default; filter: saturate(0.65); background: linear-gradient(160deg, #78634b, #443326); }
+.treasure-tile.revealed:hover { transform: none; outline: none; }
+.treasure-tile.danger-mark {
+  border-color: var(--zhu-hi);
+  box-shadow: inset 0 0 0 2px rgba(168, 50, 42, 0.75), 0 0 14px rgba(168, 50, 42, 0.55);
+}
+.treasure-tile.danger-mark::after { content: '识'; justify-self: end; color: #ffd75a; font-size: 20px; font-weight: bold; }
+.treasure-note {
+  margin: 16px auto 0; width: min(760px, 86%); min-height: 44px; padding: 8px 14px;
+  color: var(--zhe); text-align: center; line-height: 1.7;
+  border-top: 1px solid rgba(125, 90, 52, 0.4);
+}
+.hunt-guide-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.hunt-result-lead { font-size: 16px; line-height: 1.8; }
+.hunt-result-row { margin: 7px 0; padding: 7px 10px; background: rgba(201, 162, 39, 0.1); border-left: 3px solid var(--gold); }
+.hunt-result-row.rare { color: var(--zhu); font-weight: bold; }
+
+@media (max-height: 820px) {
+  .treasure-panel { min-height: 560px; padding-top: 18px; }
+  .treasure-tile { min-height: 92px; }
+  .treasure-grid { gap: 9px; }
+}
