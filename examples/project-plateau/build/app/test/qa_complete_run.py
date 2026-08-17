@@ -162,9 +162,18 @@ def run() -> dict[str, Any]:
                 page.keyboard.up("KeyC")
             input_trace.append(f"hold KeyC under cover: {purpose}")
 
-        def wait_for_family_moment(moment: str) -> None:
+        def wait_for_family_moment(moment: str, window_end: float) -> None:
+            # Do not accept a matching label at the tail of its window: the
+            # authoritative path must leave the full two-second exposure plus
+            # a small input/render margin before the behavior changes.
+            latest_start = window_end - 2.25
             page.wait_for_function(
-                f"window.__projectPlateau.snapshot().player.familyMoment === '{moment}'",
+                """([moment, latestStart]) => {
+                    const player = window.__projectPlateau.snapshot().player;
+                    return player.familyMoment === moment
+                        && player.familyBehaviorSeconds <= latestStart;
+                }""",
+                arg=[moment, latest_start],
                 timeout=10000,
             )
 
@@ -200,7 +209,7 @@ def run() -> dict[str, Any]:
             "reach the glade",
         )
         page.keyboard.press("KeyE")
-        wait_for_family_moment("glade-young-play")
+        wait_for_family_moment("glade-young-play", 4.6)
         expose_plate(2, "record young at play")
         move_until(
             "KeyS",
@@ -213,7 +222,7 @@ def run() -> dict[str, Any]:
             "window.__projectPlateau.snapshot().player.position.z <= 2",
             "return for the second behavior plate",
         )
-        wait_for_family_moment("glade-branch-pull")
+        wait_for_family_moment("glade-branch-pull", 9.0)
         expose_plate(3, "record branch pulling")
         move_until(
             "KeyS",

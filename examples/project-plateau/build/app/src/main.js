@@ -449,10 +449,10 @@ function updateFieldHud(now) {
     && previewPlate?.status === 'exposed';
   platePreview.hidden = !showPreview;
   if (showPreview) {
-    const { plateIndex, key } = player.lastProofEvent;
+    const { plateIndex, frameKey } = player.lastProofEvent;
     previewNumber.textContent = ROMAN_PLATES[plateIndex];
     previewCopy.textContent = player.lastProofEvent.label;
-    previewImage.dataset.frame = key;
+    previewImage.dataset.frame = frameKey;
     applyPlateImage(previewImage, plateImages[plateIndex]);
   }
 
@@ -716,6 +716,7 @@ function update(deltaSeconds, now) {
       if (player.familyMoment === 'glade-branch-pull') emitCue('family-branch', 2600);
     }
     if ((player.lastProofEvent?.plateIndex ?? -1) !== previousProofPlate) {
+      queuePlateCapture(player.lastProofEvent.plateIndex);
       emitCue('plate-slide');
     }
     if (player.returnRoute !== previousRoute && player.returnRoute === 'covered') emitCue('cover');
@@ -960,7 +961,6 @@ document.addEventListener('mousedown', (event) => {
     const hadPendingExposure = Boolean(player.pendingExposure);
     player = startExposure(player);
     if (!hadPendingExposure && player.pendingExposure) {
-      queuePlateCapture(player.pendingExposure.plateIndex);
       emitCue('shutter');
     }
   }

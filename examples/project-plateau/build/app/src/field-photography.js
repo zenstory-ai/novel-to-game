@@ -8,7 +8,7 @@ const EDGE_HEADING_RADIANS = 0.68;
 const CLEAR_FAMILY_PITCH_RADIANS = 0.38;
 const EDGE_FAMILY_PITCH_RADIANS = 0.75;
 const DIVE_PITCH_RADIANS = Object.freeze({ min: 0.16, max: 0.68, edgeMin: 0.06, edgeMax: 0.86 });
-const DIVE_SECONDS = Object.freeze({ min: 0.5, max: 2.24 });
+const DIVE_SECONDS = Object.freeze({ min: 0.5, max: 3 });
 
 const familyCenter = centerOf(FAMILY_LAYOUT);
 const youngPlayCenter = centerOf(
@@ -54,7 +54,21 @@ function familyCompositionForTarget(state, target) {
 }
 
 function hasCaptured(state, frameKey) {
-  return state.plates.some((plate) => plate.status === 'exposed' && plate.frameKey === frameKey);
+  return state.plates.some(
+    (plate) => plate.status === 'exposed'
+      && (plate.frameKey === frameKey || plate.sourceFrameKey === frameKey),
+  );
+}
+
+function downgradeRepeatedHighValueFrame(state, frame) {
+  if (frame.points < 2 || !hasCaptured(state, frame.key)) return frame;
+  return {
+    ...frame,
+    key: `${frame.key}-repeat`,
+    points: 1,
+    label: 'REPEAT — this high-value composition is already in the case.',
+    behavior: null,
+  };
 }
 
 function pterodactylFrameForState(state) {
@@ -100,6 +114,106 @@ export function cameraDriftFromExposure(pending, heading, pitch) {
   const headingDrift = wrapAngle((heading ?? 0) - (pending.startHeading ?? 0));
   const pitchDrift = (pitch ?? 0) - (pending.startPitch ?? 0);
   return Math.hypot(headingDrift, pitchDrift);
+}
+
+const COMPOSITION_QUALITY = Object.freeze({ empty: 0, unread: 0, edge: 1, clear: 2 });
+
+function worseComposition(first, second) {
+  return (COMPOSITION_QUALITY[second] ?? 0) < (COMPOSITION_QUALITY[first] ?? 0)
+    ? second
+    : first;
+}
+
+export function createPendingExposure(state, plateIndex, durationSeconds) {
+  const frame = frameForState(state);
+  const braced = state.stance === 'crouch' || state.inCover;
+  return {
+    ...frame,
+    plateIndex,
+    remainingSeconds: durationSeconds,
+    zone: state.zone,
+    startHeading: state.heading,
+    startPitch: state.pitch,
+    maxCameraDrift: 0,
+    braced,
+    driftLimit: MAX_STEADY_DRIFT_RADIANS * (braced ? 1.8 : 1),
+    initialSubject: frame.subject,
+    initialBehavior: frame.behavior,
+    maxExposureRisk: frame.exposure,
+    continuousSubject: frame.subject !== null,
+    continuousBehavior: frame.behavior !== null,
+    worstComposition: frame.composition,
+  };
+}
+
+export function updatePendingExposure(pending, liveFrame, heading, pitch, deltaSeconds) {
+  return {
+    ...pending,
+    ...liveFrame,
+    plateIndex: pending.plateIndex,
+    zone: pending.zone,
+    remainingSeconds: Math.max(0, pending.remainingSeconds - deltaSeconds),
+    startHeading: pending.startHeading,
+    startPitch: pending.startPitch,
+    maxCameraDrift: Math.max(
+      pending.maxCameraDrift ?? 0,
+      cameraDriftFromExposure(pending, heading, pitch),
+    ),
+    braced: pending.braced,
+    driftLimit: pending.driftLimit,
+    initialSubject: pending.initialSubject,
+    initialBehavior: pending.initialBehavior,
+    maxExposureRisk: Math.max(
+      pending.maxExposureRisk ?? pending.exposure ?? 0,
+      liveFrame.exposure ?? 0,
+    ),
+    continuousSubject: pending.continuousSubject
+      && liveFrame.subject !== null
+      && liveFrame.subject === pending.initialSubject,
+    continuousBehavior: pending.continuousBehavior
+      && liveFrame.behavior === pending.initialBehavior,
+    worstComposition: worseComposition(pending.worstComposition, liveFrame.composition),
+  };
+}
+
+export function proofForExposure(pending) {
+  const trackedMovingSubject = pending.initialSubject === 'pterodactyl'
+    && pending.continuousSubject
+    && pending.worstComposition !== 'empty';
+  const shaken = !trackedMovingSubject
+    && pending.maxCameraDrift > (pending.driftLimit ?? MAX_STEADY_DRIFT_RADIANS);
+  let proof = shaken ? {
+    key: 'shaken-frame',
+    points: pending.points > 0 ? 1 : 0,
+    label: 'SMEARED — camera drift erased the decisive detail.',
+    composition: 'shaken',
+    subject: pending.subject,
+    behavior: null,
+    stability: 'shaken',
+  } : { ...pending, stability: 'steady' };
+  if (!pending.continuousSubject || pending.worstComposition === 'empty') {
+    proof = {
+      ...proof, key: 'empty-subject', points: 0,
+      label: 'EMPTY — the living subject left the plate during exposure.',
+      composition: 'empty', subject: null, behavior: null,
+    };
+  } else if (pending.worstComposition === 'edge' && proof.points > 1) {
+    proof = {
+      ...proof, key: 'family-edge', points: 1,
+      label: 'FORM — the living subject crossed the plate edge during exposure.',
+      composition: 'edge', behavior: null,
+    };
+  } else if (proof.behavior && (
+    !pending.initialBehavior
+    || !pending.continuousBehavior
+    || proof.behavior !== pending.initialBehavior
+  ) && proof.points > 1) {
+    proof = {
+      ...proof, key: 'behavior-lost', points: 1,
+      label: 'FORM — the behavior did not hold through the exposure.', behavior: null,
+    };
+  }
+  return proof;
 }
 
 function emptySubjectFrame(familyMoment) {
@@ -206,6 +320,14 @@ function familyFrameForState(state, baseFrame) {
   };
 }
 
+function orientedStaticFrame(state, baseFrame) {
+  const familyMoment = familyMomentForState(state);
+  const composition = familyCompositionForTarget(state, familyTargetForMoment(familyMoment));
+  if (composition === 'empty') return emptySubjectFrame(familyMoment);
+  if (composition === 'edge') return edgeSubjectFrame(familyMoment);
+  return { ...baseFrame, familyMoment };
+}
+
 export function frameForState(state) {
   const pterodactylFrame = pterodactylFrameForState(state);
   if (pterodactylFrame) return pterodactylFrame;
@@ -247,6 +369,9 @@ export function frameForState(state) {
   };
   const frame = frames[state.zone];
   if (!frame) return frames.fort;
-  if (state.zone === 'brook-blind' || state.zone === 'fort') return { ...frame };
-  return familyFrameForState(state, frame);
+  if (state.zone === 'fort') return { ...frame };
+  const composed = state.zone === 'brook-blind'
+    ? orientedStaticFrame(state, frame)
+    : familyFrameForState(state, frame);
+  return downgradeRepeatedHighValueFrame(state, composed);
 }

@@ -30,9 +30,11 @@ Three pillars govern every system:
 The photography precedent is behaviour-led field observation rather than a passive photo
 mode: behaviour rarity, composition and steadiness are separate reads, while the source novel
 makes the physical plate and its safe return part of the same decision. The prototype therefore
-rejects a photograph when the living subject is outside the actual view, smears a high-value
-exposure if the scout pans during the two-second commitment and rewards distinct behaviour
-rather than repeated zone visits.
+checks subject, behaviour and both composition axes throughout the two-second exposure, settles
+the plate and its rendered preview at the same final boundary, and rewards distinct observations
+rather than repeated high-value compositions in one zone. A deliberate pan still smears a static
+subject, while a continuously framed moving wing can be tracked without treating that pan alone
+as camera shake.
 
 ## Core loop and action arc
 
@@ -56,10 +58,13 @@ releasing the shutter spends one plate after a live two-second commitment. A pla
 cues for subject visibility, scale, ecological context or a distinct behaviour, up to eight
 total authored points across the run. The camera reads both axes of the scout's live view:
 turning or pitching away records an empty plate, an edge frame records form only, and a clear
-view can record context or behaviour. Panning during the exposure smears decisive detail down
-to at most one cue and removes behaviour proof; crouching before the shutter braces the camera
-and widens the stable tolerance. Repeating the same behaviour cannot replace a new angle. The
-preview shows the actual composition and named evidence captured, not an abstract quality bar.
+view can record context or behaviour. Losing the subject, behaviour window or clear composition
+during the exposure lowers the final plate even if the shutter began clean. Panning across a
+static subject smears decisive detail down to at most one cue and removes behaviour proof;
+crouching before the shutter braces the camera and widens the stable tolerance. A continuously
+framed pterodactyl can instead be tracked through its motion. Repeating any two-cue composition,
+including basalt or creek scale, cannot replace a new angle. The preview shows the final-boundary
+composition and named evidence captured, not an earlier shutter snapshot or abstract quality bar.
 
 ### Wildlife awareness
 

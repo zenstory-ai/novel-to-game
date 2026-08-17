@@ -36,12 +36,14 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
 1. One continuous Fort → brook → observation fork → glade → two return routes → Fort
    space with readable landmarks, cover and collision.
 2. Four physical plates whose two-axis live camera direction, exposure stability, captured
-   obstruction, scale and distinct behaviour determine the visible record; empty, edge, clear
-   and smeared frames remain legible while recording stays live and exposed. Crouching before
-   the shutter braces the camera without removing exposure risk.
+   obstruction, scale and distinct behaviour are checked throughout the exposure; empty, edge,
+   clear and smeared frames remain legible while recording stays live and exposed. Plate meaning
+   and its preview commit together at the final boundary. Crouching before the shutter braces the
+   camera without removing exposure risk, while a continuously framed moving wing may be tracked.
 3. Readable iguanodon routine/young-play/branch-pull/alarm windows and pterodactyl
    distant/watch/search/attack states. Family behaviours and the optional committed-dive plate
-   require distinct timing and framing, not repeated shutters in one zone.
+   require distinct timing and framing; every repeated two-cue composition, including basalt and
+   creek scale, degrades rather than letting repeated shutters replace observation.
 4. Canopy cover, one recoverable contact, two rifle cartridges and the downstream cost
    of firing.
 5. A 180-second light budget, four alive result bands, deadline/contact failure and one

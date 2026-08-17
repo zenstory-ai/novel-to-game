@@ -2,9 +2,11 @@ import { planarAxesForHeading } from './controller.js';
 import {
   FAMILY_BEHAVIOR_CYCLE_SECONDS,
   MAX_STEADY_DRIFT_RADIANS,
-  cameraDriftFromExposure,
+  createPendingExposure,
   familyMomentForState,
   frameForState,
+  proofForExposure,
+  updatePendingExposure,
 } from './field-photography.js';
 import { integrateMovement } from './simulation-movement.js';
 export {
@@ -261,17 +263,7 @@ export function startExposure(state) {
   const plateIndex = state.plates.findIndex((plate) => plate.status === 'unexposed');
   if (plateIndex < 0) return copyState(state, { cameraRaised: false, lastEvent: 'camera:no-plates' });
   return copyState(state, {
-    pendingExposure: {
-      ...frameForState(state),
-      plateIndex,
-      remainingSeconds: EXPOSURE_SECONDS,
-      zone: state.zone,
-      startHeading: state.heading,
-      startPitch: state.pitch,
-      maxCameraDrift: 0,
-      braced: state.stance === 'crouch' || state.inCover,
-      driftLimit: MAX_STEADY_DRIFT_RADIANS * ((state.stance === 'crouch' || state.inCover) ? 1.8 : 1),
-    },
+    pendingExposure: createPendingExposure(state, plateIndex, EXPOSURE_SECONDS),
     previewSeconds: 0,
     velocity: { x: 0, z: 0 },
     rifleRaised: false,
@@ -559,18 +551,8 @@ function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
 }
 
 function finalizeExposure(state, pending, threat) {
-  const shaken = pending.maxCameraDrift > (pending.driftLimit ?? MAX_STEADY_DRIFT_RADIANS);
-  const proof = shaken
-    ? {
-      key: 'shaken-frame',
-      points: pending.points > 0 ? 1 : 0,
-      label: 'SMEARED — camera drift erased the decisive detail.',
-      composition: 'shaken',
-      subject: pending.subject,
-      behavior: null,
-      stability: 'shaken',
-    }
-    : { ...pending, stability: 'steady' };
+  const proof = proofForExposure(pending);
+  const exposureRisk = pending.maxExposureRisk ?? pending.exposure;
   const plates = state.plates.map(clonePlate);
   plates[pending.plateIndex] = {
     ...plates[pending.plateIndex],
@@ -584,7 +566,7 @@ function finalizeExposure(state, pending, threat) {
     subject: proof.subject,
     behavior: proof.behavior,
   };
-  const awareness = Math.min(3, threat.awareness + pending.exposure);
+  const awareness = Math.min(3, threat.awareness + exposureRisk);
   return {
     plates,
     pendingExposure: null,
@@ -592,7 +574,7 @@ function finalizeExposure(state, pending, threat) {
     cameraRaised: false,
     threatAwareness: awareness,
     threatState: THREAT_STATES[awareness],
-    lastThreatEvent: pending.exposure > 0 ? `plate-exposure:+${pending.exposure}` : threat.event,
+    lastThreatEvent: exposureRisk > 0 ? `plate-exposure:+${exposureRisk}` : threat.event,
     lastProofEvent: {
       plateIndex: pending.plateIndex,
       frameKey: proof.key,
@@ -667,15 +649,21 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     familyBehaviorSeconds,
   });
   const zoneHistory = zone === state.zone ? [...state.zoneHistory] : [...state.zoneHistory, zone];
+  const exposureFrame = state.pendingExposure
+    ? frameForState({
+      ...state,
+      heading,
+      pitch,
+      zone,
+      reachedGlade,
+      familyBehaviorSeconds,
+      familyMoment,
+      threatAwareness: threat.awareness,
+      threatState: threat.threatState,
+    })
+    : null;
   const pendingExposure = state.pendingExposure
-    ? {
-      ...state.pendingExposure,
-      remainingSeconds: Math.max(0, state.pendingExposure.remainingSeconds - deltaSeconds),
-      maxCameraDrift: Math.max(
-        state.pendingExposure.maxCameraDrift ?? 0,
-        cameraDriftFromExposure(state.pendingExposure, heading, pitch),
-      ),
-    }
+    ? updatePendingExposure(state.pendingExposure, exposureFrame, heading, pitch, deltaSeconds)
     : null;
   let next = copyState(state, {
     position: clonePosition(resolved.position),
