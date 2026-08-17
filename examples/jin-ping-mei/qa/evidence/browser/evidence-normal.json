@@ -1,8 +1,14 @@
 {
   "schemaVersion": 1,
-  "runId": "jin-ping-mei-main-path",
+  "runId": "jin-ping-mei-five-house-twenty-day-main-path",
   "environment": {
-    "browser": "145.0.7632.6",
+    "browser": {
+      "name": "Chromium",
+      "version": "145.0.7632.6"
+    },
+    "url": "http://127.0.0.1:5173/?seed=42",
+    "normalSpeedRun": true,
+    "durationMs": 19548,
     "viewports": [
       [
         1280,
@@ -13,125 +19,1176 @@
         1080
       ]
     ],
-    "url": "http://127.0.0.1:5173/?seed=42",
-    "normalSpeedRun": true,
-    "buildBytes": 6705977
+    "assetManifest": [
+      {
+        "key": "cg/group/inner_court_accord",
+        "path": "assets/cg/group/inner_court_accord_five.webp",
+        "sha256": "77e93ae2ffe883c25667a974d3ae8a89d2f7c73e38d8d0fd641cf4340af99770",
+        "bytes": 371144,
+        "naturalWidth": 1568,
+        "naturalHeight": 1003,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/group/inner_court_afterglow",
+        "path": "assets/cg/group/inner_court_afterglow_five.webp",
+        "sha256": "9c07c6919b046941f46fdd156b42ecbca9e18fde41b947a3be30730b61c5e887",
+        "bytes": 401956,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/group/public_day10",
+        "path": "assets/cg/group/public_day10.webp",
+        "sha256": "f8da2a04de7e4402d329a3dc1a7dfa9e3fa2cb24d0cf3bf03933345c949d981f",
+        "bytes": 388386,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/group/public_day15",
+        "path": "assets/cg/group/public_day15.webp",
+        "sha256": "a1dc2563a22f765ad7fc94fb008c05fbeaa98c8460b53e2dcd4d25bcfabec601",
+        "bytes": 423644,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/group/public_day5",
+        "path": "assets/cg/group/public_day5.webp",
+        "sha256": "a129c123a32cc1c18a4f398992c96ac2cf952be23e9e1ec7f18fe38a4340d678",
+        "bytes": 403228,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/joint/pan_pinger",
+        "path": "assets/cg/joint/pan_pinger.webp",
+        "sha256": "d8cf2e6350b8166b894bbd04a3ca3b693c8c56faea62423291475eb7acba5545",
+        "bytes": 343516,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/joint/pan_xuee",
+        "path": "assets/cg/joint/pan_xuee.webp",
+        "sha256": "f92cacd6d129f639f9e80696893580370d44e67a74fe56f9e67a97b0e7dd0b9c",
+        "bytes": 299686,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/joint/yue_meng",
+        "path": "assets/cg/joint/yue_meng.webp",
+        "sha256": "50944b6754adfc99f886dffed108f6373f9a62d087d82c0f9e4e8053bedb618c",
+        "bytes": 213364,
+        "naturalWidth": 1568,
+        "naturalHeight": 1003,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/joint/yue_pan",
+        "path": "assets/cg/joint/yue_pan.webp",
+        "sha256": "d85a05dd16aebbad7f99d5b4b85c3c238eec442a5bc57045ee5d975594fb6aca",
+        "bytes": 338786,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/joint/yue_pinger",
+        "path": "assets/cg/joint/yue_pinger.webp",
+        "sha256": "2a88c56e4f860a9be44825448bfdeaa7f794d3039419ffa7dd79b2aef063dc5d",
+        "bytes": 374790,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/meng/explicit",
+        "path": "assets/cg/meng/explicit.webp",
+        "sha256": "527a7f72aaa9935dc7223d7a4f649538f56c74235c3ba3644fff416279575879",
+        "bytes": 255476,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/meng/prelude",
+        "path": "assets/cg/meng/prelude.webp",
+        "sha256": "0fe0d93151ec777670838ce4df0530e6e7a5daec66a66b6836f770911236b0e4",
+        "bytes": 234278,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/pan/explicit",
+        "path": "assets/cg/pan/explicit.webp",
+        "sha256": "4f8e7c14de1230f25ecbe737fe3f9cb52ce11437a6d674efb97151824facb81a",
+        "bytes": 383466,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/pan/prelude",
+        "path": "assets/cg/pan/prelude.webp",
+        "sha256": "675d206c5f55fed4d932d8274e19e38c7d942bdc639036847f41031771e1ee0d",
+        "bytes": 336926,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/pinger/explicit",
+        "path": "assets/cg/pinger/explicit.webp",
+        "sha256": "2afb4dc2e46d9075b28a51988d574e1257e54b47d80e2b241a41294b0503819d",
+        "bytes": 336178,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/pinger/prelude",
+        "path": "assets/cg/pinger/prelude.webp",
+        "sha256": "dd263392dbbe30597089b4f93086d892dadbd1c4d8ba9e95fcf441c1d856dd56",
+        "bytes": 227296,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/xuee/explicit",
+        "path": "assets/cg/xuee/explicit.webp",
+        "sha256": "95e3be1279a5dc61d4fad547e0da569b68e59a19d9a7122471051a5ce6cbf920",
+        "bytes": 161570,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/xuee/prelude",
+        "path": "assets/cg/xuee/prelude.webp",
+        "sha256": "3ca84571b0b123d285e9b9872a0b4ba30defd800cd26983cc9ac71543a95aebc",
+        "bytes": 206782,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/yue/explicit",
+        "path": "assets/cg/yue/explicit.webp",
+        "sha256": "7d9098761a42ce51fcf54494137f02fe5758bc3786cac2de2e850a1f2a38ea66",
+        "bytes": 273688,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "cg/yue/prelude",
+        "path": "assets/cg/yue/prelude.webp",
+        "sha256": "194e73f73688a5cfdcec4467445d660f372b8de372ed7dc343fa9488e453ccc2",
+        "bytes": 363378,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "compound",
+        "path": "assets/bg/compound_act1.jpg",
+        "sha256": "3daea8b210eed853d1564055f54e5930f0a2850b90ca3536e1160e5796ebfe3f",
+        "bytes": 316060,
+        "naturalWidth": 1672,
+        "naturalHeight": 941,
+        "httpStatus": 200
+      },
+      {
+        "key": "cover",
+        "path": "assets/cg/group/title_five.webp",
+        "sha256": "36c54b04b9eff1e1af31bb681e22aa218931f34d14042f8a286ac889bf5fb386",
+        "bytes": 337890,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/meng",
+        "path": "assets/heroine/meng/night.webp",
+        "sha256": "c3abe8bb6d93964c831b3551f684de96e8b116b60b1c5bc504c79df94cc83cd6",
+        "bytes": 289326,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/meng/close",
+        "path": "assets/heroine/meng/night.webp",
+        "sha256": "c3abe8bb6d93964c831b3551f684de96e8b116b60b1c5bc504c79df94cc83cd6",
+        "bytes": 289326,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/pan",
+        "path": "assets/heroine/pan/night.webp",
+        "sha256": "e7d56f607f5b941127f36ac7f9c2b6d45645231f018544f50b294e369e475d99",
+        "bytes": 169430,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/pan/close",
+        "path": "assets/heroine/pan/night.webp",
+        "sha256": "e7d56f607f5b941127f36ac7f9c2b6d45645231f018544f50b294e369e475d99",
+        "bytes": 169430,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/pinger",
+        "path": "assets/heroine/pinger/night.webp",
+        "sha256": "60ec95dab6c9f0a4f28eb2237ba56da2f8cfa6f928c5f9196d2bb1589ad85836",
+        "bytes": 133612,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/pinger/close",
+        "path": "assets/heroine/pinger/night.webp",
+        "sha256": "60ec95dab6c9f0a4f28eb2237ba56da2f8cfa6f928c5f9196d2bb1589ad85836",
+        "bytes": 133612,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/xuee",
+        "path": "assets/heroine/xuee/night.webp",
+        "sha256": "5be5890d9902fc6de82f239aed527cd139d1c5fcae9e3a700bf1b47328eeee45",
+        "bytes": 241600,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/xuee/close",
+        "path": "assets/heroine/xuee/night.webp",
+        "sha256": "5be5890d9902fc6de82f239aed527cd139d1c5fcae9e3a700bf1b47328eeee45",
+        "bytes": 241600,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/yue",
+        "path": "assets/heroine/yue/night.webp",
+        "sha256": "6692dc38c8a9298dfeadb630b678acdb117baeea26b80794baa1ceafb94f6e5b",
+        "bytes": 163128,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "heroine/yue/close",
+        "path": "assets/heroine/yue/night.webp",
+        "sha256": "6692dc38c8a9298dfeadb630b678acdb117baeea26b80794baa1ceafb94f6e5b",
+        "bytes": 163128,
+        "naturalWidth": 1280,
+        "naturalHeight": 853,
+        "httpStatus": 200
+      },
+      {
+        "key": "household/jiaoer",
+        "path": "assets/household/li_jiaoer.webp",
+        "sha256": "61e9c40ee832a6fde838115229c261d8b40d0b4c7c5db4ceb77a4422f76b919b",
+        "bytes": 280502,
+        "naturalWidth": 1586,
+        "naturalHeight": 992,
+        "httpStatus": 200
+      },
+      {
+        "key": "scene/gate_collector",
+        "path": "assets/scene/gate_collector.jpg",
+        "sha256": "1156858b64cbf77098ad59adabc87161893d24169b1afe1c01b2fdc579780a83",
+        "bytes": 449757,
+        "naturalWidth": 1536,
+        "naturalHeight": 1024,
+        "httpStatus": 200
+      }
+    ],
+    "viewportChecks": [
+      {
+        "screen": "five-door-hub",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "horizontalOverflow": false,
+        "stage": {
+          "left": 230,
+          "top": 60,
+          "right": 1280,
+          "bottom": 800
+        },
+        "fatal": false
+      },
+      {
+        "screen": "day-20-coalition-gate",
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "horizontalOverflow": false,
+        "stage": {
+          "left": 230,
+          "top": 60,
+          "right": 1280,
+          "bottom": 800
+        },
+        "fatal": false
+      },
+      {
+        "screen": "terminal-1920",
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "horizontalOverflow": false,
+        "stage": {
+          "left": 300,
+          "top": 66,
+          "right": 1920,
+          "bottom": 1080
+        },
+        "fatal": false
+      }
+    ],
+    "screenshots": {
+      "age-gate": "qa/evidence/browser/safe/01_age_gate.jpg",
+      "day-1": "qa/evidence/browser/safe/day_01.jpg",
+      "five-door-hub": "qa/evidence/browser/safe/02_five_door_hub.jpg",
+      "joint-joint_yue_pan": "qa/evidence/browser/safe/joint_joint_yue_pan.jpg",
+      "joint-joint_yue_pinger": "qa/evidence/browser/safe/joint_joint_yue_pinger.jpg",
+      "joint-joint_pan_pinger": "qa/evidence/browser/safe/joint_joint_pan_pinger.jpg",
+      "public-day-5": "qa/evidence/browser/safe/public_day_5.jpg",
+      "joint-joint_yue_meng": "qa/evidence/browser/safe/joint_joint_yue_meng.jpg",
+      "joint-joint_pan_xuee": "qa/evidence/browser/safe/joint_joint_pan_xuee.jpg",
+      "day-10": "qa/evidence/browser/safe/day_10.jpg",
+      "public-day-10": "qa/evidence/browser/safe/public_day_10.jpg",
+      "public-day-15": "qa/evidence/browser/safe/public_day_15.jpg",
+      "day-19": "qa/evidence/browser/safe/day_19.jpg",
+      "day-20": "qa/evidence/browser/safe/day_20.jpg",
+      "day-20-coalition-gate": "qa/evidence/browser/safe/20_coalition_gate.jpg",
+      "five-accord-scene": "qa/evidence/browser/safe/21_five_accord.jpg",
+      "adult-five-afterglow": "qa/evidence/browser/adult/five_afterglow.jpg",
+      "terminal-1280": "qa/evidence/browser/safe/22_terminal_1280.jpg",
+      "terminal-1920": "qa/evidence/browser/safe/23_terminal_1920.jpg",
+      "restart-gallery": "qa/evidence/browser/safe/24_restart_gallery.jpg"
+    },
+    "errors": {
+      "console": [],
+      "page": [],
+      "network": [],
+      "http": []
+    }
   },
   "inputTrace": [
-    "use keyboard Enter to confirm the 18+ age gate",
-    "use keyboard only to start and choose the respectful opening",
-    "hear Yue's order term, Pan's truth term, and Pinger's safety term",
-    "complete joint_yue_pan and joint_yue_pinger as visible two-woman scenes",
-    "balance the public banquet and invite all three women on night six",
-    "choose shared_divide_roles, view inner_court_accord, make two visible afterglow choices, view inner_court_afterglow, choose a dawn outcome, and reach 三院同灯",
-    "restart and confirm the earned group page persists in the gallery"
+    "001. title-or-age | Enter | 我已成年 | title-or-age",
+    "002. title-or-age | Enter | 进宅 | opening",
+    "003. opening | Enter | 先开真账\n让所有人看见缺口 | day",
+    "004. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "005. choose_visit | Enter | 正堂\n去月娘屋里\n公私有序，承诺落到账上\n情 生疏 · 妒 平静\n第 1 次进这扇门 | visit",
+    "006. visit | Enter | 总账只认一本\n私钥仍归各人 | night",
+    "007. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "008. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "009. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "010. choose_visit | Enter | 花园角门\n去金莲屋里\n偏爱可以存在，谎话不能重用\n情 生疏 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "011. visit | Enter | 去处当日说真\n偏心不可伪装 | night",
+    "012. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "013. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "014. day | Enter | 正堂问口供\n核数再拆谎 | joint_result",
+    "015. joint_result | Enter | 把这笔记进总账 | choose_visit",
+    "016. choose_visit | Enter | 瓶儿私院\n去瓶儿屋里\n人先被留下，银箱才可能打开\n情 生疏 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "017. visit | Enter | 借银先写归期\n钥匙永不强取 | night",
+    "018. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "019. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "020. day | Enter | 公账接货单\n明借明还 | joint_result",
+    "021. joint_result | Enter | 把这笔记进总账 | household",
+    "022. household | Enter | 买下底价\n省十两却欠她回款 | choose_visit",
+    "023. choose_visit | Enter | 卷棚后间\n去玉楼屋里\n人情有往有还，体面不是拿她垫脚\n情 生疏 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "024. visit | Enter | 人情必须回礼\n不拿谁垫体面 | night",
+    "025. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "026. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "027. day | Enter | 顺话验货车\n口供对封签 | joint_result",
+    "028. joint_result | Enter | 把这笔记进总账 | banquet",
+    "029. banquet | Enter | 五人同担\n把功劳与风险写全 | scene",
+    "030. scene | Enter | 接着往下 | choose_visit",
+    "031. choose_visit | Enter | 灶上暖阁\n去雪娥屋里\n劳作被看见，分配要有实据\n情 有话说 · 妒 平静\n第 1 次进这扇门 | visit",
+    "032. visit | Enter | 工账每日落名\n先保粮火再排宴 | night",
+    "033. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "034. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "035. day | Enter | 排席定回礼\n座次变契约 | joint_result",
+    "036. joint_result | Enter | 把这笔记进总账 | choose_visit",
+    "037. choose_visit | Enter | 正堂\n去月娘屋里\n公私有序，承诺落到账上\n情 亲近 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "038. visit | Enter | 交出真账\n让她先核缺口 | night",
+    "039. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "040. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "041. day | Enter | 灶上对工簿\n证言配实物 | joint_result",
+    "042. joint_result | Enter | 把这笔记进总账 | choose_visit",
+    "043. choose_visit | Enter | 花园角门\n去金莲屋里\n偏爱可以存在，谎话不能重用\n情 亲近 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "044. visit | Enter | 接她的酒\n公开承认偏向 | night",
+    "045. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "046. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "047. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "048. choose_visit | Enter | 瓶儿私院\n去瓶儿屋里\n人先被留下，银箱才可能打开\n情 亲近 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "049. visit | Enter | 先问住处\n先问人再问箱 | night",
+    "050. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "051. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "052. day | Enter | 翻账\n核对数目与证物。 | household",
+    "053. household | Enter | 付钱抄契\n留下证据不夺原件 | choose_visit",
+    "054. choose_visit | Enter | 卷棚后间\n去玉楼屋里\n人情有往有还，体面不是拿她垫脚\n情 亲近 · 妒 发酸\n第 1 次进这扇门 | visit",
+    "055. visit | Enter | 问名帖代价\n先定回礼再借名 | night",
+    "056. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "057. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "058. day | Enter | 翻账\n核对数目与证物。 | banquet",
+    "059. banquet | Enter | 五人同担\n把功劳与风险写全 | scene",
+    "060. scene | Enter | 接着往下 | choose_visit",
+    "061. title-or-age | Enter | 接着玩 | choose_visit",
+    "062. choose_visit | Enter | 灶上暖阁\n去雪娥屋里\n劳作被看见，分配要有实据\n情 亲近 · 妒 记着了\n第 1 次进这扇门 | visit",
+    "063. visit | Enter | 接过米袋\n亲自看缺口 | night",
+    "064. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "065. morning | Enter | 当着她的面收下\n她给的不只是东西，也在等你认下这份情 | day",
+    "066. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "067. choose_visit | Enter | 正堂\n去月娘屋里\n公私有序，承诺落到账上\n情 只认你 · 妒 记着了\n第 2 次进这扇门 | visit",
+    "068. visit | Enter | 撤一桌酒\n把节省写入公中 | night",
+    "069. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "070. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "071. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "072. choose_visit | Enter | 花园角门\n去金莲屋里\n偏爱可以存在，谎话不能重用\n情 知心 · 妒 记着了\n第 2 次进这扇门 | visit",
+    "073. visit | Enter | 听她报人名\n线索落到袖口 | night",
+    "074. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "075. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "076. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "077. choose_visit | Enter | 瓶儿私院\n去瓶儿屋里\n人先被留下，银箱才可能打开\n情 知心 · 妒 记着了\n第 2 次进这扇门 | visit",
+    "078. visit | Enter | 替她关窗\n保护账本来源 | night",
+    "079. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "080. morning | Enter | 让她进门，把昨夜说透\n院里会猜，至少她不用靠猜才知道 | day",
+    "081. day | Enter | 翻账\n核对数目与证物。 | household",
+    "082. household | Enter | 签名兑票\n现银入账风险留名 | choose_visit",
+    "083. choose_visit | Enter | 卷棚后间\n去玉楼屋里\n人情有往有还，体面不是拿她垫脚\n情 知心 · 妒 记着了\n第 2 次进这扇门 | visit",
+    "084. visit | Enter | 亲送回礼\n让她被当众看见 | night",
+    "085. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "086. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "087. day | Enter | 翻账\n核对数目与证物。 | banquet",
+    "088. banquet | Enter | 五人同担\n把功劳与风险写全 | scene",
+    "089. scene | Enter | 接着往下 | choose_visit",
+    "090. choose_visit | Enter | 灶上暖阁\n去雪娥屋里\n劳作被看见，分配要有实据\n情 只认你 · 妒 平静\n第 2 次进这扇门 | visit",
+    "091. visit | Enter | 同数米斗\n把劳动变证据 | night",
+    "092. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "093. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "094. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "095. choose_visit | Enter | 正堂\n去月娘屋里\n公私有序，承诺落到账上\n情 只认你 · 妒 平静\n第 3 次进这扇门 | visit",
+    "096. visit | Enter | 请她出面\n共同承担官面 | night",
+    "097. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "098. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "099. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "100. choose_visit | Enter | 花园角门\n去金莲屋里\n偏爱可以存在，谎话不能重用\n情 只认你 · 妒 平静\n第 3 次进这扇门 | visit",
+    "101. visit | Enter | 带她对质\n让拆谎有见证 | night",
+    "102. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "103. morning | Enter | 陪她亲自挑一件\n花二十两买的不只是首饰，还有你陪她的半日 | day",
+    "104. day | Enter | 翻账\n核对数目与证物。 | household",
+    "105. household | Enter | 付封口银\n买断消息不买忠心 | choose_visit",
+    "106. choose_visit | Enter | 瓶儿私院\n去瓶儿屋里\n人先被留下，银箱才可能打开\n情 只认你 · 妒 平静\n第 3 次进这扇门 | visit",
+    "107. visit | Enter | 替她应问\n责任写在自己名下 | night",
+    "108. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "109. morning | Enter | 让她进门，把昨夜说透\n院里会猜，至少她不用靠猜才知道 | day",
+    "110. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "111. choose_visit | Enter | 卷棚后间\n去玉楼屋里\n人情有往有还，体面不是拿她垫脚\n情 只认你 · 妒 记着了\n第 3 次进这扇门 | visit",
+    "112. visit | Enter | 请她排座\n把转圜权交给她 | night",
+    "113. night | Enter | 把茶喝完\n让未完的话有结果 | morning",
+    "114. morning | Enter | 让她进门，把昨夜说透\n院里会猜，至少她不用靠猜才知道 | day",
+    "115. day | Enter | 翻账\n核对数目与证物。 | choose_visit",
+    "116. choose_visit | Enter | 请五个人都别走\n五份边界、五桩合办事和三场公开口径都在，这回她们愿意一起留下。 | shared_night",
+    "117. shared_night | Enter | 五人都留下\n各守一约并互证 | scene",
+    "118. scene | Enter | 接着往下 | shared_afterglow",
+    "119. shared_afterglow | Enter | 逐一念名\n确认每人贡献 | shared_afterglow",
+    "120. shared_afterglow | Enter | 听完再近\n每句同意都可收回 | shared_afterglow",
+    "121. shared_afterglow | Enter | 重读五约\n亲密不取消边界 | scene",
+    "122. scene | Enter | 接着往下 | shared_dawn",
+    "123. shared_dawn | Enter | 摆六盏早茶\n昨夜不藏到门后 | ending",
+    "124. ending | Enter | 再走二十日 | opening",
+    "125. opening | Enter | 场景册 5/15 | opening",
+    "126. opening | Enter | 合上 | opening",
+    "127. title-or-age | Enter | 离开 | title-or-age"
   ],
   "observations": {
     "launch": {
-      "id": "age-gate-ready",
+      "id": "age-gate-and-title-ready",
       "inputs": [
-        "navigate to the seeded run"
+        "navigate to seed=42 without fast mode",
+        "press Enter on the 18+ confirmation"
       ],
       "state": {
-        "ageGateReady": true,
-        "url": "http://127.0.0.1:5173/?seed=42"
+        "adultContentAbsentBeforeConfirmation": true,
+        "ageNoNeverExposesAdultDom": true,
+        "titleVisible": true
       },
       "visual": "qa/evidence/browser/safe/01_age_gate.jpg"
     },
-    "input": {
-      "id": "opening-choice-accepted",
+    "render": {
+      "id": "five-door-and-terminal-rendered",
       "inputs": [
-        "focus start and press Enter",
-        "focus respect_yue and press Enter"
+        "render the five-door hub",
+        "render the day-20 ending at both target viewports"
       ],
       "state": {
-        "phase": "day",
-        "choice": "respect_yue",
-        "responseVisible": true
+        "assetCount": 34,
+        "allAssetsDecoded": true,
+        "viewportChecks": [
+          {
+            "screen": "five-door-hub",
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "horizontalOverflow": false,
+            "stage": {
+              "left": 230,
+              "top": 60,
+              "right": 1280,
+              "bottom": 800
+            },
+            "fatal": false
+          },
+          {
+            "screen": "day-20-coalition-gate",
+            "viewport": {
+              "width": 1280,
+              "height": 800
+            },
+            "horizontalOverflow": false,
+            "stage": {
+              "left": 230,
+              "top": 60,
+              "right": 1280,
+              "bottom": 800
+            },
+            "fatal": false
+          },
+          {
+            "screen": "terminal-1920",
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "horizontalOverflow": false,
+            "stage": {
+              "left": 300,
+              "top": 66,
+              "right": 1920,
+              "bottom": 1080
+            },
+            "fatal": false
+          }
+        ],
+        "errors": {
+          "console": [],
+          "page": [],
+          "network": [],
+          "http": []
+        }
+      },
+      "visual": "qa/evidence/browser/safe/02_five_door_hub.jpg"
+    },
+    "input": {
+      "id": "keyboard-path-and-save-reload-accepted",
+      "inputs": [
+        "activate every game decision with focused Enter",
+        "reload at day 10 and continue"
+      ],
+      "state": {
+        "mode": "keyboard-only Enter activation",
+        "acceptedInputCount": 127,
+        "openingChoice": "opening_open_ledger",
+        "midpointReload": {
+          "day": 10,
+          "phase": "choose_visit",
+          "beforeSerializedStateHash": "c7211bf605492fe60bc5aaf75e6fde61a22fb8abf61dfef649630ec6bcce1973",
+          "afterSerializedStateHash": "c7211bf605492fe60bc5aaf75e6fde61a22fb8abf61dfef649630ec6bcce1973",
+          "match": true
+        },
+        "corruptSave": {
+          "continueDisabled": true,
+          "saveRemoved": true,
+          "titleVisible": true
+        }
       }
     },
-    "render": {
-      "id": "pair-action-and-inner-court-rendered-at-both-target-viewports",
-      "inputs": [
-        "complete three accords",
-        "complete two pair actions",
-        "choose shared_divide_roles"
-      ],
-      "state": {
-        "phase": "ending",
-        "accordSealsVisible": true,
-        "dayPanelFits1280x800": true,
-        "heroineDoorAssets": [
-          "http://127.0.0.1:5173/assets/heroine/yue/night.webp",
-          "http://127.0.0.1:5173/assets/heroine/pan/night.webp",
-          "http://127.0.0.1:5173/assets/heroine/pinger/night.webp"
-        ],
-        "heroineDoorVisual": "qa/evidence/browser/safe/03_evening_doors.jpg",
-        "jointResultScenes": [
-          "joint_yue_pan",
-          "joint_yue_pinger"
-        ],
-        "groupSceneReady": true,
-        "afterWorkPhase": "shared_afterglow",
-        "afterglowContinues": true,
-        "intimateSceneReady": true,
-        "dawnReady": true,
-        "viewport1920x1080Fits": true,
-        "consoleErrors": [],
-        "networkErrors": [],
-        "httpErrors": []
-      },
-      "visual": "qa/evidence/browser/safe/04_joint_yue_pan.jpg"
-    },
     "coreLoop": {
-      "id": "six-day-loop-complete",
+      "id": "twenty-day-five-route-loop-complete",
       "inputs": [
-        "complete three agreement nights, two pair-action days, two personal nights, the shared work scene, two afterglow choices, the adult ensemble scene, and one dawn choice"
+        "complete days 1 through 20",
+        "touch all five heroine routes",
+        "complete five distinct joint actions and three public promises"
       ],
       "state": {
-        "phase": "ending",
-        "day": 6,
-        "accords": {
-          "order": true,
-          "truth": true,
-          "safety": true
-        },
+        "dayTrace": [
+          {
+            "day": 1,
+            "pressureId": "d01",
+            "pressureText": "公中短了五十两，五处院门都等你先认哪一本账。",
+            "pressureTextHash": "457365937b4c09ee6ab1610e195f3eb615ce8e703cd00054780335b0d71e68a1",
+            "phase": "day"
+          },
+          {
+            "day": 2,
+            "pressureId": "d02",
+            "pressureText": "药车被扣，交钱与递名帖都要留下价码。",
+            "pressureTextHash": "887761220aaf3028c403ebc510bf43679bc818b1fcb7ef393fd6de7e552c0bcf",
+            "phase": "day"
+          },
+          {
+            "day": 3,
+            "pressureId": "d03",
+            "pressureText": "空箱与空米袋同时出现，货账有人做了两层。",
+            "pressureTextHash": "3c8c88efba38e96d9f7612e697f69c0a0728dcaa52603b3f96941ba798956b75",
+            "phase": "day"
+          },
+          {
+            "day": 4,
+            "pressureId": "d04",
+            "pressureText": "娇儿认出债主的旧门路，只肯做一笔明买卖。",
+            "pressureTextHash": "a9d60dcaaaf4709793454d911ac3bcd6a2845597ba1906d2fcb017dcef5bca09",
+            "phase": "day"
+          },
+          {
+            "day": 5,
+            "pressureId": "d05",
+            "pressureText": "五只杯都在桌上，旧承诺第一次公开碰面。",
+            "pressureTextHash": "2cf16f261f287c848c3447fdbe55e2147e18e9622f6e5e1c3c2e160d61fbf2e2",
+            "phase": "day"
+          },
+          {
+            "day": 6,
+            "pressureId": "d06",
+            "pressureText": "掌柜递来两本流水，要你当场定哪本作准。",
+            "pressureTextHash": "cc7f7b021c85730acaa6734ebb76e3ad73b505091d4068a954d19acea8ca3e34",
+            "phase": "day"
+          },
+          {
+            "day": 7,
+            "pressureId": "d07",
+            "pressureText": "陌生车夫翻墙递信，口供只肯对一人说。",
+            "pressureTextHash": "ea6cee4465eca628e2050d8567689daa814a94e094f43c89e8f7d069bee9ec78",
+            "phase": "day"
+          },
+          {
+            "day": 8,
+            "pressureId": "d08",
+            "pressureText": "雪娥停下一口锅，逼全宅看见少掉的工钱。",
+            "pressureTextHash": "abb5662d4f15e401ffdbf1ff7895349eb6e2733a56e5a1c617d4e6a802a706eb",
+            "phase": "day"
+          },
+          {
+            "day": 9,
+            "pressureId": "d09",
+            "pressureText": "娇儿拿来旧契，赎回与借用是两个价。",
+            "pressureTextHash": "4a999b35a92b9213e4ab2e42386dacf47e7f78d5cacf9a2bb0a3437aa3ccbabd",
+            "phase": "day"
+          },
+          {
+            "day": 10,
+            "pressureId": "d10",
+            "pressureText": "五人沿池复述证词，谁改过一句当场可见。",
+            "pressureTextHash": "5b8e3e9dfc46ccf0cae1b2265ee2a48bff00d0ca1ec8b1abd92c1e3327f91815",
+            "phase": "day"
+          },
+          {
+            "day": 11,
+            "pressureId": "d11",
+            "pressureText": "官面要一名担责者，宅内却有五份实证。",
+            "pressureTextHash": "f8251a1042a05d1843b59c1ac0f2635f831338034213836742ac18f39386c0c7",
+            "phase": "day"
+          },
+          {
+            "day": 12,
+            "pressureId": "d12",
+            "pressureText": "码头只回来空船，货却在城内换了封签。",
+            "pressureTextHash": "d16c76f823e0593a1309a1fbf35fcba64d0a0f479192bf0bf22542e5c96d0355",
+            "phase": "day"
+          },
+          {
+            "day": 13,
+            "pressureId": "d13",
+            "pressureText": "月娘封账半日，逼每笔私借各归其名。",
+            "pressureTextHash": "b2b694bc889a9bb88b43ec9f36b04c4a6609307c1637442624371a69b226d40f",
+            "phase": "day"
+          },
+          {
+            "day": 14,
+            "pressureId": "d14",
+            "pressureText": "娇儿愿折价兑票，但要把风险写进明契。",
+            "pressureTextHash": "456702447ef31bdb5bc589e6400b828daa04ededec840578acc02762a7e48159",
+            "phase": "day"
+          },
+          {
+            "day": 15,
+            "pressureId": "d15",
+            "pressureText": "街坊、债主与五院同堂，证据必须有人公开承担。",
+            "pressureTextHash": "41fa850c3bf142184c1ab989922468995c6a41b561020855a99d45f76cb9eb6f",
+            "phase": "day"
+          },
+          {
+            "day": 16,
+            "pressureId": "d16",
+            "pressureText": "对方改用人声施压，院内分工不能再含糊。",
+            "pressureTextHash": "a3ea2e64c1c15818b97b3ff4ddb4409448bae0b245bca93e844a6cd004604e42",
+            "phase": "day"
+          },
+          {
+            "day": 17,
+            "pressureId": "d17",
+            "pressureText": "五条线索指向同一柜坊，进去的人必须互相作证。",
+            "pressureTextHash": "c6b4535b83e0d0a80b51ceb19f4219c3479541c255d6d90d666dc71157627c06",
+            "phase": "day"
+          },
+          {
+            "day": 18,
+            "pressureId": "d18",
+            "pressureText": "娇儿给出终局交易：买断旧债，也买断她的沉默。",
+            "pressureTextHash": "c8b0146d61b4bc7fdeca909a1c5145106179f079a4d691d1de9cdbde3c43a5ef",
+            "phase": "day"
+          },
+          {
+            "day": 19,
+            "pressureId": "d19",
+            "pressureText": "门房今早又打发走一个来打听的。秩序、真话、安全、体面与烟火必须写成同一份约。",
+            "pressureTextHash": "f8adbc9adaf32fc1f658b6056de9c42554e20dbfd42a932a42ab3dda3d1d2199",
+            "phase": "day"
+          },
+          {
+            "day": 20,
+            "pressureId": "d20",
+            "pressureText": "门房今早又打发走一个来打听的。门外要结银，门内要决定二十日后如何共处。",
+            "pressureTextHash": "8f5ee16f93233d8e6f7c871ff48a4f17e31f30ebf72fa753108ce9b9faf95b61",
+            "phase": "day"
+          }
+        ],
+        "routeTrace": [
+          {
+            "day": 1,
+            "heroine": "wu_yueniang",
+            "choice": "accord_order",
+            "qingBefore": 10,
+            "qingAfter": 30,
+            "visitCount": 0,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 2,
+            "heroine": "pan_jinlian",
+            "choice": "accord_truth",
+            "qingBefore": 8,
+            "qingAfter": 28,
+            "visitCount": 0,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 3,
+            "heroine": "li_pinger",
+            "choice": "accord_safety",
+            "qingBefore": 8,
+            "qingAfter": 29,
+            "visitCount": 0,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 4,
+            "heroine": "meng_yulou",
+            "choice": "accord_grace",
+            "qingBefore": 8,
+            "qingAfter": 29,
+            "visitCount": 0,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 5,
+            "heroine": "sun_xuee",
+            "choice": "accord_hearth",
+            "qingBefore": 18,
+            "qingAfter": 39,
+            "visitCount": 0,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 6,
+            "heroine": "wu_yueniang",
+            "choice": "yue_1_true",
+            "qingBefore": 51,
+            "qingAfter": 71,
+            "visitCount": 1,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 7,
+            "heroine": "pan_jinlian",
+            "choice": "pan_1_cup",
+            "qingBefore": 49,
+            "qingAfter": 69,
+            "visitCount": 1,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 8,
+            "heroine": "li_pinger",
+            "choice": "pinger_1_room",
+            "qingBefore": 45,
+            "qingAfter": 66,
+            "visitCount": 1,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 9,
+            "heroine": "meng_yulou",
+            "choice": "meng_1_card",
+            "qingBefore": 40,
+            "qingAfter": 61,
+            "visitCount": 1,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 10,
+            "heroine": "sun_xuee",
+            "choice": "xuee_1_bag",
+            "qingBefore": 50,
+            "qingAfter": 72,
+            "visitCount": 1,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 11,
+            "heroine": "wu_yueniang",
+            "choice": "yue_2_cut",
+            "qingBefore": 81,
+            "qingAfter": 89,
+            "visitCount": 2,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 12,
+            "heroine": "pan_jinlian",
+            "choice": "pan_2_name",
+            "qingBefore": 79,
+            "qingAfter": 100,
+            "visitCount": 2,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 13,
+            "heroine": "li_pinger",
+            "choice": "pinger_2_close",
+            "qingBefore": 76,
+            "qingAfter": 99,
+            "visitCount": 2,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 14,
+            "heroine": "meng_yulou",
+            "choice": "meng_2_return",
+            "qingBefore": 71,
+            "qingAfter": 94,
+            "visitCount": 2,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 15,
+            "heroine": "sun_xuee",
+            "choice": "xuee_2_count",
+            "qingBefore": 84,
+            "qingAfter": 100,
+            "visitCount": 2,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 16,
+            "heroine": "wu_yueniang",
+            "choice": "yue_3_back",
+            "qingBefore": 99,
+            "qingAfter": 100,
+            "visitCount": 3,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 17,
+            "heroine": "pan_jinlian",
+            "choice": "pan_3_face",
+            "qingBefore": 100,
+            "qingAfter": 100,
+            "visitCount": 3,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 18,
+            "heroine": "li_pinger",
+            "choice": "pinger_3_shield",
+            "qingBefore": 100,
+            "qingAfter": 100,
+            "visitCount": 3,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          },
+          {
+            "day": 19,
+            "heroine": "meng_yulou",
+            "choice": "meng_3_seating",
+            "qingBefore": 100,
+            "qingAfter": 100,
+            "visitCount": 3,
+            "characterSpecificConsequence": "你留下来听她把话说完"
+          }
+        ],
         "jointActions": [
           "joint_yue_pan",
-          "joint_yue_pinger"
+          "joint_yue_pinger",
+          "joint_pan_pinger",
+          "joint_yue_meng",
+          "joint_pan_xuee"
         ],
-        "sharedNightChoice": "shared_divide_roles",
-        "sharedAfterglowChoices": [
-          "afterglow_yue_cup",
-          "afterglow_close_door"
+        "preterminalAssertions": [
+          {
+            "day": 1,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 2,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 3,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 4,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 5,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 6,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 7,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 8,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 9,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 10,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 11,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 12,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 13,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 14,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 15,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 16,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 17,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 18,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          },
+          {
+            "day": 19,
+            "phaseIsNotEnding": true,
+            "overIsFalse": true,
+            "endingAbsent": true,
+            "sharedInvitationAbsent": true
+          }
         ],
-        "sharedDawnChoice": "dawn_same_table"
+        "finalGateBeforeInvitation": {
+          "day": 20,
+          "phase": "choose_visit",
+          "accords": {
+            "order": true,
+            "truth": true,
+            "safety": true,
+            "grace": true,
+            "hearth": true
+          },
+          "jointActions": [
+            "joint_yue_pan",
+            "joint_yue_pinger",
+            "joint_pan_pinger",
+            "joint_yue_meng",
+            "joint_pan_xuee"
+          ]
+        }
       }
     },
     "outcome": {
-      "id": "balanced-inner-court-ending",
+      "id": "day-20-balanced-ending",
       "inputs": [
-        "resolve shared_divide_roles, finish both afterglow beats, close inner_court_afterglow, and choose dawn_same_table"
+        "choose shared_five_roles",
+        "complete three afterglow decisions",
+        "choose dawn_six_tea"
       ],
       "state": {
-        "terminal": "balanced-ending",
+        "terminal": "day-20-balanced-ending",
+        "day": 20,
         "phase": "ending",
-        "haremCoalition": true,
-        "sceneUnlocked": true,
-        "afterglowSceneUnlocked": true
+        "over": true,
+        "endingId": "balanced",
+        "accords": {
+          "order": true,
+          "truth": true,
+          "safety": true,
+          "grace": true,
+          "hearth": true
+        },
+        "jointActions": [
+          "joint_yue_pan",
+          "joint_yue_pinger",
+          "joint_pan_pinger",
+          "joint_yue_meng",
+          "joint_pan_xuee"
+        ],
+        "publicPromises": [
+          true,
+          true,
+          true
+        ],
+        "sharedAfterglowChoices": [
+          "after_1_names",
+          "after_2_hear",
+          "after_3_pact"
+        ],
+        "sharedDawnChoice": "dawn_six_tea"
       },
-      "visual": "qa/evidence/browser/safe/08_balanced_ending.jpg"
+      "visual": "qa/evidence/browser/safe/23_terminal_1920.jpg"
     },
     "restart": {
-      "id": "clean-day-one-restart",
+      "id": "day-1-clean-restart",
       "inputs": [
-        "focus restart and press Enter"
+        "press Enter on restart",
+        "open the persistent gallery"
       ],
       "state": {
-        "restart": "day-1-opening",
+        "restart": "day-1-opening-five-maps-reset",
         "day": 1,
         "phase": "opening",
-        "galleryKeepsInnerCourtAccord": true
+        "over": false,
+        "relationsKeys": [
+          "li_pinger",
+          "meng_yulou",
+          "pan_jinlian",
+          "sun_xuee",
+          "wu_yueniang"
+        ],
+        "visits": {
+          "wu_yueniang": 0,
+          "pan_jinlian": 0,
+          "li_pinger": 0,
+          "meng_yulou": 0,
+          "sun_xuee": 0
+        },
+        "jointActions": [],
+        "galleryCountBefore": 5,
+        "galleryCountAfter": 5
       }
     }
   }

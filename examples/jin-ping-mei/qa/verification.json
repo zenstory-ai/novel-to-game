@@ -6,10 +6,10 @@
     "exitCode": 0
   },
   "completeRun": {
-    "id": "jin-ping-mei-main-path",
+    "id": "jin-ping-mei-five-house-twenty-day-main-path",
     "cleanContext": true,
-    "terminal": "balanced-ending",
-    "restart": "day-1-opening",
+    "terminal": "day-20-balanced-ending",
+    "restart": "day-1-opening-five-maps-reset",
     "evidence": "qa/evidence/browser/evidence-normal.json"
   },
   "checks": {
@@ -23,7 +23,7 @@
   "limitations": [
     {
       "scope": "tested runtime",
-      "reason": "The run used local Chromium keyboard automation at the two target desktop viewports; other browsers and device classes were not exercised."
+      "reason": "权威路径覆盖本机 Chromium 的 1280×800 与 1920×1080；未把主观趣味、所有结局、移动端或其他浏览器宣称为已验证。"
     }
   ]
 }

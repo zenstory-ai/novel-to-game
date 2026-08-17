@@ -226,25 +226,30 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: .72rem;
+  gap: .38rem;
   min-height: 0;
-  padding: 1rem .85rem;
+  padding: .62rem .68rem;
   border-right: 1px solid rgba(216,181,111,.24);
   color: #e7dbc7;
   background: linear-gradient(180deg, #211713, #160f0d);
 }
 .rail-kicker { margin: 0 .2rem; color: #897d6b; font: .68rem var(--sans); letter-spacing: .22em; }
-.relation-card { position: relative; padding: .85rem .75rem .75rem; border: 1px solid rgba(224,202,162,.22); background: rgba(236,222,194,.055); overflow: hidden; }
+.relation-card { position: relative; padding: .46rem .58rem .44rem; border: 1px solid rgba(224,202,162,.22); background: rgba(236,222,194,.055); overflow: hidden; }
 .relation-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--gold); }
 .relation-pan_jinlian::before { background: #aa3d30; }
 .relation-li_pinger::before { background: #c59e57; }
+.relation-meng_yulou::before { background: #6f9b8c; }
+.relation-sun_xuee::before { background: #a56c42; }
 .relation-name { display: flex; align-items: center; gap: .62rem; }
-.shape-mark { width: 34px; height: 34px; display: grid; place-content: center; border: 1px solid rgba(231,208,163,.55); color: var(--gold-bright); font-weight: 700; }
+.shape-mark { width: 28px; height: 28px; display: grid; place-content: center; border: 1px solid rgba(231,208,163,.55); color: var(--gold-bright); font-size: .72rem; font-weight: 700; }
 .relation-pan_jinlian .shape-mark { clip-path: polygon(14% 0,100% 0,86% 100%,0 100%); }
 .relation-li_pinger .shape-mark { border-radius: 45%; }
+.relation-meng_yulou .shape-mark { transform: rotate(45deg); }
+.relation-meng_yulou .shape-mark::first-letter { transform: rotate(-45deg); }
+.relation-sun_xuee .shape-mark { border-radius: 3px 3px 50% 50%; }
 .relation-name b { display: block; letter-spacing: .08em; }
 .relation-name small { display: block; margin-top: .15rem; color: #8e806f; font: .66rem var(--sans); }
-.relation-tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: .25rem; margin: .7rem 0 .55rem; }
+.relation-tiers { display: grid; grid-template-columns: repeat(3,1fr); gap: .2rem; margin: .34rem 0 .28rem; }
 .relation-tiers span { position: relative; display: flex; flex-direction: column; color: #807463; font: .62rem var(--sans); }
 .relation-tiers b { margin-top: .12rem; color: #d8c6a8; font-size: .75rem; }
 /* 刚跨档的那一格:700ms 微亮 + 一枚朱印,一次性提示。
@@ -267,7 +272,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   from { opacity: .78; color: #f0dfba; text-shadow: 0 0 10px rgba(228,188,116,.9); }
   to { opacity: 1; color: #d8c6a8; text-shadow: none; }
 }
-.relation-card p { margin: 0; min-height: 2.6em; color: #948776; font: .68rem/1.55 var(--sans); }
+.relation-card p { display: -webkit-box; margin: 0; min-height: 0; overflow: hidden; color: #948776; font: .63rem/1.4 var(--sans); -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .household-roster { padding: .65rem .7rem .55rem; border-top: 1px solid rgba(216,181,111,.2); background: rgba(0,0,0,.12); }
 .household-roster > p { margin: 0 0 .42rem; color: #897d6b; font: .64rem var(--sans); letter-spacing: .18em; }
 .household-row { display: grid; grid-template-columns: 24px 54px 1fr; align-items: center; min-height: 28px; color: #b8aa93; font: .66rem var(--sans); }
@@ -278,7 +283,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 /* 账簿页:人物账与宅中人之间的中段,state.history 最近 4 条竖排墨字,新条目渗入。 */
 .ledger-book {
   flex: 1;
-  min-height: 4.5rem;
+  min-height: 3.2rem;
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -336,7 +341,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .joint-offers { margin-top: .75rem; padding-top: .65rem; border-top: 1px solid rgba(220,188,127,.2); }
 .joint-offers > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; color: #d6bd8e; font: .7rem var(--sans); letter-spacing: .1em; }
 .joint-offers > header span { color: #8f8271; font-size: .62rem; letter-spacing: .04em; }
-.joint-actions { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .65rem; }
+.joint-actions { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: .5rem; }
 .joint-actions .choice-button { min-height: 62px; }
 
 /* 双人合办结果：先让人物在同一画面完成一件事，再回到原有白日流转。 */
@@ -374,12 +379,12 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .choice-button span { margin-top: .32rem; color: #a89984; font: .68rem/1.45 var(--sans); }
 .choice-button:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(226,171,104,.8); background: rgba(157,45,37,.2); }
 
-/* 拜访 hub：三条院约常驻可见；第六夜的共同入口不藏在数字阈值后面。 */
+/* 拜访 hub：五条院约常驻可见；第二十夜的共同入口不藏在数字阈值后面。 */
 .visit-prompt { position: absolute; z-index: 4; top: 3%; left: 4%; right: 4%; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(350px,.9fr); gap: 1rem; padding: .85rem 1rem; color: #efe2cb; background: rgba(24,16,13,.88); border-left: 3px solid var(--cinnabar); }
 .accord-panel { min-width: 0; padding-left: 1rem; border-left: 1px solid rgba(220,188,127,.24); }
 .accord-heading { display: flex; align-items: center; justify-content: space-between; color: #ddc79f; font: .72rem var(--sans); letter-spacing: .12em; }
 .accord-heading span { color: var(--gold-bright); }
-.accord-seals { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .4rem; margin-top: .45rem; }
+.accord-seals { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: .32rem; margin-top: .45rem; }
 .accord-seal { display: flex; align-items: center; gap: .35rem; min-width: 0; padding: .38rem .45rem; border: 1px solid rgba(220,188,127,.2); color: #817668; font: .64rem var(--sans); background: rgba(9,7,6,.34); }
 .accord-seal i { flex: none; display: grid; place-content: center; width: 1.25rem; height: 1.25rem; border: 1px solid currentColor; color: #766a5b; font-style: normal; }
 .accord-seal.complete { border-color: rgba(207,72,57,.55); color: #dec39a; background: rgba(117,31,24,.18); }
@@ -388,15 +393,15 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .shared-invite { display: flex; width: 100%; flex-direction: column; align-items: flex-start; margin-top: .5rem; padding: .5rem .65rem; border: 1px solid rgba(216,172,95,.5); color: #ead7b7; text-align: left; background: rgba(128,43,31,.3); cursor: pointer; }
 .shared-invite b { font-size: .78rem; letter-spacing: .1em; }
 .shared-invite span { margin-top: .18rem; color: #b8a58a; font: .62rem/1.35 var(--sans); }
-.heroine-doors { position: absolute; z-index: 4; inset: 25% 4% 4%; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+.heroine-doors { position: absolute; z-index: 4; inset: 25% 3% 4%; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: .55rem; }
 .evening.has-shared .heroine-doors { top: 31%; }
 .door-card { position: relative; overflow: hidden; border: 1px solid rgba(229,205,163,.44); color: #f0e2ca; text-align: left; background: linear-gradient(180deg, rgba(27,18,14,.08), rgba(21,14,12,.93)); cursor: pointer; }
 .door-card::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(240,214,169,.14); z-index: 2; pointer-events: none; }
 .door-card > span { position: absolute; z-index: 3; top: .75rem; left: .8rem; padding: .3rem .5rem; background: rgba(24,16,13,.82); color: #dbc397; font-size: .72rem; letter-spacing: .12em; }
 .door-card img { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 68% center; filter: saturate(.78) brightness(.8); transition: transform .25s, filter .25s; }
-.door-card > div { position: absolute; z-index: 3; inset: auto 0 0; padding: 3.6rem 1rem 1rem; background: linear-gradient(transparent, rgba(16,10,8,.96) 50%); }
+.door-card > div { position: absolute; z-index: 3; inset: auto 0 0; padding: 3.2rem .68rem .68rem; background: linear-gradient(transparent, rgba(16,10,8,.96) 50%); }
 .door-card b, .door-card small, .door-card em { display: block; }
-.door-card b { font-size: 1.12rem; letter-spacing: .08em; }
+.door-card b { font-size: .92rem; letter-spacing: .05em; }
 .door-card small { margin-top: .3rem; color: #b6a68d; font: .68rem/1.5 var(--sans); }
 .door-card em { margin-top: .55rem; color: #d7b36b; font: normal .68rem var(--sans); }
 /* 门卡上的拜访次数:让「按她的第几次走」在界面上看得见。 */
@@ -404,6 +409,9 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .door-card:hover img { transform: scale(1.035); filter: saturate(.92) brightness(.92); }
 .door-pan_jinlian { background-color: rgba(100,26,22,.2); }
 .door-li_pinger { background-color: rgba(132,98,44,.16); }
+.door-meng_yulou { background-color: rgba(67,106,92,.18); }
+.door-sun_xuee { background-color: rgba(120,69,38,.2); }
+.door-card.complete { opacity: .58; filter: grayscale(.45); cursor: default; }
 
 /* 对话近景 */
 .dialogue-stage { background: #211712; }
@@ -436,7 +444,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .banquet-panel .choice-grid { grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: .8rem; }
 .banquet-panel .choice-button { min-height: 68px; }
 
-/* 第六夜共同议事：选择前仍不泄露奖励 CG，三人立绘与宅院只说明“都到了”。 */
+/* 第二十夜共同议事：选择前仍不泄露奖励 CG，五人立绘与宅院只说明“都到了”。 */
 .shared-stage::before { filter: saturate(.55) brightness(.58) sepia(.22); }
 .shared-stage::after { background: radial-gradient(65% 75% at 50% 24%, rgba(196,123,54,.2), transparent 65%), linear-gradient(0deg, rgba(12,8,7,.95), rgba(12,8,7,.12) 78%); }
 .shared-panel { left: 3%; right: 3%; bottom: 3%; padding: 1rem 1.25rem; }
@@ -446,7 +454,7 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 .shared-panel .choice-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 .shared-panel .choice-button { min-height: 68px; }
 
-/* 三院尾章：共同办事之后保留两拍夜话与一拍次晨，避免按钮后直接结算。 */
+/* 五院尾章：共同办事之后保留三拍夜话与一拍次晨，避免按钮后直接结算。 */
 .afterglow-stage::before { background-position: center; filter: saturate(.68) brightness(.58) blur(1px); transform: scale(1.02); }
 .afterglow-stage::after { background: radial-gradient(60% 70% at 65% 30%, rgba(174,83,45,.18), transparent 70%), linear-gradient(90deg, rgba(13,8,7,.94), rgba(13,8,7,.28) 64%, rgba(13,8,7,.5)); }
 .afterglow-panel { left: 4%; top: 10%; width: min(680px, 52%); max-height: 78%; padding: 1.45rem; overflow-y: auto; }
@@ -532,9 +540,9 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
 @media (max-height: 830px) {
   .game-shell { grid-template-rows: 60px 1fr; }
   .play-area { grid-template-columns: 230px 1fr; }
-  .relation-rail { gap: .5rem; padding: .7rem; }
-  .relation-card { padding: .58rem .62rem; }
-  .relation-card p { min-height: 0; font-size: .75rem; }
+  .relation-rail { gap: .25rem; padding: .42rem .55rem; }
+  .relation-card { padding: .38rem .52rem; }
+  .relation-card p { min-height: 0; font-size: .6rem; }
   .relation-tiers { margin: .45rem 0; }
   .day-panel { padding: .8rem 1rem; }
   .phase-header h2 { font-size: 1.55rem; margin-bottom: .35rem; }
@@ -542,7 +550,8 @@ button:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 3p
   .choice-button { min-height: 58px; padding: .58rem .68rem; }
   .choice-button b { font-size: .82rem; }
   .joint-offers { margin-top: .5rem; padding-top: .45rem; }
-  .joint-actions .choice-button { min-height: 52px; }
+  .joint-actions .choice-button { min-height: 52px; padding: .5rem; }
+  .joint-actions .choice-button span { font-size: .6rem; }
   .joint-result-panel { padding: .8rem 1rem; }
   .dialogue-panel { top: 3%; bottom: 3%; padding: 1.1rem; }
   .heroine-doors { top: 23%; }

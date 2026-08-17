@@ -2,15 +2,18 @@
 
 import {
   HEROINE_IDS, HEROINES, HOUSEHOLD_IDS, HOUSEHOLD, HOUSEHOLD_EVENTS,
-  DAY_NAMES, DAY_PRESSURE, DAY_ACTIONS,
+  DAY_DEFS, DAY_NAMES, DAY_PRESSURE, DAY_ACTIONS,
   OPENING_CHOICES, ROUTE_CHOICES, ACCORD_CHOICES, JOINT_ACTIONS, SHARED_NIGHT_CHOICES,
-  SHARED_AFTERGLOW_BEATS, SHARED_DAWN_CHOICES, BANQUET_CHOICES, SCENES,
+  ACCORD_META, SHARED_AFTERGLOW_BEATS, SHARED_DAWN_CHOICES, PUBLIC_EVENTS, SCENES,
   NIGHT_OUTCOMES, ENDINGS,
 } from './data.js';
 
-export const SAVE_VERSION = 11;
-export const ACCORD_KEYS = Object.freeze(['order', 'truth', 'safety']);
-export const JOINT_ACTION_TARGET = 2;
+export const SAVE_VERSION = 12;
+export const ACCORD_KEYS = Object.freeze(Object.values(ACCORD_META).map((row) => row.key));
+export const JOINT_ACTION_TARGET = 5;
+export const PUBLIC_EVENT_DAYS = Object.freeze(Object.keys(PUBLIC_EVENTS).map(Number).sort((a, b) => a - b));
+export const PUBLIC_BALANCE_FLAGS = Object.freeze(PUBLIC_EVENT_DAYS.map((day) => PUBLIC_EVENTS[day].balanceFlag));
+export const COALITION_CHOICE_ID = SHARED_NIGHT_CHOICES.find((choice) => choice.effects?.flags?.includes('harem_coalition'))?.id;
 const JOINT_ACTION_IDS = new Set(JOINT_ACTIONS.map((choice) => choice.id));
 const SAVE_PHASES = new Set([
   'opening', 'morning', 'day', 'joint_result', 'household', 'banquet',
@@ -19,7 +22,10 @@ const SAVE_PHASES = new Set([
 ]);
 const SHARED_AFTERGLOW_CHOICE_IDS = new Set(SHARED_AFTERGLOW_BEATS.flatMap((beat) => beat.choices.map((choice) => choice.id)));
 const SHARED_DAWN_CHOICE_IDS = new Set(SHARED_DAWN_CHOICES.map((choice) => choice.id));
-const MORNING_EVENT_IDS = new Set(['jealousy', 'pan_claim', 'yue_delayed', 'yue_help', 'pinger_help', 'quiet']);
+const MORNING_EVENT_IDS = new Set([
+  'jealousy', 'pan_claim', 'yue_delayed', 'yue_help', 'pinger_help',
+  'meng_invitation', 'xuee_breakfast', 'quiet',
+]);
 const RESOURCE_KEYS = Object.freeze(['silver', 'power', 'repute', 'exposure', 'strain', 'house']);
 
 // 破裂规则(GAME_DESIGN 第 5 节「拒绝／破裂」):公开越过她两次、或宅门 house<30,
@@ -32,6 +38,8 @@ const OVERRIDE_FLAG_TO_HEROINE = Object.freeze({
   broken_yue_word: 'wu_yueniang',
   broken_pan_word: 'pan_jinlian',
   pinger_exposed: 'li_pinger',
+  broken_meng_word: 'meng_yulou',
+  broken_xuee_word: 'sun_xuee',
 });
 
 // 身体耗损的读取点(F2):`strain` 原先只写不读,常驻 HUD 的代价条一局都不结账。
@@ -40,11 +48,11 @@ const OVERRIDE_FLAG_TO_HEROINE = Object.freeze({
 export const STRAIN_STRAINED = 30;   // 撑不起「走官面 / 整席面」
 export const STRAIN_REST_RELIEF = 6; // 不进亲密场景的一夜回落
 // 曝光的读取点(F3):它不是权谋结局的奖励门,是每日结转开始咬人的代价条。
-// 三档:传过街(封口钱) → 传进院(全员妒) → 进了别人的账(官面与三杯同斟关门)。
+// 三档:传过街(封口钱) → 传进院(全员妒) → 进了别人的账(官面与公开同盟关门)。
 export const EXPOSURE_STREET = 25;
 export const EXPOSURE_HOUSEHOLD = 40;
 export const EXPOSURE_LEDGERED = 55;
-export const MAX_DAY = 6;
+export const MAX_DAY = 20;
 // 宅中用度(银钱经济收紧):家声越高,日子越贵。每日结转扣一笔,次晨报在现场画面上;
 // 银子不够扣到 0 为止,摆不起的场面自己塌——宅门与家声跟着掉,不许出现负银。
 export const UPKEEP_BASE = 6;
@@ -56,9 +64,8 @@ export const COLLECTOR_PRICE = 40;
 // 安抚按妒分档:妒越拖越贵,按钮要报当前实价,不写死「二十两」。
 export const APPEASE_BASE = 20;
 export const APPEASE_DU_FLOOR = 40;
-// 权谋收束的银钱门槛:收紧后的实测值(test/bench_silver.mjs,实测记录见 GAME_DESIGN 第 10 节)——
-// 不用资源侧选项实测封顶 181,全采封顶 350;240 要求至少为银子动一处真格的。
-export const INTRIGUE_SILVER = 240;
+// 权谋收束的银钱门槛：二十日长局必须持续经营货路，不能靠开场银与日常翻账顺手撞上。
+export const INTRIGUE_SILVER = 420;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const cap100 = (value) => clamp(value, 0, 100);
 
@@ -88,18 +95,18 @@ export function newGame(seed = 42) {
     seed: Number.isFinite(Number(seed)) ? Number(seed) : 42,
     day: 1,
     phase: 'opening',
-    resources: { silver: 120, power: 2, repute: 3, exposure: 0, strain: 0, house: 65 },
+    resources: { silver: 180, power: 2, repute: 3, exposure: 0, strain: 0, house: 65 },
     relations,
     household: makeHousehold(),
     secrets: [],
     secretsUsed: [],
     flags: {},
-    publicOverrides: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
-    routeReopensOn: { wu_yueniang: 0, pan_jinlian: 0, li_pinger: 0 },
+    publicOverrides: Object.fromEntries(HEROINE_IDS.map((id) => [id, 0])),
+    routeReopensOn: Object.fromEntries(HEROINE_IDS.map((id) => [id, 0])),
     // 每名女主的个人弧线按「她的第几次」走,不按日历天——
     // 轮换顺序不再把任何人的好选项锁死(设计评审 §3)。
     visits: Object.fromEntries(HEROINE_IDS.map((id) => [id, 0])),
-    accords: { order: false, truth: false, safety: false },
+    accords: Object.fromEntries(ACCORD_KEYS.map((key) => [key, false])),
     jointActions: [],
     history: [],
     log: [],
@@ -120,12 +127,19 @@ export function newGame(seed = 42) {
 }
 
 export function dayDef(state) {
-  let pressure = DAY_PRESSURE[state.day - 1];
+  const definition = DAY_DEFS[state.day - 1];
+  let pressure = definition?.pressure ?? DAY_PRESSURE[state.day - 1];
   // 话传出了这条街:曝光的头一档后果,每天都让玩家看见它在扣钱。
   if (state.resources.exposure >= EXPOSURE_STREET) {
     pressure = `门房今早又打发走一个来打听的。${pressure}`;
   }
-  return { day: state.day, name: DAY_NAMES[state.day - 1], pressure };
+  return {
+    day: state.day,
+    id: definition?.id ?? `day_${state.day}`,
+    act: definition?.act ?? Math.ceil(state.day / 5),
+    name: definition?.name ?? DAY_NAMES[state.day - 1],
+    pressure,
+  };
 }
 
 export function hasToken(state, token) {
@@ -157,7 +171,7 @@ function addFlag(state, id) {
 }
 
 // 破裂判定:公开越过达上限、或宅门跌破下限。触发则该路线冷却一天(次日重开),
-// 不是永久锁死。house 跌破会同时冷却全部三条线——正堂不稳时谁都不肯留门。
+// 不是永久锁死。house 跌破会同时冷却全部五条线——正堂不稳时谁都不肯留门。
 export function evaluateBreak(state, heroineId) {
   const overrides = state.publicOverrides[heroineId] ?? 0;
   if (overrides < BREAK_OVERRIDE_LIMIT) return false;
@@ -230,17 +244,7 @@ export function chooseOpening(state, choiceId) {
   if (state.phase !== 'opening') return { ok: false, error: '正堂这句话已经说过了。' };
   const choice = OPENING_CHOICES.find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个选择。' };
-  if (choiceId === 'respect_yue') {
-    changeRel(state, 'wu_yueniang', { qing: 14, yu: 3 }, '正堂那日，你把账交给了她');
-    changeRel(state, 'pan_jinlian', { du: 5 }, '正堂那杯酒，你先晾了她');
-    changeResources(state, { house: 5, repute: 1 });
-    addFlag(state, 'yue_respected');
-  } else {
-    changeRel(state, 'pan_jinlian', { qing: 10, yu: 16 }, '正堂那日，你喝了她递来的酒');
-    changeRel(state, 'wu_yueniang', { du: 10 }, '她守着账，你却先喝了金莲的酒');
-    changeResources(state, { house: -4 });
-    addFlag(state, 'pan_promised');
-  }
+  applyEffects(state, choice.effects, null, `开场：${choice.label}`);
   record(state, 'opening', { choice: choiceId, public: true });
   state.log.push(choice.text);
   state.phase = 'day';
@@ -272,22 +276,20 @@ export function dayOptions(state) {
 
 const RELATIONSHIP_SECRETS = [
   'merchant_route', 'pan_rumor', 'shop_fraud', 'pinger_funds', 'yue_backing',
-  'meng_favor', 'kitchen_witness',
+  'meng_favor', 'meng_guest_list', 'xuee_store_mark', 'kitchen_witness',
 ];
-const DAY_SECRETS = [
-  'steward_shortfall', 'gate_mood', 'warehouse_key',
-  'servant_footsteps', 'banquet_whisper', 'collector_price', 'steward_gap',
-];
+const DAY_SECRETS = DAY_DEFS.map((day) => day.intel.id);
 
 function usableSecret(state) {
   return [...RELATIONSHIP_SECRETS, ...DAY_SECRETS].find((id) => state.secrets.includes(id)) ?? null;
 }
 
 function secretName(id) {
-  return ({
+  return DAY_DEFS.find((day) => day.intel.id === id)?.intel.label ?? ({
     merchant_route: '瓶儿的货路', pan_rumor: '金莲听来的口风', shop_fraud: '掌柜偷货',
     pinger_funds: '瓶儿的私账', yue_backing: '月娘的正堂背书',
-    meng_favor: '玉楼递过的名帖', kitchen_witness: '雪娥在后仓看见的事',
+    meng_favor: '玉楼递过的名帖', meng_guest_list: '玉楼记下的来客名册',
+    xuee_store_mark: '雪娥认出的锁绳', kitchen_witness: '雪娥在后仓看见的事',
     steward_shortfall: '采买短款', gate_mood: '守门人的软处', warehouse_key: '后仓钥匙',
     servant_footsteps: '门外脚步', banquet_whisper: '席上口风', collector_price: '追账人的价码',
     steward_gap: '管事账上的缺口',
@@ -301,7 +303,7 @@ export function chooseDayAction(state, actionId) {
   const r = state.resources;
   switch (actionId) {
     case 'ledger': {
-      const gain = 22 + (state.flags.pinger_same_chest ? 16 : 0) + (state.day === 6 ? 12 : 0);
+      const gain = 22 + (state.flags.pinger_same_chest ? 16 : 0) + (state.day >= 16 ? 12 : 0);
       changeResources(state, { silver: gain });
       if (state.day === 3) addSecret(state, 'steward_gap');
       text = `你从掌柜的笑脸一直翻到最后一页墨迹，把藏在“损耗”两字里的${silverText(gain)}两挨个抠了回来。`;
@@ -322,19 +324,18 @@ export function chooseDayAction(state, actionId) {
       break;
     }
     case 'listen': {
-      const secret = ['steward_shortfall', 'gate_mood', 'warehouse_key', 'servant_footsteps', 'banquet_whisper', 'collector_price'][state.day - 1];
+      const intel = DAY_DEFS[state.day - 1]?.intel;
+      if (!intel) return { ok: false, error: '今日没有可追的口风。' };
+      const secret = intel.id;
       addSecret(state, secret);
       changeResources(state, { exposure: 7 });
-      text = `你请来的人没敢坐，只把声音压到茶气底下：${({
-        steward_shortfall: '短款出在采买', gate_mood: '守门人怕官面', warehouse_key: '赃货藏在后仓',
-        servant_footsteps: '昨夜有人停在门外', banquet_whisper: '席上有人等你失约', collector_price: '追账人肯拿消息换银',
-      })[secret]}。话说完，他把凉透的茶一口喝尽，连杯子都没敢多放一会儿。`;
+      text = `你请来的人没敢坐，只把声音压到茶气底下：${intel.reveal}。话说完，他把凉透的茶一口喝尽，连杯子都没敢多放一会儿。`;
       break;
     }
     case 'banquet': {
       if (r.silver < 35) return { ok: false, error: '三十五两也摆不出一桌像样的。' };
       changeResources(state, { silver: -35, repute: 1, house: 3 });
-      text = '酒、果子和三只新杯一起送进宅里。三十五两先从账上抹掉；等人坐齐，你便有机会把一句话当着三个人说清楚。';
+      text = '酒、果子和五只新杯一起送进宅里。三十五两先从账上抹掉；等人坐齐，你便有机会把一句话当着五个人说清楚。';
       break;
     }
     default:
@@ -353,7 +354,7 @@ function advanceAfterDayAction(state) {
     state.currentHouseholdEvent = householdEvent.id;
     state.phase = 'household';
   } else {
-    state.phase = state.day === 5 ? 'banquet' : 'choose_visit';
+    state.phase = PUBLIC_EVENTS[state.day] ? 'banquet' : 'choose_visit';
   }
 }
 
@@ -436,67 +437,87 @@ export function resolveHouseholdEvent(state, choiceId) {
   record(state, 'household', { event: event.id, actor: event.actor, choice: choice.id });
   state.log.push(choice.text);
   state.currentHouseholdEvent = null;
-  state.phase = state.day === 5 ? 'banquet' : 'choose_visit';
+  state.phase = PUBLIC_EVENTS[state.day] ? 'banquet' : 'choose_visit';
   return { ok: true, text: choice.text };
 }
 
+export function currentPublicEvent(state) {
+  return PUBLIC_EVENTS[state.day] ?? null;
+}
+
+function isPublicBalanceChoice(event, choice) {
+  return !!event && (choice.effects?.flags ?? []).includes(event.balanceFlag);
+}
+
 export function banquetOptions(state) {
-  // 失信或外传都会让三杯同斟没人肯接;两条理由各说各的,别拿错那句糊弄玩家。
+  const event = currentPublicEvent(state);
+  if (state.phase !== 'banquet' || !event) return [];
+  // 失信或外传都会让共同口径没人肯接；三场公开检验各有自己的文案与场景。
   const exposed = state.resources.exposure >= EXPOSURE_LEDGERED;
-  const betrayed = state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word;
-  return BANQUET_CHOICES.map((choice) => ({
+  const betrayed = ['broken_pan_word', 'pinger_exposed', 'broken_yue_word', 'broken_meng_word', 'broken_xuee_word']
+    .some((flag) => state.flags[flag]);
+  return event.choices.map((choice) => ({
     ...choice,
-    disabled: choice.id === 'banquet_balance' && (betrayed || exposed),
-    locked: choice.id === 'banquet_balance'
-      ? (exposed ? '外头的闲话先进了席，这三杯谁也不敢接。' : '先前有人被你晾过，这三杯斟得再齐也没人肯信。')
+    disabled: isPublicBalanceChoice(event, choice) && (betrayed || exposed),
+    locked: isPublicBalanceChoice(event, choice)
+      ? (exposed ? '外头的闲话先进了席，这五个人谁也不肯替你作证。' : '先前有人被你晾过，这句话说得再齐也没人肯信。')
       : '',
   }));
 }
 
 export function chooseBanquet(state, choiceId) {
   if (state.phase !== 'banquet') return { ok: false, error: '还没到开席的时候。' };
-  const choice = BANQUET_CHOICES.find((item) => item.id === choiceId);
+  const event = currentPublicEvent(state);
+  const choice = event?.choices.find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个席面选择。' };
-  if (choiceId === 'banquet_balance' && state.resources.exposure >= EXPOSURE_LEDGERED) {
-    return { ok: false, error: '外头的闲话先进了席，这三杯谁也不敢接。' };
+  if (isPublicBalanceChoice(event, choice) && state.resources.exposure >= EXPOSURE_LEDGERED) {
+    return { ok: false, error: '外头的闲话先进了席，这五个人谁也不肯替你作证。' };
   }
-  if (choiceId === 'banquet_balance' && (state.flags.broken_pan_word || state.flags.pinger_exposed || state.flags.broken_yue_word)) {
-    return { ok: false, error: '先前有人被你晾过。这三杯斟得再齐，也没人肯喝。' };
+  if (isPublicBalanceChoice(event, choice) && ['broken_pan_word', 'pinger_exposed', 'broken_yue_word', 'broken_meng_word', 'broken_xuee_word'].some((flag) => state.flags[flag])) {
+    return { ok: false, error: '先前有人被你晾过。这句话说得再稳，也没人肯替你接。' };
   }
-  applyEffects(state, choice.effects, null, '中秋席上的公开选择');
-  record(state, 'banquet', { choice: choiceId, public: true });
-  unlockScene(state, 'banquet_conflict');
-  state.pendingScene = 'banquet_conflict';
+  applyEffects(state, choice.effects, null, `${event.title}上的公开选择`);
+  record(state, 'banquet', { event: event.id, choice: choiceId, public: true });
+  unlockScene(state, event.scene);
+  state.pendingScene = event.scene;
   state.sceneReturnPhase = 'choose_visit';
   state.phase = 'scene';
   state.log.push(choice.text);
-  return { ok: true, text: choice.text, scene: 'banquet_conflict' };
+  return { ok: true, text: choice.text, scene: event.scene };
 }
 
 export function accordStatus(state) {
-  const rows = [
-    { key: 'order', heroine: 'wu_yueniang', label: '正堂定账', glyph: '账' },
-    { key: 'truth', heroine: 'pan_jinlian', label: '去处说真', glyph: '真' },
-    { key: 'safety', heroine: 'li_pinger', label: '私钥在手', glyph: '钥' },
-  ];
-  return rows.map((row) => ({ ...row, complete: !!state.accords?.[row.key] }));
+  return Object.values(ACCORD_META).map((row) => ({ ...row, complete: !!state.accords?.[row.key] }));
+}
+
+export function publicPromisesReady(state) {
+  return PUBLIC_BALANCE_FLAGS.every((flag) => state.flags[flag]);
+}
+
+export function jointParticipantCoverage(state) {
+  const completed = new Set(state.jointActions);
+  return new Set(JOINT_ACTIONS
+    .filter((action) => completed.has(action.id))
+    .flatMap((action) => action.participants ?? []));
 }
 
 export function sharedNightStatus(state) {
   const missing = accordStatus(state).filter((row) => !row.complete);
   const jointComplete = jointActionCount(state);
   let reason = '';
-  if (!state.flags.banquet_balanced) reason = '中秋那三杯还没一同斟满。';
+  const coverage = jointParticipantCoverage(state);
+  if (!publicPromisesReady(state)) reason = '三场公开问责还没都给出五人可以一同承担的口径。';
   else if (missing.length) reason = `还缺：${missing.map((row) => row.label).join('、')}。`;
   else if (jointComplete < JOINT_ACTION_TARGET) {
-    reason = `还要让不同院门合办两桩事（${jointComplete}/${JOINT_ACTION_TARGET}）。`;
+    reason = `还要让不同院门合办五桩事（${jointComplete}/${JOINT_ACTION_TARGET}）。`;
   }
+  else if (HEROINE_IDS.some((id) => !coverage.has(id))) reason = '五个人还没都在合办事上出过力。';
   else {
     const low = HEROINE_IDS.find((id) => state.relations[id].qing < 30);
     const angry = HEROINE_IDS.find((id) => state.relations[id].du >= 70);
-    if (low) reason = `${HEROINES[low].short}还没肯把这件事当成三个人的事。`;
+    if (low) reason = `${HEROINES[low].short}还没肯把这件事当成五个人的事。`;
     else if (angry) reason = `${HEROINES[angry].short}的火还没压下去。`;
-    else if (state.resources.house < 45) reason = '宅门还没稳住，三个人谁也不肯替你收外账。';
+    else if (state.resources.house < 45) reason = '宅门还没稳住，五个人谁也不肯替你收外账。';
   }
   return {
     visible: state.day === MAX_DAY && state.phase === 'choose_visit',
@@ -511,10 +532,10 @@ export function sharedNightStatus(state) {
 
 export function startSharedNight(state) {
   if (state.phase !== 'choose_visit' || state.day !== MAX_DAY) {
-    return { ok: false, error: '还没到请三人同席的时候。' };
+    return { ok: false, error: '还没到请五人同席的时候。' };
   }
-  if (!state.flags.banquet_balanced) {
-    return { ok: false, error: '中秋那三杯没有同斟，今夜请不齐三个人。' };
+  if (!publicPromisesReady(state)) {
+    return { ok: false, error: '三场公开问责没有结成共同口径，今夜请不齐五个人。' };
   }
   state.currentHeroine = null;
   state.phase = 'shared_night';
@@ -525,29 +546,30 @@ export function startSharedNight(state) {
 export function sharedNightOptions(state) {
   if (state.phase !== 'shared_night') return [];
   const status = sharedNightStatus({ ...state, phase: 'choose_visit' });
-  return SHARED_NIGHT_CHOICES.map((choice) => ({
-    ...choice,
-    disabled: choice.id === 'shared_divide_roles'
-      ? !status.ready
-      : choice.id === 'shared_buy_quiet' && state.resources.silver < 40,
-    locked: choice.id === 'shared_divide_roles' && !status.ready
-      ? status.reason
-      : choice.id === 'shared_buy_quiet' && state.resources.silver < 40
-        ? '手里凑不出四十两。'
-        : '',
-  }));
+  return SHARED_NIGHT_CHOICES.map((choice) => {
+    const cost = Math.max(0, -(choice.effects?.silver ?? 0));
+    return {
+      ...choice,
+      disabled: choice.id === COALITION_CHOICE_ID ? !status.ready : cost > state.resources.silver,
+      locked: choice.id === COALITION_CHOICE_ID && !status.ready
+        ? status.reason
+        : cost > state.resources.silver
+          ? `手里凑不出${silverText(cost)}两。`
+          : '',
+    };
+  });
 }
 
 export function chooseSharedNight(state, choiceId) {
-  if (state.phase !== 'shared_night') return { ok: false, error: '三个人还没坐到同一张桌上。' };
+  if (state.phase !== 'shared_night') return { ok: false, error: '五个人还没坐到同一张桌上。' };
   const choice = sharedNightOptions(state).find((item) => item.id === choiceId);
   if (!choice) return { ok: false, error: '没有这个同席选择。' };
   if (choice.disabled) return { ok: false, error: choice.locked };
-  applyEffects(state, choice.effects, null, `三人同席：${choice.label}`);
+  applyEffects(state, choice.effects, null, `五人同席：${choice.label}`);
   state.sharedNightChoice = choiceId;
   record(state, 'shared_night', { choice: choiceId, public: true });
   state.log.push(choice.text);
-  if (choiceId === 'shared_divide_roles') {
+  if (choiceId === COALITION_CHOICE_ID) {
     unlockScene(state, 'inner_court_accord');
     state.pendingScene = 'inner_court_accord';
     state.sceneReturnPhase = 'after_shared_work';
@@ -609,10 +631,16 @@ function finishSharedNight(state) {
   state.over = true;
 }
 
-// 个人弧线的拍号 = 你第几次进她的门(结算成功才计次),钳在最后一拍。
+// 个人弧线的拍号 = 你第几次进她的门(结算成功才计次)。
 // 取代旧的 state.day - 1:按日历天索引会让轮换玩家撞上「好选项被锁、只能选伤害项」。
 function routeStep(state, heroineId) {
-  return Math.min(state.visits?.[heroineId] ?? 0, (ROUTE_CHOICES[heroineId]?.length ?? 1) - 1);
+  return state.visits?.[heroineId] ?? 0;
+}
+
+export function routeComplete(state, heroineId) {
+  const routeDone = routeStep(state, heroineId) >= (ROUTE_CHOICES[heroineId]?.length ?? 0);
+  const accord = ACCORD_CHOICES[heroineId];
+  return routeDone && (!accord || !!state.accords?.[accord.effects.accord]);
 }
 
 export function visitChoices(state, heroineId) {
@@ -628,6 +656,7 @@ export function visitChoices(state, heroineId) {
 export function startVisit(state, heroineId) {
   if (state.phase !== 'choose_visit') return { ok: false, error: '现在还不能去她屋里。' };
   if (!HEROINE_IDS.includes(heroineId)) return { ok: false, error: '没有这处院门。' };
+  if (routeComplete(state, heroineId)) return { ok: false, error: '她这条路已经走到了结果，今夜应去回应别的院门。' };
   state.currentHeroine = heroineId;
   state.phase = 'visit';
   record(state, 'visit_start', { heroine: heroineId, visible: true });
@@ -647,7 +676,7 @@ export function chooseVisit(state, choiceId) {
     record(state, 'accord_term', { heroine: state.currentHeroine, term: choice.effects.accord, choice: choiceId });
   } else {
     state.visits[state.currentHeroine] = (state.visits[state.currentHeroine] ?? 0) + 1;
-    record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: state.day === 5 });
+    record(state, 'visit_choice', { heroine: state.currentHeroine, choice: choiceId, public: !!PUBLIC_EVENTS[state.day] });
   }
   state.log.push(choice.text);
   state.phase = 'night';
@@ -655,11 +684,23 @@ export function chooseVisit(state, choiceId) {
 }
 
 function explicitSceneId(heroineId) {
-  return ({ wu_yueniang: 'yue_explicit', pan_jinlian: 'pan_explicit', li_pinger: 'pinger_explicit' })[heroineId];
+  return ({
+    wu_yueniang: 'yue_explicit',
+    pan_jinlian: 'pan_explicit',
+    li_pinger: 'pinger_explicit',
+    meng_yulou: 'meng_explicit',
+    sun_xuee: 'xuee_explicit',
+  })[heroineId];
 }
 
 function preludeSceneId(heroineId) {
-  return ({ wu_yueniang: 'yue_prelude', pan_jinlian: 'pan_prelude', li_pinger: 'pinger_prelude' })[heroineId];
+  return ({
+    wu_yueniang: 'yue_prelude',
+    pan_jinlian: 'pan_prelude',
+    li_pinger: 'pinger_prelude',
+    meng_yulou: 'meng_prelude',
+    sun_xuee: 'xuee_prelude',
+  })[heroineId];
 }
 
 function nightEligibility(state, heroineId) {
@@ -667,7 +708,7 @@ function nightEligibility(state, heroineId) {
   if (heroineId === 'wu_yueniang') return {
     prelude: rel.qing >= 28 && state.resources.repute >= 3,
     preludeReason: '你在人前还没给够她正堂的脸。',
-    explicit: rel.qing >= 55 && state.flags.kept_yue_word && state.resources.house >= 50 && !routeCooling(state, 'wu_yueniang') && ['ledger', 'banquet'].includes(state.selectedDayAction),
+    explicit: rel.qing >= 55 && state.accords.order && state.resources.house >= 45 && !routeCooling(state, 'wu_yueniang') && ['ledger', 'banquet'].includes(state.selectedDayAction),
     explicitReason: routeCooling(state, 'wu_yueniang') ? '“正堂不是替你擦屁股的。”今日她不留门。' : '先办成答应她的事。今日的账或席面，也得收拾干净。',
   };
   if (heroineId === 'pan_jinlian') return {
@@ -675,26 +716,48 @@ function nightEligibility(state, heroineId) {
     preludeReason: '她还等着一句不躲闪的真话。',
     explicit: rel.qing >= 40 && rel.yu >= 60 && rel.ignored < 2
       && !state.flags.broken_pan_word
-      && (state.flags.pan_promised || state.flags.kept_pan_word)
+      && state.accords.truth
       && !routeCooling(state, 'pan_jinlian') && state.selectedDayAction === 'listen',
     explicitReason: state.flags.broken_pan_word
-      ? '“官人那句独占，原来三处都能用。”她笑着把门关上。'
+      ? '“官人那句独占，原来五处都能用。”她笑着把门关上。'
       : rel.ignored >= 2
         ? '“两夜不见人，今夜倒想起这扇门？”她没有让开。'
         : routeCooling(state, 'pan_jinlian')
           ? '“空话留给席上说。”她今日笑着关门。'
           : '先还她那杯酒。今日问来的口风，也别瞒着她。',
   };
-  return {
-    prelude: rel.qing >= 35 && state.flags.pinger_route,
+  if (heroineId === 'li_pinger') return {
+    prelude: rel.qing >= 30,
     preludeReason: '那本账，她还没敢交到你手里。',
-    explicit: rel.qing >= 55 && state.flags.protected_pinger && !state.flags.pinger_exposed
+    explicit: rel.qing >= 55 && state.accords.safety && !state.flags.pinger_exposed
       && !routeCooling(state, 'li_pinger') && ['ledger', 'office'].includes(state.selectedDayAction),
     explicitReason: state.flags.pinger_exposed
       ? '“我的账已经叫人听过一回。”她把钥匙重新系回腰间。'
       : routeCooling(state, 'li_pinger')
         ? '“你要的是箱子，不是我。”钥匙今日收着。'
         : '先替她守住那本账。今日的外债，也得亲手办妥。',
+  };
+  if (heroineId === 'meng_yulou') return {
+    prelude: rel.qing >= 28 && state.resources.repute >= 2,
+    preludeReason: '她还没看见你能把利害和情分分开讲清。',
+    explicit: rel.qing >= 52 && state.accords.grace && !state.flags.broken_meng_word
+      && !routeCooling(state, heroineId) && ['banquet', 'office'].includes(state.selectedDayAction),
+    explicitReason: state.flags.broken_meng_word
+      ? '“名帖能借，我的退路不借。”玉楼仍在笑，门闩却已经落下。'
+      : routeCooling(state, heroineId)
+        ? '“今日先把说过的条件兑现。”她没有留门。'
+        : '先让她的功劳能在人前站住，今日也要办妥一桩官面事。',
+  };
+  return {
+    prelude: rel.qing >= 28 && state.resources.house >= 35,
+    preludeReason: '她还不信你能看见灶上的人，而不是只看见一碗冷饭。',
+    explicit: rel.qing >= 52 && state.accords.hearth && !state.flags.broken_xuee_word
+      && !routeCooling(state, heroineId) && ['ledger', 'listen'].includes(state.selectedDayAction),
+    explicitReason: state.flags.broken_xuee_word
+      ? '“你只要我的证据，没要过我这个人。”雪娥收火后没再回头。'
+      : routeCooling(state, heroineId)
+        ? '她把围裙系得更紧：“今日不是一句软话就能算了的。”'
+        : '先当众还她管灶与作证的权限，今日也要亲手核过账或口供。',
   };
 }
 
@@ -744,11 +807,21 @@ export function chooseNight(state, actionId) {
       changeResources(state, { strain: 12, exposure: 6 });
       addSecret(state, 'pan_rumor');
       addFlag(state, 'pan_morning_claim');
-    } else {
+    } else if (heroine === 'li_pinger') {
       changeRel(state, heroine, { qing: 12, yu: 6, du: -8 }, '你先护住她的账，才在私院留下');
       changeResources(state, { house: 4, strain: 8 });
       addSecret(state, 'merchant_route');
       addFlag(state, 'pinger_morning_route');
+    } else if (heroine === 'meng_yulou') {
+      changeRel(state, heroine, { qing: 10, yu: 7, du: -8 }, '条件一项项讲明后，是她亲手落下门闩');
+      changeResources(state, { repute: 1, strain: 8 });
+      addSecret(state, 'meng_guest_list');
+      addFlag(state, 'meng_morning_invitation');
+    } else {
+      changeRel(state, heroine, { qing: 11, yu: 7, du: -9 }, '你先把免罚与亲近分开，再等她亲手收火');
+      changeResources(state, { house: 6, strain: 9 });
+      addSecret(state, 'xuee_storehouse_mark');
+      addFlag(state, 'xuee_morning_breakfast');
     }
     for (const other of HEROINE_IDS.filter((id) => id !== heroine)) {
       changeRel(state, other, { du: 9 }, `她知道你昨夜留在${HEROINES[heroine].house}`);
@@ -830,7 +903,7 @@ function applyUpkeep(state) {
   return { type: 'upkeep', cost, paid };
 }
 
-// 第 4 日结转收账:四十两了结;拿不出,他就闹上门,宅门、暴露与三人的妒一起涨。
+// 第 4 日结转收账:四十两了结;拿不出,他就闹上门,宅门、暴露与五人的妒一起涨。
 function settleCollector(state) {
   if (state.resources.silver >= COLLECTOR_PRICE) {
     state.resources.silver -= COLLECTOR_PRICE;
@@ -858,8 +931,8 @@ function collectorText(paid) {
 }
 
 // 曝光每日结转(F3):高曝光从这夜起开始咬人,三档全部落在场面上。
-// ≥25 门房替你打发打听的人,封口钱日扣十五两;≥40 闲话传进院,三人都记一笔妒;
-// ≥55 的第三档(官面与三杯同斟关门)在 dayOptions()/banquetOptions() 里读。
+// ≥25 门房替你打发打听的人,封口钱日扣十五两;≥40 闲话传进院,五人都记一笔妒;
+// ≥55 的第三档(官面与公开同盟关门)在 dayOptions()/banquetOptions() 里读。
 function applyExposurePressure(state) {
   const exposure = state.resources.exposure;
   if (exposure >= EXPOSURE_STREET) {
@@ -909,6 +982,18 @@ function pickMorningEvent(state, visited) {
   if (state.flags.pinger_morning_route && !state.flags.pinger_route_paid) {
     return { id: 'pinger_help', actor: 'li_pinger', tone: 'backing', title: '瓶儿把一条货路压在早茶下', text: '瓶儿放下茶盘，手指在货单上停了停：“拿这张去城门，别再送那三十两。”她走到门边，又回头加了一句：“晚上回来，让我知道它用在了哪里。”' };
   }
+  if (state.flags.meng_morning_invitation && !state.flags.meng_invitation_paid) {
+    return {
+      id: 'meng_invitation', actor: 'meng_yulou', tone: 'backing', title: '玉楼将五张名帖一张张排在早茶旁',
+      text: '玉楼已重新系好衣带，只留一缕头发还没绾起。她按住第三张名帖：“昨夜说的情分留在门内，今日这份功劳，得让门外的人也知道是谁做的。”',
+    };
+  }
+  if (state.flags.xuee_morning_breakfast && !state.flags.xuee_breakfast_paid) {
+    return {
+      id: 'xuee_breakfast', actor: 'sun_xuee', tone: 'backing', title: '雪娥亲自送来五碗不同的早饭',
+      text: '雪娥的围裙已重新系好，手背却还留着昨夜火边的红痕。她把五张食单压在碗底：“谁少了什么，谁多领了什么，我都写了。你要真话，就别只在没人时认我。”',
+    };
+  }
   if (state.flags.pan_morning_claim && !state.flags.pan_claim_paid) {
     return { id: 'pan_claim', actor: 'pan_jinlian', tone: 'jealous', title: '金莲拿着你昨夜落下的衣带', text: '金莲用你落下的衣带缠着指尖，把门挡得严严实实：“昨夜还会抱着人不放，今早穿好衣裳，就又只认得账了？”' };
   }
@@ -926,6 +1011,14 @@ function pickMorningEvent(state, visited) {
         title: '瓶儿送来一盏没放糖的茶',
         text: `瓶儿把茶盏递给你，眼睛却看着${HEROINES[visited].house}的门：“我不问昨夜。只是官人今日若再来，别又叫我从别人嘴里才知道。”`,
       },
+      meng_yulou: {
+        title: '玉楼请你在廊下补签一张名帖',
+        text: `玉楼看了一眼${HEROINES[visited].house}门前没收的灯，笑着将笔递来：“夜里去哪里是情分，白日承认谁做了事是规矩。官人总不会连名字也不敢写。”`,
+      },
+      sun_xuee: {
+        title: '雪娥把一只冷了的食盒放在你手里',
+        text: `雪娥朝${HEROINES[visited].house}一扬下巴：“那院里多添一道菜，灶上就得多起一遍火。你们夜里的情分，凭什么叫我们天不亮就替你藏？”`,
+      },
     }[actor];
     return {
       id: 'jealousy', actor, tone: 'jealous',
@@ -936,6 +1029,8 @@ function pickMorningEvent(state, visited) {
     wu_yueniang: '月娘没有叫人来催，只把你落在枕边的钥匙与早茶一起放好。等你醒时，她已经坐在窗下翻完了半本账。',
     pan_jinlian: '金莲趴在床边看你醒，手里正缠着你的衣带。她不提另两处门，只把凉茶送到你唇边：“喝了。醒了再看你会不会反悔。”',
     li_pinger: '瓶儿让人送来醒酒茶，自己却还坐在床沿。钥匙已重新系好，她的手却没有从你袖口移开：“再坐一会儿。外头那些人，叫他们等。”',
+    meng_yulou: '玉楼先把两人议定的条款折好，才将门闩抬起。她回头伸手：“纸上的是退路。我现在留你，是我自己选的。”',
+    sun_xuee: '雪娥把灶火压低，洗净手，又问了一次今日不会因拒绝受罚。得到答案后，她才解下围裙放到米账旁：“那就再坐一会。”',
   }[visited];
   return {
     id: 'quiet', actor: visited, tone: 'quiet', title: '醒酒茶还没凉',
@@ -976,6 +1071,8 @@ export function resolveMorning(state, choiceId) {
         wu_yueniang: `你没叫下人送匣子，而是陪月娘亲自走了一趟。她挑了一支素簪，只花${silverText(cost)}两，回程却一直没有松开你的袖口：“银子算在你账上，这半日算给我。”`,
         pan_jinlian: `金莲试了三支簪，偏挑中最贵的那支。你付下${silverText(cost)}两时，她对着铜镜笑：“官人别心疼。今早花的是银子，再晚一日，我要的就不止这个了。”`,
         li_pinger: `瓶儿原只肯挑一枚便宜的耳坠。你付下${silverText(cost)}两，亲手替她戴好。她对着镜子看了很久，轻声说：“我记得的不是这个，是你今早没让我一个人去。”`,
+        meng_yulou: `玉楼挑了一枚只刻名字的玉扣。你付下${silverText(cost)}两，她当着掌柜的面把你的名字也写进定单：“情分不必让外人看，责任却不许只留我一个人的名。”`,
+        sun_xuee: `雪娥不肯买簪，最后选了一把真能用的铜刀。你付下${silverText(cost)}两时，她试了试刃口：“这东西我收。你今早亲自来，我也收。两笔别混着算。”`,
       })[actor];
     } else if (choiceId === 'explain') {
       changeResources(state, { exposure: 5 });
@@ -984,6 +1081,8 @@ export function resolveMorning(state, choiceId) {
         wu_yueniang: '你把月娘请进门，从昨夜第一杯酒说到天亮。她听完才端起那盏凉茶：“好。真话不一定好听，总比叫我从廊下闲话里拼凑强。”',
         pan_jinlian: '你关上门，当着金莲的面说清昨夜去了哪里、停在哪一步。她的扇子终于不再敲门：“这就对了。我吃醋是我的事，官人撒谎可就是你的错。”',
         li_pinger: '你让瓶儿进门，将昨夜的去处一句不省地说给她。她沉默片刻，把那盏没放糖的茶换走：“我听了会难过。可总好过他人拿它来笑我。”',
+        meng_yulou: '你将昨夜的去处和今日会公开的事一并说清。玉楼把那张未署名的名帖撤了：“行。真话不能叫人舒服，却能让我自己决定留不留。”',
+        sun_xuee: '你在灶房门口把昨夜说清，没有叫她先放下手里的活。雪娥听完才揭开食盒：“难听是难听。可这比叫我猜着该少做几个人的饭强。”',
       })[actor];
     } else {
       changeResources(state, { house: -3 });
@@ -992,6 +1091,8 @@ export function resolveMorning(state, choiceId) {
         wu_yueniang: '你越过月娘往前走。她没拦，只把那盏凉茶泼在廊下：“好。既然官人不愿对账，这一页我自己记。”',
         pan_jinlian: '你伸手拨开金莲的扇子。她立刻让了路，笑得比方才更甜：“官人走好。今日这股香，我保管叫满院都闻见。”',
         li_pinger: '你只说了一句“别多心”。瓶儿点点头，把没放糖的茶原样端了回去。到门口时，她已经将钥匙换到另一只袖里。',
+        meng_yulou: '你没接那支笔。玉楼仍笑着，自己把名帖折起：“好。不敢写的话，就不必说给我听了。”',
+        sun_xuee: '你叫雪娥别把灶上的事闹到人前。她拎起冷食盒就走：“行。以后院里多开几遍火，也都算我多事。”',
       })[actor];
     }
     if (event.id === 'pan_claim') addFlag(state, 'pan_claim_paid');
@@ -1025,6 +1126,24 @@ export function resolveMorning(state, choiceId) {
       resultText = '你看过货单，却没有收，只说自己已有打算。瓶儿把它重新压回茶盘下，轻声道：“好。那你就照自己的路走。”';
     }
     addFlag(state, 'pinger_route_paid');
+  } else if (event.id === 'meng_invitation') {
+    if (!['accept', 'note'].includes(choiceId)) return { ok: false, error: '先回她这五张名帖怎么署名。' };
+    if (choiceId === 'accept') {
+      addSecret(state, 'meng_guest_list');
+      changeRel(state, actor, { qing: 5, du: -6 }, '你把她的名字署在功劳上');
+      changeResources(state, { repute: 1 });
+      resultText = '你亲手在五张名帖上补了“孟玉楼经手”。她逐张吹干墨迹：“这就好。今夜的事不必写，今日的功劳不许没名。”';
+    }
+    addFlag(state, 'meng_invitation_paid');
+  } else if (event.id === 'xuee_breakfast') {
+    if (!['accept', 'note'].includes(choiceId)) return { ok: false, error: '先回她这五张食单要不要入账。' };
+    if (choiceId === 'accept') {
+      addSecret(state, 'xuee_storehouse_mark');
+      changeRel(state, actor, { qing: 5, du: -7 }, '你当着灶上众人认下她的证据');
+      changeResources(state, { house: 4 });
+      resultText = '你把五张食单原样送进正堂账册，没删她的名字。雪娥这才把最热的那碗面推给你：“吃吧。这碗是我愿意做的。”';
+    }
+    addFlag(state, 'xuee_breakfast_paid');
   }
   record(state, 'morning', { event: event.id, actor, choice: choiceId });
   state.log.push(resultText);
@@ -1054,20 +1173,23 @@ export function determineEnding(state) {
   const top = sorted[0];
   let id = 'unstable';
   if (
-    state.flags.harem_coalition
+    state.day === MAX_DAY
+    && state.flags.harem_coalition
+    && ACCORD_KEYS.every((key) => state.accords?.[key])
     && state.unlocked.includes('inner_court_accord')
     && state.unlocked.includes('inner_court_afterglow')
     && state.sharedAfterglowChoices.length === SHARED_AFTERGLOW_BEATS.length
     && SHARED_DAWN_CHOICE_IDS.has(state.sharedDawnChoice)
     && jointActionCount(state) >= JOINT_ACTION_TARGET
+    && HEROINE_IDS.every((heroine) => jointParticipantCoverage(state).has(heroine))
     && HEROINE_IDS.every((heroine) => qing[heroine] >= 30 && state.relations[heroine].du < 70)
     && state.resources.house >= 45
-    && state.flags.banquet_balanced
+    && publicPromisesReady(state)
   ) {
     id = 'balanced';
-  } else if (qing[top] >= 60 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 50)) {
+  } else if (state.day === MAX_DAY && qing[top] >= 70 && explicitByHeroine[top] && sorted.slice(1).every((heroine) => qing[heroine] < 60)) {
     id = 'exclusive';
-  } else if (state.secretsUsed.length >= 2 && (state.resources.power >= 4 || state.resources.silver >= INTRIGUE_SILVER)) {
+  } else if (state.day === MAX_DAY && state.secretsUsed.length >= 4 && (state.resources.power >= 5 || state.resources.silver >= INTRIGUE_SILVER)) {
     // 曝光不再是权谋的达成条件(F3:高曝光是代价,不是奖励),它只决定这一局的成色。
     id = 'intrigue';
   }
@@ -1079,10 +1201,10 @@ export function determineEnding(state) {
     text = ENDINGS.intrigue.texts[intrigueCost];
   } else if (id === 'unstable') {
     // F4:输要输得明白——按优先级回读具体差在哪一条,不再共用一句收尾。
-    if (qing[top] >= 60 && !explicitByHeroine[top]) missedBy = 'no_scene';
-    else if (qing[top] >= 60) missedBy = 'second_too_close';
-    else if (!state.flags.banquet_balanced && HEROINE_IDS.some((heroine) => state.publicOverrides[heroine] > 0)) missedBy = 'broke_word';
-    else if (state.secretsUsed.length >= 2) missedBy = 'not_enough_power';
+    if (qing[top] >= 70 && !explicitByHeroine[top]) missedBy = 'no_scene';
+    else if (qing[top] >= 70) missedBy = 'second_too_close';
+    else if (!publicPromisesReady(state) && HEROINE_IDS.some((heroine) => state.publicOverrides[heroine] > 0)) missedBy = 'broke_word';
+    else if (state.secretsUsed.length >= 4) missedBy = 'not_enough_power';
     else missedBy = 'spread_thin';
     text = ENDINGS.unstable.texts[missedBy].replace('{name}', HEROINES[top].name);
   }
@@ -1090,6 +1212,8 @@ export function determineEnding(state) {
     wu_yueniang: state.flags.yue_co_rule ? '共掌一宅' : '一院灯深',
     pan_jinlian: state.flags.pan_open_choice ? '火里同谋' : '话已算数',
     li_pinger: state.flags.pinger_same_chest ? '同箱共命' : '钥匙未收',
+    meng_yulou: state.flags.meng_free_contract ? '并肩立约' : '名帖有名',
+    sun_xuee: state.flags.xuee_shared_hearth ? '灶火同守' : '米账入册',
   })[top] : null;
   return {
     id,
@@ -1120,27 +1244,202 @@ export function serialize(state) {
 
 const isRecord = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
 const hasFiniteFields = (value, keys) => isRecord(value) && keys.every((key) => Number.isFinite(value[key]));
+const hasExactKeys = (value, keys) => isRecord(value)
+  && Object.keys(value).sort().join('\0') === [...keys].sort().join('\0');
+const inRange = (value, min, max) => Number.isFinite(value) && value >= min && value <= max;
+
+const OPENING_CHOICE_IDS = new Set(OPENING_CHOICES.map((choice) => choice.id));
+const ROUTE_CHOICE_IDS = Object.freeze(Object.fromEntries(HEROINE_IDS.map((id) => [
+  id,
+  new Set([...(ROUTE_CHOICES[id] ?? []).flat().map((choice) => choice.id), ACCORD_CHOICES[id]?.id].filter(Boolean)),
+])));
+const HISTORY_TYPES = new Set([
+  'opening', 'day_action', 'joint_action', 'household', 'banquet', 'visit_start',
+  'accord_term', 'visit_choice', 'night', 'morning', 'shared_night_start',
+  'shared_night', 'shared_afterglow', 'shared_dawn', 'route_break', 'upkeep_short', 'collector',
+]);
+const KNOWN_SECRET_IDS = new Set([
+  ...DAY_DEFS.map((day) => day.intel.id),
+  'steward_gap', 'yue_backing', 'merchant_route', 'pan_rumor', 'meng_guest_list',
+  'xuee_storehouse_mark', 'collector_floor', 'draft_mark', 'escape_route',
+  'guest_obligations', 'kitchen_witness', 'labor_copy', 'old_deed', 'pinger_funds', 'shop_fraud',
+]);
+
+function validHistoryEntry(entry, maxDay) {
+  if (!isRecord(entry) || !Number.isInteger(entry.day) || entry.day < 1 || entry.day > maxDay || !HISTORY_TYPES.has(entry.type)) return false;
+  if (entry.type === 'opening') return entry.day === 1 && OPENING_CHOICE_IDS.has(entry.choice);
+  if (entry.type === 'day_action') return !!DAY_ACTIONS[entry.action];
+  if (entry.type === 'joint_action') return JOINT_ACTION_IDS.has(entry.action);
+  if (entry.type === 'household') {
+    const event = HOUSEHOLD_EVENTS[entry.day];
+    return !!event && entry.event === event.id && entry.actor === event.actor && event.choices.some((choice) => choice.id === entry.choice);
+  }
+  if (entry.type === 'banquet') {
+    const event = PUBLIC_EVENTS[entry.day];
+    return !!event && entry.event === event.id && event.choices.some((choice) => choice.id === entry.choice);
+  }
+  if (entry.type === 'visit_start') return HEROINE_IDS.includes(entry.heroine);
+  if (entry.type === 'accord_term') {
+    const choice = ACCORD_CHOICES[entry.heroine];
+    return !!choice && entry.choice === choice.id && entry.term === choice.effects.accord;
+  }
+  if (entry.type === 'visit_choice') return HEROINE_IDS.includes(entry.heroine) && ROUTE_CHOICE_IDS[entry.heroine].has(entry.choice) && entry.choice !== ACCORD_CHOICES[entry.heroine]?.id;
+  if (entry.type === 'night') {
+    if (!HEROINE_IDS.includes(entry.heroine) || !['leave', 'talk', 'prelude', 'explicit'].includes(entry.action)) return false;
+    const expectedScene = entry.action === 'prelude' ? preludeSceneId(entry.heroine) : entry.action === 'explicit' ? explicitSceneId(entry.heroine) : null;
+    return (entry.scene ?? null) === expectedScene;
+  }
+  if (entry.type === 'morning') return HEROINE_IDS.includes(entry.actor) && MORNING_EVENT_IDS.has(entry.event);
+  if (entry.type === 'shared_night_start') return entry.day === MAX_DAY;
+  if (entry.type === 'shared_night') return entry.day === MAX_DAY && SHARED_NIGHT_CHOICES.some((choice) => choice.id === entry.choice);
+  if (entry.type === 'shared_afterglow') {
+    const beat = SHARED_AFTERGLOW_BEATS.find((row) => row.id === entry.beat);
+    return entry.day === MAX_DAY && !!beat && beat.choices.some((choice) => choice.id === entry.choice);
+  }
+  if (entry.type === 'shared_dawn') return entry.day === MAX_DAY && SHARED_DAWN_CHOICE_IDS.has(entry.choice);
+  if (entry.type === 'route_break') return entry.heroine === null || HEROINE_IDS.includes(entry.heroine);
+  if (entry.type === 'collector') return typeof entry.paid === 'boolean';
+  return true;
+}
+
+function rowsOn(state, day, types) {
+  const wanted = new Set(Array.isArray(types) ? types : [types]);
+  return state.history.filter((entry) => entry.day === day && wanted.has(entry.type));
+}
+
+function validProcessHistory(state) {
+  if (!state.history.every((entry) => validHistoryEntry(entry, state.day))) return false;
+  if (!state.log.every((entry) => typeof entry === 'string')) return false;
+  if (state.phase === 'opening') {
+    return state.history.length === 0
+      && state.selectedDayAction === null
+      && state.currentHeroine === null
+      && state.currentHouseholdEvent === null
+      && state.currentJointAction === null;
+  }
+  const openings = state.history.filter((entry) => entry.type === 'opening');
+  if (openings.length !== 1) return false;
+  for (let day = 1; day < state.day; day += 1) {
+    if (rowsOn(state, day, ['day_action', 'joint_action']).length !== 1) return false;
+    if (rowsOn(state, day, 'night').length !== 1) return false;
+  }
+  for (let day = 2; day < state.day; day += 1) {
+    if (rowsOn(state, day, 'morning').length !== 1) return false;
+  }
+  const currentMorningCount = rowsOn(state, state.day, 'morning').length;
+  const expectedCurrentMorning = state.day === 1 || state.phase === 'morning' ? 0 : 1;
+  if (currentMorningCount !== expectedCurrentMorning) return false;
+
+  const currentWork = rowsOn(state, state.day, ['day_action', 'joint_action']);
+  const beforeDayWork = ['morning', 'day'].includes(state.phase);
+  if (currentWork.length !== (beforeDayWork ? 0 : 1)) return false;
+  if (beforeDayWork) {
+    if (state.selectedDayAction !== null) return false;
+  } else if (state.phase === 'ending') {
+    if (state.selectedDayAction !== null) return false;
+  } else if (state.selectedDayAction !== currentWork[0].action) return false;
+
+  const personalSceneOpen = state.phase === 'scene' && state.sceneReturnPhase === 'after_night';
+  const personalEnding = state.phase === 'ending' && state.sharedNightChoice === null;
+  const currentNightRows = rowsOn(state, state.day, 'night');
+  if (currentNightRows.length !== (personalSceneOpen || personalEnding ? 1 : 0)) return false;
+
+  const visitStarts = rowsOn(state, state.day, 'visit_start');
+  const visitResolutions = rowsOn(state, state.day, ['visit_choice', 'accord_term']);
+  const duringPersonalVisit = ['visit', 'night'].includes(state.phase) || personalSceneOpen || personalEnding;
+  if (visitStarts.length !== (duringPersonalVisit ? 1 : 0)) return false;
+  if (visitResolutions.length !== (['night'].includes(state.phase) || personalSceneOpen || personalEnding ? 1 : 0)) return false;
+  if (duringPersonalVisit && visitStarts[0].heroine !== (state.currentHeroine ?? currentNightRows[0]?.heroine)) return false;
+
+  const jointHistory = state.history.filter((entry) => entry.type === 'joint_action').map((entry) => entry.action);
+  if (jointHistory.join('\0') !== state.jointActions.join('\0')) return false;
+  for (const id of HEROINE_IDS) {
+    if (state.visits[id] !== state.history.filter((entry) => entry.type === 'visit_choice' && entry.heroine === id).length) return false;
+    const term = ACCORD_CHOICES[id].effects.accord;
+    const termCount = state.history.filter((entry) => entry.type === 'accord_term' && entry.heroine === id && entry.term === term).length;
+    if (termCount > 1 || state.accords[term] !== (termCount === 1)) return false;
+  }
+  for (const day of PUBLIC_EVENT_DAYS) {
+    const event = PUBLIC_EVENTS[day];
+    const balancedHistory = state.history.some((entry) => entry.type === 'banquet' && entry.day === day
+      && event.choices.find((choice) => choice.id === entry.choice)?.effects?.flags?.includes(event.balanceFlag));
+    if (!!state.flags[event.balanceFlag] !== balancedHistory) return false;
+  }
+
+  const derivedUnlocked = new Set();
+  for (const entry of state.history) {
+    if (entry.type === 'night' && entry.scene) derivedUnlocked.add(entry.scene);
+    if (entry.type === 'banquet') derivedUnlocked.add(PUBLIC_EVENTS[entry.day].scene);
+    if (entry.type === 'shared_night' && entry.choice === COALITION_CHOICE_ID) derivedUnlocked.add('inner_court_accord');
+  }
+  const afterglowHistory = state.history.filter((entry) => entry.type === 'shared_afterglow');
+  if (afterglowHistory.length === SHARED_AFTERGLOW_BEATS.length) derivedUnlocked.add('inner_court_afterglow');
+  if (derivedUnlocked.size !== state.unlocked.length || state.unlocked.some((id) => !derivedUnlocked.has(id))) return false;
+
+  const sharedStarts = state.history.filter((entry) => entry.type === 'shared_night_start');
+  const sharedRows = state.history.filter((entry) => entry.type === 'shared_night');
+  if (state.phase === 'shared_night') {
+    if (sharedStarts.length !== 1 || sharedRows.length !== 0 || state.sharedNightChoice !== null) return false;
+  } else if (state.sharedNightChoice !== null) {
+    if (sharedStarts.length !== 1 || sharedRows.length !== 1 || sharedRows[0].choice !== state.sharedNightChoice) return false;
+  } else if (sharedStarts.length || sharedRows.length) return false;
+  if (afterglowHistory.length !== state.sharedAfterglowChoices.length) return false;
+  for (let index = 0; index < afterglowHistory.length; index += 1) {
+    if (afterglowHistory[index].beat !== SHARED_AFTERGLOW_BEATS[index].id || afterglowHistory[index].choice !== state.sharedAfterglowChoices[index]) return false;
+  }
+  const dawnRows = state.history.filter((entry) => entry.type === 'shared_dawn');
+  if (state.sharedDawnChoice === null ? dawnRows.length !== 0 : dawnRows.length !== 1 || dawnRows[0].choice !== state.sharedDawnChoice) return false;
+
+  const sharedTail = ['shared_afterglow', 'shared_dawn'].includes(state.phase)
+    || (state.phase === 'scene' && ['after_shared_work', 'after_shared_afterglow'].includes(state.sceneReturnPhase))
+    || (state.phase === 'ending' && state.sharedNightChoice === COALITION_CHOICE_ID);
+  if (sharedTail) {
+    const readiness = sharedNightStatus({ ...state, phase: 'choose_visit' });
+    if (!readiness.ready || state.sharedNightChoice !== COALITION_CHOICE_ID || !state.flags.harem_coalition) return false;
+  }
+  return true;
+}
 
 function validCurrentSave(state) {
   if (!isRecord(state) || state.version !== SAVE_VERSION) return false;
   if (!Number.isFinite(state.seed) || !Number.isInteger(state.day) || state.day < 1 || state.day > MAX_DAY) return false;
   if (!SAVE_PHASES.has(state.phase) || typeof state.over !== 'boolean') return false;
-  if (!hasFiniteFields(state.resources, RESOURCE_KEYS)) return false;
+  if (!hasExactKeys(state.resources, RESOURCE_KEYS) || !hasFiniteFields(state.resources, RESOURCE_KEYS)) return false;
+  if (state.resources.silver < 0
+    || !inRange(state.resources.power, 0, 6)
+    || !inRange(state.resources.repute, 0, 6)
+    || !inRange(state.resources.exposure, 0, 100)
+    || !inRange(state.resources.strain, 0, 100)
+    || !inRange(state.resources.house, 0, 100)) return false;
   if (!isRecord(state.flags)) return false;
   for (const key of ['secrets', 'secretsUsed', 'history', 'log', 'jointActions', 'sharedAfterglowChoices', 'unlocked']) {
     if (!Array.isArray(state[key])) return false;
   }
+  if ([state.secrets, state.secretsUsed, state.unlocked].some((rows) => new Set(rows).size !== rows.length)) return false;
+  if (state.secrets.some((id) => !KNOWN_SECRET_IDS.has(id)) || state.secretsUsed.some((id) => !KNOWN_SECRET_IDS.has(id))) return false;
+  if (state.secrets.some((id) => state.secretsUsed.includes(id))) return false;
+  if (![state.relations, state.publicOverrides, state.routeReopensOn, state.visits]
+    .every((map) => hasExactKeys(map, HEROINE_IDS))) return false;
   if (!HEROINE_IDS.every((id) => (
-    hasFiniteFields(state.relations?.[id], ['qing', 'yu', 'du', 'ignored'])
+    hasExactKeys(state.relations?.[id], ['qing', 'yu', 'du', 'ignored', 'reasons'])
+    && hasFiniteFields(state.relations[id], ['qing', 'yu', 'du', 'ignored'])
     && Array.isArray(state.relations[id].reasons)
-    && Number.isFinite(state.publicOverrides?.[id])
-    && Number.isFinite(state.routeReopensOn?.[id])
+    && inRange(state.relations[id].qing, 0, 100)
+    && inRange(state.relations[id].yu, 0, 100)
+    && inRange(state.relations[id].du, 0, 100)
+    && Number.isInteger(state.relations[id].ignored) && state.relations[id].ignored >= 0
+    && Number.isInteger(state.publicOverrides?.[id]) && state.publicOverrides[id] >= 0
+    && Number.isInteger(state.routeReopensOn?.[id]) && state.routeReopensOn[id] >= 0
     && Number.isInteger(state.visits?.[id])
+    && state.visits[id] >= 0 && state.visits[id] <= (ROUTE_CHOICES[id]?.length ?? 0)
   ))) return false;
+  if (!hasExactKeys(state.household, HOUSEHOLD_IDS)) return false;
   if (!HOUSEHOLD_IDS.every((id) => (
     hasFiniteFields(state.household?.[id], ['regard'])
     && Array.isArray(state.household[id].reasons)
+    && inRange(state.household[id].regard, -100, 100)
   ))) return false;
+  if (!hasExactKeys(state.accords, ACCORD_KEYS)) return false;
   if (!ACCORD_KEYS.every((key) => typeof state.accords?.[key] === 'boolean')) return false;
   const completed = new Set(state.jointActions);
   if (completed.size !== state.jointActions.length || [...completed].some((id) => !JOINT_ACTION_IDS.has(id))) return false;
@@ -1152,13 +1451,15 @@ function validCurrentSave(state) {
     if (!SCENES[state.pendingScene] || !['choose_visit', 'after_night', 'after_shared_work', 'after_shared_afterglow'].includes(state.sceneReturnPhase)) return false;
     if (state.sceneReturnPhase === 'after_night' && !HEROINE_IDS.includes(state.currentHeroine)) return false;
     if (state.sceneReturnPhase === 'after_night' && SCENES[state.pendingScene].heroine !== state.currentHeroine) return false;
-    if (state.sceneReturnPhase === 'choose_visit' && (state.day !== 5 || state.pendingScene !== 'banquet_conflict')) return false;
+    if (state.sceneReturnPhase === 'choose_visit' && PUBLIC_EVENTS[state.day]?.scene !== state.pendingScene) return false;
     if (state.sceneReturnPhase === 'after_shared_work' && (
       state.day !== MAX_DAY
       || state.pendingScene !== 'inner_court_accord'
-      || state.sharedNightChoice !== 'shared_divide_roles'
+      || state.sharedNightChoice !== COALITION_CHOICE_ID
       || !state.flags.harem_coalition
       || jointActionCount(state) < JOINT_ACTION_TARGET
+      || HEROINE_IDS.some((heroine) => !jointParticipantCoverage(state).has(heroine))
+      || !publicPromisesReady(state)
     )) return false;
     if (state.sceneReturnPhase === 'after_shared_afterglow' && (
       state.day !== MAX_DAY
@@ -1177,7 +1478,7 @@ function validCurrentSave(state) {
   if (state.phase === 'household' && state.currentHouseholdEvent !== HOUSEHOLD_EVENTS[state.day]?.id) return false;
   if (state.phase === 'opening' && state.day !== 1) return false;
   if (state.phase === 'morning' && state.day < 2) return false;
-  if (state.phase === 'banquet' && state.day !== 5) return false;
+  if (state.phase === 'banquet' && !PUBLIC_EVENTS[state.day]) return false;
   if (state.phase === 'shared_night' && (state.day !== MAX_DAY || state.sharedNightChoice !== null)) return false;
   if (state.sharedAfterglowChoices.some((id) => !SHARED_AFTERGLOW_CHOICE_IDS.has(id))) return false;
   if (state.sharedAfterglowChoices.length > SHARED_AFTERGLOW_BEATS.length) return false;
@@ -1187,7 +1488,7 @@ function validCurrentSave(state) {
   if (state.sharedDawnChoice !== null && !SHARED_DAWN_CHOICE_IDS.has(state.sharedDawnChoice)) return false;
   if (state.phase === 'shared_afterglow' && (
     state.day !== MAX_DAY
-    || state.sharedNightChoice !== 'shared_divide_roles'
+    || state.sharedNightChoice !== COALITION_CHOICE_ID
     || state.sharedAfterglowChoices.length >= SHARED_AFTERGLOW_BEATS.length
     || state.sharedDawnChoice !== null
   )) return false;
@@ -1200,6 +1501,10 @@ function validCurrentSave(state) {
   if (state.phase === 'ending') {
     if (state.day !== MAX_DAY || !state.over || !isRecord(state.ending) || !ENDINGS[state.ending.id]) return false;
   } else if (state.over || state.ending !== null) return false;
+  const personalSceneOpen = state.phase === 'scene' && state.sceneReturnPhase === 'after_night';
+  if ((['visit', 'night'].includes(state.phase) || personalSceneOpen) !== HEROINE_IDS.includes(state.currentHeroine)) return false;
+  if ((state.phase === 'household') !== (state.currentHouseholdEvent !== null)) return false;
+  if (!validProcessHistory(state)) return false;
   return true;
 }
 
@@ -1219,6 +1524,14 @@ export function snapshot(state) {
   return structuredClone(state);
 }
 
+export const APPROVED_ADULT_IDS = Object.freeze([
+  'wu_yueniang', 'pan_jinlian', 'li_pinger', 'meng_yulou', 'sun_xuee',
+]);
+
 export function sceneIsAdultSafe(scene) {
-  return !!scene && scene.participants.every((id) => HEROINE_IDS.includes(id));
+  const approved = new Set(APPROVED_ADULT_IDS);
+  return !!scene
+    && Array.isArray(scene.participants)
+    && scene.participants.length > 0
+    && scene.participants.every((id) => approved.has(id) && HEROINES[id]?.adult === true);
 }

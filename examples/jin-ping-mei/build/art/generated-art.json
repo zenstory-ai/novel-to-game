@@ -168,7 +168,7 @@
       "generatedAt": "2026-08-16",
       "toolVersion": "codex-cli 0.147.0",
       "path": "app/assets/cg/joint/{yue_pan,yue_pinger,pan_pinger}.webp",
-      "usage": "三院共约终局前的三种一次性双人联院差事结果图",
+      "usage": "五院扩展前已完成的三种一次性双人联院差事结果图",
       "reason": "首版联院结果复用旧门卡 PNG，浏览器截图暴露人物年龄、面容与宴席 CG 谱系不一致。改用宴席群像作身份与笔触参考，为三组搭档分别生成实际办事画面；这些图不进入成人场景册，也不表现性行为。",
       "referenceInputs": [
         "app/assets/cg/group/banquet_conflict.webp"
@@ -253,24 +253,26 @@
       ],
       "assets": [
         {
-          "path": "app/assets/household/meng_yulou.webp",
+          "path": "app/assets/heroine/meng/night.webp",
           "character": "孟玉楼",
           "anchor": "名帖与茶盘",
           "size": [
             1586,
             992
           ],
-          "bytes": 289326
+          "bytes": 289326,
+          "usage": "孟玉楼女主院门与日常近景身份母版"
         },
         {
-          "path": "app/assets/household/sun_xuee.webp",
+          "path": "app/assets/heroine/xuee/night.webp",
           "character": "孙雪娥",
           "anchor": "空米袋与后仓米箱",
           "size": [
             1586,
             992
           ],
-          "bytes": 241600
+          "bytes": 241600,
+          "usage": "孙雪娥女主院门与日常近景身份母版"
         },
         {
           "path": "app/assets/household/li_jiaoer.webp",
@@ -325,6 +327,79 @@
       },
       "reproducible": false,
       "acceptance": "真实 Chromium 通过两次余夜选择后进入 scene_id=inner_court_afterglow；18+ 证据单独存放于 qa/evidence/browser/adult，不进入 README 公共截图。"
+    },
+    {
+      "generatedAt": "2026-08-17",
+      "toolVersion": "Codex built-in image_gen (session-provided image model)",
+      "usage": "五名成年女主、二十日四幕扩展的标题、公议、联办与人物场景册",
+      "reason": "孟玉楼与孙雪娥由短线提升为可攻略女主；三次公开问责和五人终局都需要独立画面，避免用同一宴席图反复填充二十日内容。",
+      "referenceAndPromptContract": {
+        "visualLine": "明代宅院夜色、工笔纸纹、低饱和矿物色；账簿、名帖、粮袋、钥匙和证词承担剧情因果。",
+        "identity": "月娘靛蓝、金莲朱红、瓶儿淡青、玉楼淡紫、雪娥深褐；五人均为成年人。",
+        "composition": "横构图，主要动作与因果器物清楚；标题及双人联办画面为界面预留暗区。"
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/group/title_five.webp",
+          "bytes": 337890
+        },
+        {
+          "path": "app/assets/cg/group/public_day5.webp",
+          "bytes": 403228
+        },
+        {
+          "path": "app/assets/cg/group/public_day10.webp",
+          "bytes": 388386
+        },
+        {
+          "path": "app/assets/cg/group/public_day15.webp",
+          "bytes": 423644
+        },
+        {
+          "path": "app/assets/cg/group/inner_court_accord_five.webp",
+          "bytes": 371144
+        },
+        {
+          "path": "app/assets/cg/group/inner_court_afterglow_five.webp",
+          "bytes": 401956
+        },
+        {
+          "path": "app/assets/cg/joint/yue_meng.webp",
+          "bytes": 213364
+        },
+        {
+          "path": "app/assets/cg/joint/pan_xuee.webp",
+          "bytes": 299686
+        },
+        {
+          "path": "app/assets/cg/meng/prelude.webp",
+          "bytes": 234278
+        },
+        {
+          "path": "app/assets/cg/meng/explicit.webp",
+          "bytes": 255476
+        },
+        {
+          "path": "app/assets/cg/xuee/prelude.webp",
+          "bytes": 206782
+        },
+        {
+          "path": "app/assets/cg/xuee/explicit.webp",
+          "bytes": 161570
+        }
+      ],
+      "adultBoundary": "本批新图均完整着装，不含乳头、生殖器或性行为；个人“明确”册页以夜间私密氛围、门闩与人物自主同意表达亲密，不把可生成尺度冒充为裸露。",
+      "forbidden": [
+        "未成年人",
+        "胁迫或无同意",
+        "乳头或生殖器",
+        "性行为",
+        "现代物件",
+        "可读文字、字幕、签名或水印"
+      ],
+      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 88 -m 6 转为 WebP；不保留中间 PNG。",
+      "reproducible": false,
+      "acceptance": "逐张人工查看标题、公审、五人余夜、两组新联办以及玉楼/雪娥明确册页；人数、服色、因果器物与完整着装边界均符合运行用途。浏览器 QA 另验证 URL、解码尺寸与 HTTP 状态。"
     }
   ],
   "postProcessing": {
