@@ -326,7 +326,7 @@
         "method": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6"
       },
       "reproducible": false,
-      "acceptance": "真实 Chromium 通过两次余夜选择后进入 scene_id=inner_court_afterglow；18+ 证据单独存放于 qa/evidence/browser/adult，不进入 README 公共截图。"
+      "acceptance": "真实 Chromium 通过两次余夜选择后进入 scene_id=inner_court_afterglow；18+ 原始截图只存在临时 QA 工作区，不提交 example，也不进入 README 公共截图。"
     },
     {
       "generatedAt": "2026-08-17",
@@ -400,6 +400,166 @@
       "postProcessing": "image_gen 输出 PNG 经 cwebp -q 88 -m 6 转为 WebP；不保留中间 PNG。",
       "reproducible": false,
       "acceptance": "逐张人工查看标题、公审、五人余夜、两组新联办以及玉楼/雪娥明确册页；人数、服色、因果器物与完整着装边界均符合运行用途。浏览器 QA 另验证 URL、解码尺寸与 HTTP 状态。"
+    },
+    {
+      "generatedAt": "2026-08-18",
+      "toolVersion": "Codex built-in image_gen (session-provided image model)",
+      "usage": "五名成年女主各自的第二十夜一院终章安全 CG",
+      "reason": "个人终章已经扩成三拍，但此前仍放大普通院门近景，选择她本人、核心边界和另外四院善后没有视觉落点。五张新图让最终选择继续发生在画面里，而不是只剩结局文字。",
+      "referenceAndPromptContract": {
+        "identitySources": [
+          "app/assets/heroine/yue/night.webp",
+          "app/assets/heroine/pan/night.webp",
+          "app/assets/heroine/pinger/night.webp",
+          "app/assets/heroine/meng/night.webp",
+          "app/assets/heroine/xuee/night.webp"
+        ],
+        "visualLine": "明代宅院、绣像工笔线描、旧绢矿物淡彩、黎明光；人物完整着装。",
+        "composition": "横构图约 16:10，人物与因果器物在右半，左侧保留深色终章文字区。",
+        "storyAnchors": "月娘归还公钥；金莲撤首席改扇骨；瓶儿保留私钥与城外退路；玉楼撤陪客只留两杯与等大席签；雪娥封火休息并留下五人轮值牌。"
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/finale/yue.webp",
+          "bytes": 144760
+        },
+        {
+          "path": "app/assets/cg/finale/pan.webp",
+          "bytes": 221412
+        },
+        {
+          "path": "app/assets/cg/finale/pinger.webp",
+          "bytes": 158266
+        },
+        {
+          "path": "app/assets/cg/finale/meng.webp",
+          "bytes": 195590
+        },
+        {
+          "path": "app/assets/cg/finale/xuee.webp",
+          "bytes": 213768
+        }
+      ],
+      "adultBoundary": "本批是安全公开终章画，五人均为成年角色且完整着装；不含裸露、性行为或胁迫。",
+      "forbidden": [
+        "未成年人",
+        "胁迫或无同意",
+        "裸露或性行为",
+        "现代物件",
+        "可读文字、字幕、签名或水印"
+      ],
+      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 84 -metadata none 转为 1586×992 WebP；中间 PNG 留在工具缓存，不复制进仓库。",
+      "reproducible": false,
+      "acceptance": "逐张人工检查人物身份、右侧构图、关键因果器物和完整着装；真实浏览器另验证 1280×800 与 390×844 的月娘终章、三拍结局复用画面、五张 URL 解码和 HTTP 状态。"
+    },
+    {
+      "generatedAt": "2026-08-18",
+      "toolVersion": "Codex built-in image_gen (session-provided image model)",
+      "usage": "五名成年女主第 3／6 次进门人物关键章的安全中局转折 CG",
+      "reason": "普通路线已经有连续回应，但专走同一院时仍会在同一幕复用近景与小章。新增十场三段关键章，并以五张人物化画面固定其中真正改变关系规则的器物与现场。",
+      "referenceAndPromptContract": {
+        "identitySources": [
+          "app/assets/heroine/yue/night.webp",
+          "app/assets/heroine/pan/night.webp",
+          "app/assets/heroine/pinger/night.webp",
+          "app/assets/heroine/meng/night.webp",
+          "app/assets/heroine/xuee/night.webp"
+        ],
+        "visualLine": "明代宅院夜色、绣像工笔线描、旧绢矿物淡彩；角色完整着装，中局压力由器物和空间表达。",
+        "composition": "横构图约 16:10，人物与剧情器物在右半，左侧保留深色连续剧情面板区。",
+        "storyAnchors": "月娘空主位与轮值钥匙；金莲矛盾口风与封口银；瓶儿破锁空匣与两张船票；玉楼撤下的名帖匣与反咬关系网；雪娥冷灶与拒绝无名按印。"
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/milestone/yue.webp",
+          "bytes": 128808
+        },
+        {
+          "path": "app/assets/cg/milestone/pan.webp",
+          "bytes": 147686
+        },
+        {
+          "path": "app/assets/cg/milestone/pinger.webp",
+          "bytes": 153784
+        },
+        {
+          "path": "app/assets/cg/milestone/meng.webp",
+          "bytes": 167128
+        },
+        {
+          "path": "app/assets/cg/milestone/xuee.webp",
+          "bytes": 137750
+        }
+      ],
+      "adultBoundary": "本批为安全中局剧情画，五人均为成年角色且完整着装；不含裸露、性行为或胁迫。",
+      "forbidden": [
+        "未成年人",
+        "胁迫或无同意",
+        "裸露或性行为",
+        "现代物件",
+        "可读文字、字幕、签名或水印"
+      ],
+      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 84 -metadata none 转为 1586×992 WebP；中间 PNG 留在工具缓存，不复制进仓库。",
+      "reproducible": false,
+      "acceptance": "逐张人工检查人物身份、左暗右明构图、关键器物和完整着装；真实 Chromium 以月娘第 3 次进门验证三段连续推进、专属画解码、1280×800 与 390×844 无横向溢出。"
+    },
+    {
+      "generatedAt": "2026-08-19",
+      "toolVersion": "Codex built-in image_gen (session-provided image model)",
+      "usage": "原著第30—100回长期命数后日谈的安全横幅 CG",
+      "reason": "二十日结局已有五人关系回收，但缺少官哥儿与瓶儿之死、西门庆第79回死亡及家业离散的视觉落点。空宅与遗留物让不可逆命运进入游戏，同时避免用人物遗照消费悲剧。",
+      "referenceAndPromptContract": {
+        "identitySources": [],
+        "visualLine": "晚明宅院、克制写实的工笔线描、冷灰黎明与极少暖光；无人物。",
+        "composition": "1600×900 横构图；左侧深色留给命数正文，右侧长案放账页、六把钥匙、五张独立名签、私契、药碗与灭灯。",
+        "storyAnchors": "白色丧布、空院、药碗、未写完的总账、五张不相互吞并的名签；第六把钥匙代表已死家主留下而无人替他保管的权限。"
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/finale/fate_coda.webp",
+          "bytes": 178398
+        }
+      ],
+      "adultBoundary": "安全公开后日谈画；没有人物、裸露、性行为、伤口或尸体，也不描绘未成年人。",
+      "forbidden": [
+        "人物遗照或尸体",
+        "未成年人形象",
+        "裸露或性行为",
+        "血腥",
+        "现代物件",
+        "可读文字、字幕、签名或水印"
+      ],
+      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 96 -resize 1600 900 转为 WebP；源 PNG 保留在工具缓存，不复制进仓库。",
+      "reproducible": false,
+      "acceptance": "人工检查空宅、丧布、账页、钥匙、五张名签、私契、药碗与左侧叙事留白；确认无人物、无可读伪文字、无现代物件。"
+    },
+    {
+      "generatedAt": "2026-08-20",
+      "toolVersion": "branch-local image generator; provider metadata was not retained",
+      "usage": "有限同盟三问完成后的四屏共同生活群像底图",
+      "reason": "真实二至四人同盟需要与五院同灯分开的空间构图；空院、分开的桌案与仍可退出的门路承接成员和盟外边界，不用人物合照替系统决定谁已加入。",
+      "referenceAndPromptContract": {
+        "visualLine": "晚明宅院夜色、工笔线描、低饱和旧绢色；无人场景。",
+        "composition": "1672×941 横构图；中央正堂与两侧院门同时可见，上方和下方保留深色文字空间。",
+        "storyAnchors": "中央总账长案、分开的院门、可独立进出的台阶与未被人物占满的座位。"
+      },
+      "assets": [
+        {
+          "path": "app/assets/cg/group/inner_court_alliance.webp",
+          "bytes": 159898
+        }
+      ],
+      "adultBoundary": "安全公开终章底图；没有人物、裸露、性行为或未成年人。",
+      "forbidden": [
+        "人物",
+        "裸露或性行为",
+        "未成年人形象",
+        "现代物件",
+        "可读文字、字幕、签名或水印"
+      ],
+      "postProcessing": "分支内原始 1672×941 RGB PNG 经 cwebp quality 88、method 6、metadata none 转为 WebP；原始 PNG 不入库。",
+      "reproducible": false,
+      "acceptance": "人工检查正堂、两侧院门、总账长案、暗部文字空间与无人安全边界；真实 Chromium 另验证 URL、解码尺寸与 HTTP 状态。"
     }
   ],
   "postProcessing": {

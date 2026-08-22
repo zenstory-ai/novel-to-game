@@ -26,13 +26,13 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 ### 金瓶梅 · 风月总账
 
-[![西门宅中三人一齐看向玩家，其中一人递出一把铜钥匙](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+[![西门宅中五人隔着总账看向玩家](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
 
 **今夜进谁的门，明早谁来敲你的门。**
 
-六个夜晚，三处院门。分别听清三个人的规矩，让不同两人合办宅中难事，再过一场公开宴席，才有机会让她们在同一张桌上各展所长。
+二十日，五处院门。平衡银钱、官势、声名、见光与宅门损耗，守住每个人亲口说出的规矩，让不同院门在真实危局中建立互信，最后面对一笔由所有选择和记忆共同写成的总账。
 
-**[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [查看改编案例](examples/jin-ping-mei/) · 设计估时 20–30 分钟 · 18+ · 可玩原型
+**[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [查看改编案例](examples/jin-ping-mei/) · 设计估时 60–90 分钟 · 18+ · 可玩原型
 
 ### Project Plateau · 失落的世界 · 3D
 

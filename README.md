@@ -26,13 +26,13 @@ Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read
 
 ### Jin Ping Mei · Ledger of Desire
 
-[![Three women of the Ximen household look straight at the player; one holds out a brass key](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+[![Five women of the Ximen household face the player across the household ledger](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
 
 **Choose whose door you enter tonight. Find out whose door knocks in the morning.**
 
-Six nights, three courtyards. Hear each woman's terms, pair them up to solve real household trouble, survive a public banquet, then earn a shared ending where all three combine their strengths.
+Twenty days, five courtyards. Keep silver, influence, reputation, exposure, and household strain in balance; respect each woman's terms; build trust through shared crises; and face a final ledger shaped by what everyone chose and remembers.
 
-**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 20–30 min · 18+ · playable prototype
+**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Read the case study](examples/jin-ping-mei/) · design estimate: 60–90 min · 18+ · playable prototype
 
 ### Project Plateau · The Lost World · 3D
 

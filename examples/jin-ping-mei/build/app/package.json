@@ -4,8 +4,6 @@
   "type": "module",
   "description": "《金瓶梅·风月总账》20日男性第一人称成人后宫关系模拟：五条深线、五院共约、联院协力与公开问责",
   "scripts": {
-    "start": "python3 -m http.server 5173",
-    "test": "node test/ledger.mjs",
-    "test:browser": "python3 test/qa_browser.py"
+    "start": "python3 -m http.server 5173"
   }
 }

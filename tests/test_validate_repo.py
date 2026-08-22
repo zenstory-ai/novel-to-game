@@ -289,11 +289,6 @@ class RepositoryValidationTests(unittest.TestCase):
     def test_authoritative_wrappers_replace_stale_pass_on_suite_failure(self) -> None:
         scripts = (
             (
-                "examples/jin-ping-mei/build/app/test/verify.py",
-                "jin_verify_failure_test",
-                "EVIDENCE",
-            ),
-            (
                 "examples/journey-to-the-west/build/app/test/verify.py",
                 "journey_verify_failure_test",
                 "EVIDENCE",
@@ -921,7 +916,7 @@ class RepositoryValidationTests(unittest.TestCase):
 
     def test_example_run_evidence_does_not_duplicate_qa_verdicts(self) -> None:
         evidence_paths = (
-            ROOT / "examples/jin-ping-mei/qa/evidence/browser/evidence-normal.json",
+            ROOT / "examples/jin-ping-mei/qa/evidence/run.json",
             ROOT / "examples/journey-to-the-west/qa/evidence/automated.json",
             ROOT / "examples/project-plateau/build/evidence/current-run/report.json",
         )

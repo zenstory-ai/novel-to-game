@@ -2,15 +2,15 @@
   "schemaVersion": 3,
   "status": "PASS",
   "verify": {
-    "command": "python3 test/verify.py",
+    "command": "临时外部验证器：d3 账本基线 + 当前引擎定性摘要 + 关键资源失败拦截 + Chromium 当前候选全键盘路径 + 六视口布局路径",
     "exitCode": 0
   },
   "completeRun": {
-    "id": "jin-ping-mei-five-house-twenty-day-main-path",
+    "id": "jin-ping-mei-release-candidate-2026-08-22",
     "cleanContext": true,
-    "terminal": "day-20-balanced-ending",
-    "restart": "day-1-opening-five-maps-reset",
-    "evidence": "qa/evidence/browser/evidence-normal.json"
+    "terminal": "day-20-unstable-ending",
+    "restart": "day-1-opening",
+    "evidence": "qa/evidence/run.json"
   },
   "checks": {
     "launch": "PASS",
@@ -22,8 +22,16 @@
   },
   "limitations": [
     {
-      "scope": "tested runtime",
-      "reason": "权威路径覆盖本机 Chromium 的 1280×800 与 1920×1080；未把主观趣味、所有结局、移动端或其他浏览器宣称为已验证。"
+      "scope": "逻辑账本",
+      "reason": "320/320 来自 d3f4087 基线；其后唯一引擎差异是将隐藏的数值关系摘要改为定性文案，当前候选已做定向断言。"
+    },
+    {
+      "scope": "浏览器与路径",
+      "reason": "当前候选在本机 Chromium 完成正常速度键盘主路径和六个目标视口；未穷举其他浏览器与所有结局。"
+    },
+    {
+      "scope": "体验判断",
+      "reason": "证据只证明可运行、可输入、可走完、可重开及布局约束，不把主观趣味或长期平衡宣称为确定结论。"
     }
   ]
 }

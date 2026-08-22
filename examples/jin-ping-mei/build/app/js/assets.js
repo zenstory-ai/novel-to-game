@@ -35,6 +35,7 @@ export const ASSET_PATHS = Object.freeze({
   'cg/group/public_day5': 'assets/cg/group/public_day5.webp',
   'cg/group/public_day10': 'assets/cg/group/public_day10.webp',
   'cg/group/public_day15': 'assets/cg/group/public_day15.webp',
+  'cg/group/inner_court_alliance': 'assets/cg/group/inner_court_alliance.webp',
   'cg/group/inner_court_accord': 'assets/cg/group/inner_court_accord_five.webp',
   'cg/group/inner_court_afterglow': 'assets/cg/group/inner_court_afterglow_five.webp',
   'cg/joint/yue_pan': 'assets/cg/joint/yue_pan.webp',
@@ -42,6 +43,21 @@ export const ASSET_PATHS = Object.freeze({
   'cg/joint/pan_pinger': 'assets/cg/joint/pan_pinger.webp',
   'cg/joint/yue_meng': 'assets/cg/joint/yue_meng.webp',
   'cg/joint/pan_xuee': 'assets/cg/joint/pan_xuee.webp',
+  // 第二十夜的一院终章不是把旧门卡放大：五个人各有一张能读出
+  // 她的核心边界与另外四院善后方式的安全终章画面。
+  'cg/finale/yue': 'assets/cg/finale/yue.webp',
+  'cg/finale/pan': 'assets/cg/finale/pan.webp',
+  'cg/finale/pinger': 'assets/cg/finale/pinger.webp',
+  'cg/finale/meng': 'assets/cg/finale/meng.webp',
+  'cg/finale/xuee': 'assets/cg/finale/xuee.webp',
+  // 命数三页不用任何人物遗照消费悲剧；空宅、六把钥匙、五张名签、
+  // 药碗与未写完的账页承担第 30—100 回的长期回声。
+  'cg/finale/fate_coda': 'assets/cg/finale/fate_coda.webp',
+  'cg/milestone/yue': 'assets/cg/milestone/yue.webp',
+  'cg/milestone/pan': 'assets/cg/milestone/pan.webp',
+  'cg/milestone/pinger': 'assets/cg/milestone/pinger.webp',
+  'cg/milestone/meng': 'assets/cg/milestone/meng.webp',
+  'cg/milestone/xuee': 'assets/cg/milestone/xuee.webp',
 });
 
 export const CRITICAL_CG_KEYS = Object.freeze([
@@ -51,32 +67,72 @@ export const CRITICAL_CG_KEYS = Object.freeze([
   'cg/yue/prelude', 'cg/yue/explicit', 'cg/pan/prelude', 'cg/pan/explicit',
   'cg/pinger/prelude', 'cg/pinger/explicit', 'cg/meng/prelude', 'cg/meng/explicit',
   'cg/xuee/prelude', 'cg/xuee/explicit', 'cg/group/public_day5', 'cg/group/public_day10', 'cg/group/public_day15',
-  'cg/group/inner_court_accord', 'cg/group/inner_court_afterglow',
+  'cg/group/inner_court_alliance', 'cg/group/inner_court_accord', 'cg/group/inner_court_afterglow',
   'cg/joint/yue_pan', 'cg/joint/yue_pinger', 'cg/joint/pan_pinger', 'cg/joint/yue_meng', 'cg/joint/pan_xuee',
+  'cg/finale/yue', 'cg/finale/pan', 'cg/finale/pinger', 'cg/finale/meng', 'cg/finale/xuee', 'cg/finale/fate_coda',
+  'cg/milestone/yue', 'cg/milestone/pan', 'cg/milestone/pinger', 'cg/milestone/meng', 'cg/milestone/xuee',
 ]);
 
+export const BOOT_ASSET_KEYS = Object.freeze(['cover', 'compound']);
+export const ADULT_ASSET_KEYS = Object.freeze([
+  'cg/yue/prelude', 'cg/yue/explicit', 'cg/pan/prelude', 'cg/pan/explicit',
+  'cg/pinger/prelude', 'cg/pinger/explicit', 'cg/meng/prelude', 'cg/meng/explicit',
+  'cg/xuee/prelude', 'cg/xuee/explicit', 'cg/group/inner_court_afterglow',
+]);
+export const FINALE_ASSET_KEYS = Object.freeze([
+  'cg/finale/yue', 'cg/finale/pan', 'cg/finale/pinger', 'cg/finale/meng', 'cg/finale/xuee', 'cg/finale/fate_coda',
+]);
+export const MILESTONE_ASSET_KEYS = Object.freeze([
+  'cg/milestone/yue', 'cg/milestone/pan', 'cg/milestone/pinger', 'cg/milestone/meng', 'cg/milestone/xuee',
+]);
+// 终章画是安全内容，但不该在玩家刚过年龄门时就把五张结局一起下载。
+// 第四幕再闲时预取，真正进入终章时浏览器也会从相同 URL 直接复用缓存。
+export const SAFE_GAME_ASSET_KEYS = Object.freeze(CRITICAL_CG_KEYS.filter((key) => (
+  !ADULT_ASSET_KEYS.includes(key) && !FINALE_ASSET_KEYS.includes(key) && !MILESTONE_ASSET_KEYS.includes(key)
+)));
+
 const loaded = new Map();
+const requested = new Set();
+const inflight = new Map();
 
 function loadOne(key, path) {
-  return new Promise((resolve) => {
+  if (loaded.get(key)?.ok === true) return Promise.resolve();
+  if (inflight.has(key)) return inflight.get(key);
+  requested.add(key);
+  const promise = new Promise((resolve) => {
     const image = new Image();
-    image.onload = () => { loaded.set(key, { ok: true, width: image.naturalWidth, height: image.naturalHeight }); resolve(); };
-    image.onerror = () => { loaded.set(key, { ok: false, width: 0, height: 0 }); resolve(); };
+    image.onload = () => { loaded.set(key, { ok: true, width: image.naturalWidth, height: image.naturalHeight }); inflight.delete(key); resolve(); };
+    image.onerror = () => { loaded.set(key, { ok: false, width: 0, height: 0 }); inflight.delete(key); resolve(); };
     image.src = path;
   });
+  inflight.set(key, promise);
+  return promise;
 }
 
-export async function loadAssets() {
-  await Promise.all(Object.entries(ASSET_PATHS).map(([key, path]) => loadOne(key, path)));
+export async function loadAssets(keys = BOOT_ASSET_KEYS) {
+  await Promise.all(keys.map((key) => loadOne(key, ASSET_PATHS[key])));
   return assetReport();
 }
 
+export function preloadSafeAssets() {
+  return loadAssets(SAFE_GAME_ASSET_KEYS);
+}
+
+export function preloadFinaleAssets() {
+  return loadAssets(FINALE_ASSET_KEYS);
+}
+
 export function assetReport() {
-  const missingCritical = CRITICAL_CG_KEYS.filter((key) => loaded.get(key)?.ok !== true);
+  const missingCritical = CRITICAL_CG_KEYS.filter((key) => requested.has(key) && loaded.get(key)?.ok === false);
+  const bootReady = BOOT_ASSET_KEYS.every((key) => loaded.get(key)?.ok === true);
   return {
     missingCritical,
     loaded: Object.fromEntries([...loaded.entries()]),
-    ok: missingCritical.length === 0,
+    requested: [...requested],
+    adultRequested: ADULT_ASSET_KEYS.filter((key) => requested.has(key)),
+    bootReady,
+    complete: CRITICAL_CG_KEYS.every((key) => loaded.get(key)?.ok === true),
+    ok: bootReady && missingCritical.length === 0,
   };
 }
 

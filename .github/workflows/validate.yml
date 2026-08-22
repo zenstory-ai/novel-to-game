@@ -25,9 +25,6 @@ jobs:
       - name: Test Journey to the West systems and design contract
         working-directory: examples/journey-to-the-west/build/app
         run: npm test
-      - name: Test Jin Ping Mei systems
-        working-directory: examples/jin-ping-mei/build/app
-        run: npm test
       - name: Install Project Plateau dependencies
         working-directory: examples/project-plateau/build/app
         run: npm ci

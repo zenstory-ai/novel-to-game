@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "runId": "jin-ping-mei-release-candidate-2026-08-22",
+  "environment": {
+    "candidate": {
+      "runtimeDigestSha256": "91105ab2f817a228c2881f4296cc360095a37321113e2766ef2162e9d3b3f7f5",
+      "ledgerBaselineCommit": "d3f4087bcd6af45628b5f8979ced063d68e5d5d2",
+      "ledgerBaselineContracts": 320,
+      "ledgerBaselineFailures": 0,
+      "postBaselineEngineDelta": "haremOutlook only replaces a hidden numeric relationship summary with qualitative copy",
+      "haremOutlookQualitativeCopy": "PASS"
+    },
+    "browser": {
+      "name": "Chromium",
+      "version": "145.0.7632.6"
+    },
+    "seed": 42,
+    "normalSpeedRun": true,
+    "durationMs": 56959,
+    "keyboardViewport": [
+      1280,
+      800
+    ],
+    "responsiveRuns": [
+      {
+        "viewport": [
+          390,
+          844
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      },
+      {
+        "viewport": [
+          768,
+          1024
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      },
+      {
+        "viewport": [
+          1024,
+          768
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      },
+      {
+        "viewport": [
+          1280,
+          800
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      },
+      {
+        "viewport": [
+          1920,
+          1080
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      },
+      {
+        "viewport": [
+          2048,
+          973
+        ],
+        "terminal": "day-20-ending",
+        "actualPanelOverflowCount": 0,
+        "errors": 0
+      }
+    ],
+    "errors": {
+      "console": [],
+      "page": [],
+      "network": [],
+      "http": []
+    },
+    "preAgeImages": [
+      {
+        "path": "assets/cg/group/title_five.webp",
+        "bytes": 337890
+      },
+      {
+        "path": "assets/bg/compound_act1.jpg",
+        "bytes": 316060
+      }
+    ],
+    "preAgeImageBytes": 653950,
+    "adultAssetRequestsBeforeConfirmation": 0,
+    "qaWorkspace": "temporary external workspace; browser drivers, full traces and raw screenshots are not shipped with the example",
+    "criticalAssetFailureChecks": [
+      {
+        "case": "safe-preload",
+        "blockedAsset": "cg/group/public_day5",
+        "fatalElement": "#asset-error",
+        "result": "PASS"
+      },
+      {
+        "case": "persisted-adult-gallery",
+        "blockedAsset": "cg/yue/prelude",
+        "fatalElement": "#asset-error",
+        "result": "PASS"
+      }
+    ]
+  },
+  "inputTrace": [
+    "Confirm the age gate and start the game with focused Enter.",
+    "Activate 551 visible controls with focused Enter across 552 unique states; trace sha256 5ab3125ac184695f569c66e2463d85afe7ade2989e5c2b8afda57a139d9f335e.",
+    "Reach day 20 ending unstable, then activate restart and return to day 1 opening."
+  ],
+  "observations": {
+    "launch": {
+      "id": "age-gate-and-title-ready",
+      "inputs": [
+        "Navigate to seed 42 at normal speed",
+        "Confirm the 18+ gate with Enter"
+      ],
+      "state": {
+        "adultContentAbsentBeforeConfirmation": true,
+        "adultAssetRequestsBeforeConfirmation": 0,
+        "preAgeImageBytes": 653950,
+        "titleVisible": true
+      }
+    },
+    "render": {
+      "id": "narrative-screens-and-terminal-rendered",
+      "inputs": [
+        "Capture the final day-ledger screen",
+        "Traverse the complete route at six target viewports"
+      ],
+      "state": {
+        "targetViewports": 6,
+        "terminalRenders": 6,
+        "actualPanelOverflowCount": 0,
+        "browserErrors": 0
+      },
+      "visual": "qa/evidence/final-screen.webp"
+    },
+    "input": {
+      "id": "visible-keyboard-path-accepted",
+      "inputs": [
+        "Focus each currently visible enabled control",
+        "Activate it with Enter"
+      ],
+      "state": {
+        "mode": "keyboard-only Enter activation of visible controls",
+        "acceptedInputCount": 551,
+        "uniqueStates": 552,
+        "inputTraceSha256": "5ab3125ac184695f569c66e2463d85afe7ade2989e5c2b8afda57a139d9f335e"
+      }
+    },
+    "coreLoop": {
+      "id": "twenty-day-loop-complete",
+      "inputs": [
+        "Play from the opening through day 20",
+        "Resolve the final sequence"
+      ],
+      "state": {
+        "days": 20,
+        "phase": "ending",
+        "normalSpeedRun": true
+      }
+    },
+    "outcome": {
+      "id": "day-20-ending-reached",
+      "inputs": [
+        "Complete the final choices",
+        "Read the ending from its heading"
+      ],
+      "state": {
+        "terminal": "day-20-unstable-ending",
+        "day": 20,
+        "phase": "ending",
+        "endingId": "unstable",
+        "initialScrollPosition": "heading"
+      }
+    },
+    "restart": {
+      "id": "day-1-clean-restart",
+      "inputs": [
+        "Focus restart",
+        "Activate restart with Enter"
+      ],
+      "state": {
+        "restart": "day-1-opening",
+        "day": 1,
+        "phase": "opening"
+      }
+    }
+  }
+}
