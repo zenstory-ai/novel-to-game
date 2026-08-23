@@ -213,7 +213,8 @@ export const ITEMS = {
   truefan: { key: 'truefan', name: '芭蕉扇', type: 'truefan', target: 'none', desc: '真扇三段:一息火、二生风、三落雨' },
 };
 
-// 战役三场战斗
+// 战役六场战斗。剧情退出场同样给历练，因此后续敌方等级与队伍同步抬升，
+// 确保 Lv4-6 招式能在决战前真正进入玩家手里。
 export const BATTLES = {
   luosha1: {
     id: 'luosha1', name: '翠云山·芭蕉洞外', bg: 'cuiyun', boss: false, enemyLevel: 1,
@@ -222,42 +223,44 @@ export const BATTLES = {
     storyExit: { round: 3, kind: 'blow' },
   },
   luosha: {
-    id: 'luosha', name: '翠云山·芭蕉洞外·再战', bg: 'cuiyun', boss: false, enemyLevel: 1,
+    id: 'luosha', name: '翠云山·芭蕉洞外·再战', bg: 'cuiyun', boss: false, enemyLevel: 2,
     enemies: ['luosha', 'shibi', 'shibi'],
     // 教学彩蛋:罗刹女体力≤55%时悟空变化 → 化虫入腹直接取胜(原著第59回)
     transformFinisher: { bossKey: 'luosha', hpBelow: 0.55 },
   },
   firemobs: {
-    id: 'firemobs', name: '火焰山·火口', bg: 'huoyan', boss: false, enemyLevel: 2,
+    id: 'firemobs', name: '火焰山·火口', bg: 'huoyan', boss: false, enemyLevel: 3,
     enemies: ['firemob1', 'firemob1', 'firemob2'],
     // 战场态势·地火炙烤(数据驱动,engine 通用执行):回合末灼烧我方非水系单位;
     // 敌方本是火中妖,自不受害;避火锦的火抗对灼伤同样减免
     fieldRule: {
       kind: 'roundEndBurn', id: 'dihuo', name: '地火炙烤',
-      pct: 0.04, element: '火', immuneElement: '水',
-      short: '回合末灼烧我方非水系,最大体力 4%',
-      desc: '地火炙烤:每回合末,地火灼烧我方非水系单位(最大体力 4%);彼辈火妖生于火中,自不受害。水系不侵,避火锦可减四分之一。',
+      pct: 0.06, element: '火', immuneElement: '水',
+      short: '回合末灼烧非水系;水系不侵',
+      desc: '地火炙烤:每回合末灼烧我方非水系单位;彼辈火妖生于火中,自不受害。悟空可变玄甲龟将避火,避火锦也能减轻灼伤。',
     },
   },
   yumian: {
-    id: 'yumian', name: '积雷山·摩云洞前', bg: 'moyundong', boss: false, enemyLevel: 3,
+    id: 'yumian', name: '积雷山·摩云洞前', bg: 'moyundong', boss: false, enemyLevel: 4,
     enemies: ['yumian', 'yaojiang', 'yaojiang'],
     // 战场态势·妖将结阵:两名妖将同时在场,敌方全体防御+30%;折其一即解
     fieldRule: {
       kind: 'pairGuard', id: 'yaozhen', name: '妖将结阵',
-      unitKey: 'yaojiang', count: 2, reduce: 0.08,
-      short: '双妖将同在,敌方全体受伤 −8%',
-      desc: '妖将结阵:两名摩云洞妖将同时在场,互成犄角,敌方全体受伤 −8%;折损其一,结阵立解。',
+      unitKey: 'yaojiang', count: 2, reduce: 0.12,
+      short: '双妖将同在,敌方全体减伤',
+      desc: '妖将结阵:两名摩云洞妖将互成犄角,敌方全体所受伤害降低;先折其一,结阵立解。',
     },
   },
   niu1: {
-    id: 'niu1', name: '摩云洞·激战牛魔王', bg: 'moyundong', boss: false, enemyLevel: 4,
+    id: 'niu1', name: '摩云洞·激战牛魔王', bg: 'moyundong', boss: false, enemyLevel: 5,
     enemies: ['niumowang', 'yaojiang'],
     // 原著第60回:第3回合牛魔王赴碧波潭之宴而走(演出,引出碧波潭)
     storyExit: { round: 3, kind: 'retreat' },
   },
   niumowang: {
-    id: 'niumowang', name: '积雷山·决战', bg: 'leiji', boss: true, enemyLevel: 1,
+    id: 'niumowang', name: '积雷山·决战', bg: 'leiji', boss: true, enemyLevel: 6,
+    // 白牛每回合独立累积狂暴;一扇息火可清。独立 buff id 让界面能明确显示压力来源。
+    enragePerRound: 0.12,
     // 八戒+土地接力:白牛现形时全队回复 30%(第61回,亦作难度阀)
     phaseHeal: 0.3,
     // 决战:牛魔王(人形→白牛真身)+玉面公主+妖将(第61回多人对阵)

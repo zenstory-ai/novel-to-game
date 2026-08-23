@@ -128,6 +128,16 @@ let topbarCtl = null;
 let openPanelKey = null;
 let closeOpenPanel = null;
 
+function pendingGrowthTotal() {
+  const potential = Object.values(campaign.pendingPoints ?? {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  const practice = Object.values(campaign.skillPoints ?? {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  return potential + practice;
+}
+
+function refreshGrowthNotice() {
+  topbarCtl?.setHeroNotice(pendingGrowthTotal());
+}
+
 function togglePanel(key) {
   if (openPanelKey === key) {
     closeOpenPanel?.();
@@ -228,6 +238,7 @@ function skillCells(key, onChange) {
 function showHeroPanel(onClose) {
   const rebuild = () => {
     saveGame(true);
+    refreshGrowthNotice();
     closeOpenPanel?.();
     togglePanel('hero');
   };
@@ -363,6 +374,7 @@ function setupTopbar() {
       const data = loadGameData();
       if (!data) { toast(app, TEXT.ui.noSave); return; }
       campaign = data;
+      refreshGrowthNotice();
       toast(app, TEXT.ui.loaded);
       gotoStage();
     },
@@ -386,6 +398,7 @@ function setupTopbar() {
       toggle: () => { audio.unlock(); audio.toggleMuted(); },
     },
   });
+  refreshGrowthNotice();
 }
 
 // ---------- 标题画面 ----------
@@ -412,6 +425,7 @@ function showTitle() {
     bCont.addEventListener('click', () => {
       audio.unlock();
       campaign = loadGameData() ?? newCampaign();
+      refreshGrowthNotice();
       gotoStage();
     });
     menu.appendChild(bCont);
@@ -422,6 +436,7 @@ function showTitle() {
     audio.unlock();
     if (hasSave && !window.confirm(TEXT.title.newConfirm)) return;
     campaign = newCampaign();
+    refreshGrowthNotice();
     saveGame(true);
     gotoStage();
   });
@@ -525,6 +540,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
       fast: FAST,
       showTutorial,
       onceCards: opts.onceCards ?? [],
+      rewardLevel: opts.rewardLevel ?? true,
       systemControlsHost: app.querySelector('#topbar .topbar-dropdown'),
     });
     if (showTutorial) localStorage.setItem(TUT_KEY, '1');
@@ -538,6 +554,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
 function applyLevelUps(ups) {
   for (const [k, v] of Object.entries(ups)) campaign.levels[k] = v.level;
   settleLevelUp(campaign, ups); // 发潜力点+修炼点(定值,不占战斗 rng)
+  refreshGrowthNotice();
 }
 
 // 捕捉成功的新宝宝入队(一生一次)
@@ -579,6 +596,7 @@ async function startPrologue() {
           return;
         }
         // winner === 'story':被芭蕉扇吹飞(演出);战斗画面留作过场底景
+        applyLevelUps(r1.levelUps ?? {});
         await showDialog(app, TEXT.story.blowAway);
         await showDialog(app, TEXT.story.lingji);
         // 灵吉授宝二选一(定风丹/避火锦,规则型,全队法宝位 1 个;战斗外可在背包改选)
@@ -643,6 +661,7 @@ function applyTreasureResult(result) {
   const growth = result.growth;
   campaign.pendingPoints[growth.unit] = (campaign.pendingPoints[growth.unit] ?? 0) + growth.potentialPoints;
   campaign.skillPoints[growth.unit] = (campaign.skillPoints[growth.unit] ?? 0) + growth.skillPoints;
+  refreshGrowthNotice();
   campaign.hunts.fire = {
     guide: result.guide,
     deepened: result.deepened,
@@ -725,15 +744,17 @@ async function startPreNiu1() {
   if (r.winner !== 'story') {
     // 意外速胜也按剧情推进(不屈)
   }
+  applyLevelUps(r.levelUps ?? {});
   await showDialog(app, TEXT.story.niu1Retreat);
   // 碧波潭:变螃蟹偷金睛兽
   await runBibotan(app, { fast: FAST });
-  if (!campaign.pets.some((p) => p.key === 'pixie')) {
-    campaign.pets.push({ key: 'pixie', active: !campaign.pets.some((p) => p.active) });
-  }
+  for (const pet of campaign.pets) pet.active = false;
+  const pixie = campaign.pets.find((p) => p.key === 'pixie');
+  if (pixie) pixie.active = true;
+  else campaign.pets.push({ key: 'pixie', active: true });
   campaign.petJoined = true;
-  // 金睛兽入队即战力:newCampaign 预置的 Lv1 会让它在决战形同纸糊,按队伍等级-1 入队
-  campaign.levels.pixie = Math.max(campaign.levels.pixie ?? 1, (campaign.levels.wukong ?? 2) - 1);
+  // 金睛兽虽在原著后段入队,但必须以完整战力参加决战;原上阵宠保留在待命栏,可手动换回。
+  campaign.levels.pixie = Math.max(campaign.levels.pixie ?? 1, campaign.levels.wukong ?? 1);
   saveGame(true);
   toast(app, '辟水金睛兽加入召唤兽!');
   // 变牛魔王骗真扇
@@ -778,12 +799,30 @@ async function startPreBoss() {
   const startDebuff = campaign.fanFooled
     ? { unit: 'p0', buff: { id: 'atk_down', val: 0.15, turns: 1 } }
     : null;
-  const r = await runBattle('niumowang', 300, { onceCards: ['truefan'], startDebuff });
+  const r = await runBattle('niumowang', 300, { onceCards: ['truefan'], startDebuff, rewardLevel: false });
   applyLevelUps(r.levelUps);
   applyCaught(r.caught);
   campaign.battlesWon += 1;
   saveGame(true);
   showEnding();
+}
+
+function endingEchoes() {
+  const echoes = [];
+  const treasure = TREASURES[campaign.treasure];
+  if (treasure) echoes.push(`灵吉所授的${treasure.name},一路护到了积雷山。`);
+  const hunt = campaign.hunts?.fire;
+  if (hunt) {
+    const guide = TEXT.speakers[hunt.guide] ?? '师兄弟';
+    const choice = hunt.forcedRetreat ? '在妖气合围前护住外层所得' : hunt.deepened ? '带队探入火脉深处' : '见好便收,保住了退路';
+    echoes.push(`${guide}${choice}。`);
+  }
+  echoes.push(campaign.fanFooled
+    ? '悟空也曾被老牛的变化骗回一局,最终从失扇处追回了真扇。'
+    : '悟空多问了一句话,当场识破老牛所变的假八戒。');
+  const activePet = campaign.pets?.find((p) => p.active);
+  if (activePet && PARTY[activePet.key]) echoes.push(`${PARTY[activePet.key].name}随队见证了火根断绝。`);
+  return echoes.slice(0, 4);
 }
 
 // ---------- 结局(降伏→真扇三段→四十九扇→还扇西行) ----------
@@ -839,6 +878,10 @@ async function showEnding() {
   // 还扇西行
   const panel = el('div', 'ending-panel');
   for (const line of [E[6], E[7]]) panel.appendChild(el('p', '', line.text));
+  const recap = el('div', 'ending-recap');
+  recap.appendChild(el('div', 'ending-recap-title', '这一程留下的痕迹'));
+  for (const line of endingEchoes()) recap.appendChild(el('p', '', `· ${line}`));
+  panel.appendChild(recap);
   panel.appendChild(el('div', 'ending-title', TEXT.story.endingTitle));
   const btn = el('button', 'btn modal-btn', TEXT.story.restart);
   btn.id = 'btn-restart';

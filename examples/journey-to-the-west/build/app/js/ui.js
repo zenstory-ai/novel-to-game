@@ -287,6 +287,9 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
   };
   const left = el('div', 'topbar-group');
   const heroB = mk('角', TEXT.topbar.hero, 'btn-hero', onHero);
+  const heroNotice = el('span', 'topbar-notice');
+  heroNotice.hidden = true;
+  heroB.appendChild(heroNotice);
   const bagB = mk('囊', TEXT.topbar.bag, 'btn-bag', onBag);
   const petB = mk('兽', TEXT.topbar.pet, 'btn-pet', onPet);
   const formB = mk('阵', TEXT.topbar.formation, 'btn-formation', onFormation);
@@ -338,6 +341,13 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
   return {
     setOpen(key) {
       for (const [k, b] of Object.entries(panelBtns)) b.classList.toggle('open', k === key);
+    },
+    setHeroNotice(total) {
+      const n = Math.max(0, Number(total) || 0);
+      heroNotice.hidden = n === 0;
+      heroNotice.textContent = n > 9 ? '9+' : String(n);
+      heroB.classList.toggle('has-notice', n > 0);
+      heroB.title = n > 0 ? `尚有 ${n} 点潜力或修炼未分配` : '';
     },
   };
 }

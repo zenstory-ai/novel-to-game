@@ -24,7 +24,44 @@ export function createBattleCommands({
   cardByUnit,
 }) {
   // ---------- 指令菜单 ----------
-  const CMD_ICONS = { attack: '攻', skill: '法', defend: '防', item: '道', special: '技', auto: '自', flee: '逃', back: '返' };
+  const CMD_ICONS = { attack: '攻', skill: '法', defend: '防', item: '道', special: '技', auto: '自', flee: '逃', repeat: '续', back: '返' };
+  const lastCommands = new Map();
+  let plannedFanUses = 0;
+  const fanStageNames = ['息火', '生风', '落雨'];
+
+  function beginRound() {
+    plannedFanUses = 0;
+  }
+
+  function repeatableCommand(u) {
+    const cmd = lastCommands.get(u.id);
+    if (!cmd) return null;
+    if (cmd.type === 'defend' || cmd.type === 'auto') return { ...cmd };
+    if (cmd.type === 'attack') {
+      const target = getUnit(state, cmd.targetId);
+      return target?.alive && target.side === 'enemy' ? { ...cmd } : null;
+    }
+    if (cmd.type === 'skill') {
+      if (!unitSkills(u).includes(cmd.skillId)) return null;
+      const skill = effectiveSkill(u, cmd.skillId, SKILLS[cmd.skillId]);
+      if (!skill || skill.mp > u.mp) return null;
+      if (cmd.targetId) {
+        const target = getUnit(state, cmd.targetId);
+        if (!target?.alive) return null;
+      }
+      return { ...cmd };
+    }
+    return null;
+  }
+
+  function commandSummary(cmd) {
+    if (!cmd) return '上一回合没有可沿用的指令';
+    if (cmd.type === 'attack') return `沿用:攻击 ${getUnit(state, cmd.targetId)?.name ?? ''}`;
+    if (cmd.type === 'skill') return `沿用:${SKILLS[cmd.skillId]?.name ?? TEXT.commands.skill}`;
+    if (cmd.type === 'defend') return '沿用:防御';
+    if (cmd.type === 'auto') return '沿用:自动';
+    return TEXT.battle.repeatTip;
+  }
 
   function cmdButton(label, cmd, sub) {
     const b = el('button', 'btn cmd-btn');
@@ -319,7 +356,10 @@ export function createBattleCommands({
       highlightCommanding(u.id);
       const cmd = await menuFor(u);
       highlightCommanding(null);
-      if (cmd) return cmd;
+      if (cmd) {
+        if (['attack', 'skill', 'defend', 'auto'].includes(cmd.type)) lastCommands.set(u.id, { ...cmd });
+        return cmd;
+      }
     }
   }
 
@@ -380,7 +420,17 @@ export function createBattleCommands({
         attachPreview(bFlee, () => []);
       }
 
-      wrap.append(bAtk, bSkill, bDef, bItem, bSp, bAuto, bFlee);
+      const repeat = repeatableCommand(u);
+      const bRepeat = cmdButton(TEXT.commands.repeat, 'repeat');
+      bRepeat.title = repeat ? commandSummary(repeat) : '上一回合的目标或招式已不可沿用';
+      attachPreview(bRepeat, () => repeat ? [commandSummary(repeat)] : []);
+      if (!repeat) {
+        bRepeat.classList.add('disabled');
+      } else {
+        bRepeat.onclick = () => resolve({ ...repeat });
+      }
+
+      wrap.append(bAtk, bSkill, bDef, bItem, bSp, bAuto, bFlee, bRepeat);
       cmdMenu.appendChild(wrap);
       bindKbd(wrap);
     });
@@ -435,11 +485,17 @@ export function createBattleCommands({
   function itemMenu(u, resolve) {
     cmdMenu.innerHTML = '';
     const wrap = el('div', 'cmd-list');
-    const owned = Object.entries(state.items).filter(([, n]) => n > 0);
+    const owned = Object.entries(state.items)
+      .map(([k, n]) => [k, k === 'truefan' ? Math.max(0, n - plannedFanUses) : n])
+      .filter(([, n]) => n > 0);
     if (owned.length === 0) wrap.appendChild(el('div', 'cmd-empty', '——'));
     for (const [k, n] of owned) {
       const it = ITEMS[k];
-      const item = el('button', 'btn cmd-item', `${it.name} ×${n}`);
+      const nextFan = k === 'truefan'
+        ? fanStageNames[Math.min(2, state.fanStage + plannedFanUses)]
+        : null;
+      const label = nextFan ? `${it.name} · 下一扇:${nextFan} ×${n}` : `${it.name} ×${n}`;
+      const item = el('button', 'btn cmd-item', label);
       item.dataset.item = k;
       if (it.desc) item.title = it.desc;
       attachPreview(item, () => [`${it.name}:${it.desc}`]);
@@ -451,6 +507,7 @@ export function createBattleCommands({
           const t = await pickTarget(u, 'enemy', { mul: 0 }, it.name);
           resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
         } else {
+          if (k === 'truefan') plannedFanUses += 1;
           resolve({ type: 'item', itemId: k });
         }
       };
@@ -496,6 +553,7 @@ export function createBattleCommands({
   }
 
   return {
+    beginRound,
     collectCommandFor,
     dispose,
     hidePreview,

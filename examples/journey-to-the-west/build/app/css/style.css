@@ -169,6 +169,7 @@ button { font-family: inherit; cursor: pointer; }
 .topbar-sep { width: 1px; height: 24px; background: rgba(201, 162, 39, 0.55); margin: 0 8px; }
 .topbar-spacer { flex: 1; }
 .topbar-btn {
+  position: relative;
   display: inline-flex; align-items: center; gap: 5px;
   padding: 4px 12px; font-size: 13px; letter-spacing: 1px;
   color: var(--text-hi);
@@ -180,6 +181,16 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: inset 0 1px 0 rgba(230, 199, 102, 0.3), 0 2px 0 rgba(0, 0, 0, 0.4);
   text-shadow: 0 1px 1px #000;
 }
+.topbar-notice {
+  position: absolute; top: -7px; right: -7px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px; border: 1px solid #f1d58c;
+  background: var(--zhu-hi); color: #fff7df;
+  font-size: 10px; line-height: 1; letter-spacing: 0;
+  box-shadow: 0 2px 5px rgba(20, 12, 6, 0.55);
+}
+.topbar-notice[hidden] { display: none; }
 .topbar-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
 .topbar-btn:active { transform: translateY(1px); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); }
 .topbar-btn.open {
@@ -338,6 +349,12 @@ button { font-family: inherit; cursor: pointer; }
 .lv-name { width: 110px; font-weight: bold; }
 .lv-up { color: var(--zhu); }
 .lv-skill { color: var(--qing); font-size: 13px; }
+.lv-growth-note {
+  margin: 10px 0 0; padding: 9px 12px;
+  color: #563c28; background: rgba(201, 162, 39, 0.10);
+  border-left: 3px solid var(--zhu); font-size: 13px; line-height: 1.65;
+}
+.lv-growth-note.final { font-size: 15px; color: var(--zhu); }
 
 /* ---------- 轻提示 ---------- */
 /* top:104px:避开战斗行动顺序条(~44-90px)与小世界提示条,不再叠字 */

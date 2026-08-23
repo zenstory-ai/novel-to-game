@@ -158,7 +158,7 @@ export function effStat(state, unit, key) {
     const fm = FORMS[unit.form.id];
     if (fm?.mods?.[key]) v *= fm.mods[key];
   }
-  if (key === 'atk') v *= 1 + buffVal(unit, 'atk_up') - buffVal(unit, 'atk_down');
+  if (key === 'atk') v *= 1 + buffVal(unit, 'atk_up') + buffVal(unit, 'enrage') - buffVal(unit, 'atk_down');
   if (key === 'def') v *= 1 - buffVal(unit, 'def_down');
   if (key === 'spd') v *= 1 + buffVal(unit, 'spd_up') - (unit.immuneSpdDown ? 0 : buffVal(unit, 'spd_down'));
   if (key === 'mag') v *= 1 + buffVal(unit, 'mag_up');
@@ -204,7 +204,7 @@ export function calcDamage(state, attacker, defender, skill) {
   if (defender.defending) dmg *= 0.5;
   dmg *= 1 - buffVal(defender, 'dmg_reduce');
   dmg *= 1 - pairGuardReduce(state, defender); // 战场态势·结阵:双妖将同在则敌方全体减伤
-  dmg *= 1 + buffVal(defender, 'vulnerable'); // 真扇落雨破绽:受伤+40%
+  dmg *= 1 + buffVal(defender, 'vulnerable'); // 真扇落雨破绽:按 buff 数值增伤
   if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) dmg *= 0.5; // 玄甲龟将:被克减半
   const res = defender.resist?.[attacker.element] ?? 0; // 法宝五行抗性(可选入参)
   if (res) dmg *= 1 - res;
@@ -473,7 +473,7 @@ function execItem(state, events, actor, itemKey, targetId) {
       }
       events.push({ t: 'info', text: 'fan2' });
     } else if (state.fanStage === 3) {
-      // 三落雨:全队持续回血;敌方全体破防25%+破绽(受伤+40%),无视属性
+      // 三落雨:全队持续回血;敌方全体破防25%+破绽(受伤+60%),无视属性
       for (const a of aliveUnits(state, 'party')) {
         applyBuff(a, { id: 'regen', val: 0.08, turns: 3 });
         events.push({ t: 'buff', actor: actor.id, target: a.id, buff: 'regen', val: 0.08, turns: 3 });
@@ -481,8 +481,8 @@ function execItem(state, events, actor, itemKey, targetId) {
       for (const e of aliveUnits(state, 'enemy')) {
         applyBuff(e, { id: 'def_down', val: 0.25, turns: 3 });
         events.push({ t: 'buff', actor: actor.id, target: e.id, buff: 'def_down', val: 0.25, turns: 3 });
-        applyBuff(e, { id: 'vulnerable', val: 0.4, turns: 3 });
-        events.push({ t: 'buff', actor: actor.id, target: e.id, buff: 'vulnerable', val: 0.4, turns: 3 });
+        applyBuff(e, { id: 'vulnerable', val: 0.6, turns: 3 });
+        events.push({ t: 'buff', actor: actor.id, target: e.id, buff: 'vulnerable', val: 0.6, turns: 3 });
       }
       events.push({ t: 'info', text: 'fan3' });
     }
@@ -660,7 +660,7 @@ function execCommand(state, events, unit, cmd) {
     }
   } else if (cmd.type === 'defend') {
     unit.defending = true;
-    const mpBack = Math.max(1, Math.round(unit.maxMp * 0.05));
+    const mpBack = Math.max(1, Math.round(unit.maxMp * 0.1));
     unit.mp = Math.min(unit.maxMp, unit.mp + mpBack);
     events.push({ t: 'defend', unit: unit.id, mp: mpBack });
   } else if (cmd.type === 'item') {
@@ -736,7 +736,8 @@ export function executeRound(state, commands) {
   }
 
   // BOSS:每 3 回合蓄力预警(仅 BOSS 级;小怪不蓄力,避免同回合多重重击砸向最低血者)
-  // 白牛真身每回合狂暴(攻+8% 可叠加)
+  // 白牛真身每回合狂暴。使用独立 enrage id，既能与普通攻击增益区分，
+  // 也让一扇息火清层这条现成交互在界面上可读。
   if (state.def.boss) {
     for (const boss of aliveUnits(state, 'enemy').filter((u) => u.ai === 'boss')) {
       if (state.round % 3 === 0 && boss.charge <= 0) {
@@ -747,8 +748,9 @@ export function executeRound(state, commands) {
   }
   for (const u of aliveUnits(state, 'enemy')) {
     if (u.defKey === 'whitebull') {
-      applyBuff(u, { id: 'atk_up', val: 0.08, turns: 99 });
-      events.push({ t: 'buff', actor: u.id, target: u.id, buff: 'atk_up', val: 0.08, turns: 99 });
+      const val = state.def.enragePerRound ?? 0.12;
+      applyBuff(u, { id: 'enrage', val, turns: 99 });
+      events.push({ t: 'buff', actor: u.id, target: u.id, buff: 'enrage', val, turns: 99 });
     }
   }
 

@@ -152,7 +152,7 @@ section('法术 MP 与防御');
   const bj = getUnit(s, 'p1');
   bj.mp = 30;
   executeRound(s, { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'defend' }, p2: { type: 'defend' } });
-  ok(bj.mp === 30 + Math.max(1, Math.round(bj.maxMp * 0.05)), `防御回 MP 5% (30→${bj.mp})`);
+  ok(bj.mp === 30 + Math.max(1, Math.round(bj.maxMp * 0.1)), `防御回 MP 10% (30→${bj.mp})`);
   ok(bj.defending === true, '防御姿态在回合间保持');
   executeRound(s, { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'attack', targetId: 'e0' }, p2: { type: 'defend' } });
   ok(bj.defending === false, '八戒再次行动后防御姿态解除');
@@ -162,14 +162,14 @@ section('法术 MP 与防御');
   ok(evs.some((e) => e.t === 'info' && e.text === 'fallback_attack'), '蓝不足回退普攻');
 }
 
-// ---------- 8. 战斗2·携宠 + 假扇反噬 + 水克火 ----------
-section('战斗2·火兵群 + 辟水金睛兽');
+// ---------- 8. 引擎组合场景·携宠 + 假扇反噬 + 水克火 ----------
+section('组合场景·火兵群 + 辟水金睛兽');
 {
   const party = [...partyAt(2), { key: 'pixie', level: 2 }];
   const r1 = runBattle(99, 'firemobs', party, { items: { fakefan: 1 } });
   const r2 = runBattle(99, 'firemobs', party, { items: { fakefan: 1 } });
-  ok(JSON.stringify(r1.events) === JSON.stringify(r2.events), '战斗2同 seed 可复现');
-  ok(r1.state.winner === 'party', `战斗2自动可胜 (winner=${r1.state.winner})`);
+  ok(JSON.stringify(r1.events) === JSON.stringify(r2.events), '携宠火兵场景同 seed 可复现');
+  ok(r1.state.winner === 'party', `携宠火兵场景自动可胜 (winner=${r1.state.winner})`);
   const pet = r1.state.units.find((u) => u.defKey === 'pixie');
   ok(!!pet, '宠物辟水金睛兽参战');
   ok(r1.events.some((e) => e.t === 'damage' && e.actor === pet.id && e.rel === 'ke'), '宠物水系攻击触发水克火');
@@ -183,7 +183,7 @@ section('战斗2·火兵群 + 辟水金睛兽');
 // ---------- 9. BOSS 多阶段 + 真扇三段 + 逃跑规则 ----------
 section('战斗3·牛魔王两阶段 + 真扇');
 {
-  const party = [...partyAt(4), { key: 'pixie', level: 3 }];
+  const party = [...partyAt(6), { key: 'pixie', level: 6 }];
   // 逃跑:boss 战必失败
   const sBoss = createBattle({ battleId: 'niumowang', party, seed: 1, items: { truefan: 3 } });
   const fleeEvs = executeRound(sBoss, { p0: { type: 'flee' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
@@ -244,14 +244,15 @@ section('真扇无视属性减益(白牛为土也生效)');
   ok(wb.defKey === 'whitebull' && wb.element === '土', '已进入白牛真身(土)');
   const evsFan1 = executeRound(s, { p0: { type: 'item', itemId: 'truefan' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
   ok(wb.buffs.some((b) => b.id === 'atk_down'), 'fan1 息火减攻落在土属性白牛身上');
-  ok(evsFan1.some((e) => e.t === 'buff' && e.buff === 'atk_up' && e.target === 'e0'), '白牛每回合狂暴叠攻+8%');
+  ok(evsFan1.some((e) => e.t === 'buff' && e.buff === 'enrage' && e.target === 'e0'), '白牛每回合累积独立狂暴+12%');
+  ok(!wb.buffs.some((b) => b.id === 'enrage'), 'fan1 息火清空白牛狂暴层');
   executeRound(s, { p0: { type: 'item', itemId: 'truefan' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
   executeRound(s, { p0: { type: 'item', itemId: 'truefan' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
   ok(wb.buffs.some((b) => b.id === 'def_down') && wb.buffs.some((b) => b.id === 'vulnerable'), 'fan3 落雨破防+破绽落在白牛身上');
 }
 
-// ---------- 12. 破绽增伤 +40% ----------
-section('落雨破绽:受伤+40%');
+// ---------- 12. 破绽增伤 +60% ----------
+section('落雨破绽:受伤+60%');
 {
   const s = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 11 });
   const att = getUnit(s, 'p0'), def = getUnit(s, 'e0');
@@ -259,7 +260,7 @@ section('落雨破绽:受伤+40%');
   const sample = (withVuln, n) => {
     let sum = 0;
     for (let i = 0; i < n; i++) {
-      def.buffs = withVuln ? [{ id: 'vulnerable', val: 0.4, turns: 3 }] : [];
+      def.buffs = withVuln ? [{ id: 'vulnerable', val: 0.6, turns: 3 }] : [];
       sum += calcDamage(s, att, def, SKILLS.ruyibang).amount;
     }
     return sum / n;
@@ -267,7 +268,7 @@ section('落雨破绽:受伤+40%');
   const base = sample(false, 30);
   const vuln = sample(true, 30);
   const ratio = vuln / base;
-  ok(ratio > 1.28 && ratio < 1.52, `破绽增伤≈1.4 (实测 ${ratio.toFixed(2)})`);
+  ok(ratio > 1.45 && ratio < 1.75, `破绽增伤≈1.6 (实测 ${ratio.toFixed(2)})`);
 }
 
 // ---------- 13. BOSS 蓄力预警与重击 ----------
@@ -560,9 +561,9 @@ section('批0:敌人分级与技能表');
 {
   const s2 = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 1 });
   const mob = getUnit(s2, 'e0');
-  ok(mob.level === 2 && mob.maxHp > 430, `火兵随进度 Lv2 (hp ${mob.maxHp}>430)`);
+  ok(mob.level === 3 && mob.maxHp > 430, `火兵随进度 Lv3 (hp ${mob.maxHp}>430)`);
   const s3 = createBattle({ battleId: 'niumowang', party: partyAt(3), seed: 1 });
-  ok(getUnit(s3, 'e0').level === 1, '决战 3 敌编成取 Lv1(多敌+阶段+狂暴的强度阀)');
+  ok(getUnit(s3, 'e0').level === 6, '决战敌方与历练线同步取 Lv6');
   ok(skillsAtLevel(PARTY.wukong, 4).includes('qitian'), '悟空 Lv4 解锁齐天棍影');
   ok(skillsAtLevel(PARTY.sha, 6).includes('guiyuan'), '沙僧 Lv6 解锁归元静心');
   const ups = levelUpParty({ wukong: 3 });
@@ -646,7 +647,7 @@ section('批2:摩云洞·玉面公主/初战牛魔王');
   const s = createBattle({ battleId: 'yumian', party: partyAt(3), seed: 21 });
   ok(s.units.filter((u) => u.side === 'enemy').length === 3, '玉面公主战敌方 3 单位');
   const ym = s.units.find((u) => u.defKey === 'yumian');
-  ok(ym.element === '土' && ym.level === 3, '玉面公主 土属性 Lv3(八戒木克土)');
+  ok(ym.element === '土' && ym.level === 4, '玉面公主 土属性 Lv4(八戒木克土)');
   const yj = s.units.filter((u) => u.defKey === 'yaojiang');
   ok(yj.length === 2 && yj[0].element === '金', '摩云洞妖将×2 金属性');
   // 玉面公主会群体妖法与娇蛮减益
@@ -677,8 +678,8 @@ section('批2:摩云洞·玉面公主/初战牛魔王');
   }
   ok(JSON.stringify(all) === JSON.stringify(all2), '赴宴流程同 seed 一致');
   // 玉面公主战可胜(智取:先杀侍从再集火)
-  const r = runBattle(66, 'yumian', partyAt(3));
-  ok(r.state.winner === 'party', `玉面公主战自动可胜 (winner=${r.state.winner})`);
+  const r = runBattle(66, 'yumian', partyAt(4));
+  ok(r.state.winner === 'party', `玉面公主战在战役等级可胜 (winner=${r.state.winner})`);
 }
 
 // ---------- 31. 批2:辟水金睛兽正式入队作战 ----------
@@ -698,12 +699,12 @@ section('批3:众神围剿(门控)/反骗开局/阶段继承等级');
   // 决战为多人对阵
   const s = createBattle({ battleId: 'niumowang', party: [...partyAt(5), { key: 'pixie', level: 4 }], seed: 42, items: { truefan: 3 } });
   ok(s.units.filter((u) => u.side === 'enemy').length === 3, '决战敌方=牛魔王+玉面公主+妖将');
-  // 阶段继承战斗分级(Lv4)
+  // 阶段继承战斗分级(Lv6)
   const boss = getUnit(s, 'e0');
   boss.hp = 1;
   executeRound(s, { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
   const wb = getUnit(s, 'e0');
-  ok(wb.defKey === 'whitebull' && wb.level === 1 && wb.maxHp === 1300, `白牛真身继承战斗分级 (Lv${wb.level} hp ${wb.maxHp})`);
+  ok(wb.defKey === 'whitebull' && wb.level === 6 && wb.maxHp === 2050, `白牛真身继承战斗分级 (Lv${wb.level} hp ${wb.maxHp})`);
   // 众神围剿:白牛≤50%一次性触发
   wb.hp = Math.floor(wb.maxHp * 0.5);
   const evs = executeRound(s, { p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } });
@@ -851,13 +852,13 @@ section('战场态势(地火炙烤/妖将结阵)');
 {
   const party = [...partyAt(2), { key: 'pixie', level: 2 }];
   const defends = { p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' }, p3: { type: 'defend' } };
-  // 地火炙烤:回合末非水系受最大体力 4% 灼伤,水系免疫
+  // 地火炙烤:回合末非水系受最大体力 6% 灼伤,水系免疫
   const s = createBattle({ battleId: 'firemobs', party, seed: 8 });
   const px = s.units.find((u) => u.defKey === 'pixie');
   const evs = executeRound(s, { ...defends });
   const burns = evs.filter((e) => e.t === 'field_burn');
   ok(burns.length === 3, `回合末地火灼烧 3 名非水系 (实际 ${burns.length})`);
-  ok(burns.every((b) => b.amount === Math.max(1, Math.round(getUnit(s, b.target).maxHp * 0.04))), '灼伤=最大体力 4%');
+  ok(burns.every((b) => b.amount === Math.max(1, Math.round(getUnit(s, b.target).maxHp * 0.06))), '灼伤=最大体力 6%');
   ok(!burns.some((b) => b.target === px.id), '水系辟水金睛兽免疫地火');
   // 地火不占 rng:同 seed 逐字节一致
   const sR = createBattle({ battleId: 'firemobs', party, seed: 8 });
@@ -866,9 +867,9 @@ section('战场态势(地火炙烤/妖将结阵)');
   const sB = createBattle({ battleId: 'firemobs', party, seed: 8, treasure: 'bihuojin' });
   const evsB = executeRound(sB, { ...defends });
   const burnB = evsB.find((e) => e.t === 'field_burn' && e.target === 'p0');
-  const full = Math.max(1, Math.round(getUnit(sB, 'p0').maxHp * 0.04));
+  const full = Math.max(1, Math.round(getUnit(sB, 'p0').maxHp * 0.06));
   ok(burnB && burnB.amount === Math.max(1, Math.round(full * 0.75)), `避火锦减地火 25% (${full}→${burnB?.amount})`);
-  // 妖将结阵:双妖将同时在场,敌全体受伤 −8%(减伤是乘项;防御是减项,加成三成只抵个位数伤害)
+  // 妖将结阵:双妖将同时在场,敌全体受伤 −12%(减伤是乘项;防御是减项,加成三成只抵个位数伤害)
   const s3 = createBattle({ battleId: 'yumian', party: partyAt(3), seed: 5 });
   const ym = s3.units.find((u) => u.defKey === 'yumian');
   const guards = s3.units.filter((u) => u.defKey === 'yaojiang');
@@ -882,10 +883,10 @@ section('战场态势(地火炙烤/妖将结阵)');
   const evs3 = executeRound(s3, { p0: { type: 'attack', targetId: guards[0].id }, p1: { type: 'defend' }, p2: { type: 'defend' } });
   ok(evs3.some((e) => e.t === 'death' && e.unit === guards[0].id), '妖将·甲阵亡');
   ok(evs3.some((e) => e.t === 'field_break'), '结阵破除事件(field_break,供飘字/横幅)');
-  // 结阵解除后同一记普攻的伤害上限回升,且回升幅度正是 8%——减伤对主将与妖将自身同时生效
+  // 结阵解除后同一记普攻的伤害上限回升,且回升幅度正是 12%——减伤对主将与妖将自身同时生效
   const bare = previewDamage(s3, wkPrev, ym, BASIC_ATTACK).max;
   ok(bare > guarded, `结阵立解:敌方受伤回升 (${guarded}→${bare})`);
-  ok(Math.abs(guarded / bare - 0.92) < 0.02, `结阵减伤 8% 可核对 (${(guarded / bare).toFixed(3)})`);
+  ok(Math.abs(guarded / bare - 0.88) < 0.02, `结阵减伤 12% 可核对 (${(guarded / bare).toFixed(3)})`);
   ok(Math.abs(guardedSelf / previewDamage(s3, wkPrev, guards[1], BASIC_ATTACK).max - 1) < 1e-9
     || guardedSelf > 0, '妖将自身同受结阵减伤(与主将同一乘项)');
 }
@@ -943,13 +944,13 @@ section('杂兵战真决策(自动 vs 对症)');
   // 火焰山·火口(地火炙烤):战役真实编成(金睛兽未入队)下,对症明显优于全程自动
   const fA = totals('firemobs', partyAt(3), null);
   const fS = totals('firemobs', partyAt(3), smartCommand);
-  ok(fA.wins === 5 && fS.wins === 5, `火口:自动与对症均 5/5 通关·无死局 (${fA.wins}/${fS.wins})`);
+  ok(fS.wins === 5 && fA.wins < fS.wins, `火口:对症 5/5,自动不再包办通关 (${fA.wins}/${fS.wins})`);
   ok(fS.total < fA.total, `地火炙烤:对症 ${fS.total} 回合 < 全程自动 ${fA.total} 回合(5 种子合计)`);
   // 积雷山·摩云洞前(妖将结阵):先拆结阵优于集火主将,对症优于全程自动
   const yA = totals('yumian', partyAt(4), null);
   const yS = totals('yumian', partyAt(4), smartCommand);
   const yL = totals('yumian', partyAt(4), leaderCommand);
-  ok(yA.wins === 5 && yS.wins === 5, `摩云洞前:自动与对症均 5/5 通关·无死局 (${yA.wins}/${yS.wins})`);
+  ok(yS.wins === 5 && yA.wins < yS.wins, `摩云洞前:对症 5/5,自动不再包办通关 (${yA.wins}/${yS.wins})`);
   ok(yS.total < yA.total, `妖将结阵:对症 ${yS.total} 回合 < 全程自动 ${yA.total} 回合(5 种子合计)`);
   ok(yS.total < yL.total, `妖将结阵:先拆结阵 ${yS.total} 回合 < 集火主将 ${yL.total} 回合(5 种子合计)`);
 }

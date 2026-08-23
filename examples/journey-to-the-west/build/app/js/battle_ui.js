@@ -1,7 +1,7 @@
 // 战斗界面:经典对阵(敌左上斜列、我右下斜列)、行动顺序条、指令菜单、飘字动画。
 // 界面只渲染与收集指令,一切数值结算走 engine。
 
-import { SKILLS, FORMATIONS } from './data.js';
+import { SKILLS, FORMATIONS, GROWTH } from './data.js';
 import {
   createBattle, executeRound, buildActionQueue, aliveUnits, getUnit,
   effStat, levelUpParty, switchFormation,
@@ -321,9 +321,11 @@ export async function runBattleScreen(ctx) {
       else merged.set(b.id, { count: 1, turns: b.turns });
     }
     for (const [id, m] of merged) {
-      const label = m.count > 1
-        ? `${TEXT.buffNames[id] ?? id}×${m.count}`
-        : `${TEXT.buffNames[id] ?? id}${m.turns}`;
+      const label = id === 'enrage'
+        ? `${TEXT.buffNames.enrage}×${m.count}`
+        : m.count > 1
+          ? `${TEXT.buffNames[id] ?? id}×${m.count}`
+          : `${TEXT.buffNames[id] ?? id}${m.turns}`;
       const chip = el('span', 'buff-chip', label);
       chip.dataset.buff = id;
       uc.chips.appendChild(chip);
@@ -444,9 +446,15 @@ export async function runBattleScreen(ctx) {
       animator.clearFloats(); // 新回合开始前,上一回合的飘字一律不留(简报 T9)
       renderOrderBar();
       commandPhase = true;
+      commandUi.beginRound();
       refreshFormationBtn();
       const roundCommands = {};
-      for (const u of aliveUnits(state, 'party')) {
+      // 按本回合真实行动序收集我方指令。这样多人同回合使用真扇时，界面显示的
+      // 「下一扇」就与实际结算顺序一致，不会被固定队伍编号误导。
+      const partyCommandOrder = buildActionQueue(state)
+        .map((id) => getUnit(state, id))
+        .filter((u) => u?.side === 'party');
+      for (const u of partyCommandOrder) {
         if (state.over) break;
         roundCommands[u.id] = await commandUi.collectCommandFor(u);
         renderOrderBar();
@@ -466,7 +474,7 @@ export async function runBattleScreen(ctx) {
     animator.clearFloats(); // 结算帧同样不留飘字残影(简报 T9)
     if (state.winner === 'story') {
       // 剧情桥段:保留战斗画面作过场底景,由 main 在过场结束后移除
-      return { winner: 'story', rounds: state.round - 1 };
+      return { winner: 'story', rounds: state.round - 1, levelUps: levelUpParty(partyLevelsOf(ctx, state)) };
     }
     if (animator.hadFinisher()) {
       await showDialog(root, TEXT.story.luoshaMid);
@@ -474,9 +482,9 @@ export async function runBattleScreen(ctx) {
 
     if (state.winner === 'party') {
       audio.sfx('victory');
-      const ups = levelUpParty(partyLevelsOf(ctx, state));
-      audio.sfx('levelup');
-      await victoryPanel(ups);
+      const ups = ctx.rewardLevel === false ? {} : levelUpParty(partyLevelsOf(ctx, state));
+      if (ctx.rewardLevel !== false) audio.sfx('levelup');
+      await victoryPanel(ups, ctx.rewardLevel === false);
       bRoot.remove();
       return { winner: 'party', levelUps: ups, rounds: state.round - 1, caught: state.caught };
     }
@@ -508,7 +516,7 @@ export async function runBattleScreen(ctx) {
     return map;
   }
 
-  function victoryPanel(ups) {
+  function victoryPanel(ups, finalBattle = false) {
     return new Promise((resolve) => {
       const rows = [];
       for (const [key, up] of Object.entries(ups)) {
@@ -521,6 +529,11 @@ export async function runBattleScreen(ctx) {
           row.append(el('span', 'lv-skill', `${TEXT.ui.newSkill}:${up.newSkills.map((s) => SKILLS[s].name).join('、')}`));
         }
         rows.push(row);
+      }
+      if (finalBattle) {
+        rows.push(el('p', 'lv-growth-note final', '平天大圣已伏。真扇在手,该去熄灭八百里火焰。'));
+      } else {
+        rows.push(el('p', 'lv-growth-note', `每位参战伙伴另得 ${GROWTH.pointsPerLevel} 点潜力与 ${GROWTH.skillPointsPerLevel} 点修炼。顶栏【角色】已留下朱印。`));
       }
       showModal(root, {
         id: 'modal-victory',

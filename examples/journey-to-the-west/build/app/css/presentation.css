@@ -119,22 +119,22 @@
   position: absolute; left: 292px; bottom: 186px; z-index: 30;
   min-width: 320px; max-width: 48%;
   padding: 8px 14px;
-  color: var(--text-hi);
+  color: #fff4dc;
   background:
     repeating-linear-gradient(90deg, rgba(201, 162, 39, 0.06) 0 4px, transparent 4px 10px),
-    rgba(36, 24, 18, 0.94);
-  border: 1.5px solid var(--gold); border-radius: 4px;
-  box-shadow: inset 0 0 0 1px rgba(230, 199, 102, 0.3), 0 4px 14px rgba(0, 0, 0, 0.5);
-  font-size: 14px; letter-spacing: 1px;
+    rgba(24, 15, 10, 0.97);
+  border: 2px solid var(--gold-hi); border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(255, 231, 164, 0.28), 0 5px 18px rgba(0, 0, 0, 0.68);
+  font-size: 15px; letter-spacing: 1px;
   pointer-events: none;
   animation: bannerIn 0.15s ease;
 }
 .pv-line { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 1px 0; }
 .pv-main { color: var(--text-hi); }
 .pv-side { font-size: 13px; white-space: nowrap; }
-.pv-side.good { color: #7ad76a; }
-.pv-side.bad { color: #ff7a5a; }
-.pv-side.none { color: #cfc8ba; }
+.pv-side.good { color: #a8ef8d; }
+.pv-side.bad { color: #ff9a78; }
+.pv-side.none { color: #eee2ca; }
 
 /* 窄视口适配(1280×800 不破版):预览条缩短、指令台状态牌收窄 */
 @media (max-width: 1360px) {
@@ -236,4 +236,15 @@ body.no-topbar .story-bg { inset: 0; }
     linear-gradient(180deg, rgba(228, 238, 228, 0.14), rgba(210, 226, 216, 0.07));
   animation: none;
 }
+.ending-root.rain-glow .ending-bg {
+  filter: saturate(0.88) brightness(1.42) contrast(0.92);
+}
+.ending-recap {
+  margin: 14px 0 8px; padding: 12px 16px;
+  border-top: 1px solid rgba(138, 90, 46, 0.55);
+  border-bottom: 1px solid rgba(138, 90, 46, 0.55);
+  background: rgba(201, 162, 39, 0.08);
+}
+.ending-recap-title { color: var(--zhu); font-weight: bold; letter-spacing: 3px; margin-bottom: 6px; }
+.ending-recap p { margin: 3px 0; font-size: 14px; line-height: 1.65; color: #514231; }
 .wuxing-ring { transition: opacity 0.15s ease; }

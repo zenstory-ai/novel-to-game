@@ -21,7 +21,7 @@
     "fieldRules": {
       "firemobs": {
         "kind": "roundEndBurn",
-        "pct": 0.04,
+        "pct": 0.06,
         "element": "火",
         "immuneElement": "水"
       },
@@ -29,7 +29,7 @@
         "kind": "pairGuard",
         "unitKey": "yaojiang",
         "count": 2,
-        "reduce": 0.08
+        "reduce": 0.12
       }
     },
     "finalBoss": {
@@ -54,7 +54,7 @@
       "maxStages": 3,
       "stageTwoSpeed": 0.3,
       "stageThreeRegen": 0.08,
-      "stageThreeVulnerability": 0.4
+      "stageThreeVulnerability": 0.6
     }
   }
 }

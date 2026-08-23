@@ -882,7 +882,7 @@ class RepositoryValidationTests(unittest.TestCase):
             app / "css/presentation.css",
         )
         self.assertEqual(
-            "2b29b225592d1a5468769b1e8457084446febed3633d9d2bba7e5d9b2de5eebe",
+            "553503e590b54e6ef28acdc5e69d0e45ecd28293ca19efa9760d9f2c148898e3",
             hashlib.sha256(b"".join(path.read_bytes() for path in stylesheets)).hexdigest(),
         )
         for stylesheet, line_budget in zip(stylesheets, (450, 550, 300), strict=True):

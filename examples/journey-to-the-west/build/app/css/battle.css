@@ -237,6 +237,11 @@
   border: 1px solid var(--gold); border-radius: 2px; padding: 0 4px;
   text-shadow: 0 1px 1px #000;
 }
+.buff-chip[data-buff="enrage"] {
+  color: #ffe0c6; border-color: #ff7a4a;
+  background: rgba(126, 34, 22, 0.90);
+  box-shadow: 0 0 8px rgba(255, 94, 48, 0.55);
+}
 
 .unit-card.dead { opacity: 0.18; filter: grayscale(1); pointer-events: none; }
 /* 阵亡/被收服:名牌、血条、五行徽、状态签一并撤下,只留一具淡出的灰立绘——
