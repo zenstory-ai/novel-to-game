@@ -34,6 +34,7 @@ export const INITIAL_PLAYER = Object.freeze({
 export const EXPOSURE_SECONDS = 2;
 export const CONTACT_SECONDS = 3;
 export const INITIAL_LIGHT_SECONDS = 180;
+export const FAMILY_OBSERVE_SECONDS = 1.35;
 export const ABANDON_HOLD_SECONDS = 0.8;
 export const RETURN_ROUTE_SECONDS = Object.freeze({
   covered: 28,
@@ -142,6 +143,7 @@ export function createPlayerState() {
     attackSeconds: 0,
     examinedTrack: false,
     observedBehavior: false,
+    familyFocusSeconds: 0,
     familyBehaviorSeconds: 0,
     familyMoment: 'glade-routine',
     lastObservation: null,
@@ -208,6 +210,7 @@ export function examine(state) {
   if (state.zone === 'iguanodon-glade') {
     return copyState(state, {
       observedBehavior: true,
+      familyFocusSeconds: FAMILY_OBSERVE_SECONDS,
       familyBehaviorSeconds: 0,
       familyMoment: 'glade-routine',
       lastObservation: 'The young shift first. The feeding adult reaches after them.',
@@ -479,6 +482,8 @@ function submitAtFort(state) {
       abandonedPlates: state.abandonedPlates,
       aerialEvidence,
       gunshotCallback,
+      returnStrike: state.returnStrike,
+      gunshotFired: state.gunshotFired,
       recordCallback: [
         aerialEvidence ? 'The plate fixes the wing at the instant it commits to the dive.' : null,
         gunshotCallback,
@@ -639,12 +644,39 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const reachedGlade = state.reachedGlade || resolved.position.z <= 3;
   const zone = zoneForPosition(resolved.position, reachedGlade);
   const threat = updateThreatState(state, zone, stance, deltaSeconds, travelled);
-  const familyBehaviorSeconds = state.observedBehavior && reachedGlade
-    ? (state.familyBehaviorSeconds + deltaSeconds) % FAMILY_BEHAVIOR_CYCLE_SECONDS
+  const familyFocusFrame = !state.observedBehavior && zone === 'iguanodon-glade'
+    ? frameForState({
+      ...state,
+      position: resolved.position,
+      heading,
+      pitch,
+      zone,
+      reachedGlade,
+      threatAwareness: threat.awareness,
+      threatState: threat.threatState,
+    })
+    : null;
+  const isReadingFamily = Boolean(
+    familyFocusFrame?.subject === 'iguanodon-family'
+    && familyFocusFrame.composition === 'clear'
+    && travelled < 0.04
+    && magnitude <= 0.05
+    && !state.cameraRaised
+    && !state.rifleRaised
+    && !state.pendingExposure,
+  );
+  const familyFocusSeconds = state.observedBehavior
+    ? state.familyFocusSeconds
+    : isReadingFamily ? state.familyFocusSeconds + deltaSeconds : 0;
+  const observedNow = !state.observedBehavior && familyFocusSeconds >= FAMILY_OBSERVE_SECONDS;
+  const observedBehavior = state.observedBehavior || observedNow;
+  const familyBehaviorSeconds = observedBehavior && reachedGlade
+    ? observedNow ? 0 : (state.familyBehaviorSeconds + deltaSeconds) % FAMILY_BEHAVIOR_CYCLE_SECONDS
     : state.familyBehaviorSeconds;
   const familyMoment = familyMomentForState({
     ...state,
     reachedGlade,
+    observedBehavior,
     threatAwareness: threat.awareness,
     familyBehaviorSeconds,
   });
@@ -693,6 +725,8 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     zone,
     zoneHistory,
     reachedGlade,
+    observedBehavior,
+    familyFocusSeconds,
     familyBehaviorSeconds,
     familyMoment,
     inCover: threat.inCover,
@@ -705,6 +739,13 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     pendingExposure,
     previewSeconds: Math.max(0, state.previewSeconds - deltaSeconds),
   });
+
+  if (observedNow) {
+    next = copyState(next, {
+      lastObservation: 'The young move first. The feeding adult follows the branch above them.',
+      lastEvent: 'observed:behavior',
+    });
+  }
 
   if (pendingExposure && pendingExposure.remainingSeconds <= 0) {
     next = copyState(next, finalizeExposure(next, pendingExposure, threat));
@@ -721,7 +762,17 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   }
 
   next = commitReturnRoute(next, zone);
-  if (zone === 'fort' && next.returnRoute) return submitAtFort(next);
+  const returnedToFort = zone === 'fort'
+    && state.zone !== 'fort'
+    && state.zoneHistory.some((visitedZone) => visitedZone !== 'fort');
+  if (returnedToFort && !next.returnRoute) {
+    next = copyState(next, {
+      returnRoute: 'turnback',
+      returnCostSeconds: 0,
+      lastEvent: 'return:turnback:committed',
+    });
+  }
+  if (returnedToFort) return submitAtFort(next);
   if (next.remainingLight <= 0 && zone !== 'fort') return failForTimeout(next);
 
   const attackSeconds = next.threatAwareness === 3 && !next.inCover

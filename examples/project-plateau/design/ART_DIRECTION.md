@@ -82,6 +82,13 @@ light and cartridges on the other; contextual prompts appear near the relevant w
 relation and clear after use. No minimap, objective arrow, threat meter, score ticker or
 opaque central panel.
 
+The opening order contains only the commission and first movement/examination verbs. The
+full control reference belongs to pause. Plate slots show physical empty, exposed or cracked
+state without point fill; daylight uses field language rather than seconds. The viewfinder
+describes what touches the glass, while the developed plate is where an observation receives
+its name. Result plates carry one short field annotation each and remain more prominent than
+the verdict copy.
+
 Prompts name actions. Feedback names physical consequences: foliage hid the flank, a
 plate cracked, the report changed the route, or the brook remains exposed. Grayscale,
 captions and shape/motion redundancy carry every critical rule.

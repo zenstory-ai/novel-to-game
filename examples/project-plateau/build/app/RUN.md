@@ -14,10 +14,10 @@ the app has no analytics or CDN dependency.
 
 - Move/look: `WASD` / mouse
 - Sprint/crouch/jump: `Shift` / `C` / `Space`
-- Examine: `E`
+- Examine ground traces: `E`; a clear, still view reads the family automatically
 - Camera: hold right mouse, then left mouse to expose a plate
 - Rifle: hold `F`, then left mouse to fire
-- Pause or release pointer lock: `Esc`
+- Pause: `P`; `Esc` releases pointer lock and pauses safely
 
 Losing focus releases transient movement and tool holds without cancelling a
 shutter exposure already in flight.

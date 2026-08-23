@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runId": "project-plateau-main-path",
   "environment": {
-    "browser": "151.0.7922.138",
+    "browser": "151.0.7922.172",
     "viewport": [
       1440,
       900
@@ -74,11 +74,11 @@
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.389,
-            "z": 62
+            "x": 2.385,
+            "z": 62.022
           },
-          "remainingLight": 100.366,
-          "distanceTravelled": 133.982,
+          "remainingLight": 92.385,
+          "distanceTravelled": 134.078,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -133,7 +133,7 @@
       ],
       "state": {
         "acceptedInputCount": 15,
-        "distanceTravelled": 133.982
+        "distanceTravelled": 134.078
       }
     },
     "coreLoop": {
@@ -162,11 +162,11 @@
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.389,
-            "z": 62
+            "x": 2.385,
+            "z": 62.022
           },
-          "remainingLight": 100.366,
-          "distanceTravelled": 133.982,
+          "remainingLight": 92.385,
+          "distanceTravelled": 134.078,
           "plateStatus": [
             "exposed",
             "exposed",

@@ -69,7 +69,10 @@ composition and named evidence captured, not an earlier shutter snapshot or abst
 ### Wildlife awareness
 
 The iguanodon family cycles through routine feeding, young play and an adult branch pull after
-the scout reads the group. Posture plus directional sound announce each short window. At high
+the scout deliberately lowers tools and holds the group in a clear, still view for about a
+second and a half. The explicit examine
+input remains an accessible alternative, but the primary verb is watching rather than pressing
+a scan button. Posture plus directional sound announce each short window. At high
 threat the family shifts to alarm, closing the undisturbed behaviour opportunity until the
 scout restores distance. The pterodactyl moves through distant, watch, search and attack
 behaviour. Its numeric state is hidden; silhouette, call, shadow and flight path communicate
@@ -93,7 +96,7 @@ returns the player to stable ground rather than causing an invisible death.
 |---|---|
 | Light | 180 seconds; expiry outside Fort fails the run |
 | Plates | Four physical slots; each becomes unexposed, recorded, cracked or lost |
-| Evidence | 0–8 visible cues derived from captured conditions |
+| Evidence | 0–8 internal authored cues derived from captured conditions; the UI names observations rather than showing a score |
 | Exposure stability | Live angular drift; bracing widens tolerance, smear removes decisive detail |
 | Body margin | One recoverable contact; a second unblocked hit fails |
 | Rifle | Two cartridges; firing changes threat and return conditions |
@@ -107,7 +110,11 @@ pending consumption. Restart restores one clean initial state.
 
 Alive results are **No record** (0), **Insufficient** (1–3), **Corroborating**
 (4–5) and **Strong field record** (6–8). Results first place the surviving physical
-plates, then state what they support. Cracked or lost plates cannot contribute.
+plates, annotate the concrete observation on each, then state what the route and threat did
+to the record. Exact cue totals and remaining seconds stay out of the player-facing verdict.
+Cracked or lost plates cannot contribute. Crossing back into Fort after leaving resolves a
+turnback even if the scout never reached the glade, so retreat is a valid weak result rather
+than a dead end.
 
 Failure occurs through deadline expiry outside Fort or a second unblocked contact. The
 last actionable relation—threat direction, nearest cover, remaining plate or route—is
@@ -120,7 +127,7 @@ held beneath the cause card. Restart is the only reset.
    plate makes framing consequences visible.
 3. **Canopy/basalt fork:** safety and evidence quality become incompatible. A basalt exposure
    can provoke a committed dive; photograph it and swap tools, or defend immediately.
-4. **Glade:** reading the family starts two short, audible behaviour windows. Framing one,
+4. **Glade:** holding a clear, still view of the family starts two short, audible behaviour windows. Framing one,
    retreating under cover and returning for the other combines every learned rule.
 5. **Altered return:** the player chooses covered thorns or exposed creek under the
    consequences of prior exposure and gunfire, then reaches Fort.
@@ -133,13 +140,14 @@ threat information stays in the world.
 
 - Camera raise narrows attention without freezing the world; the plate preview retains
   the captured composition.
-- The viewfinder states whether the family is absent, at the plate edge, in routine, at play,
-  pulling the branch or alarmed, and whether an overhead dive is clear, edged or missed.
+- The viewfinder behaves like a physical instrument: it reports empty glass, edge, obstruction,
+  held movement and plate drift without naming the correct behaviour before exposure. The
+  developed preview names what the plate actually retained.
 - The exposure line changes when the camera is braced, steady or already smeared; it never
   rewinds a committed plate or guarantees the shutter will remain safe.
 - Calls, wing shadow and flight path carry threat escalation; colour is redundant.
-- Edge UI shows plates, remaining light and cartridges. It never exposes awareness as a
-  number or turns the centre into a dashboard.
+- Edge UI shows physical plate state, qualitative remaining light and cartridges. It never
+  exposes awareness, cue totals or exact seconds as numbers or turns the centre into a dashboard.
 - Reduced motion removes head bob, shake and FOV kick while retaining timing and state.
 - Text scales to 150%; captions identify direction and source for important calls.
 - Focus loss pauses safely. Keyboard/mouse controls remain available from pause.

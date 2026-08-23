@@ -7,6 +7,12 @@ import {
 import { FieldAudio, captionForCue } from './audio.js';
 import { applyLookDelta, shouldCaptureGameplayKey } from './controller.js';
 import { DAYLIGHT_ENERGY_PROFILE } from './daylight-energy.js';
+import {
+  daylightCondition,
+  frameConditionCopy,
+  noteForPlate,
+  routeConsequence,
+} from './field-journal.js';
 import { createFieldLighting } from './field-lighting.js';
 import { createFieldPostprocessing } from './field-postprocessing.js';
 import { createHeightFogController } from './height-fog.js';
@@ -324,76 +330,55 @@ function contextualCopy() {
   }
   if (player.cameraRaised) {
     const frame = frameForState(player);
-    if (frame.key === 'empty-sky') return 'The dive crossed outside the plate. Track the wing.';
+    if (frame.key === 'empty-sky') return 'The wing crossed outside the glass.';
     if (player.threatState === 'attack' && frame.subject !== 'pterodactyl') {
-      return 'Wing overhead — look up, or lower the camera for the rifle.';
+      return 'Wingbeats pass over the raised camera.';
     }
-    if (frame.composition === 'empty') return 'No living subject. Turn toward the family.';
-    if (frame.key === 'pterodactyl-dive') return 'Dive committed · hold the plate or reach for the rifle.';
-    if (frame.key === 'glade-form') return 'The family is between behaviors. Hold or save the plate.';
-    if (frame.key.endsWith('-repeat')) return 'Already recorded. Save the plate for another proof angle.';
-    return 'Hold steady. Release the shutter [Left Mouse]';
+    if (frame.composition === 'empty') return 'No living form rests on the glass.';
+    if (frame.key === 'pterodactyl-dive') return 'The wing is committed.';
+    if (frame.key === 'glade-form') return 'The family settles between movements.';
+    if (frame.key.endsWith('-repeat')) return 'This movement is already on a plate.';
+    return player.stance === 'crouch' || player.inCover
+      ? 'Expose plate [Left Mouse]'
+      : 'Brace [C] or expose the plate [Left Mouse]';
   }
   if (player.threatState === 'attack' && player.inCover) {
-    return 'Stay under cover · Crouch [C] to let the wing pass faster';
+    return 'Wings beat above the canopy. Keep low [C].';
   }
   if (player.threatState === 'attack') {
-    return 'Dive committed · risk the camera [Right Mouse] or raise rifle [F]';
+    return 'Shadow closing · Camera [Right Mouse] · Rifle [F]';
   }
   // A held release must always show its progress, even where the prompt is not due.
   if (!player.caseAbandoned && player.abandonHoldSeconds > 0) return ABANDON_PROMPT_COPY;
   if (abandonPromptDue(player)) return ABANDON_PROMPT_COPY;
   if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Examine the track [E]';
-  if (player.zone === 'brook-blind') return 'Hold camera [Right Mouse]';
-  if (player.zone === 'iguanodon-glade' && !player.observedBehavior) return 'Read the family [E]';
+  if (player.zone === 'brook-blind') return 'Raise the camera [Right Mouse]';
+  if (player.zone === 'iguanodon-glade' && !player.observedBehavior) {
+    return player.familyFocusSeconds > 0 ? 'Keep the family in view.' : 'Stop and watch the family.';
+  }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-young-play') {
-    return 'The young break into play · Frame them [Right Mouse]';
+    return 'Quick feet break the grazing rhythm.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-branch-pull') {
-    return 'The adult reaches for the bough · Frame it [Right Mouse]';
+    return 'A bough bends above the adult.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-alarm') {
     return 'Family alarm · Break the dive before another plate';
   }
-  if (player.returnRoute) return 'Follow the Fort smoke through the gate.';
-  if (player.zone !== 'fort' && player.plates.some((plate) => plate.status === 'unexposed')) {
-    return 'Hold camera [Right Mouse]';
+  if (player.returnRoute === 'covered') return 'Thorn route committed · Fort smoke beyond the canopy.';
+  if (player.returnRoute === 'exposed') return 'Creek route committed · Open water to Fort.';
+  if (player.reachedGlade && player.zone === 'iguanodon-glade' && player.observedBehavior) {
+    return 'Fort smoke uphill · long thorn cover or quick open creek.';
   }
   return '';
-}
-
-function frameConditionCopy(frame) {
-  const conditions = {
-    'empty-fort': 'NO LIVING SUBJECT',
-    'brook-unread': 'TRACK CONTEXT // UNREAD',
-    'brook-partial': 'FOLIAGE // SUBJECT PARTLY OCCLUDED',
-    'canopy-flank': 'FERN GAP // FLANK CLEAR',
-    'basalt-scale': 'OPEN SIGHT // BASALT SCALE',
-    'glade-form': 'FAMILY // BEHAVIOR NOT YET READ',
-    'glade-behavior': 'FAMILY // LIVING BEHAVIOR',
-    'glade-young-play': 'FAMILY // YOUNG AT PLAY',
-    'glade-branch-pull': 'FAMILY // BRANCH PULL',
-    'glade-young-repeat': 'FAMILY // YOUNG PLAY ALREADY RECORDED',
-    'glade-branch-repeat': 'FAMILY // BRANCH PULL ALREADY RECORDED',
-    'glade-alarm': 'FAMILY // DISTURBED ALARM',
-    'pterodactyl-dive': 'AERIAL BEHAVIOR // COMMITTED DIVE',
-    'pterodactyl-repeat': 'AERIAL DIVE // ALREADY RECORDED',
-    'pterodactyl-edge': 'DIVING WING AT PLATE EDGE // ADJUST',
-    'empty-sky': 'EMPTY SKY // TRACK THE DIVE',
-    'shaken-frame': 'CAMERA DRIFT // DECISIVE DETAIL SMEARED',
-    'family-edge': 'SUBJECT AT PLATE EDGE // ADJUST',
-    'empty-subject': 'NO LIVING SUBJECT // TURN TOWARD CALL',
-    'return-occluded': 'THORN // BODY PARTLY OCCLUDED',
-    'creek-scale': 'OPEN SIGHT // CREEK SCALE',
-  };
-  return conditions[frame.key] ?? 'FIELD FRAME';
 }
 
 function updateFieldHud(now) {
   const currentFrame = player.pendingExposure ?? frameForState(player);
   const prompt = contextualCopy();
+  const showFieldNote = Boolean(player.lastObservation && now < observationNoticeUntil);
   contextPrompt.textContent = prompt;
-  contextPrompt.hidden = !prompt || player.failed;
+  contextPrompt.hidden = !prompt || player.failed || showFieldNote;
   const holdProgress = !player.caseAbandoned && player.abandonHoldSeconds > 0
     ? Math.min(1, player.abandonHoldSeconds / ABANDON_HOLD_SECONDS)
     : 0;
@@ -429,16 +414,14 @@ function updateFieldHud(now) {
     const plate = player.plates[index];
     slot.dataset.status = plate.status;
     slot.dataset.frame = plate.frameKey ?? 'empty';
-    slot.dataset.cues = plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
-    slot.style.setProperty('--plate-fill', `${plate.points * 50}%`);
     slot.setAttribute(
       'aria-label',
-      `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.status === 'exposed' ? `, ${plate.points} cues` : ''}`,
+      `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.status === 'exposed' ? ` — ${noteForPlate(plate)}` : ''}`,
     );
   });
 
   lightWatch.hidden = !player.plateRailRevealed;
-  lightSeconds.textContent = Math.max(0, Math.ceil(player.remainingLight));
+  lightSeconds.textContent = daylightCondition(player.remainingLight);
 
   const previewPlate = player.lastProofEvent
     ? player.plates[player.lastProofEvent.plateIndex]
@@ -456,7 +439,7 @@ function updateFieldHud(now) {
     applyPlateImage(previewImage, plateImages[plateIndex]);
   }
 
-  fieldNote.hidden = !player.lastObservation || now >= observationNoticeUntil;
+  fieldNote.hidden = !showFieldNote;
   if (!fieldNote.hidden) fieldNote.textContent = player.lastObservation;
   contactNote.hidden = now >= contactNoticeUntil;
   captionLine.hidden = !fieldAudio.captionsEnabled
@@ -595,7 +578,7 @@ function presentTerminal() {
     const leftInBasin = player.result.caseAbandoned === true;
     slot.dataset.status = leftInBasin ? 'abandoned' : plate.status;
     slot.dataset.frame = plate.frameKey ?? 'empty';
-    slot.dataset.cues = !leftInBasin && plate.status === 'exposed' ? `${plate.points} cue${plate.points === 1 ? '' : 's'}` : '';
+    slot.dataset.note = !leftInBasin ? noteForPlate(plate) : '';
     applyPlateImage(slot, !leftInBasin && plate.status === 'exposed' ? plateImages[index] : null);
     slot.setAttribute(
       'aria-label',
@@ -609,11 +592,20 @@ function presentTerminal() {
     terminalEyebrow.textContent = 'WHAT REACHED CAMP';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
-    terminalDetail.textContent = player.result.caseAbandoned
-      ? `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.abandonedPlates} exposed plate${player.result.abandonedPlates === 1 ? '' : 's'} left in the basin · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`
-      : `${player.result.evidence} evidence cues · ${player.result.survivingPlates} recorded plates · ${player.result.route} return · ${Math.ceil(player.result.remainingLight)}s light`;
-    terminalCallback.hidden = !(player.result.recordCallback ?? player.result.gunshotCallback);
-    terminalCallback.textContent = player.result.recordCallback ?? player.result.gunshotCallback ?? '';
+    const recoveredNotes = player.result.caseAbandoned
+      ? []
+      : player.plates.filter((plate) => plate.status === 'exposed').map(noteForPlate);
+    terminalDetail.textContent = recoveredNotes.length > 0
+      ? `Recovered record · ${recoveredNotes.join(' · ')}`
+      : 'No living observation survived on glass.';
+    const callback = [
+      routeConsequence(player.result),
+      player.result.aerialEvidence
+        ? 'One plate fixes the wing at the instant it commits to the dive.'
+        : null,
+    ].filter(Boolean).join(' ');
+    terminalCallback.hidden = !callback;
+    terminalCallback.textContent = callback;
   } else {
     terminalEyebrow.textContent = 'FIELD WORK ENDED';
     terminalTitle.textContent = player.result.title;
@@ -702,6 +694,7 @@ function update(deltaSeconds, now) {
     const previousRunStatus = player.runStatus;
     const previousThreatState = player.threatState;
     const previousFamilyMoment = player.familyMoment;
+    const previousObservedBehavior = player.observedBehavior;
     const previousProofPlate = player.lastProofEvent?.plateIndex ?? -1;
     const previousRoute = player.returnRoute;
     const previousBrookResponse = player.brookResponse;
@@ -714,6 +707,10 @@ function update(deltaSeconds, now) {
     if (player.familyMoment !== previousFamilyMoment) {
       if (player.familyMoment === 'glade-young-play') emitCue('family-play', 2600);
       if (player.familyMoment === 'glade-branch-pull') emitCue('family-branch', 2600);
+    }
+    if (!previousObservedBehavior && player.observedBehavior) {
+      observationNoticeUntil = now + 2200;
+      fieldAudio.cue('examine');
     }
     if ((player.lastProofEvent?.plateIndex ?? -1) !== previousProofPlate) {
       queuePlateCapture(player.lastProofEvent.plateIndex);

@@ -48,8 +48,14 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
    of firing.
 5. A 180-second light budget, four alive result bands, deadline/contact failure and one
    clean restart state.
-6. Edge HUD, contextual prompts, physical result review, captions and accessibility
-   settings using the approved expedition-field voice.
+6. A reduced edge HUD, first-use contextual prompts, qualitative daylight, physical
+   plate-by-plate result review, captions and accessibility settings using the approved
+   expedition-field voice. Cue totals and exact seconds remain internal.
+
+Holding the family in a clear, still, tool-lowered view for about a second and a half must start its behaviour
+cycle without requiring a prompt-led scan action; the explicit examine input remains an
+accessible fallback. Returning across the Fort threshold after leaving must resolve the
+record even when the scout turns back before the glade.
 
 The representative Strong path records brook and basalt scale, reads the family, aims at
 young play, crouches under cover to widen the dive, returns for the later branch pull, returns
