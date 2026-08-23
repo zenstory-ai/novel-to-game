@@ -11,3 +11,13 @@
 - 临时请求拦截分别阻断一张安全关键图和一张持久场景册成人图，两条路径都进入 `#asset-error`，没有继续显示残页。
 
 压缩结果见 `verification.json` 与 `evidence/run.json`。这些证据不证明主观趣味、长期平衡、其他浏览器或所有结局。
+
+仓内另提供一条不依赖浏览器的可执行改编合同：
+
+```bash
+node examples/jin-ping-mei/qa/verify_playable_model.mjs
+```
+
+它对照 `playable-model.json` 与实际 `data.js` / `engine.js`，验证两种正堂起手的差异、三拍回响、非空
+回调载荷、证物来源与消费边界、同 seed 确定性、存档重演与分支污染拒绝。它不调用第 5/15/20 日、
+结局、一月笺或命数消费者，是设计回归，不冒充上面的真实渲染、输入或完整二十日证据。

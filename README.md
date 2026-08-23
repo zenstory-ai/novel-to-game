@@ -128,13 +128,13 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## Workflow
 
-The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through six stages with separate ownership. Concept, experience/level design, and art direction remain distinct, while acceptance checks only scope consistency and the six-effect minimum playable contract.
+The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through separately owned decisions. Concept, experience/level design, and art direction remain distinct. After world design, a risk-matched whitebox tests the hardest causal, systemic, spatial, or control question before art production; its findings return to the design owner rather than becoming a new QA gate.
 
 ```text
-Novel → Source analysis → Concept → World design → Art direction → Build → QA → Playable game
+Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
 ```
 
-Build targets the chosen runtime and prepares one verification entry point; QA runs it once and records the six minimum player-visible effects with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. No human-playtest gate or duplicate QA report is required. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
+The whitebox runs only the narrow model/replay check needed for its declared risk. The production build targets the chosen runtime and prepares one authoritative verification entry point; QA runs it once and records the six minimum player-visible effects with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. No human-playtest gate or duplicate QA report is required. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
 
 ## Skills
 
@@ -145,7 +145,7 @@ Build targets the chosen runtime and prepares one verification entry point; QA r
 | [`game-concept`](skills/game-concept/) | Generate three materially different directions, reject invalid options, and choose one |
 | [`game-world-design`](skills/game-world-design/) | Define the player promise, core loop, world response, systems, levels, failure, and outcomes |
 | [`game-art-direction`](skills/game-art-direction/) | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
-| [`game-build`](skills/game-build/) | Compress an approved build brief and drive implementation to a fully playable build |
+| [`game-build`](skills/game-build/) | Build a risk-matched whitebox, then implement the approved production candidate without redesigning it |
 | [`game-qa`](skills/game-qa/) | Verify commands, states, screenshots, and real play paths without overstating subjective results |
 
 ## Artifacts

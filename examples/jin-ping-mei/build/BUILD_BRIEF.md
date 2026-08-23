@@ -2,9 +2,23 @@
 
 `targetFinish: playable-prototype`
 
+`buildStage: production`
+
+`buildPath: custom`
+
 ## 目标
 
 在现有零构建网页运行时上，把六日三线切片升级为可完整游玩的二十日五线版本。保护第一人称、日程经营、可拒绝成人关系、人物能力反哺经营和证据化 QA，不改做纯视觉小说或开放世界。
+
+代码原生状态机是可执行改编模型：`data.js` 定义可选行动与内容节点，`engine.js` 独占资源、关系、知识、
+承诺、事件与结局提交，DOM/CSS 只表现已裁决结果。`qa/playable-model.json` 仅是对照实现的测试 oracle；
+`node qa/verify_playable_model.mjs` 必须证明两条正堂起手可区分、可确定性重放、长期回调载荷存在、未选
+分支不污染、合法存档可重演且伪造状态拒读。该命令不逐日演出这些回调，也不替代真实浏览器的六项
+完整 QA。这个既有候选早于内容与规则修订号拆分，故 `contentRevision`、`rulesRevision` 明记为
+`NOT_AVAILABLE`；唯一可核的兼容边界是 `saveSchemaVersion: 67`，不得把它冒充另两种版本。固定验证
+seed 为 42：主路径依次执行 `opening_open_ledger` 与三次开场后章推进，相邻反例改走
+`opening_hear_five` 与同样三次推进；两路都应进入 `day`，但旗标、宅门值与院间关系必须不同，向任一路
+注入另一条起手旗标都必须拒读。
 
 ## 必须实现
 

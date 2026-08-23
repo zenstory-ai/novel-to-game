@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "source": "design/GAME_DESIGN.md#10-可执行切片合同",
+  "experienceProfile": "narrative-led",
+  "buildPath": "custom",
+  "versions": {
+    "contentRevision": "NOT_AVAILABLE: 现有候选早于内容修订号拆分",
+    "rulesRevision": "NOT_AVAILABLE: 现有候选早于规则修订号拆分",
+    "saveSchema": 67
+  },
+  "stateSurface": {
+    "resources": {
+      "initial": {
+        "silver": 220,
+        "power": 2,
+        "repute": 3,
+        "exposure": 0,
+        "strain": 0,
+        "house": 65
+      }
+    },
+    "relationshipActors": [
+      "wu_yueniang",
+      "pan_jinlian",
+      "li_pinger",
+      "meng_yulou",
+      "sun_xuee"
+    ],
+    "dayActions": ["ledger", "office", "listen", "banquet"],
+    "eventLog": "history",
+    "knowledgeLedger": "secrets"
+  },
+  "openingActions": [
+    {
+      "id": "opening_open_ledger",
+      "expected": {
+        "flag": "opened_true_ledger",
+        "absentFlag": "heard_all_five",
+        "house": 69,
+        "bonds": {
+          "wu_yueniang|li_pinger": 6,
+          "wu_yueniang|sun_xuee": 7
+        }
+      }
+    },
+    {
+      "id": "opening_hear_five",
+      "expected": {
+        "flag": "heard_all_five",
+        "absentFlag": "opened_true_ledger",
+        "house": 65,
+        "bonds": {
+          "pan_jinlian|meng_yulou": -1,
+          "pan_jinlian|sun_xuee": 10
+        }
+      }
+    }
+  ],
+  "callbacks": [
+    "publicEcho",
+    "day15Text",
+    "finalText",
+    "endingTexts",
+    "epilogueTexts",
+    "fateText"
+  ],
+  "knowledgeProbe": {
+    "opening": "opening_open_ledger",
+    "action": "listen",
+    "factId": "missing_fifty",
+    "source": "正堂开账听来的口风",
+    "confidence": "待互证",
+    "expiresOn": 7
+  },
+  "replay": {
+    "seed": 42,
+    "openingAftermathBeats": 3,
+    "expectedDayPhase": "day",
+    "tamperedStateMustBeRejected": true
+  },
+  "validationPaths": {
+    "primary": {
+      "opening": "opening_open_ledger",
+      "aftermathAdvances": 3,
+      "expectedFlag": "opened_true_ledger",
+      "absentFlag": "heard_all_five",
+      "expectedHouse": 69,
+      "expectedFeedback": "openingMemory 非空回调载荷存在"
+    },
+    "adjacentCounterexample": {
+      "opening": "opening_hear_five",
+      "aftermathAdvances": 3,
+      "expectedFlag": "heard_all_five",
+      "absentFlag": "opened_true_ledger",
+      "expectedHouse": 65,
+      "expectedFeedback": "openingMemory 非空回调载荷存在且分支摘要不同"
+    }
+  }
+}

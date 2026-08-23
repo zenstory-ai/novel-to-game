@@ -28,7 +28,13 @@ description: "Verify a game with evidence on its selected target runtime. Launch
    完成整条路径，并记录 command、exit code、环境、六项结果、最小证据和实际失败。
 3. 对照 GAME_DESIGN 中会改变结果的不变量和三段弧结束标记；只验证批准的设计承诺，不遍历所有
    代码路径。
-4. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
+4. 若候选有可执行模型、事件日志或 patch，由同一权威 verify 内嵌项目回归，不由 QA 另跑第二条命令：
+   同版本同初态/seed/输入得到同一终态，非法动作不提交，未选分支不污染，角色与玩家不读取未获知事实；
+   patch 只改变声明节点并重放受影响路径。若有 `signature_command`，还验证规范化候选的确定性提交、
+   否定/含混/冲突输入不误命中、执行阻力可拒绝或部分完成、实际结果与反馈一致、到期事项准时且只触发
+   一次；谈话不得越权提交效果或泄露知识。失败按影响映射到 `coreLoop` / `outcome` / `restart` 或写
+   limitation，不新增 checks。
+5. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
    未验证风险，不给确定性 PASS。
 
 优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种

@@ -25,6 +25,10 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 表态、隐瞒、交出与承担回响。先例提供语法，原作规则负责改变动作对象、顺序、代价和世界回应，
 不能只做 IP 换皮。
 
+概念还要判断验证形态：可用成熟交互语法表达时说明“已有语法 + 原作如何改变它”；核心依赖实时手感、
+空间、视线、物理或独特操作时明确走自定义灰盒。不要把文本原型当所有体验的统一前置层，也不要因有
+模板可用就让模板替原作决定玩法。
+
 ## 三个方向
 
 先列 brief 的锁定维度和仍开放的维度。三个方向必须在至少三项开放维度上真正不同，例如玩家身份、
@@ -33,11 +37,15 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 
 每个概念卡只回答：
 
-- 玩家是谁、反复做什么、想获得什么独特幻想；
+- `player_job`：玩家以什么身份长期做哪份工作，想获得什么独特幻想；
+- `recurring_job_loop`：这份工作每个周期反复做什么；
 - 主类型、`experienceProfile`、主要玩法先例，以及本作借什么/不借什么；
 - 3–5 个核心动词、循环、压力、失败和世界响应；
+- `signature_command`：只有当自然语言表达本身能体现该身份时，写 `id`、`label` 与候选 `intents`；
+  不合适时明确 `N/A`，不得给所有游戏统一添加聊天框；
+- `resistance_chain`：谁或什么会阻止、拒绝、扭曲或泄露玩家的安排；
+- `advancement_ladder`：玩家在探索、成长、成熟阶段分别新学会什么、新能组合什么；
 - 原作独有的规则或情感/伦理张力怎样被玩家亲手 enact，而不是留在过场；
-- 三段弧：玩家在探索、成长、成熟阶段分别新学会什么、能到哪里；
 - 一张能同时看出身份、动作与世界特征的招牌画面；
 - 最小验证切片、最大风险，以及什么观察结果会否决该方向。
 
@@ -55,7 +63,9 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 3. 紧凑先例说明；
 4. 三个概念卡；
 5. 硬否决结果、关键取舍、推荐与选择状态；
-6. 选定方向的 `experienceProfile`、玩家能动性合同和不可妥协体验承诺；
+6. 选定方向的 `experienceProfile`、玩家能动性合同、不可妥协体验承诺，以及五项独立交接字段：
+   `player_job`、`recurring_job_loop`、`signature_command`（或 `N/A`）、`resistance_chain`、
+   `advancement_ladder`；
 7. 最小验证问题与开放问题。
 
 `narrative-led` 或 `hybrid` 的叙事层还要选择一种分支结构语法并说明内容预算。概念不得写伤害公式、

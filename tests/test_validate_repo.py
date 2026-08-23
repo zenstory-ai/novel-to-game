@@ -908,6 +908,23 @@ class RepositoryValidationTests(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
+    def test_jin_ping_mei_playable_model_is_executable(self) -> None:
+        project = ROOT / "examples/jin-ping-mei"
+        verifier = project / "qa/verify_playable_model.mjs"
+        source = verifier.read_text(encoding="utf-8")
+
+        self.assertNotIn("qa/verification.json", source)
+        result = subprocess.run(
+            ["node", str(verifier)],
+            cwd=project,
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("确定性重放", result.stdout)
+        self.assertIn("非空回调载荷", result.stdout)
+
     def test_example_verification_does_not_repeat_the_complete_run_as_a_suite(self) -> None:
         for path in (ROOT / "examples").glob("*/qa/verification.json"):
             with self.subTest(path=path):

@@ -33,11 +33,15 @@ description: "Turn a novel into a fully playable game on the selected target pla
 1. 建立工作区，记录来源、模式、当前阶段和未确认假设。
 2. 生成 `PRODUCT_BRIEF.md`；高风险歧义未解决时才停靠。
 3. 调用 `novel-game-analyze` 生成有原文依据的 `SOURCE_BIBLE.md`。
-4. 调用 `game-concept` 生成三个真正不同的方向并选定 `CONCEPT.md`；`director` 在此停靠。
-5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`。
-6. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包。
-7. 调用 `game-build` 生成可运行版本，再由 `game-qa` 验证最小闭环；问题按 product/design/art/build
-   归属回流，不让实现阶段静默重做策划。
+4. 调用 `game-concept` 生成三个真正不同的方向并选定 `CONCEPT.md`；同时判断是否存在一项值得开放的
+   角色专属命令，实时/空间/精确操作不适合时明确 `N/A`；`director` 在此停靠。
+5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`，其中锁定最大设计风险与最小可执行切片。
+6. 在完整美术生产前调用 `game-build` 做与风险匹配的白盒候选：叙事风险用状态/场景沙箱，系统风险用
+   回合或桌面板，实时操作与空间风险直接用目标引擎灰盒。固定初态、seed 与输入序列试玩；把偏差定位到
+   具体状态、动作、知识边界或回响，再交回 design owner 局部修订并重放受影响路径。
+7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包。
+8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
+   product/design/art/build 归属回流，不让实现阶段静默重做策划。
 
 编排器只记录两项完成结果：
 
@@ -56,6 +60,10 @@ description: "Turn a novel into a fully playable game on the selected target pla
   贯穿设计、美术、构建与 QA；它只改变判据表达，不降低完成要求。
 - 玩家选择要拥有因果权与结算权，不能用卡牌、回合或资源条伪装能动性。
 - 概念、体验/关卡设计、美术方向分别拥有自己的批准边界；构建只能实现，不能暗中重选方向。
+- 低保真原型服从最大风险而非统一做成文游；它只证明被实际模拟的叙事、规则、空间或操作问题。
+- 生成模型可以解释输入和写表达，状态提交、知识披露、资源结算与不可逆承诺必须由可重放规则裁决。
+- 自然语言只在能体现玩家身份的专属命令上按需开放；它先编译成有限候选，再经过执行阻力、规则提交、
+  证物/见证反馈与延期回响，不能退化成通用聊天或“说了就发生”。
 - 验证切片必须在实际运行环境中完整走通；范围服从 brief，不默认扩成长篇全量游戏。
 - 完成以运行、画面、真实输入、结果和重开证据为准；AI 不能客观证明趣味、长期平衡或商业价值。
 

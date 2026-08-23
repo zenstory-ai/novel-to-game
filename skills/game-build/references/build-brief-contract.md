@@ -6,20 +6,32 @@
 ```text
 # 成品目标
 targetFinish: [逐字继承 PRODUCT_BRIEF]
+buildStage: [whitebox | production]
+buildPath: [template | custom]
 [目标平台、目标交付物、受众、切片时长、视口/朝向/输入、分级、联网边界]
 
 # 必读设计
-[GAME_DESIGN.md, ART_DIRECTION.md]
+- whitebox: [GAME_DESIGN.md]
+- production: [GAME_DESIGN.md, ART_DIRECTION.md]
 
 # 必须保真
 - 玩家承诺与核心幻想
 - experienceProfile: [逐字继承 GAME_DESIGN]
 - 3–5 个核心动词及各自输入、可观察状态变化
 - 会改变结果的规则、三段弧结束标记
-- 每个界面/模式的招牌时刻
-- HUD 的常驻／当前场景／按需账册层级，以及目标视口中主游玩面板的单焦点阅读边界
 - 界面语言、人物声口和禁用句式
 - 叙事项目追加主要路径、结局条件、持久旗标读取点和人物知识边界
+- production 追加：每个界面/模式的招牌时刻、HUD 层级、主游玩面板的单焦点阅读边界与美术禁区
+
+# 可执行模型（两阶段都需要）
+- 最大风险与原型形态；采用 template 时列语法与脱离条件，custom 时列不可被模板替代的核心动词
+- 运行时真正消费的最小状态、动作、前置、效果、观察者/知识更新、事件和不变量
+- signature_command: [N/A，或 id / label / intents / slots / validators / commit；具体数量服从项目]
+- 到期事项与谈话回灌（实际采用时）：来源、due/trigger、携带事实、重新上桌、结清；谈话只提交已验证结构
+- contentRevision / rulesRevision / saveSchemaVersion / seed
+- snapshot 用于载入，event log 用于定位与重放；两者不能互相冒充
+- 固定验证路径：初态摘要、输入序列、预期终态/反馈、相邻反例
+- 反馈 patch：issue id、owner、目标节点、兼容性、受影响路径与重放结果
 
 # 范围
 [必须包含；明确排除；最终范围差异]
@@ -37,10 +49,11 @@ commands:
   install: [命令；无需安装写 NONE]
   buildOrExport: [命令；无需单独构建写 NONE]
   start: [命令]
-  verify: [一条权威验证命令]
+  modelCheck: [whitebox 的最窄模型/回放检查；production 可写 NONE]
+  verify: [production 的一条权威验证命令；whitebox 写 NOT_APPLICABLE]
 verification:
-  owner: game-qa
-  evidence: [完整运行生成的工作区相对路径]
+  owner: [whitebox 为 design owner；production 为 game-qa]
+  evidence: [whitebox 的结构化观察，或 production 完整运行生成的工作区相对路径]
 
 # 当前限制
 [scope / reason；testedRuntime 与 targetRuntime 不同时列目标独有未测试项]
@@ -48,9 +61,16 @@ verification:
 
 ## 最小完成证据
 
-权威 verify 必须能在一次完整路径中证明：启动成功、非空且变化的真实渲染、真实输入改变状态、核心
+whitebox 只证明被选中的最大风险：规则/场景模型能启动，固定路径可运行与重放，偏差能定位回
+GAME_DESIGN；不要求 ART_DIRECTION、最终 HUD、完整路径或 `qa/verification.json`，也不进入六项 QA 结论。
+
+production 的权威 verify 必须能在一次完整路径中证明：启动成功、非空且变化的真实渲染、真实输入改变状态、核心
 循环完成、至少一个设计结果可达、restart 回到定义初态。构建阶段只准备入口和可观察状态；由
 `game-qa` 实际运行一次并写结论。证据使用工作区相对路径，不能只留临时目录或逐点击截图。
+
+可执行模型、事件日志或 patch 存在时，verify 还应在项目回归中证明同版本同 seed/输入可重放、非法
+前置不提交、未选择分支不污染、未见证者不引用秘密，以及 patch 声明外的状态不变。这些诊断映射回
+六项玩家效果或写 limitation，不新增顶层 QA gate。
 
 测试环境与目标运行环境不同时，这六项只声明实际覆盖；源码身份、公网、营销、主观趣味、权利
 判断和完成度声明不进入这六项机器事实。
