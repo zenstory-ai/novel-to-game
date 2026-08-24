@@ -6,8 +6,8 @@
     "name": "worldwonderer",
     "url": "https://github.com/worldwonderer"
   },
-  "homepage": "https://github.com/worldwonderer/novel-to-game",
-  "repository": "https://github.com/worldwonderer/novel-to-game",
+  "homepage": "https://github.com/zenstory-ai/novel-to-game",
+  "repository": "https://github.com/zenstory-ai/novel-to-game",
   "license": "MIT",
   "keywords": [
     "novel-to-game",
@@ -32,7 +32,7 @@
     "capabilities": [
       "Write"
     ],
-    "websiteURL": "https://github.com/worldwonderer/novel-to-game",
+    "websiteURL": "https://github.com/zenstory-ai/novel-to-game",
     "defaultPrompt": [
       "Turn this novel into a complete 15-minute game prototype.",
       "Compare three game concepts for this novel before choosing one."

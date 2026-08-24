@@ -2,7 +2,7 @@
 
 > Turn a novel in any language into a source-grounded, fully playable game.
 
-[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/worldwonderer/novel-to-game?display_name=tag&sort=semver)](https://github.com/worldwonderer/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/worldwonderer/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/worldwonderer/novel-to-game?style=flat&logo=github)](https://github.com/worldwonderer/novel-to-game/stargazers)
+[![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
 
 NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It turns novel adaptation into a staged workflow: source analysis, concept selection, world and art direction, implementation, and runtime QA.
 
@@ -42,7 +42,7 @@ Play the full expedition on desktop, or watch the 15-second gameplay preview on 
 
 https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
-**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Read the case study](examples/project-plateau/) · [Share feedback](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 min run · desktop WebGL2 · playable prototype
+**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Read the case study](examples/project-plateau/) · [Share feedback](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 1–3 min run · desktop WebGL2 · playable prototype
 
 ## Why NovelToGame
 
@@ -60,14 +60,14 @@ A one-line “turn this book into a game” prompt often produces a generic resk
 
 | Agent CLI | Install | Invoke |
 |---|---|---|
-| Claude Code | `npx skills add worldwonderer/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
-| Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
-| Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
+| Claude Code | `npx skills add zenstory-ai/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
+| Codex | `npx skills add zenstory-ai/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
+| Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
 Install adapters for all three CLIs on the same machine:
 
 ```bash
-npx skills add worldwonderer/novel-to-game -g -y -s '*' \
+npx skills add zenstory-ai/novel-to-game -g -y -s '*' \
   -a claude-code -a codex -a kimi-code-cli
 ```
 
@@ -104,7 +104,7 @@ press a contradiction, and attitudes that shifted because of what you did earlie
 #### Claude Code
 
 ```text
-/plugin marketplace add worldwonderer/novel-to-game
+/plugin marketplace add zenstory-ai/novel-to-game
 /plugin install novel-to-game@novel-to-game-skills
 /novel-to-game:novel-to-game quick
 ```
@@ -112,14 +112,14 @@ press a contradiction, and attitudes that shifted because of what you did earlie
 #### Codex
 
 ```bash
-codex plugin marketplace add worldwonderer/novel-to-game
+codex plugin marketplace add zenstory-ai/novel-to-game
 codex plugin add novel-to-game@novel-to-game-skills
 ```
 
 #### Kimi Code 0.27 or newer
 
 ```text
-/plugins install https://github.com/worldwonderer/novel-to-game
+/plugins install https://github.com/zenstory-ai/novel-to-game
 /reload
 /skill:novel-to-game quick
 ```

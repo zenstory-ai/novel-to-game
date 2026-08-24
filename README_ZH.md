@@ -2,7 +2,7 @@
 
 > 把任何语言的小说，改编成有原著依据、可完整游玩的游戏。
 
-[![Validate](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/worldwonderer/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/worldwonderer/novel-to-game?display_name=tag&sort=semver)](https://github.com/worldwonderer/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/worldwonderer/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/worldwonderer/novel-to-game?style=flat&logo=github)](https://github.com/worldwonderer/novel-to-game/stargazers)
+[![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
 
 NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它把小说游戏化改编拆成一条职责清晰的流程：拆解原著、选择概念、设计世界与美术、完成构建，并在目标运行环境中实际验证。
 
@@ -42,7 +42,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [查看改编案例](examples/project-plateau/) · [反馈体验](https://github.com/worldwonderer/novel-to-game/discussions/7) · 1–3 分钟一局 · 桌面 WebGL2 · 可玩原型
+**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [查看改编案例](examples/project-plateau/) · [反馈体验](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 1–3 分钟一局 · 桌面 WebGL2 · 可玩原型
 
 ## 为什么用 NovelToGame
 
@@ -60,14 +60,14 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 | Agent CLI | 安装命令 | 调用方式 |
 |---|---|---|
-| Claude Code | `npx skills add worldwonderer/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
-| Codex | `npx skills add worldwonderer/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
-| Kimi Code | `npx skills add worldwonderer/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
+| Claude Code | `npx skills add zenstory-ai/novel-to-game -g -y -a claude-code -s '*'` | `/novel-to-game` |
+| Codex | `npx skills add zenstory-ai/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
+| Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
 在同一台机器上为三个 CLI 安装适配器：
 
 ```bash
-npx skills add worldwonderer/novel-to-game -g -y -s '*' \
+npx skills add zenstory-ai/novel-to-game -g -y -s '*' \
   -a claude-code -a codex -a kimi-code-cli
 ```
 
@@ -102,7 +102,7 @@ npx skills add worldwonderer/novel-to-game -g -y -s '*' \
 #### Claude Code
 
 ```text
-/plugin marketplace add worldwonderer/novel-to-game
+/plugin marketplace add zenstory-ai/novel-to-game
 /plugin install novel-to-game@novel-to-game-skills
 /novel-to-game:novel-to-game quick
 ```
@@ -110,14 +110,14 @@ npx skills add worldwonderer/novel-to-game -g -y -s '*' \
 #### Codex
 
 ```bash
-codex plugin marketplace add worldwonderer/novel-to-game
+codex plugin marketplace add zenstory-ai/novel-to-game
 codex plugin add novel-to-game@novel-to-game-skills
 ```
 
 #### Kimi Code 0.27 或更高版本
 
 ```text
-/plugins install https://github.com/worldwonderer/novel-to-game
+/plugins install https://github.com/zenstory-ai/novel-to-game
 /reload
 /skill:novel-to-game quick
 ```

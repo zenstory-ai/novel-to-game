@@ -1,7 +1,7 @@
 {
   "name": "novel-to-game-skills",
   "owner": {
-    "name": "worldwonderer"
+    "name": "zenstory-ai"
   },
   "metadata": {
     "description": "Turn any novel into a source-grounded, fully playable game through adaptation planning, target-platform build, and evidence-based QA. 通过改编策划、目标平台构建和证据化质量验证，把小说转成可完整游玩的游戏。",

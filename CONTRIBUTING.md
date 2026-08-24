@@ -20,10 +20,10 @@ evidence that a generated game actually works.
 - **Pull request:** a bounded change with its own verification and provenance.
 
 Use the structured issue forms instead of a blank issue. Questions and early
-ideas belong in [GitHub Discussions](https://github.com/worldwonderer/novel-to-game/discussions).
+ideas belong in [GitHub Discussions](https://github.com/zenstory-ai/novel-to-game/discussions).
 
 请优先使用 Bug、Skill Gap 或 Example Proposal 表单；尚未成形的问题与想法放到
-[Discussions](https://github.com/worldwonderer/novel-to-game/discussions)。
+[Discussions](https://github.com/zenstory-ai/novel-to-game/discussions)。
 
 ## Before changing files / 修改前
 
