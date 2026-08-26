@@ -12,6 +12,14 @@
 
 压缩结果见 `verification.json` 与 `evidence/run.json`。这些证据不证明主观趣味、长期平衡、其他浏览器或所有结局。
 
+2026-08-25 的表现层重塑没有改规则、状态、存档或完成条件，因此没有把旧的正常速度完整路径伪装成
+一次新跑。当前构建另做了 566 次可见控件的快速视觉烟测，重新到达第二十日结局；41 张运行图全部
+解码，1280×800、1600×800 与 390×844 的年龄门／首屏和桌面关键流程无水平溢出、控制台错误或请求
+失败。仓内 `final-screen.webp` 保留表现层复核前的终局基线；复核后的桌面角色抉择、桌面终局和
+390×844 终局分别见 `evidence/visual-review-dialogue-after.jpg`、
+`evidence/visual-review-ending-after.jpg` 与 `evidence/visual-review-ending-mobile-after.jpg`。权威正常速度
+完整路径仍明确属于上面的 2026-08-22 候选。
+
 仓内另提供一条不依赖浏览器的可执行改编合同：
 
 ```bash

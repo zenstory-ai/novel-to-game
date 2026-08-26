@@ -1,572 +1,161 @@
 {
-  "schemaVersion": 1,
-  "note": "生成式美术资产来源记录。它不是 build/asset-ledger.json；这里只记录由生成工具制作的运行资产、输入契约、后处理与验收边界。",
-  "generatedAt": "2026-08-06",
-  "generator": {
-    "tool": "codex-cli built-in image_gen skill",
-    "toolVersion": "codex-cli 0.146.0",
-    "skillPath": "$CODEX_HOME/skills/.system/imagegen",
-    "mode": "built-in tool mode (not scripts/image_gen.py CLI fallback)",
-    "reproducible": false,
-    "reproducibilityNote": "图像模型不保证逐字节可复现。重跑同一提示词与同一参考图会得到风格一致但不同的图；替换资产时必须重新做视觉验收，不能假设等价。"
-  },
-  "reason": "原 assets/portrait/*.png 与本作 CG 不同源：吴月娘、李瓶儿是正面对称的明代祖宗像风格（体态僵直、面容偏年长），潘金莲则是另一套三分身工笔；三者与 assets/cg/group/banquet_conflict.webp 里的人物互不相认。把 18+ 前奏 CG 从日常界面撤下之后，这批立绘变成全幅背景，身份断裂被放大。因此按 CG 谱系重出三张着装夜间立绘。",
-  "identityReference": {
-    "source": "examples/jin-ping-mei/build/app/assets/cg/group/banquet_conflict.webp",
-    "sourceSize": [
-      1564,
-      1006
+  "schemaVersion": 3,
+  "generatedAt": "2026-08-25",
+  "toolVersion": "Codex built-in image_gen",
+  "usage": "《金瓶梅·风月总账》四十一张运行图的二维新国风彻底重塑",
+  "reason": "旧棕黑 CG、古画册页样张、真人古装样张和现代时尚样张分别被判定为太暗、太旧、太真实和太现代。最终批准方向为完整晚明世界中的成熟理想化二维叙事游戏插画。",
+  "externalStyleResearch": {
+    "source": "https://github.com/freestylefly/awesome-gpt-image-2",
+    "principles": [
+      "Case 213：首先读作可进入的古代游戏空间，不借 MMO HUD、3D 真人渲染或暗街",
+      "Case 290：角色卡级身份色、器物锚点和即时情绪，不借 SSR 文案、镭射边框或暗底",
+      "Case 9：现代、多彩、明亮通透的国潮色光和留白，不借现代城市与宣传构图",
+      "Case 230：朱红、青蓝、鎏金的克制功能配色，不借品牌海报和现代地标"
     ],
-    "method": "按人物位置裁出三张身份参考图，作为 image_gen 的参考输入；提示词只写差量（时段、光照、动作、器物、构图），不重描外观，避免与参考图争夺条件。",
-    "crops": {
-      "pan_jinlian": [
-        93,
-        20,
-        656,
-        784
-      ],
-      "wu_yueniang": [
-        516,
-        0,
-        1094,
-        784
-      ],
-      "li_pinger": [
-        969,
-        20,
-        1532,
-        784
-      ]
-    }
+    "rejected": [
+      "Case 206／242 式古画与书签媒介",
+      "Case 343／514 式现代时尚与硬边艺术",
+      "Case 207 式暗黑真人封面"
+    ],
+    "copyrightBoundary": "未复制或提交参考库案例图；只借媒介裁决、游戏化识别、色光与留白方法。"
   },
-  "sharedPromptContract": {
-    "constant": [
-      "独自一人，夜间，在她自己的院/房内",
-      "单一暖色油灯为唯一光源，身后房间落入漆黑",
-      "四分之三侧身、半身构图，直视观众（第一人称西门庆刚进门）",
-      "着装完整，除面、颈、手外无裸露",
-      "人物占画面右侧 55–70%，左三分之一留白留给界面文字",
-      "横构图约 3:2"
+  "approvedStyleFrame": {
+    "asset": "app/assets/cg/group/title_new_guofeng.webp",
+    "sourceOutput": "codex-imagegen:exec-e1603504-1f87-4923-8f7d-7b6a45751299.png",
+    "promptSummary": "五名成年女性置于通透明代春庭；二维数字手绘、成熟理想化面孔、流动丝绸、朱砂石青青绿桃粉；人物居中右，左侧留真实 HTML 标题区。",
+    "required": [
+      "完整晚明建筑、服饰、发式、器物与关系空间",
+      "二维手绘游戏 CG 与可想象的人物材质",
+      "白日中高明度；夜景同时保留蓝紫月光和暖灯",
+      "五人脸型、成熟度、姿态、衣色与器物互异",
+      "画面内不承担正文排版"
     ],
     "forbidden": [
-      "画面中出现第二个人",
-      "现代物件",
-      "文字、字幕、签名或水印",
-      "裸肩或未着装",
-      "与参考图不同的面孔"
+      "真人摄影、3D 皮肤、现代时尚棚拍或品牌海报",
+      "古画复刻、工笔册页、宣纸旧化或全局黄褐滤镜",
+      "暗黑底、重暗角、全屏烟雾或不可读夜景",
+      "幼态、未成年人、胁迫、露点或性行为",
+      "现代物件、文字、标志或水印"
     ]
   },
-  "assets": [
+  "identityMasters": [
     {
-      "path": "app/assets/heroine/yue/night.webp",
       "character": "吴月娘",
-      "place": "正堂",
-      "prop": "摊开的账簿，一串铜钥匙压在她手下",
-      "robe": "靛蓝团花",
-      "bytes": 163128
+      "path": "app/assets/heroine/yue/night.webp",
+      "sourceOutput": "codex-imagegen:exec-bd1047ec-fc3b-40e4-ac8a-1d0acfe1e174.png",
+      "anchors": "石青与象牙、总账、铜钥匙"
     },
     {
-      "path": "app/assets/heroine/pan/night.webp",
       "character": "潘金莲",
-      "place": "花园角门",
-      "prop": "已经斟满的酒盏朝观众微倾，团扇搁在桌上；半开的槅扇外是月下庭院",
-      "robe": "朱红折枝",
-      "bytes": 169430
+      "path": "app/assets/heroine/pan/night.webp",
+      "sourceOutput": "codex-imagegen:exec-f521d0b2-b51a-428a-90cb-c3cbb0e5592e.png",
+      "anchors": "朱砂与暖粉、团扇、回看"
     },
     {
-      "path": "app/assets/heroine/pinger/night.webp",
       "character": "李瓶儿",
-      "place": "瓶儿私院",
-      "prop": "描金箱笼合着，她捏着一把铜钥匙半缩在袖里，像在斟酌要不要交出去",
-      "robe": "淡青缠枝",
-      "bytes": 133612
+      "path": "app/assets/heroine/pinger/night.webp",
+      "sourceOutput": "codex-imagegen:exec-314abee8-24ce-4494-9430-22b3122424df.png",
+      "anchors": "象牙与浅金、漆匣、私钥"
     },
     {
-      "path": "app/assets/cg/group/title_three.webp",
-      "character": "吴月娘 / 潘金莲 / 李瓶儿",
-      "usage": "标题屏专用群像（assets.js 的 cover 键）",
-      "reason": "把 cover 从宴席群像解绑之后，标题一度退回宅院界画：画面淡、右侧还留着 59%/41% 分栏的硬边，等于用最弱的一张去当门面。按 ART_DIRECTION《标题：三人都在看你》另出一张——它不出现在任何奖励位，所以既不剧透册页，也不再拿最强的画去换门面。",
-      "composition": "月娘正中偏后直视镜头；金莲自屏风边前探、执团扇；瓶儿在另一侧递出一把铜钥匙；三条视线汇向镜头下方的玩家位置；右三分之一落入漆黑，留给题字栏；整版单图，无分栏硬边",
-      "referenceInputs": [
-        "ref_pan_jinlian（裁自 banquet_conflict.webp）",
-        "ref_wu_yueniang（同上）",
-        "ref_li_pinger（同上）"
-      ],
-      "bytes": 286184,
-      "size": [
-        1536,
-        1024
-      ]
+      "character": "孟玉楼",
+      "path": "app/assets/heroine/meng/night.webp",
+      "sourceOutput": "codex-imagegen:exec-230a5eec-86c4-4923-8955-3715328c4cbe.png",
+      "anchors": "青绿与藕荷、名帖、曲谱、空席"
+    },
+    {
+      "character": "孙雪娥",
+      "path": "app/assets/heroine/xuee/night.webp",
+      "sourceOutput": "codex-imagegen:exec-262bebeb-8053-46d6-a1ff-5afd4a8811fa.png",
+      "anchors": "琥珀与深青、米账、仓绳、灶火"
+    },
+    {
+      "character": "李娇儿",
+      "path": "app/assets/household/li_jiaoer.webp",
+      "sourceOutput": "codex-imagegen:exec-24cda691-c334-48cc-b23b-e4feefe8e8c8.png",
+      "anchors": "梅紫与赭金、契纸、银秤、印匣"
     }
   ],
-  "laterAdditions": [
+  "batches": [
     {
-      "generatedAt": "2026-08-11",
-      "toolVersion": "codex-cli 0.147.0",
-      "path": "app/assets/scene/gate_collector.jpg",
-      "usage": "第 4 日催账到期的门前画面",
-      "reason": "银钱经济收紧后，第 4 日催账人从一句台词变成一条硬到期：付得起就了结，付不起就闹上门（house−8、exposure+10、三人各 du+5）。这一拍需要一张能承担压力的画面，否则玩家只看到数字变动，感觉不到门外真的有人在等。",
-      "composition": "自院内向外看：半开的院门框住门外等候的催账人，他腋下夹卷起的账册、腰间挂算盘，姿态是等，不是威胁；门槛、门枕石与扫净的院地在他与观众之间；前景留大片空院给界面文字",
-      "styleContract": "明代绣像白描 + 界画建筑线 + 淡彩套印，宣纸底；墨线承担全部形体，颜色只是线内薄罩染；允许 1–2px 套色错位但不让眼与嘴重影",
-      "palette": "宣纸底 + 墨线；账册与算盘用旧金引导「银钱」读数，长衣用青黑；整体低饱和，与既有明代绣像图版并置不跳",
-      "forbidden": [
-        "文字、字符、落款、印章",
-        "画面出现任何女性角色",
-        "暴力、威胁姿态、武器",
-        "现代服饰或器物",
-        "摄影光、泛光、3D 渲染、日漫风、Q 版"
-      ],
-      "sizeAndBytes": {
-        "size": [
-          1536,
-          1024
-        ],
-        "bytes": 449757,
-        "method": "PNG 1536×1024 经 sips 转 JPEG；未缩放"
-      },
-      "acceptance": "与 assets/bg/compound_act1.jpg（316060 bytes，1672×941 的同谱系界画）并置验收：纸底、墨线粗细、饱和度一致；前景空院确认可承载界面文字。"
-    },
-    {
-      "generatedAt": "2026-08-16",
-      "toolVersion": "codex-cli 0.147.0",
-      "path": "app/assets/cg/group/inner_court_accord.webp",
-      "usage": "三条院约齐备后，第六夜“今夜谁都别走”的安全共同办事群像",
-      "reason": "旧平衡后宫只复用中秋席冲突群像并直接给结局标签，没有画面证明三名女主真的共同解决一件事。新资产把总账、口供、货单和瓶儿自持的钥匙同时放进长案，作为独立结果页；不表现多人成人行为。",
-      "referenceInputs": [
-        "app/assets/cg/group/banquet_conflict.webp（人物身份、服饰、笔触与宅院夜景谱系）"
-      ],
-      "promptContract": {
-        "required": [
-          "同一名成年吴月娘居中核账",
-          "同一名成年潘金莲在左侧持口供发问",
-          "同一名成年李瓶儿在右侧持自己的铜钥匙与货单",
-          "三人完整着装",
-          "第一人称玩家手停在桌边",
-          "夜间长案共同办事而非争宠"
-        ],
-        "forbidden": [
-          "裸露或性行为",
-          "未成年人",
-          "第四名女性",
-          "现代物件",
-          "文字、字幕、签名或水印",
-          "把三人画成普通朋友合照"
-        ]
-      },
-      "sizeAndBytes": {
-        "size": [
-          1564,
-          1006
-        ],
-        "bytes": 394524,
-        "method": "image_gen 输出 PNG 后以 Pillow 转为 WebP quality 88；尺寸不变"
-      },
-      "reproducible": false,
-      "acceptance": "真实浏览器在 1280×800 与 1920×1080 触发 scene_id=inner_court_accord；人物、账簿、口供、货单、钥匙均可辨，底栏不遮共同办事的因果器物。"
-    },
-    {
-      "generatedAt": "2026-08-16",
-      "toolVersion": "codex-cli 0.147.0",
-      "path": "app/assets/cg/joint/{yue_pan,yue_pinger,pan_pinger}.webp",
-      "usage": "五院扩展前已完成的三种一次性双人联院差事结果图",
-      "reason": "首版联院结果复用旧门卡 PNG，浏览器截图暴露人物年龄、面容与宴席 CG 谱系不一致。改用宴席群像作身份与笔触参考，为三组搭档分别生成实际办事画面；这些图不进入成人场景册，也不表现性行为。",
-      "referenceInputs": [
-        "app/assets/cg/group/banquet_conflict.webp"
-      ],
-      "sharedContract": {
-        "required": [
-          "只出现对应两名成年女主",
-          "完整着装",
-          "两人互看并共同操作因果器物",
-          "明代宅院夜景",
-          "下方约 24% 暗区供字幕栏"
-        ],
-        "pairProps": {
-          "yue_pan": [
-            "总账",
-            "口供纸",
-            "算盘或印泥"
-          ],
-          "yue_pinger": [
-            "公账",
-            "货单",
-            "瓶儿自持铜钥匙",
-            "箱笼"
-          ],
-          "pan_pinger": [
-            "口供纸",
-            "折扇",
-            "货单",
-            "铜钥匙",
-            "拆封货箱"
-          ]
-        },
-        "forbidden": [
-          "裸露或性行为",
-          "未成年人",
-          "第三名女性",
-          "现代物件",
-          "文字、字幕、签名或水印",
-          "两张立绘并排的合照感"
-        ]
-      },
+      "usage": "世界与入口",
+      "promptSummary": "春日高机位宅院和明亮门槛催账；压力由契纸、人物姿态和受阻门槛表达。",
       "assets": [
-        {
-          "path": "app/assets/cg/joint/yue_pan.webp",
-          "usage": "正堂问口供：月娘核账、金莲追问",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 338786
-        },
-        {
-          "path": "app/assets/cg/joint/yue_pinger.webp",
-          "usage": "公账接货单：月娘核数、瓶儿自持钥匙调货",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 374790
-        },
-        {
-          "path": "app/assets/cg/joint/pan_pinger.webp",
-          "usage": "顺话验货车：金莲套话、瓶儿验货",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 343516
-        }
-      ],
-      "postProcessing": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6；未缩放",
-      "reproducible": false,
-      "acceptance": "真实 Chromium 1280×800 全键盘路径逐一进入 joint_yue_pan 与 joint_yue_pinger 结果页；专项截图确认人物身份、手势、器物与底栏无遮挡。第三组由关键资产存在性与同一渲染模板覆盖。"
+        ["app/assets/bg/compound_new_guofeng.webp", "codex-imagegen:exec-c623d43c-e15a-4472-b9f4-f748ad848b56.png"],
+        ["app/assets/scene/gate_collector.webp", "codex-imagegen:exec-a7b0d1b1-e316-41b6-ad57-86d009bfbada.png"]
+      ]
     },
     {
-      "generatedAt": "2026-08-17",
-      "toolVersion": "codex built-in image_gen",
-      "usage": "统一三名宅中短线人物横幅",
-      "reason": "撤下与主线 CG 断裂的旧透明 PNG；三张新图共用宴席群像的工笔夜画谱系、右侧人物与左侧文案留空合同。",
-      "referenceInputs": [
-        "app/assets/cg/group/banquet_conflict.webp"
-      ],
+      "usage": "五人前奏与关系落定",
+      "promptSummary": "同一身份母版的夜间关系 CG；以目光、开掌、钥匙、出口和共享日用表达成年人的主动选择，完整着装，无性行为。",
       "assets": [
-        {
-          "path": "app/assets/heroine/meng/night.webp",
-          "character": "孟玉楼",
-          "anchor": "名帖与茶盘",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 289326,
-          "usage": "孟玉楼女主院门与日常近景身份母版"
-        },
-        {
-          "path": "app/assets/heroine/xuee/night.webp",
-          "character": "孙雪娥",
-          "anchor": "空米袋与后仓米箱",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 241600,
-          "usage": "孙雪娥女主院门与日常近景身份母版"
-        },
-        {
-          "path": "app/assets/household/li_jiaoer.webp",
-          "character": "李娇儿",
-          "anchor": "描金匣与银锭",
-          "size": [
-            1586,
-            992
-          ],
-          "bytes": 280502
-        }
-      ],
-      "forbidden": [
-        "未成年人",
-        "裸露或性行为",
-        "现代物件",
-        "文字、字幕、签名或水印"
-      ],
-      "postProcessing": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6；未缩放。",
-      "acceptance": "人物在右侧、因果器物清晰、左侧文本区可读；运行资产表不再引用任何旧 portrait PNG。"
+        ["app/assets/cg/yue/prelude.webp", "codex-imagegen:exec-1ac36cb6-30a6-413d-812c-4b1b482b8b2a.png"],
+        ["app/assets/cg/yue/explicit.webp", "codex-imagegen:exec-65126819-70a1-4773-9759-706eaf51e6e1.png"],
+        ["app/assets/cg/pan/prelude.webp", "codex-imagegen:exec-dcd0c85d-b0b1-4ae3-973f-40f8e2fa65e5.png"],
+        ["app/assets/cg/pan/explicit.webp", "codex-imagegen:exec-ae6c99ab-27ce-4652-81d1-2af468e8260a.png"],
+        ["app/assets/cg/pinger/prelude.webp", "codex-imagegen:exec-01830d1b-2d87-4e97-b97c-92f15ced287c.png"],
+        ["app/assets/cg/pinger/explicit.webp", "codex-imagegen:exec-a985ad93-a833-4272-b41e-ed493997eca4.png"],
+        ["app/assets/cg/meng/prelude.webp", "codex-imagegen:exec-f6a3adb4-0335-497b-8509-ee2c09f61780.png"],
+        ["app/assets/cg/meng/explicit.webp", "codex-imagegen:exec-00c1529b-543e-42fc-8dad-3de16000a529.png"],
+        ["app/assets/cg/xuee/prelude.webp", "codex-imagegen:exec-48622697-5ef3-443e-9a34-83e4a9c25859.png"],
+        ["app/assets/cg/xuee/explicit.webp", "codex-imagegen:exec-216df76e-b036-443a-9e70-529f2b12cdba.png"]
+      ]
     },
     {
-      "generatedAt": "2026-08-17",
-      "toolVersion": "codex built-in image_gen",
-      "path": "app/assets/cg/group/inner_court_afterglow.webp",
-      "usage": "三院共同办事后的成人余夜群像",
-      "reason": "共同分工不再一张协作图后直接结算；两段可交互夜话后，以含蓄香艳但完整着装的群像证明三人确实共同留下。",
-      "referenceInputs": [
-        "app/assets/cg/group/inner_court_accord.webp",
-        "app/assets/cg/group/banquet_conflict.webp"
-      ],
-      "required": [
-        "同一名成年吴月娘、潘金莲、李瓶儿",
-        "三人完整着装并靠近第一人称玩家",
-        "三只酒杯、月娘簪冠、金莲手中流苏、瓶儿自持钥匙",
-        "暖灯、纱帐与同一工笔纸纹谱系"
-      ],
-      "forbidden": [
-        "裸露或性行为",
-        "未成年人",
-        "第四名女性",
-        "现代物件",
-        "文字、字幕、签名或水印"
-      ],
-      "sizeAndBytes": {
-        "size": [
-          1561,
-          1007
-        ],
-        "bytes": 301388,
-        "method": "image_gen PNG 原尺寸以 Pillow 转为 WebP quality 88、method 6"
-      },
-      "reproducible": false,
-      "acceptance": "真实 Chromium 通过两次余夜选择后进入 scene_id=inner_court_afterglow；18+ 原始截图只存在临时 QA 工作区，不提交 example，也不进入 README 公共截图。"
-    },
-    {
-      "generatedAt": "2026-08-17",
-      "toolVersion": "Codex built-in image_gen (session-provided image model)",
-      "usage": "五名成年女主、二十日四幕扩展的标题、公议、联办与人物场景册",
-      "reason": "孟玉楼与孙雪娥由短线提升为可攻略女主；三次公开问责和五人终局都需要独立画面，避免用同一宴席图反复填充二十日内容。",
-      "referenceAndPromptContract": {
-        "visualLine": "明代宅院夜色、工笔纸纹、低饱和矿物色；账簿、名帖、粮袋、钥匙和证词承担剧情因果。",
-        "identity": "月娘靛蓝、金莲朱红、瓶儿淡青、玉楼淡紫、雪娥深褐；五人均为成年人。",
-        "composition": "横构图，主要动作与因果器物清楚；标题及双人联办画面为界面预留暗区。"
-      },
+      "usage": "五人公开关系与共同办事",
+      "promptSummary": "五人以交叉视线、递证、按账、留座和轮值器物形成真实关系动作，不做并排群像。",
       "assets": [
-        {
-          "path": "app/assets/cg/group/title_five.webp",
-          "bytes": 337890
-        },
-        {
-          "path": "app/assets/cg/group/public_day5.webp",
-          "bytes": 403228
-        },
-        {
-          "path": "app/assets/cg/group/public_day10.webp",
-          "bytes": 388386
-        },
-        {
-          "path": "app/assets/cg/group/public_day15.webp",
-          "bytes": 423644
-        },
-        {
-          "path": "app/assets/cg/group/inner_court_accord_five.webp",
-          "bytes": 371144
-        },
-        {
-          "path": "app/assets/cg/group/inner_court_afterglow_five.webp",
-          "bytes": 401956
-        },
-        {
-          "path": "app/assets/cg/joint/yue_meng.webp",
-          "bytes": 213364
-        },
-        {
-          "path": "app/assets/cg/joint/pan_xuee.webp",
-          "bytes": 299686
-        },
-        {
-          "path": "app/assets/cg/meng/prelude.webp",
-          "bytes": 234278
-        },
-        {
-          "path": "app/assets/cg/meng/explicit.webp",
-          "bytes": 255476
-        },
-        {
-          "path": "app/assets/cg/xuee/prelude.webp",
-          "bytes": 206782
-        },
-        {
-          "path": "app/assets/cg/xuee/explicit.webp",
-          "bytes": 161570
-        }
-      ],
-      "adultBoundary": "本批新图均完整着装，不含乳头、生殖器或性行为；个人“明确”册页以夜间私密氛围、门闩与人物自主同意表达亲密，不把可生成尺度冒充为裸露。",
-      "forbidden": [
-        "未成年人",
-        "胁迫或无同意",
-        "乳头或生殖器",
-        "性行为",
-        "现代物件",
-        "可读文字、字幕、签名或水印"
-      ],
-      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 88 -m 6 转为 WebP；不保留中间 PNG。",
-      "reproducible": false,
-      "acceptance": "逐张人工查看标题、公审、五人余夜、两组新联办以及玉楼/雪娥明确册页；人数、服色、因果器物与完整着装边界均符合运行用途。浏览器 QA 另验证 URL、解码尺寸与 HTTP 状态。"
+        ["app/assets/cg/group/public_day5.webp", "codex-imagegen:exec-32d97fcc-b83b-41f4-8bae-d8e5bf286910.png"],
+        ["app/assets/cg/group/public_day10.webp", "codex-imagegen:exec-60f375a8-ae0f-426d-9de2-fdbda4649142.png"],
+        ["app/assets/cg/group/public_day15.webp", "codex-imagegen:exec-0be274e2-1562-4cb6-9354-7d437b27aa43.png"],
+        ["app/assets/cg/group/inner_court_alliance.webp", "codex-imagegen:exec-7651ef0d-f27b-4ed1-86f7-7aaa5d049f99.png"],
+        ["app/assets/cg/group/inner_court_accord_five.webp", "codex-imagegen:exec-1bc7fb07-e6df-4974-b802-69f6f32cf44b.png"],
+        ["app/assets/cg/group/inner_court_afterglow_five.webp", "codex-imagegen:exec-19692392-08c1-4eeb-8c63-ea86b1a2e07b.png"]
+      ]
     },
     {
-      "generatedAt": "2026-08-18",
-      "toolVersion": "Codex built-in image_gen (session-provided image model)",
-      "usage": "五名成年女主各自的第二十夜一院终章安全 CG",
-      "reason": "个人终章已经扩成三拍，但此前仍放大普通院门近景，选择她本人、核心边界和另外四院善后没有视觉落点。五张新图让最终选择继续发生在画面里，而不是只剩结局文字。",
-      "referenceAndPromptContract": {
-        "identitySources": [
-          "app/assets/heroine/yue/night.webp",
-          "app/assets/heroine/pan/night.webp",
-          "app/assets/heroine/pinger/night.webp",
-          "app/assets/heroine/meng/night.webp",
-          "app/assets/heroine/xuee/night.webp"
-        ],
-        "visualLine": "明代宅院、绣像工笔线描、旧绢矿物淡彩、黎明光；人物完整着装。",
-        "composition": "横构图约 16:10，人物与因果器物在右半，左侧保留深色终章文字区。",
-        "storyAnchors": "月娘归还公钥；金莲撤首席改扇骨；瓶儿保留私钥与城外退路；玉楼撤陪客只留两杯与等大席签；雪娥封火休息并留下五人轮值牌。"
-      },
+      "usage": "五组双院结果",
+      "promptSummary": "两名对应成年女性共同作用于一件证物；脸、衣色、器物和方法冲突继承身份母版。",
       "assets": [
-        {
-          "path": "app/assets/cg/finale/yue.webp",
-          "bytes": 144760
-        },
-        {
-          "path": "app/assets/cg/finale/pan.webp",
-          "bytes": 221412
-        },
-        {
-          "path": "app/assets/cg/finale/pinger.webp",
-          "bytes": 158266
-        },
-        {
-          "path": "app/assets/cg/finale/meng.webp",
-          "bytes": 195590
-        },
-        {
-          "path": "app/assets/cg/finale/xuee.webp",
-          "bytes": 213768
-        }
-      ],
-      "adultBoundary": "本批是安全公开终章画，五人均为成年角色且完整着装；不含裸露、性行为或胁迫。",
-      "forbidden": [
-        "未成年人",
-        "胁迫或无同意",
-        "裸露或性行为",
-        "现代物件",
-        "可读文字、字幕、签名或水印"
-      ],
-      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 84 -metadata none 转为 1586×992 WebP；中间 PNG 留在工具缓存，不复制进仓库。",
-      "reproducible": false,
-      "acceptance": "逐张人工检查人物身份、右侧构图、关键因果器物和完整着装；真实浏览器另验证 1280×800 与 390×844 的月娘终章、三拍结局复用画面、五张 URL 解码和 HTTP 状态。"
+        ["app/assets/cg/joint/yue_pan.webp", "codex-imagegen:exec-74e2b0e8-c46f-45c7-8ee6-e4ee651bd56d.png"],
+        ["app/assets/cg/joint/yue_pinger.webp", "codex-imagegen:exec-35f35c39-8dfc-40b2-bfaa-f6071929cdb0.png"],
+        ["app/assets/cg/joint/pan_pinger.webp", "codex-imagegen:exec-a0bb4acc-0a64-444d-9c5a-30b2d0fad595.png"],
+        ["app/assets/cg/joint/yue_meng.webp", "codex-imagegen:exec-02c5f590-a171-4fa0-8a79-b0324079a512.png"],
+        ["app/assets/cg/joint/pan_xuee.webp", "codex-imagegen:exec-5af38352-b063-4dbe-9b4a-af807faa2f94.png"]
+      ]
     },
     {
-      "generatedAt": "2026-08-18",
-      "toolVersion": "Codex built-in image_gen (session-provided image model)",
-      "usage": "五名成年女主第 3／6 次进门人物关键章的安全中局转折 CG",
-      "reason": "普通路线已经有连续回应，但专走同一院时仍会在同一幕复用近景与小章。新增十场三段关键章，并以五张人物化画面固定其中真正改变关系规则的器物与现场。",
-      "referenceAndPromptContract": {
-        "identitySources": [
-          "app/assets/heroine/yue/night.webp",
-          "app/assets/heroine/pan/night.webp",
-          "app/assets/heroine/pinger/night.webp",
-          "app/assets/heroine/meng/night.webp",
-          "app/assets/heroine/xuee/night.webp"
-        ],
-        "visualLine": "明代宅院夜色、绣像工笔线描、旧绢矿物淡彩；角色完整着装，中局压力由器物和空间表达。",
-        "composition": "横构图约 16:10，人物与剧情器物在右半，左侧保留深色连续剧情面板区。",
-        "storyAnchors": "月娘空主位与轮值钥匙；金莲矛盾口风与封口银；瓶儿破锁空匣与两张船票；玉楼撤下的名帖匣与反咬关系网；雪娥冷灶与拒绝无名按印。"
-      },
+      "usage": "五张个人终章与命数空宅",
+      "promptSummary": "人物用钥匙、席位、退路、名帖、停灶和轮值执行最后规则；命数页以无人空宅、六把钥匙和五张名签承接固定历史。",
       "assets": [
-        {
-          "path": "app/assets/cg/milestone/yue.webp",
-          "bytes": 128808
-        },
-        {
-          "path": "app/assets/cg/milestone/pan.webp",
-          "bytes": 147686
-        },
-        {
-          "path": "app/assets/cg/milestone/pinger.webp",
-          "bytes": 153784
-        },
-        {
-          "path": "app/assets/cg/milestone/meng.webp",
-          "bytes": 167128
-        },
-        {
-          "path": "app/assets/cg/milestone/xuee.webp",
-          "bytes": 137750
-        }
+        ["app/assets/cg/finale/yue.webp", "codex-imagegen:exec-a0272894-bfa1-44e7-a15f-a749322db57f.png"],
+        ["app/assets/cg/finale/pan.webp", "codex-imagegen:exec-4ab8a42b-3d8b-4f81-8864-82ec3366b40f.png"],
+        ["app/assets/cg/finale/pinger.webp", "codex-imagegen:exec-8c08054f-b78f-492d-8187-6b80dcaecc73.png"],
+        ["app/assets/cg/finale/meng.webp", "codex-imagegen:exec-d3764cf3-67a3-4ae7-b98d-1b4f26083aea.png"],
+        ["app/assets/cg/finale/xuee.webp", "codex-imagegen:exec-ed7203e7-bcbb-4829-b1c1-417ee44cedf8.png"],
+        ["app/assets/cg/finale/fate_coda.webp", "codex-imagegen:exec-c29af8f8-fca4-4f71-aef0-5af5a4dd4d2a.png"]
       ],
-      "adultBoundary": "本批为安全中局剧情画，五人均为成年角色且完整着装；不含裸露、性行为或胁迫。",
-      "forbidden": [
-        "未成年人",
-        "胁迫或无同意",
-        "裸露或性行为",
-        "现代物件",
-        "可读文字、字幕、签名或水印"
-      ],
-      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 84 -metadata none 转为 1586×992 WebP；中间 PNG 留在工具缓存，不复制进仓库。",
-      "reproducible": false,
-      "acceptance": "逐张人工检查人物身份、左暗右明构图、关键器物和完整着装；真实 Chromium 以月娘第 3 次进门验证三段连续推进、专属画解码、1280×800 与 390×844 无横向溢出。"
+      "editNote": "月娘、瓶儿、雪娥终章使用 image_gen 二次编辑清除模型伪文字。"
     },
     {
-      "generatedAt": "2026-08-19",
-      "toolVersion": "Codex built-in image_gen (session-provided image model)",
-      "usage": "原著第30—100回长期命数后日谈的安全横幅 CG",
-      "reason": "二十日结局已有五人关系回收，但缺少官哥儿与瓶儿之死、西门庆第79回死亡及家业离散的视觉落点。空宅与遗留物让不可逆命运进入游戏，同时避免用人物遗照消费悲剧。",
-      "referenceAndPromptContract": {
-        "identitySources": [],
-        "visualLine": "晚明宅院、克制写实的工笔线描、冷灰黎明与极少暖光；无人物。",
-        "composition": "1600×900 横构图；左侧深色留给命数正文，右侧长案放账页、六把钥匙、五张独立名签、私契、药碗与灭灯。",
-        "storyAnchors": "白色丧布、空院、药碗、未写完的总账、五张不相互吞并的名签；第六把钥匙代表已死家主留下而无人替他保管的权限。"
-      },
+      "usage": "五张中局转折",
+      "promptSummary": "空主位与轮值钥匙、矛盾口风与封口银、破锁空匣与退路、名帖网络、冷灶拒印分别成为可读危机。",
       "assets": [
-        {
-          "path": "app/assets/cg/finale/fate_coda.webp",
-          "bytes": 178398
-        }
+        ["app/assets/cg/milestone/yue.webp", "codex-imagegen:exec-a84bb537-8fc2-4844-9d40-f6552b28fb4c.png"],
+        ["app/assets/cg/milestone/pan.webp", "codex-imagegen:exec-debb4c41-2c4e-41b8-8eff-3e1a272184ec.png"],
+        ["app/assets/cg/milestone/pinger.webp", "codex-imagegen:exec-43cace36-0bee-41d1-aa84-798882ad6d49.png"],
+        ["app/assets/cg/milestone/meng.webp", "codex-imagegen:exec-3adba92b-e8cf-4103-adf7-ac81026dbf41.png"],
+        ["app/assets/cg/milestone/xuee.webp", "codex-imagegen:exec-de699d51-80ee-4cc5-93d7-c0553f705f0f.png"]
       ],
-      "adultBoundary": "安全公开后日谈画；没有人物、裸露、性行为、伤口或尸体，也不描绘未成年人。",
-      "forbidden": [
-        "人物遗照或尸体",
-        "未成年人形象",
-        "裸露或性行为",
-        "血腥",
-        "现代物件",
-        "可读文字、字幕、签名或水印"
-      ],
-      "postProcessing": "image_gen 输出 PNG 经 cwebp -q 96 -resize 1600 900 转为 WebP；源 PNG 保留在工具缓存，不复制进仓库。",
-      "reproducible": false,
-      "acceptance": "人工检查空宅、丧布、账页、钥匙、五张名签、私契、药碗与左侧叙事留白；确认无人物、无可读伪文字、无现代物件。"
-    },
-    {
-      "generatedAt": "2026-08-20",
-      "toolVersion": "branch-local image generator; provider metadata was not retained",
-      "usage": "有限同盟三问完成后的四屏共同生活群像底图",
-      "reason": "真实二至四人同盟需要与五院同灯分开的空间构图；空院、分开的桌案与仍可退出的门路承接成员和盟外边界，不用人物合照替系统决定谁已加入。",
-      "referenceAndPromptContract": {
-        "visualLine": "晚明宅院夜色、工笔线描、低饱和旧绢色；无人场景。",
-        "composition": "1672×941 横构图；中央正堂与两侧院门同时可见，上方和下方保留深色文字空间。",
-        "storyAnchors": "中央总账长案、分开的院门、可独立进出的台阶与未被人物占满的座位。"
-      },
-      "assets": [
-        {
-          "path": "app/assets/cg/group/inner_court_alliance.webp",
-          "bytes": 159898
-        }
-      ],
-      "adultBoundary": "安全公开终章底图；没有人物、裸露、性行为或未成年人。",
-      "forbidden": [
-        "人物",
-        "裸露或性行为",
-        "未成年人形象",
-        "现代物件",
-        "可读文字、字幕、签名或水印"
-      ],
-      "postProcessing": "分支内原始 1672×941 RGB PNG 经 cwebp quality 88、method 6、metadata none 转为 WebP；原始 PNG 不入库。",
-      "reproducible": false,
-      "acceptance": "人工检查正堂、两侧院门、总账长案、暗部文字空间与无人安全边界；真实 Chromium 另验证 URL、解码尺寸与 HTTP 状态。"
+      "editNote": "月娘、玉楼、雪娥转折图使用 image_gen 二次编辑清除模型伪文字。"
     }
   ],
   "postProcessing": {
-    "nightImages": "三张夜间立绘由 PNG 1536×1024 转为 WebP 1280×853，quality 88，method 6",
-    "titleImage": "标题群像保留 1536×1024，转为 WebP，未缩放",
-    "totalBytes": 752354,
-    "rationale": "三张夜间立绘由同一源规格转换为 WebP 1280×853，quality 88，method 6；原始 PNG 不入库。",
-    "bundleImpact": "四张新增 WebP 合计 752354 bytes；实测运行目录 6244598 → 7012282 bytes（代码与资产合计 +767684 bytes）"
-  }
+    "command": "cwebp -q 88 -m 6 -metadata none",
+    "assetCount": 41,
+    "totalBytes": 10938766,
+    "intermediatePolicy": "image_gen 原始 PNG 留在工具缓存，不复制进仓库；运行目录只保留四十一张新 WebP。",
+    "reproducible": false
+  },
+  "acceptance": "人工巡检身份母版、个人夜景、五人群像、双院结果、终章与中局转折；浏览器 QA 另验证四十一张 URL 解码、旧资产清零、目标视口、流程输入和控制台。"
 }

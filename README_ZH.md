@@ -16,7 +16,7 @@ NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Sk
 
 ### 西游记 · 三借芭蕉扇
 
-[![积雷山雨幕下悟空一行迎战牛魔王，敌我两侧五行徽记与下方实时指令台](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+[![积雷山决战中敌我阵列完整留在木刻舞台，下方轻绢指令台与人物画面彼此分离](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
 
 **一扇吹出五万里。这口气，一回合一回合打回来。**
 

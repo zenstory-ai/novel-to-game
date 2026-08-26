@@ -131,7 +131,7 @@ button:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2p
   text-align: center;
   background:
     linear-gradient(rgba(22,16,13,.82), rgba(22,16,13,.92)),
-    url('../assets/bg/compound_act1.jpg') center/cover;
+    url('../assets/bg/compound_new_guofeng.webp') center/cover;
 }
 .age-gate::before {
   content: "";

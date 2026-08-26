@@ -16,7 +16,7 @@ Three playable adaptations, each available in a browser right now and linked to 
 
 ### Journey to the West · Three Borrowings of the Banana Fan
 
-[![Wukong's party faces the Bull Demon King on the Jilei Mountain stage under the third fan's rain, five-element badges on both sides and a live command tray below](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+[![Wukong's party and the Bull Demon King's formation remain fully visible above a separate light-silk command tray on the Jilei Mountain stage](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
 
 **One wave of a fan blew you fifty thousand li. Take the mountain back one turn at a time.**
 

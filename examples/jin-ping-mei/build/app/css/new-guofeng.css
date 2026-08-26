@@ -1,0 +1,1105 @@
+/*
+ * 新国风叙事 CG 主题（2026-08）
+ *
+ * 目标不是复刻古画，也不是把古装人物放进现代时尚棚拍。完整保留晚明世界，
+ * 以当代文字游戏常见的二维人物审美、通透光色、情绪化镜头和丝绸层次重塑界面。
+ * 白日保持春庭高明度；夜景用蓝紫月光与暖灯形成可读层次，不允许全屏压黑。
+ */
+
+:root {
+  --paper: #fff7ed;
+  --paper-light: #fffdf8;
+  --paper-dark: #e7d6c7;
+  --ink: #292d3b;
+  --ink-soft: #646676;
+  --night: #e8edf8;
+  --night-soft: #d8dfef;
+  --gold: #b98642;
+  --gold-bright: #d2a15b;
+  --cinnabar: #c84f5c;
+  --jade: #3f8f83;
+  --honey: #d39847;
+  --azurite: #355f98;
+  --lilac: #8c79ad;
+  --line: rgba(72, 75, 96, .2);
+  --silk: rgba(255, 250, 245, .9);
+  --silk-strong: rgba(255, 253, 249, .975);
+  --cg-shadow: 0 22px 64px rgba(79, 63, 74, .16);
+}
+
+html,
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 14% 10%, rgba(242, 180, 188, .2), transparent 28%),
+    radial-gradient(circle at 86% 86%, rgba(91, 146, 170, .15), transparent 30%),
+    #f3e9df;
+}
+
+#app::after {
+  opacity: .34;
+  mix-blend-mode: soft-light;
+  background-image:
+    radial-gradient(ellipse at 12% 18%, rgba(255,255,255,.9) 0 1px, transparent 2px),
+    radial-gradient(ellipse at 74% 12%, rgba(229,137,154,.34) 0 1px, transparent 2px),
+    radial-gradient(circle at 48% 82%, rgba(82,128,152,.22) 0 1px, transparent 2px);
+  background-size: 31px 37px, 43px 49px, 53px 61px;
+}
+
+.loading,
+.fatal-card {
+  color: var(--ink);
+  background: linear-gradient(145deg, #fffdf8, #f3e4dd);
+}
+
+.eyebrow { color: var(--cinnabar); }
+
+/* 年龄门：从明亮宅门进入，而不是穿过一堵黑墙。 */
+.age-gate {
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(255,250,244,.96) 0%, rgba(255,250,244,.86) 45%, rgba(255,250,244,.25) 76%),
+    url('../assets/bg/compound_new_guofeng.webp') center / cover;
+}
+
+.age-gate::before {
+  border: 1px solid rgba(185, 127, 92, .26);
+  background: rgba(255, 248, 242, .12);
+  box-shadow:
+    inset 0 0 0 8px rgba(255, 253, 249, .42),
+    inset 0 0 0 9px rgba(200, 79, 92, .12),
+    0 26px 90px rgba(75, 65, 82, .13);
+}
+
+.age-gate p:not(.eyebrow) { color: #5d6070; }
+
+.age-seal {
+  color: var(--cinnabar);
+  border-color: var(--cinnabar);
+  background: rgba(255, 250, 245, .76);
+  box-shadow: 0 10px 28px rgba(152, 63, 79, .14);
+}
+
+/* 按钮是剧情签，不是黑色系统框。 */
+.ink-button,
+.plain-button {
+  border-color: rgba(80, 91, 120, .28);
+  color: #343745;
+  background: rgba(255, 252, 248, .84);
+  box-shadow: 0 9px 25px rgba(61, 69, 91, .08);
+  backdrop-filter: blur(8px);
+}
+
+.ink-button:hover:not(:disabled),
+.plain-button:hover {
+  color: #a93345;
+  border-color: rgba(200, 79, 92, .58);
+  background: #fffaf7;
+}
+
+.ink-button.primary {
+  color: #fffaf7;
+  border-color: #b94050;
+  background: linear-gradient(145deg, #d96370, #b83f50);
+  box-shadow: 0 13px 32px rgba(177, 56, 73, .24);
+}
+
+.ink-button.primary:hover:not(:disabled),
+.ink-button.primary:focus-visible {
+  color: #fff;
+  border-color: #a83546;
+  background: linear-gradient(145deg, #e06d79, #aa3547);
+}
+
+.ink-button.story-continue {
+  color: #406d91;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ink-button.story-continue:hover:not(:disabled) { color: var(--cinnabar); }
+
+/* 标题图自带左侧春庭留白，标题直接进入画面，不另做硬分栏。 */
+.title-screen {
+  display: grid;
+  grid-template-columns: minmax(19rem, 42%) 1fr;
+  color: var(--ink);
+  background: #f7e9e2;
+}
+
+.title-art {
+  background-position: center;
+  filter: saturate(1.04) contrast(1.01) brightness(1.02);
+}
+
+.title-art::after {
+  background:
+    linear-gradient(90deg, rgba(255,250,246,.96) 0%, rgba(255,250,246,.82) 22%, rgba(255,250,246,.18) 45%, transparent 66%),
+    linear-gradient(0deg, rgba(92,65,83,.1), transparent 45%);
+}
+
+.title-copy {
+  z-index: 2;
+  grid-column: 1;
+  padding: 8vh 2.2vw 7vh 5.3vw;
+  background: radial-gradient(circle at 30% 48%, rgba(255,255,255,.62), transparent 54%);
+}
+
+.title-copy::before {
+  right: auto;
+  left: 2.1vw;
+  top: 8vh;
+  color: rgba(192, 66, 85, .08);
+}
+
+.title-copy::after {
+  content: "";
+  width: min(18rem, 76%);
+  height: 3px;
+  margin: .2rem 0 1.25rem;
+  order: -1;
+  background: linear-gradient(90deg, var(--azurite) 0 20%, var(--cinnabar) 20% 40%, #d5aa65 40% 60%, var(--lilac) 60% 80%, var(--jade) 80%);
+  box-shadow: 0 1px rgba(255,255,255,.86);
+}
+
+.title-copy h1 {
+  color: #2e3040;
+  text-shadow: 0 2px rgba(255,255,255,.78);
+}
+
+.title-subtitle { color: #996334; }
+.identity-line { color: #545969; border-left-color: var(--cinnabar); }
+.rating-line { color: #a74d59; }
+.save-note { color: #767786; }
+
+/* 游戏框架像一层铺在 CG 上的轻绢，不再把画面装进暗木盒。 */
+.game-shell { background: #e8e5e7; }
+
+.topbar {
+  color: #343846;
+  border-bottom-color: rgba(64, 96, 135, .22);
+  background:
+    linear-gradient(90deg, rgba(255,253,249,.98), rgba(239,245,248,.95) 55%, rgba(255,241,238,.97));
+  box-shadow: 0 8px 30px rgba(65, 71, 91, .12);
+}
+
+.day-mark { border-right-color: rgba(64, 96, 135, .18); }
+.day-mark b { color: #7a5a2e; }
+.day-mark span,
+.hud-notice { color: #707383; }
+.hud-notice.urgent { color: #a93647; background: rgba(200,79,92,.08); }
+.top-actions #btn-mute { color: #6e7180; }
+
+.phase-stage,
+.dialogue-stage,
+.night-talk-stage,
+.scene-view { background: #e7e4e7; }
+
+#app .visual-stage::before { filter: saturate(1.01) contrast(1.01) brightness(1.03); }
+
+#app .visual-stage::after {
+  background:
+    linear-gradient(180deg, rgba(255,248,244,.02), rgba(77,72,91,.08)),
+    radial-gradient(120% 96% at 76% 36%, transparent 55%, rgba(70,64,89,.11) 100%);
+}
+
+/* 通用对话与账册面板。 */
+.decision-panel,
+.confirm-card,
+.gallery-book,
+.roster-sheet,
+.epilogue-copy,
+.fate-coda-copy {
+  color: var(--ink);
+  border-color: rgba(86, 92, 119, .22);
+  background:
+    linear-gradient(145deg, var(--silk-strong), rgba(245, 236, 236, .94));
+  box-shadow: var(--cg-shadow);
+  backdrop-filter: blur(16px) saturate(.9);
+}
+
+.decision-panel::before,
+.confirm-card::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border: 1px solid rgba(200, 79, 92, .09);
+}
+
+.phase-header h2,
+.decision-panel h2,
+.confirm-card h2,
+.gallery-book h2,
+.roster-sheet h2 { color: #303342; }
+
+.phase-header > p:last-child,
+.phase-lead,
+.speaker-line,
+.consent-note,
+.want-line { color: #626574; }
+
+.morning-note,
+.day-speaker,
+.want-line {
+  border-left-color: rgba(200,79,92,.58);
+  color: #575b69;
+  background: rgba(217,99,112,.055);
+}
+
+.choice-button {
+  color: #343745;
+  border: 1px solid rgba(79, 91, 120, .18);
+  border-left: 4px solid rgba(78, 125, 155, .58);
+  background: rgba(255,253,249,.76);
+  box-shadow: 0 7px 22px rgba(66,68,89,.06);
+}
+
+.choice-button span { color: #676a79; }
+.choice-button .choice-meta { color: #9a6834; }
+
+.choice-button:hover:not(:disabled):not([aria-disabled="true"]),
+.choice-button:focus-visible {
+  border-color: rgba(200,79,92,.5);
+  border-left-color: var(--cinnabar);
+  background: #fffaf7;
+  box-shadow: 0 10px 27px rgba(141,65,81,.1);
+}
+
+.story-progress { color: #9b6d3a; }
+.story-progress b { color: #4c5060; }
+
+/* 五扇院门像角色卡面，但仍属于同一个古代庭院。 */
+.visit-prompt {
+  color: #333746;
+  border-left-color: var(--cinnabar);
+  background: rgba(255,251,247,.9);
+  box-shadow: 0 14px 40px rgba(72,67,88,.13);
+  backdrop-filter: blur(14px);
+}
+
+.accord-panel { border-left-color: rgba(71,101,134,.24); }
+.accord-heading,
+.visit-prompt h2 { color: #353846; }
+
+.accord-seal {
+  color: #707383;
+  border-color: rgba(74,91,118,.2);
+  background: rgba(255,253,249,.72);
+}
+
+.accord-seal.complete { color: #8d4450; background: rgba(200,79,92,.07); }
+
+.door-card {
+  color: #303441;
+  border: 1px solid rgba(87, 92, 119, .27);
+  background: #fbf2ed;
+  box-shadow: 0 16px 42px rgba(71,65,87,.15);
+}
+
+.door-card::before { border-color: rgba(200,79,92,.16); }
+.door-card > span { color: #4d5264; background: rgba(255,250,246,.88); }
+.door-card img { filter: saturate(1.03) brightness(1.05) contrast(.99); }
+.door-card > div { color: #323542; background: linear-gradient(transparent, rgba(251,242,237,.97) 58%); }
+.door-card small,
+.door-knock,
+.door-forecast dd { color: #666978; }
+
+/* 人物近景保留插画质感；只在文字所在一侧覆浅色雾纱。 */
+.close-portrait,
+.close-portrait.closer {
+  filter: drop-shadow(-16px 20px 22px rgba(74,64,87,.17)) saturate(1.03) brightness(1.04) contrast(1.01);
+}
+
+#app .dialogue-stage::after,
+#app .morning-stage::after { background: linear-gradient(90deg, rgba(255,249,245,.34), transparent 60%); }
+
+.night-talk-cg,
+.close-cg,
+.close-cg.closer,
+#app .scene-view > img { filter: saturate(1.02) brightness(1.03) contrast(1.01); }
+
+.close-cg::after,
+.morning-cg::after {
+  background:
+    linear-gradient(96deg, rgba(244,240,244,.94) 0%, rgba(244,240,244,.8) 30%, rgba(244,240,244,.08) 58%, rgba(63,59,82,.08) 100%),
+    radial-gradient(112% 88% at 72% 40%, transparent 52%, rgba(69,62,91,.13) 100%);
+}
+
+.close-cg.closer { filter: saturate(1.04) brightness(1.01) contrast(1.02); }
+.morning-cg { filter: saturate(1) brightness(1.08) contrast(1); }
+
+#app .night-talk-stage::after,
+#app .night-talk-result::after {
+  background:
+    linear-gradient(96deg, rgba(243,241,249,.96) 0%, rgba(243,241,249,.86) 42%, rgba(243,241,249,.1) 69%),
+    linear-gradient(0deg, rgba(72,62,98,.08), transparent 62%);
+}
+
+.night-talk-voice,
+.night-talk-continuity,
+.night-talk-memory,
+.route-branch-memory,
+.day-consequence,
+.ledger-status {
+  color: #515565;
+  border-color: rgba(75, 91, 120, .22);
+  background: rgba(255,253,250,.68);
+}
+
+.night-talk-voice b,
+.night-talk-continuity b,
+.route-branch-memory b,
+.day-consequence b { color: #3f4352; }
+
+.night-talk-voice p,
+.night-talk-memory p,
+.night-talk-continuity p,
+.route-branch-memory p { color: #626575; }
+
+.night-talk-prop {
+  color: #7b5a2e;
+  border-color: rgba(179, 130, 66, .35);
+  background: radial-gradient(circle, rgba(255,253,249,.98), rgba(226,214,221,.94) 72%);
+  box-shadow: 0 18px 46px rgba(74,65,91,.16), inset 0 0 0 8px rgba(255,255,255,.25);
+}
+
+/* 场景册与剧情结果让 CG 继续占主位。 */
+#app .scene-scrim {
+  background: linear-gradient(90deg, rgba(247,243,246,.93) 0%, rgba(247,243,246,.67) 34%, transparent 66%);
+}
+
+#app .scene-caption,
+#app .scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption {
+  color: #303442;
+  border: 1px solid rgba(77, 91, 119, .21);
+  border-left: 4px solid var(--cinnabar);
+  background: rgba(255,251,248,.88);
+  box-shadow: 0 20px 52px rgba(67,63,84,.15);
+  backdrop-filter: blur(14px);
+}
+
+#app .scene-caption h2,
+#app .scene-caption > p:not(.eyebrow) { color: #343746; }
+#app .scene-meta { color: #6a6d7c; }
+#app .scene-meta span { border-color: rgba(75,91,119,.22); }
+
+#app .scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-scrim {
+  background: linear-gradient(0deg, rgba(250,246,247,.72) 0%, rgba(250,246,247,0) 38%);
+}
+
+#app .scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) .scene-caption {
+  background: linear-gradient(0deg, rgba(255,251,248,.96) 0%, rgba(255,251,248,.84) 52%, rgba(255,251,248,0) 100%);
+  backdrop-filter: none;
+}
+
+#app .scene-view:is([data-scene-tier="public"], [data-scene-tier="ensemble"]) > img {
+  filter: saturate(1.03) brightness(1.03) contrast(1.01);
+}
+
+/* 旧结构里最暗的三张群像，强制回到新 CG 自己的曝光。 */
+.scene-view[data-scene-id="inner_court_alliance"] > img,
+.scene-view[data-scene-id="inner_court_accord"] > img,
+.scene-view[data-scene-id="inner_court_afterglow"] > img {
+  filter: saturate(1.03) brightness(1.04) contrast(1.01);
+}
+
+.scene-view[data-scene-id="inner_court_alliance"] .scene-caption,
+.scene-view[data-scene-id="inner_court_afterglow"] .scene-caption {
+  color: var(--ink);
+  border-color: rgba(80,95,123,.22);
+  border-left-color: var(--cinnabar);
+  background: linear-gradient(145deg, rgba(255,253,249,.97), rgba(241,235,241,.92));
+}
+
+.shared-night-accord-overview,
+.shared-night-accord-entry,
+.alliance-tableau-overview,
+.alliance-tableau-entry,
+.shared-afterglow-tableau-overview,
+.shared-afterglow-tableau-entry {
+  color: #4a4e5e;
+  border-color: rgba(80,96,124,.2);
+  background: rgba(255,252,249,.68);
+}
+
+.shared-night-accord-overview header,
+.shared-night-accord-entry > header,
+.alliance-tableau-overview > header,
+.alliance-tableau-entry > header,
+.shared-afterglow-tableau-overview header,
+.shared-afterglow-tableau-entry > header { color: #767887; }
+
+.shared-night-accord-overview header b,
+.shared-night-accord-entry > header b,
+.alliance-tableau-overview > header b,
+.alliance-tableau-entry > header b,
+.shared-afterglow-tableau-overview header b,
+.shared-afterglow-tableau-entry > header b { color: #8e6040; }
+
+.shared-night-accord-overview > div > span,
+.shared-night-accord-ledger article,
+.alliance-tableau-overview,
+.alliance-tableau-entry,
+.alliance-tableau-path > span,
+.alliance-tableau-actions article,
+.shared-afterglow-tableau-overview > div > span,
+.shared-afterglow-tableau-actions article {
+  border-color: rgba(91,111,140,.18);
+  background: rgba(247,244,247,.68);
+}
+
+.shared-night-accord-overview b,
+.shared-night-accord-ledger b,
+.alliance-tableau-members b,
+.alliance-tableau-path b,
+.alliance-tableau-actions b,
+.shared-afterglow-tableau-overview b,
+.shared-afterglow-tableau-actions b { color: #805a42; }
+
+.shared-night-accord-overview em,
+.shared-night-accord-overview small,
+.shared-night-accord-ledger p,
+.shared-night-accord-conclusion,
+.alliance-tableau-overview > p,
+.alliance-tableau-entry > p,
+.alliance-tableau-members span,
+.alliance-tableau-path small,
+.alliance-tableau-path em,
+.alliance-tableau-actions p,
+.shared-afterglow-tableau-overview small,
+.shared-afterglow-tableau-overview em,
+.shared-afterglow-tableau-entry > p,
+.shared-afterglow-tableau-actions p { color: #666a79; }
+
+.alliance-tableau-members figure { background: rgba(231,226,232,.72); }
+.alliance-tableau-members img,
+.alliance-tableau-actions img { filter: saturate(1) brightness(1.03); }
+.alliance-tableau-members figcaption { background: linear-gradient(90deg, transparent, rgba(251,247,245,.94) 42%); }
+
+.shared-night-accord-ledger blockquote,
+.alliance-tableau-entry > blockquote,
+.shared-afterglow-tableau-entry > blockquote {
+  color: #4b655f;
+  border-left-color: rgba(63,143,131,.54);
+  background: rgba(63,143,131,.07);
+}
+
+.gallery-overlay,
+.confirm-overlay,
+.roster-overlay,
+.epilogue-overlay,
+.fate-coda-overlay {
+  background: rgba(224, 220, 226, .62);
+  backdrop-filter: blur(14px) saturate(.82);
+}
+
+.gallery-book > header,
+.roster-sheet > header,
+.epilogue-copy > header,
+.fate-coda-copy > header { border-color: rgba(79,94,122,.19); }
+
+.roster-sheet,
+.gallery-book { color: #383c4a; }
+
+/* 压力与成功只改变局部色，不改变整场曝光。 */
+.day-consequence.resolved {
+  border-color: rgba(63,143,131,.4);
+  background: rgba(63,143,131,.07);
+}
+
+.day-consequence.missed,
+.hud-notice.urgent {
+  border-color: rgba(200,79,92,.44);
+  background: rgba(200,79,92,.075);
+}
+
+.fast .scene-view > img { animation: none; filter: saturate(1.02) brightness(1.03); }
+
+/*
+ * 复合叙事页不能继续沿用旧主题的“黑底上叠半透明卡”结构。新插画本身已经
+ * 承担场景气氛；面板、旁听者和多人回应要成为彼此分开的纸面层，不能互相透图。
+ */
+#app :is(.opening-aftermath-stage, .day-aftermath-stage, .aftermath-stage, [class*="-aftermath-stage"]) {
+  background: #e8e4e7;
+}
+
+#app :is(
+  .day-aftermath-lead,
+  .aftermath-main,
+  .personal-afterglow-aftermath-close
+) {
+  filter: saturate(1.02) brightness(1.04) contrast(1.01);
+}
+
+#app .decision-panel :is(p:not(.eyebrow), li, dd, small, em) { color: #626574; }
+#app .decision-panel :is(h2, h3, h4, b, strong, dt) { color: #343746; }
+
+#app .decision-panel :is(
+  blockquote,
+  [class*="-origin"],
+  [class*="-echo"],
+  [class*="-memory"],
+  [class*="-stake"],
+  [class*="-ledger"],
+  [class*="-rule"],
+  [class*="-voice"],
+  [class*="-note"]
+) {
+  color: #515565;
+  border-color: rgba(75, 91, 120, .22);
+  background: rgba(255, 253, 250, .72);
+}
+
+#app .decision-panel :is(
+  [class*="-transcript"],
+  [class*="-archive"]
+) li,
+#app .supporting-context > summary,
+#app .supporting-context-pages > * {
+  color: #5f6271;
+  border-color: rgba(75, 91, 120, .18);
+  background: rgba(244, 240, 241, .82);
+}
+
+#app .decision-panel :is(
+  blockquote,
+  [class*="-origin"],
+  [class*="-echo"],
+  [class*="-memory"],
+  [class*="-stake"],
+  [class*="-ledger"],
+  [class*="-rule"],
+  [class*="-voice"],
+  [class*="-note"],
+  [class*="-transcript"] li,
+  [class*="-archive"] li
+) :is(p, small, em) { color: #626574; }
+
+#app .decision-panel :is(
+  blockquote,
+  [class*="-origin"],
+  [class*="-echo"],
+  [class*="-memory"],
+  [class*="-stake"],
+  [class*="-ledger"],
+  [class*="-rule"],
+  [class*="-voice"],
+  [class*="-note"],
+  [class*="-transcript"] li,
+  [class*="-archive"] li
+) :is(b, strong) { color: #3f4352; }
+
+#app .decision-panel :is(
+  blockquote,
+  [class*="-origin"],
+  [class*="-echo"],
+  [class*="-memory"],
+  [class*="-stake"],
+  [class*="-ledger"],
+  [class*="-rule"],
+  [class*="-voice"],
+  [class*="-note"],
+  [class*="-transcript"] li,
+  [class*="-archive"] li
+) > span { color: #91623f; }
+
+/* 多人卡不再悬浮在同一张人物图上：给卡组一张不透底的薄绢托纸。 */
+#app :is(
+  .opening-aftermath-cast,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) {
+  padding: .45rem;
+  border: 1px solid rgba(80, 95, 123, .18);
+  background: rgba(249, 246, 246, .94);
+  box-shadow: 0 18px 52px rgba(67, 63, 84, .14);
+  backdrop-filter: blur(12px) saturate(.9);
+}
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figure {
+  border-color: rgba(80, 95, 123, .2);
+  background: #eee7e6;
+  filter: none;
+  transform: none;
+}
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figure:not(.speaking):not(.is-responding) { opacity: .8; }
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figure:is(.speaking, .is-responding) {
+  opacity: 1;
+  border-color: rgba(200, 79, 92, .54);
+  box-shadow: 0 10px 28px rgba(130, 66, 82, .14);
+}
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) img { filter: saturate(1.02) brightness(1.04) contrast(1.01); }
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figcaption {
+  color: #444856;
+  background: linear-gradient(transparent, rgba(252, 248, 246, .98) 48%);
+}
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figcaption :is(b, strong) { color: #353846; }
+
+#app :is(
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .crisis-cast,
+  .crisis-aftermath-cast,
+  .pair-portraits,
+  .pair-aftermath-cast,
+  .jiaoer-aftermath-cast,
+  .invitation-aftermath-cast,
+  .council-resolution-cast,
+  .public-aftermath-cast,
+  .act-aftermath-cast,
+  .final-aftermath-cast,
+  .alliance-assembly-cast,
+  .alliance-result-cast,
+  .collapse-cast,
+  .collapse-result-cast,
+  .shared-result-cast,
+  .shared-dawn-result-cast
+) figcaption :is(span, small, em, p) { color: #666978; }
+
+.day-aftermath-reactions figure:only-child {
+  width: min(250px, 100%);
+  height: min(520px, 72%);
+  align-self: center;
+}
+
+.aftermath-observer {
+  padding: .38rem;
+  color: #3f4352;
+  border: 1px solid rgba(80, 95, 123, .2);
+  background: rgba(252, 248, 246, .94);
+  box-shadow: 0 14px 38px rgba(67, 63, 84, .14);
+  opacity: 1;
+}
+
+.aftermath-observer img {
+  mask-image: none;
+  filter: saturate(1.02) brightness(1.04) contrast(1.01);
+}
+
+.aftermath-observer figcaption span { color: #91623f; }
+.aftermath-observer figcaption b { color: #353846; }
+
+/* 单人抉择按内容收高，避免短段落被一整块空白纸面包到屏幕底。 */
+.dialogue-panel,
+.night-talk-panel {
+  top: 50%;
+  bottom: auto;
+  max-height: 88%;
+  overflow-y: auto;
+  transform: translateY(-50%);
+}
+
+/* 结局与后日谈也必须延续亮色叙事，不在最后一屏突然回到旧黑金主题。 */
+.ending-view {
+  color: var(--ink);
+  background: #eee7e6;
+}
+
+.ending-art,
+.ending-view[data-ending="exclusive"] .ending-art,
+.ending-view[data-ending="intrigue"] .ending-art,
+.ending-view[data-ending="unstable"] .ending-art {
+  filter: saturate(1.01) brightness(1.03) contrast(1.01);
+  background-blend-mode: screen;
+}
+
+.ending-copy {
+  border-left: 1px solid rgba(80, 95, 123, .16);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(218, 113, 126, .08), transparent 35%),
+    linear-gradient(145deg, rgba(255, 253, 249, .985), rgba(240, 237, 243, .97));
+  box-shadow: -20px 0 54px rgba(67, 63, 84, .12);
+}
+
+.ending-copy h1 { color: #303342; }
+.ending-copy h1:focus-visible {
+  outline: 2px solid rgba(200, 79, 92, .54);
+  outline-offset: .3rem;
+}
+.ending-tag { color: #9a6834; }
+.ending-copy > p:not(.eyebrow):not(.ending-tag):not(.ending-note) { color: #5f6372; }
+.ending-note { color: #737584; }
+
+.ending-ledger span,
+.ending-habits,
+.ending-habits article,
+.household-ending span {
+  color: #626574;
+  border-color: rgba(80, 95, 123, .18);
+  background: rgba(255, 253, 250, .64);
+}
+
+.ending-ledger b,
+.ending-habits > header b,
+.ending-habits article b,
+.household-ending b { color: #454958; }
+
+.ending-habits > header,
+.ending-habits article span,
+.ending-habits article small,
+.household-ending small { color: #737584; }
+
+.epilogue-book,
+.fate-coda-book {
+  color: var(--ink);
+  border-color: rgba(80, 95, 123, .24);
+  background: #eee7e8;
+  box-shadow: 0 32px 90px rgba(67, 63, 84, .28);
+}
+
+.epilogue-art { background: #e8e2e3; }
+.epilogue-art::after { background: linear-gradient(90deg, transparent 62%, rgba(244, 239, 240, .9)); }
+.epilogue-art img { filter: saturate(1.02) brightness(1.03) contrast(1.01); }
+.epilogue-art > span { color: rgba(154, 104, 52, .22); }
+
+.epilogue-copy h2,
+.epilogue-body,
+.epilogue-progress,
+.epilogue-relations b,
+.epilogue-route-note,
+.epilogue-habit b,
+.epilogue-habit p,
+.epilogue-night-conversations header b,
+.epilogue-night-conversations li b,
+.epilogue-night-conversations li p { color: #4e5261; }
+
+.epilogue-relations span,
+.epilogue-route-note,
+.epilogue-habit,
+.epilogue-night-conversations,
+.epilogue-night-conversations li {
+  color: #666978;
+  border-color: rgba(80, 95, 123, .18);
+  background: rgba(255, 253, 250, .64);
+}
+
+.fate-coda-art { filter: saturate(1.01) brightness(1.03) contrast(1.01); }
+.fate-coda-art::after {
+  background: linear-gradient(90deg, rgba(242, 241, 246, .98) 0%, rgba(242, 241, 246, .9) 31%, rgba(242, 241, 246, .2) 55%, transparent 76%);
+}
+
+.fate-coda-copy {
+  color: #4e5261;
+  background: linear-gradient(90deg, rgba(248, 250, 252, .99), rgba(248, 250, 252, .9) 72%, transparent);
+}
+
+.fate-coda-copy > header p,
+.fate-coda-copy > header .eyebrow,
+.fate-coda-progress i,
+.fate-coda-variants > span { color: #6d7180; }
+
+.fate-coda-variants,
+.fate-coda-variants button {
+  color: #555968;
+  border-color: rgba(80, 95, 123, .2);
+  background: rgba(255, 253, 250, .7);
+}
+
+.fate-coda-variants button.current {
+  color: #8d4450;
+  border-color: rgba(200, 79, 92, .48);
+  background: rgba(200, 79, 92, .07);
+}
+
+.fate-coda-copy h2 { color: #303442; }
+.fate-coda-body,
+.fate-coda-decision > p,
+.fate-coda-result p,
+.fate-coda-combination > p { color: #5f6372; }
+
+.fate-coda-ledger-section,
+.fate-coda-ledger-section article,
+.fate-coda-result {
+  color: #555968;
+  border-color: rgba(80, 95, 123, .2);
+  background: rgba(255, 253, 250, .7);
+}
+
+.fate-coda-ledger-section > header span,
+.fate-coda-ledger-section article > span,
+.fate-coda-result span,
+.fate-coda-combination > span { color: #737786; }
+
+.fate-coda-ledger-section > header h3,
+.fate-coda-ledger-section article > b,
+.fate-coda-result b,
+.fate-coda-combination > b { color: #454958; }
+
+.fate-coda-ledger-section article > p { color: #626574; }
+
+.fate-coda-decision .choice-button {
+  color: #343745;
+  border-color: rgba(79, 91, 120, .2);
+  background: rgba(255, 253, 249, .82);
+}
+
+.fate-coda-decision .choice-button:hover,
+.fate-coda-decision .choice-button:focus-visible {
+  border-color: rgba(200, 79, 92, .5);
+  background: #fffaf7;
+}
+
+.fate-coda-copy > footer > span { color: #707483; }
+
+@media (max-width: 900px) {
+  .age-gate {
+    background:
+      linear-gradient(0deg, rgba(255,250,245,.98) 0%, rgba(255,250,245,.87) 56%, rgba(255,250,245,.22) 100%),
+      url('../assets/bg/compound_new_guofeng.webp') center / cover;
+  }
+
+  .title-art {
+    inset: 0 0 auto;
+    height: 52%;
+    background-color: #f8e8e2;
+    background-position: 63% top;
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+  }
+
+  .title-art::after {
+    background: linear-gradient(0deg, #f7e8e2 0%, rgba(247,232,226,.86) 36%, rgba(247,232,226,.04) 72%);
+  }
+
+  .title-copy {
+    justify-content: flex-start;
+    padding: 42vh 1.2rem 1.25rem;
+    background: linear-gradient(0deg, rgba(247,232,226,.99), rgba(247,232,226,.8) 68%, transparent);
+  }
+
+  .title-copy h1 {
+    white-space: nowrap;
+    font-size: clamp(2rem, 8.7vw, 2.45rem);
+  }
+
+  .title-copy::after { width: 13rem; margin-bottom: .65rem; }
+  .visit-prompt { background: rgba(255,251,248,.94); }
+
+  /* 窄屏只保留一张主图；重复的人物卡会把画面和正文同时吃掉。 */
+  .opening-aftermath-cast,
+  .day-aftermath-reactions,
+  .aftermath-observer { display: none; }
+
+  .opening-aftermath-panel,
+  .aftermath-panel { max-height: 76%; overflow-y: auto; }
+
+  .dialogue-panel,
+  .night-talk-panel {
+    top: auto;
+    bottom: 2%;
+    max-height: 76%;
+    transform: none;
+  }
+
+  #app :is(
+    .crisis-cast,
+    .crisis-aftermath-cast,
+    .pair-portraits,
+    .pair-aftermath-cast,
+    .jiaoer-aftermath-cast,
+    .invitation-aftermath-cast,
+    .council-resolution-cast,
+    .public-aftermath-cast,
+    .act-aftermath-cast,
+    .final-aftermath-cast,
+    .alliance-assembly-cast,
+    .alliance-result-cast,
+    .collapse-cast,
+    .collapse-result-cast,
+    .shared-result-cast,
+    .shared-dawn-result-cast
+  ) {
+    top: 1.5%;
+    bottom: auto;
+    height: 22%;
+    padding: .2rem;
+  }
+
+  #app :is(
+    .crisis-cast,
+    .crisis-aftermath-cast,
+    .pair-portraits,
+    .pair-aftermath-cast,
+    .jiaoer-aftermath-cast,
+    .invitation-aftermath-cast,
+    .council-resolution-cast,
+    .public-aftermath-cast,
+    .act-aftermath-cast,
+    .final-aftermath-cast,
+    .alliance-assembly-cast,
+    .alliance-result-cast,
+    .collapse-cast,
+    .collapse-result-cast,
+    .shared-result-cast,
+    .shared-dawn-result-cast
+  ) figcaption :is(p, small, em) { display: none; }
+
+  #app .scene-scrim {
+    background: linear-gradient(0deg, rgba(246,242,246,.96), rgba(246,242,246,.16) 74%);
+  }
+
+  .close-cg::after,
+  .morning-cg::after {
+    background: linear-gradient(0deg, rgba(243,240,245,.98) 0%, rgba(243,240,245,.83) 47%, rgba(243,240,245,.05) 78%);
+  }
+
+  .fate-coda-art::after {
+    background: linear-gradient(0deg, rgba(240,244,248,.99) 0%, rgba(240,244,248,.9) 62%, rgba(240,244,248,.06) 91%);
+  }
+
+  .fate-coda-copy {
+    background: linear-gradient(0deg, rgba(248,250,252,.995), rgba(248,250,252,.91) 78%, transparent);
+  }
+
+  .ending-art { opacity: .76; }
+  .ending-copy {
+    background: linear-gradient(0deg, rgba(250, 247, 245, .995) 0%, rgba(250, 247, 245, .95) 64%, rgba(250, 247, 245, .88) 100%);
+  }
+
+  .epilogue-art::after { background: linear-gradient(0deg, rgba(244, 239, 240, .94), transparent 62%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-art,
+  .door-card img,
+  .night-talk-cg,
+  .close-portrait,
+  .scene-view > img {
+    transition: none !important;
+    animation: none !important;
+  }
+}

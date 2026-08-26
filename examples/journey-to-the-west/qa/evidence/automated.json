@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "runId": "journey-to-the-west-main-path",
   "environment": {
-    "browser": "145.0.7632.6",
+    "browser": "148.0.7778.96",
     "viewport": [
       1440,
       900
     ],
-    "url": "http://127.0.0.1:56221/?seed=42&fast=1",
-    "buildBytes": 4541376
+    "url": "http://127.0.0.1:5173/?seed=42&fast=1",
+    "buildBytes": 4566624
   },
   "inputTrace": [
     "start a new campaign",
@@ -48,7 +48,7 @@
         "phase": "ending",
         "consoleErrors": []
       },
-      "visual": "qa/evidence/browser/03_ending.jpg"
+      "visual": "qa/evidence/browser/04_ending.jpg"
     },
     "coreLoop": {
       "id": "campaign-loop-complete",
@@ -65,7 +65,7 @@
           "relics": 4,
           "items": {
             "jinchuang": 1,
-            "bihuofu": 1,
+            "falidan": 1,
             "dahuandan": 1
           },
           "potentialPoints": 4,
@@ -83,7 +83,7 @@
           "digsLimit": 2,
           "bankedItems": {
             "jinchuang": 1,
-            "bihuofu": 1,
+            "falidan": 1,
             "dahuandan": 1
           },
           "carriedItems": {},
@@ -96,7 +96,7 @@
               "element": "火",
               "revealed": true,
               "kind": "supply",
-              "name": "避火符匣",
+              "name": "火候丹匣",
               "dangerMarked": false
             },
             {
@@ -149,7 +149,7 @@
             "forcedRetreat": false,
             "items": {
               "jinchuang": 1,
-              "bihuofu": 1,
+              "falidan": 1,
               "dahuandan": 1
             },
             "relics": 4,
@@ -254,16 +254,16 @@
                 "source": "dig",
                 "kind": "supply",
                 "element": "火",
-                "name": "避火符匣"
+                "name": "火候丹匣"
               },
               {
                 "type": "supply",
                 "layer": "deep",
                 "index": 0,
                 "reward": {
-                  "bihuofu": 1
+                  "falidan": 1
                 },
-                "name": "避火符匣"
+                "name": "火候丹匣"
               },
               {
                 "type": "paid_dig",
@@ -314,7 +314,7 @@
         "terminal": "ending: 三借芭蕉扇 · 完",
         "phase": "ending"
       },
-      "visual": "qa/evidence/browser/03_ending.jpg"
+      "visual": "qa/evidence/browser/04_ending.jpg"
     },
     "restart": {
       "id": "clean-restart",

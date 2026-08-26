@@ -187,9 +187,17 @@ export async function runBattleScreen(ctx) {
   // 敌方步进 13% ≥ 缩放后卡宽(168px×0.99≈1280 宽下的 13%),名牌/血条/状态签
   // 不再越界压到相邻单位(此前 7% 步进,玉面公主与妖将的名牌签叠成一团)。
   function laneLayout(list, side) {
+    if (window.matchMedia('(max-width: 700px)').matches) {
+      const slot = 92 / Math.max(1, list.length);
+      return list.map((u, i) => ({
+        left: 3 + i * slot + Math.max(0, (slot - (u.big ? 27 : 21)) / 2),
+        bottom: side === 'enemy' ? 43 - (i % 2) * 2 : 3 + (i % 2) * 2,
+        zoom: u.big ? 0.92 : 1,
+      }));
+    }
     const frontT = (HORIZON[state.def.bg] ?? 94) - (side === 'enemy' ? 14 : 0);
-    const startX = side === 'enemy' ? 3 : 56;
-    const stepX = side === 'enemy' ? 13 : 9;
+    const startX = side === 'enemy' ? 3 : 54;
+    const stepX = side === 'enemy' ? 14 : 10.5;
     const n = list.length;
     let extra = 0; // 大体积单位(白牛真身)之后的车道右让,避免盖住邻位
     return list.map((u, i) => {

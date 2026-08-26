@@ -20,26 +20,39 @@ export function runOverworld(ctx) {
   root.appendChild(wrap);
   const g = canvas.getContext('2d');
   Object.assign(wrap.style, bgStyle('overworld'));
+  const portraitViewport = window.matchMedia('(max-width: 700px)').matches;
 
   // 实体:坐标为世界坐标(1280x720 逻辑)
   const ents = {
     wukong: { key: 'wukong', name: TEXT.speakers.wukong, x: 560, y: 520, h: 150, tx: 560, ty: 520, speed: 300 },
-    tang: { key: 'tang', name: TEXT.speakers.tang, x: 480, y: 560, h: 140 },
-    bajie: { key: 'bajie', name: TEXT.speakers.bajie, x: 420, y: 600, h: 145 },
-    sha: { key: 'sha', name: TEXT.speakers.sha, x: 360, y: 640, h: 148 },
+    tang: { key: 'tang', name: TEXT.speakers.tang, x: portraitViewport ? 410 : 480, y: 560, h: 140 },
+    bajie: { key: 'bajie', name: TEXT.speakers.bajie, x: portraitViewport ? 270 : 420, y: 600, h: 145 },
+    sha: { key: 'sha', name: TEXT.speakers.sha, x: portraitViewport ? 130 : 360, y: 640, h: 148 },
     tudi: { key: 'tudi', name: TEXT.speakers.tudi, x: 300, y: 400, h: 120, npc: true },
     luosha: { key: 'luosha', name: TEXT.speakers.luosha, x: 1060, y: 260, h: 165, npc: true },
   };
   const followers = [
-    { e: ents.tang, dx: -80, dy: 40 },
-    { e: ents.bajie, dx: -140, dy: 80 },
-    { e: ents.sha, dx: -200, dy: 120 },
+    { e: ents.tang, dx: portraitViewport ? -150 : -80, dy: 40 },
+    { e: ents.bajie, dx: portraitViewport ? -290 : -140, dy: 80 },
+    { e: ents.sha, dx: portraitViewport ? -430 : -200, dy: 120 },
   ];
 
   let raf = 0, last = performance.now();
   let busy = false; // 对话中禁止移动
   let luoshaArmed = true;
   let disposed = false;
+  let visualAspectX = 1;
+
+  // 画布必须让整张地图在任何视口都可点，因此窄屏仍会铺满容器。只对人物、地标与
+  // 字牌做横向比例补偿，避免 16:9 逻辑画布在竖屏里把所有角色压成细长纸片。
+  function withNaturalAspectX(centerX, draw) {
+    g.save();
+    g.translate(centerX, 0);
+    g.scale(visualAspectX, 1);
+    g.translate(-centerX, 0);
+    draw();
+    g.restore();
+  }
 
   function worldFromEvent(ev) {
     const r = canvas.getBoundingClientRect();
@@ -152,112 +165,115 @@ export function runOverworld(ctx) {
   }
 
   function drawEnt(e) {
-    const img = unitImage(e.key);
-    const h = e.h;
-    if (img) {
-      const wpx = (img.width / img.height) * h;
-      g.drawImage(img, e.x - wpx / 2, e.y - h, wpx, h);
-    } else {
-      // 回退色块
-      const wpx = h * 0.62;
-      g.fillStyle = e.key === 'luosha' ? '#3a7a5a' : '#7a6a55';
-      g.fillRect(e.x - wpx / 2, e.y - h, wpx, h);
-      g.strokeStyle = '#c9a227';
-      g.lineWidth = 3;
-      g.strokeRect(e.x - wpx / 2, e.y - h, wpx, h);
-      g.fillStyle = '#f2e8d5';
-      g.font = `bold ${Math.round(h * 0.36)}px "Songti SC", serif`;
+    withNaturalAspectX(e.x, () => {
+      const img = unitImage(e.key);
+      const h = e.h;
+      if (img) {
+        const wpx = (img.width / img.height) * h;
+        g.drawImage(img, e.x - wpx / 2, e.y - h, wpx, h);
+      } else {
+        // 回退色块
+        const wpx = h * 0.62;
+        g.fillStyle = e.key === 'luosha' ? '#3a7a5a' : '#7a6a55';
+        g.fillRect(e.x - wpx / 2, e.y - h, wpx, h);
+        g.strokeStyle = '#c9a227';
+        g.lineWidth = 3;
+        g.strokeRect(e.x - wpx / 2, e.y - h, wpx, h);
+        g.fillStyle = '#f2e8d5';
+        g.font = `bold ${Math.round(h * 0.36)}px "Songti SC", serif`;
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        g.fillText(e.name.slice(0, 1), e.x, e.y - h / 2);
+      }
+      // 名牌(置顶,避免与下方单位重叠;描边底+金线保证清晰)
+      g.font = '15px "Songti SC", serif';
       g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      g.fillText(e.name.slice(0, 1), e.x, e.y - h / 2);
-    }
-    // 名牌(置顶,避免与下方单位重叠;描边底+金线保证清晰)
-    g.font = '15px "Songti SC", serif';
-    g.textAlign = 'center';
-    g.textBaseline = 'bottom';
-    const tw = g.measureText(e.name).width + 14;
-    const ly = e.y - e.h - 24;
-    g.fillStyle = 'rgba(43,33,24,0.85)';
-    g.fillRect(e.x - tw / 2, ly, tw, 22);
-    g.strokeStyle = 'rgba(201,162,39,0.8)';
-    g.lineWidth = 1;
-    g.strokeRect(e.x - tw / 2, ly, tw, 22);
-    g.fillStyle = '#f2e8d5';
-    g.fillText(e.name, e.x, ly + 20);
+      g.textBaseline = 'bottom';
+      const tw = g.measureText(e.name).width + 14;
+      const ly = e.y - e.h - 24;
+      g.fillStyle = 'rgba(43,33,24,0.85)';
+      g.fillRect(e.x - tw / 2, ly, tw, 22);
+      g.strokeStyle = 'rgba(201,162,39,0.8)';
+      g.lineWidth = 1;
+      g.strokeRect(e.x - tw / 2, ly, tw, 22);
+      g.fillStyle = '#f2e8d5';
+      g.fillText(e.name, e.x, ly + 20);
+    });
   }
 
   function drawScenery() {
     // 背景画本身已是完整的火焰山脚木刻,不再盖手绘假山/米色热浪带/墨绿半圆
     // (三者把画拦腰截出硬边,绿色半椭圆读作坏图占位——简报 T4 全删,让背景露出来)。
     // 只保留「芭蕉洞」地标牌:加描边底牌保证在山体上可读
-    g.save();
-    g.font = '17px "Songti SC", serif';
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    const caveLabel = '翠云山 · 芭蕉洞';
-    const clw = g.measureText(caveLabel).width + 18;
-    const clx = ents.luosha.x - 186, cly = ents.luosha.y - 150;
-    g.fillStyle = 'rgba(43,33,24,0.85)';
-    g.fillRect(clx - clw / 2, cly - 13, clw, 26);
-    g.strokeStyle = 'rgba(201,162,39,0.8)';
-    g.lineWidth = 1;
-    g.strokeRect(clx - clw / 2, cly - 13, clw, 26);
-    g.fillStyle = '#f2e8d5';
-    g.fillText(caveLabel, clx, cly + 1);
-    g.restore();
+    const clx = ents.luosha.x - 186;
+    withNaturalAspectX(clx, () => {
+      g.font = '17px "Songti SC", serif';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      const caveLabel = '翠云山 · 芭蕉洞';
+      const clw = g.measureText(caveLabel).width + 18;
+      const cly = ents.luosha.y - 150;
+      g.fillStyle = 'rgba(43,33,24,0.85)';
+      g.fillRect(clx - clw / 2, cly - 13, clw, 26);
+      g.strokeStyle = 'rgba(201,162,39,0.8)';
+      g.lineWidth = 1;
+      g.strokeRect(clx - clw / 2, cly - 13, clw, 26);
+      g.fillStyle = '#f2e8d5';
+      g.fillText(caveLabel, clx, cly + 1);
+    });
     // 土地庙(贴图优先,缺图回退占位画法)
     const miao = sceneImage('tudimiao');
-    if (miao) {
-      const mw = 150;
-      const mh = (miao.height / miao.width) * mw;
-      g.drawImage(miao, ents.tudi.x - 148, ents.tudi.y - mh - 6, mw, mh);
-    } else {
-      g.save();
-      g.fillStyle = 'rgba(90,74,56,0.9)';
-      g.fillRect(ents.tudi.x - 70, ents.tudi.y - 190, 60, 70);
-      g.fillStyle = '#a8322a';
-      g.beginPath();
-      g.moveTo(ents.tudi.x - 84, ents.tudi.y - 190);
-      g.lineTo(ents.tudi.x - 40, ents.tudi.y - 228);
-      g.lineTo(ents.tudi.x + 4, ents.tudi.y - 190);
-      g.closePath();
-      g.fill();
-      g.restore();
-    }
+    withNaturalAspectX(ents.tudi.x - 74, () => {
+      if (miao) {
+        const mw = 150;
+        const mh = (miao.height / miao.width) * mw;
+        g.drawImage(miao, ents.tudi.x - 148, ents.tudi.y - mh - 6, mw, mh);
+      } else {
+        g.fillStyle = 'rgba(90,74,56,0.9)';
+        g.fillRect(ents.tudi.x - 70, ents.tudi.y - 190, 60, 70);
+        g.fillStyle = '#a8322a';
+        g.beginPath();
+        g.moveTo(ents.tudi.x - 84, ents.tudi.y - 190);
+        g.lineTo(ents.tudi.x - 40, ents.tudi.y - 228);
+        g.lineTo(ents.tudi.x + 4, ents.tudi.y - 190);
+        g.closePath();
+        g.fill();
+      }
+    });
   }
 
   function drawMarker(x, y, t, color, text) {
     // 脉冲高亮 + 「!」标记
     const s = 1 + Math.sin(t / 280) * 0.16;
     const yy = y - 200 - Math.abs(Math.sin(t / 300)) * 8;
-    g.save();
-    g.translate(x, yy);
-    g.scale(s, s);
-    g.beginPath();
-    g.arc(0, 0, 16, 0, Math.PI * 2);
-    g.fillStyle = color;
-    g.globalAlpha = 0.92;
-    g.fill();
-    g.strokeStyle = '#c9a227';
-    g.lineWidth = 2;
-    g.stroke();
-    g.fillStyle = '#fff';
-    g.font = 'bold 22px "Songti SC", serif';
-    g.textAlign = 'center';
-    g.textBaseline = 'middle';
-    g.fillText('!', 0, 1);
-    g.restore();
-    if (text) {
+    withNaturalAspectX(x, () => {
       g.save();
-      g.font = '15px "Songti SC", serif';
+      g.translate(x, yy);
+      g.scale(s, s);
+      g.beginPath();
+      g.arc(0, 0, 16, 0, Math.PI * 2);
+      g.fillStyle = color;
+      g.globalAlpha = 0.92;
+      g.fill();
+      g.strokeStyle = '#c9a227';
+      g.lineWidth = 2;
+      g.stroke();
+      g.fillStyle = '#fff';
+      g.font = 'bold 22px "Songti SC", serif';
       g.textAlign = 'center';
-      g.fillStyle = 'rgba(43,33,24,0.85)';
-      const tw = g.measureText(text).width + 12;
-      g.fillRect(x - tw / 2, yy + 22, tw, 20);
-      g.fillStyle = '#ffd75a';
-      g.fillText(text, x, yy + 37);
+      g.textBaseline = 'middle';
+      g.fillText('!', 0, 1);
       g.restore();
-    }
+      if (text) {
+        g.font = '15px "Songti SC", serif';
+        g.textAlign = 'center';
+        g.fillStyle = 'rgba(43,33,24,0.85)';
+        const tw = g.measureText(text).width + 12;
+        g.fillRect(x - tw / 2, yy + 22, tw, 20);
+        g.fillStyle = '#ffd75a';
+        g.fillText(text, x, yy + 37);
+      }
+    });
   }
 
   function frame(now) {
@@ -265,6 +281,11 @@ export function runOverworld(ctx) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     step(dt);
+    const rect = canvas.getBoundingClientRect();
+    const cssAspect = rect.width / Math.max(1, rect.height);
+    // Match the canvas' horizontal and vertical CSS scale so sprites, labels and
+    // landmarks retain their authored aspect ratio even on tall phone screens.
+    visualAspectX = Math.max(1, (W / H) / cssAspect);
     g.clearRect(0, 0, W, H);
     drawScenery();
     // 按 y 排序画,近处盖住远处

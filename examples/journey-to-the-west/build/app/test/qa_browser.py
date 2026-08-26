@@ -11,7 +11,7 @@ import socket
 import subprocess
 import sys
 import time
-from typing import Callable
+from typing import Callable, Optional
 from urllib.parse import urlparse
 
 from playwright.sync_api import Page, sync_playwright
@@ -24,7 +24,7 @@ BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:5173")
 URL = BASE_URL + "/?seed=42" + ("" if os.environ.get("QA_SLOW") else "&fast=1")
 SHOTS = Path(os.environ.get("QA_SHOTS", EVIDENCE / "browser"))
 CHECK_NAMES = ("launch", "render", "input", "coreLoop", "outcome", "restart")
-Decision = Callable[[dict[str, object], str | None], bool]
+Decision = Callable[[dict[str, object], Optional[str]], bool]
 
 
 def ensure_server() -> subprocess.Popen[bytes] | None:
@@ -444,6 +444,10 @@ def run_path() -> tuple[
         page.wait_for_selector("#btn-once-close", timeout=15000)
         page.click("#btn-once-close")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
+        boss_shot = path.shot("boss_command")
+        public_hero = PROJECT / "screenshots/hero.jpg"
+        public_hero.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(boss_shot, public_hero)
 
         def defeat_bull_king(state: dict[str, object], unit_id: str | None) -> bool:
             low = path.lowest_party(state)

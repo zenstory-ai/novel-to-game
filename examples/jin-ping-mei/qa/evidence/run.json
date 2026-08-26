@@ -10,6 +10,19 @@
       "postBaselineEngineDelta": "haremOutlook only replaces a hidden numeric relationship summary with qualitative copy",
       "haremOutlookQualitativeCopy": "PASS"
     },
+    "visualRefresh": {
+      "date": "2026-08-25",
+      "scope": "presentation-only; rules, state, save schema and completion conditions unchanged",
+      "browser": "Google Chrome 151.0.7922.174",
+      "mode": "fast visual smoke",
+      "visibleActionCount": 566,
+      "terminal": "day-20-ending",
+      "horizontalOverflow": false,
+      "errors": 0,
+      "runtimeAssetCount": 41,
+      "missingOrUnreferencedRuntimeAssets": 0,
+      "note": "This refresh updates the shipped visual snapshot and asset paths; the authoritative normal-speed complete-run record below remains the 2026-08-22 candidate."
+    },
     "browser": {
       "name": "Chromium",
       "version": "145.0.7632.6"
@@ -85,15 +98,15 @@
     },
     "preAgeImages": [
       {
-        "path": "assets/cg/group/title_five.webp",
-        "bytes": 337890
+        "path": "assets/cg/group/title_new_guofeng.webp",
+        "bytes": 297206
       },
       {
-        "path": "assets/bg/compound_act1.jpg",
-        "bytes": 316060
+        "path": "assets/bg/compound_new_guofeng.webp",
+        "bytes": 443276
       }
     ],
-    "preAgeImageBytes": 653950,
+    "preAgeImageBytes": 740482,
     "adultAssetRequestsBeforeConfirmation": 0,
     "qaWorkspace": "temporary external workspace; browser drivers, full traces and raw screenshots are not shipped with the example",
     "criticalAssetFailureChecks": [
@@ -126,7 +139,7 @@
       "state": {
         "adultContentAbsentBeforeConfirmation": true,
         "adultAssetRequestsBeforeConfirmation": 0,
-        "preAgeImageBytes": 653950,
+        "preAgeImageBytes": 740482,
         "titleVisible": true
       }
     },
@@ -134,15 +147,17 @@
       "id": "narrative-screens-and-terminal-rendered",
       "inputs": [
         "Capture the final day-ledger screen",
-        "Traverse the complete route at six target viewports"
+        "Traverse the complete route at six target viewports",
+        "Refresh the shipped snapshot from the 2026-08-25 presentation-only build after a 566-action fast smoke reaches day 20"
       ],
       "state": {
         "targetViewports": 6,
         "terminalRenders": 6,
         "actualPanelOverflowCount": 0,
-        "browserErrors": 0
+        "browserErrors": 0,
+        "visualRefreshTerminal": "day-20-ending"
       },
-      "visual": "qa/evidence/final-screen.webp"
+      "visual": "qa/evidence/visual-review-ending-after.jpg"
     },
     "input": {
       "id": "visible-keyboard-path-accepted",

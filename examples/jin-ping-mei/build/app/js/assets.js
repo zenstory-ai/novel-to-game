@@ -1,22 +1,21 @@
 // 视觉键表：发布模式对所有首屏、人物近景与奖励 CG 采用 fail-closed，不静默回退。
 
 export const ASSET_PATHS = Object.freeze({
-  // cover 与公开席面群像解绑:五人同框的册页只属于「按下那个按钮之后」。
-  // 标题专用群像让五道视线汇向玩家，但不占用任何奖励位，
-  // 它不占用任何奖励位,右三分之一留暗给标题栏。
-  cover: 'assets/cg/group/title_five.webp',
-  compound: 'assets/bg/compound_act1.jpg',
-  // 催账到期那两个早晨的门前画面:同一谱系的界画白描,人在门外等，院里还没开门。
+  // 标题与全套 CG 使用同一批二维新国风叙事母版：角色集中在中右区域，
+  // 左侧春庭留白交给真实 HTML 标题，既保留古代世界，也给玩家想象空间。
+  cover: 'assets/cg/group/title_new_guofeng.webp',
+  compound: 'assets/bg/compound_new_guofeng.webp',
+  // 催账到期那两个早晨的门前画面：来人、契纸与受阻门槛承担压力，不靠压黑画面。
   // 不进 CRITICAL_CG_KEYS——报条文字已经把账说清楚,缺图不该拦住一局。
-  'scene/gate_collector': 'assets/scene/gate_collector.jpg',
-  // 门卡与对话使用同一张身份母版，旧 portrait PNG 不再进入运行路径。
+  'scene/gate_collector': 'assets/scene/gate_collector.webp',
+  // 门卡与对话使用同一张二维身份母版，脸、发式、衣色与器物贯穿所有剧情 CG。
   'heroine/yue': 'assets/heroine/yue/night.webp',
   'heroine/pan': 'assets/heroine/pan/night.webp',
   'heroine/pinger': 'assets/heroine/pinger/night.webp',
   'heroine/meng': 'assets/heroine/meng/night.webp',
   'heroine/xuee': 'assets/heroine/xuee/night.webp',
   'household/jiaoer': 'assets/household/li_jiaoer.webp',
-  // 日常近景、门卡与人物身份母版统一到同一批着装夜间横幅；18+ 前奏 CG 只做场景册奖励。
+  // 日常近景、门卡与人物身份母版统一；夜间专属图只改变关系动作与灯月，不更换画风。
   'heroine/yue/close': 'assets/heroine/yue/night.webp',
   'heroine/pan/close': 'assets/heroine/pan/night.webp',
   'heroine/pinger/close': 'assets/heroine/pinger/night.webp',
