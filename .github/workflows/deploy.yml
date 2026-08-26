@@ -9,6 +9,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '.github/workflows/deploy.yml'
       - 'examples/jin-ping-mei/build/app/**'
       - 'examples/journey-to-the-west/build/app/**'
       - 'examples/project-plateau/build/app/**'
@@ -34,10 +35,13 @@ jobs:
         with:
           filters: |
             jpm:
+              - '.github/workflows/deploy.yml'
               - 'examples/jin-ping-mei/build/app/**'
             jttw:
+              - '.github/workflows/deploy.yml'
               - 'examples/journey-to-the-west/build/app/**'
             plateau:
+              - '.github/workflows/deploy.yml'
               - 'examples/project-plateau/build/app/**'
 
   jinpingmei:
@@ -51,7 +55,8 @@ jobs:
       - uses: actions/checkout@v7
       - run: npm i -g vercel@56.4.0
       - name: Deploy jinpingmei to production
-        working-directory: examples/jin-ping-mei/build/app
+        # The Vercel project already owns its Root Directory. Running from that
+        # directory here would make the CLI append the same path a second time.
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
 
   xiyouji:
@@ -65,7 +70,6 @@ jobs:
       - uses: actions/checkout@v7
       - run: npm i -g vercel@56.4.0
       - name: Deploy xiyouji to production
-        working-directory: examples/journey-to-the-west/build/app
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
 
   project-plateau:
@@ -79,5 +83,4 @@ jobs:
       - uses: actions/checkout@v7
       - run: npm i -g vercel@56.4.0
       - name: Deploy Project Plateau to production
-        working-directory: examples/project-plateau/build/app
         run: vercel deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"

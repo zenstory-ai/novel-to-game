@@ -350,6 +350,17 @@ class RepositoryValidationTests(unittest.TestCase):
     def test_repository_contract_is_valid(self) -> None:
         self.assertEqual(validate_repository(ROOT), [])
 
+    def test_vercel_deploy_uses_project_root_directories_once(self) -> None:
+        workflow = (ROOT / ".github/workflows/deploy.yml").read_text(encoding="utf-8")
+        self.assertNotIn("working-directory:", workflow)
+        for app_path in (
+            "examples/jin-ping-mei/build/app/**",
+            "examples/journey-to-the-west/build/app/**",
+            "examples/project-plateau/build/app/**",
+        ):
+            self.assertIn(app_path, workflow)
+        self.assertEqual(4, workflow.count("'.github/workflows/deploy.yml'"))
+
     def test_skill_validator_rejects_todo_and_broken_link(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             skill = Path(temporary) / "demo"
