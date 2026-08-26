@@ -1,7 +1,13 @@
 # Changelog
 
-All notable changes to NovelToGame are documented here. This project follows
-[Semantic Versioning](https://semver.org/spec/v2.0.0.html); release dates use YYYY-MM-DD.
+All notable changes to NovelToGame are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html);
+release dates use YYYY-MM-DD.
+
+Sections use the six Keep a Changelog categories. A change that starts refusing
+input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
