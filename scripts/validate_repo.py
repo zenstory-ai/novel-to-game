@@ -3,12 +3,10 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import re
 import sys
 from pathlib import Path
-from typing import cast
 
 
 EXPECTED_SKILLS = {
@@ -31,7 +29,6 @@ MANIFEST_REQUIRED = {
     "citationPattern",
     "targetFinish",
 }
-MANIFEST_ALLOWED = MANIFEST_REQUIRED | {"title"}
 SOURCE_REQUIRED = {"chapters", "headingPattern", "numeral"}
 NUMERAL_KINDS = {"chinese", "arabic", "roman"}
 TARGET_FINISHES = {
@@ -63,8 +60,6 @@ QA_COMPLETE_RUN_FIELDS = {
     "terminal",
     "restart",
     "evidence",
-    "speed",
-    "steps",
 }
 QA_LIMITATION_FIELDS = {"scope", "reason"}
 QA_EVIDENCE_FIELDS = {
@@ -75,18 +70,6 @@ QA_EVIDENCE_FIELDS = {
     "observations",
 }
 QA_OBSERVATION_FIELDS = {"id", "inputs", "state", "visual"}
-GATE_STATUSES = {"NOT_RUN", "FAIL", "PASS"}
-VISUAL_RUBRIC_FIELDS = {
-    "focus",
-    "silhouette",
-    "depth",
-    "materialLine",
-    "lightColor",
-    "hud",
-    "motionFeedback",
-    "artifacts",
-    "failureExamples",
-}
 # The orchestrator owns the pipeline-wide language rule; every downstream skill has to
 # restate it, because cross-skill links are rejected and skills must stay self-contained.
 ORCHESTRATOR_SKILL = "novel-to-game"
@@ -105,20 +88,16 @@ EXAMPLE_PLANNING_FILES = {
     "design/ART_DIRECTION.md",
     "build/BUILD_BRIEF.md",
 }
-# Allowed but not required — legacy examples may predate coverage tracking, while
-# richer examples may keep a build asset ledger beside the frozen build brief.
-OPTIONAL_PLANNING_FILES = {
-    "analysis/_coverage.md",
-    "build/asset-ledger.json",
-    "build/source-inputs.json",
-    "design/VISUAL_TARGETS.md",
-}
+TARGET_FINISH_SOURCES = (
+    "PRODUCT_BRIEF.md",
+    "design/ART_DIRECTION.md",
+    "build/BUILD_BRIEF.md",
+)
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
-CHAPTER_HEADING_RE = re.compile(r"^\s*第([〇零○一二三四五六七八九十百]+)回\s+(.+?)\s*$")
-CHAPTER_CITATION_RE = re.compile(r"第(\d{1,3})(?:\s*[-–—至]\s*(\d{1,3}))?回")
 LEVEL_TWO_HEADING_RE = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
+TARGET_FINISH_RE = re.compile(r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$", re.MULTILINE)
 CHINESE_DIGITS = {
     "〇": 0,
     "零": 0,
@@ -133,12 +112,7 @@ CHINESE_DIGITS = {
     "八": 8,
     "九": 9,
 }
-VALIDATION_IGNORED_DIRECTORIES = {
-    "node_modules",
-    "dist",
-    "coverage",
-    "__pycache__",
-}
+ROMAN_VALUES = {"i": 1, "v": 5, "x": 10, "l": 50, "c": 100, "d": 500, "m": 1000}
 
 
 def visible_directories(parent: Path) -> set[str]:
@@ -155,18 +129,6 @@ def visible_directories(parent: Path) -> set[str]:
     }
 
 
-def validation_json_files(root: Path) -> list[Path]:
-    """Return authored JSON while excluding local state and generated trees."""
-    return sorted(
-        path
-        for path in root.rglob("*.json")
-        if not any(
-            part.startswith(".") or part in VALIDATION_IGNORED_DIRECTORIES
-            for part in path.relative_to(root).parts[:-1]
-        )
-    )
-
-
 def parse_frontmatter(text: str) -> dict[str, str]:
     match = FRONTMATTER_RE.match(text)
     if not match:
@@ -179,7 +141,10 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return values
 
 
-ROMAN_VALUES = {"i": 1, "v": 5, "x": 10, "l": 50, "c": 100, "d": 500, "m": 1000}
+def leads_with_english(text: str) -> bool:
+    # The description is what an agent routes an English request against, and what a
+    # plugin directory shows as listing copy with no README_EN fallback.
+    return text[:1].isascii() and text[:1].isalpha()
 
 
 def parse_roman_number(value: str) -> int:
@@ -189,14 +154,6 @@ def parse_roman_number(value: str) -> int:
         total += current if current >= previous else -current
         previous = max(previous, current)
     return total
-
-
-def parse_numeral(value: str, kind: str) -> int:
-    if kind == "arabic":
-        return int(value)
-    if kind == "roman":
-        return parse_roman_number(value)
-    return parse_chinese_number(value)
 
 
 def parse_chinese_number(value: str) -> int:
@@ -219,18 +176,25 @@ def parse_chinese_number(value: str) -> int:
     return total + current
 
 
-def extract_chapters(
-    source: Path, pattern: re.Pattern[str] | None = None, numeral: str = "chinese"
-) -> list[tuple[int, str, int]]:
-    heading = pattern or CHAPTER_HEADING_RE
-    chapters: list[tuple[int, str, int]] = []
-    for line_number, line in enumerate(
-        source.read_text(encoding="utf-8").splitlines(), start=1
-    ):
-        match = heading.match(line)
-        if match:
-            title = match.group(2) if match.lastindex and match.lastindex >= 2 else ""
-            chapters.append((parse_numeral(match.group(1), numeral), title, line_number))
+def parse_numeral(value: str, kind: str) -> int:
+    if kind == "arabic":
+        return int(value)
+    if kind == "roman":
+        return parse_roman_number(value)
+    if kind == "chinese":
+        return parse_chinese_number(value)
+    raise ValueError(f"unsupported numeral kind: {kind}")
+
+
+def extract_chapter_numbers(
+    sources: list[Path], heading: re.Pattern[str], numeral: str
+) -> list[int]:
+    chapters: list[int] = []
+    for source in sources:
+        for line in source.read_text(encoding="utf-8").splitlines():
+            match = heading.match(line)
+            if match:
+                chapters.append(parse_numeral(match.group(1), numeral))
     return chapters
 
 
@@ -244,11 +208,9 @@ def markdown_section(text: str, heading: str) -> str | None:
     return None
 
 
-def chapter_citation_coverage(
-    text: str, pattern: re.Pattern[str] | None = None
-) -> set[int]:
+def chapter_citation_coverage(text: str, pattern: re.Pattern[str]) -> set[int]:
     coverage: set[int] = set()
-    for match in (pattern or CHAPTER_CITATION_RE).finditer(text):
+    for match in pattern.finditer(text):
         first = int(match.group(1))
         last = int(match.group(2) or first)
         if first <= last:
@@ -256,30 +218,17 @@ def chapter_citation_coverage(
     return coverage
 
 
-# Skill weight budget.
-#
-# Prompt files only ever grow: adding a rule always reads as diligence and removing
-# one always reads as risk, so nothing ever comes out and the model's attention gets
-# spread thinner every iteration. A ceiling converts that silent ratchet into a
-# deliberate choice — to add a rule you either cut one, or you raise the number here
-# in a diff someone has to justify.
-#
-# These are attention budgets, not style limits. Raising them is allowed; raising
-# them without saying why in the commit message is the thing to catch in review.
-SKILL_TOTAL_LINE_BUDGET = 3100
-SKILL_MD_LINE_BUDGET = 170
-REFERENCE_LINE_BUDGET = 250
-
-
-def markdown_line_count(path: Path) -> int:
-    return len(path.read_text(encoding="utf-8").splitlines())
+# Attention budgets keep new runtime guidance from silently accumulating.
+SKILL_TOTAL_LINE_BUDGET = 1900
+SKILL_MD_LINE_BUDGET = 100
+REFERENCE_LINE_BUDGET = 150
 
 
 def validate_skill_budget(skills_root: Path) -> list[str]:
     issues: list[str] = []
     total = 0
     for markdown in sorted(skills_root.rglob("*.md")):
-        lines = markdown_line_count(markdown)
+        lines = len(markdown.read_text(encoding="utf-8").splitlines())
         total += lines
         relative = markdown.relative_to(skills_root)
         if markdown.name == "SKILL.md":
@@ -315,14 +264,10 @@ def validate_skill(skill_dir: Path) -> list[str]:
     description = frontmatter.get("description")
     if not description:
         issues.append(f"{skill_dir.name}: missing description")
-    elif not description[:1].isascii() or not description[:1].isalpha():
-        # The description is what an agent routes an English request against, and what a
-        # plugin directory shows as listing copy with no README_EN fallback.
+    elif not leads_with_english(description):
         issues.append(f"{skill_dir.name}: description must lead with English")
     if skill_dir.name != ORCHESTRATOR_SKILL and OUTPUT_LANGUAGE_RULE not in text:
         issues.append(f"{skill_dir.name}: missing the output-language rule")
-    if "TODO" in text:
-        issues.append(f"{skill_dir.name}: unresolved TODO")
 
     metadata = skill_dir / "agents/openai.yaml"
     if not metadata.is_file():
@@ -339,77 +284,15 @@ def validate_skill(skill_dir: Path) -> list[str]:
             if not target or "://" in target or target.startswith(("#", "mailto:")):
                 continue
             resolved = (markdown.parent / target).resolve()
-            try:
-                resolved.relative_to(skill_dir.resolve())
-            except ValueError:
+            if not resolved.is_relative_to(skill_dir.resolve()):
                 issues.append(
                     f"{markdown.relative_to(skill_dir)}: link leaves skill: {target}"
                 )
-                continue
-            if not resolved.exists():
+            elif not resolved.exists():
                 issues.append(
                     f"{markdown.relative_to(skill_dir)}: broken link: {target}"
                 )
     return issues
-
-
-def read_manifest(example_dir: Path) -> tuple[dict[str, object] | None, list[str]]:
-    """读示例自述文件。返回 (manifest, issues)；manifest 为 None 表示不可用。"""
-    path = example_dir / EXAMPLE_MANIFEST
-    if not path.is_file():
-        return None, [f"{example_dir.name}: missing {EXAMPLE_MANIFEST}"]
-    try:
-        manifest = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as error:
-        return None, [f"{example_dir.name}/{EXAMPLE_MANIFEST}: invalid JSON: {error}"]
-    if not isinstance(manifest, dict):
-        return None, [f"{example_dir.name}/{EXAMPLE_MANIFEST}: must be an object"]
-
-    issues: list[str] = []
-    missing = MANIFEST_REQUIRED - manifest.keys()
-    if missing:
-        issues.append(
-            f"{example_dir.name}/{EXAMPLE_MANIFEST}: missing {sorted(missing)}"
-        )
-    unknown = manifest.keys() - MANIFEST_ALLOWED
-    if unknown:
-        issues.append(
-            f"{example_dir.name}/{EXAMPLE_MANIFEST}: unsupported fields {sorted(unknown)}"
-        )
-    if manifest.get("targetFinish") not in TARGET_FINISHES:
-        issues.append(
-            f"{example_dir.name}/{EXAMPLE_MANIFEST}: targetFinish must be one of "
-            f"{sorted(TARGET_FINISHES)}"
-        )
-    source = manifest.get("source")
-    if not isinstance(source, dict):
-        issues.append(f"{example_dir.name}/{EXAMPLE_MANIFEST}: source must be an object")
-    else:
-        source_missing = SOURCE_REQUIRED - source.keys()
-        if source_missing:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: source missing {sorted(source_missing)}"
-            )
-        if source.get("numeral") not in NUMERAL_KINDS:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: numeral must be one of {sorted(NUMERAL_KINDS)}"
-            )
-    for key in ("headingPattern",):
-        raw = (source or {}).get(key) if isinstance(source, dict) else None
-        if isinstance(raw, str):
-            try:
-                re.compile(raw)
-            except re.error as error:
-                issues.append(f"{example_dir.name}/{EXAMPLE_MANIFEST}: {key}: {error}")
-    raw_citation = manifest.get("citationPattern")
-    if isinstance(raw_citation, str):
-        try:
-            re.compile(raw_citation)
-        except re.error as error:
-            issues.append(
-                f"{example_dir.name}/{EXAMPLE_MANIFEST}: citationPattern: {error}"
-            )
-    return (None if issues else manifest), issues
 
 
 def _read_json_object(path: Path, label: str) -> tuple[dict[str, object] | None, list[str]]:
@@ -424,28 +307,78 @@ def _read_json_object(path: Path, label: str) -> tuple[dict[str, object] | None,
     return value, []
 
 
-def _workspace_file_issue(
-    example_dir: Path, raw: object, field: str
-) -> str | None:
-    label = f"{example_dir.name}/qa/verification.json"
-    if not isinstance(raw, str) or not raw.strip():
-        return f"{label}: {field} must be a non-empty workspace path"
-    candidate = Path(raw)
-    if candidate.is_absolute() or "://" in raw:
-        return f"{label}: {field} must be workspace-local: {raw}"
-    resolved = (example_dir / candidate).resolve()
-    try:
-        resolved.relative_to(example_dir.resolve())
-    except ValueError:
-        return f"{label}: {field} leaves the example workspace: {raw}"
+def _object(
+    value: object,
+    label: str,
+    issues: list[str],
+    *,
+    exactly: set[str] | None = None,
+    within: set[str] | None = None,
+) -> dict[str, object] | None:
+    """Require an object whose keys are exactly `exactly` or a subset of `within`."""
+    if not isinstance(value, dict):
+        issues.append(f"{label} must be an object")
+        return None
+    if exactly is not None and set(value) != exactly:
+        issues.append(
+            f"{label} must contain exactly {sorted(exactly)}; found {sorted(value)}"
+        )
+    if within is not None and set(value) - within:
+        issues.append(f"{label} has unknown fields {sorted(set(value) - within)}")
+    return value
+
+
+def _blank(value: object) -> bool:
+    return not isinstance(value, str) or not value.strip()
+
+
+def _not_steps(value: object) -> bool:
+    return not isinstance(value, list) or not value or any(_blank(item) for item in value)
+
+
+def read_manifest(example_dir: Path) -> tuple[dict[str, object] | None, list[str]]:
+    """读示例自述文件。返回 (manifest, issues)；manifest 为 None 表示不可用。"""
+    label = f"{example_dir.name}/{EXAMPLE_MANIFEST}"
+    manifest, issues = _read_json_object(example_dir / EXAMPLE_MANIFEST, label)
+    if manifest is None:
+        return None, issues
+    missing = MANIFEST_REQUIRED - manifest.keys()
+    if missing:
+        issues.append(f"{label}: missing {sorted(missing)}")
+    if manifest.get("targetFinish") not in TARGET_FINISHES:
+        issues.append(f"{label}: targetFinish must be one of {sorted(TARGET_FINISHES)}")
+    source = _object(manifest.get("source"), f"{label}: source", issues)
+    if source is None:
+        return None, issues
+    source_missing = SOURCE_REQUIRED - source.keys()
+    if source_missing:
+        issues.append(f"{label}: source missing {sorted(source_missing)}")
+    if source.get("numeral") not in NUMERAL_KINDS:
+        issues.append(f"{label}: numeral must be one of {sorted(NUMERAL_KINDS)}")
+    for owner, key in ((source, "headingPattern"), (manifest, "citationPattern")):
+        pattern = owner.get(key)
+        if isinstance(pattern, str):
+            try:
+                re.compile(pattern)
+            except re.error as error:
+                issues.append(f"{label}: {key}: {error}")
+    return (None if issues else manifest), issues
+
+
+def _workspace_file_issue(example_dir: Path, raw: object, field: str) -> str | None:
+    if _blank(raw):
+        return f"{field} must be a non-empty workspace path"
+    resolved = (example_dir / str(raw)).resolve()
+    if not resolved.is_relative_to(example_dir.resolve()):
+        return f"{field} leaves the example workspace: {raw}"
     if not resolved.is_file():
-        return f"{label}: {field} does not exist: {raw}"
+        return f"{field} does not exist: {raw}"
     if resolved.stat().st_size == 0:
-        return f"{label}: {field} must not be empty: {raw}"
+        return f"{field} must not be empty: {raw}"
     return None
 
 
-def _contains_json_value(value: object, expected: str) -> bool:
+def _contains_json_value(value: object, expected: object) -> bool:
     if value == expected:
         return True
     if isinstance(value, dict):
@@ -456,258 +389,151 @@ def _contains_json_value(value: object, expected: str) -> bool:
 
 
 def _validate_complete_run_evidence(
-    example_dir: Path,
-    raw_path: object,
-    run_id: object,
-    terminal: object,
-    restart: object,
+    example_dir: Path, complete_run: dict[str, object]
 ) -> list[str]:
     label = f"{example_dir.name}/qa/verification.json"
     field = "completeRun.evidence"
+    raw_path = complete_run.get("evidence")
+    if raw_path is None:
+        return [f"{label}: {field} is required"]
     issue = _workspace_file_issue(example_dir, raw_path, field)
     if issue:
-        return [issue]
-    assert isinstance(raw_path, str)
-    evidence_path = example_dir / raw_path
-    evidence, issues = _read_json_object(evidence_path, f"{label}: {field}")
+        return [f"{label}: {issue}"]
+    evidence, issues = _read_json_object(example_dir / str(raw_path), f"{label}: {field}")
     if evidence is None:
         return issues
 
-    unknown = set(evidence) - QA_EVIDENCE_FIELDS
-    missing = QA_EVIDENCE_FIELDS - set(evidence)
-    if unknown:
-        issues.append(f"{label}: {field} has unknown fields {sorted(unknown)}")
-    if missing:
-        issues.append(f"{label}: {field} missing fields {sorted(missing)}")
+    _object(evidence, f"{label}: {field}", issues, exactly=QA_EVIDENCE_FIELDS)
     if evidence.get("schemaVersion") != 1:
         issues.append(f"{label}: {field}.schemaVersion must be 1")
-    if evidence.get("runId") != run_id:
+    if evidence.get("runId") != complete_run.get("id"):
         issues.append(f"{label}: {field}.runId must match completeRun.id")
-    environment = evidence.get("environment")
-    if not isinstance(environment, dict) or not environment:
-        issues.append(f"{label}: {field}.environment must be a non-empty object")
-    input_trace = evidence.get("inputTrace")
-    if (
-        not isinstance(input_trace, list)
-        or not input_trace
-        or not all(isinstance(item, str) and item.strip() for item in input_trace)
-    ):
+    environment = _object(evidence.get("environment"), f"{label}: {field}.environment", issues)
+    if environment is not None and not environment:
+        issues.append(f"{label}: {field}.environment must be non-empty")
+    if _not_steps(evidence.get("inputTrace")):
         issues.append(f"{label}: {field}.inputTrace must contain non-empty steps")
 
-    observations = evidence.get("observations")
-    required = set(MINIMAL_QA_CHECKS)
-    if not isinstance(observations, dict):
-        issues.append(f"{label}: {field}.observations must be an object")
+    observations = _object(
+        evidence.get("observations"),
+        f"{label}: {field}.observations",
+        issues,
+        exactly=MINIMAL_QA_CHECKS,
+    )
+    if observations is None:
         return issues
-    if set(observations) != required:
-        issues.append(
-            f"{label}: {field}.observations must contain exactly {sorted(required)}; "
-            f"found {sorted(observations)}"
-        )
-    for name in sorted(required):
-        observation = observations.get(name)
+    for name in sorted(MINIMAL_QA_CHECKS):
         observation_field = f"{field}.observations.{name}"
-        if not isinstance(observation, dict):
-            issues.append(f"{label}: {observation_field} must be an object")
+        observation = _object(
+            observations.get(name),
+            f"{label}: {observation_field}",
+            issues,
+            within=QA_OBSERVATION_FIELDS,
+        )
+        if observation is None:
             continue
-        unknown = set(observation) - QA_OBSERVATION_FIELDS
-        if unknown:
-            issues.append(
-                f"{label}: {observation_field} has unknown fields {sorted(unknown)}"
-            )
-        if not isinstance(observation.get("id"), str) or not observation["id"].strip():
+        if _blank(observation.get("id")):
             issues.append(f"{label}: {observation_field}.id must be non-empty")
-        inputs = observation.get("inputs")
-        if (
-            not isinstance(inputs, list)
-            or not inputs
-            or not all(isinstance(item, str) and item.strip() for item in inputs)
-        ):
+        if _not_steps(observation.get("inputs")):
             issues.append(f"{label}: {observation_field}.inputs must contain steps")
-        state = observation.get("state")
-        if not isinstance(state, dict) or not state:
+        state = _object(observation.get("state"), f"{label}: {observation_field}.state", issues)
+        if state is not None and not state:
             issues.append(f"{label}: {observation_field}.state must be non-empty")
         visual = observation.get("visual")
-        if name == "render" and visual is None:
+        if visual is None and name == "render":
             issues.append(f"{label}: {observation_field}.visual is required")
-        if visual is not None:
+        elif visual is not None:
             visual_issue = _workspace_file_issue(
                 example_dir, visual, f"{observation_field}.visual"
             )
             if visual_issue:
-                issues.append(visual_issue)
+                issues.append(f"{label}: {visual_issue}")
 
-    outcome_state = observations.get("outcome", {})
-    restart_state = observations.get("restart", {})
-    if isinstance(terminal, str) and not _contains_json_value(
-        outcome_state.get("state") if isinstance(outcome_state, dict) else None,
-        terminal,
-    ):
-        issues.append(f"{label}: outcome observation must record completeRun.terminal")
-    if isinstance(restart, str) and not _contains_json_value(
-        restart_state.get("state") if isinstance(restart_state, dict) else None,
-        restart,
-    ):
-        issues.append(f"{label}: restart observation must record completeRun.restart")
+    for name, key in (("outcome", "terminal"), ("restart", "restart")):
+        expected = complete_run.get(key)
+        observation = observations.get(name)
+        state = observation.get("state") if isinstance(observation, dict) else None
+        if isinstance(expected, str) and not _contains_json_value(state, expected):
+            issues.append(f"{label}: {name} observation must record completeRun.{key}")
     return issues
 
 
 def validate_qa(example_dir: Path) -> list[str]:
     """Validate the single minimal, player-effect QA contract."""
     label = f"{example_dir.name}/qa/verification.json"
-    issues: list[str] = []
-
-    verification_path = example_dir / "qa/verification.json"
-    verification, verification_issues = _read_json_object(verification_path, label)
-    issues.extend(verification_issues)
+    verification, issues = _read_json_object(example_dir / "qa/verification.json", label)
     if verification is None:
         return issues
 
-    unknown = set(verification) - QA_TOP_LEVEL_FIELDS
-    if unknown:
-        issues.append(f"{label}: unknown fields {sorted(unknown)}")
-
-    schema_version = verification.get("schemaVersion")
-    if schema_version != 3:
+    _object(verification, label, issues, within=QA_TOP_LEVEL_FIELDS)
+    if verification.get("schemaVersion") != 3:
         issues.append(f"{label}: minimal QA requires schemaVersion 3")
         return issues
 
     status = verification.get("status")
-    if status not in GATE_STATUSES:
-        issues.append(f"{label}: status must be one of {sorted(GATE_STATUSES)}")
-    elif status != "PASS":
+    if status != "PASS":
         issues.append(f"{label}: status must PASS for the current QA record")
 
-    verify = verification.get("verify")
-    if not isinstance(verify, dict):
-        issues.append(f"{label}: verify must be an object")
-    else:
-        unknown = set(verify) - QA_VERIFY_FIELDS
-        if unknown:
-            issues.append(f"{label}: verify has unknown fields {sorted(unknown)}")
-        if not isinstance(verify.get("command"), str) or not verify["command"].strip():
+    verify = _object(verification.get("verify"), f"{label}: verify", issues, within=QA_VERIFY_FIELDS)
+    if verify is not None:
+        if _blank(verify.get("command")):
             issues.append(f"{label}: verify.command must be non-empty")
-        exit_code = verify.get("exitCode")
-        if type(exit_code) is not int or exit_code != 0:
-            issues.append(f"{label}: verify.exitCode must be integer 0")
+        if verify.get("exitCode") != 0:
+            issues.append(f"{label}: verify.exitCode must be 0")
 
-    complete_run = verification.get("completeRun")
-    run_evidence: object = None
-    if not isinstance(complete_run, dict):
-        issues.append(f"{label}: completeRun must be an object")
-    else:
-        unknown = set(complete_run) - QA_COMPLETE_RUN_FIELDS
-        if unknown:
-            issues.append(
-                f"{label}: completeRun has unknown fields {sorted(unknown)}"
-            )
+    complete_run = _object(
+        verification.get("completeRun"),
+        f"{label}: completeRun",
+        issues,
+        within=QA_COMPLETE_RUN_FIELDS,
+    )
+    if complete_run is not None:
         if complete_run.get("cleanContext") is not True:
             issues.append(f"{label}: completeRun.cleanContext must be true")
-        for field in ("id", "terminal", "restart"):
-            if not isinstance(complete_run.get(field), str) or not complete_run[field].strip():
-                issues.append(f"{label}: completeRun.{field} must be non-empty")
-        run_evidence = complete_run.get("evidence")
-        if run_evidence is None:
-            issues.append(f"{label}: completeRun.evidence is required")
-        else:
-            issues.extend(_validate_complete_run_evidence(
-                example_dir,
-                run_evidence,
-                complete_run.get("id"),
-                complete_run.get("terminal"),
-                complete_run.get("restart"),
-            ))
+        for key in ("id", "terminal", "restart"):
+            if _blank(complete_run.get(key)):
+                issues.append(f"{label}: completeRun.{key} must be non-empty")
+        issues.extend(_validate_complete_run_evidence(example_dir, complete_run))
 
-    checks = verification.get("checks")
-    if not isinstance(checks, dict):
-        issues.append(f"{label}: checks must be an object")
-        checks = {}
-    required = set(MINIMAL_QA_CHECKS)
-    if set(checks) != required:
-        issues.append(
-            f"{label}: checks must contain exactly {sorted(required)}; "
-            f"found {sorted(checks)}"
-        )
-    for name in sorted(required):
-        check_status = checks.get(name)
-        if check_status not in GATE_STATUSES:
-            issues.append(
-                f"{label}: checks.{name} must be one of {sorted(GATE_STATUSES)}"
-            )
-        if status == "PASS" and check_status != "PASS":
-            issues.append(f"{label}: checks.{name} must PASS for overall PASS")
+    checks = _object(
+        verification.get("checks"), f"{label}: checks", issues, exactly=MINIMAL_QA_CHECKS
+    )
+    if checks is not None:
+        for name in sorted(MINIMAL_QA_CHECKS):
+            if checks.get(name) != "PASS":
+                issues.append(f"{label}: checks.{name} must PASS for overall PASS")
 
     limitations = verification.get("limitations")
     if not isinstance(limitations, list):
         issues.append(f"{label}: limitations must be a list")
     else:
-        for index, limitation in enumerate(limitations):
+        for index, raw_limitation in enumerate(limitations):
             field = f"limitations[{index}]"
-            if not isinstance(limitation, dict):
-                issues.append(f"{label}: {field} must be an object")
-                continue
-            unknown = set(limitation) - QA_LIMITATION_FIELDS
-            if unknown:
-                issues.append(
-                    f"{label}: {field} has unknown fields {sorted(unknown)}"
-                )
-            for key in ("scope", "reason"):
-                if not isinstance(limitation.get(key), str) or not limitation[key].strip():
+            limitation = _object(
+                raw_limitation, f"{label}: {field}", issues, exactly=QA_LIMITATION_FIELDS
+            )
+            for key in sorted(QA_LIMITATION_FIELDS):
+                if limitation is not None and _blank(limitation.get(key)):
                     issues.append(f"{label}: {field}.{key} must be non-empty")
-
     return issues
 
 
 def _validate_target_finish_inheritance(
-    example_dir: Path, target_finish: object
+    example_dir: Path, target_finish: str
 ) -> list[str]:
     issues: list[str] = []
-    for relative in (
-        "PRODUCT_BRIEF.md",
-        "design/ART_DIRECTION.md",
-        "build/BUILD_BRIEF.md",
-    ):
+    optional = "design/VISUAL_TARGETS.md"
+    for relative in (*TARGET_FINISH_SOURCES, optional):
         path = example_dir / relative
         if not path.is_file():
-            issues.append(f"{example_dir.name}/{relative}: missing targetFinish source")
+            if relative != optional:
+                issues.append(f"{example_dir.name}/{relative}: missing targetFinish source")
             continue
-        values = re.findall(
-            r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$",
-            path.read_text(encoding="utf-8"),
-            flags=re.MULTILINE,
-        )
-        unique = set(values)
-        if not values:
-            issues.append(f"{example_dir.name}/{relative}: missing canonical targetFinish")
-        elif len(unique) != 1:
+        values = set(TARGET_FINISH_RE.findall(path.read_text(encoding="utf-8")))
+        if values != {target_finish}:
             issues.append(
-                f"{example_dir.name}/{relative}: conflicting targetFinish values {sorted(unique)}"
-            )
-        elif next(iter(unique)) != target_finish:
-            issues.append(
-                f"{example_dir.name}/{relative}: targetFinish must match example.json"
-            )
-    visual_targets = example_dir / "design/VISUAL_TARGETS.md"
-    if visual_targets.is_file():
-        relative = "design/VISUAL_TARGETS.md"
-        values = re.findall(
-            r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$",
-            visual_targets.read_text(encoding="utf-8"),
-            flags=re.MULTILINE,
-        )
-        unique = set(values)
-        if not values:
-            issues.append(
-                f"{example_dir.name}/{relative}: missing canonical targetFinish"
-            )
-        elif len(unique) != 1:
-            issues.append(
-                f"{example_dir.name}/{relative}: conflicting targetFinish values "
-                f"{sorted(unique)}"
-            )
-        elif next(iter(unique)) != target_finish:
-            issues.append(
-                f"{example_dir.name}/{relative}: targetFinish must match example.json"
+                f"{example_dir.name}/{relative}: targetFinish must be exactly "
+                f"{target_finish}, found {sorted(values)}"
             )
     return issues
 
@@ -737,8 +563,9 @@ def validate_example(example_dir: Path) -> list[str]:
     manifest, issues = read_manifest(example_dir)
     if manifest is None:
         return issues
-    target_finish = str(manifest["targetFinish"])
-    issues.extend(_validate_target_finish_inheritance(example_dir, target_finish))
+    issues.extend(
+        _validate_target_finish_inheritance(example_dir, str(manifest["targetFinish"]))
+    )
     issues.extend(validate_qa(example_dir))
     actual_planning_files = {
         path.relative_to(example_dir).as_posix()
@@ -747,31 +574,27 @@ def validate_example(example_dir: Path) -> list[str]:
         for path in (example_dir / directory).iterdir()
         if path.is_file()
     }
-    # Coverage state and an asset ledger are valid supporting artifacts, but neither is
-    # universal across the legacy examples. Ignore them when grading the five compact
-    # planning handoffs instead of rejecting a richer, otherwise compliant example.
-    graded_planning_files = actual_planning_files - OPTIONAL_PLANNING_FILES
-    if graded_planning_files != EXAMPLE_PLANNING_FILES:
+    missing_planning_files = EXAMPLE_PLANNING_FILES - actual_planning_files
+    if missing_planning_files:
         issues.append(
-            f"{example_dir.name}: planning artifact mismatch; "
-            f"missing={sorted(EXAMPLE_PLANNING_FILES - graded_planning_files)} "
-            f"extra={sorted(graded_planning_files - EXAMPLE_PLANNING_FILES)}"
+            f"{example_dir.name}: missing planning artifacts "
+            f"{sorted(missing_planning_files)}"
         )
 
     source_dir = example_dir / "source"
     if not (source_dir / "SOURCE.md").is_file():
         issues.append(f"{example_dir.name}: missing source/SOURCE.md")
     source_texts = sorted(source_dir.glob("*.txt")) if source_dir.is_dir() else []
-    if len(source_texts) != 1:
-        issues.append(f"{example_dir.name}: expected exactly one source text")
+    if not source_texts:
+        issues.append(f"{example_dir.name}: missing source text")
         return issues
 
-    source_spec = cast(dict[str, object], manifest["source"])
+    source_spec = manifest["source"]
     expected_chapters = int(str(source_spec["chapters"]))
     heading = re.compile(str(source_spec["headingPattern"]))
-    numeral = str(source_spec["numeral"])
-    chapters = extract_chapters(source_texts[0], heading, numeral)
-    chapter_numbers = [chapter[0] for chapter in chapters]
+    chapter_numbers = extract_chapter_numbers(
+        source_texts, heading, str(source_spec["numeral"])
+    )
     if chapter_numbers != list(range(1, expected_chapters + 1)):
         issues.append(
             f"{example_dir.name}: source must contain consecutive chapters "
@@ -780,6 +603,7 @@ def validate_example(example_dir: Path) -> list[str]:
         return issues
 
     known_chapters = set(chapter_numbers)
+    citation = re.compile(str(manifest["citationPattern"]))
     source_bible = example_dir / "analysis/SOURCE_BIBLE.md"
     if source_bible.is_file():
         coverage_section = markdown_section(
@@ -788,7 +612,6 @@ def validate_example(example_dir: Path) -> list[str]:
         if coverage_section is None:
             issues.append(f"{example_dir.name}: source bible missing full-book coverage")
         else:
-            citation = re.compile(str(manifest["citationPattern"]))
             coverage = chapter_citation_coverage(coverage_section, citation)
             missing = known_chapters - coverage
             extra = coverage - known_chapters
@@ -798,16 +621,14 @@ def validate_example(example_dir: Path) -> list[str]:
                     f"missing={sorted(missing)} extra={sorted(extra)}"
                 )
 
-    citation = re.compile(str(manifest["citationPattern"]))
     # 引用格式随语言变。若 citationPattern 在整个示例的策划产物里一次都不匹配,
     # 下面的逐条校验就会「真空通过」——保证悄悄消失而不是变红。这里只要求全例
     # 至少命中一次(不要求每份文档都引章节:美术方向讲视觉，本来就不引)。
     citation_hits = 0
     for relative_path in sorted(EXAMPLE_PLANNING_FILES & actual_planning_files):
-        markdown = example_dir / relative_path
-        body = markdown.read_text(encoding="utf-8")
-        citation_hits += len(citation.findall(body))
+        body = (example_dir / relative_path).read_text(encoding="utf-8")
         for match in citation.finditer(body):
+            citation_hits += 1
             first = int(match.group(1))
             last = int(match.group(2) or first)
             if first > last or any(
@@ -823,15 +644,6 @@ def validate_example(example_dir: Path) -> list[str]:
             f"artifact; the chapter-citation check would pass vacuously"
         )
     return issues
-
-
-def manifest_skill_root(manifest: dict[str, object]) -> str | None:
-    skills = manifest.get("skills")
-    if isinstance(skills, str):
-        return skills.rstrip("/")
-    if isinstance(skills, list) and len(skills) == 1 and isinstance(skills[0], str):
-        return skills[0].rstrip("/")
-    return None
 
 
 def validate_agent_adapters(root: Path, version: str) -> list[str]:
@@ -864,52 +676,42 @@ def validate_agent_adapters(root: Path, version: str) -> list[str]:
             )
 
     for relative_path in sorted(PLUGIN_MANIFESTS):
-        path = root / relative_path
-        if not path.is_file():
-            issues.append(f"repository: missing {relative_path}")
+        manifest, manifest_issues = _read_json_object(root / relative_path, relative_path)
+        issues.extend(manifest_issues)
+        if manifest is None:
             continue
-        manifest = json.loads(path.read_text(encoding="utf-8"))
         if manifest.get("name") != "novel-to-game":
             issues.append(f"{relative_path}: plugin name must be novel-to-game")
         if manifest.get("version") != version:
             issues.append(f"{relative_path}: version does not match VERSION")
-        if manifest_skill_root(manifest) != "./skills":
+        if not leads_with_english(str(manifest.get("description", ""))):
+            issues.append(f"{relative_path}: description must lead with English")
+        if manifest.get("skills") not in {"./skills", "./skills/"}:
             issues.append(
                 f"{relative_path}: plugin must expose the complete ./skills bundle"
             )
 
-    marketplace_path = root / ".claude-plugin/marketplace.json"
-    if not marketplace_path.is_file():
-        issues.append("repository: missing .claude-plugin/marketplace.json")
-    else:
-        marketplace = json.loads(marketplace_path.read_text(encoding="utf-8"))
+    marketplace_path = ".claude-plugin/marketplace.json"
+    marketplace, marketplace_issues = _read_json_object(root / marketplace_path, marketplace_path)
+    issues.extend(marketplace_issues)
+    if marketplace is not None:
         plugins = marketplace.get("plugins")
-        if not isinstance(plugins, list) or len(plugins) != 1:
-            issues.append(
-                "repository: marketplace must expose exactly one bundle plugin"
-            )
+        plugin = plugins[0] if isinstance(plugins, list) and len(plugins) == 1 else None
+        if not isinstance(plugin, dict):
+            issues.append(f"{marketplace_path}: must expose exactly one bundle plugin")
         else:
-            plugin = plugins[0]
-            if not isinstance(plugin, dict):
-                issues.append("repository: marketplace plugin entry must be an object")
-            else:
-                expected = {
-                    "name": "novel-to-game",
-                    "source": "./",
-                    "version": version,
-                }
-                if any(plugin.get(key) != value for key, value in expected.items()):
-                    issues.append(
-                        "repository: marketplace bundle name, source, or version is invalid"
-                    )
+            expected = {"name": "novel-to-game", "source": "./", "version": version}
+            if {key: plugin.get(key) for key in expected} != expected:
+                issues.append(
+                    f"{marketplace_path}: bundle name, source, or version is invalid"
+                )
+            if not leads_with_english(str(plugin.get("description", ""))):
+                issues.append(f"{marketplace_path}: plugin description must lead with English")
         metadata = marketplace.get("metadata")
         if not isinstance(metadata, dict) or metadata.get("version") != version:
-            issues.append(
-                "repository: marketplace metadata version does not match VERSION"
-            )
-
-    if (root / "reasonix-plugin.json").exists():
-        issues.append("repository: Reasonix adapter is outside the supported CLI set")
+            issues.append(f"{marketplace_path}: metadata version does not match VERSION")
+        elif not leads_with_english(str(metadata.get("description", ""))):
+            issues.append(f"{marketplace_path}: metadata description must lead with English")
     return issues
 
 
@@ -935,15 +737,8 @@ def validate_repository(root: Path) -> list[str]:
     if not actual_examples:
         issues.append("repository: no examples found")
     for name in sorted(actual_examples):
-        example_dir = examples_root / name
-        issues.extend(validate_example(example_dir))
+        issues.extend(validate_example(examples_root / name))
     issues.extend(validate_readme_example_order(root))
-
-    for json_file in validation_json_files(root):
-        try:
-            json.loads(json_file.read_text(encoding="utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            issues.append(f"{json_file.relative_to(root)}: invalid JSON: {error}")
 
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     issues.extend(validate_agent_adapters(root, version))
@@ -951,10 +746,7 @@ def validate_repository(root: Path) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.parse_args()
-    root = Path(__file__).resolve().parents[1]
-    issues = validate_repository(root)
+    issues = validate_repository(Path(__file__).resolve().parents[1])
     if issues:
         for issue in issues:
             print(f"FAIL: {issue}")

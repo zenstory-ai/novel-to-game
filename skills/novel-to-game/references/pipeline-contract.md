@@ -40,9 +40,8 @@ JSON/YAML。设计理由仍由 `GAME_DESIGN.md` 拥有，运行状态与动作�
 
 ## 证据角色
 
-`qa/verification.json` 是唯一 QA 事实源。schema v3 只写整体状态、权威命令、一次 complete run、
-六项游戏效果 checks 和包含 `scope` / `reason` 的 limitations。目标运行环境与实际环境不同就如实
-记录，不能用替代运行结果冒充目标平台通过。
+`qa/verification.json` schema v3 只写整体状态、权威命令、一次 complete run、六项游戏效果 checks
+和包含 `scope` / `reason` 的 limitations。
 
 构建只准备候选与 verify 入口，QA 只运行一次完整路径；不要求真人试玩、逐项人工批准、重复机器
 证据对象或第二份 QA 报告。
@@ -51,8 +50,7 @@ JSON/YAML。设计理由仍由 `GAME_DESIGN.md` 拥有，运行状态与动作�
 的状态/动作/知识/回响节点和 owner；修订后固定同一初态、规则版本、seed 与输入序列重放受影响路径。
 若节点 id、变量语义、动作效果或知识权限改变，必须迁移旧存档/日志或明确拒绝兼容，不能静默解释成新历史。
 
-`targetFinish` 描述成色，不改变最小 QA。预算或工具耗尽只会留下 `NOT_RUN` / `FAIL`、缩小范围或
-延期，不会生成 PASS。主观趣味、平衡、权利合规和发布质量不由机器事实确定。
+预算或工具耗尽只会留下 `NOT_RUN` / `FAIL`、缩小范围或延期，不会生成 PASS。
 
 ## resume 与回流
 

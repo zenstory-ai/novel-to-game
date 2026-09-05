@@ -4,7 +4,7 @@
 
 ## 一、从六项结果反推
 
-为 launch、render、input、coreLoop、outcome、restart 各选择一条最小证据，不为项目自己的回归与诊断复制平行验收矩阵。
+为 launch、render、input、coreLoop、outcome、restart 各选择一条最小证据。
 
 ## 二、从设计承诺写断言
 

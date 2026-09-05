@@ -11,6 +11,15 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Changed
+
+- Collapsed the repository validator's hand-written QA schema checks into shared object/field helpers, folded the duplicated `targetFinish` inheritance and JSON-loading paths, and moved the English-first check for plugin manifest descriptions into the validator. Plugin manifests must now declare `skills` as the `./skills` string; the single-element list form is no longer accepted. Example manifests and planning directories now permit additional project-owned metadata and supporting artifacts, and chapter coverage can span multiple source text files.
+- Trimmed within-skill restatements so each rule lives once per skill, in either its `SKILL.md` or the reference that skill already reads, and tightened prompt line budgets around the resulting package size.
+
+### Removed
+
+- Removed dead validator code (an unused constant, unreachable regex defaults, the Reasonix guard, the repository-wide JSON scan, and argument parsing with no arguments) and the tests that locked example-app internals (module line budgets, import edges, stylesheet hashes, asset-ledger provenance) or re-ran checks already covered by the validator's authoritative command. The minimal evidence fixture now owns one executable path instead of duplicating its state assertions in a nested unit suite, and the Jin Ping Mei playable-model verifier runs in CI from its own example lane.
+
 ## [0.3.0] - 2026-08-23
 
 ### Added

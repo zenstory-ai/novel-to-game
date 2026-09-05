@@ -13,10 +13,10 @@ description: "Turn a novel into a fully playable game on the selected target pla
 [intake-method.md](references/intake-method.md) 只处理会实质改变方向或带来权利、尺度、平台风险的
 歧义。低风险空白集中列为未确认假设，不逐项拦停。
 
-`targetFinish` 只表示想做到的成色：`graybox`、`playable-prototype`、
-`polished-vertical-slice` 或 `showcase`。所有项目使用同一最小 QA：真实启动、渲染、输入、核心循环、
-至少一个设计结果和重开。连续 3D、语音、生成媒体、多语言或无障碍只在实际采用时运行项目自己的
-效果回归，不形成第二套验收等级。
+`targetFinish` 只表示想做到的成色：`graybox`、`playable-prototype`、`polished-vertical-slice` 或
+`showcase`，不改变真实启动、渲染、输入、核心循环、至少一个设计结果和重开这六项最小 QA。六项全部
+PASS 才算完成；`NOT_RUN` 不能满足完成声明，`qa/verification.json` 是唯一机器事实源。连续 3D、语音、
+生成媒体、多语言或无障碍只在实际采用时做效果回归，不形成第二套验收等级。
 
 `PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实，下游不得静默改写。brief 必须锁定平台、生产
 引擎、实际交付物、目标运行时和可用的实际测试运行时。工具链不可用时，只能使用 brief 已批准的
@@ -43,10 +43,8 @@ description: "Turn a novel into a fully playable game on the selected target pla
 8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
    product/design/art/build 归属回流，不让实现阶段静默重做策划。
 
-编排器只记录两项完成结果：
-
-- `scope`：上游范围和阶段 owner 齐全且不冲突；
-- `playable`：六项最小玩家效果均有真实运行证据。
+编排器只记录 `scope`（上游范围和阶段 owner 齐全且不冲突）与 `playable`（六项最小玩家效果均有
+真实运行证据）。
 
 ## 语言与文化
 
@@ -66,6 +64,3 @@ description: "Turn a novel into a fully playable game on the selected target pla
   证物/见证反馈与延期回响，不能退化成通用聊天或“说了就发生”。
 - 验证切片必须在实际运行环境中完整走通；范围服从 brief，不默认扩成长篇全量游戏。
 - 完成以运行、画面、真实输入、结果和重开证据为准；AI 不能客观证明趣味、长期平衡或商业价值。
-
-六项必需检查全部 PASS 才报告当前候选完成最小 QA。`NOT_RUN` 可以诚实结束本次执行，但不能满足
-完成声明；`qa/verification.json` 是唯一机器事实源。

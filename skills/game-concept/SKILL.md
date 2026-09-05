@@ -17,10 +17,6 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 时回总入口修订，不在概念阶段静默改值。原作语言、文化语境、目标市场和界面语言分别处理，不从
 其中一个自动推出另一个。
 
-先例只用于解释玩法为什么可识别：选一个最接近核心动词与循环的主要玩法先例，必要时再补一个解决
-独立问题的辅助先例。写清借用的动词/循环/结构与明确不借的内容，不要求销量数字、固定名单或为每个
-方向重复市场研究。外部事实只有在会改变选择且可能变化时才核实。
-
 互动叙事是成熟玩法，不因以阅读和对白承载就降低标准；它的动词可以是读局面、追问、比对信息、
 表态、隐瞒、交出与承担回响。先例提供语法，原作规则负责改变动作对象、顺序、代价和世界回应，
 不能只做 IP 换皮。
@@ -35,24 +31,10 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 子类型、核心循环、压力来源、原作选段、空间/镜头、成长关系或美术方向；已锁的主玩法不可偷换，
 未锁的核心循环可以正面比较。
 
-每个概念卡只回答：
-
-- `player_job`：玩家以什么身份长期做哪份工作，想获得什么独特幻想；
-- `recurring_job_loop`：这份工作每个周期反复做什么；
-- 主类型、`experienceProfile`、主要玩法先例，以及本作借什么/不借什么；
-- 3–5 个核心动词、循环、压力、失败和世界响应；
-- `signature_command`：只有当自然语言表达本身能体现该身份时，写 `id`、`label` 与候选 `intents`；
-  不合适时明确 `N/A`，不得给所有游戏统一添加聊天框；
-- `resistance_chain`：谁或什么会阻止、拒绝、扭曲或泄露玩家的安排；
-- `advancement_ladder`：玩家在探索、成长、成熟阶段分别新学会什么、新能组合什么；
-- 原作独有的规则或情感/伦理张力怎样被玩家亲手 enact，而不是留在过场；
-- 一张能同时看出身份、动作与世界特征的招牌画面；
-- 最小验证切片、最大风险，以及什么观察结果会否决该方向。
-
 ## 选择
 
-先按 concept-method 的硬否决逐个淘汰，不计算总分。再比较原作适配、玩家能动性、可读性、文化
-准确性、传播画面和完成风险。`quick` 自动选证据最强的方向；`director` 给出推荐后等待用户决定。
+先按 concept-method 的硬否决逐个淘汰，不计算总分，再按其比较维度选择。`quick` 自动选证据最强的
+方向；`director` 给出推荐后等待用户决定。
 
 ## 输出
 
@@ -61,12 +43,14 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 1. brief 锁定值与开放维度；
 2. 三条体验支柱，各配可观察现象和失败现象；
 3. 紧凑先例说明；
-4. 三个概念卡；
+4. 三个概念卡，每张只写主类型、`experienceProfile`、借用/拒绝的玩法先例、3–5 个核心动词、循环、
+   压力、失败、世界响应，以及 `player_job`、`recurring_job_loop`、`resistance_chain` 和
+   `advancement_ladder`；仅当自然语言能体现玩家身份时写 `signature_command` 的 `id`、`label` 与候选
+   `intents`，否则写 `N/A`；最后说明原作张力如何由玩家亲手 enact、招牌画面、最小验证切片、最大风险
+   和否决观察；
 5. 硬否决结果、关键取舍、推荐与选择状态；
-6. 选定方向的 `experienceProfile`、玩家能动性合同、不可妥协体验承诺，以及五项独立交接字段：
-   `player_job`、`recurring_job_loop`、`signature_command`（或 `N/A`）、`resistance_chain`、
-   `advancement_ladder`；
+6. 选定方向的玩家能动性合同、不可妥协体验承诺；上述五项交接字段必须独立成项；
 7. 最小验证问题与开放问题。
 
-`narrative-led` 或 `hybrid` 的叙事层还要选择一种分支结构语法并说明内容预算。概念不得写伤害公式、
-具体百分比、敌人血量、代码结构或逐场脚本；交接前确认选定方向可在 brief 范围内做成完整切片。
+`narrative-led` 或 `hybrid` 的叙事层还要选择一种分支结构语法并说明内容预算。交接前确认选定方向
+可在 brief 范围内做成完整切片。
