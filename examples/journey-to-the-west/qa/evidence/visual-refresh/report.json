@@ -1,0 +1,166 @@
+{
+  "command": "python3 test/visual_browser.py",
+  "status": "PASS",
+  "viewports": [
+    {
+      "viewport": [
+        1440,
+        900
+      ],
+      "title": [
+        {
+          "text": "踏上火焰山",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "行前须知",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "dialogue": [
+        {
+          "text": "唐僧\n悟空，我们还没到山脚，衣裳便湿透了。这片火海，该从哪里过去？\n▼ 点击继续 · 2 / 5",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "dialogueRemoved": true,
+      "commands": [
+        {
+          "text": "阵型：天罡阵",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "攻\n攻击",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "法\n法术",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "防\n防御",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "道\n道具",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "技\n特技",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "自\n自动",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "逃\n逃跑",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "roundBefore": 1,
+      "roundAfter": 2,
+      "hpChanged": true,
+      "motion": {
+        "requested": false,
+        "duration": "1.4s"
+      }
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "title": [
+        {
+          "text": "踏上火焰山",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "行前须知",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "dialogue": [
+        {
+          "text": "唐僧\n悟空，我们还没到山脚，衣裳便湿透了。这片火海，该从哪里过去？\n▼ 点击继续 · 2 / 5",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "dialogueRemoved": true,
+      "commands": [
+        {
+          "text": "阵型：天罡阵",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "攻\n攻击",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "法\n法术",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "防\n防御",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "道\n道具",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "技\n特技",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "自\n自动",
+          "visible": true,
+          "unobstructed": true
+        },
+        {
+          "text": "逃\n逃跑",
+          "visible": true,
+          "unobstructed": true
+        }
+      ],
+      "roundBefore": 1,
+      "roundAfter": 2,
+      "hpChanged": true,
+      "motion": {
+        "requested": true,
+        "duration": "1e-05s"
+      }
+    }
+  ],
+  "errors": [],
+  "visuals": [
+    "qa/evidence/visual-refresh/title-desktop.jpg",
+    "qa/evidence/visual-refresh/title-mobile.jpg",
+    "qa/evidence/visual-refresh/dialogue-desktop.jpg",
+    "qa/evidence/visual-refresh/dialogue-mobile.jpg",
+    "qa/evidence/visual-refresh/battle-desktop.jpg",
+    "qa/evidence/visual-refresh/battle-mobile.jpg"
+  ],
+  "browser": "145.0.7632.6"
+}

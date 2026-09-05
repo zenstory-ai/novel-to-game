@@ -48,6 +48,15 @@ def write_verification(passed: bool) -> None:
             "checks": {name: status for name in CHECKS},
             "limitations": [
                 {
+                    "scope": "visual regression coverage",
+                    "reason": (
+                        "The complete campaign uses accelerated presentation on desktop. "
+                        "The separate visual_browser.py regression exercises normal-speed "
+                        "first-round input at 1440x900 and 390x844, including reduced motion. "
+                        "A complete mobile campaign and all normal-speed cinematics were not recorded."
+                    ),
+                },
+                {
                     "scope": "tested runtime",
                     "reason": (
                         "The run used local Chromium automation; other browsers and "

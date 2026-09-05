@@ -55,21 +55,30 @@ export function showDialog(root, lines) {
     let idx = 0;
     const box = el('div', 'dlg-box');
     box.id = 'dialog';
-    addCorners(box);
+    box.setAttribute('role', 'button');
+    box.setAttribute('tabindex', '0');
+    box.setAttribute('aria-label', '继续对话');
+    const stage = el('div', 'dlg-stage');
+    stage.setAttribute('aria-hidden', 'true');
     const portrait = el('img', 'dlg-portrait');
+    portrait.alt = '';
+    stage.appendChild(portrait);
     const right = el('div', 'dlg-right');
     const name = el('div', 'dlg-name');
     const text = el('div', 'dlg-text');
     const next = el('div', 'dlg-next', TEXT.ui.clickNext);
     right.append(name, text, next);
-    box.append(portrait, right);
-    root.appendChild(box);
+    box.append(right);
+    root.append(stage, box);
     const ownerGeneration = shadeOn('dlg');
 
     function render() {
       const line = lines[idx];
+      stage.hidden = !line.who;
+      box.classList.toggle('narration', !line.who);
       if (line.who) {
-        portrait.src = unitURL(line.who, TEXT.speakers[line.who] ?? line.who);
+        // 假八戒沿用八戒面貌；不知道真身前不能由头像提前揭露。
+        portrait.src = unitURL(line.who === 'fakeBajie' ? 'bajie' : line.who, TEXT.speakers[line.who] ?? line.who);
         portrait.style.visibility = 'visible';
         name.style.visibility = 'visible';
         name.textContent = TEXT.speakers[line.who] ?? line.who;
@@ -79,6 +88,7 @@ export function showDialog(root, lines) {
         name.textContent = '　';
       }
       text.textContent = line.text;
+      next.textContent = `${TEXT.ui.clickNext}  ·  ${idx + 1} / ${lines.length}`;
       box.dataset.idx = String(idx);
     }
     function cleanup() {
@@ -90,6 +100,7 @@ export function showDialog(root, lines) {
       idx += 1;
       if (idx >= lines.length) {
         box.remove();
+        stage.remove();
         cleanup();
         resolve();
       } else {
@@ -98,6 +109,7 @@ export function showDialog(root, lines) {
     }
     function onKey(ev) {
       if (!box.isConnected) { cleanup(); return; }
+      if (root.querySelector('.modal-mask')) return;
       if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowRight') {
         advance();
         ev.preventDefault();

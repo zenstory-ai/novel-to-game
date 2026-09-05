@@ -23,9 +23,9 @@ export function createAtmosphere(scene) {
     cloudBanks,
     createRidge('world.atmosphere.far-ridge', -154, 74, -18, [12, 31], 0x394840, 811),
     createRidge('world.atmosphere.near-ridge', -104.5, 65, -16, [8, 23], 0x3c4a35, 419, true),
-    createMistLayer('world.atmosphere.mist-near', -47, 0.035, 0x77948d, 241),
-    createMistLayer('world.atmosphere.mist-mid', -82, 0.062, 0x759695, 517),
-    createMistLayer('world.atmosphere.mist-far', -116, 0.092, 0x72969b, 881),
+    createMistLayer('world.atmosphere.mist-near', -47, 0.048, 0x789991, 241),
+    createMistLayer('world.atmosphere.mist-mid', -82, 0.082, 0x789da0, 517),
+    createMistLayer('world.atmosphere.mist-far', -116, 0.122, 0x7b9fa8, 881),
   );
   group.userData.environmentLighting = 'bounded-pmrem-physical-sky-dielectric-response';
   group.userData.applyCloudShadowsTo = (targetScene) => overheadCloudField.applyTo(targetScene);

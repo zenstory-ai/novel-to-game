@@ -118,3 +118,18 @@ test('ground-cover library settles every root crown and couples colour/depth win
   assert.equal(first.userData.materials.windUniforms.time.value, 0);
   assert.equal(first.userData.materials.windUniforms.strength.value, 0);
 });
+
+test('low route-edge cover adds parallax while preserving a clear walking seam', () => {
+  const world = createWorld(new THREE.Scene());
+  const placements = world.environmentDensity.userData.groundCoverPlacements;
+  const routeEdge = placements.filter(({ microclimate }) => (
+    microclimate === 'route-edge-parallax'
+  ));
+
+  assert.equal(routeEdge.length, 120);
+  assert.ok(routeEdge.some(({ scale }) => scale > 2));
+  assert.ok(routeEdge.every(({ x, z }) => (
+    !(z > 18 && z < 72 && Math.abs(x - 3) < 2)
+    && !(z > -58 && z <= 18 && Math.abs(x - 1) < 3.6)
+  )));
+});

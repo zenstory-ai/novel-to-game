@@ -50,6 +50,7 @@ import { terrainHeight } from './terrain.js';
 import { createViewmodelController } from './viewmodel.js';
 import { createWorld } from './world.js';
 import { hideLoading, showLoading } from './loading-screen.js';
+import { createFrameCommitGate } from './frame-commit-gate.js';
 
 const canvas = document.querySelector('#game-canvas');
 const runtimeError = document.querySelector('#runtime-error');
@@ -84,7 +85,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
-document.querySelector('#build-badge').textContent = 'Playable prototype';
+document.querySelector('#build-badge').textContent = 'Challenger expedition · field copy';
 const query = new URLSearchParams(window.location.search);
 const systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let presentationSettings = loadSettings(window.localStorage, systemReducedMotion);
@@ -115,14 +116,17 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x122c34);
-scene.fog = new THREE.FogExp2(0x58716f, DAYLIGHT_ENERGY_PROFILE.fogDensityPerMeter);
+scene.background = new THREE.Color(0x367c8e);
+scene.fog = new THREE.FogExp2(0x78a1a3, DAYLIGHT_ENERGY_PROFILE.fogDensityPerMeter);
 const atmosphere = createAtmosphere(scene);
 const atmosphereEnvironment = applyAtmosphereEnvironment(scene, renderer);
 
 const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 320);
-const titleCameraPosition = new THREE.Vector3(18, 7.6, 55);
-const titleCameraTarget = new THREE.Vector3(-1, 3.2, -34);
+// Hold the title close to the scout's eventual eye line. The earlier high,
+// distant survey angle exposed too much empty foreground and made the basin
+// read like a level editor overview instead of a dangerous field photograph.
+const titleCameraPosition = new THREE.Vector3(-3.5, 1.7, 16);
+const titleCameraTarget = new THREE.Vector3(0, 1.2, -33);
 
 const { sun } = createFieldLighting(scene);
 const world = createWorld(scene);
@@ -180,6 +184,7 @@ let renderScheduleAt = 0;
 let renderedFrameCount = 0;
 let firstRenderedAt = null;
 let visualElapsed = 0;
+const assetFrameCommit = createFrameCommitGate();
 
 let boundaryNoticeUntil = 0;
 let observedBoundaryRecoveries = 0;
@@ -319,56 +324,56 @@ function emitCue(cue, duration) {
   showCaption(cue, duration);
 }
 
-const ABANDON_PROMPT_COPY = 'Drop the case and run [Hold G] — the plates stay in the basin.';
+const ABANDON_PROMPT_COPY = 'Leave the plate case and run [Hold G] — nothing on glass comes home.';
 
 function contextualCopy() {
   if (player.pendingExposure) {
     return player.pendingExposure.maxCameraDrift
       > (player.pendingExposure.driftLimit ?? MAX_STEADY_DRIFT_RADIANS)
-      ? 'Plate moved — decisive detail will smear.'
-      : player.pendingExposure.braced ? 'Braced exposure — hold the frame.' : 'Hold steady.';
+      ? 'The camera shifted. Fine detail is going.'
+      : player.pendingExposure.braced ? 'Braced against the earth. Hold.' : 'Easy now. Hold the glass still.';
   }
   if (player.cameraRaised) {
     const frame = frameForState(player);
-    if (frame.key === 'empty-sky') return 'The wing crossed outside the glass.';
+    if (frame.key === 'empty-sky') return 'The wing has slipped beyond the plate.';
     if (player.threatState === 'attack' && frame.subject !== 'pterodactyl') {
-      return 'Wingbeats pass over the raised camera.';
+      return 'Wingbeats pass over the hooded camera.';
     }
-    if (frame.composition === 'empty') return 'No living form rests on the glass.';
-    if (frame.key === 'pterodactyl-dive') return 'The wing is committed.';
-    if (frame.key === 'glade-form') return 'The family settles between movements.';
-    if (frame.key.endsWith('-repeat')) return 'This movement is already on a plate.';
+    if (frame.composition === 'empty') return 'Only the river light reaches the glass.';
+    if (frame.key === 'pterodactyl-dive') return 'The wing folds into its dive.';
+    if (frame.key === 'glade-form') return 'The family settles on the pale bar.';
+    if (frame.key.endsWith('-repeat')) return 'That movement is already in the case.';
     return player.stance === 'crouch' || player.inCover
-      ? 'Expose plate [Left Mouse]'
-      : 'Brace [C] or expose the plate [Left Mouse]';
+      ? 'Draw the dark slide [Left Mouse]'
+      : 'Brace low [C], or draw the slide [Left Mouse]';
   }
   if (player.threatState === 'attack' && player.inCover) {
-    return 'Wings beat above the canopy. Keep low [C].';
+    return 'Wings hammer the leaves overhead. Keep low [C].';
   }
   if (player.threatState === 'attack') {
-    return 'Shadow closing · Camera [Right Mouse] · Rifle [F]';
+    return 'The shadow is dropping · Camera [Right Mouse] · Rifle [F]';
   }
   // A held release must always show its progress, even where the prompt is not due.
   if (!player.caseAbandoned && player.abandonHoldSeconds > 0) return ABANDON_PROMPT_COPY;
   if (abandonPromptDue(player)) return ABANDON_PROMPT_COPY;
-  if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Examine the track [E]';
-  if (player.zone === 'brook-blind') return 'Raise the camera [Right Mouse]';
+  if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Three toes in the wet bar. Read them [E].';
+  if (player.zone === 'brook-blind') return 'The spoor turns downriver. Raise the camera [Right Mouse].';
   if (player.zone === 'iguanodon-glade' && !player.observedBehavior) {
-    return player.familyFocusSeconds > 0 ? 'Keep the family in view.' : 'Stop and watch the family.';
+    return player.familyFocusSeconds > 0 ? 'Stay with them.' : 'Stop. Let the family forget you are here.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-young-play') {
-    return 'Quick feet break the grazing rhythm.';
+    return 'The young break into a run across the bar.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-branch-pull') {
-    return 'A bough bends above the adult.';
+    return 'The feeding adult draws the whole bough down.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-alarm') {
-    return 'Family alarm · Break the dive before another plate';
+    return 'The family has heard the wings. Break the dive before you lose another plate.';
   }
-  if (player.returnRoute === 'covered') return 'Thorn route committed · Fort smoke beyond the canopy.';
-  if (player.returnRoute === 'exposed') return 'Creek route committed · Open water to Fort.';
+  if (player.returnRoute === 'covered') return 'Under the thorns now. Fort smoke shows through the leaves.';
+  if (player.returnRoute === 'exposed') return 'Stay with the bright creek. There is nowhere to hide.';
   if (player.reachedGlade && player.zone === 'iguanodon-glade' && player.observedBehavior) {
-    return 'Fort smoke uphill · long thorn cover or quick open creek.';
+    return 'Fort smoke lies uphill: the long green tunnel, or the quick open creek.';
   }
   return '';
 }
@@ -589,15 +594,15 @@ function presentTerminal() {
   });
 
   if (player.result.kind === 'alive') {
-    terminalEyebrow.textContent = 'WHAT REACHED CAMP';
+    terminalEyebrow.textContent = 'The case opened at Fort Challenger';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
     const recoveredNotes = player.result.caseAbandoned
       ? []
       : player.plates.filter((plate) => plate.status === 'exposed').map(noteForPlate);
     terminalDetail.textContent = recoveredNotes.length > 0
-      ? `Recovered record · ${recoveredNotes.join(' · ')}`
-      : 'No living observation survived on glass.';
+      ? `On the drying rack: ${recoveredNotes.join(' · ')}.`
+      : 'The rack is bare. No living shape survived on glass.';
     const callback = [
       routeConsequence(player.result),
       player.result.aerialEvidence
@@ -607,7 +612,7 @@ function presentTerminal() {
     terminalCallback.hidden = !callback;
     terminalCallback.textContent = callback;
   } else {
-    terminalEyebrow.textContent = 'FIELD WORK ENDED';
+    terminalEyebrow.textContent = 'The case never reached the fort';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
     terminalDetail.textContent = player.result.cue;
@@ -730,8 +735,8 @@ function update(deltaSeconds, now) {
       contactNoticeUntil = now + 3200;
       const cracked = player.plates.find((plate) => plate.status === 'cracked');
       contactNote.textContent = cracked
-        ? `CASE STRIKE — PLATE ${ROMAN_PLATES[cracked.index]} CRACKED.`
-        : 'CASE STRIKE — THE NEXT PASS WILL END THE RUN.';
+        ? `The case takes the blow. Plate ${ROMAN_PLATES[cracked.index]} breaks inside.`
+        : 'The case takes the blow. It will not survive another.';
     }
     if (previousRunStatus === 'active' && player.runStatus !== 'active') presentTerminal();
     visualElapsed += deltaSeconds;
@@ -788,7 +793,10 @@ function animate(frameTime) {
     renderedFrameCount,
   );
   composer.render();
-  if (firstRenderedAt === null) hideLoading();
+  if (assetFrameCommit.commit()) {
+    window.__projectPlateau.ready = true;
+    hideLoading();
+  }
   if (capture) {
     pendingPlateCapture = null;
     encodeRenderedPlate(capture);
@@ -828,20 +836,21 @@ async function enterBasin() {
   closePanels();
   runtimeError.hidden = true;
   enterButton.disabled = true;
-  showLoading('Preparing field camera, rifle and wildlife…', 'assets');
+  showLoading('Checking the camera, rifle and glass plates…', 'assets');
   try {
     await ensureHy3dVisuals();
     player = createPlayerState();
     setView('order');
     document.querySelector('#field-order').hidden = false;
-    hideLoading();
+    await assetFrameCommit.wait();
   } catch (error) {
     hideLoading();
     clearTransientInput();
     runActive = false;
+    window.__projectPlateau.ready = false;
     runtimeErrorCopy.textContent = error instanceof Error
       ? error.message
-      : 'A required local 3D asset could not be loaded.';
+      : 'Something needed for the expedition is missing from the local case.';
     document.querySelector('#field-order').hidden = true;
     document.querySelector('#retry-runtime').hidden = false;
     runtimeError.hidden = false;
@@ -1025,7 +1034,7 @@ function playerSnapshot() {
 
 window.__projectPlateau = {
   stage: 'current-complete-run',
-  ready: true,
+  ready: false,
   renderer: renderer.capabilities.isWebGL2 ? 'WebGL2' : 'unsupported',
   snapshot() {
     return {
@@ -1043,3 +1052,17 @@ window.__projectPlateau = {
 
 setView(query.get('view') === 'glade' ? 'glade' : 'title');
 requestAnimationFrame(animate);
+showLoading('Holding the silver plate until the valley settles…', 'assets');
+ensureHy3dVisuals()
+  .then(() => assetFrameCommit.wait())
+  .catch((error) => {
+    console.error('Project Plateau title assets failed to settle.', error);
+    hideLoading();
+    window.__projectPlateau.ready = false;
+    runtimeErrorCopy.textContent = error instanceof Error
+      ? error.message
+      : 'Something needed for the expedition is missing from the local case.';
+    document.querySelector('#retry-runtime').hidden = false;
+    runtimeError.hidden = false;
+    document.body.dataset.mode = 'runtime-error';
+  });

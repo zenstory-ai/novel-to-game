@@ -208,7 +208,7 @@ test('a carried-but-empty return keeps the original no-record copy', () => {
   assert.equal(player.result.band, 'returned-without-record');
   assert.equal(
     player.result.copy,
-    'You returned with a story. Stories are what they came to dispute.',
+    'The fire heard your account. London will ask for the glass.',
   );
   assert.equal(player.result.caseAbandoned, false);
   assert.equal(player.result.abandonedPlates, 0);

@@ -80,6 +80,7 @@ export function createWorldAssetVisualLoader({
   pterodactyls,
   rifle,
   riparianCover,
+  riverRoom,
   vegetation,
 }) {
   let assetVisualPromise = null;
@@ -250,6 +251,23 @@ export function createWorldAssetVisualLoader({
         onLoadFailure: () => {
           if (environmentDensity.userData.forestEdgeAssetAnchor.userData.assetVisual) {
             environmentDensity.userData.forestEdgeAssetAnchor.userData.assetVisual.visible = false;
+          }
+        },
+      }),
+      loadOptionalAssetVisual({
+        load: loadCanopyTreeLibraryTemplate,
+        attach: (template) => {
+          const visual = attachCanopyTreeLibraryVisual(
+            riverRoom.userData.canopyAssetAnchor,
+            template,
+            riverRoom.userData.canopyTreePlacements,
+            { terrainHeight, terrainGradient, terrainWetness },
+          );
+          visual.name = 'world.river-room.terrace-canopy.original-library';
+        },
+        onLoadFailure: () => {
+          if (riverRoom.userData.canopyAssetAnchor.userData.assetVisual) {
+            riverRoom.userData.canopyAssetAnchor.userData.assetVisual.visible = false;
           }
         },
       }),

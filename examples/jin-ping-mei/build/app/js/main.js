@@ -346,9 +346,17 @@ function renderAgeGate() {
 function renderTitle() {
   const saved = loadSave();
   const hasSave = !!saved;
+  const titleCast = [
+    ['月娘', '定账'],
+    ['金莲', '识谎'],
+    ['瓶儿', '私钥'],
+    ['玉楼', '名帖'],
+    ['雪娥', '灶权'],
+  ];
   app.innerHTML = `
     <main class="title-screen">
       <div class="title-art" style="background-image:url('${urlFor('cover')}')" role="img" aria-label="月娘、金莲、瓶儿、玉楼与雪娥各据一处，五道视线都落在你身上"></div>
+      <aside class="title-folio" aria-hidden="true"><b>风月总账</b><span>二十日 · 四幕</span></aside>
       <section class="title-copy">
         <p class="eyebrow">成人后宫关系游戏 · 二十日四幕</p>
         <h1>${TEXT.title}</h1>
@@ -362,6 +370,9 @@ function renderTitle() {
         <p class="rating-line">${TEXT.rating}</p>
         <p class="save-note">${TEXT.saveNote}</p>
       </section>
+      <ol class="title-cast" aria-label="五院与各自握有的权力">
+        ${titleCast.map(([name, role], index) => `<li><i>${index + 1}</i><span>${name}</span><b>${role}</b></li>`).join('')}
+      </ol>
     </main>`;
   if (newGameConfirmOpen && hasSave) appendNewGameConfirm(saved);
   if (galleryOpen) appendGallery();
@@ -903,8 +914,9 @@ function renderOpening() {
   return `
     <div class="opening-scene visual-stage" style="--scene-bg:url('${urlFor('cover')}')">
       <div class="decision-panel opening-panel">
-        ${phaseHeader('第一日 · 正堂', '五十两银子不见了', '月娘守着账簿，金莲把酒送到你手边。瓶儿的钥匙、玉楼的名帖和雪娥的米账，都会在今后二十日进入这本总账。')}
-        <p class="speaker-line">月娘：“真账留下。”　金莲：“人也留下，先喝我这杯。”</p>
+        <div class="opening-case" aria-hidden="true"><span>初日</span><b>一</b><i>正堂·灯下</i></div>
+        ${phaseHeader('正堂 · 五更尽', '账上空了五十两', '窗纸还没有亮。月娘把两本账摊在灯下，其中一页有一行新墨。金莲坐在桌另一头，指尖还按着一只没人喝的酒杯。')}
+        <p class="speaker-line"><b>月娘</b>“你先看账。”<br/><b>金莲</b>“也先听听人怎么说。”</p>
         <div class="choice-grid">${OPENING_CHOICES.map((choice) => choiceButton(choice, 'opening')).join('')}</div>
       </div>
     </div>`;
@@ -1262,7 +1274,8 @@ function renderDay() {
   return `
     <div class="hub-stage visual-stage" style="--scene-bg:url('${urlFor('compound')}')">
       <div class="decision-panel day-panel">
-        ${phaseHeader('白日', def.name, `${def.pressure} ${def.tell}`)}
+        <div class="day-scene-mark" aria-hidden="true"><span>DAY</span><b>${String(state.day).padStart(2, '0')}</b><i>${escapeHtml(def.act)}</i></div>
+        ${phaseHeader(`第 ${state.day} 日 · 院中`, def.name, `${def.pressure} ${def.tell}`)}
         ${contextSection}
         ${renderEvidenceBoard()}
         <div class="day-actions">${dayOptions.map((choice) => choiceButton({ ...choice, hint: `${choice.actor ? `${HEROINES[choice.actor].short} · ` : ''}${choice.hint}`, meta: '' }, 'day-action')).join('')}</div>
@@ -1289,7 +1302,7 @@ function renderDayAftermath() {
       return `<figure class="${row.delta > 0 ? 'accepts' : 'resists'}"><img src="${urlFor(heroine.portrait)}" alt="${heroine.name}"/><figcaption><span>${escapeHtml(row.tone)}</span><b>${heroine.name}</b><p>${escapeHtml(row.text)}</p></figcaption></figure>`;
     }).join('')}</div>`
     : '';
-  const consequence = beat.resolved === null ? '' : `<div class="day-consequence ${beat.resolved ? 'resolved' : 'missed'}"><span>${beat.resolved ? '危局已收' : '危局漏口'}</span><b>${beat.resolved ? '这一步给后宫关系网留下一条能继续追的线。' : '得到的眼前收益仍在，但真正的对手已经换了下一手。'}</b></div>`;
+  const consequence = beat.resolved === null ? '' : `<div class="day-consequence ${beat.resolved ? 'resolved' : 'missed'}"><span>${beat.resolved ? '这件事暂时稳住了' : '还有一处没有堵住'}</span><b>${beat.resolved ? '人、物和原话都留在眼前，明日还能顺着查下去。' : '眼前的好处拿到了，门外那只手却已经换了一条路。'}</b></div>`;
   return `
     <div class="day-aftermath-stage visual-stage dialogue-${story.actor} beat-${beat.id}" data-day-aftermath="${beat.id}" style="--scene-bg:url('${urlFor(actor.close || actor.portrait)}')">
       <div class="day-aftermath-lead" aria-hidden="true" style="background-image:url('${urlFor(actor.close || actor.portrait)}')"></div>
@@ -1642,9 +1655,9 @@ function renderSharedNight() {
   return `
     <div class="shared-stage visual-stage" style="--scene-bg:url('${urlFor(backdrop)}')">
       <div class="decision-panel shared-panel">
-        ${phaseHeader('第二十夜 · 五人都没走', '总账还在桌上，五处院门的钥匙都在各自手里', TEXT.sharedNightLead)}
+        ${phaseHeader('第二十夜 · 五人都没走', '茶还热着，五把钥匙各在主人手里', TEXT.sharedNightLead)}
         <div class="accord-seals shared-seals">${rows.map((row) => `<span class="accord-seal ${row.complete ? 'complete' : ''}" data-accord="${row.key}"><i>${row.glyph}</i>${row.label}</span>`).join('')}</div>
-        <p class="shared-proof">${narrativeProgress(Math.min(E.jointActionCount(state), E.JOINT_ACTION_TARGET), E.JOINT_ACTION_TARGET, ['联院差事尚未成形', '已有搭档真正共事', '五组搭档都已共事'])} · ${narrativeProgress(state.resolvedPressures.length, E.PRESSURE_TARGET, ['危局仍压着宅门', '多桩危局已经收住', '宅门经得住最后一问'])}</p>
+        <p class="shared-proof">${narrativeProgress(Math.min(E.jointActionCount(state), E.JOINT_ACTION_TARGET), E.JOINT_ACTION_TARGET, ['她们还没有一起做过事', '已有人并肩做完一桩事', '五组搭档都真正共过事'])} · ${narrativeProgress(state.resolvedPressures.length, E.PRESSURE_TARGET, ['门外的事还在逼近', '她们已一起撑过几回', '今夜终于有余地谈自己'])}</p>
         <div class="choice-grid">${E.sharedNightOptions(state).map((choice) => choiceButton(choice, 'shared-night')).join('')}</div>
       </div>
     </div>`;
@@ -1657,7 +1670,7 @@ function renderSharedAfterglow() {
     <div class="afterglow-stage visual-stage" data-shared-beat="${beat.id}" style="--scene-bg:url('${urlFor('cg/group/inner_court_accord')}')">
       <div class="decision-panel afterglow-panel">
         ${phaseHeader(beat.kicker, beat.title, beat.body)}
-        <p class="shared-proof">夜还在往下走 · ${narrativeStep(state.sharedAfterglowChoices.length + 1, SHARED_AFTERGLOW_BEATS.length)} · 每句话都会有人接</p>
+        <p class="shared-proof">灯还亮着 · ${narrativeStep(state.sharedAfterglowChoices.length + 1, SHARED_AFTERGLOW_BEATS.length)} · 这一步要等五个人都开口</p>
         <div class="choice-grid">${E.sharedAfterglowOptions(state).map((choice) => choiceButton(choice, 'shared-afterglow')).join('')}</div>
       </div>
     </div>`;
@@ -1771,9 +1784,10 @@ function renderVisit() {
     <div class="dialogue-stage visual-stage dialogue-${id}">
       <div class="close-cg" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}近景"></div>
       <div class="decision-panel dialogue-panel">
-        ${phaseHeader(`${h.house} · ${h.shape}`, h.name, h.voice)}
-        <p class="want-line">${h.want}<br/><span>${h.gives}</span><br/><small>这条线已记：${stance.covenant === stance.private ? (stance.covenant ? '共同承担与私下情分仍在拉扯' : '两种相处都还没有定形') : stance.covenant > stance.private ? '共同承担渐成主线' : '私下情分渐成主线'}</small></p>
-        ${branch ? `<aside class="route-branch-memory branch-${branch.lane}" data-route-branch="${branch.lane}:${branch.step}"><span>${escapeHtml(branch.label)} · ${branch.lane === 'covenant' ? '共同承担已经改写后续' : '私下情分已经改写后续'}</span><b>此前的选择把这一章带到这里</b><p>${escapeHtml(branch.body)}</p></aside>` : ''}
+        <div class="character-seal" aria-hidden="true"><i>${h.glyph}</i><span>${h.house}</span></div>
+        ${phaseHeader(`第 ${state.day} 夜 · ${h.house}`, h.name, h.voice)}
+        <p class="want-line"><b>她今夜要你回答</b>${h.want}<br/><span>${h.gives}</span><br/><small>${stance.covenant === stance.private ? (stance.covenant ? '你们既谈家中的事，也留过只在门内的话。' : '这是你们第一次认真谈今后怎样相处。') : stance.covenant > stance.private ? '她记得你更常在人前接住她的事。' : '她记得你更常把话留在门内。'}</small></p>
+        ${branch ? `<aside class="route-branch-memory branch-${branch.lane}" data-route-branch="${branch.lane}:${branch.step}"><span>${escapeHtml(branch.label)} · ${branch.lane === 'covenant' ? '她记得你在人前怎样做' : '她记得你在门内怎样说'}</span><b>今夜从这件旧事往下谈</b><p>${escapeHtml(branch.body)}</p></aside>` : ''}
         ${favorReckoningMemory(id)}
         ${routeReckoningMemory(id)}
         ${intimacyMemory(id)}
@@ -1848,7 +1862,7 @@ function renderRouteAftermath() {
         ${phaseHeader(event.milestone ? '再次进门的关键章' : `路线小章 · ${narrativeStep(event.act, 4)}`, event.title, event.body)}
         <p class="aftermath-echo"><span>上一拍</span><b>${escapeHtml(event.sourceLabel)}</b><small>${escapeHtml(event.sourceText)}</small></p>
         ${routeContinuityCard(event)}
-        <p class="aftermath-question">这件事已经越过一扇院门。你现在决定它怎样进入另外一个人的生活。</p>
+        <p class="aftermath-question">另一处院门已经听见了。你是把话拿到人前，让她们当面说，还是只护住今夜这扇门？</p>
         <div class="choice-stack">${E.routeAftermathOptions(state).map((choice) => choiceButton(choice, 'route-aftermath')).join('')}</div>
       </div>
     </div>`;
@@ -1886,7 +1900,7 @@ function renderNight() {
           ${phaseHeader(`第 ${state.day} 夜 · 夜谈${narrativeProgress(conversation.chapter, 4, ['刚刚起话', '正在接续', '已成条款'])} · 回答后章${narrativeStep(result.beat + 1, result.count)}`, result.current.title, result.current.body)}
           ${intimacyMemory(id)}
           ${result.beat === 0 && conversation.memoryEcho ? `<aside class="night-talk-memory"><span>上一章没有消失</span><p>${escapeHtml(conversation.memoryEcho)}</p></aside>` : ''}
-          <aside class="night-talk-stake" data-night-stake="${result.mode}"><span>这章实际改变</span><b>${escapeHtml(result.stake.label)} · ${escapeHtml(narrativeChoiceMeta(result.stake.resourceText))}</b><p>${escapeHtml(result.stake.text)}</p></aside>
+          <aside class="night-talk-stake" data-night-stake="${result.mode}"><span>天亮以后会留下</span><b>${escapeHtml(result.stake.label)} · ${escapeHtml(narrativeChoiceMeta(result.stake.resourceText))}</b><p>${escapeHtml(result.stake.text)}</p></aside>
           ${result.beat > 0 ? `<p class="night-result-origin"><span>你刚才回答</span><b>${escapeHtml(result.label)}</b></p>` : ''}
           ${previousBeats.length ? `<ol class="night-result-transcript" aria-label="这次回答已经发生的后果">${previousBeats.map((beat, index) => `<li><span>${narrativeBeatMark(index)}</span><div><b>${escapeHtml(beat.title)}</b><p>${escapeHtml(beat.body)}</p></div></li>`).join('')}</ol>` : ''}
           ${result.beat + 1 === result.count ? `<div class="night-talk-continuity continuity-${result.continuity.kind}">
@@ -1924,7 +1938,8 @@ function renderNight() {
     <div class="dialogue-stage visual-stage night dialogue-${id}">
       <div class="close-cg closer" style="background-image:url('${urlFor(h.close)}')" role="img" aria-label="${h.name}夜间近景"></div>
       <div class="decision-panel dialogue-panel">
-        ${phaseHeader('夜深了', h.name, TEXT.nightLead)}
+        <div class="character-seal" aria-hidden="true"><i>${h.glyph}</i><span>${h.house}</span></div>
+        ${phaseHeader(`第 ${state.day} 夜 · 灯下`, h.name, TEXT.nightLead)}
         ${intimacyMemory(id)}
         <div class="choice-stack">${choices.map((choice) => choiceButton(choice, 'night')).join('')}</div>
         <p class="consent-note">她往前一步，才有下一步。她若停下，门便停在这里。</p>
@@ -2289,6 +2304,13 @@ function renderPersonalAfterglowAftermath() {
 function renderEnding() {
   const end = state.ending;
   const top = HEROINE_IDS.slice().sort((a, b) => state.relations[b].qing - state.relations[a].qing)[0];
+  const endingLead = ({
+    balanced: '天亮时，五盏灯还在同一张桌边。月娘合上总账，金莲把最后一句假话撤掉，瓶儿、玉楼与雪娥各自收回钥匙、名帖和工簿。她们愿意留下，不等于把自己交给一本总账。',
+    alliance: '天亮时，留在桌边的人只答应了自己亲手做过的那一部分。没有坐进来的院门仍各自收着钥匙；今夜的亲近，不替任何人补一个没说出口的“愿意”。',
+    exclusive: `天亮时，${HEROINES[top].name}的门还开着。其余四院没有因为你做了选择就自动原谅；她们把各自的原话、钥匙和去处收回，留下的人也不替你遮掉这份代价。`,
+    intrigue: '天亮时，门外的账暂时压住了，门里却没有因此重新热起来。你用银子、名字和口供换来一口气；谁被暴露，谁收回了手，仍然一笔笔留在桌上。',
+    unstable: '天亮时，五处院门依次灭了灯。月娘封账，金莲收走你说过的话，瓶儿扣回钥匙，玉楼把名帖收进匣里，雪娥合上工簿。门外的债还在，这一回没有人再替你把空话接下去。',
+  })[end.id] ?? end.text;
   const relationshipSummary = end.id === 'balanced'
     ? '<span>五院关系 <b>都还在桌上</b></span>'
     : end.id === 'alliance'
@@ -2329,7 +2351,8 @@ function renderEnding() {
         <p class="eyebrow">第 20 日 · 风月总账</p>
         <h1 tabindex="-1">${end.title}</h1>
         <p class="ending-tag">${end.tag}${end.heroineName ? ` · ${end.heroineName}` : ''}${end.reckoningResult ? ` · ${end.reckoningResult}` : ''}${end.routeResult ? ` · ${end.routeResult}` : ''}</p>
-        <p>${end.text}</p>
+        <p>${endingLead}</p>
+        <details class="ending-old-account"><summary>翻看这二十日的来路</summary><p>${end.text}</p></details>
         <div class="ending-ledger">
           ${relationshipSummary}
           <span>结局总账 <b>${loadEndingArchive().length ? '已有旧卷' : '首卷落定'}</b></span>

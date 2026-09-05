@@ -9,7 +9,10 @@ import { VEGETATION_LAYOUT } from '../src/environment-layout.js';
 import { terrainGradient, terrainHeight, terrainWetness } from '../src/terrain.js';
 import {
   CANOPY_TREE_LIBRARY_ASSET,
+  CANOPY_TREE_LEAF_RETENTION_PROFILE,
   attachCanopyTreeLibraryVisual,
+  canopyTreeLeafRetention,
+  classifyCanopyTreeHabitat,
   createCachedCanopyTreeLibraryLoader,
   updateCanopyTreeLibraryWind,
 } from '../src/canopy-tree-library.js';
@@ -91,6 +94,19 @@ test('cached canopy-tree loader clamps imported materials to dielectric bounds',
     assert.equal(object.material.emissive.getHex(), 0);
     assert.equal(object.material.emissiveIntensity, 0);
   });
+});
+
+test('canopy retention exposes stable sky holes without stripping the crown', () => {
+  const values = VEGETATION_LAYOUT.trees.map((tree) => canopyTreeLeafRetention(
+    tree,
+    classifyCanopyTreeHabitat(tree, { terrainGradient, terrainWetness }),
+  ).retention);
+
+  assert.equal(CANOPY_TREE_LEAF_RETENTION_PROFILE.version, 'age-wind-and-habitat-leaf-retention-v2');
+  assert.ok(Math.min(...values) >= CANOPY_TREE_LEAF_RETENTION_PROFILE.minimumRetention);
+  assert.ok(Math.max(...values) <= CANOPY_TREE_LEAF_RETENTION_PROFILE.maximumRetention);
+  assert.ok(Math.max(...values) < 0.94, 'field crowns should retain visible negative space');
+  assert.ok(Math.max(...values) - Math.min(...values) > 0.04);
 });
 
 

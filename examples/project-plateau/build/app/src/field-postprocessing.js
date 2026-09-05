@@ -90,16 +90,22 @@ export function createFieldPostprocessing({
       void main() {
         vec4 source = texture2D(tDiffuse, vUv);
         float luma = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-        vec3 color = mix(vec3(luma), source.rgb, 1.035);
-        float shadowWeight = 1.0 - smoothstep(0.12, 0.52, luma);
-        float highlightWeight = smoothstep(0.46, 0.9, luma);
-        color = mix(color, color * vec3(0.94, 1.0, 1.045), shadowWeight * 0.045);
-        color = mix(color, color * vec3(1.035, 1.0, 0.955), highlightWeight * 0.03);
+        vec3 color = mix(vec3(luma), source.rgb, 1.105);
+        // A restrained toe and shoulder keep the humid fill while separating
+        // trunks, wet ground and the warm sky. This is a field-photography
+        // grade, not a full-screen period tint.
+        color = max(color, vec3(0.0));
+        color = max((color - 0.18) * 1.07 + 0.18, vec3(0.0));
+        float gradedLuma = dot(color, vec3(0.2126, 0.7152, 0.0722));
+        float shadowWeight = 1.0 - smoothstep(0.1, 0.48, gradedLuma);
+        float highlightWeight = smoothstep(0.42, 0.88, gradedLuma);
+        color = mix(color, color * vec3(0.91, 1.015, 1.04), shadowWeight * 0.09);
+        color = mix(color, color * vec3(1.055, 1.015, 0.92), highlightWeight * 0.065);
         vec2 centred = (vUv - 0.5) * vec2(1.0, 0.82);
         float vignette = smoothstep(0.34, 0.76, dot(centred, centred));
-        color *= 1.0 - vignette * 0.055;
+        color *= 1.0 - vignette * 0.105;
         float grain = fieldHash(gl_FragCoord.xy) - 0.5;
-        color += grain * 0.002;
+        color += grain * 0.0015;
         gl_FragColor = vec4(max(color, 0.0), source.a);
       }
     `,

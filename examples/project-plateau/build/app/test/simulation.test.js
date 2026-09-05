@@ -268,7 +268,10 @@ test('examining the brook makes context eligible without awarding evidence', () 
   assert.equal(frameForState(player).points, 0);
   player = examine(player);
   assert.equal(player.examinedTrack, true);
-  assert.equal(player.lastObservation, 'Three toes. Fresh. The brook runs back to camp.');
+  assert.equal(
+    player.lastObservation,
+    'Three toes pressed deep in the wet bar. Fresh — and turned away from camp.',
+  );
   assert.equal(player.plates.reduce((total, plate) => total + plate.points, 0), 0);
   assert.equal(frameForState(player).points, 1);
 
@@ -395,14 +398,14 @@ test('a tracked pterodactyl stays sharp while subject loss during exposure spend
   const lateProof = proofForExposure(crossedWindow);
   assert.equal(lateProof.points, 0);
   assert.equal(lateProof.behavior, null);
-  assert.match(lateProof.label, /left the plate/i);
+  assert.match(lateProof.label, /left before the glass/i);
 
   let lost = startExposure(setCameraRaised(diveState(), true));
   lost = stepPlayer(lost, { heading: 0.28, pitch: 0 }, 1);
   lost = stepPlayer(lost, { heading: 0.28, pitch: 0.32 }, 1);
   assert.equal(lost.plates[0].frameKey, 'empty-subject');
   assert.equal(lost.plates[0].points, 0);
-  assert.match(lost.plates[0].label, /left the plate/i);
+  assert.match(lost.plates[0].label, /left before the glass/i);
 });
 
 test('behavior must remain valid through the exposure rather than only at shutter start', () => {
@@ -520,7 +523,7 @@ test('reading the family opens timed young-play and branch-pull windows', () => 
   assert.equal(familyMomentForState(player), 'glade-young-play');
   const play = frameForState(player);
   assert.equal(play.key, 'glade-young-play');
-  assert.match(play.label, /young play/i);
+  assert.match(play.label, /young run/i);
 
   player.plates[0] = {
     ...player.plates[0],
@@ -538,7 +541,7 @@ test('reading the family opens timed young-play and branch-pull windows', () => 
   assert.equal(familyMomentForState(player), 'glade-branch-pull');
   const branch = frameForState(player);
   assert.equal(branch.key, 'glade-branch-pull');
-  assert.match(branch.label, /branch/i);
+  assert.match(branch.label, /bough/i);
   assert.equal(branch.points, 2);
 });
 
@@ -558,7 +561,7 @@ test('an attacking wing alarms the family and closes the undisturbed behavior wi
   const alarm = frameForState(player);
   assert.equal(alarm.key, 'glade-alarm');
   assert.equal(alarm.points, 1);
-  assert.match(alarm.label, /alarm/i);
+  assert.match(alarm.label, /head lifts/i);
 });
 
 test('crouching under canopy actively widens the dive faster than passive waiting', () => {
@@ -603,7 +606,7 @@ test('camera raise slows movement and shutter commits one physical plate for two
   assert.equal(exposed.pendingExposure, null);
   assert.equal(exposed.plates[0].status, 'exposed');
   assert.equal(exposed.plates[0].points, 1);
-  assert.equal(exposed.plates[0].label, 'PARTIAL — foliage hides the flank.');
+  assert.equal(exposed.plates[0].label, 'Wet fern hides half the flank.');
   assert.equal(exposed.plates[0].sourceFrameKey, 'brook-partial');
   assert.equal(exposed.plates[0].stability, 'steady');
   assert.equal(exposed.threatAwareness, 1);
@@ -782,6 +785,12 @@ test('remaining light expires outside Fort with exact cause and actionable cue',
   player = stepPlayer(player, {}, 0.1);
   assert.equal(player.runStatus, 'failure');
   assert.equal(player.failureCause, 'remaining-light-expired');
-  assert.equal(player.result.copy, 'The basin went dark. The brook was no longer enough.');
-  assert.equal(player.result.cue, 'Leave the last frame, or take the shorter return while it is still usable.');
+  assert.equal(
+    player.result.copy,
+    'The pale bar vanished, then the spoor, then the road to Fort Challenger.',
+  );
+  assert.equal(
+    player.result.cue,
+    'Next time, leave the last plate unmade or take the bright creek while it can still be read.',
+  );
 });

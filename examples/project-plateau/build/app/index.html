@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Project Plateau: a first-person 3D field-record survival prototype."
+      content="Project Plateau: four glass plates, one living valley, and the road back to camp."
     />
     <link rel="icon" href="/favicon.svg" />
     <title>Project Plateau · Proof Before Dark</title>
@@ -19,54 +19,54 @@
     <main id="app">
       <section id="loading-screen" data-phase="runtime" aria-live="polite" aria-busy="true" aria-labelledby="loading-title">
         <div class="loading-case">
-          <p class="eyebrow">Forward scout · field case</p>
-          <h1 id="loading-title">Preparing the expedition</h1>
-          <p id="loading-status">Opening the plateau…</p>
+          <p class="eyebrow">Challenger expedition · western party</p>
+          <h1 id="loading-title">Unlatching the field case</h1>
+          <p id="loading-status">The valley is coming into view…</p>
           <div class="loading-track" aria-hidden="true"><span></span></div>
         </div>
       </section>
       <canvas id="game-canvas" aria-label="A live three-dimensional plateau at late afternoon"></canvas>
       <section id="runtime-error" class="card" hidden aria-labelledby="runtime-error-title">
-        <p class="eyebrow">Expedition unavailable</p>
-        <h1 id="runtime-error-title">The expedition cannot begin.</h1>
-        <p id="runtime-error-copy">A required local 3D asset could not be loaded.</p>
-        <button id="retry-runtime" type="button">Retry equipment load</button>
+        <p class="eyebrow">The case will not open</p>
+        <h1 id="runtime-error-title">Something is missing from the field kit.</h1>
+        <p id="runtime-error-copy">One of the local field assets could not be read.</p>
+        <button id="retry-runtime" type="button">Check the case again</button>
       </section>
 
       <section id="title-screen" aria-labelledby="game-title">
         <div class="glass-plate" aria-hidden="true">
-          <span class="plate-cliff"></span>
-          <span class="plate-tree"></span>
+          <span class="plate-register">PLATE IV · INNER BEND</span>
+          <span class="plate-scale">WEST OF FORT CHALLENGER · 5:40 PM</span>
           <span class="plate-wing"></span>
         </div>
         <div class="title-copy">
-          <p class="eyebrow">A field record from the plateau</p>
+          <p class="eyebrow">From Malone's unopened field case</p>
           <h1 id="game-title">Project Plateau</h1>
-          <p class="subtitle">Proof Before Dark</p>
+          <p class="subtitle">Bring Back What You Saw</p>
           <div class="menu" aria-label="Main menu">
-            <button id="enter-button" type="button">Enter the basin</button>
-            <button id="settings-button" type="button" class="secondary">Settings</button>
-            <button id="credits-button" type="button" class="secondary">Credits</button>
+            <button id="enter-button" type="button">Follow the spoor</button>
+            <button id="settings-button" type="button" class="secondary">Open the field kit</button>
+            <button id="credits-button" type="button" class="secondary">Read the source note</button>
           </div>
         </div>
       </section>
 
       <section id="field-order" class="card" hidden aria-labelledby="order-title">
-        <p id="order-title" class="eyebrow">FIELD ORDER // FORWARD SCOUT</p>
-        <p>Four glass plates. Photograph a living record and bring it back before the basin goes dark.</p>
-        <p class="order-condition">Read the ground. Watch the animals. Decide which moments are worth standing still for.</p>
+        <p id="order-title" class="eyebrow">A note left on the plate case</p>
+        <p>Malone — take four clean plates to the river bend. Bring back one thing London cannot explain away.</p>
+        <p class="order-condition">Read the mud before you raise the camera. If the family stirs, watch before you move.</p>
         <p class="order-controls">Move [WASD] · Look [Mouse / Arrows] · Examine traces [E] · Pause [P]</p>
-        <button id="dismiss-order" type="button">Begin field work</button>
+        <button id="dismiss-order" type="button">Shoulder the case</button>
       </section>
 
       <section id="pause-panel" class="card pause-card" hidden aria-labelledby="pause-title">
         <p id="pause-label" class="eyebrow">PAUSED</p>
-        <h2 id="pause-title">The route is held.</h2>
-        <p>Movement, remaining light and wildlife are frozen.</p>
+        <h2 id="pause-title">A breath beneath the trees.</h2>
+        <p>The valley waits while you gather yourself.</p>
         <p class="pause-controls">Move [WASD] · Look [Mouse / Arrows] · Sprint [Shift] · Crouch [C] · Jump [Space] · Examine traces [E] · Camera [Right Mouse + Left Mouse] · Rifle [F + Left Mouse] · Drop case [Hold G]</p>
         <div class="pause-actions">
-          <button id="resume-button" type="button">Resume field work</button>
-          <button id="restart-button" type="button" class="secondary">Restart run</button>
+          <button id="resume-button" type="button">Step back onto the trail</button>
+          <button id="restart-button" type="button" class="secondary">Return to the morning order</button>
         </div>
       </section>
 
@@ -75,19 +75,19 @@
           <span></span><span></span><span></span><span></span>
         </div>
         <div class="terminal-copy">
-          <p id="terminal-eyebrow" class="eyebrow">WHAT REACHED CAMP</p>
+          <p id="terminal-eyebrow" class="eyebrow">The case opened at Fort Challenger</p>
           <h2 id="terminal-title"></h2>
           <p id="terminal-result-copy"></p>
           <p id="terminal-detail"></p>
           <p id="terminal-callback" hidden></p>
-          <button id="terminal-restart" type="button">Take the route again</button>
+          <button id="terminal-restart" type="button">Walk the bend again</button>
         </div>
       </section>
 
       <section id="settings-panel" class="card panel" hidden aria-labelledby="settings-title">
         <button class="panel-close" type="button" aria-label="Close settings">×</button>
-        <p class="eyebrow">Field settings</p>
-        <h2 id="settings-title">Presentation</h2>
+        <p class="eyebrow">Inside the field case</p>
+        <h2 id="settings-title">Make the kit your own</h2>
         <label><input id="reduced-motion" type="checkbox" /> Reduced motion</label>
         <label><input id="captions-enabled" type="checkbox" checked /> Sound captions</label>
         <label>
@@ -110,12 +110,12 @@
         <label>Ambience <input id="ambience-volume" type="range" min="0" max="1" step="0.01" value="0.34" /></label>
         <label>Effects <input id="effects-volume" type="range" min="0" max="1" step="0.01" value="0.72" /></label>
         <label>Music <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.2" /></label>
-        <button id="settings-reset" class="secondary" type="button">Restore defaults</button>
+        <button id="settings-reset" class="secondary" type="button">Pack it as issued</button>
       </section>
 
       <section id="credits-panel" class="card panel" hidden aria-labelledby="credits-title">
         <button class="panel-close" type="button" aria-label="Close credits">×</button>
-        <p class="eyebrow">Source note</p>
+        <p class="eyebrow">From the expedition library</p>
         <h2 id="credits-title">Project Plateau</h2>
         <p>
           Adapted from Arthur Conan Doyle's 1912 novel <cite>The Lost World</cite>,
@@ -130,7 +130,7 @@
           <span class="frame-corner top-right"></span>
           <span class="frame-corner bottom-left"></span>
           <span class="frame-corner bottom-right"></span>
-          <p id="frame-condition">FOLIAGE // SUBJECT PARTLY OCCLUDED</p>
+          <p id="frame-condition">A flank shows through the fern.</p>
           <div id="commit-line"><span></span></div>
         </div>
         <p id="context-prompt"></p>
@@ -142,9 +142,9 @@
         </section>
         <p id="contact-note" hidden></p>
         <p id="caption-line" hidden></p>
-        <p id="boundary-note" hidden>The red cliff gives no path here.</p>
+        <p id="boundary-note" hidden>The red bank rises sheer here.</p>
         <p id="light-watch" hidden><span id="light-seconds">Full light</span></p>
-        <p id="control-hint">Move [WASD] · Look [Mouse / Arrows] · Examine traces [E] · Pause [P]</p>
+        <p id="control-hint">Walk [WASD] · Look [Mouse / Arrows] · Read the ground [E] · Take breath [P]</p>
         <div id="cartridge-display" hidden aria-label="Two rifle cartridges">
           <span></span><span></span>
         </div>
@@ -153,7 +153,7 @@
         </div>
       </div>
 
-      <aside id="build-badge" aria-label="Development build">Playable prototype</aside>
+      <aside id="build-badge" aria-label="Expedition field copy">Challenger expedition · field copy</aside>
     </main>
     <script type="module" src="/src/entry.js"></script>
   </body>

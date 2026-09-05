@@ -76,7 +76,9 @@ export async function runBattleScreen(ctx) {
   toggles.append(speedBtn, skipBtn, shakeBtn);
   // 节奏开关收进顶栏「设」齿轮下拉(简报 T7):不再挂在舞台右上角每张截图里
   const sysDrop = ctx.systemControlsHost;
-  field.append(orderBar, roundTag, banner, formBtn);
+  const sceneHeading = el('div', 'battle-scene-heading');
+  sceneHeading.append(el('span', 'scene-heading-kicker', '三借芭蕉扇 · 西行战记'), el('h2', '', state.def.name));
+  field.append(sceneHeading, orderBar, roundTag, banner, formBtn);
   if (sysDrop) sysDrop.appendChild(toggles);
   else field.appendChild(toggles); // 无顶栏的独立挂载场景兜底
   // 战场态势常驻条(地火炙烤/妖将结阵等,数据驱动):名字+一句话效果,开场起挂在回合签下
@@ -181,7 +183,7 @@ export async function runBattleScreen(ctx) {
   // 地平线常量:卡底边在战场高度的百分比(自顶),按背景画里实际可站的地面读。
   // 立绘经 object-position 底对齐后,脚线 = 卡底边 − 79px(名牌+血条+状态签栈高),
   // 因此卡永远从地平线往下长,第四个单位不会再被场地下缘裁掉。
-  const HORIZON = { cuiyun: 92, huoyan: 96, moyundong: 96, leiji: 96 };
+  const HORIZON = { cuiyun: 98, huoyan: 98, moyundong: 98, leiji: 98 };
   // 敌我各占一条斜列车道,同一套规则(简报 T11):
   // 敌左 3→42%、我右 56→83%;每档卡底只差 4.5%,纵深用 zoom(远小近大)表达。
   // 敌方步进 13% ≥ 缩放后卡宽(168px×0.99≈1280 宽下的 13%),名牌/血条/状态签
@@ -191,11 +193,11 @@ export async function runBattleScreen(ctx) {
       const slot = 92 / Math.max(1, list.length);
       return list.map((u, i) => ({
         left: 3 + i * slot + Math.max(0, (slot - (u.big ? 27 : 21)) / 2),
-        bottom: side === 'enemy' ? 43 - (i % 2) * 2 : 3 + (i % 2) * 2,
+        bottom: side === 'enemy' ? 34 - (i % 2) * 2 : (i % 2) * 2,
         zoom: u.big ? 0.92 : 1,
       }));
     }
-    const frontT = (HORIZON[state.def.bg] ?? 94) - (side === 'enemy' ? 14 : 0);
+    const frontT = HORIZON[state.def.bg] ?? 98;
     const startX = side === 'enemy' ? 3 : 54;
     const stepX = side === 'enemy' ? 14 : 10.5;
     const n = list.length;
@@ -203,7 +205,7 @@ export async function runBattleScreen(ctx) {
     return list.map((u, i) => {
       const pos = {
         left: startX + i * stepX + extra,
-        bottom: 100 - (frontT - (n - 1 - i) * 4.5),
+        bottom: 100 - (frontT - (n - 1 - i) * (side === 'enemy' ? 2.5 : 4.5)),
         zoom: side === 'enemy' ? Math.min(0.99, 0.84 + i * 0.05) : Math.min(1.03, 0.88 + i * 0.05),
       };
       if (u.big) extra += 12;
@@ -215,6 +217,7 @@ export async function runBattleScreen(ctx) {
   function unitCard(u, pos) {
     const card = el('div', `unit-card ${u.side}`);
     card.dataset.unitId = u.id;
+    card.dataset.portrait = u.portrait;
     const anchor = el('div', 'float-anchor');
     const shadow = el('div', 'unit-shadow');
     const img = el('img', 'unit-portrait');
@@ -309,6 +312,7 @@ export async function runBattleScreen(ctx) {
   function refreshUnit(u) {
     const uc = cardByUnit.get(u.id);
     if (!uc) return;
+    uc.card.dataset.portrait = u.portrait;
     setBar(uc.hpBar, u.hp / u.maxHp);
     uc.hpBar.text.textContent = `${u.hp}/${u.maxHp}`;
     uc.hpBar.wrap.classList.toggle('low', u.alive && u.hp / u.maxHp < 0.25);

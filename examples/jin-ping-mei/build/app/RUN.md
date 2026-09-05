@@ -107,15 +107,23 @@ python3 -m http.server 5173
 
 ## 验证
 
-example 不内置重型账本测试、浏览器驱动或逐屏 QA 截图。仓内保留一条轻量可执行改编合同，检查正堂
+example 不内置重型账本测试、完整输入矩阵或逐屏 QA 截图。仓内保留一条轻量可执行改编合同，检查正堂
 起手的状态差异、非空长期回调载荷、确定性重放与伪造状态拒读：
 
 ```bash
 npm run verify:model
 ```
 
-发布前仍在仓库外临时工作区对本目录做完整确定性账本检查和真实 Chromium 全键盘路径；通过后只回写
-`qa/verification.json` 与 `qa/evidence/run.json` 的压缩证据。覆盖范围与当前结果见 `../../qa/README.md`。
+当前权威 QA 是一条 Chromium 轻量完整路径，覆盖年龄门、五档标题／首日布局、真实夜访与选择后章、
+单一第二十日结果以及换 seed 重开，并原子刷新 `../../qa/verification.json`、`../../qa/evidence/run.json`
+与四张代表图（标题、首日、夜访、结局）：
+
+```bash
+npm run verify:visual
+```
+
+该命令是当前候选的事实源，但只走每屏第一项可行主动作，不冒充全键盘、全分支或五档完整二十日矩阵。
+更重的发布检查仍可在仓库外临时工作区执行；覆盖范围与当前结果见 `../../qa/README.md`。
 
 仓库级验证：
 
@@ -128,3 +136,14 @@ python3 -m unittest discover -s tests -v
 
 - 自动化可以证明流程、状态、资源、素材和画面按当前合同运行，不能证明“好玩”“性感”或长期平衡。
 - 内网小说库只用于归纳结构和声口；运行文案不复制未授权原句。
+
+### 首夜阅读与键盘回归
+
+```bash
+python3 -m unittest discover -s test -p 'test_*.py' -v
+python3 test/verify_readability.py --write-evidence
+```
+
+证据原子写入 `../../qa/evidence/readability.json`；执行失败时保留有效 JSON 的 FAIL 记录，不用 shell 重定向覆盖文件。
+
+使用真实浏览器进入首夜，检查原版五人近景与封面映射及固定 SHA-256（避免同名文件被替换）、390×844 / 1280×800 的文字对比度与布局，以及 Tab 聚焦、Enter 提交选项。正文区域使用不透明底色，辅助字号不低于 12px；本检查不代表全站无障碍审计，也不替代完整二十日验证。

@@ -3,11 +3,11 @@
 export const HEROINE_IDS = Object.freeze(['wu_yueniang', 'pan_jinlian', 'li_pinger', 'meng_yulou', 'sun_xuee']);
 
 export const HEROINES = Object.freeze({
-  wu_yueniang: { id: 'wu_yueniang', adult: true, short: '月娘', name: '吴月娘', house: '正堂', glyph: '正', portrait: 'heroine/yue', close: 'heroine/yue/close', shape: '方签', want: '公私有序，承诺落到账上', gives: '总账、决断与共同掌家的底气', voice: '月娘把账推来：“先把话写明，再谈今夜留谁。”', colors: ['#203b3a', '#b6995f'] },
-  pan_jinlian: { id: 'pan_jinlian', adult: true, short: '金莲', name: '潘金莲', house: '花园角门', glyph: '扇', portrait: 'heroine/pan', close: 'heroine/pan/close', shape: '斜签', want: '偏爱可以存在，谎话不能重用', gives: '锐利口风、拆谎本事与不躲闪的热意', voice: '金莲压住杯沿：“敢选便敢认，别叫我替你圆。”', colors: ['#7f231f', '#c88b69'] },
-  li_pinger: { id: 'li_pinger', adult: true, short: '瓶儿', name: '李瓶儿', house: '瓶儿私院', glyph: '匣', portrait: 'heroine/pinger', close: 'heroine/pinger/close', shape: '圆签', want: '人先被留下，银箱才可能打开', gives: '货路、周转与一处不必高声的屋子', voice: '瓶儿握着钥匙：“账能共算，去留要先说清。”', colors: ['#8d6a32', '#ead9b4'] },
-  meng_yulou: { id: 'meng_yulou', adult: true, short: '玉楼', name: '孟玉楼', house: '卷棚后间', glyph: '曲', portrait: 'heroine/meng', close: 'heroine/meng/close', shape: '弧签', want: '人情有往有还，体面不是拿她垫脚', gives: '席面转圜、社会契约与替众人留台阶的从容', voice: '玉楼收起名帖：“情面借一次，回礼须当众交。”', colors: ['#4f5140', '#d1b58a'] },
-  sun_xuee: { id: 'sun_xuee', adult: true, short: '雪娥', name: '孙雪娥', house: '灶上暖阁', glyph: '灶', portrait: 'heroine/xuee', close: 'heroine/xuee/close', shape: '折签', want: '劳作被看见，分配要有实据', gives: '粮火、证词与把全宅日子真正撑住的手', voice: '雪娥拍净面粉：“好话不顶柴，拿证据来。”', colors: ['#6e422d', '#d39b63'] },
+  wu_yueniang: { id: 'wu_yueniang', adult: true, short: '月娘', name: '吴月娘', house: '正堂', glyph: '正', portrait: 'heroine/yue', close: 'heroine/yue/close', shape: '方签', want: '她要看真账，也要知道这个家出事时谁来落名。', gives: '钥匙不会白交；你若敢担，她就敢和你一起守正堂。', voice: '月娘用指节压住账角：“别先讲好听的。五十两去了哪里？”', colors: ['#203b3a', '#b6995f'] },
+  pan_jinlian: { id: 'pan_jinlian', adult: true, short: '金莲', name: '潘金莲', house: '花园角门', glyph: '扇', portrait: 'heroine/pan', close: 'heroine/pan/close', shape: '斜签', want: '她不怕你偏心，只怕你转身就把话换了。', gives: '一句谎话到她手里，总能顺着来路找到说谎的人。', voice: '金莲把酒杯转了半圈：“你若只打算说今夜，这杯就别接。”', colors: ['#7f231f', '#c88b69'] },
+  li_pinger: { id: 'li_pinger', adult: true, short: '瓶儿', name: '李瓶儿', house: '瓶儿私院', glyph: '匣', portrait: 'heroine/pinger', close: 'heroine/pinger/close', shape: '圆签', want: '她先问门窗和去处，再问银箱能不能开。', gives: '她认得每道封绳和货路，也给人留一处不必高声的屋子。', voice: '瓶儿先望了一眼窗缝，才把钥匙放下：“账可以算。你先说，我若不愿意呢？”', colors: ['#8d6a32', '#ead9b4'] },
+  meng_yulou: { id: 'meng_yulou', adult: true, short: '玉楼', name: '孟玉楼', house: '卷棚后间', glyph: '曲', portrait: 'heroine/meng', close: 'heroine/meng/close', shape: '弧签', want: '她肯替人留台阶，却不肯永远坐在没人记得的末席。', gives: '一张名帖、一次回礼，她能让僵住的两方重新坐下。', voice: '玉楼把名帖推到桌中间：“用我的名字不难。回礼要叫谁看见？”', colors: ['#4f5140', '#d1b58a'] },
+  sun_xuee: { id: 'sun_xuee', adult: true, short: '雪娥', name: '孙雪娥', house: '灶上暖阁', glyph: '灶', portrait: 'heroine/xuee', close: 'heroine/xuee/close', shape: '折签', want: '她要的不是一句“辛苦了”，是柴、工钱和一个能停火的时辰。', gives: '她记得每袋米、每个做事的人；一宅热饭是她真正撑起来的。', voice: '雪娥拍掉手上的面粉：“锅里就剩这点米。你先说，今日谁吃？”', colors: ['#6e422d', '#d39b63'] },
 });
 
 export const HOUSEHOLD_IDS = Object.freeze(['li_jiaoer']);
@@ -30,7 +30,7 @@ export const DAY_DEFS = Object.freeze([
   ['d12','空船换箱','码头只回一条空船，宅中却多出几只换过封的旧箱；追船会丢掉眼前实物，守箱又会放跑知道谁换绳的人。','证据合流','rope_fiber','船绳纤维','新封绳取自西厢旧货。'],
   ['d13','五件急用归名','三日米、药钱、灯油、回礼和跑腿鞋袜都有人先垫；月娘封门半日，要让每一件东西回到真正掏钱、使用和等待归还的人。','证据合流','loan_chain','私借链','五笔私借最终汇到同一柜坊。'],
   ['d14','四张空签等银','娇儿愿折价兑票，米、药、工钱与回礼四张待用签却仍空着；一旦落名，谁的箱、粮和退路不入押也必须写清。','证据合流','draft_mark','银票暗记','票号暗记能锁定幕后兑手。'],
-  ['d15','堂前先递一物','街坊、债主与五院同堂；米斗、账页、名帖和口供只能先递一件，先站到亮处的人也先承受反问。','证据合流','witness_order','证人顺序','先证劳动账可击穿整套假账。'],
+  ['d15','堂前先摆哪一件','街坊和债主挤满正堂。米斗、账页、名帖、口供都在案上，可第一件递出去的东西，也会决定众人先盯住谁。','证据合流','witness_order','上堂次序','先摆雪娥量过的短米，假账便不能再把亏空说成家里人凭嘴编的。'],
   ['d16','热饭草鞋围门','真债主与收过一顿饭、一双草鞋的闲汉混在门外；对方改用饥饿和人声施压，宅内不能把穷人、雇声与真债混成一种敌人。','同灯结盟','crowd_pay','围门花名','围门者多是临时雇来的闲汉。'],
   ['d17','夜查柜坊','柜坊只留一盏油灯和一更时间；三份封痕、具名夜牌、守柜人口误或一双错鞋，只能保住你真正查到的那一段。','同灯结盟','vault_slot','柜格编号','旧债本藏在七号夹层。'],
   ['d18','最后一口价','娇儿把银堆、车筹、两把空椅和一碗路饭放在同一张桌上；卖哪一程、作哪一段证、坐不坐下，都要由她亲手落字。','同灯结盟','silence_price','封口价','沉默价中藏着债主逃路。'],
@@ -720,8 +720,8 @@ export const DAY_AGENDAS = Object.freeze([
     preparedMove('meng_yulou',DAY14_DRAFT_PREPARATIONS.office),
     preparedMove('pan_jinlian',DAY14_DRAFT_PREPARATIONS.listen),
     preparedMove('wu_yueniang',DAY14_DRAFT_PREPARATIONS.banquet))),
-  agenda('d15','堂前只能先递一件东西。米斗最能证明灶上真少过粮，却也会让雪娥和做活的人先站进众目；若先递本票、名帖或锋利口供，门外便会把一宅人的日子讲成五个女人串好的家话。',['sun_xuee','wu_yueniang','li_pinger'],pressureMoves(
-    ['sun_xuee','从第一斗短米说','让实物先开口；雪娥与真正抬米的人都要受问','雪娥把第一斗短米和那双跑腿破鞋一并放到堂中，再把谁领、谁运、谁改数逐个唱明。她没有把下人推到自己身后，也不许你等问急了才说认识她：“我的手能作证，先认这双手做过什么。”'],
+  agenda('d15','人都到齐了，案上却只能先摆一件。先摆米斗，雪娥和抬米的人就得先挨问；先念本票、名帖或韩道国的改口，街坊又会说五院早把话串好了。',['sun_xuee','wu_yueniang','li_pinger'],pressureMoves(
+    ['sun_xuee','先把短米摆上堂','米能复称；雪娥和抬米的人也会先被逐个问话','雪娥抱来第一斗短米，把跑腿人补过三次的鞋放在斗边。谁领米、谁抬进灶、哪一日少了工钱，她按工簿一名一名叫。轮到自己，她把手按在斗沿：“先问我称过什么，别等找不到人了才想起这双手。”'],
     ['meng_yulou','请三家只认亲见','让公审不能私了；外客也必须承认自己没有看过的部分','玉楼请米铺、药铺与码头三家旁证隔席而坐，先给每人一张可划掉的退席帖。她对五人道：“今日能停；留下的人也只说亲眼见过的物、数和时辰，不替体面补齐故事。”'],
     ['pan_jinlian','叫韩道国先念假账','抓住工钱怎样被改成损耗；场面会立刻反咬成逼供','金莲把假账递给韩道国，叫他自己念。念到第三行，他把“添火工钱”改成“灶上损耗”，她没有先骂，只把第五日热汤、盐瓮和破鞋三件旧物推过去：“哪一件是纸自己烧的火、走的路？”'],
     ['wu_yueniang','五物各归一只手','花银成堂；总账、口供、货单、名帖与工簿仍由原经手人逐件说','月娘将总账、金莲原话、瓶儿货单、玉楼名帖与雪娥工簿依次排开，旁边各放一件能摸到的物。谁递来的便由谁先说，正堂不替旁院改口；她最后才在“只核次序”旁落自己的印。'])),
@@ -884,8 +884,8 @@ export const FAVOR_RECKONINGS = Object.freeze({
 const route = (id,label,hint,text,effects={},condition=null,locked='') => Object.freeze({ id,label,hint,text,effects,condition,locked });
 const householdChoice = (id,label,hint,text,effects) => Object.freeze({ id,label,hint,text,effects });
 export const OPENING_CHOICES = Object.freeze([
-  route('opening_open_ledger','先开真账','让所有人看见缺口','你把真账摊开。月娘按住页角，另外四人各自报出能核验的一项。',{house:4,bonds:[['wu_yueniang','li_pinger',3],['wu_yueniang','sun_xuee',3]],flags:['opened_true_ledger']}),
-  route('opening_hear_five','先听五人','今日不抢着给答案','你逐一问完。金莲删掉一句假口供，玉楼与雪娥把人情账和工账并排放下。',{exposure:-2,bonds:[['pan_jinlian','meng_yulou',3],['pan_jinlian','sun_xuee',3]],flags:['heard_all_five']}),
+  route('opening_open_ledger','把真账摊开','五十两空在桌上，谁都看得见','你把真账摊到灯下。月娘按住被风吹起的页角，另外四人各自放下一件能查的东西。',{house:4,bonds:[['wu_yueniang','li_pinger',3],['wu_yueniang','sun_xuee',3]],flags:['opened_true_ledger']}),
+  route('opening_hear_five','让她们一个个说','今日先不抢着定谁的罪','你没有先抢答案。金莲划掉一句听来的话，玉楼放下名帖，雪娥把沾着米灰的工账摊在旁边。',{exposure:-2,bonds:[['pan_jinlian','meng_yulou',3],['pan_jinlian','sun_xuee',3]],flags:['heard_all_five']}),
 ]);
 
 const openingBeat = (title, body, speakers, voices) => Object.freeze({
@@ -1020,11 +1020,11 @@ export const COALITION_PROOF_META = Object.freeze({
   sun_xuee:{heroine:'sun_xuee',flag:'xuee_counted',label:'雪娥与你亲手核过米斗'},
 });
 export const ACCORD_CHOICES = Object.freeze({
-  wu_yueniang:route('accord_order','总账只认一本','私钥仍归各人','月娘划定公私两栏：“越线便当众说明。”',{rel:{qing:12,du:-5},house:5,accord:'order'}),
-  pan_jinlian:route('accord_truth','去处当日说真','偏心不可伪装','金莲折断假口供：“敢偏，便敢让五个人都知道。”',{rel:{qing:12,yu:6,du:-6},accord:'truth'}),
-  li_pinger:route('accord_safety','借银先写归期','钥匙永不强取','瓶儿收好钥匙：“写清归期，我才开箱。”',{rel:{qing:13,du:-5},house:3,accord:'safety'}),
-  meng_yulou:route('accord_grace','人情必须回礼','不拿谁垫体面','玉楼收下回帖：“借我的名，便当众还我的名。”',{rel:{qing:13,du:-5},repute:1,accord:'grace'}),
-  sun_xuee:route('accord_hearth','工账每日落名','先保粮火再排宴','雪娥把工簿钉在墙上：“谁做的，谁领；谁省的，谁记。”',{rel:{qing:13,du:-5},house:5,accord:'hearth'}),
+  wu_yueniang:route('accord_order','公柜只留一本账','各院的小钥匙仍由本人收着','月娘用红线把公柜与私匣分开：“这边的账都能问我。过了线，先去问拿钥匙的人。”',{rel:{qing:12,du:-5},house:5,accord:'order'}),
+  pan_jinlian:route('accord_truth','今夜去哪里就说哪里','可以偏心，别叫门房编第二句','金莲当众撕了那张假话：“偏谁是你的事。让五个人听五种说法，不行。”',{rel:{qing:12,yu:6,du:-6},accord:'truth'}),
+  li_pinger:route('accord_safety','每笔借银都写还日','箱子由她开，钥匙不离手','瓶儿把归期纸压在箱盖上：“日子写实，我来开。谁急，也不许抢钥匙。”',{rel:{qing:13,du:-5},house:3,accord:'safety'}),
+  meng_yulou:route('accord_grace','借了名帖就当面还','她可以圆场，不做被忘掉的垫脚石','玉楼把回帖放在原帖旁边：“借我的名字敲了门，还的时候也请叫我坐在席上。”',{rel:{qing:13,du:-5},repute:1,accord:'grace'}),
+  sun_xuee:route('accord_hearth','每日写下做活的人','先留三日米柴，再说宴席','雪娥把工簿钉在灶门边：“挑水、添柴、守夜，谁做就写谁。没有米，就别先点菜。”',{rel:{qing:13,du:-5},house:5,accord:'hearth'}),
 });
 
 export const JOINT_ACTIONS = Object.freeze([
@@ -1575,9 +1575,9 @@ export const PUBLIC_EVENTS = Object.freeze({
     route('public_balance_2','五证原页，各归本人','五个人各守原页，只在别人的下一手指出新增字','你让五份原页沿池各走一格，页主始终看得见自己的原字。下一人只能圈新增的一句，不能替前一人润色；五份都回到本人手里，纠错次序也完整留在纸边。',{house:8,flags:['public_vow_2'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:6,du:-4}]))}),
     route('public_10_hide','烧掉错词','证人安全但证链断一环','你烧掉一页错词。瓶儿收好余证，金莲另写一张火盆收讫条，只记你亲手毁了哪句、何时入火；缺掉的原页不准靠众人回忆补抄。',{exposure:-6,power:-1,flags:['burned_lotus_page']})
   ])},
-  15:{id:'public_day15',title:'堂前公审',heading:'五院作证',body:'债主逼你推出一人担责。五份证物都已上堂，却还没有决定哪一件先说、哪一件替前一件作证。',balanceFlag:'public_vow_3',scene:'public_inquest',choices:Object.freeze([
-    route('public_balance_3','罪名留白，五证归手','不先押人；谁递哪件物、只证明哪一段，都在堂前逐手落名','你叫官差把“罪名”一栏暂留空白。月娘只核总账次序，金莲只守本人问过的话，瓶儿、玉楼与雪娥也各自握住货单、名帖、工簿与米斗；韩道国仍在堂前受问，却没有先被写成五份证物的共同答案。',{house:8,flags:['public_vow_3'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:6,du:-4}]))}),
-    route('public_15_scapegoat','推韩道国顶罪','暂散人群，却把账路、门路与传言全塞给一个伙计','韩道国被押到阶前。雪娥指出少掉的米仍接不上他的手，玉楼也当场撤回只为官面程序作出的担保。',{power:1,house:-8,flags:['false_scapegoat']})
+  15:{id:'public_day15',title:'堂前对账',heading:'先让哪件东西说话',body:'债主催你先押一个人，官差的罪名栏还空着。米斗、总账、门簿和四份说法都摆在眼前；先递哪一件，众人就会先沿哪条路追问。',balanceFlag:'public_vow_3',scene:'public_inquest',choices:Object.freeze([
+    route('public_balance_3','先不填人名','每件东西由经手人亲自递；它能证明到哪里，就只说到哪里','你让书手把罪名栏空着。月娘翻总账，金莲守着自己问来的原话，瓶儿压住货单，玉楼摊开名帖，雪娥扶稳米斗。韩道国仍要回答铺面的流水，却不必在第一件东西上堂以前先背下整案。',{house:8,flags:['public_vow_3'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:6,du:-4}]))}),
+    route('public_15_scapegoat','先押韩道国','人群会暂时散去，可米、账和门路的缺口全会压到一个伙计身上','韩道国被押到阶前。雪娥当场问：少掉的米还没查到他的手，凭什么先捆人？玉楼也收回那张只肯担保递状时辰的名帖。',{power:1,house:-8,flags:['false_scapegoat']})
   ])},
 });
 export const BANQUET_CHOICES = PUBLIC_EVENTS[5].choices;
@@ -1745,16 +1745,16 @@ export const DAY10_PUBLIC_OPENINGS = Object.freeze({
 export const DAY15_PUBLIC_OPENINGS = Object.freeze({
   public_balance_3:Object.freeze({
     choice:'public_balance_3',
-    label:'罪名留白，五证各归原手',
-    endingText:'到了关系结局，第十五日那张空罪名纸仍压在米斗、账页、名帖、门簿与口供下面。有人留下、结盟或各自回院，只移动自己的灯和物；纸上哪一格尚接不到手，便继续空着，不拿最亲近的人替五件材料背名。',
+    label:'人名空着，各自递物',
+    endingText:'到了散局那天，第十五日那张空着人名的纸仍压在米斗、账页、名帖、门簿和口供下面。谁留下、谁回院，都只带走自己的灯和物；哪一段还找不到经手人，就照样空着，不拿最亲近的人补数。',
     fateText:'西门家败散以后，后人仍不得把“曾被问过”抄成“已经定罪”；第十五日空白罪名只允许纸、物、时辰与经手逐段填入，宅院的覆灭本身不是把一个名字补进全案的证据。',
-    evidenceText:'开场时你没有先押任何人；罪名栏仍空着，五份证物只能按原手逐段找答案。三步证链若真能闭合，判词便可只由物、数与经手得出。',
-    followupText:'主签格旁的罪名栏仍是空白；无论由谁承担递案责任，都不能偷偷补成“韩道国已认罪”，也不能拿一枚总签吞掉五份原署名。',
+    evidenceText:'你没有先押人。书手把人名栏留空，米斗、账页、门簿和口供只能顺着各自的来路往下查；若三步真能对上，堂上便不必先猜一个犯人。',
+    followupText:'递状人的名字可以落，罪名栏仍须空着。谁来送这份案子，都不能顺手添成“韩道国已经认了”，也不能让一枚总签盖掉五个人原来的落款。',
     rebuttalText:'第十六日复案仍从证物本身起问：原审没有预填犯人，三名外部人物只能逐段挑战事实、经手或口供，不能把“尚待复核”偷换成对某人的既定归罪。',
     aftermathTexts:Object.freeze([
-      '主签落下时，月娘用铜镇压住最上方那格空白；签名只写在“由谁递案”的窄栏里，没有伸进罪名格。堂下有人催她填名，她把笔搁回原处：“先让东西自己说。”',
-      '五份证物重新回到原手：雪娥扶米斗，玉楼按名帖，瓶儿守货单，金莲捏住口供边角，月娘只核账页次序。韩道国站着答自己经手的流水，阶前没有一根绳把其余四件物也拴到他身上。',
-      '书手把新页分成“先见何物”“再问何人”“仍待何证”三栏，末尾的罪名格依旧空着。五件物按递出次序收进不同封套，最方便站到阶前的人没有因此被塞进最后一格。',
+      '月娘用铜镇压住人名栏，只让递状者在旁边落款。堂下有人催她写韩道国，她把笔搁回砚边：“先听米斗和账页怎么说。”',
+      '东西重新回到各人手里：雪娥扶米斗，玉楼按名帖，瓶儿守货单，金莲捏住口供边角，月娘只翻账页。韩道国站在案前，只回答自己经手的铺面流水。',
+      '书手另起三栏：先看见什么，再问到谁，还缺哪一样。五件东西按递出次序分别封好，最后的人名仍空着；站得离案桌最近的人，没有因此替所有缺口背名。',
     ]),
     rebuttalChoiceTexts:Object.freeze({
       segment:'三栏顶端继续留着空罪名格：玳安、韩道国、应伯爵只为各自反问负责，没有谁因被问得最多便先变成被告。',
@@ -1841,23 +1841,23 @@ const publicEvidenceOutcome = (id, label, title, body, echo, effects) => Object.
 // 三名外部人物均取自原作社会网络；此处公审事件与具体反制为原型适配。
 export const PUBLIC_EVIDENCE_CHAIN = Object.freeze({
   id:'public_day15_evidence_chain',
-  title:'三步成证',
-  body:'从四份证物里依次递出三份。每一步都要回答一个不同的问题：事情是否真的发生、经了谁的手、对方的说法为何不能成立。只把三张“像证据的纸”叠在一起，不会自动成为证据链。',
+  title:'三样东西，按次序上堂',
+  body:'案上有四样东西，你只能依次递三样。第一样先证明米和工钱确实少过，第二样追到哪只手改过账，第三样才拿改口来对。次序颠倒，再真的纸也只会变成各说各话。',
   witnesses:Object.freeze([
     Object.freeze({id:'dai_an',name:'玳安',role:'门路见证',stance:'只认亲自跑过的时辰，不肯替任何院门补空白'}),
     Object.freeze({id:'han_daoguo',name:'韩道国',role:'账路经手',stance:'熟悉铺面流水，也最会把一处差额说成整本账都不可信'}),
     Object.freeze({id:'ying_bojue',name:'应伯爵',role:'席间口风',stance:'能替一场公审找来听众，也能把难看的事实改讲成一桩家丑'}),
   ]),
   evidence:Object.freeze([
-    publicEvidence('grain_measure',1,'孙雪娥 · 米斗与工簿','先落米斗','先证明少掉的米与欠工确实存在；它不能独自指认谁改账','一斗实物、一页工时，把“宅里自己闹出来的亏空”钉成可复称的事实。','韩道国立即反问：米少只能证明仓里有缺口，不能证明铺面哪一页是假。'),
-    publicEvidence('double_ledger',2,'吴月娘、李瓶儿 · 总账与货签','再对两本流水','有实物作锚时，可把缺数接到新墨、货签与经手印；先递则像正堂自证','两本流水的墨色、数目和货签互相扣住，指出假账在哪一手开始改写。','韩道国把两本账推回去：若没有独立实物，正堂自己的总账仍可在事后补写。'),
-    publicEvidence('gate_route',3,'孟玉楼、玳安 · 名帖与门簿','再排递送门路','在事实或账页之后，可证明原件何时过门、经谁转手；单独说门路只能证明有人来过','名帖、角门时辰与递送方向把纸从铺面接回堂前，玳安只为自己跑过的那一段落名。','玳安拒绝替空白时辰圆话：门簿能证明谁来过，不能替你猜他袖里装的是哪本账。'),
-    publicEvidence('cross_words',4,'潘金莲 · 四版口供','最后拆改口','至少两份独立证物在前，改词才是矛盾；先逼口供只会被说成五院串词','金莲逐句复读四版说法，让每一次改口撞上已经落定的物、数或时辰。','应伯爵当众换了个说法：若前面没有东西撑住，这不过是五个女人把同一句家话练熟了。'),
+    publicEvidence('grain_measure',1,'孙雪娥 · 米斗与工簿','先称这斗米','先把短米和欠下的工钱称实；它还说不出是谁改了铺面账','斗里的米可以复称，工簿上的时辰也有人领认。宅里确实少过粮、欠过工，不是谁临到堂前才编出的亏空。','韩道国问得直白：“仓里少米，我认。可你凭什么说是铺面这本账改了？”'),
+    publicEvidence('double_ledger',2,'吴月娘、李瓶儿 · 总账与货签','把两本账摊开对','米斗在前，才能沿缺数查新墨、货签和经手印；若一上来只拿自家账，旁人尽可说是后来补的','月娘把总账压在左边，瓶儿按日期摆开货签。少掉的数从米斗接进两本流水，最后停在同一处新墨和经手印上。','韩道国把账推回半寸：“若没有那斗米在先，正堂今日重抄一本，我也分不出来。”'),
+    publicEvidence('gate_route',3,'孟玉楼、玳安 · 名帖与门簿','按时辰查纸从哪扇门过','前面已有米或账，门簿才能接出原件何时转手；它单独只能证明人来过','玉楼把名帖与角门时辰并排，玳安只认自己送过的一程。纸从铺面进了哪扇门、在谁手里停过，终于有了可问的人。','玳安把空着的一更圈出来：“我只认自己跑过的路。人进过门，不等于我看见他袖里是哪本账。”'),
+    publicEvidence('cross_words',4,'潘金莲 · 四版口供','最后逐句对改口','米、账或门簿已有两样对上，改口才有东西可撞；先逼人说，只会落下串供的话柄','金莲把四版说法逐句念回去。谁把“少米”改成“耗损”，谁又把过门时辰挪了一更，每一句都撞上案上已经摆定的物和数。','应伯爵笑着截话：“前头若什么都没摆实，这不过是五位娘子把一句家话练熟了。”'),
   ]),
   outcomes:Object.freeze({
-    complete:publicEvidenceOutcome('complete','闭合证链','物、数与人接成一线','第一份证物先立住独立事实，后两份各自补上经手或矛盾。韩道国不能再用账解释账，应伯爵也不能把三种来源说成同一场串词；玳安只认一段门路，反而使他的证言没有越界。','第十五日的公审留下了一条别人可以复查、也可以逐段反驳的完整证链。',{house:7,power:1,exposure:3,flags:['public_chain_complete'],bonds:[['wu_yueniang','li_pinger',3],['pan_jinlian','sun_xuee',3],['meng_yulou','sun_xuee',3]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:3,du:-3}]))}),
-    rebuttable:publicEvidenceOutcome('rebuttable','有案有缝','三份证物能够成案，却留下一处承接空白','堂上收下了三份证物，但其中一份在前证尚未站稳时就先下了结论。韩道国抓住那处空白要求重验，应伯爵已经把“尚待复核”讲成“五院自己也说不清”；案子没散，下一次追问却有了入口。','第十五日的公审成立了，但证链有一处只能靠当事人再次说明。',{house:2,exposure:6,flags:['public_chain_rebuttable'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:1,du:2}]))}),
-    broken:publicEvidenceOutcome('broken','三纸未成链','先有结论，后补证物','你先把最锋利的指控递了出去，后两份纸只能替它补理由。玳安不肯替空白门路落名，韩道国说账是事后拼的，应伯爵当场把公审讲成五院围住一个伙计逼供；三张纸都是真的，却没有一张能独立托住下一张。','第十五日留下的是三份彼此挨着的证物，不是一条能抵住反问的证链。',{house:-7,power:-1,exposure:9,flags:['public_chain_broken'],bonds:[['wu_yueniang','pan_jinlian',-2],['li_pinger','sun_xuee',-2]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{du:5}]))}),
+    complete:publicEvidenceOutcome('complete','三步对上了','短米、经手与改口接到一起','第一样先称实短米，中间那样接出纸或账走过谁的手，最后才拿改口来对。韩道国不能再用一句账上说法绕开米斗，应伯爵也不能把三处不同来路都说成五院串好的话；每个人只认亲手见过的一段，反倒让那一段更站得住。','第十五日堂上留下三样按次序封好的东西。往后谁不服，可以一件一件重称、重对、重问。',{house:7,power:1,exposure:3,flags:['public_chain_complete'],bonds:[['wu_yueniang','li_pinger',3],['pan_jinlian','sun_xuee',3],['meng_yulou','sun_xuee',3]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:3,du:-3}]))}),
+    rebuttable:publicEvidenceOutcome('rebuttable','还差一截','三样东西能收案，还有一处对不上','官差收下了三样东西，可其中一样太早替前面的空处下了结论。韩道国指着那一处要求重验，应伯爵已经在门外说“五院自己也讲不清”。案子没有散，下回却得先把这段补实。','第十五日的案子收下了；有一处仍要请真正经手的人回来，把缺的那一段当面说清。',{house:2,exposure:6,flags:['public_chain_rebuttable'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:1,du:2}]))}),
+    broken:publicEvidenceOutcome('broken','三样各说各话','前一件未站稳，后一件先下了结论','你递出的第一样还没有站稳，下一样便先替它下了结论，第三样只好跟着补理由。玳安不肯替没跑过的路落名，韩道国说账页前后对不上，应伯爵转身就把堂前说成五院围着一个伙计逼供。三样都是真的，摆在这个次序里却谁也托不住谁。','第十五日收下三只封套，却没能把它们的来路接在一起。往后每开一只，都会先遇见今日没答上的反问。',{house:-7,power:-1,exposure:9,flags:['public_chain_broken'],bonds:[['wu_yueniang','pan_jinlian',-2],['li_pinger','sun_xuee',-2]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{du:5}]))}),
   }),
 });
 
@@ -1867,14 +1867,14 @@ export const PUBLIC_EVIDENCE_CHAIN = Object.freeze({
 export const DAY15_OPENING_EVIDENCE = Object.freeze({
   ledger:Object.freeze({
     evidence:'grain_measure',
-    label:'米斗、破鞋与工单先落堂',
-    object:'第一斗短米、跑腿人的补丁破鞋、逐名抬米工单',
-    openingText:'白日里雪娥已经把第一斗短米、跑腿破鞋与逐名工单放在众目下，第一步因此不是重新选择：米与欠工确曾短少。它只钉事实，不先替堂上指认谁改了账。',
-    followupText:'这条证链从雪娥亲手量过的短米起笔；主签只能分配谁为自己经手的下一段担责，不能把先受问的雪娥、抬米人或灶上工簿写成整案替罪人。',
+    label:'雪娥先把短米摆上来',
+    object:'一斗可以复称的短米、跑腿人的补丁鞋、逐名写下的抬米工单',
+    openingText:'雪娥白日已经把短米、补丁鞋和工单摆给众人看。第一步不用再选：米确实少过，抬米与跑腿的工钱也确实欠过。至于是谁改了铺面账，还得看下一样东西。',
+    followupText:'这桩事从雪娥亲手称过的米问起。递状的人只能写谁接着查账、谁去认门路，不能因为雪娥和抬米人最先受问，就把整案压到他们头上。',
     aftermathTexts:Object.freeze([
-      '米斗仍压在主签格旁：第一证只证明短米与欠工，刚落下的签法必须另写谁核账、谁认门路，不能把事实见证人顺手写成责任人。',
-      '第二拍追问回到那双补过三次的破鞋；做活的人只认自己抬过哪一斗、何时未领工钱，不替五院猜谁改了铺面流水。',
-      '归档时，米斗、破鞋与工单仍列作首证并保留原名；后两证怎样承接照真实次序入卷，没有被主签倒写成正堂一纸总供。',
+      '米斗还在落款栏旁。它只证明短米与欠工；谁去核账、谁去认门路，须另写清楚，不能顺手把称米的人写成改账的人。',
+      '下一轮问到那双补过三次的鞋。跑腿人只认自己抬过哪一斗、哪天没领到工钱，不替五院猜铺面是谁动了笔。',
+      '收卷时，米斗、破鞋和工单仍排在最前，名字也各归原人。后两样东西照真正递出的次序跟上，没有被一枚总签揉成正堂的一份齐口。',
     ]),
   }),
   office:Object.freeze({
@@ -2030,8 +2030,8 @@ export const PUBLIC_FOLLOWUPS = Object.freeze({
     route('follow_10_send_bait','让假本先流出去','用一次可控的谎，钓出真正收口供的人','玉楼换掉纸角，瓶儿重封油布，金莲故意保留一个只有造假者认得的错字。假本被重新放回池边；月娘提醒你，这一步能抓人，也会让五个人承担同一场反噬。',{power:2,exposure:9,house:-2,flags:['follow_10_bait_sent'],bonds:[['pan_jinlian','meng_yulou',4],['li_pinger','meng_yulou',4]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:2,du:2}]))}),
     route('follow_10_burn_again','当众烧掉第六份','不给假话第二次伤人，也失去追造假者的线','你先让五个人各自看清被改了什么，再把湿纸投入火盆。金莲记住错字，瓶儿收回真本；火能止住今晚，却不能证明明日是谁又写一份。',{exposure:-8,power:-1,flags:['follow_10_false_burned'],bonds:[['pan_jinlian','li_pinger',-2],['pan_jinlian','sun_xuee',-2]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:1,du:3}]))}),
   ]),
-  15: publicFollowup('public_follow_15',15,'堂前人群还没散','应伯爵已经在门外讲起“唯一主签”','三步举证刚落定，官差便推回文书：五份证据可以并列，担责处只能有一个主签。应伯爵在门外把这条官面惯例讲成“西门宅终究只能有一人说了算”，韩道国则等着看谁替整本账担保。若只写一人，其余四人的风险与功劳都会变成附件；若没人签，债主明早就能说今日从未成案。',[...HEROINE_IDS],[
-    route('follow_15_five_seals','把一格拆成五印','不选代罪者，每个人只为自己的证据承担','月娘把主签格裁成五栏。金莲只签口供，瓶儿只签货单，玉楼只签名帖来路，雪娥只签工簿与米斗；没有谁替别人保证身体、私物或没说过的话。官差不情愿，仍收下了这份无法推给一人的文书。',{house:9,power:1,exposure:4,flags:['follow_15_five_seals'],bonds:[['wu_yueniang','pan_jinlian',4],['wu_yueniang','li_pinger',4],['wu_yueniang','meng_yulou',4],['pan_jinlian','sun_xuee',4]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:5,du:-5}]))}),
+  15: publicFollowup('public_follow_15',15,'堂前的人还堵着门','官差只肯收一个总落款','三样东西刚按次序封好，官差便把文书推回来：五份可以分开收，递状处却只能写一个名字。应伯爵已经在门外笑说“西门宅到底还得一个人做主”，韩道国也盯着那格，看谁要替整本账作保。只写一人，其余四人的物和话都会被叫作附件；一个都不写，债主明早便会说今日根本没收案。',[...HEROINE_IDS],[
+    route('follow_15_five_seals','请他分开收五枚印','每个人只认自己递出的东西，也各拿一张回执','月娘拿裁纸刀把总落款旁分出五栏。金莲在口供旁签，瓶儿在货单旁签，玉楼只认名帖经过哪扇门，雪娥只认工簿和自己称过的米。官差嫌麻烦，月娘把五样东西往回一收：“不肯分着收，就一件也别带走。”他这才逐栏盖印。',{house:9,power:1,exposure:4,flags:['follow_15_five_seals'],bonds:[['wu_yueniang','pan_jinlian',4],['wu_yueniang','li_pinger',4],['wu_yueniang','meng_yulou',4],['pan_jinlian','sun_xuee',4]],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:5,du:-5}]))}),
     route('follow_15_sign_yourself','由你独签担责','五人的证据保留原名，官面后果先落到你身上','你在主签格写下自己的名字，又在附件首行注明五份证据各归原经手人。金莲确认你没替她改口，瓶儿确认私钥没有入押，雪娥确认工簿仍署她名，才准官差收走。',{power:1,house:5,exposure:7,flags:['follow_15_player_signs'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:4,du:-2}]))}),
     route('follow_15_yue_signs','请月娘主签','用正堂身份快速成案，也把最大风险压给她','月娘看完五人一眼，在主签格落名。案子当场成立，官差也当场把追责文书只递给她。金莲问为何秩序总要月娘一个人背，雪娥则把“正堂应当”四字从副本上重重划掉。',{power:2,house:2,flags:['follow_15_yue_signs'],bonds:[['wu_yueniang','pan_jinlian',-4],['wu_yueniang','sun_xuee',-4]],relAll:{wu_yueniang:{qing:8,du:3},pan_jinlian:{du:5},li_pinger:{du:3},meng_yulou:{du:3},sun_xuee:{du:5}}}),
   ]),
@@ -2065,8 +2065,8 @@ export const PUBLIC_FOLLOWUP_AFTERMATHS = Object.freeze({
     publicAftermathBeat('sun_xuee','雪娥听见门外的人照样背出了被烧掉的半句','纸化成灰后，一个送水的却把“雪娥偷粮”四字说得分毫不差。金莲立即追问是谁教的，那人只说池边人人都听过；没有原件可对，改词从一张可拆的假口供变成了几十张长在嘴里的副本。'),
     publicAftermathBeat('li_pinger','瓶儿把真本各自收回，五个人也失去共同追纸的线','瓶儿确认真本尚在，月娘让每人另写一份自己记得的错词，至少不让明日全凭传言。可纸脚、油布和经手印已经跟着火一起没了；五院保住今晚不再受伤，却只能各自防守下一份不知道从哪里来的假话。')),
   follow_15_five_seals: publicAftermath('wu_yueniang',
-    publicAftermathBeat('sun_xuee','官差想把五印下面再添一句“正堂总保”','官差收纸前又拿笔补了一行，仍想让月娘为其余四份证据兜底。雪娥按住工簿说，她只保自己称过的米；瓶儿也把货单抽回半寸。五格若最后还要一个女人总保，不过是把代罪者藏进小字。'),
-    publicAftermathBeat('meng_yulou','玉楼逼官差给五个人各留一张独立收据','玉楼用名帖担保文书今日确已收下，却拒绝担保任何证词内容。官差只得给五枚印各编案号，分别写明可追问范围。五个人承担的风险没有消失，但从此谁被传唤、谁能撤回、谁只为哪件证物负责，都不能再被塞回一个名字里。')),
+    publicAftermathBeat('sun_xuee','雪娥按住官差偷添的“正堂总保”','官差收纸前又补了一行，想让月娘替其余四份兜底。雪娥把工簿压在他笔下：“我只认自己称过的米。”瓶儿也抽回货单。若五栏写完还要月娘包圆，不过是把顶罪的人藏进小字。'),
+    publicAftermathBeat('meng_yulou','玉楼当面数回五张收据','玉楼只以名帖证明官差今日收过文书，不替任何人口供作保。她看着他给五枚印各编一号，再把可追问的物件写在收据上。往后传谁、问什么、哪一页可以收回，都须照这五张纸来，不能再只敲正堂一扇门。')),
   follow_15_sign_yourself: publicAftermath('pan_jinlian',
     publicAftermathBeat('wu_yueniang','月娘先把你的签名与五人的证词切成两层','月娘在副本上添注：你的主签只承担递案与官面后果，不能替五个人承认没说过的话。金莲逐份复读，瓶儿确认货与私钥不入押；这不是一场替她们受罚的表演，而是把你的责任限定在你真正决定过的部分。'),
     publicAftermathBeat('sun_xuee','雪娥拿回五张回执，发现追索真的先落到了你名下','官差给五份证据分别盖收讫，却把次日问讯只写给你。雪娥把回执交还各院，提醒任何人都不欠你一份因“代签”换来的顺从；五个人的证词保住原名，你也终于不能把承担官面风险当作替她们拥有答案。')),
@@ -2834,54 +2834,54 @@ export const JIAOER_RECKONINGS = Object.freeze({
 const step = (...choices) => Object.freeze(choices);
 export const ROUTE_CHOICES = Object.freeze({
   wu_yueniang:Object.freeze([
-    step(route('yue_1_true','交出真账','让她先核缺口','月娘逐页划线：“明日照这本追。”',{rel:{qing:12},flags:['yue_informed']}),route('yue_1_hide','只报总数','暂避追问','她合笔：“数无来路，便不算账。”',{rel:{du:10}})),
+    step(route('yue_1_true','把那本真账给她','让她从第一页查起','月娘没有抬头，只用笔尖点了点第三页：“明日先找写这行字的人。”',{rel:{qing:12},flags:['yue_informed']}),route('yue_1_hide','只告诉她少了多少','名字和来路今夜不提','月娘把笔放回笔山：“一个数自己不会长脚。你想说了，再来。”',{rel:{du:10}})),
     step(route('yue_2_cut','撤一桌酒','把节省写入公中','她当众封存省下的银：“这才叫守诺。”',{silver:30,house:5,flags:['kept_yue_word']}),route('yue_2_spend','照摆两席','换脸面伤公账','她收走公钥：“排场由你私付。”',{silver:-35,rel:{du:12},flags:['broken_yue_word']})),
     step(route('yue_3_back','请她出面','共同承担官面','月娘带真账入堂，替你挡住第一轮盘问。',{power:1,rel:{qing:14},flags:['yue_backing']},'yue_informed','尚未交真账'),route('yue_3_tea','先递热茶','让争执降温','她接茶坐下：“现在说正事。”',{rel:{qing:8,du:-4}})),
-    step(route('yue_4_seat','让她开席','权责一并交付','她定座次也承担失席之责。',{house:6,rel:{qing:12}}),route('yue_4_private','只谈私情','公事仍悬着','她留下半盏茶：“白日账明早补。”',{rel:{yu:12,du:5},flags:['broken_yue_word']})),
+    step(route('yue_4_seat','请她坐主位开席','座次由她排，出了岔子也由她当面答','月娘没有立刻坐下。她先把五只杯挪开，让每个人自己认领座位，才在主位旁坐定：“今夜我来排。若有人受了慢待，先来问我，不许去骂传菜的人。”',{house:6,rel:{qing:12}}),route('yue_4_private','把账先收进匣里','今夜陪她喝完茶，白日的缺数明早仍要交代','你伸手合账，月娘却先夹了一张纸签在缺数那页。她给你留半盏茶：“可以不说公事。天一亮，这张签还在，你也还得来。”',{rel:{yu:12,du:5},flags:['broken_yue_word']})),
     step(route('yue_5_keys','共持公钥','双方互相核验','她分回一半钥匙：“彼此都留证。”',{house:8,rel:{qing:15},flags:['yue_co_rule']},'kept_yue_word','尚未履约'),route('yue_5_lasttea','喝完末茶','今夜不许新愿','她撤去账页，只问你明日几时来。',{rel:{qing:10,yu:8}})),
-    step(route('yue_6_record','把承诺入账','让私话可追责','她写下日期，你在旁落名。',{rel:{qing:16,du:-7},flags:['yue_recorded']}),route('yue_6_wait','等她决定','不催她开门','她看完账，亲自把门留了一线。',{rel:{qing:9,du:-4}})),
+    step(route('yue_6_record','把昨夜那句话写上日期','叫你们都不能把说过的话赖给醉意','月娘只写日期，不替你润色。她念一遍昨夜的原话，等你亲手落名，才把纸折起：“往后若改，就来这页旁边改。别说自己从未讲过。”',{rel:{qing:16,du:-7},flags:['yue_recorded']}),route('yue_6_wait','坐着等她自己开门','今夜不拿体谅催她立刻回答','月娘从头看到尾，几次抬眼，你都没有去碰门闩。更鼓响过，她亲手把门留开一线：“进来吧。不是你等得久，是我已经想清楚。”',{rel:{qing:9,du:-4}})),
     step(route('yue_7_delegate','交她调度权','终局由她排班','月娘分派五院任务，并把自己的责任写在首行。',{house:9,flags:['yue_stewardship'],rel:{qing:16}}),route('yue_7_check','陪她复核','共同查最后一遍','两人核出债主重复计息的一栏。',{silver:20,rel:{qing:11}})),
-    step(route('yue_8_equal','签共治契','权力与问责同在','她收笔：“今日起，谁也不能拿正堂二字逃责。”',{house:12,flags:['yue_final_pact'],rel:{qing:20,du:-10}}),route('yue_8_rest','替她收账','让她先歇一夜','你锁账，她确认封条后靠回椅背。',{rel:{qing:13,yu:8}})),
+    step(route('yue_8_equal','让五把钥匙各有主人','她管总账，也得在别人说停时交手','月娘把总账钥留在正堂，另外四把逐一还到本人掌心。最后她写下自己的交手时辰：“谁拿正堂二字压人，先来收我的钥匙。”',{house:12,flags:['yue_final_pact'],rel:{qing:20,du:-10}}),route('yue_8_rest','替她封好今晚的账','明日仍照旧查，今夜先让她睡一觉','你照她说的顺序锁柜、贴封，把钥匙放回她伸手够得到的地方。月娘逐个看过，终于靠回椅背：“灯别全灭。其余的，天亮再说。”',{rel:{qing:13,yu:8}})),
   ]),
   pan_jinlian:Object.freeze([
-    step(route('pan_1_cup','接她的酒','公开承认偏向','金莲不松杯：“明日也认？”你当席点头。',{rel:{qing:12,yu:12},flags:['pan_promised']}),route('pan_1_hush','压下酒杯','席暂静，话未消','她饮尽后把空杯留作证。',{rel:{du:12}})),
+    step(route('pan_1_cup','当着人接她的酒','今夜的偏心，明日也认','金莲却没松手：“明日天亮，你还敢说这杯是我的？”你当席点了头。',{rel:{qing:12,yu:12},flags:['pan_promised']}),route('pan_1_hush','把酒杯轻轻推回去','席上会安静，她却不会忘','金莲仰头喝完，把空杯倒扣在你面前：“好。留着。”',{rel:{du:12}})),
     step(route('pan_2_name','听她报人名','线索落到袖口','她说完便让你复述，免得明日装忘。',{secrets:['shop_fraud'],rel:{qing:13},flags:['pan_involved']}),route('pan_2_flirt','只接她的话','今夜热，线索凉','她收扇：“正事错过不补。”',{rel:{yu:13}})),
     step(route('pan_3_face','带她对质','让拆谎有见证','她逼掌柜连答三遍，第三遍露馅。',{power:1,rel:{qing:15}},'pan_involved','尚未听人名'),route('pan_3_home','叫她等结果','避开闲话','她留下问题清单：“少问一句都别回来。”',{rel:{qing:6,du:7}})),
-    step(route('pan_4_open','当面开门','让她看现场','她验过凉茶与脚印，删掉一条谣言。',{secrets:['pan_rumor'],rel:{qing:12,du:-8}}),route('pan_4_wait','让她门外等','保住屋内秘密','她敲三下：“明日我在人前问。”',{rel:{du:15},flags:['broken_pan_word']})),
+    step(route('pan_4_open','把门打开给她看','凉茶、脚印和屋里的人都不藏','你当面推开门。金莲先摸茶壶，又蹲下看窗边的湿鞋印，最后把传话里多出来的那句划掉：“屋里是什么样，我自己看过了。谁再添字，来找我。”',{secrets:['pan_rumor'],rel:{qing:12,du:-8}}),route('pan_4_wait','请她先在门外等','屋里的事暂时保住，明日她会当众再问','门只开了一条缝。金莲没有往里挤，拿扇骨在门上敲了三下：“好，我等。明日人齐了，你别又说今晚没听见。”',{rel:{du:15},flags:['broken_pan_word']})),
     step(route('pan_5_repay','补上旧酒','把旧话兑现','你亲手递杯，她先问日期再饮。',{rel:{qing:15},flags:['kept_pan_word']},'pan_promised','尚未接酒'),route('pan_5_bluff','叫她别闹','席面暂稳','她把旧话逐字念给全桌。',{house:-5,rel:{du:18},flags:['broken_pan_word']})),
-    step(route('pan_6_openly','公开今夜去处','不让门房替你撒谎','金莲听完传话，才亲手开门。',{exposure:5,rel:{qing:17},flags:['pan_open_choice']},'kept_pan_word','尚未还酒'),route('pan_6_do','少说先做','用行动替代许愿','你按她的清单逐项办完。',{rel:{qing:11,du:-5}})),
+    step(route('pan_6_openly','叫门房照实报你的去处','这一夜不让别人替你编借口','你当着金莲的面叫来门房，只说今夜进哪一院、几更离开，不添一句安抚。她听完才拉开门：“这话明早若变，也由你亲口改。”',{exposure:5,rel:{qing:17},flags:['pan_open_choice']},'kept_pan_word','尚未还酒'),route('pan_6_do','先照她的清单做完','不添新誓言，把漏下的三件小事补齐','你没有急着辩。旧杯送回原处，传错的话逐人更正，答应的回帖也亲手交了。金莲把清单翻过来：“行。今晚不用再许。”',{rel:{qing:11,du:-5}})),
     step(route('pan_7_cross','让她交叉问证','把锐气变成程序','她与雪娥轮问采买，锁定假日期。',{power:1,flags:['pan_cross_exam'],rel:{qing:16}}),route('pan_7_apology','认一句旧谎','承担而不辩解','她划掉那句：“这次算你自己说破。”',{rel:{qing:11,du:-9}})),
-    step(route('pan_8_truth','签真话契','每次偏向都可追问','金莲把扇印压在契尾：“我不求第一，只求不被骗。”',{flags:['pan_final_pact'],rel:{qing:20,du:-10}}),route('pan_8_watch','请她守口供','让她保管原话','她封好口供，坐到天亮。',{rel:{qing:13,yu:7}})),
+    step(route('pan_8_truth','把每日原话留一份','偏爱可以变，改口必须由本人来','金莲用裁纸刀剜掉纸上“永远”二字，只留下日期、去处和改口的人。她把扇印压在末尾：“我不争一句一辈子。你今日若变，就今日来告诉我。”',{flags:['pan_final_pact'],rel:{qing:20,du:-10}}),route('pan_8_watch','把原话匣交给她守','她保管每次怎么说，不替任何人添字','金莲把一张张口供按日期重排，错字也原样留着。她扣好匣锁，抱着匣子坐到窗边：“你睡。我守的是话，不是替你守住面子。”',{rel:{qing:13,yu:7}})),
   ]),
   li_pinger:Object.freeze([
-    step(route('pinger_1_room','先问住处','先问人再问箱','瓶儿指出漏窗，你先叫人修好。',{rel:{qing:13},flags:['pinger_route']}),route('pinger_1_money','先问银数','拿到数也添防备','她报得分毫不差，钥匙却握紧。',{silver:40,rel:{du:8}})),
+    step(route('pinger_1_room','叫人先把漏窗修好','银箱放一放，今夜先问她住得安不安','瓶儿用手背试了试窗缝的冷风。等工匠把木条钉实，她才把钥匙放回桌上。',{rel:{qing:13},flags:['pinger_route']}),route('pinger_1_money','先问箱里有多少银子','你会得到一个准数，钥匙还在她手里','瓶儿报得分毫不差。说完，她把钥匙在掌心又收紧了一寸。',{silver:40,rel:{du:8}})),
     step(route('pinger_2_close','替她关窗','保护账本来源','门窗查清后，她递出货簿。',{secrets:['pinger_funds'],rel:{qing:15}}),route('pinger_2_take','先借急银','解燃眉伤安全','她借银并写下你未报归期。',{silver:70,rel:{du:11},flags:['pinger_exposed']})),
     step(route('pinger_3_shield','替她应问','责任写在自己名下','你出堂担责，她把证物交给月娘。',{house:4,flags:['protected_pinger'],rel:{qing:16}},'pinger_route','尚未先问住处'),route('pinger_3_answer','让她自答','公开来路','她答清来路，回房换锁。',{repute:1,rel:{du:10}})),
-    step(route('pinger_4_secret','确认账未动','保住证据链','她检查线头后交出下一条货路。',{secrets:['merchant_route'],rel:{qing:13}},'protected_pinger','尚未保护她'),route('pinger_4_tea','陪她饮茶','不追问银箱','她把点心分你一半。',{rel:{qing:10,du:-4}})),
+    step(route('pinger_4_secret','请她先验封线','线头没动，她才肯拿出下一张货单','瓶儿举着灯沿箱角照了一周，确认旧线还在，才从夹层抽出一张货单。她把纸递来，钥匙仍系在腕上：“这一路可以查，箱子不跟你走。”',{secrets:['merchant_route'],rel:{qing:13}},'protected_pinger','尚未保护她'),route('pinger_4_tea','陪她把这盏茶喝完','今夜不问箱数，也不碰她腕上的钥匙','你在离箱最远的椅子坐下。瓶儿等了许久，才把点心掰成两半推来一份：“茶喝完再走。今夜不谈那只箱。”',{rel:{qing:10,du:-4}})),
     step(route('pinger_5_credit','货单写她名','功劳归原主','她确认署名后才盖箱印。',{repute:1,flags:['pinger_credited'],rel:{qing:15}}),route('pinger_5_spend','挪钱撑场','换场面伤信任','她散席便重新编号封条。',{silver:-25,rel:{du:16},flags:['pinger_exposed']})),
-    step(route('pinger_6_share','共同算债','烂账也向她公开','她把两本账并列，不替你遮亏。',{silver:55,flags:['pinger_same_chest'],rel:{qing:17}},'protected_pinger','尚未保护她'),route('pinger_6_return','归还钥匙','让她决定去留','她收钥匙却留你喝完茶。',{rel:{qing:11,du:-6}})),
+    step(route('pinger_6_share','把两本亏账并排摊开','好看的、难看的都让她自己看','你把公账和暗账一起放下。瓶儿从最坏的一页看起，没有替你合册，只拿算盘核了三遍：“这笔我能周转。那笔是谁瞒的，仍由谁认。”',{silver:55,flags:['pinger_same_chest'],rel:{qing:17}},'protected_pinger','尚未保护她'),route('pinger_6_return','把那把钥匙还到她手里','今后开不开箱，都由她自己决定','你把钥匙放在桌沿，没有往前推。瓶儿自己取回，系好腕绳，才给空杯续了茶：“钥匙收了。人可以再坐一会儿。”',{rel:{qing:11,du:-6}})),
     step(route('pinger_7_reserve','设安全储备','先留三日粮银','她封存储备并把数报给五人。',{house:8,flags:['pinger_reserve'],rel:{qing:16}}),route('pinger_7_receipt','补齐借据','旧借都有归期','你补签欠条，她拆下一把旧锁。',{rel:{qing:12,du:-7}})),
-    step(route('pinger_8_safe','签安全契','钥匙与同意不可越界','她把契收进箱，却把茶席留在外间。',{flags:['pinger_final_pact'],rel:{qing:20,du:-10}}),route('pinger_8_stay','守到封账','人在而不碰箱','你坐到封条干透，她靠着椅背睡了一刻。',{rel:{qing:13,yu:7}})),
+    step(route('pinger_8_safe','把借期写在箱盖内侧','钥匙、银子和愿不愿意，三件事不能混说','瓶儿亲手把归期贴进箱盖，合箱前又让你念了一遍。她收好钥匙，把茶席移到外间：“借钱看这张纸。进这扇门，另问我。”',{flags:['pinger_final_pact'],rel:{qing:20,du:-10}}),route('pinger_8_stay','陪她等封泥干透','人在屋里，手不伸向她的箱','封泥一点点失去亮光。你始终坐在桌外，瓶儿才慢慢靠上椅背闭了会儿眼；醒来第一件事，仍是自己摸了摸腕上的钥匙。',{rel:{qing:13,yu:7}})),
   ]),
   meng_yulou:Object.freeze([
-    step(route('meng_1_card','问名帖代价','先定回礼再借名','玉楼写下回礼：“现在可去敲门。”',{flags:['meng_terms'],rel:{qing:13}}),route('meng_1_decline','不用名帖','不欠情也失路径','她收帖：“至少这次没有白借我。”',{rel:{qing:6}})),
+    step(route('meng_1_card','问她这张名帖要怎样还','先说定回礼，再拿她的名字去敲门','玉楼把回礼的日子写在帖后，吹干了墨才递给你：“这下可去。别叫我下回当众讨。”',{flags:['meng_terms'],rel:{qing:13}}),route('meng_1_decline','这次不用她的名帖','不欠这份人情，也少一条门路','玉楼把帖子收进匣里：“也好。这回你没白借我的名字。”',{rel:{qing:6}})),
     step(route('meng_2_return','亲送回礼','让她被当众看见','你在来客前谢她搭桥，席上无人再抹去她的功。',{repute:1,flags:['meng_repaid'],rel:{qing:15}},'meng_terms','尚未定价'),route('meng_2_private','私下道谢','情意有了，名分未正','她收礼：“这句还欠一个听众。”',{rel:{qing:9,yu:5}})),
     step(route('meng_3_seating','请她排座','把转圜权交给她','她让争执双方隔席落座，仍各有台阶。',{house:6,flags:['meng_hosted'],rel:{qing:14}}),route('meng_3_corner','叫她陪末席','避开锋芒','她坐下替你记清谁先失礼。',{rel:{qing:8}})),
-    step(route('meng_4_defend','挡下轻慢','公开承认她的功','你截住讥讽，点明名帖救过药车。',{power:1,rel:{qing:16},flags:['meng_defended']}),route('meng_4_signal','让她自行回话','她能化解却记下你的沉默','玉楼笑着回敬，桌下却把回礼单收走。',{rel:{du:9},flags:['broken_meng_word']})),
+    step(route('meng_4_defend','当席拦下那句轻慢','把药车为何能进门说给所有人听','笑声刚起，你便点明是玉楼的名帖救下那车药。玉楼没有替自己添功，只把回帖放到桌上：“听见便好。往后借名，别只在出事时想起我。”',{power:1,rel:{qing:16},flags:['meng_defended']}),route('meng_4_signal','让她自己接这句话','她能圆回场面，也会记得你没有开口','玉楼笑着把讥讽接成一句席间玩笑，满桌又动了筷子。桌下，她却把原定的回礼单折起收走；散席时只说：“这回我替自己说，不算替你。”',{rel:{du:9},flags:['broken_meng_word']})),
     step(route('meng_5_contract','人情逐笔记','让关系可追偿','她把借与还各写一栏。',{house:5,rel:{qing:15},flags:['meng_social_ledger']}),route('meng_5_favor','再借一次笑','先过关后欠债','她替你圆场，回单又添一行。',{repute:1,rel:{du:8},flags:['broken_meng_word']})),
-    step(route('meng_6_dance','请她领席','让她决定节奏','玉楼起身移杯，五人顺势换到同桌。',{house:6,rel:{qing:16,yu:6}}),route('meng_6_listen','听她复盘','辨清谁欠谁','她逐人说完，不替你删掉失礼。',{secrets:['guest_obligations'],rel:{qing:11}})),
+    step(route('meng_6_dance','请她起身重新排席','让她决定谁先换座、谁先把话说完','玉楼端起自己的杯，先给争执最深的两人各留半步。五个人顺着她的眼色换座，等最后一张椅子落稳，她才坐下：“如今谁有话，慢慢说。”',{house:6,rel:{qing:16,yu:6}}),route('meng_6_listen','请她把散席后的话说完','谁失礼、谁补过，不替你省掉难听处','客人走净，玉楼把每个人何时冷脸、何时让座逐一说完。轮到你时，她没有改轻半句：“这些话只说一次。你若要还人情，记清名字。”',{secrets:['guest_obligations'],rel:{qing:11}})),
     step(route('meng_7_witness','让她见证公约','体面成为可执行条款','她逐句确认无人被拿来垫脚。',{flags:['meng_witness'],rel:{qing:17}}),route('meng_7_amend','请她改措辞','让拒绝也留出口','她把命令改成可答应、可拒绝的约定。',{house:4,rel:{qing:13}})),
-    step(route('meng_8_grace','签体面契','回礼与拒绝都公开','玉楼压下曲印：“往后谁借名，谁当众还。”',{flags:['meng_final_pact'],rel:{qing:20,du:-10}}),route('meng_8_lastcup','陪她收末席','散席也算劳动','你同她逐桌送客，最后一杯才留给彼此。',{rel:{qing:14,yu:8}})),
+    step(route('meng_8_grace','把借名与回礼写成对页','谁借她的名字，谁亲自在人前归还','玉楼把名帖放在左页，回礼写在右页，中间不留替人圆场的空格。曲印落下时她说：“借我的名可以。还的时候，也请叫我坐在席上。”',{flags:['meng_final_pact'],rel:{qing:20,du:-10}}),route('meng_8_lastcup','陪她送完最后一桌客','收席也是一晚的工，不让她独自做完','你同她逐桌送客、收帖、叫车，直到院里只剩两只杯。玉楼把温的那只递给你：“这杯不用还礼。喝完便算今晚散了。”',{rel:{qing:14,yu:8}})),
   ]),
   sun_xuee:Object.freeze([
-    step(route('xuee_1_bag','接过米袋','亲自看缺口','你跟她进仓，她指出重绑的绳结。',{secrets:['kitchen_witness'],flags:['xuee_evidence'],rel:{qing:14}}),route('xuee_1_cash','叫她先垫','眼前有银灶上转冷','她剪下私房银：“往后热水自烧。”',{silver:35,rel:{du:14}})),
+    step(route('xuee_1_bag','接过米袋，跟她去后仓','绳结重绑过，你自己去看','米袋比看着轻。雪娥蹲在仓门前，拨开绳结给你看里面的旧勒痕：“这袋子不是头一回空。”',{secrets:['kitchen_witness'],flags:['xuee_evidence'],rel:{qing:14}}),route('xuee_1_cash','叫她先拿私房钱垫上','今日能开锅，这笔钱却落在她一个人身上','雪娥解下腰间的银剪子，当你的面剪开银包：“好。今日的热水有了。往后你自己烧。”',{silver:35,rel:{du:14}})),
     step(route('xuee_2_count','同数米斗','把劳动变证据','你记斗数，她核重量，差额正合假账。',{silver:18,flags:['xuee_counted'],rel:{qing:15}}),route('xuee_2_order','催她开火','先保席面','她开锅却把欠工写在门上。',{house:2,rel:{du:9},flags:['broken_xuee_word']})),
     step(route('xuee_3_wage','补发工钱','先付做事的人','她逐人唱名发钱，灶火当场复燃。',{silver:-25,house:7,flags:['xuee_wages'],rel:{qing:16}}),route('xuee_3_praise','只在人前夸','不给实际回报','雪娥把掌声记作零两。',{repute:1,rel:{du:12},flags:['broken_xuee_word']})),
-    step(route('xuee_4_testify','请她持簿作证','让实物进入公堂','她带米斗与工簿出堂，没人能把她赶回灶间。',{power:1,flags:['xuee_testified'],rel:{qing:17}},'xuee_evidence','尚未查缺口'),route('xuee_4_copy','只拿工簿抄本','保护她不露面','她交抄本，也注明谁没让她作证。',{secrets:['labor_copy'],rel:{qing:8}})),
+    step(route('xuee_4_testify','请她带米斗进堂','让她自己说短了多少、谁碰过袋子','雪娥一手抱工簿，一手提米斗走进正堂。有人叫她把东西留下便回灶上，她把斗往桌上一放：“袋子是我开的，数也该由我说。”',{power:1,flags:['xuee_testified'],rel:{qing:17}},'xuee_evidence','尚未查缺口'),route('xuee_4_copy','只拿一份工簿抄本','她不必露面，但少了一次当面追问的机会','雪娥把抄本交给你，末页另添一行：原簿仍在灶上，今日没有请她到堂。她吹干墨：“拿去。别说成我已经当面认过。”',{secrets:['labor_copy'],rel:{qing:8}})),
     step(route('xuee_5_ration','先定三日粮','宴前保住全宅','她封好口粮才批准开席。',{house:8,flags:['xuee_ration'],rel:{qing:15}}),route('xuee_5_feast','先办大席','得名声耗粮火','席面亮，次日灶上只剩稀粥。',{repute:2,house:-8,rel:{du:10}})),
-    step(route('xuee_6_rest','替她守一更火','承认她也会疲倦','你看火，她洗净手坐下喝完热汤。',{rel:{qing:16,yu:6,du:-6}}),route('xuee_6_audit','请她再核账','继续劳动但给署名','她核完后在工簿首行写自己的名。',{silver:12,rel:{qing:11}})),
+    step(route('xuee_6_rest','替她守一更灶火','今夜让她洗手、坐下，把热汤喝完','你挽袖坐到灶前看火。雪娥起初每隔片刻便回头，见锅没有糊，才洗净手坐下，把一碗汤从热喝到温。',{rel:{qing:16,yu:6,du:-6}}),route('xuee_6_audit','请她再把米数核一遍','她仍要多做一轮，名字必须写在头一行','雪娥把米斗重新称过，差数核清后没有立刻合簿。她蘸足了墨，在第一页最上面写下自己姓名：“这遍是谁做的，别又只记一个准数。”',{silver:12,rel:{qing:11}})),
     step(route('xuee_7_allocate','让她排配给','按实做事分资源','她依人数与工时发粮，无人能插队。',{house:9,flags:['xuee_allocator'],rel:{qing:17}}),route('xuee_7_sharemeal','同桌吃灶饭','用一餐确认尊重','她把最热的一碗推给你，也给另外四人留足。',{rel:{qing:13}})),
-    step(route('xuee_8_hearth','签烟火契','劳动、休息、粮账同记','雪娥按下灶印：“往后火不靠谁白撑。”',{flags:['xuee_final_pact'],rel:{qing:20,du:-10}}),route('xuee_8_bankfire','陪她封火','让今日劳动真正结束','你同她封好余炭，她洗手后把暖阁门留开。',{rel:{qing:14,yu:7}})),
+    step(route('xuee_8_hearth','把停火日也写进灶簿','做了多少、歇了多久、粮剩几日都要记','雪娥在每日用粮旁另开一栏，专写谁值火、谁休息。灶印按下去，她先圈出自己的停火日：“往后哪口锅都不靠一个人白守。”',{flags:['xuee_final_pact'],rel:{qing:20,du:-10}}),route('xuee_8_bankfire','陪她把最后一炉炭封好','今日的活到这里，不再临时添一桌饭','你递灰，她压实炉口，确认余火明早还能起。雪娥洗净手，把暖阁门留开半扇：“今晚若有人再要酒席，你去回。”',{rel:{qing:14,yu:7}})),
   ]),
 });
 
@@ -3913,14 +3913,14 @@ export const ALLIANCE_NIGHT_COMBINATIONS = Object.freeze({
 });
 
 export const SHARED_NIGHT_CHOICES = Object.freeze([
-  route('shared_five_roles','五人都留下','各守一约并互证','月娘排账，金莲问证，瓶儿管货，玉楼接客，雪娥守粮；五人逐项应下，也各自保留拒绝权。',{house:14,silver:30,flags:['harem_coalition'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:12,du:-12}]))}),
-  route('shared_buy_quiet','五袋银买静','只买一夜不买同心','五只荷包各归一处，五份证据也随人离桌。',{silver:-60,house:-2}),
-  route('shared_false_only','仍许人人唯一','同一句话当场失效','金莲先复述你昨夜原话，另外四人逐一对证；五扇门同时收回钥匙。',{house:-14,exposure:8,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:-6,du:18}]))}),
+  route('shared_five_roles','请五个人都坐下','每人只答应自己手里那件事','月娘把总账放到桌中，金莲压住原话，瓶儿把货单与私钥分开，玉楼递帖，雪娥先留粮。五个人一个个说愿意，也都能随时收回自己那一份。',{house:14,silver:30,flags:['harem_coalition'],relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:12,du:-12}]))}),
+  route('shared_buy_quiet','把五袋银分到各院','银子能买一夜安静，买不到她们说同一句话','五只荷包被各自收走。月娘合账，瓶儿锁箱，玉楼收帖，雪娥抱走工簿；金莲留在最后，只问你这钱究竟买的是什么。',{silver:-60,house:-2}),
+  route('shared_false_only','再说每个人都是唯一','金莲手里还留着你昨夜的原话','金莲当着五个人把你的话念了一遍。另外四院各拿出一句同样的话；没有人吵，五把钥匙却同时从桌上收了回去。',{house:-14,exposure:8,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:-6,du:18}]))}),
 ]);
 export const SHARED_AFTERGLOW_BEATS = Object.freeze([
-  {id:'five_cups',kicker:'外账初定',title:'五杯仍暖',body:'月娘收账，金莲撕假证，瓶儿锁原件，玉楼给雪娥递来热茶；雪娥把最后一碗汤推回桌心。',choices:Object.freeze([route('after_1_names','逐一念名','确认每人贡献','你念出五人的名与所做之事。玉楼纠正一处遗漏，月娘补到账尾，五人都点了头。',{house:5,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:5}]))}),route('after_1_rest','先叫众人歇','今夜不再派活','雪娥熄灶，瓶儿收钥匙；金莲替月娘拆簪，玉楼把五把椅子挪近。',{house:4})])},
-  {id:'five_boundaries',kicker:'更漏过半',title:'五句边界',body:'衣袍都松了些，肩背落在暖灯里；你先问是否继续靠近。五人各自说出愿意与不愿意，没人替别人回答。',choices:Object.freeze([route('after_2_hear','听完再近','每句同意都可收回','你逐句复述。金莲说“这才算真话”，雪娥把门闩交给月娘，瓶儿仍握自己的钥匙。',{house:5,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:4,yu:3,du:-4}]))}),route('after_2_dim','拨暗灯芯','留得见彼此的光','玉楼先问众人是否愿意，五人都应了，才把纱帐放下一半。',{house:3})])},
-  {id:'five_afterglow',kicker:'天色将明',title:'没有谁被落下',body:'金莲把毯角递给瓶儿，瓶儿替雪娥垫好手腕；雪娥催月娘歇息，月娘让玉楼停止替所有人周全。五人相视而笑。',choices:Object.freeze([route('after_3_pact','重读五约','亲密不取消边界','五人轮流读完自己的条款，又替下一人确认。你最后落名。',{flags:['five_accord_sealed'],house:8}),route('after_3_quiet','并肩等天亮','不再追加承诺','五人彼此留出位置，安静听完最后一更。',{house:5})])},
+  {id:'five_cups',kicker:'外账初定',title:'五杯仍暖',body:'月娘收账，金莲撕假证，瓶儿锁原件，玉楼给雪娥递来热茶；雪娥把最后一碗汤推回桌心。',choices:Object.freeze([route('after_1_names','把五个人的名字念全','哪件事是谁做的，就当面说给她听','你从总账说到灶火，一个个念出名字。玉楼指出漏掉的守门人，月娘当场补上；雪娥听见自己的工不再写成“灶上自办”，才端起那碗汤。',{house:5,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:5}]))}),route('after_1_rest','先叫她们把手里的活放下','今夜不再临时添账、添茶或添一桌饭','雪娥封火，瓶儿系回钥匙，月娘合上最后一页。金莲替她拔簪以前先问疼不疼；玉楼只挪近空椅，不替任何人说一定会坐。',{house:4})])},
+  {id:'five_boundaries',kicker:'更漏过半',title:'五句边界',body:'衣袍都松了些，肩背落在暖灯里；你先问是否继续靠近。五人各自说出愿意与不愿意，没人替别人回答。',choices:Object.freeze([route('after_2_hear','听完每个人再靠近','一句愿意只管眼前这一步','你按座次逐句问，谁说慢便慢，谁伸手停便停。瓶儿始终摸得到钥匙和门；金莲改了一次答案，你也照她新说的做。',{house:5,relAll:Object.fromEntries(HEROINE_IDS.map(id=>[id,{qing:4,yu:3,du:-4}]))}),route('after_2_dim','只拨暗一枚灯芯','纱帐留一半，门闩和彼此的脸仍看得见','玉楼先问过每个人，才放下一半纱帐。雪娥把热水和外袍移到桌中，瓶儿亲手走了一遍门边的路；另一枚灯始终亮着。',{house:3})])},
+  {id:'five_afterglow',kicker:'天色将明',title:'没有谁被落下',body:'金莲把毯角递给瓶儿，瓶儿替雪娥垫好手腕；雪娥催月娘歇息，月娘让玉楼停止替所有人周全。五人相视而笑。',choices:Object.freeze([route('after_3_pact','把五件旧物传一周','别人复述过，也仍由本人亲手收回','总账钥、扇骨、私钥、名帖与停灶牌沿圆席慢慢传过。每个人只复述自己听见的那一条，原物随即回到主人手中；你只在见证栏落名。',{flags:['five_accord_sealed'],house:8}),route('after_3_quiet','今夜不再添一句誓言','有人靠近，有人守着门边，都不必解释成永久','最后一更里没有再铺纸。金莲把问题压在扇下，月娘没有排明日清单，雪娥也不再起身收杯；五个人各留一个舒服的位置，安静等天亮。',{house:5})])},
 ]);
 
 // 五院余夜不是点完按钮便切下一张图。每项安排先让五个人分别回应，确认

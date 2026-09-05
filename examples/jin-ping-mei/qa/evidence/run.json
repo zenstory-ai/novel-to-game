@@ -1,213 +1,250 @@
 {
   "schemaVersion": 1,
-  "runId": "jin-ping-mei-release-candidate-2026-08-22",
+  "runId": "jin-ping-mei-visual-reconstruction-2026-09-05",
   "environment": {
-    "candidate": {
-      "runtimeDigestSha256": "91105ab2f817a228c2881f4296cc360095a37321113e2766ef2162e9d3b3f7f5",
-      "ledgerBaselineCommit": "d3f4087bcd6af45628b5f8979ced063d68e5d5d2",
-      "ledgerBaselineContracts": 320,
-      "ledgerBaselineFailures": 0,
-      "postBaselineEngineDelta": "haremOutlook only replaces a hidden numeric relationship summary with qualitative copy",
-      "haremOutlookQualitativeCopy": "PASS"
-    },
-    "visualRefresh": {
-      "date": "2026-08-25",
-      "scope": "presentation-only; rules, state, save schema and completion conditions unchanged",
-      "browser": "Google Chrome 151.0.7922.174",
-      "mode": "fast visual smoke",
-      "visibleActionCount": 566,
-      "terminal": "day-20-ending",
-      "horizontalOverflow": false,
-      "errors": 0,
-      "runtimeAssetCount": 41,
-      "missingOrUnreferencedRuntimeAssets": 0,
-      "note": "This refresh updates the shipped visual snapshot and asset paths; the authoritative normal-speed complete-run record below remains the 2026-08-22 candidate."
-    },
+    "candidate": "2026-09 标题与开场视觉重构候选",
+    "runtimeDigestSha256": "3ed7fae9460a5f91c8976b3602bd2d5a7b31ef6a19c65177f44cb67b8c14a35a",
     "browser": {
       "name": "Chromium",
       "version": "145.0.7632.6"
     },
+    "testedRuntime": "临时本地 HTTP 服务 + Python Playwright",
     "seed": 42,
-    "normalSpeedRun": true,
-    "durationMs": 56959,
-    "keyboardViewport": [
-      1280,
-      800
-    ],
-    "responsiveRuns": [
-      {
-        "viewport": [
-          390,
-          844
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      },
-      {
-        "viewport": [
-          768,
-          1024
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      },
-      {
-        "viewport": [
-          1024,
-          768
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      },
-      {
-        "viewport": [
-          1280,
-          800
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      },
-      {
-        "viewport": [
-          1920,
-          1080
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      },
-      {
-        "viewport": [
-          2048,
-          973
-        ],
-        "terminal": "day-20-ending",
-        "actualPanelOverflowCount": 0,
-        "errors": 0
-      }
-    ],
+    "mode": "每屏第一项可行主动作的快速完整路径",
+    "inputMode": "Playwright locator.click；不使用 force；DOM 只负责读取候选 selector",
+    "timestamp": "2026-09-05T10:28:25.924768+00:00",
     "errors": {
       "console": [],
-      "page": [],
-      "network": [],
       "http": []
     },
-    "preAgeImages": [
+    "limitations": [
       {
-        "path": "assets/cg/group/title_new_guofeng.webp",
-        "bytes": 297206
+        "scope": "路径覆盖",
+        "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。"
       },
       {
-        "path": "assets/bg/compound_new_guofeng.webp",
-        "bytes": 443276
-      }
-    ],
-    "preAgeImageBytes": 740482,
-    "adultAssetRequestsBeforeConfirmation": 0,
-    "qaWorkspace": "temporary external workspace; browser drivers, full traces and raw screenshots are not shipped with the example",
-    "criticalAssetFailureChecks": [
-      {
-        "case": "safe-preload",
-        "blockedAsset": "cg/group/public_day5",
-        "fatalElement": "#asset-error",
-        "result": "PASS"
+        "scope": "输入覆盖",
+        "reason": "本次使用 Playwright locator.click 且不使用 force；没有复测 2026-08 的全键盘正常速度路径。"
       },
       {
-        "case": "persisted-adult-gallery",
-        "blockedAsset": "cg/yue/prelude",
-        "fatalElement": "#asset-error",
-        "result": "PASS"
+        "scope": "响应式覆盖",
+        "reason": "五档视口覆盖标题与首日，390×844 和 1280×800 覆盖夜访，1280×800 覆盖本次结局；未声明五档完整二十日矩阵。"
+      },
+      {
+        "scope": "体验判断",
+        "reason": "自动化只证明当前候选可启动、渲染、输入、走到结果并重开，不判断主观吸引力、长期平衡或其他浏览器。"
       }
     ]
   },
   "inputTrace": [
-    "Confirm the age gate and start the game with focused Enter.",
-    "Activate 551 visible controls with focused Enter across 552 unique states; trace sha256 5ab3125ac184695f569c66e2463d85afe7ade2989e5c2b8afda57a139d9f335e.",
-    "Reach day 20 ending unstable, then activate restart and return to day 1 opening."
+    "以 Playwright 点击确认年龄门并进入五院标题。",
+    "点击进入首日，完成正堂选择与三拍后章，再真实进入吴月娘夜访并选择第一项路线回答。",
+    "继续以 Playwright locator.click 激活每屏第一项可见可行主动作；主流程动作计数 562。",
+    "到达第二十日失稳结局后点击“换一套暗线”，确认新 seed 回到第一日正堂。"
   ],
   "observations": {
     "launch": {
-      "id": "age-gate-and-title-ready",
+      "id": "age-gate-to-five-court-title",
       "inputs": [
-        "Navigate to seed 42 at normal speed",
-        "Confirm the 18+ gate with Enter"
+        "打开 seed=42",
+        "点击我已成年"
       ],
       "state": {
-        "adultContentAbsentBeforeConfirmation": true,
+        "ageGateVisible": true,
         "adultAssetRequestsBeforeConfirmation": 0,
-        "preAgeImageBytes": 740482,
-        "titleVisible": true
-      }
+        "preAgeImageRequests": [
+          "http://127.0.0.1:56372/assets/cg/group/title_new_guofeng.webp",
+          "http://127.0.0.1:56372/assets/bg/compound_new_guofeng.webp"
+        ],
+        "titleVisible": true,
+        "titleCourtCount": 5
+      },
+      "visual": "qa/evidence/visual-reconstruction-title.jpg"
     },
     "render": {
-      "id": "narrative-screens-and-terminal-rendered",
+      "id": "title-opening-night-ending-rendered",
       "inputs": [
-        "Capture the final day-ledger screen",
-        "Traverse the complete route at six target viewports",
-        "Refresh the shipped snapshot from the 2026-08-25 presentation-only build after a 566-action fast smoke reaches day 20"
+        "检查五档标题与首日",
+        "检查移动端及桌面夜访",
+        "检查桌面结局"
       ],
       "state": {
-        "targetViewports": 6,
-        "terminalRenders": 6,
-        "actualPanelOverflowCount": 0,
-        "browserErrors": 0,
-        "visualRefreshTerminal": "day-20-ending"
+        "titleViewports": [
+          {
+            "name": "mobile",
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "portrait-tablet",
+            "width": 768,
+            "height": 1024,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "tablet",
+            "width": 1024,
+            "height": 768,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "desktop",
+            "width": 1280,
+            "height": 800,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "wide",
+            "width": 1920,
+            "height": 1080,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          }
+        ],
+        "openingViewports": [
+          {
+            "name": "mobile",
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "portrait-tablet",
+            "width": 768,
+            "height": 1024,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "tablet",
+            "width": 1024,
+            "height": 768,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "desktop",
+            "width": 1280,
+            "height": 800,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "wide",
+            "width": 1920,
+            "height": 1080,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          }
+        ],
+        "nightVisitViewports": [
+          {
+            "name": "mobile",
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          },
+          {
+            "name": "desktop",
+            "width": 1280,
+            "height": 800,
+            "horizontalOverflow": false,
+            "verticalPageOverflow": false,
+            "mainPanelOverflow": false,
+            "enabledControlsInViewport": true
+          }
+        ],
+        "endingViewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "horizontalOverflowCount": 0,
+        "mainPanelOverflowCount": 0,
+        "enabledControlsOutsideViewportCount": 0
       },
-      "visual": "qa/evidence/visual-review-ending-after.jpg"
+      "visual": "qa/evidence/visual-reconstruction-day.jpg"
     },
     "input": {
-      "id": "visible-keyboard-path-accepted",
+      "id": "visible-enabled-controls-accepted",
       "inputs": [
-        "Focus each currently visible enabled control",
-        "Activate it with Enter"
+        "Playwright locator.click",
+        "不使用 force",
+        "DOM 仅选择下一 locator"
       ],
       "state": {
-        "mode": "keyboard-only Enter activation of visible controls",
-        "acceptedInputCount": 551,
-        "uniqueStates": 552,
-        "inputTraceSha256": "5ab3125ac184695f569c66e2463d85afe7ade2989e5c2b8afda57a139d9f335e"
-      }
+        "mainPathActionCount": 562,
+        "openingChoiceAccepted": true,
+        "nightVisitAccepted": true,
+        "routeResultVisible": true,
+        "consoleErrors": [],
+        "httpErrors": []
+      },
+      "visual": "qa/evidence/visual-reconstruction-night-visit.jpg"
     },
     "coreLoop": {
-      "id": "twenty-day-loop-complete",
+      "id": "twenty-day-fast-path-complete",
       "inputs": [
-        "Play from the opening through day 20",
-        "Resolve the final sequence"
+        "从第一日正堂持续选择每屏第一项可行主动作"
       ],
       "state": {
-        "days": 20,
+        "day": 20,
         "phase": "ending",
-        "normalSpeedRun": true
+        "historyCount": 206
       }
     },
     "outcome": {
-      "id": "day-20-ending-reached",
+      "id": "day-20-unstable-ending",
       "inputs": [
-        "Complete the final choices",
-        "Read the ending from its heading"
+        "完成第二十日最终选择并读取结局"
       ],
       "state": {
         "terminal": "day-20-unstable-ending",
         "day": 20,
         "phase": "ending",
         "endingId": "unstable",
-        "initialScrollPosition": "heading"
-      }
+        "endingTitle": "五处各自封灯"
+      },
+      "visual": "qa/evidence/visual-reconstruction-ending.jpg"
     },
     "restart": {
-      "id": "day-1-clean-restart",
+      "id": "new-seed-day-1-opening",
       "inputs": [
-        "Focus restart",
-        "Activate restart with Enter"
+        "点击换一套暗线"
       ],
       "state": {
-        "restart": "day-1-opening",
+        "restart": "day-1-opening-new-seed",
         "day": 1,
-        "phase": "opening"
+        "phase": "opening",
+        "seedChanged": true
       }
     }
   }

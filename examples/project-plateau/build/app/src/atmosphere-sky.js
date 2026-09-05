@@ -9,10 +9,10 @@ import { DAYLIGHT_ENERGY_PROFILE } from './daylight-energy.js';
 export const SUN_DIRECTION = new THREE.Vector3(-0.44, 0.55, 0.71).normalize();
 
 const SKY_SETTINGS = Object.freeze({
-  turbidity: 8.2,
-  rayleigh: 1.42,
-  mieCoefficient: 0.009,
-  mieDirectionalG: 0.84,
+  turbidity: 5.6,
+  rayleigh: 2.05,
+  mieCoefficient: 0.006,
+  mieDirectionalG: 0.8,
 });
 
 function createEnvironmentSky() {
@@ -39,11 +39,11 @@ function createDisplaySky() {
     depthWrite: false,
     fog: false,
     uniforms: {
-      topColor: { value: new THREE.Color(0x254752) },
-      upperColor: { value: new THREE.Color(0x5a7777) },
-      horizonColor: { value: new THREE.Color(0xc79568) },
-      lowerColor: { value: new THREE.Color(0x344f48) },
-      sunColor: { value: new THREE.Color(0xffc783) },
+      topColor: { value: new THREE.Color(0x276f87) },
+      upperColor: { value: new THREE.Color(0x78abb6) },
+      horizonColor: { value: new THREE.Color(0xe6bd82) },
+      lowerColor: { value: new THREE.Color(0x6d918a) },
+      sunColor: { value: new THREE.Color(0xffd79b) },
       sunDirection: { value: SUN_DIRECTION.clone() },
     },
     vertexShader: `
@@ -104,16 +104,16 @@ const CLOUD_PROFILES = Object.freeze({
     detailScale: 2.05,
     densityLow: 0.49,
     densityHigh: 0.72,
-    opacity: 0.1,
+    opacity: 0.075,
     altitudeLow: 0.19,
     altitudeFull: 0.3,
     altitudeFade: 0.63,
     altitudeHigh: 0.86,
     wind: new THREE.Vector2(0.00054, 0.00018),
     domainOffset: new THREE.Vector2(-12.4, 7.6),
-    shadowColor: 0x647b7b,
-    bodyColor: 0xafbbb5,
-    sunColor: 0xeac48d,
+    shadowColor: 0x6f9198,
+    bodyColor: 0xc7d8d4,
+    sunColor: 0xf2d09c,
   }),
 });
 

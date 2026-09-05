@@ -1,19 +1,20 @@
 // 资产加载与回退:图片缺失时一律回退色块头像 / 渐变背景,保证没美术也能跑。
 
 const unitPaths = {
-  wukong: 'assets/units/wukong.png', bajie: 'assets/units/bajie.png', sha: 'assets/units/sha.png',
-  tang: 'assets/units/tang.png', tudi: 'assets/units/tudi.png', luosha: 'assets/units/luosha.png',
-  insect: 'assets/units/insect.png', shibi: 'assets/units/shibi.png',
-  niumowang: 'assets/units/niumowang.png', whitebull: 'assets/units/whitebull.png',
-  pixie: 'assets/units/pixie.png', mob_fire1: 'assets/units/mob_fire1.png', mob_fire2: 'assets/units/mob_fire2.png',
-  yumian: 'assets/units/yumian.png', yaojiang: 'assets/units/yaojiang.png',
-  nezha: 'assets/units/nezha.png', litianwang: 'assets/units/litianwang.png',
-  lingji: 'assets/units/lingji.png',
+  wukong: 'assets/units/wukong.webp', bajie: 'assets/units/bajie.webp', sha: 'assets/units/sha.webp',
+  tang: 'assets/units/tang.webp', tudi: 'assets/units/tudi.webp', luosha: 'assets/units/luosha.webp',
+  insect: 'assets/units/insect.png', shibi: 'assets/units/shibi.webp',
+  niumowang: 'assets/units/niumowang.webp', whitebull: 'assets/units/whitebull.webp',
+  pixie: 'assets/units/pixie.webp', mob_fire1: 'assets/units/mob_fire1.webp', mob_fire2: 'assets/units/mob_fire2.webp',
+  yumian: 'assets/units/yumian.webp', yaojiang: 'assets/units/yaojiang.webp',
+  nezha: 'assets/units/nezha.webp', litianwang: 'assets/units/litianwang.webp',
+  lingji: 'assets/units/lingji.webp',
 };
 const bgPaths = {
-  cuiyun: 'assets/bg/cuiyun.jpg', huoyan: 'assets/bg/huoyan.jpg',
-  leiji: 'assets/bg/leiji.jpg', overworld: 'assets/bg/overworld.jpg',
-  moyundong: 'assets/bg/moyundong.jpg', bibotan: 'assets/bg/bibotan.jpg',
+  cuiyun: 'assets/bg/cuiyun.jpg?v=20260905', huoyan: 'assets/bg/huoyan.jpg?v=20260905',
+  'huoyan-rain': 'assets/bg/huoyan-rain.jpg?v=20260905',
+  leiji: 'assets/bg/leiji.jpg?v=20260905', overworld: 'assets/bg/overworld.jpg?v=20260905',
+  moyundong: 'assets/bg/moyundong.jpg?v=20260905', bibotan: 'assets/bg/bibotan.jpg?v=20260905',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
@@ -52,7 +53,7 @@ function loadOne(path) {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = () => resolve(null);
-    img.src = path;
+    img.src = path + (path.includes('?') ? '&' : '?') + 'art=20260905-reimagine';
   });
 }
 
@@ -62,7 +63,6 @@ export async function loadAssets() {
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
   for (const [k, p] of Object.entries(treasurePaths)) jobs.push(loadOne(p).then((i) => (images[`t:${k}`] = i)));
-  jobs.push(loadOne('assets/cover.jpg').then((i) => (images['cover'] = i)));
   await Promise.all(jobs);
   return images;
 }
@@ -116,8 +116,4 @@ export function bgStyle(key) {
 export function bgURL(key) {
   const img = images[`b:${key}`];
   return img ? img.src : null;
-}
-
-export function coverURL() {
-  return images['cover'] ? images['cover'].src : null;
 }

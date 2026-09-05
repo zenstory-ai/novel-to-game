@@ -3,7 +3,7 @@
 import { TEXT } from './text.js';
 import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, TREASURES, GROWTH } from './data.js';
 import { audio } from './audio.js';
-import { loadAssets, coverURL, bgURL, unitURL, bgStyle, treasureURL } from './assets.js';
+import { loadAssets, bgURL, unitURL, bgStyle, treasureURL } from './assets.js';
 import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard, resetOverlayShading } from './ui.js';
 import { unitLevelStats, skillsAtLevel, effectiveSkill } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend, allocateSkillPoint, applyRecommendSkills } from './growth.js';
@@ -371,6 +371,8 @@ function setupTopbar() {
     },
     onLoad: () => {
       if (phase === 'battle') { toast(app, '战斗中不可读档'); return; }
+      // 对话拥有尚未结束的剧情续程，不能在半句话中另起一次 gotoStage。
+      if (app.querySelector('.dlg-box')) { toast(app, '先把这段话听完，再读档。'); return; }
       const data = loadGameData();
       if (!data) { toast(app, TEXT.ui.noSave); return; }
       campaign = data;
@@ -409,14 +411,24 @@ function showTitle() {
   const s = el('div', 'screen title-screen');
   s.id = 'title-screen';
   const cover = el('div', 'title-cover');
-  const url = coverURL();
+  const url = bgURL('huoyan');
   if (url) cover.style.backgroundImage = `url(${url})`;
   else cover.classList.add('fallback');
   const mask = el('div', 'title-mask');
   const logo = el('div', 'title-logo');
-  const h1 = el('h1', '', TEXT.gameTitle);
+  const kicker = el('div', 'title-kicker', '西游记 · 第五十九至六十一回');
+  const h1 = el('h1');
+  h1.setAttribute('aria-label', TEXT.gameTitle);
+  h1.append(el('span', 'title-line', '三借'), el('span', 'title-line', '芭蕉扇'));
+  const seal = el('span', 'title-seal', '西行');
+  seal.setAttribute('aria-hidden', 'true');
+  const hero = el('img', 'title-hero');
+  hero.src = unitURL('wukong');
+  hero.alt = '';
+  hero.setAttribute('aria-hidden', 'true');
+  const inscription = el('div', 'title-inscription', '一扇息火 · 二扇生风 · 三扇落雨');
   const sub = el('p', '', TEXT.gameSubtitle);
-  logo.append(h1, sub);
+  logo.append(kicker, h1, seal, sub);
   const menu = el('div', 'title-menu');
   const hasSave = !!loadGameData();
   if (hasSave) {
@@ -451,7 +463,7 @@ function showTitle() {
     });
   });
   menu.append(bStart, bHelp);
-  s.append(cover, mask, logo, menu);
+  s.append(cover, mask, hero, inscription, logo, menu);
   app.appendChild(s);
   // 键盘:↑/↓ 循环选钮,回车确认(简报验收:键盘全流程可通关)
   const tBtns = [...menu.querySelectorAll('button')];
@@ -476,7 +488,7 @@ function showTitle() {
 }
 
 function clearScreens() {
-  app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .modal-mask, .story-bg').forEach((n) => n.remove());
+  app.querySelectorAll('.screen, .battle-root, .overworld-root, .ending-root, .dlg-box, .dlg-stage, .modal-mask, .story-bg').forEach((n) => n.remove());
   resetOverlayShading();
   overworldCtl = null;
   treasureCtl = null;
@@ -832,14 +844,11 @@ async function showEnding() {
   clearScreens();
   const wrap = el('div', 'ending-root');
   wrap.id = 'ending-root';
-  // 火根断绝发生在火焰山,结局底图必须用 huoyan(简报 T1:此前错用翠云山竹林);
-  // 独立一层 .ending-bg 承载「雨后」退色调,不滤到上面的卷轴面板。
+  // 先保留火口原貌；火根断绝时才切换同机位的雨后资产，不用滤镜冒充熄火。
   const bg = bgURL('huoyan');
-  if (bg) {
-    const bgd = el('div', 'ending-bg');
-    bgd.style.backgroundImage = `linear-gradient(rgba(20,34,44,0.52), rgba(20,34,44,0.38)), url(${bg})`;
-    wrap.appendChild(bgd);
-  }
+  const bgd = el('div', 'ending-bg');
+  if (bg) bgd.style.backgroundImage = `url(${bg})`;
+  wrap.appendChild(bgd);
   app.appendChild(wrap);
   const sleep = (ms) => new Promise((r) => setTimeout(r, FAST ? Math.max(30, ms * 0.2) : ms));
   const E = TEXT.story.ending;
@@ -874,6 +883,8 @@ async function showEnding() {
   // 火根断绝后,均匀雨幕转为薄光(AD 结局签名帧:雨后晴土,不再是全屏密集大雨)
   wrap.classList.remove('raining', 'rain-2', 'rain-3');
   wrap.classList.add('rain-glow');
+  const restored = bgURL('huoyan-rain');
+  if (restored) bgd.style.backgroundImage = `url(${restored})`;
 
   // 还扇西行
   const panel = el('div', 'ending-panel');

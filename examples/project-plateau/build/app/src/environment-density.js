@@ -100,13 +100,15 @@ function makeDegradableGroundAccents(scene) {
   // Alternate route margins and depth bands so the plateau no longer reads
   // as one flat horizontal strip or a regularly spaced tree row.
   for (let index = 0; index < marginCount; index += 1) {
-    const nearBand = index < 12;
+    const nearBand = index < 18;
     const side = index % 2 ? -1 : 1;
-    const z = nearBand
-      ? 48 + random() * 34
-      : -54 + random() * 70;
-    const x = side * (nearBand ? 14 + random() * 10 : 20 + random() * 13);
-    const scale = nearBand ? 1.35 + random() * 1.25 : 0.9 + random() * 1.05;
+    const z = nearBand ? 64 - random() * 103 : -54 + random() * 70;
+    const corridorCentre = z > 18 ? 3 : 1;
+    const marginDistance = z > 18 ? 4.4 : z > -15 ? 6 : 8.2;
+    const x = nearBand
+      ? corridorCentre + side * (marginDistance + random() * 2)
+      : side * (20 + random() * 13);
+    const scale = nearBand ? 1.8 + random() * 1.8 : 0.9 + random() * 1.05;
     const rotation = random() * Math.PI * 2;
     const tilt = side * (0.04 + random() * 0.08);
     const instanceScale = [
@@ -126,7 +128,7 @@ function makeDegradableGroundAccents(scene) {
     ];
     color.setHSL(...marginColor);
     margins.setColorAt(index, color);
-    const matureScale = Math.min(0.5, scale * 0.22);
+    const matureScale = Math.min(0.72, scale * 0.28);
     const scaleRatio = matureScale / scale;
     fernLibraryPlacements.push(Object.freeze({
       index: wetlandCount + index,
@@ -138,8 +140,8 @@ function makeDegradableGroundAccents(scene) {
       instanceScale: Object.freeze(instanceScale.map((value) => value * scaleRatio)),
       color: Object.freeze(marginColor),
       sourceRole: 'degradable-margin-accent-replacement',
-      maxDiameterMeters: 1.8,
-      maxHeightMeters: 0.9,
+      maxDiameterMeters: nearBand ? 2.6 : 1.8,
+      maxHeightMeters: nearBand ? 1.4 : 0.9,
     }));
   }
 
@@ -204,6 +206,18 @@ function makeEnvironmentDensity(scene) {
     return FAMILY_LAYOUT.some((animal) => Math.hypot(x - animal.x, z - animal.z) < 3.2);
   }
 
+  // Low, pliable plants can approach the walking corridor much more closely
+  // than trunks, deadfall or moss mats. Keeping only a narrow boot-width seam
+  // open replaces the old bare "game lane" with readable edge parallax while
+  // leaving every collision, track impression and animal silhouette untouched.
+  function blocksGroundCoverRead(x, z) {
+    if (Math.hypot(x - TRACK_IMPRESSION.x, z - TRACK_IMPRESSION.z) < 3.8) return true;
+    if (Math.hypot(x - 1, z - 81) < 13) return true;
+    if (z > 18 && z < 72 && Math.abs(x - 3) < 2) return true;
+    if (z > -58 && z <= 18 && Math.abs(x - 1) < 3.6) return true;
+    return FAMILY_LAYOUT.some((animal) => Math.hypot(x - animal.x, z - animal.z) < 3.2);
+  }
+
   const forestFloorDetritus = createForestFloorDetritusLayer({
     terrainHeight,
     terrainGradient,
@@ -238,7 +252,19 @@ function makeEnvironmentDensity(scene) {
       microclimate: 'brook-bank-moisture',
     };
   });
-  const coverClusters = [...shadeClusters, ...wetlandClusters];
+  const routeEdgeClusters = Array.from({ length: 12 }, (_, index) => {
+    const z = THREE.MathUtils.lerp(66, -46, index / 11);
+    const corridorCentre = z > 18 ? 3 : 1;
+    const corridorHalfWidth = z > 18 ? 4 : 6.2;
+    const side = index % 2 ? -1 : 1;
+    return {
+      x: corridorCentre + side * (corridorHalfWidth + (index % 3) * 0.65),
+      z,
+      radius: 2.2 + (index % 4) * 0.38,
+      microclimate: 'route-edge-parallax',
+    };
+  });
+  const coverClusters = [...routeEdgeClusters, ...shadeClusters, ...wetlandClusters];
 
   for (let index = 0; index < SCENE_BUDGET.groundCover; index += 1) {
     let cluster = coverClusters[index % coverClusters.length];
@@ -254,10 +280,12 @@ function makeEnvironmentDensity(scene) {
       x = cluster.x + Math.cos(angle) * radius;
       z = cluster.z + Math.sin(angle) * radius * (0.72 + random() * 0.42);
       attempts += 1;
-    } while (blocksAuthoredRead(x, z) && attempts < 30);
+    } while (blocksGroundCoverRead(x, z) && attempts < 30);
     const variant = index % coverMeshes.length;
     const wetness = terrainWetness(x, z);
-    const scale = 0.42 + random() ** 1.35 * 1.12;
+    const scale = cluster.microclimate === 'route-edge-parallax'
+      ? 0.9 + random() ** 1.18 * 1.8
+      : 0.42 + random() ** 1.35 * 1.12;
     const tiltX = (random() - 0.5) * 0.05;
     const rotation = random() * Math.PI * 2;
     const tiltZ = (random() - 0.5) * 0.08;

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "runId": "project-plateau-main-path",
   "environment": {
-    "browser": "151.0.7922.172",
+    "browser": "152.0.7977.77",
     "viewport": [
       1440,
       900
@@ -30,11 +30,11 @@
     "launch": {
       "id": "00-clean-start",
       "inputs": [
-        "Enter the basin"
+        "Follow the spoor"
       ],
       "state": {
         "mode": "order",
-        "sceneChildren": 72,
+        "sceneChildren": 73,
         "triangles": 1,
         "player": {
           "position": {
@@ -59,6 +59,11 @@
           "returnRoute": null,
           "runStatus": "active",
           "resultBand": null
+        },
+        "assetRecovery": {
+          "requiredAssetRequest": "iguanodon-hy3d-v35-stylized.glb",
+          "failureState": "runtime-error-ready-false",
+          "retryState": "order-ready-after-render"
         }
       },
       "visual": "build/evidence/current-run/00-clean-start.jpg"
@@ -70,15 +75,15 @@
       ],
       "state": {
         "mode": "terminal",
-        "sceneChildren": 72,
+        "sceneChildren": 73,
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.385,
-            "z": 62.022
+            "x": 2.394,
+            "z": 62.032
           },
-          "remainingLight": 92.385,
-          "distanceTravelled": 134.078,
+          "remainingLight": 92.313,
+          "distanceTravelled": 134.062,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -108,7 +113,30 @@
             "branch-pull"
           ]
         },
-        "terminal": "strong-field-record"
+        "terminal": "strong-field-record",
+        "visualReview": {
+          "title": {
+            "visual": "build/evidence/current-run/00-title.jpg",
+            "state": {
+              "mode": "title",
+              "viewport": [
+                1440,
+                900
+              ]
+            }
+          },
+          "field": {
+            "visual": "build/evidence/current-run/01-field-glade.jpg",
+            "state": {
+              "mode": "field",
+              "zone": "iguanodon-glade",
+              "viewport": [
+                1440,
+                900
+              ]
+            }
+          }
+        }
       },
       "visual": "build/evidence/current-run/01-designed-outcome.jpg"
     },
@@ -133,7 +161,7 @@
       ],
       "state": {
         "acceptedInputCount": 15,
-        "distanceTravelled": 134.078
+        "distanceTravelled": 134.062
       }
     },
     "coreLoop": {
@@ -158,15 +186,15 @@
       ],
       "state": {
         "mode": "terminal",
-        "sceneChildren": 72,
+        "sceneChildren": 73,
         "triangles": 1,
         "player": {
           "position": {
-            "x": 2.385,
-            "z": 62.022
+            "x": 2.394,
+            "z": 62.032
           },
-          "remainingLight": 92.385,
-          "distanceTravelled": 134.078,
+          "remainingLight": 92.313,
+          "distanceTravelled": 134.062,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -203,11 +231,11 @@
     "restart": {
       "id": "02-clean-restart",
       "inputs": [
-        "Take the route again"
+        "Walk the bend again"
       ],
       "state": {
         "mode": "order",
-        "sceneChildren": 72,
+        "sceneChildren": 73,
         "triangles": 1,
         "player": {
           "position": {

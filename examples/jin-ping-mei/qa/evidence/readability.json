@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "runtimeDigestSha256": "3ed7fae9460a5f91c8976b3602bd2d5a7b31ef6a19c65177f44cb67b8c14a35a",
+  "originalPortraits": true,
+  "originalArtSha256": {
+    "assets/cg/group/title_new_guofeng.webp": "375f73c10aea38a0235e84467bfabf8f13fe5a55322875e4af3711fa0a1b3bfc",
+    "assets/heroine/yue/night.webp": "5f9dd4ad1e7bf7c91643d0f519bdbf90b158d06c7ea6b3db6bb1d10032d44803",
+    "assets/heroine/pan/night.webp": "d9e966068e2f727c37b0e23df3e59a5f173d78c1146ba69e7acd7de2c946df99",
+    "assets/heroine/pinger/night.webp": "982804fc9d873848965eb4e70e7ef6090740d135c622a281936cb84280d93b81",
+    "assets/heroine/meng/night.webp": "69809edd2de568e73956fd4f2d45c47a5d99e5ad2bb1d6c5e019eedeefc126d7",
+    "assets/heroine/xuee/night.webp": "7394d8b7ff4e48498266ea2c16d9c6851949bdc3e444fb39fc761c34003ce3f8"
+  },
+  "keyboardChoice": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "text": [
+        {
+          "tag": "P",
+          "color": "rgb(234, 219, 197)",
+          "fontSize": 14.4,
+          "contrastRatio": 8.45
+        },
+        {
+          "tag": "B",
+          "color": "rgb(226, 189, 120)",
+          "fontSize": 12,
+          "contrastRatio": 6.45
+        },
+        {
+          "tag": "SPAN",
+          "color": "rgb(219, 200, 171)",
+          "fontSize": 13.76,
+          "contrastRatio": 7.04
+        },
+        {
+          "tag": "SMALL",
+          "color": "rgb(207, 192, 170)",
+          "fontSize": 12.16,
+          "contrastRatio": 6.44
+        }
+      ],
+      "layout": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 800,
+        "horizontalOverflow": false,
+        "verticalPageOverflow": false,
+        "mainPanelOverflow": false,
+        "enabledControlsInViewport": true
+      }
+    },
+    {
+      "viewport": "mobile",
+      "text": [
+        {
+          "tag": "P",
+          "color": "rgb(234, 219, 197)",
+          "fontSize": 13.44,
+          "contrastRatio": 8.45
+        },
+        {
+          "tag": "B",
+          "color": "rgb(226, 189, 120)",
+          "fontSize": 12,
+          "contrastRatio": 6.45
+        },
+        {
+          "tag": "SPAN",
+          "color": "rgb(219, 200, 171)",
+          "fontSize": 12.64,
+          "contrastRatio": 7.04
+        },
+        {
+          "tag": "SMALL",
+          "color": "rgb(207, 192, 170)",
+          "fontSize": 12,
+          "contrastRatio": 6.44
+        }
+      ],
+      "layout": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": false,
+        "verticalPageOverflow": false,
+        "mainPanelOverflow": false,
+        "enabledControlsInViewport": true
+      },
+      "stackedChoicesWhileHovered": true
+    }
+  ],
+  "command": "python3 test/verify_readability.py --write-evidence"
+}

@@ -371,7 +371,7 @@ export function routeStance(state, heroineId) {
   return {
     covenant: row.covenant,
     private: row.private,
-    tone: row.covenant === row.private ? '两面都在看' : row.covenant > row.private ? '更信共同承担' : '更信私下情分',
+    tone: row.covenant === row.private ? '人前人后的话都记着' : row.covenant > row.private ? '更记得你当众做过的事' : '更记得门内只对她说的话',
   };
 }
 
@@ -381,7 +381,7 @@ const ROUTE_BRANCH_MEMORY = Object.freeze({
     private: '她记得你总把最难看的账先带进她门内；这一次会追问信任是否又让她独自遮丑。',
   }),
   pan_jinlian: Object.freeze({
-    covenant: '她已经把锋利磨成人人可用的追问程序；这一次要看你是否也肯受同一套真话约束。',
+    covenant: '她已经让别人也能拿原话来问。这一次，她要看你自己被问时会不会改口。',
     private: '她记得那些只在角门内成立的偏话；这一次会逼你分清亲近、撒谎与可停止的追问。',
   }),
   li_pinger: Object.freeze({
@@ -2247,10 +2247,10 @@ export function currentFivePrivatePrices(state) {
     || JSON.stringify(pending.coalition) !== JSON.stringify(fivePriceCoalition(pending.protocol, pending.right, pending.replies))) return null;
   const names = pending.coalition.members.map((id) => HEROINES[id].short).join('、');
   const result = pending.coalition.kind === 'full'
-    ? { title:'五封不同的答复仍能互相作证', body:'没有人被要求同声，五个人却都保留了足够的互证条件。明日可以继续谈五院共同出证，但每页仍须本人放行。' }
+    ? { title:'五封信说得不一样，却能对上同一件事', body:'月娘没有把五封信誊成一句。她只把日期、纸脚和各人亲手经过的那一段排在一起；明日若要拿出去，仍要一封一封问主人。' }
     : pending.coalition.kind === 'limited'
-      ? { title:'有限互证候选成形，今夜尚无人预签同席', body:`${names}愿意成为明日互证候选；其余院门没有被判作失败者，也不会被强拉进共同授权。外账只能写“候选间互证、非候选者自持”，不能提前把候选叫作盟员。` }
-      : { title:'五封各归原主，只保下一条权利底线', body:'今夜没有形成可共同授权的联盟。明日仍须结外账，但不能用付银、见官或分册按钮把这道裂口洗成五院圆满。' };
+      ? { title:`${names}肯互借一页，其余的信仍各自收好`, body:`${names}只答应明日在彼此看过的那几页上落名。其余人没有被说成不肯帮忙，也没有人替她们把信抽走。` }
+      : { title:'五封信都回到了主人手里', body:'月娘没有强行把信订成一册。明日的外账仍要面对，但今夜没有谁愿意把自己的名字、原话和钥匙一并交给别人。' };
   const jiaoerEcho = fivePriceJiaoerEcho(state, 'resolution');
   const dayPreparation = fivePriceDayPreparation(state, 'resolution');
   return {
@@ -4309,10 +4309,10 @@ export function publicEvidenceOptions(state) {
         ...item,
         strength,
         meta: strength === 2
-          ? (item.id === 'cross_words' ? '收口成立 · 让改口撞上前证' : '强承接 · 能托住下一步')
+          ? (item.id === 'cross_words' ? '正好收住前两样 · 改口有物可对' : '接得上 · 下一样还能往下查')
           : strength === 1
-            ? (item.id === 'grain_measure' ? '事实迟到 · 仍有效但无法回填前缝' : '旁证补强 · 不能代替最后拆口')
-            : '承接悬空 · 对方可立即反问',
+            ? (item.id === 'grain_measure' ? '米斗来迟了 · 短米仍真，前面的空处却补不回' : '能添一笔 · 还不能回答前面的反问')
+            : '前后接不上 · 堂下会当场追问',
       };
     });
 }
@@ -4327,24 +4327,24 @@ export function choosePublicEvidence(state, evidenceId) {
     return {
       ok:true,
       text:evidence.resistance,
-      announcement:`第${state.publicEvidence.selected.length}步，${evidence.label}已落案。反问：${evidence.resistance}`,
+      announcement:`第${state.publicEvidence.selected.length}样，${evidence.label}已经摆上堂。${evidence.resistance}`,
     };
   }
   const evaluation = publicEvidenceEvaluationForState(state, state.publicEvidence.selected);
-  if (!evaluation) return { ok:false, error:'三步证链没有接成可核的次序。' };
+  if (!evaluation) return { ok:false, error:'这三样还没有按能查下去的次序摆好。' };
   state.publicEvidence.result = evaluation.id;
   state.log.push(evaluation.outcome.body);
   return {
     ok:true,
     text:evaluation.outcome.body,
-    announcement:`第3步，${evidence.label}已落案。判词：${evaluation.outcome.label}。${evaluation.outcome.title}。承接力 ${evaluation.score}/6。${evaluation.outcome.body}`,
+    announcement:`第三样，${evidence.label}已经摆上堂。结果：${evaluation.outcome.label}——${evaluation.outcome.title}。${evaluation.outcome.body}`,
   };
 }
 
 export function completePublicEvidence(state) {
   const current = currentPublicEvidence(state);
-  if (!current?.resolved || !current.result) return { ok:false, error:'先把三份证物依次递完，再进入主签裁决。' };
-  applyEffects(state, current.result.effects, null, `堂前公审：${current.result.label}`);
+  if (!current?.resolved || !current.result) return { ok:false, error:'先把三样东西依次递完，再决定由谁在收案文书上落款。' };
+  applyEffects(state, current.result.effects, null, `堂前对账：${current.result.label}`);
   record(state, 'public_evidence_chain', {
     event:PUBLIC_EVIDENCE_CHAIN.id,
     chain:[...current.selected],
@@ -4511,7 +4511,7 @@ function publicEvidenceFutureEcho(state) {
     if (evidence.id === 'rebuttable') return `第十五日的案卷既有承接空白，也保留韩道国先于证物被押的时辰。复案必须同时补证并区分押前、押后口供；主签不能把一段新证据扩成对旧预断的追认。${coda}`;
     return `第十五日三份证物没有接成链，韩道国又先被押成共同答案。堂外已经把这场公审讲成五院围住一个伙计逼供；今日若不同时清证物次序与错误归罪，缺口会继续被一名替罪者吞掉。${coda}`;
   }
-  if (evidence.id === 'complete') return `第十五日那条证链仍能逐段复查：雪娥的米斗定事实，账页或门簿接经手，最后一份证物才拆口供。韩道国、玳安与应伯爵此后只能各自质疑一段，不能再用一套圆话抹掉全部。${coda}`;
+  if (evidence.id === 'complete') return `第十五日三样东西仍可重新摆一遍：先称雪娥的米，中间以账页或门簿追经手，最后才拿改口来对。韩道国、玳安与应伯爵可以各问其中一段，却不能再用一句圆话把短米、中间那只手和最后的改口一并抹掉。${coda}`;
   if (evidence.id === 'rebuttable') return `第十五日的案卷仍有一处承接空白。韩道国正要求重验，应伯爵也把“待复核”讲成五院自相矛盾；今日结外账时，必须决定由谁补证而不是再靠主签压过去。${coda}`;
   return `第十五日三份真证没有接成一条链。玳安未认空白门路，韩道国与应伯爵已经把公审改讲成围人逼供；今日若仍只清银不清经手，这个版本会比原件传得更远。${coda}`;
 }
@@ -5253,24 +5253,24 @@ export function personalFinaleRouteReason(history, heroineId, procedure) {
   });
   const covenantRows = rows.filter((row) => row.lane === 'covenant');
   const privateRows = rows.filter((row) => row.lane === 'private');
-  let historyText = '她此前没有可核的人物路线选择，因此没有一条隐藏倾向可以替她预先答应善后。';
+  let historyText = '你们之前没有做成一件足以回答今日的事。她不会因为气氛到了，就替空白点头。';
   if (covenantRows.length > privateRows.length) {
     const latest = covenantRows.at(-1);
-    historyText = `她的路线账留下共同承担${covenantRows.length}次、本人私门${privateRows.length}次；最近支撑共同规则的是第${latest.day}日“${latest.label}”：${latest.text}这项真选择，而非汇总分数，构成她今天核约的同向依据。`;
+    historyText = `你更常把她的话带到人前。最近一次是第${latest.day}日的“${latest.label}”：${latest.text}她今日记得的是这件真事，不是你们累计了多少次。`;
   } else if (privateRows.length > covenantRows.length) {
     const latest = privateRows.at(-1);
-    historyText = `她的路线账留下共同承担${covenantRows.length}次、本人私门${privateRows.length}次；最近支撑本人私门的是第${latest.day}日“${latest.label}”：${latest.text}这项真选择，而非汇总分数，构成她今天核约的同向依据。`;
+    historyText = `你更常把她的话留在门内。最近一次是第${latest.day}日的“${latest.label}”：${latest.text}她今日要从这件真事往下谈，不让一句“我们亲近”替代回答。`;
   } else if (rows.length) {
     const covenant = covenantRows.at(-1);
     const privateChoice = privateRows.at(-1);
-    historyText = `她的路线账在共同承担与本人私门各有${covenantRows.length}次：最近一项共同规则是第${covenant.day}日“${covenant.label}”：${covenant.text}最近一项本人私门是第${privateChoice.day}日“${privateChoice.label}”：${privateChoice.text}两项都仍在场，没有一边能被系统写成默认答案。`;
+    historyText = `你们既有人前做过的事，也有只在门内说过的话。最近的两件是第${covenant.day}日“${covenant.label}”：${covenant.text}以及第${privateChoice.day}日“${privateChoice.label}”：${privateChoice.text}她不打算为了今夜好看，就把其中一件当成没发生。`;
   }
-  return `${historyText}本次真实提案是“${procedure?.label ?? '未知善后'}”：${procedure?.summary ?? ''}其直接触及${procedure?.focus ?? '本人权利'}。`;
+  return `${historyText}现在摆在她面前的是“${procedure?.label ?? '还没说清的安排'}”：${procedure?.summary ?? ''}它会直接动到${procedure?.focus ?? '她自己手里的东西'}。`;
 }
 
 export function personalFinaleSelectedProcedureReason(procedure, heroineId) {
   if (!procedure?.id || !HEROINE_IDS.includes(heroineId) || !PERSONAL_FINALE_DEPARTURES[procedure.id]) return '';
-  return `你与${HEROINES[heroineId].short}在第三答落下的真实程序是“${procedure.label}”：${procedure.summary}它只处分${procedure.focus}。她可以确认自己怎样陪你执行、怎样不替你遮掩，却不能替另外四院接下、改写或拒绝；因此这项共同决定必须在四个人逐一亲口作答以后才生效。`;
+  return `你和${HEROINES[heroineId].short}最后说定的是“${procedure.label}”：${procedure.summary}这件事只动到${procedure.focus}。她能答应自己怎样做，也能当面不答应；另外四个人仍要一个个开口，她不替任何人点头。`;
 }
 
 export function personalFinaleSelectedReasons(history, heroineId, beatIndex, selectedChoice) {
@@ -6317,11 +6317,11 @@ function sharedFinaleRouteReason(history, heroineId) {
     const lane = routeChoiceLane(heroineId, entry.choice);
     return choice && lane ? [{ day:entry.day, choice, lane }] : [];
   });
-  if (!rows.length) return `${HEROINES[heroineId].short}此前没有一项可核的人物路线选择；重读五约或并肩等天亮都不能从好感数值补出她的长期相处方式。`;
+  if (!rows.length) return `${HEROINES[heroineId].short}之前没有和你做成一件足以带到今夜的事。重念一遍约定，也不能替她编出早已愿意的答案。`;
   const covenant = rows.filter((row) => row.lane === 'covenant');
   const privateRows = rows.filter((row) => row.lane === 'private');
   const latest = rows.at(-1);
-  return `她在二十日里留下共同承担${covenant.length}次、本人私门${privateRows.length}次；最近一项真实选择是第${latest.day}日“${latest.choice.label}”（${latest.choice.hint}）：${latest.choice.text}五院共守只能继续核验这段具体来往，不能用终夜风格覆盖它。`;
+  return `她最近记得的是第${latest.day}日“${latest.choice.label}”（${latest.choice.hint}）：${latest.choice.text}今夜的灯再暖，也只能从这件真事往下谈，不能把她以前的点头或拒绝一并抹掉。`;
 }
 
 function sharedAfterglowChoiceReason(choice, heroineId, beatIndex) {
@@ -10053,11 +10053,11 @@ function allianceEndingText(members, style = null) {
     : style === '明账共恋'
       ? '去处与偏爱仍围着你发生，却不再靠猜；每一次靠近、改口与独宿都必须当着联盟成员说清。'
       : style === '有限共居'
-        ? '她们保留各自院门，只把确实愿意共同承担的部分放到桌心；亲近没有被伪装成吞并。'
+        ? '她们仍各自收着院门钥匙，只把亲口答应的东西放到桌中。坐得近，不等于从此什么都归在一起。'
         : '';
   if (exact) return `${exact}${styleText ? ` ${styleText}` : ''}`;
   const names = members.map((id) => HEROINES[id].name).join('、');
-  return `${names}把能共同承担的事写成一份有限同盟。未入盟的院门仍保留自己的账与去路，你也不能拿这份亲近冒充五院圆满。${styleText ? ` ${styleText}` : ''}`;
+  return `${names}只把彼此亲手经过、亲口答应的事写在同一页。没有坐进来的人仍收着自己的账、钥匙和去处；你不能因为今夜亲近，就说五处院门都已点头。${styleText ? ` ${styleText}` : ''}`;
 }
 
 function heroineEpilogueVariant(state, endingId, allianceMembers, exclusiveHeroine, heroineId) {
@@ -10118,11 +10118,11 @@ function endingEpilogues(state, endingId, allianceMembers, exclusiveHeroine) {
       : '';
     const firstOpeningText = firstOpening?.epilogueTexts?.[heroine] ?? '';
     const routeHistoryNote = stance.covenant > stance.private
-      ? `二十日里，你有 ${stance.covenant} 次把她的要求带到共同规则中，另有 ${stance.private} 次只留在门内。这封笺记住了你更偏向共同承担。`
+      ? `二十日里，你更常把她说过的话带到人前，让别人也能看见你有没有照做。这封笺记的是那些真正发生过的事。`
       : stance.private > stance.covenant
-        ? `二十日里，你有 ${stance.private} 次选择私下相护，只有 ${stance.covenant} 次愿意让众人共同追问。这份亲近也留下了旁院要回看的后果。`
-        : stance.covenant
-          ? `共同承担与私下情分各有 ${stance.covenant} 次。她没有替你把两种选择算成同一件事。`
+        ? `二十日里，你更常把话留在她的门内。那些亲近是真的，门外等过、猜过和来问过的人也是真的。`
+      : stance.covenant
+          ? `你既在人前接过她的话，也和她关过门。她记得这是两种不同的事，不打算替你混成一句“都很好”。`
           : '你没有真正走进她的路线；结局仍会交代她怎样收回自己的名字、钥匙与去处。';
     const habitNote = habit.mode
       ? `已走的 ${habit.chapters}/4 章夜谈更偏向“${habit.label}”：明说 ${habit.counts.honest}、由她定界 ${habit.counts.listen}、门内私情 ${habit.counts.private}。`

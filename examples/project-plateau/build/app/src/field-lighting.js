@@ -8,8 +8,8 @@ export function createFieldLighting(scene) {
     DAYLIGHT_ENERGY_PROFILE.ambientIntensity,
   );
   const hemisphere = new THREE.HemisphereLight(
-    0x91aaa9,
-    0x2b372e,
+    0xb3d4d5,
+    0x4a4738,
     DAYLIGHT_ENERGY_PROFILE.hemisphereIntensity,
   );
   const sun = new THREE.DirectionalLight(0xffbd70, DAYLIGHT_ENERGY_PROFILE.sunIntensity);

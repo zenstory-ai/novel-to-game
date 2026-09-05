@@ -11,6 +11,28 @@ const engine = await import(resolve(here, '../build/app/js/engine.js'));
 
 const digest = (value) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const assertText = (value, label) => assert.equal(typeof value === 'string' && value.length > 0, true, label);
+const ROUTE_RULES_DIGEST = '3b3c6bd6dc565ff05825d16738ef3a76ad87bd1392d7d149794dc55ff8c005fa';
+
+function routeRulesProjection() {
+  const route = Object.fromEntries(Object.entries(data.ROUTE_CHOICES).map(([heroine, steps]) => [
+    heroine,
+    steps.map((choices) => choices.map((choice) => ({
+      id: choice.id,
+      effects: choice.effects,
+      condition: choice.condition ?? null,
+    }))),
+  ]));
+  const accord = Object.fromEntries(Object.entries(data.ACCORD_CHOICES).map(([heroine, choice]) => [
+    heroine,
+    { id: choice.id, effects: choice.effects, condition: choice.condition ?? null },
+  ]));
+  const shared = data.SHARED_NIGHT_CHOICES.map((choice) => ({
+    id: choice.id,
+    effects: choice.effects ?? null,
+    condition: choice.condition ?? null,
+  }));
+  return { route, accord, shared };
+}
 
 function finishOpening(state) {
   let beats = 0;
@@ -119,6 +141,7 @@ for (const [index, path] of Object.values(contract.validationPaths).entries()) {
 assert.deepEqual(Object.keys(data.DAY_ACTIONS), contract.stateSurface.dayActions);
 assert.deepEqual(data.HEROINE_IDS, contract.stateSurface.relationshipActors);
 assert.deepEqual(data.OPENING_CHOICES.map(({ id }) => id), contract.openingActions.map(({ id }) => id));
+assert.equal(digest(routeRulesProjection()), ROUTE_RULES_DIGEST, '文案改写不得改动五条路线、五院约或共享终夜的 id/condition/effects');
 
 const firstRuns = contract.openingActions.map(runOpening);
 const replayRuns = contract.openingActions.map(runOpening);

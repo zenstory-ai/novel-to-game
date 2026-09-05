@@ -46,23 +46,23 @@ export const ABANDONED_RECORD_COPY = 'The case stayed in the basin. The plates s
 export const RESULT_BANDS = Object.freeze([
   Object.freeze({
     key: 'returned-without-record', min: 0, max: 0,
-    title: 'Returned without a record',
-    copy: 'You returned with a story. Stories are what they came to dispute.',
+    title: 'Only your word came home',
+    copy: 'The fire heard your account. London will ask for the glass.',
   }),
   Object.freeze({
     key: 'insufficient-record', min: 1, max: 3,
-    title: 'Insufficient record',
-    copy: 'The plates survived. The animal never stands clear.',
+    title: 'A shape in the silver',
+    copy: 'Something enormous crossed the plate, but never long enough to settle the argument.',
   }),
   Object.freeze({
     key: 'corroborating-record', min: 4, max: 5,
-    title: 'Corroborating record',
-    copy: 'Living form, more than one angle. The argument can begin again.',
+    title: 'Two plates tell the same story',
+    copy: 'A living body appears from more than one angle. Challenger finally has an answer to carry home.',
   }),
   Object.freeze({
     key: 'strong-field-record', min: 6, max: 8,
-    title: 'Strong field record',
-    copy: 'Scale. Living form. Behavior. The field record holds.',
+    title: 'The river bend lives on glass',
+    copy: 'Body, scale and movement survived the road to camp. No one can call the valley empty now.',
   }),
 ]);
 
@@ -203,7 +203,7 @@ export function examine(state) {
   if (state.zone === 'brook-blind') {
     return copyState(state, {
       examinedTrack: true,
-      lastObservation: 'Three toes. Fresh. The brook runs back to camp.',
+      lastObservation: 'Three toes pressed deep in the wet bar. Fresh — and turned away from camp.',
       lastEvent: 'examined:track',
     });
   }
@@ -213,7 +213,7 @@ export function examine(state) {
       familyFocusSeconds: FAMILY_OBSERVE_SECONDS,
       familyBehaviorSeconds: 0,
       familyMoment: 'glade-routine',
-      lastObservation: 'The young shift first. The feeding adult reaches after them.',
+      lastObservation: 'The young test the open gravel first. The feeding adult keeps one eye on the trees.',
       lastEvent: 'examined:behavior',
     });
   }
@@ -336,9 +336,9 @@ export function applyThreatContact(state) {
       result: {
         kind: 'failure',
         cause: 'second-unblocked-strike',
-        title: 'The second pass',
-        copy: 'The second pass found you in open ground.',
-        cue: 'Break the dive under the trees, or fire before contact.',
+        title: 'The wings came round again',
+        copy: 'The second pass found you beneath open sky.',
+        cue: 'Reach the thorn cover, or turn the dive before it reaches the case.',
       },
       rifleRaised: false,
       cameraRaised: false,
@@ -504,9 +504,9 @@ function failForTimeout(state) {
     result: {
       kind: 'failure',
       cause: 'remaining-light-expired',
-      title: 'The basin went dark',
-      copy: 'The basin went dark. The brook was no longer enough.',
-      cue: 'Leave the last frame, or take the shorter return while it is still usable.',
+      title: 'Night reached the river first',
+      copy: 'The pale bar vanished, then the spoor, then the road to Fort Challenger.',
+      cue: 'Next time, leave the last plate unmade or take the bright creek while it can still be read.',
     },
     lastEvent: 'failure:remaining-light-expired',
   });
@@ -742,7 +742,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
 
   if (observedNow) {
     next = copyState(next, {
-      lastObservation: 'The young move first. The feeding adult follows the branch above them.',
+      lastObservation: 'The young cross first. Behind them, the feeding adult draws down the branch and listens.',
       lastEvent: 'observed:behavior',
     });
   }

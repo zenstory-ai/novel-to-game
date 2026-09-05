@@ -101,6 +101,36 @@ def run() -> dict[str, Any]:
             headless=True,
             executable_path=str(CHROME) if CHROME.exists() else None,
         )
+        recovery_page = browser.new_page(viewport={"width": 1440, "height": 900})
+        aborted_required_asset = False
+
+        def interrupt_first_required_asset(route: Any) -> None:
+            nonlocal aborted_required_asset
+            if not aborted_required_asset:
+                aborted_required_asset = True
+                route.abort()
+                return
+            route.continue_()
+
+        required_asset_pattern = "**/iguanodon-hy3d-v35-stylized.glb"
+        recovery_page.route(required_asset_pattern, interrupt_first_required_asset)
+        recovery_page.goto(f"{BASE_URL}/?qa=asset-recovery", wait_until="networkidle")
+        recovery_page.locator("#runtime-error").wait_for(state="visible")
+        assert aborted_required_asset
+        assert recovery_page.evaluate("window.__projectPlateau.ready") is False
+        assert recovery_page.locator("body").get_attribute("data-mode") == "runtime-error"
+        recovery_page.unroute(required_asset_pattern, interrupt_first_required_asset)
+        recovery_page.get_by_role("button", name="Check the case again").click()
+        recovery_page.wait_for_function("window.__projectPlateau?.ready === true")
+        assert recovery_page.locator("#runtime-error").is_hidden()
+        assert recovery_page.locator("body").get_attribute("data-mode") == "order"
+        asset_recovery = {
+            "requiredAssetRequest": "iguanodon-hy3d-v35-stylized.glb",
+            "failureState": "runtime-error-ready-false",
+            "retryState": "order-ready-after-render",
+        }
+        recovery_page.close()
+
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         page.on(
             "console",
@@ -112,6 +142,9 @@ def run() -> dict[str, Any]:
         page.goto(f"{BASE_URL}/?qa=complete-run", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") == "current-complete-run"
+        title_image = EVIDENCE / "00-title.jpg"
+        page.screenshot(path=title_image, type="jpeg", quality=84)
+        assert page.locator("body").get_attribute("data-mode") == "title"
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, Any]:
             state = snapshot(page)
@@ -177,13 +210,13 @@ def run() -> dict[str, Any]:
                 timeout=10000,
             )
 
-        page.get_by_role("button", name="Enter the basin").click()
+        page.get_by_role("button", name="Follow the spoor").click()
         page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'")
-        clean_start = capture("00-clean-start", ["Enter the basin"])
+        clean_start = capture("00-clean-start", ["Follow the spoor"])
         assert clean_start["player"]["remainingLight"] == 180
         assert clean_start["sceneChildren"] > 0 and clean_start["triangles"] > 0
 
-        page.get_by_role("button", name="Begin field work").click()
+        page.get_by_role("button", name="Shoulder the case").click()
         move_until(
             "KeyW",
             "window.__projectPlateau.snapshot().player.position.z <= 45",
@@ -209,6 +242,8 @@ def run() -> dict[str, Any]:
             "reach the glade",
         )
         page.keyboard.press("KeyE")
+        field_image = EVIDENCE / "01-field-glade.jpg"
+        page.screenshot(path=field_image, type="jpeg", quality=84)
         wait_for_family_moment("glade-young-play", 4.6)
         expose_plate(2, "record young at play")
         move_until(
@@ -246,9 +281,9 @@ def run() -> dict[str, Any]:
         assert outcome["player"]["result"]["band"] == "strong-field-record"
         assert outcome["player"]["distanceTravelled"] > 0
 
-        page.get_by_role("button", name="Take the route again").click()
+        page.get_by_role("button", name="Walk the bend again").click()
         page.wait_for_timeout(80)
-        restart = capture("02-clean-restart", ["Take the route again"])
+        restart = capture("02-clean-restart", ["Walk the bend again"])
         assert restart["mode"] == "order"
         assert restart["player"]["remainingLight"] == 180
         assert restart["player"]["distanceTravelled"] == 0
@@ -257,6 +292,13 @@ def run() -> dict[str, Any]:
         browser.close()
 
     clean_observation, outcome_observation, restart_observation = checkpoints
+    clean_observation = {
+        **clean_observation,
+        "state": {
+            **clean_observation["state"],
+            "assetRecovery": asset_recovery,
+        },
+    }
     outcome_observation = {
         **outcome_observation,
         "state": {
@@ -282,7 +324,26 @@ def run() -> dict[str, Any]:
         "inputTrace": input_trace,
         "observations": {
             "launch": clean_observation,
-            "render": outcome_observation,
+            "render": {
+                **outcome_observation,
+                "state": {
+                    **outcome_observation["state"],
+                    "visualReview": {
+                        "title": {
+                            "visual": title_image.relative_to(BUILD.parent).as_posix(),
+                            "state": {"mode": "title", "viewport": [1440, 900]},
+                        },
+                        "field": {
+                            "visual": field_image.relative_to(BUILD.parent).as_posix(),
+                            "state": {
+                                "mode": "field",
+                                "zone": "iguanodon-glade",
+                                "viewport": [1440, 900],
+                            },
+                        },
+                    },
+                },
+            },
             "input": {
                 "id": "field-input-trace",
                 "inputs": input_trace,

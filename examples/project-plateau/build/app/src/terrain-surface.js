@@ -529,6 +529,19 @@ function makeTerrain(scene) {
         vec3 compactedResponse = vec3(0.9, 0.88, 0.79);
         diffuseColor.rgb *= terrainSoilMicro;
         diffuseColor.rgb *= 0.94 + broadBreak * 0.17 + mineralBreak * 0.075 + gritBreak * 0.035;
+        float terrainWarmPatch = smoothstep(
+          -0.38,
+          0.46,
+          broadBreak * 0.72 + mineralBreak * 0.46 - dampPocket * 0.32
+        );
+        vec3 terrainMacroChromaticity = mix(
+          vec3(0.76, 0.9, 0.78),
+          vec3(1.12, 0.95, 0.73),
+          terrainWarmPatch
+        );
+        float terrainMacroLayer = (0.12 + abs(broadBreak) * 0.1)
+          * (1.0 - vTerrainRouteWear * 0.46);
+        diffuseColor.rgb *= mix(vec3(1.0), terrainMacroChromaticity, terrainMacroLayer);
         float terrainSoilAggregateContrast = clamp(
           (terrainSoilMicroLuma - 0.39) * 2.45,
           -0.16,

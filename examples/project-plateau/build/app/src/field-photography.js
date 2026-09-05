@@ -66,7 +66,7 @@ function downgradeRepeatedHighValueFrame(state, frame) {
     ...frame,
     key: `${frame.key}-repeat`,
     points: 1,
-    label: 'REPEAT — this high-value composition is already in the case.',
+    label: 'The same telling view is already in the case.',
     behavior: null,
   };
 }
@@ -84,14 +84,14 @@ function pterodactylFrameForState(state) {
     : pitch <= DIVE_PITCH_RADIANS.edgeMax ? 'edge' : 'empty';
   if (horizontal === 'empty' || vertical === 'empty') {
     return {
-      key: 'empty-sky', points: 0, label: 'EMPTY — the dive crossed outside the plate.', exposure: 0,
+      key: 'empty-sky', points: 0, label: 'The dive passed beyond the edge of the plate.', exposure: 0,
       composition: 'empty', subject: null, behavior: null, familyMoment: familyMomentForState(state),
     };
   }
   const composition = horizontal === 'edge' || vertical === 'edge' ? 'edge' : 'clear';
   if (composition === 'edge') {
     return {
-      key: 'pterodactyl-edge', points: 1, label: 'FORM — the diving wing clips the plate edge.', exposure: 2,
+      key: 'pterodactyl-edge', points: 1, label: 'Only the descending wingtip caught the plate.', exposure: 2,
       composition, subject: 'pterodactyl', behavior: null, familyMoment: familyMomentForState(state),
     };
   }
@@ -100,8 +100,8 @@ function pterodactylFrameForState(state) {
     key: repeated ? 'pterodactyl-repeat' : 'pterodactyl-dive',
     points: repeated ? 1 : 2,
     label: repeated
-      ? 'REPEAT — the committed dive is already in the case.'
-      : 'BEHAVIOR — committed aerial dive, held in frame.',
+      ? 'That folded dive is already in the case.'
+      : 'The whole wing folded into its dive and held on glass.',
     exposure: 2,
     composition,
     subject: 'pterodactyl',
@@ -185,7 +185,7 @@ export function proofForExposure(pending) {
   let proof = shaken ? {
     key: 'shaken-frame',
     points: pending.points > 0 ? 1 : 0,
-    label: 'SMEARED — camera drift erased the decisive detail.',
+    label: 'The camera wandered; the telling detail dissolved in the silver.',
     composition: 'shaken',
     subject: pending.subject,
     behavior: null,
@@ -194,13 +194,13 @@ export function proofForExposure(pending) {
   if (!pending.continuousSubject || pending.worstComposition === 'empty') {
     proof = {
       ...proof, key: 'empty-subject', points: 0,
-      label: 'EMPTY — the living subject left the plate during exposure.',
+      label: 'The living shape left before the glass had taken it.',
       composition: 'empty', subject: null, behavior: null,
     };
   } else if (pending.worstComposition === 'edge' && proof.points > 1) {
     proof = {
       ...proof, key: 'family-edge', points: 1,
-      label: 'FORM — the living subject crossed the plate edge during exposure.',
+      label: 'The body crossed the edge while the plate was still open.',
       composition: 'edge', behavior: null,
     };
   } else if (proof.behavior && (
@@ -210,7 +210,7 @@ export function proofForExposure(pending) {
   ) && proof.points > 1) {
     proof = {
       ...proof, key: 'behavior-lost', points: 1,
-      label: 'FORM — the behavior did not hold through the exposure.', behavior: null,
+      label: 'The animal remained, but the movement ended too soon.', behavior: null,
     };
   }
   return proof;
@@ -220,7 +220,7 @@ function emptySubjectFrame(familyMoment) {
   return {
     key: 'empty-subject',
     points: 0,
-    label: 'EMPTY — the living subject is outside the plate.',
+    label: 'The living shape stands outside the plate.',
     exposure: 0,
     composition: 'empty',
     subject: null,
@@ -233,7 +233,7 @@ function edgeSubjectFrame(familyMoment) {
   return {
     key: 'family-edge',
     points: 1,
-    label: 'FORM — a living shape reaches the plate edge.',
+    label: 'A living shape reaches the very edge of the plate.',
     exposure: 1,
     composition: 'edge',
     subject: 'iguanodon-family',
@@ -272,7 +272,7 @@ function familyFrameForState(state, baseFrame) {
     return {
       key: 'glade-form',
       points: 1,
-      label: 'FORM — the family stands clear; no behavior is committed.',
+      label: 'The family stands clear, quiet between movements.',
       exposure: 2,
       composition,
       subject: 'iguanodon-family',
@@ -284,7 +284,7 @@ function familyFrameForState(state, baseFrame) {
     return {
       key: 'glade-alarm',
       points: 1,
-      label: 'ALARM — the family is disturbed; natural behavior is lost.',
+      label: 'Every head lifts; the undisturbed moment is gone.',
       exposure: 2,
       composition,
       subject: 'iguanodon-family',
@@ -298,7 +298,7 @@ function familyFrameForState(state, baseFrame) {
     return {
       key: familyMoment === 'glade-young-play' ? 'glade-young-repeat' : 'glade-branch-repeat',
       points: 1,
-      label: `REPEAT — ${behavior === 'young-play' ? 'young play' : 'branch pull'} is already in the case.`,
+      label: `The ${behavior === 'young-play' ? 'young at play' : 'bending bough'} is already in the case.`,
       exposure: 2,
       composition,
       subject: 'iguanodon-family',
@@ -310,8 +310,8 @@ function familyFrameForState(state, baseFrame) {
     key: familyMoment,
     points: 2,
     label: behavior === 'young-play'
-      ? 'BEHAVIOR — young play, clear and undisturbed.'
-      : 'BEHAVIOR — the adult pulls the branch, clear and undisturbed.',
+      ? 'The young run clear across the pale bar, still unaware.'
+      : 'The adult draws down the bough, still unaware.',
     exposure: 2,
     composition,
     subject: 'iguanodon-family',
@@ -334,36 +334,36 @@ export function frameForState(state) {
   const familyMoment = familyMomentForState(state);
   const frames = {
     fort: {
-      key: 'empty-fort', points: 0, label: 'EMPTY — no living subject in frame.', exposure: 0,
+      key: 'empty-fort', points: 0, label: 'The fort stands empty on the glass.', exposure: 0,
       composition: 'empty', subject: null, behavior: null, familyMoment,
     },
     'brook-blind': state.examinedTrack
       ? {
-        key: 'brook-partial', points: 1, label: 'PARTIAL — foliage hides the flank.', exposure: 1,
+        key: 'brook-partial', points: 1, label: 'Wet fern hides half the flank.', exposure: 1,
         composition: 'edge', subject: 'iguanodon-family', behavior: null, familyMoment,
       }
       : {
-        key: 'brook-unread', points: 0, label: 'UNCLEAR — the track has not been read.', exposure: 1,
+        key: 'brook-unread', points: 0, label: 'Mud and water, before the spoor was understood.', exposure: 1,
         composition: 'unread', subject: null, behavior: null, familyMoment,
       },
     'canopy-overlook': {
-      key: 'canopy-flank', points: 1, label: 'FORM — a full flank clears the fern.', exposure: 1,
+      key: 'canopy-flank', points: 1, label: 'A full flank clears the fern roof.', exposure: 1,
       composition: 'clear', subject: 'iguanodon-family', behavior: null, familyMoment,
     },
     'basalt-shelf': {
-      key: 'basalt-scale', points: 2, label: 'CONTEXT — basalt gives scale.', exposure: 2,
+      key: 'basalt-scale', points: 2, label: 'The adult passes beneath the red stone wall.', exposure: 2,
       composition: 'clear', subject: 'iguanodon-family', behavior: null, familyMoment,
     },
     'iguanodon-glade': {
-      key: 'glade-form', points: 1, label: 'FORM — the family stands clear.', exposure: 2,
+      key: 'glade-form', points: 1, label: 'The family stands together on the river bar.', exposure: 2,
       composition: 'clear', subject: 'iguanodon-family', behavior: null, familyMoment,
     },
     'covered-return': {
-      key: 'return-occluded', points: 1, label: 'PARTIAL — thorn hides the body.', exposure: 1,
+      key: 'return-occluded', points: 1, label: 'Thorn closes across the body.', exposure: 1,
       composition: 'edge', subject: 'iguanodon-family', behavior: null, familyMoment,
     },
     'exposed-creek': {
-      key: 'creek-scale', points: 2, label: 'CONTEXT — the open creek gives scale.', exposure: 2,
+      key: 'creek-scale', points: 2, label: 'Animal and open creek share the plate.', exposure: 2,
       composition: 'clear', subject: 'iguanodon-family', behavior: null, familyMoment,
     },
   };

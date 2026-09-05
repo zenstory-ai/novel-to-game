@@ -10,7 +10,7 @@ import { createBrookSceneCapture } from './brook-scene-capture.js';
 import { createWorldAnimationController } from './world-animation.js';
 import { createWorldAssetVisualLoader } from './world-asset-visuals.js';
 import { createWorldAssetSnapshot } from './world-snapshot.js';
-import { makeRouteAndBrook, makeTerrain } from './world-terrain.js';
+import { makeRiverRoomLandforms, makeRouteAndBrook, makeTerrain } from './world-terrain.js';
 import {
   makeDegradableGroundAccents,
   makeEnvironmentDensity,
@@ -53,6 +53,7 @@ export { loadOptionalAssetVisual } from './world-asset-visuals.js';
 export function createWorld(scene) {
   const terrain = makeTerrain(scene);
   const routeAndBrook = makeRouteAndBrook(scene);
+  const riverRoom = makeRiverRoomLandforms(scene);
   const brookBoulder = makeBrookBoulder(scene);
   const riparianCover = makeRiparianCover(scene);
   const coverArches = riparianCover.group;
@@ -79,10 +80,12 @@ export function createWorld(scene) {
   accentFernAssetAnchor.userData.fallbackMeshes = Object.freeze([
     habitatAccents.skirts,
     ...degradableGroundAccents.userData.proceduralFallbackMeshes,
+    ...riverRoom.userData.proceduralFallbackMeshes,
   ]);
   accentFernAssetAnchor.userData.placements = Object.freeze([
     ...habitatAccents.fernLibraryPlacements,
     ...degradableGroundAccents.userData.fernLibraryPlacements,
+    ...riverRoom.userData.fernLibraryPlacements,
   ].map((placement, index) => Object.freeze({
     ...placement,
     index: FERN_LIBRARY_LAYOUT.length + index,
@@ -128,6 +131,7 @@ export function createWorld(scene) {
     pterodactyls,
     rifle,
     riparianCover,
+    riverRoom,
     vegetation,
   });
   const animationController = createWorldAnimationController({

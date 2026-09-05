@@ -499,10 +499,18 @@ def run_path() -> tuple[
                 page.locator("#dialog").click()
             page.wait_for_timeout(250)
         page.wait_for_selector(".ending-panel", timeout=15000)
-        ending_text = page.locator("#ending-root").inner_text()
+        ending_title = page.locator(".ending-title").inner_text()
+        page.wait_for_function("() => document.querySelector('.ending-bg')?.style.backgroundImage.includes('huoyan-rain.jpg')")
+        page.evaluate("() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))")
         ending_shot = path.shot("ending")
         checks["coreLoop"] = page.evaluate("__game.phase()") == "ending"
-        checks["outcome"] = "三借芭蕉扇 · 完" in ending_text
+        # 文案允许重写；以已完成的战役、雨后场景和实际渲染的结局标题共同证明结果。
+        checks["outcome"] = bool(page.evaluate("""async () => {
+          const { TEXT } = await import('./js/text.js');
+          return __game.phase() === 'ending' && __game.campaign().battlesWon === 4
+            && document.querySelector('.ending-title')?.textContent === TEXT.story.endingTitle
+            && document.querySelector('.ending-bg')?.style.backgroundImage.includes('huoyan-rain.jpg');
+        }"""))
         checks["render"] = ending_shot.is_file() and not errors
         ending_visual = ending_shot.relative_to(PROJECT).as_posix()
         observations["render"] = {
@@ -531,6 +539,7 @@ def run_path() -> tuple[
             "inputs": ["resolve the final victory"],
             "state": {
                 "terminal": "ending: 三借芭蕉扇 · 完",
+                "displayTitle": ending_title,
                 "phase": page.evaluate("__game.phase()"),
             },
             "visual": ending_visual,

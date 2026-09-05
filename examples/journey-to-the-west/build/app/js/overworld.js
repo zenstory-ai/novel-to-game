@@ -3,7 +3,7 @@
 import { TEXT } from './text.js';
 import { el } from './ui.js';
 import { audio } from './audio.js';
-import { unitImage, sceneImage, bgStyle } from './assets.js';
+import { unitImage, bgStyle } from './assets.js';
 
 const W = 1280, H = 720;
 
@@ -221,25 +221,7 @@ export function runOverworld(ctx) {
       g.fillStyle = '#f2e8d5';
       g.fillText(caveLabel, clx, cly + 1);
     });
-    // 土地庙(贴图优先,缺图回退占位画法)
-    const miao = sceneImage('tudimiao');
-    withNaturalAspectX(ents.tudi.x - 74, () => {
-      if (miao) {
-        const mw = 150;
-        const mh = (miao.height / miao.width) * mw;
-        g.drawImage(miao, ents.tudi.x - 148, ents.tudi.y - mh - 6, mw, mh);
-      } else {
-        g.fillStyle = 'rgba(90,74,56,0.9)';
-        g.fillRect(ents.tudi.x - 70, ents.tudi.y - 190, 60, 70);
-        g.fillStyle = '#a8322a';
-        g.beginPath();
-        g.moveTo(ents.tudi.x - 84, ents.tudi.y - 190);
-        g.lineTo(ents.tudi.x - 40, ents.tudi.y - 228);
-        g.lineTo(ents.tudi.x + 4, ents.tudi.y - 190);
-        g.closePath();
-        g.fill();
-      }
-    });
+    // 土地庙已绘入同一地理底图，不叠第二座不同机位的建筑。
   }
 
   function drawMarker(x, y, t, color, text) {

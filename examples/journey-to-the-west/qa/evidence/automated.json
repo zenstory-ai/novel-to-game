@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "runId": "journey-to-the-west-main-path",
   "environment": {
-    "browser": "148.0.7778.96",
+    "browser": "145.0.7632.6",
     "viewport": [
       1440,
       900
     ],
-    "url": "http://127.0.0.1:5173/?seed=42&fast=1",
-    "buildBytes": 4566624
+    "url": "http://127.0.0.1:52902/?seed=42&fast=1",
+    "buildBytes": 9396191
   },
   "inputTrace": [
     "start a new campaign",
@@ -312,6 +312,7 @@
       ],
       "state": {
         "terminal": "ending: 三借芭蕉扇 · 完",
+        "displayTitle": "—— 火息路开，继续西行 ——",
         "phase": "ending"
       },
       "visual": "qa/evidence/browser/04_ending.jpg"
