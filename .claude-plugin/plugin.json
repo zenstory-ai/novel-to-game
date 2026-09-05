@@ -1,6 +1,6 @@
 {
   "name": "novel-to-game",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Turn any novel into a source-grounded, fully playable game — a 7-skill adaptation pipeline covering gameable deconstruction, concept selection, world and art design, target-platform build, and evidence-based QA. 把小说转成有原著依据、可在目标平台完整游玩的游戏。",
   "author": {
     "name": "worldwonderer",

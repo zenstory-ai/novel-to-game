@@ -11,14 +11,28 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-09-04
+
+### Added
+
+- Added default-brightness adjudication and historical-style calibration to art direction, with the matching production rules in the build brief ([#41](https://github.com/zenstory-ai/novel-to-game/pull/41)).
+
 ### Changed
 
-- Collapsed the repository validator's hand-written QA schema checks into shared object/field helpers, folded the duplicated `targetFinish` inheritance and JSON-loading paths, and moved the English-first check for plugin manifest descriptions into the validator. Plugin manifests must now declare `skills` as the `./skills` string; the single-element list form is no longer accepted. Example manifests and planning directories now permit additional project-owned metadata and supporting artifacts, and chapter coverage can span multiple source text files.
-- Trimmed within-skill restatements so each rule lives once per skill, in either its `SKILL.md` or the reference that skill already reads, and tightened prompt line budgets around the resulting package size.
+- Refreshed both Chinese examples with a brighter neo-guofeng presentation, separated illustration from narrative UI, preserved authored character proportions on portrait mobile viewports, and updated the README screenshots ([#41](https://github.com/zenstory-ai/novel-to-game/pull/41)).
+- Migrated the repository namespace to `zenstory-ai`; marketplace and install commands from earlier documentation no longer resolve.
+- Collapsed the repository validator's QA schema checks into shared object and field helpers, folded the duplicated `targetFinish` inheritance and JSON-loading paths, and moved the English-first check for plugin manifest descriptions into the validator ([#44](https://github.com/zenstory-ai/novel-to-game/pull/44)).
+- Plugin manifests must now declare `skills` as the `./skills` string; the single-element list form is no longer accepted. Example manifests and planning directories accept additional project-owned metadata, and chapter coverage may span multiple source text files ([#44](https://github.com/zenstory-ai/novel-to-game/pull/44)).
+- Trimmed within-skill restatements so each rule lives once per skill, in either its `SKILL.md` or the reference that skill already reads, and tightened the prompt line budgets to the resulting package size ([#44](https://github.com/zenstory-ai/novel-to-game/pull/44)).
+
+### Fixed
+
+- Fixed Vercel deployments failing before upload: the CLI ran from each app directory and appended an already-applied Root Directory a second time. Deploys now run from the repository root ([#42](https://github.com/zenstory-ai/novel-to-game/pull/42)).
 
 ### Removed
 
-- Removed dead validator code (an unused constant, unreachable regex defaults, the Reasonix guard, the repository-wide JSON scan, and argument parsing with no arguments) and the tests that locked example-app internals (module line budgets, import edges, stylesheet hashes, asset-ledger provenance) or re-ran checks already covered by the validator's authoritative command. The minimal evidence fixture now owns one executable path instead of duplicating its state assertions in a nested unit suite, and the Jin Ping Mei playable-model verifier runs in CI from its own example lane.
+- Removed dead validator code: an unused constant, unreachable regex defaults, the Reasonix guard, the repository-wide JSON scan, and argument parsing with no arguments ([#44](https://github.com/zenstory-ai/novel-to-game/pull/44)).
+- Removed the tests that locked example-app internals or re-ran checks already covered by the validator's authoritative command. The minimal evidence fixture owns one executable path, and the Jin Ping Mei playable-model verifier runs in CI from its own example lane ([#44](https://github.com/zenstory-ai/novel-to-game/pull/44)).
 
 ## [0.3.0] - 2026-08-23
 
@@ -62,7 +76,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/zenstory-ai/novel-to-game/releases/tag/v0.1.0
