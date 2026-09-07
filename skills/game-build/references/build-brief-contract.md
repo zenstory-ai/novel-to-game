@@ -1,109 +1,72 @@
 # 构建说明契约
 
-构建说明只约束产品边界、实际运行方式和证明方式；不要规定实现模型能从环境正确决定的类、着色器、
-框架或文件拆分。
+只压缩产品边界、必须保真的体验、实际运行方式与证据；不规定实现模型能自行决定的技术结构。
+以下是交接骨架，按项目填相关内容，不为空白补造系统。
 
 ```text
-# 成品目标
-targetFinish: [逐字继承 PRODUCT_BRIEF]
+# 目标与设计
+targetFinish: [继承 PRODUCT_BRIEF]
 buildStage: [whitebox | production]
 buildPath: [template | custom]
-[目标平台、目标交付物、受众、切片时长、视口/朝向/输入、分级、联网边界]
-
-# 必读设计
-- whitebox: [GAME_DESIGN.md]
-- production: [GAME_DESIGN.md, ART_DIRECTION.md]
+[平台、交付物、受众、范围、视口/输入、分级、联网边界]
+[whitebox 读取 GAME_DESIGN；production 追加 ART_DIRECTION]
 
 # 必须保真
-- 玩家承诺与核心幻想
-- experienceProfile: [逐字继承 GAME_DESIGN]
-- 3–5 个核心动词及各自输入、可观察状态变化
-- 会改变结果的规则、三段弧结束标记
-- 界面语言、人物声口和禁用句式
-- 叙事项目追加主要路径、结局条件、持久旗标读取点和人物知识边界
-- production 追加：每个界面/模式的招牌时刻、HUD 层级、主游玩面板的单焦点阅读边界与美术禁区
+experienceProfile: [继承 GAME_DESIGN]
+[玩家承诺、核心动作及可观察变化、会改变结果的规则和结束标记]
+[产物语言与原作身份；叙事实际采用时记录路径、历史读取点和知识边界]
+[production 继承关键游戏时刻、视觉约束与批准目标图]
 
-# 可执行模型（两阶段都需要）
-- 最大风险与原型形态；采用 template 时列语法与脱离条件，custom 时列不可被模板替代的核心动词
-- 运行时真正消费的最小状态、动作、前置、效果、观察者/知识更新、事件和不变量
-- signature_command: [N/A，或 id / label / intents / slots / validators / commit；具体数量服从项目]
-- 到期事项与谈话回灌（实际采用时）：来源、due/trigger、携带事实、重新上桌、结清；谈话只提交已验证结构
-- contentRevision / rulesRevision / saveSchemaVersion / seed
-- snapshot 用于载入，event log 用于定位与重放；两者不能互相冒充
-- 固定验证路径：初态摘要、输入序列、预期终态/反馈、相邻反例
-- 反馈 patch：issue id、owner、目标节点、兼容性、受影响路径与重放结果
+# 最小实现与复现
+[最大风险、原型形态、复用语法及脱离条件]
+[运行时消费的状态、动作、前置、效果与不变量]
+[初态、输入路径、预期结果；随机性相关时固定 seed]
+[仅在采用生成式输入、知识权限、事件回放、存档迁移或专属命令时追加对应可执行模型合同]
+signature_command: [N/A，或继承 id / label / intents / slots / validators / commit]
 
-# 范围
-[必须包含；明确排除；最终范围差异]
-
-# 运行与验证
+# 运行
 toolchain:
   targetPlatform: [批准平台]
-  targetRuntime: [计划交付的运行环境]
-  testedRuntime: [本次实际启动的运行环境]
+  targetRuntime: [计划交付环境]
+  testedRuntime: [本次实际启动环境]
   engine: [实际引擎/框架]
-  engineVersion: [实际版本或 NOT_AVAILABLE: 原因]
-  runtimeVersion: [实际版本或 NOT_AVAILABLE: 原因]
+  engineVersion: [版本或 NOT_AVAILABLE: 原因]
+  runtimeVersion: [版本或 NOT_AVAILABLE: 原因]
   packageManager: [name@version；无则 none]
 commands:
   install: [命令；无需安装写 NONE]
   buildOrExport: [命令；无需单独构建写 NONE]
   start: [命令]
-  modelCheck: [whitebox 的最窄模型/回放检查；production 可写 NONE]
-  verify: [production 的一条权威验证命令；whitebox 写 NOT_APPLICABLE]
+  modelCheck: [whitebox 的最窄风险检查；production 可写 NONE]
+  verify: [production 权威命令；whitebox 写 NOT_APPLICABLE]
 verification:
   owner: [whitebox 为 design owner；production 为 game-qa]
-  evidence: [whitebox 的结构化观察，或 production 完整运行生成的工作区相对路径]
+  evidence: [工作区相对路径]
 
-# 当前限制
-[scope / reason；testedRuntime 与 targetRuntime 不同时列目标独有未测试项]
+# 限制
+[实际范围差异、未测试项与原因；替代运行时不证明目标平台]
 ```
 
-## 最小完成证据
+## 完成证据
 
-whitebox 只证明被选中的最大风险：规则/场景模型能启动，固定路径可运行与重放，偏差能定位回
-GAME_DESIGN；不要求 ART_DIRECTION、最终 HUD、完整路径或 `qa/verification.json`，也不进入六项 QA 结论。
+whitebox 只证明选中的最大风险，保留可复现的实际观察并定位回 GAME_DESIGN；
+不要求最终美术、完整产品路径或 `qa/verification.json`，不进入六项 QA 结论。
 
-production 的权威 verify 必须能在一次完整路径中证明：启动成功、非空且变化的真实渲染、真实输入改变状态、核心
-循环完成、至少一个设计结果可达、restart 回到定义初态。构建阶段只准备入口和可观察状态；由
-`game-qa` 实际运行一次并写结论。证据使用工作区相对路径，不能只留临时目录或逐点击截图。
+production 的权威 verify 必须在同一次完整运行中证明启动、真实渲染、真实输入、核心循环、
+至少一个设计结果与重开。证据留在工作区，不只保存在临时目录。
+构建者准备入口，不预填 PASS；game-qa 记录实际命令、退出码和结果。
 
-可执行模型、事件日志或 patch 存在时，verify 还应在项目回归中证明同版本同 seed/输入可重放、非法
-前置不提交、未选择分支不污染、未见证者不引用秘密，以及 patch 声明外的状态不变。这些诊断映射回
-六项玩家效果或写 limitation，不新增顶层 QA gate。
+允许定向检查、修复和复跑；最终 `qa/verification.json` 原子替换为当前完整运行结果，
+失败不得残留旧 PASS，也不能拼接不同版本或不同运行的六项成功。
+有事件、知识权限或 patch 时，将其相关回归纳入项目验证，不另设顶层通用门禁。
 
-测试环境与目标运行环境不同时，这六项只声明实际覆盖；源码身份、公网、营销、主观趣味、权利
-判断和完成度声明不进入这六项机器事实。
+## 按需交接
 
-## 条件台账
+- 视觉：只列批准的焦点资产、生产状态、运行中证据和剩余问题，继承 ART_DIRECTION，不重新裁决风格。
+  必需资产失败须明确报错；可降级项采用预先定义的替代，并验证玩家效果仍成立。
+- 连续 3D：记录控制权、相机/移动前向、失焦归零，以及改变路线的布局与碰撞边界；
+  帧率或一条成功路线不证明碰撞正确。
+- 动态媒体/语音：记录实际资产、来源、运行文件、字幕/静音/缺音替代与生成状态，
+  不把生成请求或营销旁白当成游戏运行证据。
 
-### 视觉与必需资产
-
-只列批准的焦点资产与招牌时刻：资产键、生产状态、工作区证据和剩余问题。必需运行期资产失败必须
-阻断或进入明确错误界面；可降级项须预先写 fallback，并证明核心动作、状态、结果、可读反馈和重开
-仍成立。
-
-同时继承 `ART_DIRECTION.md` 的明度边界。非低照度题材检查首屏、核心循环、夜景和结果页，禁止用
-未经批准的全局黑罩、暗角、降曝光或灰色小字替代气氛设计；夜景至少能辨认人物轮廓与朝向、关键器物、
-行动目标、正文／选项和结果信号。批准的暗调界面须保留约定的亮度或高对比 fallback，并在目标视口
-用实际交互画面验证，而不是只验静态海报。
-
-时代题材另列目标图批准状态和三轴合同：世界时代、表现媒介、人物理想化程度。未批准前只生产最小
-样张；批准后批量资产必须引用目标图与身份母版，并继承光色、构图和文本留白。若用户否决样张，构建
-立即停止同方向扩批，替换所有运行引用并从发布目录清掉旧图、试验图和未引用变体。
-
-### 连续 3D
-
-采用连续 3D 时记录输入控制权、相机/移动前向、失焦归零，以及会改变路线的可见布局与 collider
-边界。不要把渲染帧率或一条成功路线当碰撞证明。
-
-### 动态媒体与语音
-
-只记录游戏实际采用的媒体或语音资产、来源、运行文件、字幕/静音/缺音 fallback 和生成状态。密钥
-不入库；未生成写 `NOT_RUN: 原因`。生成请求、营销旁白和可重建中间文件不作为最小 QA 证据。
-
-## 权威验证
-
-verify 可以组合现有游戏效果脚本，但最终 QA 只运行一次；由 `game-qa` 在 `qa/verification.json`
-回写实际 command、exit code、完整路径、六项结果和当前限制。构建者不得预填 PASS 或另跑一套平行
-验收。预算、时间或调用上限只会留下 NOT_RUN/FAIL、延期或缩小范围，不会替代证据。
+预算或工具缺口只能产生明确限制、NOT_RUN/FAIL 或经批准的范围调整，不能替代证据。

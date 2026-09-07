@@ -92,11 +92,10 @@ Keep variables as hidden causal tags rather than a visible stat panel.
 Key choices must change later scenes, character attitudes, and the ending, and be named back in later text.
 ```
 
-The narrative track **lowers no standard**: it still needs a recognizable gameplay precedent, the same
-three-phase arc, and the same hard vetoes. Only the expression changes -- new people to question, new ways to
-press a contradiction, and attitudes that shifted because of what you did earlier.
+The narrative track keeps the same agency and runtime-evidence requirements, without forcing a fixed
+progression arc: questioning people, pressing contradictions, and changing attitudes can carry the player loop.
 
-`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares three concepts, and continues through design, build, and QA. Every project runs one minimum QA path covering real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. It does not require a human playtest or a separate approval report. Choose `director` when you want to pick the concept yourself.
+`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares meaningful alternatives, and continues through design, build, and QA. Already selected directions are validated, not reopened to fill a quota. QA covers real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. Diagnosis and reruns are allowed; the final record must come from one complete run. No human-playtest gate or separate approval report is required. Choose `director` when you want to pick the concept yourself.
 
 <details>
 <summary><strong>Native plugin installation</strong></summary>
@@ -134,7 +133,7 @@ The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through sep
 Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
 ```
 
-The whitebox runs only the narrow model/replay check needed for its declared risk. The production build targets the chosen runtime and prepares one authoritative verification entry point; QA runs it once and records the six minimum player-visible effects with real execution evidence. Capability-specific regression checks run only when that capability is actually adopted. No human-playtest gate or duplicate QA report is required. Source identity, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
+The whitebox runs only the narrow check needed for its declared risk. The production build targets the chosen runtime and prepares one authoritative verification entry point. QA may diagnose, fix, and rerun; its final record binds all six player-visible effects to the same complete execution, without reusing stale passes. Capability-specific regression checks run only when that capability is adopted. No human-playtest gate or duplicate QA report is required. Source-code provenance, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
 
 ## Skills
 
@@ -142,7 +141,7 @@ The whitebox runs only the narrow model/replay check needed for its declared ris
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
 | [`novel-game-analyze`](skills/novel-game-analyze/) | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
-| [`game-concept`](skills/game-concept/) | Generate three materially different directions, reject invalid options, and choose one |
+| [`game-concept`](skills/game-concept/) | Compare meaningful alternatives, reject invalid options, and select or validate a direction |
 | [`game-world-design`](skills/game-world-design/) | Define the player promise, core loop, world response, systems, levels, failure, and outcomes |
 | [`game-art-direction`](skills/game-art-direction/) | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
 | [`game-build`](skills/game-build/) | Build a risk-matched whitebox, then implement the approved production candidate without redesigning it |

@@ -20,12 +20,13 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 
 1. 读取 `targetRuntime`、`testedRuntime` 和权威 verify；与 PRODUCT_BRIEF/BUILD_BRIEF 冲突时先报错，
    不由 QA 猜值。
-2. 只运行一次权威 verify：它在 testedRuntime 从 clean start → 核心动作 → 设计结果 → restart
+2. 运行权威 verify：它在 testedRuntime 从 clean start → 核心动作 → 设计结果 → restart
    完成整条路径，并记录 command、exit code、环境、六项结果、最小证据和实际失败。
-3. 对照 GAME_DESIGN 中会改变结果的不变量和三段弧结束标记；只验证批准的设计承诺，不遍历所有
+3. 对照 GAME_DESIGN 中会改变结果的不变量和结束标记；只验证批准的设计承诺，不遍历所有
    代码路径。
 4. 若候选有可执行模型、事件日志、patch 或 `signature_command`，按 test-design-method 的对应合同把
-   项目回归嵌入同一权威 verify；失败映射到已有 checks 或 limitation，不另跑命令或新增门禁。
+   项目回归嵌入权威 verify；允许定向诊断、修复和复跑，最终六项证据必须来自同一次完整运行。
+   失败映射到已有 checks 或 limitation，不新增通用门禁，不拼接不同运行的 PASS。
 5. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
    未验证风险，不给确定性 PASS。
 
