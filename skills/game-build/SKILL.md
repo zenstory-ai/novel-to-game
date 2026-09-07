@@ -7,8 +7,7 @@ description: "Build a risk-matched whitebox or the approved production game for 
 保护已批准的体验边界；正式生产时再保护已批准的美术边界。驱动实现模型完成真实可玩的候选，不在
 构建阶段重新做概念、关卡或美术方向。
 
-读取 [build-brief-contract.md](references/build-brief-contract.md) 与
-[playable-model-contract.md](references/playable-model-contract.md)。白盒阶段必须已有 `GAME_DESIGN.md`；
+读取 [build-brief-contract.md](references/build-brief-contract.md)。白盒阶段必须已有 `GAME_DESIGN.md`；
 完整候选还必须已有 `ART_DIRECTION.md`。缺产品决定时回对应 owner，不在 BUILD_BRIEF 就地发明。
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
@@ -19,8 +18,7 @@ description: "Build a risk-matched whitebox or the approved production game for 
 目标工具链不可用时不得自动改做网页；只有 brief 已批准替代运行时才可使用，并分开记录
 `targetRuntime`、`testedRuntime` 与未覆盖项。
 
-正式生产继承 `ART_DIRECTION.md` 的明度边界与时代题材目标图合同；实现阶段不得擅自压暗，也不得把
-“当代审美”做成现代棚拍或把“古风”做成古画旧化。检查项见 build-brief-contract「视觉与必需资产」。
+正式生产继承 `ART_DIRECTION.md` 的可观察视觉约束与批准目标图，在实际运行中验证焦点资产。
 
 BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式与完成证据，实现细节交给实现模型。
 
@@ -33,6 +31,8 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 
 ## 按能力读取可选合同
 
+- 采用生成式自由输入、知识权限、事件回放、存档迁移或 `signature_command` 时，读取
+  [playable-model-contract.md](references/playable-model-contract.md) 的相关部分；普通游戏不另建一套平行状态模型。
 - 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。TTS
   优先构建期生成成本地资产；运行时远程合成须在 brief 批准，密钥只留受信服务端。
 - 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。已有批准
@@ -42,13 +42,12 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 
 1. 先实现一个最小但完整的核心循环：启动、真实输入、状态变化、结果和重开。范围不足时修范围，
    不先堆审计材料。
-2. 按 playable-model-contract「最小语义面」「裁决边界」实现运行时真正消费的状态与规则；存在
-   `signature_command` 时再执行其专属合同。模型只解释输入和结果，规则器拥有提交权。
-3. 按该合同「Snapshot、事件日志与回放」「反馈与局部 patch」固定版本、初态、seed 和输入序列，
-   修订后重放失败路径与相邻反例。
+2. 实现 GAME_DESIGN 的状态、动作与结果；使用生成模型时，模型只解释输入和结果，规则器拥有提交权。
+   存在 `signature_command` 时再执行可选合同的专属边界。
+3. 保留能复现问题的初态与输入路径，涉及随机性时固定 seed；修订后重放失败路径与相邻反例。
 4. 回写实际工具链、install/build/start 命令和版本；未知值写 `NOT_AVAILABLE: 原因`，不猜。
 
-`whitebox` 到此按 build-brief-contract「最小完成证据」运行最窄检查并交回 design owner；设计修订后
+`whitebox` 到此按 build-brief-contract「完成证据」运行最窄检查并交回 design owner；设计修订后
 重放受影响路径，直到最大风险已被实际暴露或当前方向被否决。
 
 `production` 继续：
@@ -59,7 +58,7 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
    目标平台输入、性能、打包或设备项写入 limitation。
 7. 达到 brief 的 `targetFinish`；更高完成度只处理已批准的焦点资产和招牌时刻，不制造与可玩闭环
    无关的发布审计。
-8. 交给 `game-qa` 只运行一次权威命令并写最终事实。
+8. 交给 `game-qa`；允许诊断、修复和复跑，最终事实必须来自修订后同一次完整验证，不能拼接旧 PASS。
 
 ## 输出
 
