@@ -31,6 +31,8 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 
 ## 按能力读取可选合同
 
+- 已选择 Blender 制作或修改可编辑三维资产时，读取 [blender-asset-workflow.md](references/blender-asset-workflow.md)；
+  不因项目是 3D 就默认采用 Blender 或安装 MCP。
 - 采用生成式自由输入、知识权限、事件回放、存档迁移或 `signature_command` 时，读取
   [playable-model-contract.md](references/playable-model-contract.md) 的相关部分；普通游戏不另建一套平行状态模型。
 - 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。TTS
