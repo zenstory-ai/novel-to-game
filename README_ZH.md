@@ -1,5 +1,7 @@
 # NovelToGame
 
+> 项目页：<https://zenstory.ai/novel-to-game> · ZenStory AI 全部项目：<https://zenstory.ai/projects>
+
 > 把任何语言的小说，改编成有原著依据、可完整游玩的游戏。
 
 [![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
