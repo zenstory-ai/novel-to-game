@@ -177,3 +177,16 @@ NovelToGame is released under the [MIT License](LICENSE).
 ## Acknowledgments
 
 Thanks to the [linux.do](https://linux.do) community for early feedback and support.
+
+## Part of ZenStory AI
+
+This project is maintained by [ZenStory AI](https://zenstory.ai) — open-source, agent-native tools for creating, adapting and producing stories (GitHub org: [zenstory-ai](https://github.com/zenstory-ai)). Sibling projects:
+
+| Project | What it does |
+| --- | --- |
+| [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | Web-fiction writing skill pack: chart scanning, deconstruction, drafting, de-AI-flavor, covers |
+| [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI short-drama / motion-comic suite: scripts, assets, storyboards, image & video prompts, review |
+| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | Agent skills that turn novels into playable games (this repo) |
+| [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | Clip any video into a narrated Chinese recap, with CapCut draft export |
+| [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | DeepSeek Harness plugin wrapping the Oh Story and Drama Skills workflows |
+| [zenstory](https://github.com/zenstory-ai/zenstory) | Chat-to-create AI novel-writing workbench (zenstory.ai) |
