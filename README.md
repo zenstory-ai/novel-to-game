@@ -56,6 +56,21 @@ A one-line “turn this book into a game” prompt often produces a generic resk
 - **Optional, restrained voice:** synthesize only selected high-value lines at build time, keep subtitles and mute fallbacks, and never send the whole novel to a TTS provider by default;
 - **Evidence-based QA:** verify startup, rendering, input, the core loop, an outcome, restart, and explicit limitations in the tested runtime.
 
+### Choose the first design task
+
+Use the [quick-start guide](https://zenstory.ai/novel-to-game/quick-start) to scope a first adaptation, then the [meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) when choices need lasting consequences rather than different button wording.
+
+- **Scoped first adaptation:** separate authorized source facts, author-approved additions, and unresolved questions; keep the first slice small without changing the chosen engine or platform.
+- **Meaningful choices:** state each player option, available evidence, cost, and visible outcome, then name the later scene that reads the resulting state instead of silently resetting it.
+
+Planning-only brief for an agent with the skills installed:
+
+```text
+Using my authorized source, plan one small gameplay-design slice for my target engine.
+Keep the choices and outcomes bounded; show each option's evidence, cost, visible effect, and where a later scene uses its state.
+Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
+```
+
 ## Quick Start
 
 ### 1. Install the seven skills
