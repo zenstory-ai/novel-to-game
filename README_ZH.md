@@ -60,6 +60,8 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 先用[小说改游戏入门](https://zenstory.ai/novel-to-game/quick-start)限定首次改编，再在选择需要留下长期后果时参考[有后果的选择指南](https://zenstory.ai/novel-to-game/meaningful-choices)，不要只改按钮措辞。
 
+在比较工具？[NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）说明三种工具形态和设计文档归谁所有。
+
 - **首次改编切片**：分开记录获准使用的原文事实、作者批准的新增设定与待决问题；缩小第一版范围，但不改变已经选定的引擎或平台。
 - **有后果的选择**：写清每个玩家选项、可用证据、代价与可见结果，并指出后续哪个场景读取这项状态，不能悄悄重置。
 

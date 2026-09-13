@@ -60,6 +60,8 @@ A one-line “turn this book into a game” prompt often produces a generic resk
 
 Use the [quick-start guide](https://zenstory.ai/novel-to-game/quick-start) to scope a first adaptation, then the [meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) when choices need lasting consequences rather than different button wording.
 
+Comparing tools? [NovelToGame compared with story-to-game builders](docs/novel-to-game-vs-story-to-game-tools.md) explains the three shapes of tool and where the design documents live.
+
 - **Scoped first adaptation:** separate authorized source facts, author-approved additions, and unresolved questions; keep the first slice small without changing the chosen engine or platform.
 - **Meaningful choices:** state each player option, available evidence, cost, and visible outcome, then name the later scene that reads the resulting state instead of silently resetting it.
 
