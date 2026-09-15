@@ -50,3 +50,24 @@ Run before reporting completion:
 python3 scripts/validate_repo.py
 python3 -m unittest discover -s tests -v
 ```
+
+## Decision notes
+
+Non-trivial changes (behavior, architecture, cross-skill contracts, process or
+tooling, testing strategy, on-disk formats) must leave a note in
+`.agents/notes/{proposed,implemented,rejected}/{feature,bug-fix,simplification,architecture,process,testing}/yyyy-mm-dd-topic.md`,
+following the DeepSeek Harness agent-notes convention
+(https://github.com/czm15053/write-notes-like-deepseek). Notes are written in
+Chinese with English section headers.
+
+- Search `.agents/notes/` for the owning note first. Update facts in place when
+  the decision stands; open a new note that links to the old one when the
+  decision itself reverses. Never rewrite `## Decision` into its opposite.
+- New ideas start in `proposed/` and move to `implemented/` in the same commit
+  as the code. Mechanical edits (formatting, renames, version bumps,
+  behavior-neutral patches) need no note.
+- Each note carries `## Problem`, `## Decision` (present tense) or
+  `## Proposal`, `## Alternatives considered` (strongest argument for each
+  rejected option first, real options only), and `## Consequences` (benefits
+  and costs). The rules above in this file are summaries; the notes hold the why.
+- No `INDEX.md`; the folder is the state.
