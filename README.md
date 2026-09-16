@@ -1,12 +1,35 @@
-[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Workflow](#workflow) · [Skills](#skills) · [Artifacts](#artifacts) · [Contributing](#contributing)
+<p align="center">
+  <img src="https://zenstory.ai/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
+</p>
 
-# NovelToGame
+<h1 align="center">NovelToGame</h1>
 
-**A source-grounded novel-to-game workflow: adaptation design, target-runtime builds, and evidence-based QA.**
+<p align="center">
+  <b>A source-grounded novel-to-game workflow: adaptation design, target-runtime builds, and evidence-based QA.</b>
+</p>
 
-Project page: https://zenstory.ai/novel-to-game
+<p align="center">
+  <a href="https://zenstory.ai/novel-to-game"><b>Project page</b></a>
+  &nbsp;·&nbsp;
+  <a href="#play-online"><b>Play online</b></a>
+  &nbsp;·&nbsp;
+  <a href="#quick-start"><b>Quick start</b></a>
+  &nbsp;·&nbsp;
+  <a href="README_ZH.md"><b>中文</b></a>
+</p>
 
-[![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
+<p align="center">
+  <a href="https://github.com/zenstory-ai/novel-to-game/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat-square&color=22D3EE&logo=github&logoColor=white&label=Stars"></a>
+  <a href="https://github.com/zenstory-ai/novel-to-game/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?style=flat-square&color=081431&label=Release"></a>
+  <img alt="Skills 7" src="https://img.shields.io/badge/Skills-7-081431?style=flat-square">
+  <a href="https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml"><img alt="Validate" src="https://img.shields.io/github/actions/workflow/status/zenstory-ai/novel-to-game/validate.yml?style=flat-square&label=Validate"></a>
+  <a href="./LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/License-MIT-1F6FEB?style=flat-square"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/zenstory-ai/novel-to-game/discussions"><img alt="GitHub Discussions" src="https://img.shields.io/badge/GitHub%20Discussions-181717?style=for-the-badge&logo=github&logoColor=white"></a>
+  <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
+</p>
 
 NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. Give your coding agent a novel and a target platform or engine; it works through source analysis, concept selection, world and art direction, the build, and runtime QA, and hands you a playable game plus the design documents behind it.
 
