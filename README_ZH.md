@@ -1,16 +1,16 @@
+[English](README.md) · [在线试玩](#在线试玩) · [快速开始](#快速开始) · [工作流](#工作流) · [Skills](#skills) · [产物](#产物) · [参与贡献](#参与贡献)
+
 # NovelToGame
 
-> 项目页：<https://zenstory.ai/zh/novel-to-game> · ZenStory AI 全部项目：<https://zenstory.ai/zh/projects>
+**有原著依据的小说改编游戏工作流：改编设计、面向指定运行环境的游戏构建，以及基于运行证据的 QA。**
 
-> 有原著依据的小说改编游戏工作流：改编设计、面向指定运行环境的游戏构建，以及基于运行证据的 QA。
+项目主页：https://zenstory.ai/zh/novel-to-game
 
 [![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
 
-NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。它把小说游戏化改编拆成一条职责清晰的流程：拆解原著、选择概念、设计世界与美术、完成构建，并在目标运行环境中实际验证。
+NovelToGame 是一套面向 Claude Code、Codex 和 Kimi Code 的开源 Agent Skills。把一本小说和目标平台或引擎交给你的编码 Agent，它会依次完成拆解原著、选择概念、设计世界与美术、构建，并在目标运行环境中实际验证，最后交给你一款可玩的游戏和背后的设计文档。
 
-小说可以使用任何语言，生成内容使用用户指定的语言。构建和 QA 始终以选定的平台或引擎为准，不会为了实现方便换成更容易的替代环境。
-
-[English](README.md) · [在线试玩](#在线试玩) · [快速开始](#快速开始) · [工作流](#工作流) · [Skills](#skills) · [产物](#产物) · [参与贡献](#参与贡献)
+小说可以使用任何语言，生成内容使用你指定的语言。构建和 QA 在你选定的平台或引擎上进行。
 
 ## 在线试玩
 
@@ -52,26 +52,9 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 - **基于原著做改编**：从文本中提取有原文依据的规则、空间、角色意志、冲突和视觉锚点；
 - **真正完成游戏设计**：把原著证据转成玩家动作、系统、关卡、反馈、失败与结果；
-- **面向目标环境构建**：严格按照批准的平台或引擎实现，避免实现阶段悄悄重做策划；
+- **面向目标环境构建**：严格按照你批准的平台或引擎实现，实现阶段无法悄悄重做策划；
 - **克制地选用语音**：只在构建期合成选定的关键台词，保留字幕与静音降级，默认不向 TTS 供应商发送整本小说；
 - **用运行证据做 QA**：在实际测试环境中验证启动、渲染、输入、核心循环、一个结果、重开和明确限制。
-
-### 先选定第一项设计任务
-
-先用[小说改游戏入门](https://zenstory.ai/zh/novel-to-game/quick-start)限定首次改编，再在选择需要留下长期后果时参考[有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)，不要只改按钮措辞。
-
-在比较工具？[NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）说明三种工具形态和设计文档归谁所有。
-
-- **首次改编切片**：分开记录获准使用的原文事实、作者批准的新增设定与待决问题；缩小第一版范围，但不改变已经选定的引擎或平台。
-- **有后果的选择**：写清每个玩家选项、可用证据、代价与可见结果，并指出后续哪个场景读取这项状态，不能悄悄重置。
-
-交给已安装相关 Skills 的 Agent 的“只做规划”请求：
-
-```text
-使用我获准改编的原文，为目标引擎规划一个小范围的玩法设计切片。
-控制选择与结果的数量；写清每项的证据、代价、可见变化，以及后续场景如何使用其状态。
-标明允许新增的设定与待决问题。只交付设计说明，不构建、不运行 QA，也不声称运行成品已经完成。
-```
 
 ## 快速开始
 
@@ -83,6 +66,9 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 | Codex | `npx skills add zenstory-ai/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
+<details>
+<summary><strong>三个 CLI 一次装齐，或使用原生插件安装</strong></summary>
+
 在同一台机器上为三个 CLI 安装适配器：
 
 ```bash
@@ -91,32 +77,6 @@ npx skills add zenstory-ai/novel-to-game -g -y -s '*' \
 ```
 
 克隆仓库后，三种 CLI 均可直接发现项目内的 Skills。
-
-### 2. 开始一次改编
-
-把小说文件、目录或链接交给 Agent：
-
-```text
-用 novel-to-game quick 把这本小说改编成一款可完整游玩的游戏。
-请根据题材推荐目标平台、类型和引擎，并把首个版本控制在 15 分钟左右。
-玩家以原创角色的身份进入世界，不要逐段复演原作剧情。
-```
-
-想要**互动小说 / 互动叙事**而不是系统玩法时，直接说出来——这会锁定 `narrative-led` 体验档案，让概念、设计与 QA 都按连续场景、人物对白、证词和关键选择来判，而不是套用回合、卡牌和资源条：
-
-```text
-用 novel-to-game quick 把这本小说改编成一款互动叙事游戏。
-体验以连续场景、人物对白、证词与关键选择承载；数值只作为隐藏的剧情因果标签，不做常驻数值面板。
-关键选择要改变后续场景、人物态度和结局，并在后文被点名回读。
-```
-
-叙事主导保留相同的能动性与真实运行证据要求，不强套固定成长弧线；追问人物、质证矛盾、
-改变人物态度都可以承载玩家循环。
-
-`quick` 是低门槛默认模式：Agent 先给出合理草案，只追问会改变产品方向或涉及安全的选择，再比较有效替代并继续设计、构建和 QA。已选方向只验证，不为凑数重开选择。QA 覆盖真实启动、渲染、输入、完整循环、一个结果、重开和明确限制；允许诊断和复跑，最终记录必须来自同一次完整运行。不要求真人试玩门禁或另写审批报告。想自己选择概念时使用 `director`。
-
-<details>
-<summary><strong>使用原生插件安装</strong></summary>
 
 #### Claude Code
 
@@ -143,15 +103,47 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 </details>
 
+### 2. 开始一次改编
+
+把小说文件、目录或链接交给 Agent，然后复制下面任意一条请求，改一改就能用。
+
+**做一款有原创路线的系统玩法游戏：**
+
+```text
+用 novel-to-game quick 把这本小说改编成一款可完整游玩的游戏。
+请根据题材推荐目标平台、类型和引擎，并把首个版本控制在 15 分钟左右。
+玩家以原创角色的身份进入世界，不要逐段复演原作剧情。
+```
+
+**做互动小说 / 互动叙事**（这会锁定 `narrative-led` 体验档案，让概念、设计与 QA 都按连续场景、人物对白、证词和关键选择来判，而不是套用回合、卡牌和资源条）：
+
+```text
+用 novel-to-game quick 把这本小说改编成一款互动叙事游戏。
+体验以连续场景、人物对白、证词与关键选择承载；数值只作为隐藏的剧情因果标签，不做常驻数值面板。
+关键选择要改变后续场景、人物态度和结局，并在后文被点名回读。
+```
+
+叙事主导保留相同的能动性与真实运行证据要求，不强套固定成长弧线；追问人物、质证矛盾、改变人物态度都可以承载玩家循环。
+
+**只要设计说明，先不构建：**
+
+```text
+使用我获准改编的原文，为目标引擎规划一个小范围的玩法设计切片。
+控制选择与结果的数量；写清每项的证据、代价、可见变化，以及后续场景如何使用其状态。
+标明允许新增的设定与待决问题。只交付设计说明，不构建、不运行 QA，也不声称运行成品已经完成。
+```
+
+`quick` 是低门槛默认模式：Agent 先给出合理草案，只追问会改变产品方向或涉及安全的选择，再比较有效替代并继续设计、构建和 QA。想自己选择概念时使用 `director`。
+
 ## 工作流
 
-总入口先锁定 `PRODUCT_BRIEF.md`，再让改编任务进入职责独立的决策阶段。概念、体验/关卡与美术方向继续分别负责。世界设计完成后，先用与风险匹配的白盒验证最难的因果、系统、空间或操作问题，再开始美术生产；观察结果交回设计 owner，不新增一道 QA 门。
+总入口先锁定 `PRODUCT_BRIEF.md`，再让改编任务进入职责独立的决策阶段。概念、体验/关卡与美术方向继续分别负责。世界设计完成后，先用与风险匹配的白盒验证最难的因果、系统、空间或操作问题，再开始美术生产；观察结果交回设计 owner。
 
 ```text
 小说 → 游戏化拆解 → 游戏概念 → 世界设计 → 风险白盒 ↺ → 美术方向 → 正式构建 → QA → 可玩游戏
 ```
 
-白盒只运行足以暴露声明风险的最窄检查。正式构建面向选定的运行环境并准备一条权威验证入口。QA 可以诊断、修复和复跑；最终记录把六项玩家效果绑定到同一次完整运行，不沿用旧 PASS。只有实际采用的能力才运行对应回归检查；不要求真人试玩门禁或重复 QA 报告。源码溯源、公网托管、营销、权利、主观趣味和发布质量不由这份机器记录证明。
+白盒只运行足以暴露声明风险的最窄检查。正式构建面向选定的运行环境并准备一条权威验证入口。QA 可以诊断、修复和复跑；最终记录把六项玩家效果绑定到同一次完整运行。只有实际采用的能力才运行对应回归检查。
 
 ## Skills
 
@@ -182,7 +174,13 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-核心设计文档不绑定某个模型或游戏引擎；批准后的目标运行环境决定实际实现与 QA 环境。
+设计文档是你自己持有的、不绑定引擎的 Markdown；你批准的目标运行环境决定实际实现与 QA 环境。
+
+## 延伸阅读
+
+- [小说改游戏入门](https://zenstory.ai/zh/novel-to-game/quick-start)——限定首次改编：分开记录获准使用的原文事实、作者批准的新增设定与待决问题，缩小第一版范围。
+- [有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)——写清每个玩家选项的证据、代价与可见结果，并指出后续哪个场景读取这项状态。
+- [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
 
 ## 参与贡献
 

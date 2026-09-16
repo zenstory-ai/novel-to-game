@@ -1,20 +1,20 @@
+[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Workflow](#workflow) · [Skills](#skills) · [Artifacts](#artifacts) · [Contributing](#contributing)
+
 # NovelToGame
 
-> Project page: <https://zenstory.ai/novel-to-game> · All ZenStory AI projects: <https://zenstory.ai/projects>
+**A source-grounded novel-to-game workflow: adaptation design, target-runtime builds, and evidence-based QA.**
 
-> A source-grounded novel-to-game workflow: adaptation design, target-runtime builds, and evidence-based QA.
+Project page: https://zenstory.ai/novel-to-game
 
 [![Validate](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml/badge.svg)](https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml) [![Latest release](https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?display_name=tag&sort=semver)](https://github.com/zenstory-ai/novel-to-game/releases/latest) [![License](https://img.shields.io/github/license/zenstory-ai/novel-to-game)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat&logo=github)](https://github.com/zenstory-ai/novel-to-game/stargazers)
 
-NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. It turns novel adaptation into a staged workflow: source analysis, concept selection, world and art direction, implementation, and runtime QA.
+NovelToGame is an open-source Agent Skills toolkit for Claude Code, Codex, and Kimi Code. Give your coding agent a novel and a target platform or engine; it works through source analysis, concept selection, world and art direction, the build, and runtime QA, and hands you a playable game plus the design documents behind it.
 
-Bring a novel in any language and choose the target runtime. Generated artifacts follow the requested language; build and QA stay on the chosen platform instead of silently falling back to an easier substitute.
-
-[中文](README_ZH.md) · [Play Online](#play-online) · [Quick Start](#quick-start) · [Workflow](#workflow) · [Skills](#skills) · [Artifacts](#artifacts) · [Contributing](#contributing)
+The novel can be in any language, and generated artifacts follow the language you ask for. The build and QA run on the platform or engine you chose.
 
 ## Play Online
 
-Three playable adaptations, each available in a browser right now and linked to the case study behind it: source provenance, concept trade-offs, game and art direction, runnable source, and evidence from the playable paths.
+Three playable adaptations, each open in a browser right now and linked to the case study behind it: source provenance, concept trade-offs, game and art direction, runnable source, and evidence from the playable paths.
 
 ### Journey to the West · Three Borrowings of the Banana Fan
 
@@ -48,30 +48,13 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 ## Why NovelToGame
 
-A one-line “turn this book into a game” prompt often produces a generic reskin or a clickable plot summary. NovelToGame keeps the adaptation traceable and gives each major decision a clear owner:
+A one-line "turn this book into a game" prompt often produces a generic reskin or a clickable plot summary. NovelToGame keeps the adaptation traceable and gives each major decision a clear owner:
 
 - **Source-grounded adaptation:** extract rules, spaces, character agency, conflicts, and visual anchors with citations;
 - **Real game design:** turn source evidence into player verbs, systems, levels, feedback, failure, and outcomes;
-- **Target-runtime delivery:** build for the approved platform or engine without implementation silently redesigning the game;
+- **Target-runtime delivery:** build for the platform or engine you approved, so implementation cannot quietly redesign the game;
 - **Optional, restrained voice:** synthesize only selected high-value lines at build time, keep subtitles and mute fallbacks, and never send the whole novel to a TTS provider by default;
 - **Evidence-based QA:** verify startup, rendering, input, the core loop, an outcome, restart, and explicit limitations in the tested runtime.
-
-### Choose the first design task
-
-Use the [quick-start guide](https://zenstory.ai/novel-to-game/quick-start) to scope a first adaptation, then the [meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) when choices need lasting consequences rather than different button wording.
-
-Comparing tools? [NovelToGame compared with story-to-game builders](docs/novel-to-game-vs-story-to-game-tools.md) explains the three shapes of tool and where the design documents live.
-
-- **Scoped first adaptation:** separate authorized source facts, author-approved additions, and unresolved questions; keep the first slice small without changing the chosen engine or platform.
-- **Meaningful choices:** state each player option, available evidence, cost, and visible outcome, then name the later scene that reads the resulting state instead of silently resetting it.
-
-Planning-only brief for an agent with the skills installed:
-
-```text
-Using my authorized source, plan one small gameplay-design slice for my target engine.
-Keep the choices and outcomes bounded; show each option's evidence, cost, visible effect, and where a later scene uses its state.
-Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
-```
 
 ## Quick Start
 
@@ -83,6 +66,9 @@ Label allowed additions and unresolved questions. Deliver design notes only—do
 | Codex | `npx skills add zenstory-ai/novel-to-game -g -y -a codex -s '*'` | `$novel-to-game` |
 | Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
+<details>
+<summary><strong>All three CLIs at once, or native plugin installation</strong></summary>
+
 Install adapters for all three CLIs on the same machine:
 
 ```bash
@@ -91,33 +77,6 @@ npx skills add zenstory-ai/novel-to-game -g -y -s '*' \
 ```
 
 Cloning the repository also enables project-local skill discovery in all three CLIs.
-
-### 2. Start an adaptation
-
-Give the agent a novel file, directory, or link:
-
-```text
-Use novel-to-game quick to adapt this novel into a fully playable game.
-Recommend the target platform, genre, and engine from the source, and keep the first build to about 15 minutes.
-Let the player enter the world as an original character with a new playable route through its conflict.
-```
-
-When you want an **interactive story** rather than a systems game, say so. That locks the `narrative-led` experience profile, so concept, design, and QA judge continuous scenes, character dialogue, testimony, and key choices instead of applying rounds, cards, and resource bars:
-
-```text
-Use novel-to-game quick to adapt this novel into an interactive story.
-Carry the experience with continuous scenes, character dialogue, testimony, and key choices.
-Keep variables as hidden causal tags rather than a visible stat panel.
-Key choices must change later scenes, character attitudes, and the ending, and be named back in later text.
-```
-
-The narrative track keeps the same agency and runtime-evidence requirements, without forcing a fixed
-progression arc: questioning people, pressing contradictions, and changing attitudes can carry the player loop.
-
-`quick` is the low-friction option: the agent drafts sensible defaults, asks only about materially branching or safety-sensitive choices, compares meaningful alternatives, and continues through design, build, and QA. Already selected directions are validated, not reopened to fill a quota. QA covers real startup, rendering, input, a complete loop, an outcome, restart, and explicit limitations. Diagnosis and reruns are allowed; the final record must come from one complete run. No human-playtest gate or separate approval report is required. Choose `director` when you want to pick the concept yourself.
-
-<details>
-<summary><strong>Native plugin installation</strong></summary>
 
 #### Claude Code
 
@@ -144,15 +103,48 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 </details>
 
+### 2. Start an adaptation
+
+Give the agent a novel file, directory, or link, then copy one of these requests and adjust it.
+
+**A systems game with a new playable route:**
+
+```text
+Use novel-to-game quick to adapt this novel into a fully playable game.
+Recommend the target platform, genre, and engine from the source, and keep the first build to about 15 minutes.
+Let the player enter the world as an original character with a new playable route through its conflict.
+```
+
+**An interactive story** (this locks the `narrative-led` experience profile, so concept, design, and QA judge continuous scenes, character dialogue, testimony, and key choices instead of rounds, cards, and resource bars):
+
+```text
+Use novel-to-game quick to adapt this novel into an interactive story.
+Carry the experience with continuous scenes, character dialogue, testimony, and key choices.
+Keep variables as hidden causal tags rather than a visible stat panel.
+Key choices must change later scenes, character attitudes, and the ending, and be named back in later text.
+```
+
+The narrative track keeps the same agency and runtime-evidence requirements; questioning people, pressing contradictions, and changing attitudes can carry the player loop.
+
+**Design notes only, no build yet:**
+
+```text
+Using my authorized source, plan one small gameplay-design slice for my target engine.
+Keep the choices and outcomes bounded; show each option's evidence, cost, visible effect, and where a later scene uses its state.
+Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
+```
+
+`quick` is the low-friction mode: the agent drafts sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to pick the concept yourself.
+
 ## Workflow
 
-The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through separately owned decisions. Concept, experience/level design, and art direction remain distinct. After world design, a risk-matched whitebox tests the hardest causal, systemic, spatial, or control question before art production; its findings return to the design owner rather than becoming a new QA gate.
+The orchestrator locks `PRODUCT_BRIEF.md`, then hands the adaptation through separately owned decisions. Concept, experience/level design, and art direction remain distinct. After world design, a risk-matched whitebox tests the hardest causal, systemic, spatial, or control question before art production; its findings return to the design owner.
 
 ```text
 Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
 ```
 
-The whitebox runs only the narrow check needed for its declared risk. The production build targets the chosen runtime and prepares one authoritative verification entry point. QA may diagnose, fix, and rerun; its final record binds all six player-visible effects to the same complete execution, without reusing stale passes. Capability-specific regression checks run only when that capability is adopted. No human-playtest gate or duplicate QA report is required. Source-code provenance, public hosting, marketing, rights, subjective fun, and publication quality are not machine-proven by this QA record.
+The whitebox runs only the narrow check needed for its declared risk. The production build targets the chosen runtime and prepares one authoritative verification entry point. QA may diagnose, fix, and rerun; its final record binds all six player-visible effects to the same complete execution. Capability-specific regression checks run only when that capability is adopted.
 
 ## Skills
 
@@ -183,7 +175,13 @@ game-adaptations/<project>/
   _progress.md
 ```
 
-Core design documents remain independent of any single model or game engine. The approved target runtime determines the implementation and QA environment.
+The design documents are engine-agnostic Markdown you own. The target runtime you approve determines the implementation and QA environment.
+
+## Further reading
+
+- [Quick-start guide](https://zenstory.ai/novel-to-game/quick-start) — scope a first adaptation: separate authorized source facts, author-approved additions, and open questions, and keep the first slice small.
+- [Meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) — give each player option evidence, cost, and a visible outcome, and name the later scene that reads its state.
+- [NovelToGame compared with story-to-game builders](docs/novel-to-game-vs-story-to-game-tools.md) — the three shapes of tool and where the design documents live.
 
 ## Contributing
 
