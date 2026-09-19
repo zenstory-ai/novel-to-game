@@ -1326,54 +1326,8 @@ body {
   --scene-gold: #c5a264;
 }
 
-.title-screen {
-  color: #f5ead7;
-  background: #141923;
-}
-.title-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(13,17,25,.97) 0%, rgba(18,23,33,.82) 30%, rgba(18,23,33,.08) 62%),
-    linear-gradient(0deg, rgba(13,16,23,.82), transparent 48%);
-}
-.title-art { filter: saturate(.72) contrast(1.08) brightness(.78); transform: scale(1.025); }
-.title-copy {
-  z-index: 5;
-  left: 5vw;
-  top: 50%;
-  bottom: auto;
-  width: min(34rem, 39vw);
-  padding: 0 0 0 1.5rem;
-  transform: translateY(-52%);
-  border-left: 1px solid rgba(197,162,100,.7);
-  background: none;
-  box-shadow: none;
-  backdrop-filter: none;
-}
-.title-copy .eyebrow, .title-copy .rating-line, .title-copy .save-note { color: rgba(239,224,199,.62); }
-.title-copy h1 { color: #fff4dd; font-size: clamp(3.1rem, 5.8vw, 6.6rem); line-height: .94; letter-spacing: .08em; text-shadow: 0 16px 46px rgba(0,0,0,.58); }
-.title-subtitle { color: #e7cda4; font-size: clamp(1.05rem,1.4vw,1.35rem); letter-spacing: .12em; }
-.identity-line { color: rgba(245,235,217,.8); max-width: 31rem; line-height: 1.85; }
-.title-actions .ink-button { color: #efe1c8; border-color: rgba(225,200,156,.36); background: rgba(15,20,29,.5); }
-.title-actions .ink-button.primary { color: #fff6e8; border-color: #a8393f; background: #8f232d; }
-.title-folio { color: #e6d1aa; border-left-color: rgba(197,162,100,.55); }
-.title-folio span { color: rgba(231,211,177,.62); }
-.title-cast {
-  z-index: 6;
-  right: 3vw;
-  bottom: 2.5vh;
-  width: min(43rem,48vw);
-  border: 0;
-  background: rgba(10,14,21,.62);
-  box-shadow: 0 18px 46px rgba(0,0,0,.28);
-  backdrop-filter: blur(12px);
-}
-.title-cast li { color: #f1e5d0; background: rgba(22,27,38,.72); }
-.title-cast span { color: #f1e5d0; }
-.title-cast b { color: rgba(235,219,193,.6); }
+/* 标题页不再套用第二轮的深色覆盖：那组规则是为已撤回的暗色群像配的，会把原版明亮封面压暗。
+ * 标题沿用上方 08-25 的亮底规则；下方白日、路线与夜谈的重设保留。 */
 
 /* 白日：一张掀起的宣纸靠左，院落与人物行动留出大面积呼吸。 */
 #app .hub-stage:not(.evening)::after {
@@ -1465,10 +1419,6 @@ body {
 #app :is(.dialogue-panel, .night-talk-panel) .consent-note { color:rgba(231,215,192,.65); }
 
 @media (max-width: 900px) {
-  .title-screen::after { background:linear-gradient(0deg, rgba(13,17,25,.98) 0%, rgba(15,20,29,.88) 50%, rgba(15,20,29,.08) 78%); }
-  .title-copy { left:1.1rem; right:1.1rem; top:auto; bottom:2vh; width:auto; padding:1rem 0 0; transform:none; border-left:0; border-top:1px solid rgba(197,162,100,.54); }
-  .title-copy h1 { font-size:clamp(2.5rem,12vw,4.2rem); }
-  .title-cast { display:none; }
   #app .day-panel { left:3%; right:3%; top:auto; bottom:2%; width:auto; max-height:77%; padding:1rem 1rem 1rem 4.4rem; transform:none; }
   .day-scene-mark { left:.65rem; top:1rem; bottom:1rem; width:3rem; }
   .day-scene-mark b { font-size:1.8rem; }
