@@ -56,6 +56,7 @@ ideas belong in [GitHub Discussions](https://github.com/zenstory-ai/novel-to-gam
 - Keep `README.md` and `README_ZH.md` structurally aligned.
 - Do not describe subjective fun, balance, visual quality, or adaptation quality
   as deterministically verified.
+- Record non-trivial decisions in `.agents/notes/` (see `AGENTS.md`).
 
 修改 Skill 时必须保持自包含、简体中文运行正文和英文优先的入口描述；修改
 示例时必须遵守 `example.json` 的语言、来源、权利与证据边界。

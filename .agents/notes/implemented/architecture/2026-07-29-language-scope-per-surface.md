@@ -11,14 +11,14 @@ Status: implemented
 语言边界按 surface 逐条锁定，写在 `AGENTS.md`，由 `scripts/validate_repo.py` 与 `tests/test_validate_repo.py` 机械执行：
 
 - skill 正文与 `references/`：must 始终简体中文。测试扫描 `skills/**/*.md` 的每个标题行，不含 CJK 即失败。
-- frontmatter `description`、三个插件 manifest 与 marketplace 的 description、`agents/openai.yaml` 接口字段：must 英文在前、中文在后。校验器用首字符是否 ASCII 字母判定（`leads_with_english`）。
+- frontmatter `description`、三个插件 manifest 与 marketplace 的 description：must 英文在前、中文在后，校验器用首字符是否 ASCII 字母判定（`leads_with_english`）。`agents/openai.yaml` 接口字段同样英文在前，但只靠约定：校验器对它只检查文件存在与默认 prompt 出现 `$<skill-name>`。
 - 示例：由各自 `example.json` 的 `language` 声明；只有声明 `zh*` 的示例才要求中文标题，英文示例 project-plateau 不受此检查。
 - README：`README.md` 英文为默认入口，`README_ZH.md` 中文镜像，两者的示例链接顺序 must 一致（`validate_readme_example_order`）。
 - 产物语言与仓库语言分离：每个非编排 skill 的 `SKILL.md` must 原样包含 `OUTPUT_LANGUAGE_RULE` 那句话——跨 skill 链接被拒，规则无法引用编排器（见 [single-skill-bundle](2026-07-18-single-skill-bundle-self-contained-skills.md)）。
 
 never 在 skill 正文里维护中英双份。文件名、命令、代码字段、状态值、专有名词在任何 surface 保持原文。
 
-来源：958056a、ac5b933、cf05311、7e75f9d、bfbb3c1、212f7e2、58e0ae4 (#44)
+来源：958056a、ac5b933、cf05311、7e75f9d、bfbb3c1、212f7e2、6c450da (#20)、58e0ae4 (#44)
 
 ## Alternatives considered
 

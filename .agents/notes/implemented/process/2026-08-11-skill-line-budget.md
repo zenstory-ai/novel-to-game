@@ -8,7 +8,7 @@ Prompt 文件只增不减：加规则读起来像尽职，删规则读起来像�
 
 ## Decision
 
-`scripts/validate_repo.py` 的 `validate_skill_budget` 对 `skills/**/*.md` 计行：`SKILL.md` 单文件 ≤ `SKILL_MD_LINE_BUDGET`（100），reference ≤ `REFERENCE_LINE_BUDGET`（150），全部合计 ≤ `SKILL_TOTAL_LINE_BUDGET`（1900）。超限即校验失败，错误信息直接指示"删等量内容，或在本文件提高常量并在 commit 里说明理由"。
+`scripts/validate_repo.py` 的 `validate_skill_budget` 对 `skills/**/*.md` 计行：`SKILL.md` 单文件 ≤ `SKILL_MD_LINE_BUDGET`（100），reference ≤ `REFERENCE_LINE_BUDGET`（150），全部合计 ≤ `SKILL_TOTAL_LINE_BUDGET`（1900）。超限即校验失败；总量超限的错误信息直接指示"删等量内容，或在本文件提高常量并在 commit 里说明理由"，单文件超限只提示移入 `references/`、拆文件或删一条规则。
 
 - 数字不是机制，机制是数字住在一个必须被 diff 的文件里：加规则 must 删规则或显式提高常量；允许提高，never 静默漂过。
 - 一条规则在一个 skill 里只住一处：要么 `SKILL.md`，要么该 skill 已读取的 reference。
@@ -27,4 +27,4 @@ Prompt 文件只增不减：加规则读起来像尽职，删规则读起来像�
 
 - 收益：每次增长都是被评审看见的决定；`skills/` 总量有上限，Agent 读取成本可预期。
 - 代价：自包含要求（见 [single-skill-bundle](../architecture/2026-07-18-single-skill-bundle-self-contained-skills.md)）让必要的跨 skill 重述也计入预算，作者要在"再抄一次"与"删别的"之间取舍；A/B 是 n=3/arm 的粗筛，抓不到细微退化。
-- 明确保留、不因预算而删的：反 slop 禁语表、能动性契约、叙事轨规则、产物语言规则——它们各自对应仓库真实踩过的失败。
+- 明确保留、不因预算而删的：玩家能动性合同、叙事层规则、产物语言规则——它们各自对应仓库真实踩过的失败；#27 同时点名保留的反 slop 禁语表已在 #48 随 `game-writing-craft.md` 一并删除。

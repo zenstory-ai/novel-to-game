@@ -8,8 +8,8 @@ Claude Code、Codex、Kimi Code 的发现、插件与调用契约各不相同；
 
 ## Decision
 
-- `skills/` 是唯一内容源，固定七个目录（`EXPECTED_SKILLS`）。CLI 适配层只做指向：`.agents/skills -> ../skills` 相对符号链接；`.claude/skills/<name> -> ../../skills/<name>` 逐个链接；`.claude-plugin/plugin.json`、`.codex-plugin/plugin.json`、`kimi.plugin.json` 三个 manifest 的 `skills` must 是字符串 `./skills`（单元素列表自 #44 起不再接受）；`.claude-plugin/marketplace.json` must 恰好暴露一个 `source: "./"` 的 bundle。四份 manifest 的 `name` 固定 `novel-to-game`，`version` must 等于 `VERSION` 文件。
-- 每个 skill 自包含：Markdown 链接 never 离开本 skill 目录（`link leaves skill` 即失败），也不能断链；需要其他 skill 时按名调用（README 里的 `/novel-to-game`、`$novel-to-game`、`/skill:novel-to-game`）。`agents/openai.yaml` 的默认 prompt must 出现 `$<skill-name>`。
+- `skills/` 是唯一内容源，固定七个目录（`EXPECTED_SKILLS`）。CLI 适配层只做指向：`.agents/skills -> ../skills` 相对符号链接；`.claude/skills/<name> -> ../../skills/<name>` 逐个链接；`.claude-plugin/plugin.json`、`.codex-plugin/plugin.json`、`kimi.plugin.json` 三个 manifest 的 `skills` must 是字符串 `./skills` 或 `./skills/`（三份现状都写后者；单元素列表自 #44 起不再接受）；`.claude-plugin/marketplace.json` must 恰好暴露一个 `source: "./"` 的 bundle。三个插件 manifest 与 marketplace 里那个 bundle 条目的 `name` 固定 `novel-to-game`（marketplace 自身顶层 `name` 是 `novel-to-game-skills`）；四份的 `version` must 等于 `VERSION` 文件。
+- 每个 skill 自包含：Markdown 链接 never 离开本 skill 目录（`link leaves skill` 即失败），也不能断链；需要其他 skill 时按裸名调用（编排器写「调用 `game-concept`」）；README 里的 `/novel-to-game`、`$novel-to-game`、`/skill:novel-to-game` 是三个 CLI 各自的用户入口命令。`agents/openai.yaml` 的默认 prompt must 出现 `$<skill-name>`。
 - 自包含的直接推论：编排器持有的产物语言规则无法被引用，每个下游 `SKILL.md` must 逐字重述 `OUTPUT_LANGUAGE_RULE`（见 [language-scope-per-surface](2026-07-29-language-scope-per-surface.md)）。
 - 验证入口固定为 `python3 scripts/validate_repo.py` 与 `python3 -m unittest discover -s tests -v`，两者不依赖第三方包。
 
