@@ -3,7 +3,7 @@
   "runId": "jin-ping-mei-visual-reconstruction-2026-09-05",
   "environment": {
     "candidate": "2026-09 标题与开场视觉重构候选",
-    "runtimeDigestSha256": "3ed7fae9460a5f91c8976b3602bd2d5a7b31ef6a19c65177f44cb67b8c14a35a",
+    "runtimeDigestSha256": "bda376e70692b5ae06c84109399cb1a6a2c518de689b5f5f36d42f0dcd20a83c",
     "browser": {
       "name": "Chromium",
       "version": "145.0.7632.6"
@@ -12,7 +12,7 @@
     "seed": 42,
     "mode": "每屏第一项可行主动作的快速完整路径",
     "inputMode": "Playwright locator.click；不使用 force；DOM 只负责读取候选 selector",
-    "timestamp": "2026-09-05T10:28:25.924768+00:00",
+    "timestamp": "2026-09-19T03:46:37.971616+00:00",
     "errors": {
       "console": [],
       "http": []
@@ -53,8 +53,8 @@
         "ageGateVisible": true,
         "adultAssetRequestsBeforeConfirmation": 0,
         "preAgeImageRequests": [
-          "http://127.0.0.1:56372/assets/cg/group/title_new_guofeng.webp",
-          "http://127.0.0.1:56372/assets/bg/compound_new_guofeng.webp"
+          "http://127.0.0.1:62194/assets/cg/group/title_new_guofeng.webp",
+          "http://127.0.0.1:62194/assets/bg/compound_new_guofeng.webp"
         ],
         "titleVisible": true,
         "titleCourtCount": 5
