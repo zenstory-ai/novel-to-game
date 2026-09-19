@@ -26,6 +26,7 @@ python3 -m unittest discover -s tests -v
 ## Checklist / 检查清单
 
 - [ ] The change is bounded and the description explains why it is needed.
+- [ ] Non-trivial changes leave a decision note in `.agents/notes/` (see `AGENTS.md`).
 - [ ] Skill bodies and references remain Simplified Chinese; routing and listing copy remain English-first, then Chinese.
 - [ ] Each skill stays self-contained and examples follow their declared artifact language.
 - [ ] Source quotations, terminology, and culturally specific concepts are preserved where decisions require them.
