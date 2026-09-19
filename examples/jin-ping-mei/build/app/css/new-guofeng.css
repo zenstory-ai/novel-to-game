@@ -1419,10 +1419,6 @@ body {
 #app :is(.dialogue-panel, .night-talk-panel) .consent-note { color:rgba(231,215,192,.65); }
 
 @media (max-width: 900px) {
-  .title-copy { left:1.1rem; right:1.1rem; top:auto; bottom:2vh; width:auto; padding:1rem 0 0; transform:none; border-left:0; border-top:1px solid rgba(197,162,100,.54); }
-  /* 8 个字的标题在 390px 宽下 12vw 会裁掉末字；10.4vw 刚好放下且不换行。 */
-  .title-copy h1 { font-size:clamp(2.2rem,10.4vw,4.2rem); }
-  .title-cast { display:none; }
   #app .day-panel { left:3%; right:3%; top:auto; bottom:2%; width:auto; max-height:77%; padding:1rem 1rem 1rem 4.4rem; transform:none; }
   .day-scene-mark { left:.65rem; top:1rem; bottom:1rem; width:3rem; }
   .day-scene-mark b { font-size:1.8rem; }

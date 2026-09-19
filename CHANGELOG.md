@@ -13,7 +13,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ### Changed
 
-- Restored the bright title screen of the Jin Ping Mei example: the dark title-screen override added in [#46](https://github.com/zenstory-ai/novel-to-game/pull/46) for a since-withdrawn group portrait was still dimming the original cover, so it was removed and the README and QA title screenshots were re-recorded. The mobile title heading no longer clips its last character.
+- Restored the bright title screen of the Jin Ping Mei example: the title-screen override added in [#46](https://github.com/zenstory-ai/novel-to-game/pull/46) for a since-withdrawn group portrait was still dimming the original cover on desktop and, on phones, still pinning the copy to the bottom and hiding the five-woman cast strip. Both the desktop and the mobile parts of that override were removed, the title screen is back on its original light rules at every breakpoint, and the README and QA title screenshots were re-recorded.
 
 ## [0.3.1] - 2026-09-04
 
