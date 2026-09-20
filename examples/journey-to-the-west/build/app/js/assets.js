@@ -97,10 +97,6 @@ export function unitImage(key) {
   return images[`u:${key}`] ?? null;
 }
 
-export function sceneImage(key) {
-  return images[`s:${key}`] ?? null;
-}
-
 // 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里,没美术照样能选。
 export function treasureURL(key) {
   return images[`t:${key}`]?.src ?? null;

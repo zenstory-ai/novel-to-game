@@ -21,11 +21,3 @@ export function hideLoading() {
   screen.setAttribute('aria-busy', 'false');
 }
 
-export function loadingScreenSnapshot() {
-  const { screen, status } = elements();
-  return {
-    visible: Boolean(screen && !screen.hidden),
-    phase: screen?.dataset.phase ?? null,
-    status: status?.textContent ?? null,
-  };
-}

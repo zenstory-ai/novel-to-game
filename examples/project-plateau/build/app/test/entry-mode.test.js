@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 import { classifyEntryMode } from '../src/entry-mode.js';
 
@@ -40,11 +39,4 @@ test('touch-only and undersized devices report the desktop runtime boundary', ()
     classifyEntryMode({ ...DESKTOP, width: 1024, height: 768 }).reason,
     'viewport-below-desktop-floor',
   );
-});
-
-test('the app shell contains no promotional media or cross-demo navigation', () => {
-  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-  assert.doesNotMatch(html, /<video|\/media\/|vibecoco|github\.com/i);
-  assert.equal(existsSync(new URL('../src/preview-gateway.js', import.meta.url)), false);
-  assert.equal(existsSync(new URL('../public/media', import.meta.url)), false);
 });

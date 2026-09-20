@@ -13064,14 +13064,3 @@ export function snapshot(state) {
   return structuredClone(state);
 }
 
-export const APPROVED_ADULT_IDS = Object.freeze([
-  'wu_yueniang', 'pan_jinlian', 'li_pinger', 'meng_yulou', 'sun_xuee',
-]);
-
-export function sceneIsAdultSafe(scene) {
-  const approved = new Set(APPROVED_ADULT_IDS);
-  return !!scene
-    && Array.isArray(scene.participants)
-    && scene.participants.length > 0
-    && scene.participants.every((id) => approved.has(id) && HEROINES[id]?.adult === true);
-}

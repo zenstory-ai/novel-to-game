@@ -22,6 +22,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Removed the second QA harnesses that had grown beside each example's one authoritative command: the Jin Ping Mei readability checker and its unit test, the Journey to the West visual-refresh browser script, and the `test:complete-run` alias that duplicated `npm run verify` in Project Plateau.
 - Removed historical evidence that described superseded candidates rather than the current run: the Jin Ping Mei visual-review and readability screenshots with their README section, and the Journey to the West visual-refresh screenshot set.
 - Removed the README example-link-order check and the Vercel workflow test from the repository validator; both measured delivery rather than whether a game plays.
+- Removed dead code from the example apps: twelve exports nothing imported (including three Project Plateau terrain profile constants that only described themselves), 31 Jin Ping Mei CSS rules for class names no script or markup emits, and a Project Plateau test that asserted the app shell carried no promotional media, which is a delivery check.
 
 ## [0.3.1] - 2026-09-04
 
