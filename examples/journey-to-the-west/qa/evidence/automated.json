@@ -7,8 +7,8 @@
       1440,
       900
     ],
-    "url": "http://127.0.0.1:52902/?seed=42&fast=1",
-    "buildBytes": 9396191
+    "url": "http://127.0.0.1:52741/?seed=42&fast=1",
+    "buildBytes": 9395321
   },
   "inputTrace": [
     "start a new campaign",

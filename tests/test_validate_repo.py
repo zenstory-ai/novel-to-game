@@ -22,7 +22,6 @@ from validate_repo import (  # noqa: E402
     parse_numeral,
     read_manifest,
     validate_qa,
-    validate_readme_example_order,
     validate_skill,
     validate_skill_budget,
     visible_directories,
@@ -114,22 +113,6 @@ class RepositoryValidationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             project = make_verification_fixture(Path(temporary))
             self.assertEqual(validate_qa(project), [])
-
-    def test_readme_example_link_order_must_match_between_languages(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            (root / "README.md").write_text("[A](examples/a/) [B](examples/b/)", encoding="utf-8")
-            (root / "README_ZH.md").write_text("[乙](examples/b/) [甲](examples/a/)", encoding="utf-8")
-            issues = validate_readme_example_order(root)
-            self.assertTrue(any("example link order must match" in issue for issue in issues), issues)
-
-    def test_vercel_deploy_never_re_enters_the_project_root_directory(self) -> None:
-        """每个 Vercel 项目自己拥有 Root Directory；在 app 目录里跑会把同一段路径追加两次。"""
-        workflow = (ROOT / ".github/workflows/deploy.yml").read_text(encoding="utf-8")
-        self.assertNotIn("working-directory:", workflow)
-        for name in sorted(visible_directories(ROOT / "examples")):
-            if (ROOT / "examples" / name / "build/app").is_dir():
-                self.assertIn(f"examples/{name}/build/app/**", workflow)
 
     def test_skill_validator_rejects_a_broken_skill(self) -> None:
         cases = (

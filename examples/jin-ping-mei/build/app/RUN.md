@@ -136,14 +136,3 @@ python3 -m unittest discover -s tests -v
 
 - 自动化可以证明流程、状态、资源、素材和画面按当前合同运行，不能证明“好玩”“性感”或长期平衡。
 - 内网小说库只用于归纳结构和声口；运行文案不复制未授权原句。
-
-### 首夜阅读与键盘回归
-
-```bash
-python3 -m unittest discover -s test -p 'test_*.py' -v
-python3 test/verify_readability.py --write-evidence
-```
-
-证据原子写入 `../../qa/evidence/readability.json`；执行失败时保留有效 JSON 的 FAIL 记录，不用 shell 重定向覆盖文件。
-
-使用真实浏览器进入首夜，检查原版五人近景与封面映射及固定 SHA-256（避免同名文件被替换）、390×844 / 1280×800 的文字对比度与布局，以及 Tab 聚焦、Enter 提交选项。正文区域使用不透明底色，辅助字号不低于 12px；本检查不代表全站无障碍审计，也不替代完整二十日验证。

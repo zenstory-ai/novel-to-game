@@ -13,7 +13,15 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ### Changed
 
+- Lowered the skills line budget from 1900 to 1300 so the current package size (about 1120 lines) becomes the ceiling instead of a distant target; the budget is the forcing function and a wide gap lets rules accumulate unnoticed.
+- The Journey to the West example now records normal-speed cinematics, mobile viewports and reduced motion as a plain limitation of its one authoritative run instead of pointing at a second browser harness.
 - Restored the bright title screen of the Jin Ping Mei example: the title-screen override added in [#46](https://github.com/zenstory-ai/novel-to-game/pull/46) for a since-withdrawn group portrait was still dimming the original cover on desktop and, on phones, still pinning the copy to the bottom and hiding the five-woman cast strip. Both the desktop and the mobile parts of that override were removed, the title screen is back on its original light rules at every breakpoint, and the README and QA title screenshots were re-recorded.
+
+### Removed
+
+- Removed the second QA harnesses that had grown beside each example's one authoritative command: the Jin Ping Mei readability checker and its unit test, the Journey to the West visual-refresh browser script, and the `test:complete-run` alias that duplicated `npm run verify` in Project Plateau.
+- Removed historical evidence that described superseded candidates rather than the current run: the Jin Ping Mei visual-review and readability screenshots with their README section, and the Journey to the West visual-refresh screenshot set.
+- Removed the README example-link-order check and the Vercel workflow test from the repository validator; both measured delivery rather than whether a game plays.
 
 ## [0.3.1] - 2026-09-04
 

@@ -16,7 +16,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test test/*.test.js",
-    "test:complete-run": "python3 test/qa_complete_run.py",
     "verify": "python3 test/verify.py"
   },
   "dependencies": {
