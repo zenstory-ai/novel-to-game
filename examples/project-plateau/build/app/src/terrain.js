@@ -60,24 +60,6 @@ export const TERRAIN_GEOMORPHOLOGY_PROFILE = Object.freeze({
   topology: 'single-cpu-heightfield-shared-by-rendering-collision-placement-and-hydrology',
 });
 
-export const TERRAIN_FLUVIAL_SURFACE_PROFILE = Object.freeze({
-  model: 'meander-energy-sorted-point-bar-floodplain-silt-and-cut-bank-exposure',
-  processSource: 'shared-brook-control-line-heightfield-and-bank-curvature',
-  bankSurfaceModel: 'terrain-integrated-wet-bank-point-bar-floodplain-and-cut-bank-fields',
-  bankTopology: 'single-shared-render-and-collision-heightfield',
-  bankOverlayGeometryCount: 0,
-  bankOverlayDrawCalls: 0,
-  wetBankRoughnessRange: Object.freeze([0.76, 0.99]),
-  contactModel: 'water-feather-over-shared-terrain-bank-no-raised-ribbon',
-  pointBarMaterial: 'inner-bend-coarse-sand-and-rounded-fine-gravel',
-  floodplainMaterial: 'low-energy-overbank-silt-and-clay',
-  cutBankMaterial: 'outer-bend-exposed-cohesive-subsoil',
-  pointBarReliefAmplitudeMeters: 0.13,
-  floodplainReliefAmplitudeMeters: 0.045,
-  cutBankReliefAmplitudeMeters: 0.11,
-  grainOrdering: 'cut-bank-erosion-to-bed-load-to-inner-bend-lag-to-overbank-fines',
-});
-
 const freezeControlLine = (points) => Object.freeze(
   points.map(([x, z]) => Object.freeze([x, z])),
 );
@@ -99,19 +81,6 @@ export const EXPOSED_FORK_CONTROL_POINTS = freezeControlLine([
   [5, 35], [13, 25], [20, 13], [18, 0], [7, -14],
 ]);
 
-export const TERRAIN_ROUTE_SURFACE_PROFILE = Object.freeze({
-  version: 'terrain-integrated-footfall-compaction-v1',
-  source: 'three-authored-navigation-control-lines',
-  topology: 'single-shared-render-and-collision-heightfield',
-  surfaceResponse: 'litter-suppression-colour-compaction-relief-and-roughness',
-  overlayGeometryCount: 0,
-  overlayDrawCalls: 0,
-  collisionChange: 'none',
-  mainRouteInfluenceMeters: Object.freeze([1.4, 3.25]),
-  coveredForkInfluenceMeters: Object.freeze([1.05, 2.55]),
-  exposedForkInfluenceMeters: Object.freeze([1.15, 2.8]),
-});
-
 export const TERRAIN_BRYOPHYTE_PROFILE = Object.freeze({
   model: 'canopy-shade-moisture-hollow-and-stable-substrate-bryophyte-establishment',
   sourceCanopyKinds: Object.freeze([
@@ -129,20 +98,6 @@ export const TERRAIN_BRYOPHYTE_PROFILE = Object.freeze({
   topology: 'thin-living-cover-inside-shared-terrain-material-no-overlay-geometry',
   collisionChange: 'none',
 });
-
-const GROUND_PROCESS_PROFILE = Object.freeze({
-  model: 'source-coupled-canopy-litter-hydrology-slope-and-footfall',
-  canopySources: VEGETATION_LAYOUT.trees.length
-    + HABITAT_TREE_LAYOUT.length
-    + COVER_ARCH_LAYOUT.length
-    + 1,
-  routeLines: 3,
-  brookLines: 1,
-  randomMasks: 0,
-  bryophyteModel: TERRAIN_BRYOPHYTE_PROFILE.model,
-});
-
-export const TERRAIN_ECOLOGY_PROFILE = GROUND_PROCESS_PROFILE;
 
 function clamp(value, minimum = 0, maximum = 1) {
   return Math.min(maximum, Math.max(minimum, value));

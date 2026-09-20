@@ -30,10 +30,3 @@ export const DAYLIGHT_ENERGY_PROFILE = Object.freeze({
   }),
 });
 
-export function daylightEnergyRatios(profile = DAYLIGHT_ENERGY_PROFILE) {
-  return Object.freeze({
-    skyToResidualAmbient: profile.hemisphereIntensity / profile.ambientIntensity,
-    sunToSky: profile.sunIntensity / profile.hemisphereIntensity,
-    environmentToSky: profile.environmentIntensity / profile.hemisphereIntensity,
-  });
-}

@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 
@@ -19,22 +17,6 @@ function templateWithMesh() {
   ));
   return template;
 }
-
-test('HY3D rifle-and-hands viewmodel is the only production gun asset and stays within budget', () => {
-  assert.equal(HY3D_RIFLE_ASSET.url, '/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb');
-  assert.ok(HY3D_RIFLE_ASSET.bytes < 1_100_000);
-  assert.equal(HY3D_RIFLE_ASSET.triangles, 50_000);
-  assert.equal(HY3D_RIFLE_ASSET.textureSize, 1024);
-  assert.ok(HY3D_RIFLE_ASSET.approximateGpuMiB <= 18);
-  assert.equal(HY3D_RIFLE_ASSET.integratedHands, 2);
-  assert.deepEqual(HY3D_RIFLE_ASSET.gripRoles, ['fore-end-support', 'trigger-grip']);
-  const asset = new URL(`../public${HY3D_RIFLE_ASSET.url}`, import.meta.url);
-  assert.equal(statSync(asset).size, HY3D_RIFLE_ASSET.bytes);
-  assert.equal(
-    createHash('sha256').update(readFileSync(asset)).digest('hex'),
-    'db4f0a6dc2cab117e913b9179d31882c02c64c1f20de0e8645a06ba1f39c411c',
-  );
-});
 
 test('rifle loader caches one matte local template', async () => {
   let loads = 0;

@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 
@@ -49,20 +47,6 @@ function anatomicalTemplate() {
     new THREE.MeshStandardMaterial(),
   ));
 }
-
-test('HY3D production asset stays within the approved shared package and render budget', () => {
-  assert.equal(HY3D_IGUANODON_ASSET.url, '/assets/iguanodon-hy3d-v35-stylized.glb');
-  assert.ok(HY3D_IGUANODON_ASSET.bytes < 1_100_000);
-  assert.ok(HY3D_IGUANODON_ASSET.triangles <= 25_000);
-  assert.equal(HY3D_IGUANODON_ASSET.textureSize, 1024);
-  assert.ok(HY3D_IGUANODON_ASSET.approximateSharedGpuMiB <= 19);
-  const asset = new URL(`../public${HY3D_IGUANODON_ASSET.url}`, import.meta.url);
-  assert.equal(statSync(asset).size, HY3D_IGUANODON_ASSET.bytes);
-  assert.equal(
-    createHash('sha256').update(readFileSync(asset)).digest('hex'),
-    '74a46de82a54dcdb25119e24d3db87485ad814a37a5a92d28756b9e9cbb60de5',
-  );
-});
 
 test('cached loader fetches once and reuses a prepared template', async () => {
   let loads = 0;

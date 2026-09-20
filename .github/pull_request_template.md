@@ -25,13 +25,6 @@ python3 -m unittest discover -s tests -v
 
 ## Checklist / 检查清单
 
-- [ ] The change is bounded and the description explains why it is needed.
-- [ ] Non-trivial changes leave a decision note in `.agents/notes/` (see `AGENTS.md`).
-- [ ] Skill bodies and references remain Simplified Chinese; routing and listing copy remain English-first, then Chinese.
-- [ ] Each skill stays self-contained and examples follow their declared artifact language.
-- [ ] Source quotations, terminology, and culturally specific concepts are preserved where decisions require them.
-- [ ] New source text and assets have an explicit redistribution basis; no credential, private prompt, or private manuscript is included.
-- [ ] No dependency was added without an explicit product need.
-- [ ] Repository validation and unit tests pass, or every missing check is marked `NOT_RUN: <reason>`.
-- [ ] Runtime claims include direct evidence; subjective claims remain clearly subjective.
-- [ ] `README.md` and `README_ZH.md` remain structurally aligned when either changes.
+- [ ] The description says why the change is needed and what it deliberately leaves alone.
+- [ ] `python3 scripts/validate_repo.py` and the unit tests pass, or every missing check is listed as `NOT_RUN: <reason>`.
+- [ ] Runtime claims point at direct evidence; subjective claims stay subjective. Repository contracts are in `AGENTS.md`.

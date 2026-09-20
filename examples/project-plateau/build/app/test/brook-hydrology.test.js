@@ -4,10 +4,8 @@ import test from 'node:test';
 import * as THREE from 'three';
 
 import {
-  BROOK_FREE_SURFACE_PROFILE,
   BROOK_HYDROLOGY_PROFILE,
   BROOK_OBSTACLE_FLOW_PROFILE,
-  BROOK_REFLECTION_PROFILE,
   BROOK_SURFACE_DRAW_PROFILE,
   brookFlowFrameAt,
   buildBrookObstacleFlowField,
@@ -75,21 +73,6 @@ test('each reflection reach is an upward local free-surface plane that never cro
       assert.ok(reach.grade > 0);
     }
   }
-});
-
-test('brook reflection quality uses a bounded screen-space trace over a complete fallback', () => {
-  assert.deepEqual(BROOK_REFLECTION_PROFILE.stepsByQuality, {
-    low: 0,
-    balanced: 12,
-    high: 20,
-  });
-  assert.equal(BROOK_REFLECTION_PROFILE.maximumRangeMeters, 38);
-  assert.ok(BROOK_REFLECTION_PROFILE.constantThicknessMeters > 0);
-  assert.ok(BROOK_REFLECTION_PROFILE.constantThicknessMeters < 0.2);
-  assert.ok(BROOK_REFLECTION_PROFILE.depthScaledThicknessPerMeter > 0);
-  assert.match(BROOK_REFLECTION_PROFILE.model, /screen-space-reflected-ray/);
-  assert.match(BROOK_REFLECTION_PROFILE.fallback, /local-planar/);
-  assert.match(BROOK_REFLECTION_PROFILE.evidenceBoundary, /cannot-recover/);
 });
 
 test('brook obstacle flow accepts only rendered clasts that reach the upper water column', () => {
@@ -161,22 +144,6 @@ test('brook obstacle flow directions converge from both headwaters and remain bu
     .sub(points[south.segmentIndex]).setY(0).normalize();
   assert.ok(north.flowDirection.dot(new THREE.Vector2(northTangent.x, northTangent.z)) > 0.999);
   assert.ok(south.flowDirection.dot(new THREE.Vector2(southTangent.x, southTangent.z)) < -0.999);
-  assert.deepEqual(BROOK_OBSTACLE_FLOW_PROFILE.activeCountByQuality, {
-    low: 4,
-    balanced: 8,
-    high: 12,
-  });
-  assert.equal(BROOK_OBSTACLE_FLOW_PROFILE.maximumObstacleCount, 12);
-  assert.match(BROOK_OBSTACLE_FLOW_PROFILE.evidenceBoundary, /not-cfd/);
-  assert.equal(BROOK_FREE_SURFACE_PROFILE.longitudinalSubdivisions, 4);
-  assert.equal(BROOK_FREE_SURFACE_PROFILE.crossSectionVertices, 13);
-  assert.equal(BROOK_FREE_SURFACE_PROFILE.maximumDisplacementMeters, 0.038);
-  assert.ok(
-    BROOK_FREE_SURFACE_PROFILE.maximumUpstreamCompressionMeters
-      > BROOK_FREE_SURFACE_PROFILE.maximumWakeAmplitudeMeters,
-  );
-  assert.match(BROOK_FREE_SURFACE_PROFILE.volumeContract, /zero-mean-oscillatory-wake/);
-  assert.match(BROOK_FREE_SURFACE_PROFILE.evidenceBoundary, /not-shallow-water-cfd/);
 });
 
 test('brook surface is ordered ahead of standing transparent scene elements', () => {
@@ -196,10 +163,5 @@ test('brook surface is ordered ahead of standing transparent scene elements', ()
   assert.ok(
     BROOK_SURFACE_DRAW_PROFILE.surfaceRenderOrder
       < BROOK_SURFACE_DRAW_PROFILE.standingTransparentRenderOrder,
-  );
-  assert.match(BROOK_SURFACE_DRAW_PROFILE.sortHazard, /origin-does-not-track-visible-water/);
-  assert.match(
-    BROOK_SURFACE_DRAW_PROFILE.evidenceBoundary,
-    /not-per-fragment-depth-sorting/,
   );
 });

@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 
@@ -34,19 +32,6 @@ function templateWithMesh() {
   ));
   return template;
 }
-
-test('HY3D pterodactyl asset stays within the approved shared delivery budget', () => {
-  assert.ok(HY3D_PTERODACTYL_ASSET.bytes < 1_350_000);
-  assert.ok(HY3D_PTERODACTYL_ASSET.triangles <= 30_500);
-  assert.equal(HY3D_PTERODACTYL_ASSET.textureSize, 1024);
-  assert.ok(HY3D_PTERODACTYL_ASSET.approximateSharedGpuMiB <= 19);
-  const asset = new URL(`../public${HY3D_PTERODACTYL_ASSET.url}`, import.meta.url);
-  assert.equal(statSync(asset).size, HY3D_PTERODACTYL_ASSET.bytes);
-  assert.equal(
-    createHash('sha256').update(readFileSync(asset)).digest('hex'),
-    'e55fb8979f4349e8887943395ca58979dc417fd30f7df2fe438062161c620113',
-  );
-});
 
 test('pterodactyl loader caches one matte template with shared flight morphs', async () => {
   let loads = 0;

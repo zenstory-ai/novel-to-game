@@ -42,24 +42,12 @@ ideas belong in [GitHub Discussions](https://github.com/zenstory-ai/novel-to-gam
 
 ## Repository contracts / 仓库契约
 
-- Keep each skill self-contained. Invoke another skill by name; do not create a
-  runtime file dependency across skills.
-- Keep `SKILL.md` procedural and compact. Put optional depth in one-level
-  `references/` files.
-- Skill bodies and `references/` use Simplified Chinese. Skill frontmatter,
-  plugin listing copy, and `agents/openai.yaml` interface fields lead with
-  English and then Chinese.
-- Example artifacts follow the language declared in their `example.json`.
-- Preserve source-language quotations and culturally specific terms. When the
-  output language differs, maintain one terminology table instead of replacing
-  concepts with generic genre tropes.
-- Keep `README.md` and `README_ZH.md` structurally aligned.
-- Do not describe subjective fun, balance, visual quality, or adaptation quality
-  as deterministically verified.
-- Record non-trivial decisions in `.agents/notes/` (see `AGENTS.md`).
+The rules a change must respect (self-contained skills, language scope per
+surface, evidence for QA claims, no dependency without a product need, decision
+notes) live in [`AGENTS.md`](AGENTS.md). Read it once before editing; this file
+does not restate it.
 
-修改 Skill 时必须保持自包含、简体中文运行正文和英文优先的入口描述；修改
-示例时必须遵守 `example.json` 的语言、来源、权利与证据边界。
+修改前请读一遍 [`AGENTS.md`](AGENTS.md)，仓库契约只在那里维护一份。
 
 ## Verification / 验证
 

@@ -19,10 +19,6 @@ export function rfloat(rng, min, max) {
 }
 
 // [min, max] 整数
-export function rint(rng, min, max) {
-  return min + Math.floor(rng() * (max - min + 1));
-}
-
 // 概率判定
 export function chance(rng, p) {
   return rng() < p;

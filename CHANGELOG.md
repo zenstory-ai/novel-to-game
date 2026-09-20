@@ -13,7 +13,19 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ### Changed
 
+- Lowered the skills line budget from 1900 to 1300 so the current package size (about 1120 lines) becomes the ceiling instead of a distant target; the budget is the forcing function and a wide gap lets rules accumulate unnoticed.
+- The Journey to the West example now records normal-speed cinematics, mobile viewports and reduced motion as a plain limitation of its one authoritative run instead of pointing at a second browser harness.
 - Restored the bright title screen of the Jin Ping Mei example: the title-screen override added in [#46](https://github.com/zenstory-ai/novel-to-game/pull/46) for a since-withdrawn group portrait was still dimming the original cover on desktop and, on phones, still pinning the copy to the bottom and hiding the five-woman cast strip. Both the desktop and the mobile parts of that override were removed, the title screen is back on its original light rules at every breakpoint, and the README and QA title screenshots were re-recorded.
+
+### Removed
+
+- Removed the second QA harnesses that had grown beside each example's one authoritative command: the Jin Ping Mei readability checker and its unit test, the Journey to the West visual-refresh browser script, and the `test:complete-run` alias that duplicated `npm run verify` in Project Plateau.
+- Removed historical evidence that described superseded candidates rather than the current run: the Jin Ping Mei visual-review and readability screenshots with their README section, and the Journey to the West visual-refresh screenshot set.
+- Removed the README example-link-order check and the Vercel workflow test from the repository validator; both measured delivery rather than whether a game plays.
+- Removed dead code from the example apps: twelve exports nothing imported (including three Project Plateau terrain profile constants that only described themselves), 31 Jin Ping Mei CSS rules for class names no script or markup emits, and a Project Plateau test that asserted the app shell carried no promotional media, which is a delivery check.
+- Removed 22 Project Plateau unit tests and the constant-echo assertions inside 24 more (204 → 182 tests): asset size and SHA-256 fingerprints, budgets recomputed from their own constants, frozen profiles compared with the literals they were copied from, and a grep for remote URLs. Each remaining test fails only when behaviour changes. The `sha256` fields nothing read and two helpers only tests called went with them.
+- Removed 73 optional-chaining and nullish-coalescing guards in the Jin Ping Mei engine where the save validator or the engine's own factories already make the value total; a differential replay over 14 seeded playthroughs produced identical state digests before and after. One guard that turned a bad heroine id into state corruption when removed was kept.
+- Repository contracts now live only in `AGENTS.md`; `CONTRIBUTING.md` points there instead of restating them, and the pull request checklist shrinks from ten items to three.
 
 ## [0.3.1] - 2026-09-04
 

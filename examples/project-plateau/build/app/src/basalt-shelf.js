@@ -11,7 +11,6 @@ export const BASALT_SHELF_ASSET = Object.freeze({
   drawCalls: 2,
   shelfCount: 3,
   fragmentCount: 6,
-  sha256: 'e6a868adca7ca1748a807cddb5eee9e869ce864624763f0b39a2aff5afc20eab',
   provenance: 'project-original-deterministic-offline-authored-mesh-library',
   generator: 'app/scripts/generate-basalt-shelf-library.mjs',
   rights: 'project-original-code-authored-output',

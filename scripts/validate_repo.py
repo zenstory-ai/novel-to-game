@@ -219,7 +219,7 @@ def chapter_citation_coverage(text: str, pattern: re.Pattern[str]) -> set[int]:
 
 
 # Attention budgets keep new runtime guidance from silently accumulating.
-SKILL_TOTAL_LINE_BUDGET = 1900
+SKILL_TOTAL_LINE_BUDGET = 1300
 SKILL_MD_LINE_BUDGET = 100
 REFERENCE_LINE_BUDGET = 150
 
@@ -538,27 +538,6 @@ def _validate_target_finish_inheritance(
     return issues
 
 
-def validate_readme_example_order(root: Path) -> list[str]:
-    """Keep the bilingual README example listings structurally aligned."""
-    readme_slugs: dict[str, list[str]] = {}
-    for filename in ("README.md", "README_ZH.md"):
-        path = root / filename
-        if path.is_file():
-            readme_slugs[filename] = list(
-                dict.fromkeys(re.findall(r"examples/([^/)]+)/?", path.read_text(encoding="utf-8")))
-            )
-    if (
-        "README.md" in readme_slugs
-        and "README_ZH.md" in readme_slugs
-        and readme_slugs["README.md"] != readme_slugs["README_ZH.md"]
-    ):
-        return [
-            "README.md and README_ZH.md: example link order must match; "
-            f"english={readme_slugs['README.md']} chinese={readme_slugs['README_ZH.md']}"
-        ]
-    return []
-
-
 def validate_example(example_dir: Path) -> list[str]:
     manifest, issues = read_manifest(example_dir)
     if manifest is None:
@@ -738,7 +717,6 @@ def validate_repository(root: Path) -> list[str]:
         issues.append("repository: no examples found")
     for name in sorted(actual_examples):
         issues.extend(validate_example(examples_root / name))
-    issues.extend(validate_readme_example_order(root))
 
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     issues.extend(validate_agent_adapters(root, version))

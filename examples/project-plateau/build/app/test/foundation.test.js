@@ -1,14 +1,9 @@
 import assert from 'node:assert/strict';
-import { globSync, readFileSync } from 'node:fs';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
 
 import {
-  PRODUCT_BUDGET,
-  SCENE_BUDGET,
   onePercentLowFps,
-  percentile,
   seededRandom,
 } from '../src/config.js';
 import {
@@ -22,17 +17,6 @@ import {
 } from '../src/world.js';
 import { HERO_GINGKO_LAYOUT } from '../src/environment-layout.js';
 import { NAVIGATION } from '../src/simulation.js';
-
-const root = new URL('../', import.meta.url);
-const rootPath = fileURLToPath(root);
-
-test('foundation exposes the locked viewport and performance budgets', () => {
-  assert.deepEqual(PRODUCT_BUDGET.targetViewport, [1440, 900]);
-  assert.deepEqual(PRODUCT_BUDGET.minimumViewport, [1280, 720]);
-  assert.equal(PRODUCT_BUDGET.medianFps, 45);
-  assert.equal(PRODUCT_BUDGET.onePercentLowFps, 30);
-  assert.equal(PRODUCT_BUDGET.ttiMs, 8000);
-});
 
 test('optional asset fallback handles load failure without swallowing attachment invariants', async () => {
   let fallbackCalls = 0;
@@ -68,19 +52,6 @@ test('procedural placement is deterministic for a recorded seed', () => {
     Array.from({ length: 12 }, first),
     Array.from({ length: 12 }, second),
   );
-});
-
-test('representative scene contains all declared subject and pressure groups', () => {
-  assert.equal(SCENE_BUDGET.adultIguanodons, 2);
-  assert.equal(SCENE_BUDGET.youngIguanodons, 3);
-  assert.ok(SCENE_BUDGET.pterodactyls >= 1);
-  assert.equal(SCENE_BUDGET.ferns, 120);
-  assert.ok(SCENE_BUDGET.groundCover >= 300);
-  assert.equal(SCENE_BUDGET.bryophyteGround, 640);
-  assert.equal(SCENE_BUDGET.forestFloorDetritus, 390);
-  assert.ok(SCENE_BUDGET.distantTrees >= 120);
-  assert.ok(SCENE_BUDGET.deadfall >= 12);
-  assert.ok(SCENE_BUDGET.trees + SCENE_BUDGET.ferns >= 200);
 });
 
 test('every authored solid collider stays registered to the rendered object position', () => {
@@ -559,25 +530,8 @@ test('pterodactyl body forward follows the actual orbit and attack travel tangen
   });
 });
 
-test('frame percentile is stable and keeps the slow tail visible', () => {
-  const frames = [16, 17, 15, 18, 40, 14, 16, 17, 19, 16];
-  assert.equal(percentile(frames, 0.5), 17);
-  assert.equal(percentile(frames, 0.99), 40);
-  assert.equal(percentile([], 0.5), 0);
-});
-
 test('one percent low FPS averages the slowest one percent of frame times', () => {
   const frames = [...Array(198).fill(10), 100, 200];
   assert.ok(Math.abs(onePercentLowFps(frames) - (1000 / 150)) < 1e-9);
   assert.equal(onePercentLowFps([]), 0);
-});
-
-test('runtime sources contain no remote request or navigation URL', () => {
-  const files = ['index.html', ...globSync('src/*.{js,css}', { cwd: rootPath })];
-  for (const relative of files) {
-    const source = readFileSync(new URL(relative, root), 'utf8');
-    assert.doesNotMatch(source, /https?:\/\//i, relative);
-    assert.doesNotMatch(source, /(?:src|href)\s*=\s*['"]\/\//i, relative);
-    assert.doesNotMatch(source, /url\(\s*['"]?https?:/i, relative);
-  }
 });

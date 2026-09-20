@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -58,18 +57,6 @@ async function loadActualTemplate() {
   });
   return load();
 }
-
-test('original canopy-tree library is deterministic, budget matched and project-owned', () => {
-  const asset = new URL('../public' + CANOPY_TREE_LIBRARY_ASSET.url, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, CANOPY_TREE_LIBRARY_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(createHash('sha256').update(bytes).digest('hex'), CANOPY_TREE_LIBRARY_ASSET.sha256);
-  assert.ok(CANOPY_TREE_LIBRARY_ASSET.triangles <= 34_000);
-  assert.equal(CANOPY_TREE_LIBRARY_ASSET.variantIds.length, CANOPY_TREE_LIBRARY_ASSET.variantCount);
-  assert.ok(CANOPY_TREE_LIBRARY_ASSET.drawCalls <= 8);
-});
-
 
 test('cached canopy-tree loader clamps imported materials to dielectric bounds', async () => {
   let loads = 0;

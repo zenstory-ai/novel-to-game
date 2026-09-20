@@ -1,13 +1,3 @@
-export const PRODUCT_BUDGET = Object.freeze({
-  targetViewport: Object.freeze([1440, 900]),
-  minimumViewport: Object.freeze([1280, 720]),
-  medianFps: 45,
-  onePercentLowFps: 30,
-  initialCompressedBytes: 20 * 1024 * 1024,
-  totalBytes: 50 * 1024 * 1024,
-  ttiMs: 8000,
-});
-
 export const PALETTE = Object.freeze({
   canopy: 0x193c2b,
   fern: 0x3f6a43,
@@ -44,13 +34,6 @@ export function seededRandom(seed = 139) {
     state = (1664525 * state + 1013904223) >>> 0;
     return state / 4294967296;
   };
-}
-
-export function percentile(values, fraction) {
-  if (!values.length) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  const index = Math.min(sorted.length - 1, Math.floor(sorted.length * fraction));
-  return sorted[index];
 }
 
 export function onePercentLowFps(frameTimes) {

@@ -256,8 +256,6 @@ body {
 }
 
 .choice-button span { color: #676a79; }
-.choice-button .choice-meta { color: #9a6834; }
-
 .choice-button:hover:not(:disabled):not([aria-disabled="true"]),
 .choice-button:focus-visible {
   border-color: rgba(200,79,92,.5);
@@ -304,12 +302,6 @@ body {
 .door-card small,
 .door-knock,
 .door-forecast dd { color: #666978; }
-
-/* 人物近景保留插画质感；只在文字所在一侧覆浅色雾纱。 */
-.close-portrait,
-.close-portrait.closer {
-  filter: drop-shadow(-16px 20px 22px rgba(74,64,87,.17)) saturate(1.03) brightness(1.04) contrast(1.01);
-}
 
 #app .dialogue-stage::after,
 #app .morning-stage::after { background: linear-gradient(90deg, rgba(255,249,245,.34), transparent 60%); }

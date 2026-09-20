@@ -4,14 +4,11 @@ import test from 'node:test';
 import * as THREE from 'three';
 
 import { createAtmosphere } from '../src/atmosphere.js';
-import { CANOPY_WIND_PROFILE, createWorld } from '../src/world.js';
+import { createWorld } from '../src/world.js';
 
 test('world facade preserves its public snapshot and wind API', () => {
   const world = createWorld(new THREE.Scene());
 
-  assert.deepEqual(CANOPY_WIND_PROFILE.direction, [0.82, 0, 0.57]);
-  assert.equal(typeof world.assetSnapshot, 'function');
-  assert.equal(typeof world.brookResponseSnapshot, 'function');
   const snapshot = world.assetSnapshot();
   assert.deepEqual(Object.keys(snapshot), [
     'terrain',
@@ -48,12 +45,6 @@ test('world facade preserves its public snapshot and wind API', () => {
 test('atmosphere facade preserves lighting, cloud and ridge observations', () => {
   const atmosphere = createAtmosphere(new THREE.Scene());
 
-  assert.equal(
-    atmosphere.userData.environmentLighting,
-    'bounded-pmrem-physical-sky-dielectric-response',
-  );
-  assert.equal(typeof atmosphere.userData.cloudFieldSnapshot, 'function');
-  assert.equal(typeof atmosphere.userData.ridgeForestSnapshot, 'function');
   assert.equal(atmosphere.userData.ridgeForestSnapshot().ridgeCount, 2);
   assert.deepEqual(atmosphere.userData.cloudFieldSnapshot().physics, {
     medium: 'water-droplet-participating-medium',

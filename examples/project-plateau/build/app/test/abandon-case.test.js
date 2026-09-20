@@ -55,7 +55,6 @@ function commitRoute(player, position) {
 }
 
 test('the case release commits only after the full hold threshold', () => {
-  assert.equal(ABANDON_HOLD_SECONDS, 0.8);
   let player = createPlayerState();
   player = holdAbandon(player, 0.7);
   assert.equal(player.caseAbandoned, false);

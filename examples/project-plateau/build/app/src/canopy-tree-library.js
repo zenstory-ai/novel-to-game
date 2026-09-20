@@ -20,7 +20,6 @@ export const CANOPY_TREE_LIBRARY_ASSET = Object.freeze({
     'layered-araucaria',
   ]),
   supportPlaneY: -0.22,
-  sha256: '16f105bc453d588fe2b2335e9a29736e0f19e9a766c11ef4945c8740993a5858',
 });
 
 export const CANOPY_TREE_WIND_PROFILE = Object.freeze({

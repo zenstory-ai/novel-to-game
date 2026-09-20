@@ -1580,8 +1580,6 @@ export const PUBLIC_EVENTS = Object.freeze({
     route('public_15_scapegoat','先押韩道国','人群会暂时散去，可米、账和门路的缺口全会压到一个伙计身上','韩道国被押到阶前。雪娥当场问：少掉的米还没查到他的手，凭什么先捆人？玉楼也收回那张只肯担保递状时辰的名帖。',{power:1,house:-8,flags:['false_scapegoat']})
   ])},
 });
-export const BANQUET_CHOICES = PUBLIC_EVENTS[5].choices;
-
 // 第五日公开开场决定宅中是在追“每只手怎样把一夜去处扩成办差次序”，
 // 还是家主已经先承认偏宠与补工责任。门房抄条、三项追责、三拍归档、
 // 第六日假账换幕和第七日夜簿都要继续读取这一区别。

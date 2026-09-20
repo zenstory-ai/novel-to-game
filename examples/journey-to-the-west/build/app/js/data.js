@@ -10,8 +10,6 @@ export const ELEMENTS = {
   火: { beats: '金' },
 };
 
-export const ELEMENT_ORDER = ['金', '木', '水', '火', '土'];
-
 // 克制系数
 export const ELEMENT_COEF = { ke: 1.5, beike: 0.66, none: 1.0 };
 
@@ -272,4 +270,3 @@ export const BATTLES = {
 };
 
 // 战斗次序(战役推进用)
-export const CAMPAIGN_BATTLES = ['luosha1', 'luosha', 'firemobs', 'yumian', 'niu1', 'niumowang'];

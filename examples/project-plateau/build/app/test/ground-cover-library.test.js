@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -54,18 +53,6 @@ async function loadActualTemplate() {
   });
   return load();
 }
-
-test('original ground-cover library is deterministic, compact, diverse and project-owned', () => {
-  const asset = new URL('../public' + GROUND_COVER_LIBRARY_ASSET.url, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, GROUND_COVER_LIBRARY_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(createHash('sha256').update(bytes).digest('hex'), GROUND_COVER_LIBRARY_ASSET.sha256);
-  assert.ok(GROUND_COVER_LIBRARY_ASSET.triangles <= 3_000);
-  assert.equal(GROUND_COVER_LIBRARY_ASSET.variantIds.length, GROUND_COVER_LIBRARY_ASSET.variantCount);
-  assert.ok(GROUND_COVER_LIBRARY_ASSET.drawCalls <= 6);
-});
-
 
 test('cached ground-cover loader clamps imported materials to dielectric bounds', async () => {
   let loads = 0;

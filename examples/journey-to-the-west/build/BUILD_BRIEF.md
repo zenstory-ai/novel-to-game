@@ -126,7 +126,7 @@
 - `app/assets/bg/{cuiyun,huoyan,leiji,moyundong,bibotan,overworld}.jpg` 为本次重新生成的原创矿物彩印场景；`huoyan-rain.jpg` 以本次火口图约束同机位的灭火后状态。第二轮换成 17 张彩绘人物／妖兽透明立绘；仅蟭蟟虫沿用原资产。标题直接复用火口舞台，不再加载旧封面。图像仅表达已提交剧情，不增加玩法。
 - 六张地理图与雨后状态均从本地 `assets.js` 加载；背景 URL 带修订参数，避免旧 immutable 缓存继续显示旧图。
 - 方向落地见 `../design/ART_DIRECTION.md` 整体重设节。代表图由浏览器运行生成，不能用生成目标图冒充实机。
-- 权威完整路径仍为 `python3 test/verify.py`；补充视觉回归为 `python3 test/visual_browser.py`，覆盖实际鼠标开局、首战常速结算、1440×900 / 390×844 控件无遮挡与低动效。后者输出 `../qa/evidence/visual-refresh/report.json`，不替代六项 QA。
+- 权威完整路径仍为 `python3 test/verify.py`；窄屏与常速首战未另建回归，作为 limitation 如实写入 `qa/verification.json`。
 
 ## 第二轮整体重设与文案
 
