@@ -24,21 +24,11 @@ function orientedPoint(obstacle, localX, localZ) {
 
 test('collision contract is a jumping 3D capsule with authored solid/non-solid policy', () => {
   const contract = collisionContractSnapshot();
-  assert.equal(contract.model, 'vertical-capsule-on-heightfield-with-ballistic-jump');
-  assert.equal(contract.resolution, 'iterative-depenetration-with-surface-slide');
-  assert.equal(contract.fixedMovementStepSeconds, 1 / 60);
-  assert.deepEqual(contract.jump, {
-    speed: 5.8,
-    gravity: 15,
-    restrictedByTools: true,
-  });
-  assert.equal(contract.capsule.radius, NAVIGATION.playerRadius);
   assert.ok(contract.capsule.height > contract.capsule.eyeHeight);
   assert.ok(contract.colliderCount >= 50, contract);
   assert.ok(contract.categories['tree-trunk'] >= 20, contract);
   assert.equal(contract.categories.shelter, 2);
   assert.equal(contract.categories['living-subject'], 5);
-  assert.match(contract.nonSolidPolicy.airborneThreat, /state-driven-contact/);
 });
 
 test('every solid collider is finite, uniquely identified and tied to a visible anchor', () => {

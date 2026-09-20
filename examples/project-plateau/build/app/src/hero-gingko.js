@@ -7,7 +7,6 @@ export const HERO_GINGKO_ASSET = Object.freeze({
   triangles: 123_624,
   drawCalls: 2,
   leafCount: 1_971,
-  sha256: '3c2192dc6d4be1ab811a41cc287a38067c14d2e2cd3bcb4accd662a35b738b89',
   provenance: 'project-original-deterministic-offline-authored-mesh',
   generator: 'app/scripts/generate-hero-gingko.mjs',
   rights: 'project-original-code-authored-output',

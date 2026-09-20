@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 
@@ -19,22 +17,6 @@ function templateWithMesh() {
   ));
   return template;
 }
-
-test('HY3D camera-and-hands viewmodel is the only production camera asset and stays within budget', () => {
-  assert.equal(HY3D_FIELD_CAMERA_ASSET.url, '/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb');
-  assert.ok(HY3D_FIELD_CAMERA_ASSET.bytes < 1_120_000);
-  assert.equal(HY3D_FIELD_CAMERA_ASSET.triangles, 50_000);
-  assert.equal(HY3D_FIELD_CAMERA_ASSET.textureSize, 1024);
-  assert.ok(HY3D_FIELD_CAMERA_ASSET.approximateGpuMiB <= 18);
-  assert.equal(HY3D_FIELD_CAMERA_ASSET.integratedHands, 2);
-  assert.deepEqual(HY3D_FIELD_CAMERA_ASSET.gripRoles, ['camera-left-grip', 'camera-right-grip']);
-  const asset = new URL(`../public${HY3D_FIELD_CAMERA_ASSET.url}`, import.meta.url);
-  assert.equal(statSync(asset).size, HY3D_FIELD_CAMERA_ASSET.bytes);
-  assert.equal(
-    createHash('sha256').update(readFileSync(asset)).digest('hex'),
-    'b9130671704349c7e287c2edd7fa812e9f95ac04f19596957be6bd69fe1e5193',
-  );
-});
 
 test('field-camera loader caches one matte local template', async () => {
   let loads = 0;

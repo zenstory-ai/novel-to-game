@@ -6,19 +6,6 @@ import * as THREE from 'three';
 import * as rocks from '../src/rock-rendering.js';
 
 test('rock rendering keeps its public facade and authored family geometry', () => {
-  assert.deepEqual(Object.keys(rocks), [
-    'basaltDetailTextures',
-    'createFracturedBasaltGeometry',
-    'createNonColumnarRockGeometry',
-    'createWeatheredRockGeometry',
-    'makeNonColumnarRockFamilies',
-    'renderedRockObstacleCandidate',
-    'rockTextures',
-    'settleRockOnTerrain',
-  ]);
-  assert.equal(rocks.basaltDetailTextures.albedo.name, 'world.material.basalt-albedo');
-  assert.equal(rocks.rockTextures.albedo.name, 'world.material.weathered-rock-albedo');
-
   const families = ['fluvial-cobble', 'bedded-slab', 'angular-talus'];
   const geometries = families.map((family) => rocks.createNonColumnarRockGeometry(family));
   assert.deepEqual(

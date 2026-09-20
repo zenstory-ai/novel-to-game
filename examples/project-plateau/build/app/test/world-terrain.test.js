@@ -38,16 +38,6 @@ test('terrain and connected route keep their scene construction contract', () =>
     },
   );
 
-  assert.deepEqual(Object.keys(route), [
-    'brook',
-    'brookHydrology',
-    'driftwood',
-    'driftwoodSupportEvidence',
-    'brookRipples',
-    'brookStones',
-    'brookPoints',
-    'brookObstacleCandidates',
-  ]);
   assert.deepEqual(
     scene.children.map(({ name }) => name),
     [

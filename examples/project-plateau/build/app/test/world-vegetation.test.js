@@ -19,23 +19,10 @@ test('vegetation factories preserve their authored scene contract', () => {
   const groundAccents = makeDegradableGroundAccents(scene);
   const density = makeEnvironmentDensity(scene);
 
-  assert.deepEqual(Object.keys(riparian), ['group', 'assetAnchor']);
   assert.deepEqual(
     [riparian.group.name, riparian.group.children.length, riparian.assetAnchor.children.length],
     ['world.connected_route.cover_arches', 36, 10],
   );
-  assert.deepEqual(Object.keys(vegetation), [
-    'trunkMeshes',
-    'canopyBranchMeshes',
-    'leafDetailMeshes',
-    'crownMesh',
-    'crownAccentMesh',
-    'araucariaMesh',
-    'fernMeshes',
-    'fernAssetAnchor',
-    'canopyTreeAssetAnchor',
-    'profile',
-  ]);
   assert.deepEqual(vegetation.trunkMeshes.map(({ count }) => count), [86, 42]);
   assert.deepEqual(vegetation.canopyBranchMeshes.map(({ count }) => count), [43, 42]);
   assert.deepEqual(vegetation.leafDetailMeshes.map(({ count }) => count), [43, 42]);

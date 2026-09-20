@@ -19,7 +19,6 @@ export const FERN_LIBRARY_ASSET = Object.freeze({
     'low-cycad-fern',
   ]),
   supportPlaneY: -0.12,
-  sha256: '15fb84b00565da300a8a0b2a50769eb787bc27cf15cb5d028cdf3a4b765ea2f3',
 });
 
 export const FERN_WIND_PROFILE = Object.freeze({

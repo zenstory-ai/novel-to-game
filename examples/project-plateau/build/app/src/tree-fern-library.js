@@ -19,7 +19,6 @@ export const TREE_FERN_LIBRARY_ASSET = Object.freeze({
     'sheltered-tier-tree-fern',
   ]),
   supportPlaneY: -0.18,
-  sha256: '23b8f4f2ccac9797bd0a00038962dd30b01c935d465543b22ca4813db0bd9b6e',
 });
 
 export const TREE_FERN_WIND_PROFILE = Object.freeze({

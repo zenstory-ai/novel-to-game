@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -98,35 +97,6 @@ function fixtureTemplate() {
   }
   return template;
 }
-
-test('original brook boulder is deterministic, compact and project-owned', () => {
-  assert.equal(BROOK_BOULDER_ASSET.url, '/assets/brook-boulder-original-v6.glb');
-  assert.equal(BROOK_BOULDER_ASSET.version, 'original-brook-boulder-v6');
-  assert.ok(BROOK_BOULDER_ASSET.bytes < 230_000);
-  assert.equal(BROOK_BOULDER_ASSET.triangles, 1_626);
-  assert.equal(BROOK_BOULDER_ASSET.massTriangles, 1_344);
-  assert.equal(BROOK_BOULDER_ASSET.apronTriangles, 282);
-  assert.equal(BROOK_BOULDER_ASSET.drawCalls, 6);
-  assert.equal(BROOK_BOULDER_ASSET.fragmentCount, 5);
-  assert.equal(
-    BROOK_BOULDER_ASSET.provenance,
-    'project-original-deterministic-offline-authored-geometry',
-  );
-  assert.equal(BROOK_BOULDER_ASSET.rights, 'project-original-code-authored-output');
-  assert.equal(
-    BROOK_BOULDER_ASSET.transportClass,
-    'immobile-residual-bank-erratic-reexposed-on-inner-bend',
-  );
-
-  const asset = new URL(`../public${BROOK_BOULDER_ASSET.url}`, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, BROOK_BOULDER_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(
-    createHash('sha256').update(bytes).digest('hex'),
-    BROOK_BOULDER_ASSET.sha256,
-  );
-});
 
 test('brook boulder mass and spall apron are closed, outward-facing and load-bearing', async () => {
   const asset = new URL(`../public${BROOK_BOULDER_ASSET.url}`, import.meta.url);

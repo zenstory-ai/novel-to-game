@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -53,18 +52,6 @@ async function loadActualTemplate() {
   });
   return load();
 }
-
-test('original fern library is deterministic, compact, diverse and project-owned', () => {
-  const asset = new URL('../public' + FERN_LIBRARY_ASSET.url, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, FERN_LIBRARY_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(createHash('sha256').update(bytes).digest('hex'), FERN_LIBRARY_ASSET.sha256);
-  assert.ok(FERN_LIBRARY_ASSET.triangles <= 7_000);
-  assert.equal(FERN_LIBRARY_ASSET.variantIds.length, FERN_LIBRARY_ASSET.variantCount);
-  assert.ok(FERN_LIBRARY_ASSET.drawCalls <= 6);
-});
-
 
 test('cached fern loader clamps imported materials to non-emissive dielectric bounds', async () => {
   let loads = 0;

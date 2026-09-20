@@ -3,11 +3,7 @@ import test from 'node:test';
 
 import * as THREE from 'three';
 
-import {
-  RIDGE_SURFACE_PROFILE,
-  SUN_DIRECTION,
-  createAtmosphere,
-} from '../src/atmosphere.js';
+import { createAtmosphere } from '../src/atmosphere.js';
 
 test('atmosphere composition preserves every named visual layer', () => {
   const scene = new THREE.Scene();
@@ -72,21 +68,4 @@ test('atmosphere update keeps quality fallback and reduced-motion behavior stabl
   assert.equal(banks.userData.fallback.visible, false);
   assert.equal(firstVolume.material.uniforms.stepCount.value, 18);
   assert.deepEqual(firstVolume.position.toArray(), firstVolume.userData.basePosition);
-});
-
-test('atmosphere public lighting and ridge-surface constants stay fixed', () => {
-  assert.ok(Math.abs(SUN_DIRECTION.length() - 1) < 1e-12);
-  assert.deepEqual(
-    SUN_DIRECTION.toArray().map((value) => Number(value.toFixed(12))),
-    [-0.439956006599, 0.549945008249, 0.709929010648],
-  );
-  assert.equal(RIDGE_SURFACE_PROFILE.version, 'process-coupled-distant-ridge-surface-v2');
-  assert.deepEqual(
-    [
-      RIDGE_SURFACE_PROFILE.broadDetailPeriodMeters,
-      RIDGE_SURFACE_PROFILE.fineDetailPeriodMeters,
-      RIDGE_SURFACE_PROFILE.microDetailPeriodMeters,
-    ],
-    [37, 13, 9],
-  );
 });

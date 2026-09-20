@@ -23,6 +23,9 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Removed historical evidence that described superseded candidates rather than the current run: the Jin Ping Mei visual-review and readability screenshots with their README section, and the Journey to the West visual-refresh screenshot set.
 - Removed the README example-link-order check and the Vercel workflow test from the repository validator; both measured delivery rather than whether a game plays.
 - Removed dead code from the example apps: twelve exports nothing imported (including three Project Plateau terrain profile constants that only described themselves), 31 Jin Ping Mei CSS rules for class names no script or markup emits, and a Project Plateau test that asserted the app shell carried no promotional media, which is a delivery check.
+- Removed 22 Project Plateau unit tests and the constant-echo assertions inside 24 more (204 → 182 tests): asset size and SHA-256 fingerprints, budgets recomputed from their own constants, frozen profiles compared with the literals they were copied from, and a grep for remote URLs. Each remaining test fails only when behaviour changes. The `sha256` fields nothing read and two helpers only tests called went with them.
+- Removed 73 optional-chaining and nullish-coalescing guards in the Jin Ping Mei engine where the save validator or the engine's own factories already make the value total; a differential replay over 14 seeded playthroughs produced identical state digests before and after. One guard that turned a bad heroine id into state corruption when removed was kept.
+- Repository contracts now live only in `AGENTS.md`; `CONTRIBUTING.md` points there instead of restating them, and the pull request checklist shrinks from ten items to three.
 
 ## [0.3.1] - 2026-09-04
 

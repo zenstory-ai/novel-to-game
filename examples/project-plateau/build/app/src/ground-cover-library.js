@@ -19,7 +19,6 @@ export const GROUND_COVER_LIBRARY_ASSET = Object.freeze({
     'slope-sedge-fan',
   ]),
   supportPlaneY: -0.08,
-  sha256: '344a899894b845aa0c5fce5057ac1b9c4b0c006c3bb87b1aaafe7b81b8b3a264',
 });
 
 export const GROUND_COVER_ARCHITECTURE_PROFILE = Object.freeze({

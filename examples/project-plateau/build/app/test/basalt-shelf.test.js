@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -47,35 +46,6 @@ function edgeUseCounts(geometry) {
   }
   return counts;
 }
-
-test('original basalt shelf is deterministic, original and inside the environment budget', () => {
-  assert.equal(BASALT_SHELF_ASSET.url, '/assets/basalt-shelf-original-v2.glb');
-  assert.equal(BASALT_SHELF_ASSET.version, 'original-basalt-shelf-v2-library');
-  assert.ok(BASALT_SHELF_ASSET.bytes < 300_000);
-  assert.ok(BASALT_SHELF_ASSET.triangles <= 2_000);
-  assert.equal(BASALT_SHELF_ASSET.variantCount, 3);
-  assert.deepEqual(BASALT_SHELF_ASSET.variantIds, [
-    'needle-buttress', 'split-saddle', 'terraced-fan',
-  ]);
-  assert.deepEqual(BASALT_SHELF_ASSET.trianglesByVariant, [660, 560, 640]);
-  assert.equal(BASALT_SHELF_ASSET.drawCalls, 2);
-  assert.equal(BASALT_SHELF_ASSET.shelfCount, 3);
-  assert.equal(BASALT_SHELF_ASSET.fragmentCount, 6);
-  assert.equal(
-    BASALT_SHELF_ASSET.provenance,
-    'project-original-deterministic-offline-authored-mesh-library',
-  );
-  assert.equal(BASALT_SHELF_ASSET.rights, 'project-original-code-authored-output');
-
-  const asset = new URL(`../public${BASALT_SHELF_ASSET.url}`, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, BASALT_SHELF_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(
-    createHash('sha256').update(bytes).digest('hex'),
-    BASALT_SHELF_ASSET.sha256,
-  );
-});
 
 test('basalt shelf meshes are closed and preserve a buried plinth-to-shelf support chain', async () => {
   const asset = new URL(`../public${BASALT_SHELF_ASSET.url}`, import.meta.url);

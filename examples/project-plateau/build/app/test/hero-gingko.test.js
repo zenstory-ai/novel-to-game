@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -30,30 +29,6 @@ function fixtureTemplate() {
   ));
   return template;
 }
-
-test('original hero gingko asset is reproducible and remains inside its delivery budget', () => {
-  assert.equal(HERO_GINGKO_ASSET.url, '/assets/hero-gingko-original-v2.glb');
-  assert.equal(HERO_GINGKO_ASSET.version, 'original-hero-gingko-v2');
-  assert.ok(HERO_GINGKO_ASSET.bytes < 5_000_000);
-  assert.ok(HERO_GINGKO_ASSET.triangles <= 125_000);
-  assert.equal(HERO_GINGKO_ASSET.drawCalls, 2);
-  assert.ok(HERO_GINGKO_ASSET.leafCount >= 1_900);
-  assert.ok(HERO_GINGKO_ASSET.leafCount <= 2_050);
-  assert.equal(
-    HERO_GINGKO_ASSET.provenance,
-    'project-original-deterministic-offline-authored-mesh',
-  );
-  assert.equal(HERO_GINGKO_ASSET.rights, 'project-original-code-authored-output');
-
-  const asset = new URL(`../public${HERO_GINGKO_ASSET.url}`, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, HERO_GINGKO_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(
-    createHash('sha256').update(bytes).digest('hex'),
-    HERO_GINGKO_ASSET.sha256,
-  );
-});
 
 test('production gingko keeps a closed two-material load path and buries root tips', async () => {
   const asset = new URL(`../public${HERO_GINGKO_ASSET.url}`, import.meta.url);

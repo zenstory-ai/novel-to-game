@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -55,18 +54,6 @@ async function loadActualTemplate() {
   });
   return load();
 }
-
-test('original tree-fern library is deterministic, bounded and project-owned', () => {
-  const asset = new URL('../public' + TREE_FERN_LIBRARY_ASSET.url, import.meta.url);
-  const bytes = readFileSync(asset);
-  assert.equal(statSync(asset).size, TREE_FERN_LIBRARY_ASSET.bytes);
-  assert.equal(bytes.subarray(0, 4).toString('ascii'), 'glTF');
-  assert.equal(createHash('sha256').update(bytes).digest('hex'), TREE_FERN_LIBRARY_ASSET.sha256);
-  assert.ok(TREE_FERN_LIBRARY_ASSET.triangles <= 20_000);
-  assert.equal(TREE_FERN_LIBRARY_ASSET.variantIds.length, TREE_FERN_LIBRARY_ASSET.variantCount);
-  assert.ok(TREE_FERN_LIBRARY_ASSET.drawCalls <= 9);
-});
-
 
 test('cached tree-fern loader clamps imported materials to dielectric bounds', async () => {
   let loads = 0;

@@ -5,10 +5,7 @@ import {
   createDeadwoodMaterial,
   createDriftwoodGeometry,
 } from '../src/deadwood-rendering.js';
-import {
-  CANOPY_WIND_PROFILE,
-  createLeafWindDepthMaterial,
-} from '../src/vegetation-leaf-materials.js';
+import { createLeafWindDepthMaterial } from '../src/vegetation-leaf-materials.js';
 import { shared } from '../src/vegetation-rendering.js';
 import { barkTextures } from '../src/vegetation-textures.js';
 
@@ -57,9 +54,6 @@ test('shared vegetation geometry and bark textures remain deterministic', () => 
 });
 
 test('leaf wind and depth materials keep one shared displacement contract', () => {
-  assert.deepEqual(CANOPY_WIND_PROFILE.direction, [0.82, 0, 0.57]);
-  assert.equal(CANOPY_WIND_PROFILE.horizontalTipDisplacementMeters, 0.085);
-  assert.equal(CANOPY_WIND_PROFILE.verticalTipDisplacementMeters, 0.018);
   assert.deepEqual(
     shared.canopyLeafMaterials.map((material) => [
       material.userData.family,

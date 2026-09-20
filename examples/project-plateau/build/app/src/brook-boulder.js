@@ -10,7 +10,6 @@ export const BROOK_BOULDER_ASSET = Object.freeze({
   drawCalls: 6,
   fragmentCount: 5,
   supportPlaneY: -0.56,
-  sha256: '888e28b4aca0bfc964e78d89ea8d27a0af19ea45293fbb64d8a694a8ce5a9f09',
   provenance: 'project-original-deterministic-offline-authored-geometry',
   generator: 'app/scripts/generate-brook-boulder.mjs',
   rights: 'project-original-code-authored-output',

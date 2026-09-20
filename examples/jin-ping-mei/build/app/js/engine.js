@@ -181,9 +181,9 @@ const HEROINE_BOUNDARY_FLAGS = Object.freeze({
 // 顺序重演「越界／修复」，才能同时支持修复后重开与后来再次越界重新关门。
 function routeBoundaryBreachActive(state, heroineId) {
   const contract = HEROINE_BOUNDARY_FLAGS[heroineId];
-  if (!contract || !state?.flags?.[contract.broken]) return false;
+  if (!contract || !state.flags[contract.broken]) return false;
   let active = null;
-  for (const entry of state.history ?? []) {
+  for (const entry of state.history) {
     if (entry.type !== 'visit_choice' || entry.heroine !== heroineId) continue;
     const flags = routeChoiceById(heroineId, entry.choice)?.effects?.flags ?? [];
     if (flags.includes(contract.broken)) active = true;
@@ -246,7 +246,7 @@ function costLockedText(choice) {
 
 // 安抚实价:妒过四十两起步价之后,每多一点妒加一两。
 export function appeaseCost(state, heroineId) {
-  return APPEASE_BASE + Math.max(0, (state.relations[heroineId]?.du ?? 0) - APPEASE_DU_FLOOR);
+  return APPEASE_BASE + Math.max(0, state.relations[heroineId].du - APPEASE_DU_FLOOR);
 }
 
 const makeRel = () => ({ qing: 8, yu: 6, du: 0, ignored: 0, reasons: [] });
@@ -263,7 +263,7 @@ export function bondKey(left, right) {
 
 export function bondValue(state, left, right) {
   const key = bondKey(left, right);
-  return key ? state.bonds?.[key] ?? 0 : 0;
+  return key ? state.bonds[key] : 0;
 }
 
 export function bondTier(value) {
@@ -277,7 +277,7 @@ export function bondTier(value) {
 export function bondStatus(state) {
   return PAIR_IDS.map((id) => {
     const [left, right] = id.split('|');
-    const value = state.bonds?.[id] ?? 0;
+    const value = state.bonds[id];
     return { id, left, right, value, tier: bondTier(value) };
   });
 }
@@ -335,8 +335,8 @@ function routeChoiceLane(heroineId, choiceId) {
 }
 
 function dominantRouteLane(stance) {
-  if ((stance?.covenant ?? 0) > (stance?.private ?? 0)) return 'covenant';
-  if ((stance?.private ?? 0) > (stance?.covenant ?? 0)) return 'private';
+  if (stance.covenant > stance.private) return 'covenant';
+  if (stance.private > stance.covenant) return 'private';
   return null;
 }
 
@@ -367,7 +367,7 @@ function routeBondChanges(heroineId, lane) {
 }
 
 export function routeStance(state, heroineId) {
-  const row = state.routeStances?.[heroineId] ?? { covenant: 0, private: 0 };
+  const row = state.routeStances[heroineId];
   return {
     covenant: row.covenant,
     private: row.private,
@@ -400,7 +400,7 @@ const ROUTE_BRANCH_MEMORY = Object.freeze({
 
 export function routeBranchContext(state, heroineId) {
   const stepIndex = routeStep(state, heroineId);
-  const stance = state.routeStances?.[heroineId] ?? { covenant: 0, private: 0 };
+  const stance = state.routeStances[heroineId];
   const lane = dominantRouteLane(stance);
   if (!lane || !ROUTE_BRANCHES[heroineId]?.[stepIndex]?.[lane]) return null;
   const lead = lane === 'covenant' ? stance.covenant : stance.private;
@@ -419,7 +419,7 @@ export function routeBranchContext(state, heroineId) {
 function changeBond(state, left, right, delta) {
   const key = bondKey(left, right);
   if (!key || !delta) return;
-  state.bonds[key] = clamp((state.bonds[key] ?? 0) + delta, -100, 100);
+  state.bonds[key] = clamp(state.bonds[key] + delta, -100, 100);
 }
 
 function dayNetworkChanges(day, actionId, actor) {
@@ -559,8 +559,8 @@ export function dayPressureRule(state, day = state.day) {
 export function dayFavorSolution(state, day = state.day) {
   const row = DAY_FAVOR_SOLUTIONS[day - 1];
   if (!row) return null;
-  const stance = state.routeStances?.[row.heroine] ?? { covenant: 0, private: 0 };
-  const qing = state.relations?.[row.heroine]?.qing ?? 0;
+  const stance = state.routeStances[row.heroine];
+  const qing = state.relations[row.heroine].qing;
   const bond = bondValue(state, row.heroine, row.observer);
   const accord = heroineAccordReady(state, row.heroine);
   const leverageReady = accord
@@ -613,11 +613,11 @@ function resolvePressure(state, actionId, joint = false, planned = null) {
           : { house: 4, exposure: -8 };
     const momentum = pressureMomentum(state);
     if (momentum.resolved >= 2) {
-      reward.house = (reward.house ?? 0) + 2;
+      reward.house += 2;
       reward.power = 1;
     }
     if (momentum.missed >= 2) {
-      reward.house = (reward.house ?? 0) + 6;
+      reward.house += 6;
       reward.strain = -4;
     }
     changeResources(state, reward);
@@ -1042,7 +1042,7 @@ function addFlag(state, id) {
   state.flags[id] = true;
   const heroine = OVERRIDE_FLAG_TO_HEROINE[id];
   if (heroine) {
-    state.publicOverrides[heroine] = (state.publicOverrides[heroine] ?? 0) + 1;
+    state.publicOverrides[heroine] += 1;
     evaluateBreak(state, heroine);
   }
 }
@@ -1068,9 +1068,9 @@ export function evaluateHouseBreak(state) {
   record(state, 'route_break', { heroine: null, cause: 'house', house: state.resources.house });
 }
 
-// 路线是否在冷却中。旧档缺这两个字段时按「未冷却」回退,不影响读档。
+// 路线是否在冷却中。
 export function routeCooling(state, heroineId) {
-  return (state.routeReopensOn?.[heroineId] ?? 0) > state.day;
+  return state.routeReopensOn[heroineId] > state.day;
 }
 
 function changeRel(state, heroineId, delta = {}, reason = '') {
@@ -1093,7 +1093,7 @@ function setIgnored(state, heroineId, value) {
 }
 
 function changeHousehold(state, effect, reason = '') {
-  if (!effect?.id || !state.household?.[effect.id]) return;
+  if (!effect?.id || !state.household[effect.id]) return;
   const row = state.household[effect.id];
   row.regard = clamp(row.regard + (effect.regard ?? 0), -100, 100);
   if (reason && effect.regard) {
@@ -1104,7 +1104,7 @@ function changeHousehold(state, effect, reason = '') {
 
 function changeResources(state, effects = {}) {
   applyResourceDelta(state.resources, effects);
-  if (effects.house && state.routeReopensOn) evaluateHouseBreak(state);
+  if (effects.house) evaluateHouseBreak(state);
 }
 
 function applyResourceDelta(r, effects = {}) {
@@ -1999,7 +1999,7 @@ function fivePriceSupport(basis, heroine) {
   const candidates = HEROINE_IDS
     .filter((id) => id !== heroine)
     .map((id) => {
-      const trust = basis.bonds[bondKey(heroine, id)] ?? 0;
+      const trust = basis.bonds[bondKey(heroine, id)];
       const witnessed = basis.history.some((entry) => (
         entry.type === 'pair_interlude'
         && entry.pair?.includes(heroine)
@@ -2013,7 +2013,7 @@ function fivePriceSupport(basis, heroine) {
   const strongest = candidates[0] ?? null;
   const supported = !!strongest;
   const ally = strongest?.heroine ?? null;
-  return { supported, ally, trust: ally ? basis.bonds[bondKey(heroine, ally)] ?? 0 : null };
+  return { supported, ally, trust: ally ? basis.bonds[bondKey(heroine, ally)] : null };
 }
 
 function fivePriceBreakSource(basis, breakIndex, heroine) {
@@ -2050,7 +2050,7 @@ function fivePriceBreakStatus(basis, heroine) {
   for (let index = 0; index < basis.history.length; index += 1) {
     const entry = basis.history[index];
     if (entry.type !== 'route_break' || (entry.heroine !== heroine && entry.heroine !== null)) continue;
-    if (entry.heroine === heroine && (basis.overrides[heroine] ?? 0) < BREAK_OVERRIDE_LIMIT) continue;
+    if (entry.heroine === heroine && basis.overrides[heroine] < BREAK_OVERRIDE_LIMIT) continue;
     breakIndex = index;
   }
   if (breakIndex < 0) return { entry:null, index:-1, source:null, repair:null, unresolved:false };
@@ -2112,7 +2112,7 @@ function fivePriceReplyReasons(heroine, { accord, stance, support, arrangement, 
 function expectedFivePriceReply(state, heroine) {
   const basis = fivePriceBasis(state);
   const accord = basis.accords.has(FIVE_PRICE_ACCORD[heroine]);
-  const stance = basis.stances[heroine] ?? { covenant:0, private:0 };
+  const stance = basis.stances[heroine];
   const support = fivePriceSupport(basis, heroine);
   const broken = fivePriceUnresolvedBreak(basis, heroine);
   const arrangement = latestIntimacyArrangement({ history:basis.history }, heroine);
@@ -2324,7 +2324,7 @@ export function advanceFivePrivatePrices(state) {
 export function jointActionOptions(state) {
   const completed = completedJointActions(state);
   return JOINT_ACTIONS.map((choice) => {
-    const missing = choice.requires.filter((key) => !state.accords?.[key]);
+    const missing = choice.requires.filter((key) => !state.accords[key]);
     const used = completed.has(choice.id);
     const unaffordable = cannotAfford(state, choice);
     const pairTrust = choice.participants?.length === 2 ? bondValue(state, choice.participants[0], choice.participants[1]) : 0;
@@ -2418,10 +2418,10 @@ function portablePrecedentBasis(history) {
 function portablePrecedentReplyFromBasis(basis, event, joint, heroine) {
   const pair = basis.history.find((entry) => entry.type === 'pair_interlude'
     && entry.pair?.includes(joint.participants[0]) && entry.pair?.includes(joint.participants[1])) ?? null;
-  const stance = basis.stances[heroine] ?? { covenant:0, private:0 };
+  const stance = basis.stances[heroine];
   const lane = stance.covenant === stance.private ? 'tie' : stance.covenant > stance.private ? 'covenant' : 'private';
   const broken = fivePriceUnresolvedBreak(basis, heroine);
-  const trust = basis.bonds[bondKey(joint.participants[0], joint.participants[1])] ?? 0;
+  const trust = basis.bonds[bondKey(joint.participants[0], joint.participants[1])];
   const accordKey = Object.values(ACCORD_META).find((row) => row.heroine === heroine)?.key ?? null;
   const accord = accordKey ? basis.accords.has(accordKey) : false;
   let outcome = 'narrow';
@@ -4989,11 +4989,11 @@ export function resolveFinalReckoningAftermath(state, choiceId) {
 }
 
 export function accordStatus(state) {
-  return Object.values(ACCORD_META).map((row) => ({ ...row, complete: !!state.accords?.[row.key] }));
+  return Object.values(ACCORD_META).map((row) => ({ ...row, complete: state.accords[row.key] }));
 }
 
 export function coalitionProofStatus(state) {
-  return Object.values(COALITION_PROOF_META).map((row) => ({ ...row, complete: !!state.flags?.[row.flag] }));
+  return Object.values(COALITION_PROOF_META).map((row) => ({ ...row, complete: !!state.flags[row.flag] }));
 }
 
 export function publicPromisesReady(state) {
@@ -5033,11 +5033,11 @@ function personalFinaleDepartureBasis(history) {
 }
 
 function personalFinaleDepartureOutcome(basis, heroine, procedure) {
-  const stance = basis.stances[heroine] ?? { covenant:0, private:0 };
+  const stance = basis.stances[heroine];
   const lane = stance.covenant === stance.private ? 'tie' : stance.covenant > stance.private ? 'covenant' : 'private';
   const accord = basis.accords.has(FIVE_PRICE_ACCORD[heroine]);
   const visits = basis.history.filter((entry) => entry.type === 'visit_choice' && entry.heroine === heroine).length;
-  const arrangements = basis.arrangements[heroine] ?? [];
+  const arrangements = basis.arrangements[heroine];
   const close = visits >= 6 || arrangements.length > 0;
   const broken = fivePriceUnresolvedBreak(basis, heroine);
   const match = procedure?.lane === lane && lane !== 'tie';
@@ -5301,7 +5301,7 @@ export function personalFinaleSelectedReasons(history, heroineId, beatIndex, sel
 }
 
 function personalFinaleDepartureReasons(basis, heroine, procedure, outcome) {
-  const arrangements = basis.arrangements[heroine] ?? [];
+  const arrangements = basis.arrangements[heroine];
   const relationText = arrangements.length
     ? personalFinaleIntimacyReason(basis.history, heroine, procedure)
     : personalFinaleRelationshipReason(basis.history, heroine);
@@ -5632,7 +5632,7 @@ function sharedNightAccordEntry(state, heroineId) {
   const accordRow = [...state.history].reverse().find((entry) => entry.type === 'accord_term' && entry.heroine === heroineId && entry.choice === accord?.id) ?? null;
   const proof = COALITION_PROOF_META[heroineId];
   const day20 = allianceDay20Protection(state, heroineId, settlement.right);
-  if (!reply || !protocol || !right || !offer || !outcome || !finalChoice || !aftermathChoice || aftermathRow.approach !== finalRow.choice || !accordRow || !proof || !state.flags?.[proof.flag]) return null;
+  if (!reply || !protocol || !right || !offer || !outcome || !finalChoice || !aftermathChoice || aftermathRow.approach !== finalRow.choice || !accordRow || !proof || !state.flags[proof.flag]) return null;
   const boundary = PERSONAL_FINALE_BOUNDARY_OBJECTS[heroineId];
   const protectionLabel = SHARED_NIGHT_PROTECTION_LABELS[day20.day20Protection];
   const protectionText = sharedNightProtectionText(settlement.right, day20.day20Protection);
@@ -6199,7 +6199,7 @@ export function sharedNightStatus(state) {
     visible: state.day === MAX_DAY && state.phase === 'choose_visit',
     ready: !reason,
     reason,
-    complete: ACCORD_KEYS.filter((key) => state.accords?.[key]).length,
+    complete: ACCORD_KEYS.filter((key) => state.accords[key]).length,
     total: ACCORD_KEYS.length,
     jointComplete: Math.min(jointComplete, JOINT_ACTION_TARGET),
     jointTotal: JOINT_ACTION_TARGET,
@@ -6741,19 +6741,19 @@ function finishSharedNight(state) {
 // 个人弧线的拍号 = 你第几次进她的门(结算成功才计次)。
 // 取代旧的 state.day - 1:按日历天索引会让轮换玩家撞上「好选项被锁、只能选伤害项」。
 function routeStep(state, heroineId) {
-  return state.visits?.[heroineId] ?? 0;
+  return state.visits[heroineId];
 }
 
 export function routeComplete(state, heroineId) {
   const routeDone = routeStep(state, heroineId) >= (ROUTE_CHOICES[heroineId]?.length ?? 0);
   const accord = ACCORD_CHOICES[heroineId];
-  return routeDone && (!accord || !!state.accords?.[accord.effects.accord]);
+  return routeDone && (!accord || state.accords[accord.effects.accord]);
 }
 
 export function visitChoices(state, heroineId) {
-  const rows = routeRowsFor(heroineId, routeStep(state, heroineId), state.routeStances?.[heroineId]);
+  const rows = routeRowsFor(heroineId, routeStep(state, heroineId), state.routeStances[heroineId]);
   const accord = ACCORD_CHOICES[heroineId];
-  const choices = accord && !state.accords?.[accord.effects.accord] ? [...rows, accord] : rows;
+  const choices = accord && !state.accords[accord.effects.accord] ? [...rows, accord] : rows;
   return choices.map((choice) => {
     const conditionLocked = !!choice.condition && !hasToken(state, choice.condition);
     const unaffordable = cannotAfford(state, choice);
@@ -7127,7 +7127,7 @@ export function chooseVisit(state, choiceId) {
       }
       for (const row of routeBondChanges(heroine, lane)) changeBond(state, heroine, row.other, row.delta);
     }
-    state.visits[heroine] = (state.visits[heroine] ?? 0) + 1;
+    state.visits[heroine] += 1;
     record(state, 'visit_choice', { heroine, choice: choiceId, lane, public: !!PUBLIC_EVENTS[state.day] });
   }
   state.log.push(choice.text);
@@ -7191,7 +7191,7 @@ export function visitForecast(state, heroineId) {
     choice.effects?.accord ? '院约' : routeChoiceLane(heroineId, choice.id) === 'covenant' ? '共担' : '私情'
   )))];
   const obligation = activeObligations(state).find((row) => row.heroine === heroineId && row.type !== 'cooldown') ?? null;
-  const reopenDay = state.routeReopensOn?.[heroineId] ?? 0;
+  const reopenDay = state.routeReopensOn[heroineId];
   const branch = routeBranchContext(state, heroineId);
   return {
     mostJealous,
@@ -8798,7 +8798,7 @@ export function activeObligations(state) {
   }
 
   for (const heroine of HEROINE_IDS) {
-    const reopenDay = state.routeReopensOn?.[heroine] ?? 0;
+    const reopenDay = state.routeReopensOn[heroine];
     if (reopenDay <= state.day) continue;
     rows.push({
       id:`cooldown:${heroine}`, type:'cooldown', status:'locked',
@@ -9286,7 +9286,7 @@ function morningSettlementNarrowAuthorized(state, heroine) {
       && entry.day === state.morningSettlement.sourceDay
       && entry.action === state.morningSettlement.sourceId
       && entry.actor === heroine);
-  return (!!accord && !!state.accords?.[accord] || sourceIsNamed)
+  return (!!accord && state.accords[accord] || sourceIsNamed)
     && !fivePriceUnresolvedBreak(morningSettlementBasis(state), heroine);
 }
 
@@ -10034,7 +10034,7 @@ function combinations(rows, size, start = 0, prefix = [], result = []) {
 
 function heroineAccordReady(state, heroineId) {
   const key = Object.values(ACCORD_META).find((row) => row.heroine === heroineId)?.key;
-  return !!key && !!state.accords?.[key];
+  return !!key && !!state.accords[key];
 }
 
 function allianceEndingText(members, style = null) {
@@ -10064,7 +10064,7 @@ function heroineEpilogueVariant(state, endingId, allianceMembers, exclusiveHeroi
   if (endingId === 'balanced') return 'balanced';
   if (endingId === 'alliance') return allianceMembers?.includes(heroineId) ? 'alliance' : 'outside';
   if (endingId === 'exclusive') return exclusiveHeroine === heroineId ? 'exclusive' : 'outside';
-  const relation = state.relations?.[heroineId] ?? { qing: 0, du: 100 };
+  const relation = state.relations[heroineId];
   return relation.qing >= 35 && relation.du < 65 ? 'personal' : 'outside';
 }
 
@@ -10083,7 +10083,7 @@ function endingEpilogues(state, endingId, allianceMembers, exclusiveHeroine) {
   const morningSettlements = recordedMorningSettlements(state);
   return HEROINE_IDS.map((heroine) => {
     const stance = routeStance(state, heroine);
-    const relation = state.relations?.[heroine] ?? { qing: 0, yu: 0, du: 0 };
+    const relation = state.relations[heroine];
     const variant = heroineEpilogueVariant(state, endingId, allianceMembers, exclusiveHeroine, heroine);
     const base = EPILOGUES[heroine][variant];
     const habit = nightRelationshipPattern(state, heroine);
@@ -10298,7 +10298,7 @@ export function determineEnding(state) {
     state.day === MAX_DAY
     && recordedFivePriceSettlement(state)?.coalition.kind === 'full'
     && state.flags.harem_coalition
-    && ACCORD_KEYS.every((key) => state.accords?.[key])
+    && ACCORD_KEYS.every((key) => state.accords[key])
     && state.unlocked.includes('inner_court_accord')
     && state.unlocked.includes('inner_court_afterglow')
     && state.sharedAfterglowChoices.length === SHARED_AFTERGLOW_BEATS.length
@@ -10717,7 +10717,7 @@ export function startFateCoda(state) {
 
 function fateCodaInstitutionEcho(state) {
   const accordNames = Object.values(ACCORD_META)
-    .filter((row) => state.accords?.[row.key])
+    .filter((row) => state.accords[row.key])
     .map((row) => ({
       order: '月娘留下的正堂定账',
       truth: '金莲留下的去处真话',
@@ -10726,10 +10726,10 @@ function fateCodaInstitutionEcho(state) {
       hearth: '雪娥留下的停灶与工账',
     })[row.key]);
   const accordCount = accordNames.length;
-  const covenant = Object.values(state.routeStances ?? {}).reduce((sum, row) => sum + (row?.covenant ?? 0), 0);
-  const privateCount = Object.values(state.routeStances ?? {}).reduce((sum, row) => sum + (row?.private ?? 0), 0);
-  const publicProof = ['harem_coalition', ...Object.keys(state.flags ?? {}).filter((key) => key.includes('public') || key.includes('balance'))]
-    .some((key) => state.flags?.[key]);
+  const covenant = Object.values(state.routeStances).reduce((sum, row) => sum + row.covenant, 0);
+  const privateCount = Object.values(state.routeStances).reduce((sum, row) => sum + row.private, 0);
+  const publicProof = ['harem_coalition', ...Object.keys(state.flags).filter((key) => key.includes('public') || key.includes('balance'))]
+    .some((key) => state.flags[key]);
   const accordEcho = accordCount
     ? `二十日里真正立过的${accordNames.join('、')}没有救回死者，却让后来的人仍能据此拒绝被并账。`
     : '二十日里没有一条院约真正落稳；离散来时，每个人只能凭自己还握得住的物件作证。';
