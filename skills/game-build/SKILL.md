@@ -34,11 +34,9 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 - 已选择 Blender 制作或修改可编辑三维资产时，读取 [blender-asset-workflow.md](references/blender-asset-workflow.md)；
   不因项目是 3D 就默认采用 Blender 或安装 MCP。
 - 采用生成式自由输入、知识权限、事件回放、存档迁移或 `signature_command` 时，读取
-  [playable-model-contract.md](references/playable-model-contract.md) 的相关部分；普通游戏不另建一套平行状态模型。
-- 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。TTS
-  优先构建期生成成本地资产；运行时远程合成须在 brief 批准，密钥只留受信服务端。
-- 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。已有批准
-  参考图时以图约束；工具与模型按当前环境选择，不写成跨项目默认。
+  [playable-model-contract.md](references/playable-model-contract.md) 的相关部分。
+- 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。
+- 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。
 
 ## 共同构建循环
 
@@ -60,7 +58,7 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
    目标平台输入、性能、打包或设备项写入 limitation。
 7. 达到 brief 的 `targetFinish`；更高完成度只处理已批准的焦点资产和招牌时刻，不制造与可玩闭环
    无关的发布审计。
-8. 交给 `game-qa`；允许诊断、修复和复跑，最终事实必须来自修订后同一次完整验证，不能拼接旧 PASS。
+8. 交给 `game-qa`；诊断、复跑与事实源规则见契约「完成证据」。
 
 ## 输出
 
