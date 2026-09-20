@@ -14,13 +14,9 @@ description: "Turn a novel into a fully playable game on the selected target pla
 歧义。低风险空白集中列为未确认假设，不逐项拦停。
 
 `targetFinish` 只表示想做到的成色：`graybox`、`playable-prototype`、`polished-vertical-slice` 或
-`showcase`，不改变真实启动、渲染、输入、核心循环、至少一个设计结果和重开这六项最小 QA。六项全部
-PASS 才算完成；`NOT_RUN` 不能满足完成声明，`qa/verification.json` 是唯一机器事实源。连续 3D、语音、
-生成媒体、多语言或无障碍只在实际采用时做效果回归，不形成第二套验收等级。
+`showcase`，不改变六项最小 QA，也不形成第二套验收等级。
 
-`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实，下游不得静默改写。brief 必须锁定平台、生产
-引擎、实际交付物、目标运行时和可用的实际测试运行时。工具链不可用时，只能使用 brief 已批准的
-替代运行时；替代结果不证明目标平台已通过。
+`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实，下游不得静默改写。
 
 ## 模式
 
@@ -41,9 +37,6 @@ PASS 才算完成；`NOT_RUN` 不能满足完成声明，`qa/verification.json` 
 7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包。
 8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
    product/design/art/build 归属回流，不让实现阶段静默重做策划。
-
-编排器只记录 `scope`（上游范围和阶段 owner 齐全且不冲突）与 `playable`（六项最小玩家效果均有
-真实运行证据）。
 
 ## 语言与文化
 

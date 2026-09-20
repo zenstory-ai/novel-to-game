@@ -36,8 +36,7 @@ description: "Design game experience, systems, and levels. Converge the chosen c
 6. **语言、文化与交接边界**：界面语言、术语、阅读顺序、内容尺度，以及交给美术和构建的玩家效果；
 7. **可执行切片合同**：最大设计风险、匹配的原型形态、最小状态、动作前置/效果，以及初态、输入路径、
    预期状态与反馈；随机性相关时固定 seed，知情差或事件回读相关时才补观察者与事件；若概念选择了
-   `signature_command`，固定 `id / label / intents / slots / validators / commit` 六组最小结构，再追加
-   澄清与拒绝条件、委托执行链、实际结果、证物/知情变化和到期回响；
+   `signature_command`，按方法「身份专属命令与延期回响」补齐结构；
 8. **验证切片**：范围、明确非目标、完整路径和会触发设计修改的观察结果。
 
 规则优先用短表表达，不复制成平行 JSON、go/no-go 表或第二份验收矩阵。

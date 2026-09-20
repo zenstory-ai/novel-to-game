@@ -35,7 +35,6 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 
 ## 输出
 
-- `qa/verification.json`：唯一 QA 事实源，包含三态 status、权威命令、complete run、六项 checks、
-  一条证据路径和 limitations；字段与证据要求见 qa-contract.md。
+- `qa/verification.json`：唯一 QA 事实源；字段与证据要求见 qa-contract.md。
 
 缺口写结构化 limitation，不发明 `PASS_WITH_GAPS`；未运行或失败的必需项不能满足整体 PASS。

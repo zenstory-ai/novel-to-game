@@ -40,9 +40,6 @@ JSON/YAML。设计理由仍由 `GAME_DESIGN.md` 拥有，运行状态与动作�
 
 ## 证据角色
 
-`qa/verification.json` schema v3 只写整体状态、权威命令、一次 complete run、六项游戏效果 checks
-和包含 `scope` / `reason` 的 limitations。
-
 构建准备候选与 verify 入口。QA 可诊断、修复后复跑；最终事实源原子记录当前同一次完整运行，
 不拼接旧 PASS。不要求真人试玩、逐项人工批准、重复证据对象或第二份 QA 报告。
 
@@ -54,7 +51,7 @@ JSON/YAML。设计理由仍由 `GAME_DESIGN.md` 拥有，运行状态与动作�
 
 ## resume 与回流
 
-`resume` 读取 `_progress.md` 和实际产物，从最早未成立的完成检查继续。QA 发现按 owner 回流：
+QA 发现按 owner 回流：
 
 - product：回 `PRODUCT_BRIEF.md`；
 - design/art：修订批准文档后重建受影响范围；
