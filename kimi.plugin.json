@@ -1,6 +1,6 @@
 {
   "name": "novel-to-game",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. 有原著依据的 7-skill 小说改编游戏工作流，覆盖可游戏化拆解、概念选择、世界与美术设计、面向指定运行环境的候选版本构建，以及基于运行证据的 QA。",
   "skills": "./skills/",
   "interface": {
