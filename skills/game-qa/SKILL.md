@@ -26,9 +26,8 @@ description: "Verify a game with evidence on its selected target runtime. Launch
    代码路径。
 4. 若候选有可执行模型、事件日志、patch 或 `signature_command`，按 test-design-method 的对应合同把
    项目回归嵌入权威 verify；允许定向诊断、修复和复跑，最终六项证据必须来自同一次完整运行。
-   失败映射到已有 checks 或 limitation，不新增通用门禁，不拼接不同运行的 PASS。
-5. 记录 limitation 和问题的 product/design/art/build 归属。趣味、长期平衡、留存和商业价值只能写成
-   未验证风险，不给确定性 PASS。
+   失败映射到已有 checks 或 limitation，不新增通用门禁。
+5. 记录 limitation 和问题的 product/design/art/build 归属。
 
 优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种
 框架、测试库或调试接口。
