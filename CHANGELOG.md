@@ -11,8 +11,16 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-21
+
+### Added
+
+- Added an opt-in Blender asset route to game-build: a short reference covering isolated scene export, target-loader semantic checks and in-game feedback, with a research note on the cases it draws from. Blender is not the runtime and the MCP server stays optional ([#49](https://github.com/zenstory-ai/novel-to-game/pull/49)).
+
 ### Changed
 
+- Polished all three examples together: Jin Ping Mei rebuilt its title, opening and night-visit presentation and rewrote route copy; Journey to the West replaced 17 character assets with transparent illustrations and refreshed six environments; Project Plateau added river terraces, bars and canopy layers and waits for loaded assets before reporting readiness. Gameplay rules, save contracts and age gating are unchanged, and the QA evidence was re-recorded ([#46](https://github.com/zenstory-ai/novel-to-game/pull/46)).
+- Simplified all seven skills by removing generic tutorials, fixed quotas and duplicate instructions, and separated causal reenactment from strategic trade-offs and source-level verification from player-visible discoverability testing ([#48](https://github.com/zenstory-ai/novel-to-game/pull/48)).
 - Trimmed the hedges that game-qa, game-art-direction, game-build and the orchestrator each repeated inside one skill ("subjective fun is not a machine PASS" stated up to four times per skill, "do not stitch old PASSes" twice), and dropped two negations of rules that no longer exist ("do not mandate mid-high brightness or forbid scrolling", "do not allot each screen a fixed number of signature moments"). Each surviving rule lives once, in the file that owns it. The same trim was tried on game-world-design and reverted: blind A/B scored it 6.38 vs 6.84 with the slimmed arm winning 6 of 27 pairings, so those hedges stay.
 - Removed the rules that each skill stated twice, once in its `SKILL.md` and again in the reference that skill already reads (29 lines across six skills), and made the art-direction identity calibration rule live only in its method file, where the two copies had drifted into different wordings. Blind A/B on an invented novel (three samples per arm for `game-concept` and `game-art-direction`, three judges: Opus, Sonnet, Codex) scored the slimmed skills 7.13 vs 6.87 and 7.27 vs 7.00, winning 34 of 54 pairwise placements; no regression detected at this sample size.
 - Lowered the skills line budget from 1900 to 1300 so the current package size (about 1120 lines) becomes the ceiling instead of a distant target; the budget is the forcing function and a wide gap lets rules accumulate unnoticed.
@@ -94,7 +102,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.1.0...v0.2.0
