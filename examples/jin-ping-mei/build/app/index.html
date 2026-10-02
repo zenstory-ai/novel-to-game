@@ -4,15 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <meta name="description" content="《金瓶梅·风月总账》20日男性第一人称成人后宫关系模拟：五条深线、四幕危机与证据化结局" />
+  <meta name="description" content="《金瓶梅·风月总账》18+ 古风恋爱 ADV：一条共通线，五位女主各自的路线与三种结局。" />
   <title>金瓶梅·风月总账</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/new-guofeng.css" />
 </head>
 <body>
-  <div id="app"></div>
-  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <div id="app">
+    <section id="gate" class="screen" hidden>
+      <div class="gate-card">
+        <div class="gate-seal">18+</div>
+        <h1>十八岁以下，止步</h1>
+        <p>本作只供成年人游玩，含成人恋爱关系、轻度裸露与亲密场景及成熟主题。所有可进入亲密场景的人物均为成年虚构角色。</p>
+        <div class="gate-actions">
+          <button id="btn-age-yes" class="btn primary">我已成年，进入</button>
+          <button id="btn-age-no" class="btn">离开</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="title" class="screen" hidden>
+      <div class="title-bg"></div>
+      <canvas id="petals"></canvas>
+      <div class="title-veil"></div>
+      <div class="title-logo">
+        <h1><span>金瓶梅</span><small>风月总账</small></h1>
+        <p>那年春天，五扇门，都为你留过灯。</p>
+      </div>
+      <nav class="title-menu" aria-label="标题菜单">
+        <button data-act="new">开始游戏</button>
+        <button data-act="continue">继续</button>
+        <button data-act="load">读取</button>
+        <button data-act="extras">鉴赏</button>
+        <button data-act="config">设置</button>
+        <button data-act="exit">退出</button>
+      </nav>
+      <p class="title-foot">18+ · 成人恋爱 ADV · 点击推进，选择改变她们的心意</p>
+    </section>
+
+    <section id="game" class="screen" hidden>
+      <div id="stage">
+        <div class="bg" id="bg-a"></div>
+        <div class="bg" id="bg-b"></div>
+        <div id="sprites"></div>
+        <div id="weather"></div>
+        <div id="cg"><img alt="" /></div>
+        <div id="flash"></div>
+      </div>
+      <div id="ui">
+        <div id="textbox">
+          <div id="nameplate"></div>
+          <p id="text"></p>
+          <span id="next-ind" aria-hidden="true"></span>
+          <span id="hint" hidden>点击画面或按空格继续 · 右键隐藏文字 · 滚轮上翻回看</span>
+        </div>
+        <nav id="quickmenu" aria-label="快捷菜单">
+          <button data-act="backlog">回看</button>
+          <button data-act="rollback">上一选项</button>
+          <button data-act="qsave">快存</button>
+          <button data-act="qload">快读</button>
+          <button data-act="save">存档</button>
+          <button data-act="load">读档</button>
+          <button data-act="auto">自动</button>
+          <button data-act="skip">快进</button>
+          <button data-act="config">设置</button>
+          <button data-act="hide">隐藏</button>
+          <button data-act="menu">菜单</button>
+        </nav>
+      </div>
+      <div id="choices" tabindex="-1" hidden></div>
+      <div id="card" hidden></div>
+      <div id="mode-badge" hidden></div>
+    </section>
+
+    <section id="overlay" hidden></section>
+    <div id="toast" hidden></div>
+  </div>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

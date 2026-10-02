@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""轻量浏览器视觉烟测：标题、首日、夜访、结局与重开。"""
+"""唯一权威完整路径：年龄门 → 标题 → 共通线 → 选择 → 吴月娘线 → 良缘结局 → 原著命数 → 回标题重开。
+
+真实 Chromium + Playwright 点击／按键；不调用任何游戏内部函数。--write-evidence 时写
+qa/verification.json、qa/evidence/run.json 与三张截图（标题、ADV 场景、结局）。
+"""
 
 from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import json
 import socket
 import subprocess
@@ -16,76 +19,40 @@ from urllib.request import urlopen
 
 from playwright.sync_api import sync_playwright
 
-
 APP = Path(__file__).resolve().parents[1]
 EXAMPLE = APP.parents[1]
-EVIDENCE = EXAMPLE / "qa" / "evidence"
-VERIFICATION = EXAMPLE / "qa" / "verification.json"
-RUN_EVIDENCE = EVIDENCE / "run.json"
-RUN_ID = "jin-ping-mei-visual-reconstruction-2026-09-05"
-VERIFY_COMMAND = "cd examples/jin-ping-mei/build/app && python3 test/verify_visual.py --write-evidence"
-VIEWPORTS = [
-    ("mobile", 390, 844),
-    ("portrait-tablet", 768, 1024),
-    ("tablet", 1024, 768),
-    ("desktop", 1280, 800),
-    ("wide", 1920, 1080),
-]
-
+QA = EXAMPLE / "qa"
+RUN_ID = "jin-ping-mei-galgame-2026-10"
+COMMAND = "cd examples/jin-ping-mei/build/app && python3 test/verify_visual.py --write-evidence"
+SHOTS = {"title": "screenshots/title.jpg", "adv": "screenshots/adv.jpg", "ending": "qa/evidence/ending.jpg"}
+CHECKS = ("launch", "render", "input", "coreLoop", "outcome", "restart")
+# 月娘良缘的一条完整选择：按选项里出现的字找按钮
+PLAN = ["立刻回家", "看向月娘", "正院 · 月娘还在", "先别吵", "箱子我替你守着", "听月娘的", "正院 · 月娘",
+        "沉下脸", "给月娘", "吴月娘", "那件事，是我不对", "糖兔子", "家里的账，大姐管", "推门进去", "只陪她坐着"]
 LIMITATIONS = [
-    {
-        "scope": "路径覆盖",
-        "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。",
-    },
-    {
-        "scope": "输入覆盖",
-        "reason": "本次使用 Playwright locator.click 且不使用 force；没有复测 2026-08 的全键盘正常速度路径。",
-    },
-    {
-        "scope": "响应式覆盖",
-        "reason": "五档视口覆盖标题与首日，390×844 和 1280×800 覆盖夜访，1280×800 覆盖本次结局；未声明五档完整二十日矩阵。",
-    },
-    {
-        "scope": "体验判断",
-        "reason": "自动化只证明当前候选可启动、渲染、输入、走到结果并重开，不判断主观吸引力、长期平衡或其他浏览器。",
-    },
+    {"scope": "路径覆盖", "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"},
+    {"scope": "成人画面", "reason": "权威路径选择不进入亲密场景，成人 CG 的显示与帘幕替代只做过人工抽查。"},
+    {"scope": "视口与浏览器", "reason": "只在 1440×900 Chromium 运行；窄屏布局与其他浏览器未纳入本次运行。"},
+    {"scope": "体验判断", "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"},
 ]
 
 
-def write_json_atomic(path: Path, value: dict) -> None:
+def write_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.tmp")
-    temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
+    tmp = path.with_name(f".{path.name}.tmp")
+    tmp.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
 
 
-def pending_verification() -> dict:
+def verification(status: str, checks: dict, terminal: str, restart: str) -> dict:
     return {
         "schemaVersion": 3,
-        "status": "FAIL",
-        "verify": {"command": VERIFY_COMMAND, "exitCode": 1},
-        "completeRun": {
-            "id": RUN_ID,
-            "cleanContext": True,
-            "terminal": "NOT_RUN",
-            "restart": "NOT_RUN",
-            "evidence": "qa/evidence/run.json",
-        },
-        "checks": {key: "NOT_RUN" for key in ("launch", "render", "input", "coreLoop", "outcome", "restart")},
+        "status": status,
+        "verify": {"command": COMMAND, "exitCode": 0 if status == "PASS" else 1},
+        "completeRun": {"id": RUN_ID, "cleanContext": True, "terminal": terminal, "restart": restart, "evidence": "qa/evidence/run.json"},
+        "checks": checks,
         "limitations": LIMITATIONS,
     }
-
-
-def runtime_digest() -> str:
-    digest = hashlib.sha256()
-    for relative in ("index.html", "css/style.css", "css/new-guofeng.css", "js/main.js", "js/data.js", "js/engine.js", "js/text.js", "js/assets.js"):
-        digest.update(relative.encode())
-        digest.update((APP / relative).read_bytes())
-    for asset in sorted((APP / "assets").rglob("*")):
-        if asset.is_file():
-            digest.update(asset.relative_to(APP).as_posix().encode())
-            digest.update(asset.read_bytes())
-    return digest.hexdigest()
 
 
 def free_port() -> int:
@@ -94,331 +61,168 @@ def free_port() -> int:
         return int(sock.getsockname()[1])
 
 
-def wait_for_server(url: str) -> None:
-    for _ in range(50):
-        try:
-            with urlopen(url, timeout=0.2) as response:
-                if response.status == 200:
-                    return
-        except OSError:
-            time.sleep(0.05)
-    raise RuntimeError("本地验证服务器未能启动")
-
-
-def layout_snapshot(page, name: str, width: int, height: int) -> dict:
-    page.set_viewport_size({"width": width, "height": height})
-    page.wait_for_timeout(40)
-    metrics = page.evaluate(
-        """() => ({
-          scrollWidth: document.documentElement.scrollWidth,
-          clientWidth: document.documentElement.clientWidth,
-          scrollHeight: document.documentElement.scrollHeight,
-          clientHeight: document.documentElement.clientHeight,
-          mainPanelOverflow: [...document.querySelectorAll('#phase-stage .decision-panel')]
-            .some((panel) => panel.scrollHeight > panel.clientHeight + 1),
-          controls: [...document.querySelectorAll('button:not(:disabled):not([aria-disabled="true"])')]
-            .filter((button) => {
-              const rect = button.getBoundingClientRect();
-              return rect.width > 0 && rect.height > 0;
-            })
-            .map((button) => {
-              const rect = button.getBoundingClientRect();
-              return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
-            })
-        })"""
-    )
-    controls_in_view = all(
-        control["left"] >= -0.5
-        and control["top"] >= -0.5
-        and control["right"] <= width + 0.5
-        and control["bottom"] <= height + 0.5
-        for control in metrics["controls"]
-    )
-    return {
-        "name": name,
-        "width": width,
-        "height": height,
-        "horizontalOverflow": metrics["scrollWidth"] > metrics["clientWidth"],
-        "verticalPageOverflow": metrics["scrollHeight"] > metrics["clientHeight"],
-        "mainPanelOverflow": metrics["mainPanelOverflow"],
-        "enabledControlsInViewport": controls_in_view,
-    }
-
-
-def click_forward(page) -> str | None:
-    candidate = page.evaluate(
-        """() => {
-          const selectorFor = (button) => {
-            if (button.id) return `#${CSS.escape(button.id)}`;
-            const key = Object.keys(button.dataset)[0];
-            if (!key) return null;
-            const attr = key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-            return `[data-${attr}="${CSS.escape(button.dataset[key])}"]`;
-          };
-          const dismiss = document.querySelector('#result-feedback #btn-result-dismiss');
-          if (dismiss) return { selector: '#btn-result-dismiss', label: 'dismiss-feedback' };
-          const available = (selector) => [...document.querySelectorAll(selector)].filter((button) => {
-            const rect = button.getBoundingClientRect();
-            return !button.disabled && button.getAttribute('aria-disabled') !== 'true'
-              && rect.width > 0 && rect.height > 0;
-          });
-          const preferred = available('#phase-stage .choice-button, #phase-stage .story-continue');
-          const buttons = preferred.length ? preferred : available('#phase-stage button');
-          if (!buttons.length) return null;
-          return { selector: selectorFor(buttons[0]), label: buttons[0].innerText.trim() };
-        }"""
-    )
-    if not candidate or not candidate["selector"]:
-        return None
-    page.locator(candidate["selector"]).click(timeout=5_000, no_wait_after=True)
-    return candidate["label"]
-
-
-def assert_layout(rows: list[dict], label: str) -> None:
-    for row in rows:
-        assert not row["horizontalOverflow"], f"{label} {row['name']} 出现横向溢出"
-        assert not row["verticalPageOverflow"], f"{label} {row['name']} 出现页面纵向溢出"
-        assert not row["mainPanelOverflow"], f"{label} {row['name']} 主面板出现内部滚动"
-        assert row["enabledControlsInViewport"], f"{label} {row['name']} 有控件落出视口"
-
-
-def run(write_evidence: bool) -> dict:
+def run(write: bool) -> None:
+    if write:
+        write_json(QA / "verification.json", verification("FAIL", {k: "NOT_RUN" for k in CHECKS}, "NOT_RUN", "NOT_RUN"))
     port = free_port()
-    url = f"http://127.0.0.1:{port}/?seed=42"
-    server = subprocess.Popen(
-        [sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"],
-        cwd=APP,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    url = f"http://127.0.0.1:{port}/"
+    server = subprocess.Popen([sys.executable, "-m", "http.server", str(port), "--bind", "127.0.0.1"], cwd=APP,
+                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    obs: dict = {}
+    trace: list[str] = []
     try:
-        wait_for_server(url)
-        with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(headless=True)
-            browser_version = browser.version
-            page = browser.new_page(viewport={"width": 1280, "height": 800})
-            console_errors: list[str] = []
-            http_errors: list[dict] = []
-            pre_age_images: list[str] = []
-            age_confirmed = {"value": False}
-            page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
-            page.on("pageerror", lambda error: console_errors.append(str(error)))
-            page.on(
-                "response",
-                lambda response: http_errors.append({"status": response.status, "url": response.url})
-                if response.status >= 400
-                else None,
-            )
-            page.on(
-                "request",
-                lambda request: pre_age_images.append(request.url)
-                if request.resource_type == "image" and not age_confirmed["value"]
-                else None,
-            )
+        for _ in range(60):
+            try:
+                urlopen(url, timeout=0.2)
+                break
+            except OSError:
+                time.sleep(0.05)
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            errors: list[str] = []
+            requests: list[str] = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+            page.on("requestfailed", lambda r: errors.append(f"failed {r.url}"))
+            page.on("response", lambda r: errors.append(f"{r.status} {r.url}") if r.status >= 400 else None)
+            page.on("request", lambda r: requests.append(r.url))
+            shot = lambda key: page.screenshot(path=str(EXAMPLE / SHOTS[key]), type="jpeg", quality=82)
 
-            page.goto(url, wait_until="commit")
-            page.wait_for_selector("#btn-age-yes")
-            page.wait_for_timeout(120)
-            assert not any(
-                "/assets/cg/" in item and "title_new_guofeng" not in item
-                for item in pre_age_images
-            )
-            page.click("#btn-age-yes", no_wait_after=True)
-            age_confirmed["value"] = True
-            page.wait_for_selector("#btn-start")
-            assert page.locator(".title-cast li").count() == 5
-            title_layout = [layout_snapshot(page, *viewport) for viewport in VIEWPORTS]
-            assert_layout(title_layout, "标题")
-            if write_evidence:
-                page.set_viewport_size({"width": 1920, "height": 1080})
-                page.screenshot(path=str(EVIDENCE / "visual-reconstruction-title.jpg"), type="jpeg", quality=86)
+            # launch：年龄门在前，确认前不请求任何成人 CG
+            page.goto(url)
+            page.wait_for_selector("#gate:not([hidden])")
+            adult_before = [u for u in requests if "/explicit" in u or "/prelude" in u]
+            page.click("#btn-age-yes")
+            page.wait_for_selector("#title:not([hidden])")
+            page.wait_for_timeout(2600)
+            shot("title")
+            obs["launch"] = {"id": "age-gate-then-title", "inputs": ["打开页面", "点击「我已成年，进入」"],
+                             "state": {"ageGateFirst": True, "adultRequestsBeforeConfirm": len(adult_before),
+                                       "titleMenu": page.locator(".title-menu button").all_inner_texts()},
+                             "visual": SHOTS["title"]}
+            assert not adult_before
+            trace.append("点击年龄门确认，进入动画标题。")
 
-            page.set_viewport_size({"width": 1280, "height": 800})
-            page.click("#btn-start", no_wait_after=True)
-            page.wait_for_selector(".opening-case")
-            opening_layout = [layout_snapshot(page, *viewport) for viewport in VIEWPORTS]
-            assert_layout(opening_layout, "首日")
-            if write_evidence:
-                page.set_viewport_size({"width": 1280, "height": 800})
-                page.screenshot(path=str(EVIDENCE / "visual-reconstruction-day.jpg"), type="jpeg", quality=86)
+            # input：在设置里把文字速度拖到瞬间（真实滑杆输入），再开始游戏
+            page.click('.title-menu [data-act="config"]')
+            page.locator('input[data-cfg="textSpeed"]').fill("100")
+            page.click('#overlay [data-act="close"]')
+            page.click('.title-menu [data-act="new"]')
+            page.wait_for_selector("#game:not([hidden])")
+            chapter_card = page.inner_text("#card")
+            page.mouse.click(720, 300)  # 点掉序章标题卡
+            first_line = page.inner_text("#text")
+            page.mouse.click(720, 300)
+            after_click = page.inner_text("#text")
+            page.keyboard.press("Enter")
+            after_key = page.inner_text("#text")
+            assert "序章" in chapter_card and first_line and first_line != after_click != after_key, "点击／回车没有推进文字"
+            trace.append("设置里把文字速度调到瞬间；开始游戏后用鼠标点击和回车各推进一句。")
 
-            action_count = 0
-            while page.evaluate("window.__game.state().phase") != "choose_visit":
-                assert action_count < 30, "首日未在预期步数内进入选院"
-                assert click_forward(page), "首日流程没有可继续的控件"
-                page.wait_for_timeout(4)
-                action_count += 1
+            plan = list(PLAN)
+            chapters: list[str] = []
+            adv_state = None
+            quick = None
+            for _ in range(2000):
+                if page.is_visible("#title"):
+                    break
+                card = page.locator("#card:not([hidden])")
+                if card.count():
+                    cls = card.get_attribute("class") or ""
+                    text = card.inner_text()
+                    if "chapter" in cls:
+                        chapters.append(text.split("\n")[1] if "\n" in text else text)
+                    if "ending" in cls and "ending" not in obs:
+                        page.wait_for_timeout(1600)  # 结局卡出现后 1.5 秒内的点击会被挡下
+                        shot("ending")
+                        obs["outcome"] = {"id": "yue-good-ending", "inputs": ["按计划在每个选项处点击", "读完月娘线"],
+                                          "state": {"endingCard": " / ".join(t for t in text.split("\n") if t.strip()),
+                                                    "recorded": page.evaluate("JSON.parse(localStorage.getItem('jpm2_global')||'{}').ending||[]"),
+                                                    "terminal": "yue_good"},
+                                          "visual": SHOTS["ending"]}
+                        trace.append("走到「吴月娘篇 · 良缘结局 · 月下焚香」。")
+                    if "fate" in cls and "fatePage" not in obs["outcome"]["state"]:
+                        page.wait_for_timeout(5100)  # 命数页逐行浮现，5 秒内的点击只会整页显出
+                        obs["outcome"]["state"]["fatePage"] = page.inner_text(".fate-inner h2")
+                        trace.append("点开原著命数页（第七十九回、第一百回）后回到标题。")
+                choices = page.locator("#choices:not([hidden]) button.choice")
+                if choices.count():
+                    want = plan.pop(0)
+                    texts = choices.all_inner_texts()
+                    index = next((i for i, t in enumerate(texts) if want in t), None)
+                    assert index is not None, f"找不到选项「{want}」：{texts}"
+                    if want == "吴月娘":
+                        obs["coreLoop"] = {"id": "common-route-to-branch", "inputs": PLAN[:9],
+                                           "state": {"chapters": list(chapters), "openDoors": [t.split("\n")[1] for t in texts
+                                                     if not choices.nth(texts.index(t)).is_disabled()]}}
+                    page.wait_for_timeout(500)  # 选项出现后 450ms 内的点击会被挡下
+                    choices.nth(index).click()
+                    continue
+                name = page.inner_text("#nameplate") if page.is_visible("#nameplate") else ""
+                if adv_state is None and name.startswith("玉楼") and page.locator(".sprite").count() >= 3:
+                    page.wait_for_timeout(700)
+                    shot("adv")
+                    adv_state = page.evaluate("""() => ({
+                      nameplate: document.querySelector('#nameplate').textContent,
+                      sprites: [...document.querySelectorAll('.sprite')].map(s => s.dataset.who + (s.classList.contains('dim') ? ':dim' : ':speaking')),
+                      spritesLoaded: [...document.querySelectorAll('.sprite img')].every(i => i.complete && i.naturalWidth > 0),
+                      background: document.querySelector('.bg.on').dataset.bg })""")
+                    assert adv_state["spritesLoaded"]
+                    # 快存 → 推进两句 → 快读，应回到同一句；再开回看记录
+                    saved_line = page.inner_text("#text")
+                    page.click('#quickmenu [data-act="qsave"]')
+                    page.wait_for_selector('#toast:has-text("已快速存档")')
+                    page.keyboard.press("Enter")
+                    page.keyboard.press("Enter")
+                    page.click('#quickmenu [data-act="qload"]')
+                    page.wait_for_timeout(300)
+                    restored = page.inner_text("#text")
+                    page.mouse.move(720, 300)
+                    page.mouse.wheel(0, -200)
+                    page.wait_for_selector(".backlog li")
+                    backlog = page.locator(".backlog li").count()
+                    page.keyboard.press("Escape")
+                    quick = {"savedLine": saved_line, "restoredLine": restored, "backlogEntries": backlog}
+                    assert saved_line == restored and backlog > 5, quick
+                    trace.append("在三人同场的晚饭戏截图；快存、推进两句、快读回到同一句；滚轮上翻打开回看记录后关闭。")
+                page.keyboard.press("Enter")
+            assert page.is_visible("#title") and not plan, f"没有走完：剩余选择 {plan}"
+            obs["render"] = {"id": "adv-scene-three-sprites", "inputs": ["读到晚饭戏玉楼开口"],
+                             "state": adv_state, "visual": SHOTS["adv"]}
+            obs["input"] = {"id": "click-enter-wheel-quicksave", "inputs": ["设置滑杆", "鼠标点击", "回车", "快存／快读", "滚轮回看", "选项点击"],
+                            "state": {"firstLine": first_line, "afterClick": after_click, "afterEnter": after_key, **quick}}
 
-            page.set_viewport_size({"width": 1280, "height": 800})
-            page.locator("[data-visit]:not(:disabled)").first.click(no_wait_after=True)
-            page.wait_for_selector("[data-route-choice]")
-            assert page.evaluate("window.__game.state().phase") == "visit"
-            visit_layout = [
-                layout_snapshot(page, "mobile", 390, 844),
-                layout_snapshot(page, "desktop", 1280, 800),
-            ]
-            assert_layout(visit_layout, "夜访")
-            if write_evidence:
-                page.screenshot(path=str(EVIDENCE / "visual-reconstruction-night-visit.jpg"), type="jpeg", quality=86)
-
-            page.locator("[data-route-choice]:not(:disabled)").first.click(no_wait_after=True)
-            page.wait_for_selector("[data-route-story]")
-            assert page.evaluate("window.__game.state().phase") == "route_aftermath"
-
-            seen: dict[tuple[int, str, int], int] = {}
-            while page.evaluate("window.__game.state().phase") != "ending":
-                state = page.evaluate("window.__game.state()")
-                signature = (state["day"], state["phase"], len(state["history"]))
-                seen[signature] = seen.get(signature, 0) + 1
-                assert seen[signature] <= 12, f"流程卡在 {signature}"
-                assert action_count < 750, "快速烟测超过动作上限"
-                assert click_forward(page), f"{signature} 没有可继续的控件"
-                page.wait_for_timeout(2)
-                action_count += 1
-
-            ending = page.evaluate("window.__game.state()")
-            assert ending["day"] == 20 and ending["ending"]["id"]
-            page.set_viewport_size({"width": 1280, "height": 800})
-            assert_layout([layout_snapshot(page, "desktop", 1280, 800)], "结局")
-            if write_evidence:
-                page.screenshot(path=str(EVIDENCE / "visual-reconstruction-ending.jpg"), type="jpeg", quality=86)
-
-            old_seed = ending["seed"]
-            page.locator("#btn-restart").click(timeout=5_000, no_wait_after=True)
-            page.wait_for_selector(".opening-case")
-            restarted = page.evaluate("window.__game.state()")
-            assert restarted["day"] == 1 and restarted["phase"] == "opening"
-            assert restarted["seed"] != old_seed
+            # restart：回到标题后「继续」可用，「开始游戏」从序章第一句重来
+            continue_enabled = page.locator('.title-menu [data-act="continue"]').is_enabled()
+            page.click('.title-menu [data-act="new"]')
+            page.wait_for_selector("#game:not([hidden])")
+            page.mouse.click(720, 300)
+            restart_line = page.inner_text("#text")
+            assert restart_line == first_line
+            obs["restart"] = {"id": "title-new-game", "inputs": ["结局后回到标题", "点击「开始游戏」"],
+                              "state": {"continueEnabled": continue_enabled, "firstLine": restart_line, "restart": "prologue-first-line"}}
+            trace.append("回到标题后重新开始，回到序章第一句。")
+            assert not errors, errors
+            version = browser.version
             browser.close()
-
-        assert not console_errors, f"浏览器控制台错误：{console_errors}"
-        assert not http_errors, f"HTTP 错误：{http_errors}"
-        report = {
-            "schemaVersion": 1,
-            "runId": RUN_ID,
-            "environment": {
-                "candidate": "2026-09 标题与开场视觉重构候选",
-                "runtimeDigestSha256": runtime_digest(),
-                "browser": {"name": "Chromium", "version": browser_version},
-                "testedRuntime": "临时本地 HTTP 服务 + Python Playwright",
-                "seed": 42,
-                "mode": "每屏第一项可行主动作的快速完整路径",
-                "inputMode": "Playwright locator.click；不使用 force；DOM 只负责读取候选 selector",
-                "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
-                "errors": {"console": console_errors, "http": http_errors},
-                "limitations": LIMITATIONS,
-            },
-            "inputTrace": [
-                "以 Playwright 点击确认年龄门并进入五院标题。",
-                "点击进入首日，完成正堂选择与三拍后章，再真实进入吴月娘夜访并选择第一项路线回答。",
-                f"继续以 Playwright locator.click 激活每屏第一项可见可行主动作；主流程动作计数 {action_count}。",
-                "到达第二十日失稳结局后点击“换一套暗线”，确认新 seed 回到第一日正堂。",
-            ],
-            "observations": {
-                "launch": {
-                    "id": "age-gate-to-five-court-title",
-                    "inputs": ["打开 seed=42", "点击我已成年"],
-                    "state": {
-                        "ageGateVisible": True,
-                        "adultAssetRequestsBeforeConfirmation": 0,
-                        "preAgeImageRequests": pre_age_images,
-                        "titleVisible": True,
-                        "titleCourtCount": 5,
-                    },
-                    "visual": "qa/evidence/visual-reconstruction-title.jpg",
-                },
-                "render": {
-                    "id": "title-opening-night-ending-rendered",
-                    "inputs": ["检查五档标题与首日", "检查移动端及桌面夜访", "检查桌面结局"],
-                    "state": {
-                        "titleViewports": title_layout,
-                        "openingViewports": opening_layout,
-                        "nightVisitViewports": visit_layout,
-                        "endingViewport": {"width": 1280, "height": 800},
-                        "horizontalOverflowCount": 0,
-                        "mainPanelOverflowCount": 0,
-                        "enabledControlsOutsideViewportCount": 0,
-                    },
-                    "visual": "qa/evidence/visual-reconstruction-day.jpg",
-                },
-                "input": {
-                    "id": "visible-enabled-controls-accepted",
-                    "inputs": ["Playwright locator.click", "不使用 force", "DOM 仅选择下一 locator"],
-                    "state": {
-                        "mainPathActionCount": action_count,
-                        "openingChoiceAccepted": True,
-                        "nightVisitAccepted": True,
-                        "routeResultVisible": True,
-                        "consoleErrors": console_errors,
-                        "httpErrors": http_errors,
-                    },
-                    "visual": "qa/evidence/visual-reconstruction-night-visit.jpg",
-                },
-                "coreLoop": {
-                    "id": "twenty-day-fast-path-complete",
-                    "inputs": ["从第一日正堂持续选择每屏第一项可行主动作"],
-                    "state": {"day": ending["day"], "phase": ending["phase"], "historyCount": len(ending["history"])},
-                },
-                "outcome": {
-                    "id": "day-20-unstable-ending",
-                    "inputs": ["完成第二十日最终选择并读取结局"],
-                    "state": {
-                        "terminal": "day-20-unstable-ending",
-                        "day": ending["day"],
-                        "phase": ending["phase"],
-                        "endingId": ending["ending"]["id"],
-                        "endingTitle": ending["ending"]["title"],
-                    },
-                    "visual": "qa/evidence/visual-reconstruction-ending.jpg",
-                },
-                "restart": {
-                    "id": "new-seed-day-1-opening",
-                    "inputs": ["点击换一套暗线"],
-                    "state": {
-                        "restart": "day-1-opening-new-seed",
-                        "day": restarted["day"],
-                        "phase": restarted["phase"],
-                        "seedChanged": restarted["seed"] != old_seed,
-                    },
-                },
-            },
-        }
-        return report
     finally:
         server.terminate()
-        try:
-            server.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            server.kill()
 
-
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--write-evidence", action="store_true")
-    args = parser.parse_args()
-    if args.write_evidence:
-        write_json_atomic(VERIFICATION, pending_verification())
-    report = run(args.write_evidence)
-    verification = {
-        "schemaVersion": 3,
-        "status": "PASS",
-        "verify": {"command": VERIFY_COMMAND, "exitCode": 0},
-        "completeRun": {
-            "id": RUN_ID,
-            "cleanContext": True,
-            "terminal": "day-20-unstable-ending",
-            "restart": "day-1-opening-new-seed",
-            "evidence": "qa/evidence/run.json",
-        },
-        "checks": {key: "PASS" for key in ("launch", "render", "input", "coreLoop", "outcome", "restart")},
-        "limitations": LIMITATIONS,
-    }
-    if args.write_evidence:
-        write_json_atomic(RUN_EVIDENCE, report)
-        write_json_atomic(VERIFICATION, verification)
-    print(json.dumps({"checks": verification["checks"], "runId": RUN_ID}, ensure_ascii=False))
-    return 0
+    print(f"PASS：{len(chapters)} 张章节卡，结局 {obs['outcome']['state']['endingCard']}")
+    if write:
+        write_json(QA / "evidence" / "run.json", {
+            "schemaVersion": 1,
+            "runId": RUN_ID,
+            "environment": {"browser": f"Chromium {version}", "viewport": "1440x900", "runtime": "临时本地 HTTP 服务 + Python Playwright",
+                            "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")},
+            "inputTrace": trace,
+            "observations": {k: obs[k] for k in CHECKS},
+        })
+        write_json(QA / "verification.json", verification("PASS", {k: "PASS" for k in CHECKS}, "yue_good", "prologue-first-line"))
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--write-evidence", action="store_true")
+    run(parser.parse_args().write_evidence)

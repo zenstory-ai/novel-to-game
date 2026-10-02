@@ -6,10 +6,10 @@
     "exitCode": 0
   },
   "completeRun": {
-    "id": "jin-ping-mei-visual-reconstruction-2026-09-05",
+    "id": "jin-ping-mei-galgame-2026-10",
     "cleanContext": true,
-    "terminal": "day-20-unstable-ending",
-    "restart": "day-1-opening-new-seed",
+    "terminal": "yue_good",
+    "restart": "prologue-first-line",
     "evidence": "qa/evidence/run.json"
   },
   "checks": {
@@ -23,19 +23,19 @@
   "limitations": [
     {
       "scope": "路径覆盖",
-      "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。"
+      "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
     },
     {
-      "scope": "输入覆盖",
-      "reason": "本次使用 Playwright locator.click 且不使用 force；没有复测 2026-08 的全键盘正常速度路径。"
+      "scope": "成人画面",
+      "reason": "权威路径选择不进入亲密场景，成人 CG 的显示与帘幕替代只做过人工抽查。"
     },
     {
-      "scope": "响应式覆盖",
-      "reason": "五档视口覆盖标题与首日，390×844 和 1280×800 覆盖夜访，1280×800 覆盖本次结局；未声明五档完整二十日矩阵。"
+      "scope": "视口与浏览器",
+      "reason": "只在 1440×900 Chromium 运行；窄屏布局与其他浏览器未纳入本次运行。"
     },
     {
       "scope": "体验判断",
-      "reason": "自动化只证明当前候选可启动、渲染、输入、走到结果并重开，不判断主观吸引力、长期平衡或其他浏览器。"
+      "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
     }
   ]
 }
