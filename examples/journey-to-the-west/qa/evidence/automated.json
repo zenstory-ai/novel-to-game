@@ -7,13 +7,14 @@
       1440,
       900
     ],
-    "url": "http://127.0.0.1:52741/?seed=42&fast=1",
-    "buildBytes": 9395321
+    "url": "http://127.0.0.1:52435/?seed=42&fast=1",
+    "buildBytes": 12466838
   },
   "inputTrace": [
-    "start a new campaign",
-    "interact with the Earth God and Princess Iron Fan",
-    "complete six command battles and story decisions",
+    "start a new campaign and land in the walkable Flaming Mountain village",
+    "click the Earth God's sprite, then follow the quest tracker's auto-path across scene portals",
+    "accept the Earth God's demon bounty, auto-path to the wandering demon and win the encounter",
+    "complete six story command battles and story decisions, each started by an NPC in a scene",
     "use keyboard-only input to choose a guide and complete the risky five-element treasure route",
     "reach the designed ending",
     "restart to a clean title campaign"
@@ -26,17 +27,18 @@
       ],
       "state": {
         "phase": "title"
-      },
-      "visual": "qa/evidence/browser/01_title.jpg"
+      }
     },
     "input": {
       "id": "overworld-input-accepted",
       "inputs": [
         "click start",
+        "click the Earth God sprite",
         "advance dialogue"
       ],
       "state": {
-        "phase": "overworld"
+        "phase": "overworld",
+        "mainStep": "一借芭蕉扇"
       }
     },
     "render": {
@@ -70,6 +72,24 @@
           },
           "potentialPoints": 4,
           "skillPoints": 1
+        },
+        "bounty": {
+          "ring": 1,
+          "round": 1,
+          "demon": null,
+          "report": true,
+          "accepted": true
+        },
+        "bountyRewards": {
+          "before": {
+            "exp": 0,
+            "money": 220
+          },
+          "after": {
+            "exp": 90,
+            "money": 292,
+            "level": 2
+          }
         },
         "treasureSnapshot": {
           "guide": "wukong",
@@ -303,7 +323,7 @@
         },
         "treasureInput": "keyboard-only"
       },
-      "visual": "qa/evidence/browser/02_fire_vein_treasure.jpg"
+      "visual": "qa/evidence/browser/01_overworld.jpg"
     },
     "outcome": {
       "id": "designed-ending",

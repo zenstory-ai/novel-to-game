@@ -30,25 +30,32 @@ const KIND_COPY = {
   empty: '空穴',
 };
 
+// 探路者一人一句大白话(详细规则在 treasure.js 的 HUNT_GUIDES)
+const GUIDE_PLAIN = {
+  wukong: { short: '悟空', line: '悟空：深层能看穿哪一格是妖穴' },
+  bajie: { short: '八戒', line: '八戒：每层白挖一格' },
+  sha: { short: '沙僧', line: '沙僧：替你挡一次妖气' },
+};
+
 function pickGuide(root) {
   return new Promise((resolve) => {
     const rows = Object.values(HUNT_GUIDES).map((guide) => {
       const row = el('div', 'hunt-guide-row');
       row.append(
         iconBadge(guide.key === 'wukong' ? '识' : guide.key === 'bajie' ? '掘' : '守'),
-        el('div', '', `${guide.name} — ${guide.desc}`),
+        el('div', 'hunt-guide-line', GUIDE_PLAIN[guide.key]?.line ?? guide.desc),
       );
       return row;
     });
     showModal(root, {
       id: 'modal-hunt-guide',
-      title: '火脉残图 · 谁来探路',
+      title: '谁来探路',
       bodyNodes: [
-        el('p', 'tutorial-line', '五行罗盘只报地脉，不报格中何物。先定探路者；他的本事会改写这一局。'),
+        el('p', 'tutorial-line', '残图上九处地脉，各标一个五行。外层挖三处，之后可以收手，也可以再往深处挖。'),
         ...rows,
       ],
       buttons: Object.values(HUNT_GUIDES).map((guide) => ({
-        label: guide.name,
+        label: GUIDE_PLAIN[guide.key]?.short ?? guide.name,
         id: `hunt-guide-${guide.key}`,
         onClick: () => resolve(guide.key),
       })),
@@ -113,12 +120,17 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
   function showDepthChoice() {
     const visible = visibleTreasureState(state);
     const settleReward = itemsText(visible.safeSettleReward);
+    // 外层所得与顶栏那行同一本账：已带回+还在洞里逐项相加，残简一并列上
+    const outer = { ...visible.bankedItems };
+    for (const [k, n] of Object.entries(visible.carriedItems)) outer[k] = (outer[k] ?? 0) + n;
+    const relics = visible.bankedRelics + visible.carriedRelics;
     showModal(root, {
       id: 'modal-hunt-depth',
       title: '残图已明 · 收手还是深入',
       bodyNodes: [
-        el('p', 'tutorial-line', `外层所得已在手：${itemsText({ ...state.bankedItems, ...state.carriedItems })}。`),
-        el('p', 'tutorial-line', `此刻收手可把封炉余火凝成${settleReward}；深入会放弃这份独占稳收，换取大还丹与修炼心得。外层所得仍已护住。`),
+        el('p', 'tutorial-line', `外层挖到：${[Object.keys(outer).length ? itemsText(outer) : '', relics > 0 ? `残简 ${relics}` : ''].filter(Boolean).join(' · ') || '尚无'}。`),
+        el('p', 'tutorial-line', `收手：带着这些回去，另得一张${settleReward}。`),
+        el('p', 'tutorial-line', '深入：外层所得先送回队里收好，再往深处挖两处，可得大还丹与修炼心得；妖气涨满只丢深处的东西。'),
       ],
       buttons: [
         { label: '见好就收', id: 'treasure-settle', onClick: () => finish(settleTreasureHunt(state)) },
@@ -147,15 +159,16 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
   function tileButton(tile) {
     const revealed = tile.revealed;
     const danger = tile.dangerMarked && !revealed;
-    const button = el('button', `treasure-tile element-${tile.element}${revealed ? ' revealed' : ''}${danger ? ' danger-mark' : ''}`);
+    const button = el('button', `treasure-tile element-${tile.element}${revealed ? ' revealed' : ' sealed'}${danger ? ' danger-mark' : ''}`);
     button.type = 'button';
     button.dataset.treasureIndex = String(tile.index);
     button.dataset.element = tile.element;
     button.disabled = revealed || state.status !== 'playing';
     button.append(iconBadge(tile.element, { round: true }));
-    const title = revealed ? tile.name : danger ? '火眼识破 · 妖穴' : `${tile.element}脉 · ${ELEMENT_COPY[tile.element]}`;
-    const sub = revealed ? KIND_COPY[tile.kind] : danger ? '此处妖气最盛' : '点击掘开';
-    button.append(el('span', 'treasure-tile-title', title), el('span', 'treasure-tile-sub', sub));
+    // 未掘的格子只露五行印(含义看上方图例);掘开后才写是什么
+    if (revealed) button.append(el('span', 'treasure-tile-title', tile.name), el('span', 'treasure-tile-sub', KIND_COPY[tile.kind]));
+    else if (danger) button.append(el('span', 'treasure-tile-title', '妖穴'), el('span', 'treasure-tile-sub', '悟空看穿了'));
+    button.title = revealed ? tile.name : `${tile.element}脉 · ${ELEMENT_COPY[tile.element]}`;
     button.addEventListener('click', () => {
       const beforeThreat = state.threat;
       const beforeRevealed = state.revealed[state.layer].length;
@@ -181,7 +194,7 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
 
     const head = el('div', 'treasure-head');
     const title = el('div', 'treasure-title', visible.layer === 'outer' ? '火脉残图 · 炉砖外藏' : '火脉残图 · 妖穴深层');
-    const guide = el('div', 'treasure-guide', HUNT_GUIDES[visible.guide].name);
+    const guide = el('div', 'treasure-guide', state.status === 'preview' ? '尚未选人' : `${GUIDE_PLAIN[visible.guide]?.short ?? ''}探路`);
     head.append(title, guide);
 
     const status = el('div', 'treasure-status');
@@ -193,23 +206,23 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
     status.append(
       el('div', 'treasure-digs', `掘数 ${visible.digsUsed}/${visible.digsLimit}`),
       threat,
-      el('div', 'treasure-haul', `护住：${itemsText(visible.bankedItems)} · 手中：${itemsText(visible.carriedItems)} · 残简 ${visible.bankedRelics + visible.carriedRelics}`),
+      el('div', 'treasure-haul', `已带回：${itemsText(visible.bankedItems)} · 还在洞里：${itemsText(visible.carriedItems)} · 残简 ${visible.bankedRelics + visible.carriedRelics}`),
     );
 
     const legend = el('div', 'treasure-legend');
     for (const [element, copy] of Object.entries(ELEMENT_COPY)) {
       const item = el('span', 'treasure-legend-item');
-      item.append(iconBadge(element, { round: true, sm: true }), document.createTextNode(`${element}·${copy}`));
+      item.append(iconBadge(element, { round: true, sm: true }), document.createTextNode(copy));
       legend.append(item);
     }
 
     const grid = el('div', `treasure-grid ${visible.layer}`);
     for (const tile of visible.tiles) grid.append(tileButton(tile));
     const note = el('div', 'treasure-note', visible.layer === 'outer'
-      ? '五行只报倾向：同一火脉可能藏丹，也可能惊妖；不能仅凭明牌锁定陷阱。三掘后必须收手或深入。'
+      ? '五行只说「多半」有什么：火脉也可能藏丹，金脉也可能惊妖。挖满三处后再定去留。'
       : visible.guide === 'wukong'
-        ? '火眼已从同类地脉里辨出真妖穴并盖上「识」印。这是五行明牌之外的新情报。'
-        : '深层起步妖气一格；若涨满四格，只损失深层所得，外层宝物已经护住。');
+        ? '悟空看穿的妖穴已盖上「识」印，避开它挖。'
+        : '妖气已有一格；涨满四格就得退，只丢深处挖到的东西。');
 
     panel.append(head, status, legend, grid, note);
     publish();
@@ -247,6 +260,10 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
   window.addEventListener('keydown', onGridKey);
 
   void (async () => {
+    // 先把整张残图(扣着的九格)摆出来,再在它上面选探路者:选之前就看得见要挖的是什么
+    state = createTreasureHunt(seed, 'wukong');
+    state.status = 'preview';
+    render();
     const guide = await pickGuide(root);
     if (closed) return;
     state = createTreasureHunt(seed, guide);

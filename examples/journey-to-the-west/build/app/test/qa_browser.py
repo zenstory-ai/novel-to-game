@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""用 Playwright 跑一条《三借芭蕉扇》完整路径并保留三张代表帧。"""
+"""用 Playwright 跑一条《三借芭蕉扇》完整路径(场景行走→主线与日常→结局→重开)并保留四张代表帧。"""
 
 from __future__ import annotations
 
@@ -174,8 +174,48 @@ class BrowserPath:
                 self.page.wait_for_timeout(100)
         raise RuntimeError("战斗未在限定步数内结束")
 
+    def open_forms(self) -> None:
+        """特技→七十二变;首次打开会先弹一张说明卡。"""
+        self.page.click('.cmd-btn[data-cmd="special"]')
+        self.page.wait_for_selector('[data-form], #btn-once-close')
+        if self.page.locator("#btn-once-close").count():
+            self.page.click("#btn-once-close")
+        self.page.wait_for_selector('[data-form="chongzi"]')
+
     def wait_victory(self) -> None:
         self.page.wait_for_selector("#modal-victory #btn-victory-ok", timeout=30000)
+
+    def advance_until(self, selector: str, timeout_seconds: int = 60) -> None:
+        """点掉剧情对白,直到目标控件出现(场景自动寻路、章节卡都在这段时间里走完)。"""
+        deadline = time.time() + timeout_seconds
+        while time.time() < deadline:
+            if self.page.locator(selector).count():
+                return
+            if self.page.locator("#dialog").count():
+                self.page.locator("#dialog").click()
+            self.page.wait_for_timeout(200)
+        raise RuntimeError(f"未等到 {selector}")
+
+    def in_world(self, scene: str | None = None) -> bool:
+        return bool(self.page.evaluate(
+            "s => __game.phase() === 'overworld' && !document.querySelector('#dialog, .modal-mask, #npc-menu')"
+            " && (!s || __game.scene() === s)",
+            scene,
+        ))
+
+    def back_to_world(self, scene: str | None = None, timeout_seconds: int = 60) -> None:
+        deadline = time.time() + timeout_seconds
+        while time.time() < deadline:
+            if self.in_world(scene):
+                return
+            if self.page.locator("#dialog").count():
+                self.page.locator("#dialog").click()
+            self.page.wait_for_timeout(200)
+        raise RuntimeError(f"未回到场景 {scene}")
+
+    def track(self, quest: str) -> None:
+        """点右侧任务追踪,让角色自动寻路(含跨图传送)。"""
+        self.page.locator(f'#quest-tracker [data-quest="{quest}"]').click()
 
 
 def run_path() -> tuple[
@@ -189,16 +229,18 @@ def run_path() -> tuple[
     errors: list[str] = []
     observations: dict[str, object] = {}
     input_trace = [
-        "start a new campaign",
-        "interact with the Earth God and Princess Iron Fan",
-        "complete six command battles and story decisions",
+        "start a new campaign and land in the walkable Flaming Mountain village",
+        "click the Earth God's sprite, then follow the quest tracker's auto-path across scene portals",
+        "accept the Earth God's demon bounty, auto-path to the wandering demon and win the encounter",
+        "complete six story command battles and story decisions, each started by an NPC in a scene",
         "use keyboard-only input to choose a guide and complete the risky five-element treasure route",
         "reach the designed ending",
         "restart to a clean title campaign",
     ]
 
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch()
+        # 无头环境没有真实声卡:用假音频输出,免得声卡错误冒充成游戏报错
+        browser = playwright.chromium.launch(args=["--disable-audio-output"])
         page = browser.new_page(viewport={"width": 1440, "height": 900})
         page.on(
             "console",
@@ -211,43 +253,66 @@ def run_path() -> tuple[
         page.goto(URL)
         page.wait_for_selector("#btn-start", timeout=10000)
         checks["launch"] = page.evaluate("__game.phase()") == "title"
-        title_shot = path.shot("title")
         observations["launch"] = {
             "id": "title-ready",
             "inputs": ["navigate to the seeded title"],
             "state": {"phase": page.evaluate("__game.phase()")},
-            "visual": title_shot.relative_to(PROJECT).as_posix(),
         }
 
         page.click("#btn-start")
-        path.wait_dialog_then_clear()
+        path.back_to_world("village")
         page.wait_for_selector("#overworld-canvas", timeout=5000)
-        checks["input"] = page.evaluate("__game.phase()") == "overworld"
+        # 第一分钟:土地头顶挂「!」,任务追踪指向土地。直接点他的身形对话。
+        first_step = page.evaluate("__game.mainStep()")
+        tudi = page.evaluate("__game.npcScreenPos('tudi')")
+        if first_step.get("actor") != "tudi" or not tudi or not (0 < tudi["x"] < 1440 and 0 < tudi["y"] < 900):
+            raise RuntimeError(f"开局主线目标不可见:{first_step} {tudi}")
+        page.mouse.click(tudi["x"], tudi["y"])
+        path.wait_dialog_then_clear()
+        path.back_to_world("village")
+        checks["input"] = page.evaluate("__game.campaign().flags.tudi === true && __game.mainStep().actor === 'luosha'")
         observations["input"] = {
             "id": "overworld-input-accepted",
-            "inputs": ["click start", "advance dialogue"],
-            "state": {"phase": page.evaluate("__game.phase()")},
+            "inputs": ["click start", "click the Earth God sprite", "advance dialogue"],
+            "state": {"phase": page.evaluate("__game.phase()"), "mainStep": page.evaluate("__game.mainStep().title")},
         }
 
-        for actor in ("tudi", "luosha"):
-            position = page.evaluate(f"__game.npcScreenPos('{actor}')")
-            if not position:
-                raise RuntimeError(f"无法定位剧情角色：{actor}")
-            page.mouse.click(position["x"], position["y"])
-            path.wait_dialog_then_clear()
-
-        page.wait_for_selector("#btn-tutorial-ok", timeout=10000)
+        # 任务追踪自动寻路:村子 → 翠云山传送阵 → 罗刹女
+        path.track("main")
+        path.advance_until("#btn-tutorial-ok")
         page.click("#btn-tutorial-ok")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=5000)
         path.drive_battle(stop_on_dialog=True, max_steps=150)
-
-        while page.locator("#choice-dingfengdan").count() == 0:
-            if page.locator("#dialog").count():
-                page.locator("#dialog").click()
-            page.wait_for_timeout(200)
+        path.advance_until("#choice-dingfengdan")
         page.click("#choice-dingfengdan")
-        path.dialogs_until_battle()
-        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=10000)
+        path.back_to_world("cuiyun")
+
+        # 日常封妖:回村领令,追踪到明处的火妖开打,再回报土地
+        path.track("bounty")
+        path.advance_until('#npc-menu [data-opt="accept"]')
+        page.click('#npc-menu [data-opt="accept"]')
+        path.back_to_world("village")
+        page.wait_for_function("() => !document.querySelector('.big-toast, .toast')", timeout=8000)
+        world_shot = path.shot("overworld")
+        before = page.evaluate("({exp: __game.campaign().exp, money: __game.campaign().money})")
+        path.track("bounty")
+        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=20000)
+        path.drive_battle()
+        path.wait_victory()
+        page.click("#btn-victory-ok")
+        path.back_to_world("village")
+        bounty = page.evaluate("__game.campaign().bounty")
+        after = page.evaluate("({exp: __game.campaign().exp, money: __game.campaign().money, level: __game.campaign().levels.wukong})")
+        if not (bounty.get("ring") == 1 and bounty.get("report") and after["money"] > before["money"] and (after["exp"] > before["exp"] or after["level"] > 2)):
+            raise RuntimeError(f"封妖奖励未结算:{bounty} {before} -> {after}")
+        path.track("bounty")
+        path.advance_until('#npc-menu [data-opt="report"]')
+        page.click('#npc-menu [data-opt="report"]')
+        path.back_to_world("village")
+
+        # 二借:追踪回翠云山
+        path.track("main")
+        path.advance_until('.cmd-btn[data-cmd="auto"]')
 
         def defeat_luosha(state: dict[str, object], unit_id: str | None) -> bool:
             boss = next(
@@ -256,10 +321,7 @@ def run_path() -> tuple[
             )
             if unit_id != "p0" or not boss or boss["hp"] / boss["maxHp"] > 0.55:
                 return False
-            page.click('.cmd-btn[data-cmd="special"]')
-            if page.locator("#btn-once-close").count():
-                page.locator("#btn-once-close").click()
-            page.wait_for_selector('[data-form="chongzi"]')
+            path.open_forms()
             page.click('[data-form="chongzi"]')
             page.wait_for_timeout(400)
             return True
@@ -267,11 +329,7 @@ def run_path() -> tuple[
         path.drive_battle(decide=defeat_luosha)
         path.wait_victory()
         page.click("#btn-victory-ok")
-        page.wait_for_selector("#dialog", timeout=15000)
-        while page.evaluate("__game.phase()") != "overworld":
-            page.locator("#dialog").click()
-            page.wait_for_timeout(220)
-        page.wait_for_selector("#dialog", timeout=10000)
+        path.back_to_world("village")
 
         page.click("#btn-bag")
         page.wait_for_selector("#modal-bag")
@@ -280,9 +338,9 @@ def run_path() -> tuple[
         page.click("#choice-bihuojin")
         page.wait_for_selector("#modal-bag")
         page.click("#modal-bag-close")
-        path.dialogs_until_battle()
 
-        page.wait_for_selector("#btn-once-close", timeout=15000)
+        path.track("main")
+        path.advance_until("#btn-once-close")
         page.click("#btn-once-close")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
 
@@ -293,8 +351,7 @@ def run_path() -> tuple[
             wukong = next((unit for unit in units if unit["id"] == "p0"), None)
             low = path.lowest_party(state)
             if unit_id == "p0" and wukong and not wukong["form"]:
-                page.click('.cmd-btn[data-cmd="special"]')
-                page.wait_for_selector('[data-form="xuangui"]')
+                path.open_forms()
                 page.click('[data-form="xuangui"]')
                 page.wait_for_timeout(400)
                 return True
@@ -371,8 +428,10 @@ def run_path() -> tuple[
             raise RuntimeError(f"寻宝深层结算未满足合同：{hunt_result}")
         page.keyboard.press("Enter")
 
-        path.dialogs_until_battle()
-        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
+        # 寻宝回到火口场景,再由追踪走去积雷山见玉面公主
+        path.back_to_world("huokou")
+        path.track("main")
+        path.advance_until('.cmd-btn[data-cmd="auto"]')
         hunt_campaign = page.evaluate("__game.campaign().hunts.fire")
         next_battle = path.battle_state()
         if not (
@@ -406,14 +465,12 @@ def run_path() -> tuple[
         page.click("#btn-victory-ok")
         page.wait_for_selector("#equip-ruyibang_jing", timeout=8000)
         page.click("#equip-ruyibang_jing")
-        path.dialogs_until_battle()
-        page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
+        path.back_to_world("jilei")
+        path.track("main")
+        path.advance_until('.cmd-btn[data-cmd="auto"]')
         path.drive_battle(stop_on_dialog=True, max_steps=150)
 
-        while page.locator("#choice-crab").count() == 0:
-            if page.locator("#dialog").count():
-                page.locator("#dialog").click()
-            page.wait_for_timeout(200)
+        path.advance_until("#choice-crab")
         page.click("#choice-crab")
         path.wait_dialog_then_clear()
         page.wait_for_selector("#choice-shift", timeout=5000)
@@ -421,33 +478,27 @@ def run_path() -> tuple[
         path.wait_dialog_then_clear()
         page.wait_for_selector("#choice-steal", timeout=5000)
         page.click("#choice-steal")
-        page.wait_for_selector("#dialog", timeout=5000)
-        while page.evaluate("__game.campaign().items.truefan") != 3:
-            page.locator("#dialog").click()
-            page.wait_for_timeout(200)
-
-        path.click_dialogs()
-        page.wait_for_selector("#choice-check", timeout=10000)
-        page.click("#choice-check")
-        page.wait_for_selector("#dialog", timeout=8000)
-        for _ in range(4):
-            page.locator("#dialog").click()
-            page.wait_for_timeout(200)
-        page.wait_for_selector("#dialog", timeout=15000)
+        path.back_to_world("cuiyun")
+        if page.evaluate("__game.campaign().items.truefan") != 3:
+            raise RuntimeError("骗扇后未得真扇")
         page.click("#btn-pet")
         page.wait_for_selector("#modal-pet")
         page.click('[data-pet-active="pixie"]')
         page.wait_for_selector("#modal-pet")
         page.click("#modal-pet-close")
-        path.click_dialogs()
 
-        page.wait_for_selector("#btn-once-close", timeout=15000)
+        # 下山路上迎面来的「八戒」——队伍里真八戒还跟在身后
+        path.track("main")
+        path.advance_until("#choice-check")
+        page.click("#choice-check")
+        path.advance_until("#btn-once-close")
         page.click("#btn-once-close")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
         boss_shot = path.shot("boss_command")
-        public_hero = PROJECT / "screenshots/hero.jpg"
-        public_hero.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(boss_shot, public_hero)
+        public = PROJECT / "screenshots"
+        public.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(world_shot, public / "hero.jpg")
+        shutil.copyfile(boss_shot, public / "battle.jpg")
 
         def defeat_bull_king(state: dict[str, object], unit_id: str | None) -> bool:
             low = path.lowest_party(state)
@@ -529,10 +580,12 @@ def run_path() -> tuple[
                 "phase": page.evaluate("__game.phase()"),
                 "battlesWon": page.evaluate("__game.campaign().battlesWon"),
                 "treasureHunt": page.evaluate("__game.campaign().hunts.fire"),
+                "bounty": bounty,
+                "bountyRewards": {"before": before, "after": after},
                 "treasureSnapshot": hunt_state,
                 "treasureInput": "keyboard-only",
             },
-            "visual": hunt_shot.relative_to(PROJECT).as_posix(),
+            "visual": world_shot.relative_to(PROJECT).as_posix(),
         }
         observations["outcome"] = {
             "id": "designed-ending",

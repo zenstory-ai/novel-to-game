@@ -1,4 +1,4 @@
-// 玩家偏好设置(localStorage 持久化,简报二.5/二.1):
+// 玩家偏好设置(localStorage 持久化，简报二.5/二.1):
 // 战斗加速 ×2、跳过演出、屏幕震动开关。键名一经写入不再变更(QA 据此断言持久化)。
 
 const KEYS = {
@@ -21,7 +21,7 @@ export function setSkipFx(on) {
   localStorage.setItem(KEYS.skipFx, on ? '1' : '0');
 }
 
-// 震动默认开(克制的 2px),可关
+// 震动默认开(克制的 2px)，可关
 export function getShake() {
   return localStorage.getItem(KEYS.shake) !== '0';
 }

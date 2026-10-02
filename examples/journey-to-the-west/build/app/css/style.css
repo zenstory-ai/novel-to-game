@@ -369,6 +369,9 @@ button { font-family: inherit; cursor: pointer; }
   pointer-events: none; text-align: center;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+/* 战场态势全文：贴在右上常驻条下方，左边留给指令预览 */
+.toast.rule-toast { left: auto; right: 16px; top: 184px; max-width: 380px; text-align: left; line-height: 1.6; transform: translateY(-8px); }
+.toast.rule-toast.show { transform: none; }
 
 /* ---------- 章回卡(三借递进) ---------- */
 /* 全屏压暗 + 宣纸卷轴:两端木轴、左侧朱印字号、宋体标题——沿用顶栏/木框同一套语汇 */

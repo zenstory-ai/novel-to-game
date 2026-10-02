@@ -73,9 +73,24 @@ def write_verification(passed: bool) -> None:
                 {
                     "scope": "input coverage",
                     "reason": (
-                        "The complete campaign run used mixed mouse and keyboard input. The "
-                        "new treasure route was exercised keyboard-only; a keyboard-only run "
-                        "of the entire campaign was not recorded."
+                        "The complete campaign run used mixed mouse and keyboard input; scenes were "
+                        "walked by clicking sprites and the quest tracker's auto-path. Arrow-key "
+                        "walking, minimap clicks and a keyboard-only campaign were not recorded."
+                    ),
+                },
+                {
+                    "scope": "scene-layer systems",
+                    "reason": (
+                        "The browser run covers one bounty ring. Shops, gear swaps, money skill "
+                        "study, rage stunts and the level cap are covered by node rule tests and "
+                        "a manual playtest only."
+                    ),
+                },
+                {
+                    "scope": "balance",
+                    "reason": (
+                        "Grinding to the +1 level cap makes mob fights noticeably easier; only the "
+                        "final boss staying unwinnable on full auto is asserted."
                     ),
                 },
             ],

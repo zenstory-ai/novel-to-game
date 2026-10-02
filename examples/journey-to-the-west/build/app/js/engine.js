@@ -1,8 +1,8 @@
-// 战斗引擎:纯逻辑,无 DOM。浏览器与 node 自测共用。
-// 指令回合制:我方先下完全部指令 → 按速度降序生成行动队列 → 逐个结算 → 回合结束。
-// 一切随机走 state.rng(seedRNG),同 seed 同指令 = 同结果。
+// 战斗引擎：纯逻辑，无 DOM。浏览器与 node 自测共用。
+// 指令回合制：我方先下完全部指令 → 按速度降序生成行动队列 → 逐个结算 → 回合结束。
+// 一切随机走 state.rng(seedRNG)，同 seed 同指令 = 同结果。
 
-import { ELEMENTS, ELEMENT_COEF, SKILLS, BASIC_ATTACK, FORMS, PARTY, ENEMIES, FORMATIONS, ITEMS, BATTLES, POINT_GAINS, EQUIPS, TREASURES } from './data.js';
+import { ELEMENTS, ELEMENT_COEF, SKILLS, BASIC_ATTACK, FORMS, PARTY, ENEMIES, FORMATIONS, ITEMS, BATTLES, POINT_GAINS, EQUIPS, TREASURES, SP, STUNTS } from './data.js';
 import { createRNG, chance, pick, rfloat } from './rng.js';
 
 // ---------- 五行 ----------
@@ -47,10 +47,12 @@ export function makeUnit(defKey, side, level, opts = {}) {
   const def = (side === 'party' ? PARTY : ENEMIES)[defKey];
   if (!def) throw new Error(`未知单位: ${side}/${defKey}`);
   const stats = unitLevelStats(def, level, opts.alloc ?? null);
-  // 护栏:装备/法宝均为可选入参,缺省不加
+  // 护栏：装备/法宝均为可选入参，缺省不加
   let critBonus = 0;
-  if (opts.equip && EQUIPS[opts.equip]) {
-    const eq = EQUIPS[opts.equip];
+  // 装备可为单件键或多槽位键数组(兵器+护身)
+  for (const key of [].concat(opts.equip ?? [])) {
+    const eq = EQUIPS[key];
+    if (!eq) continue;
     for (const [k, v] of Object.entries(eq.mods ?? {})) stats[k] = (stats[k] ?? 0) + v;
     critBonus += eq.crit ?? 0;
   }
@@ -68,6 +70,7 @@ export function makeUnit(defKey, side, level, opts = {}) {
     baseElement: def.element,
     element: def.element,
     big: !!def.big,
+    small: !!def.small,
     crit: (def.crit ?? 0.05) + critBonus,
     maxHp: stats.hp, hp: stats.hp,
     maxMp: stats.mp, mp: stats.mp,
@@ -81,10 +84,10 @@ export function makeUnit(defKey, side, level, opts = {}) {
     nextPhase: def.nextPhase ?? null,
     heavyName: def.heavyName ?? null,
     ai: def.ai ?? 'mob',
-    buffs: [], defending: false, form: null,
+    buffs: [], defending: false, form: null, sp: 0,
     alive: true, charge: 0, summonCount: 0,
   };
-  // 召唤技初始冷却(2):回合末递减,使首次召唤落在第 3 回合
+  // 召唤技初始冷却(2)：回合末递减，使首次召唤落在第 3 回合
   for (const lv of Object.keys(def.skills ?? {})) {
     for (const sk of def.skills[lv]) {
       if (SKILLS[sk]?.summon) {
@@ -97,36 +100,37 @@ export function makeUnit(defKey, side, level, opts = {}) {
 }
 
 // ---------- 战斗创建 ----------
-export function createBattle({ battleId, party, formation = 'tiangang', items = {}, seed = 1, treasure = null, startDebuff = null } = {}) {
+export function createBattle({ battleId, party, formation = 'tiangang', items = {}, seed = 1, treasure = null, startDebuff = null, enemyLevel = null } = {}) {
   const opts = { treasure, startDebuff };
   const battleDef = BATTLES[battleId];
   if (!battleDef) throw new Error(`未知战斗: ${battleId}`);
   uidCounter = 0;
   const units = [];
   party.forEach((p, i) => {
-    // 护栏:养成字段 undefined 时与旧行为一致
+    // 护栏：养成字段 undefined 时与旧行为一致
     units.push(makeUnit(p.key, 'party', p.level, {
       id: `p${i}`, alloc: p.alloc, equip: p.equip, treasure: opts.treasure, skillLevels: p.skillLevels,
     }));
   });
-  const enemyLevel = battleDef.enemyLevel ?? 1;
+  // 日常封妖战按队伍等级出怪;剧情战沿用表内等级
+  const foeLevel = enemyLevel ?? battleDef.enemyLevel ?? 1;
   battleDef.enemies.forEach((key, i) => {
-    const u = makeUnit(key, 'enemy', enemyLevel, { id: `e${i}` });
+    const u = makeUnit(key, 'enemy', foeLevel, { id: `e${i}` });
     if (battleDef.enemies.filter((k) => k === key).length > 1) {
       const idx = battleDef.enemies.slice(0, i + 1).filter((k) => k === key).length;
       u.name = `${ENEMIES[key].name}·${'甲乙丙丁'[idx - 1]}`;
     }
     units.push(u);
   });
-  // 可选:反骗得逞开局(悟空中计)
+  // 可选：反骗得逞开局(悟空中计)
   if (opts.startDebuff) {
     const t = units.find((u) => u.id === opts.startDebuff.unit) ?? units.find((u) => u.side === 'party');
     if (t) t.buffs.push({ ...opts.startDebuff.buff });
   }
   return {
-    battleId, def: battleDef,
+    battleId, def: battleDef, enemyLevel: foeLevel,
     rng: createRNG(seed), seed,
-    catchRng: createRNG((seed ^ 0x5eed) >>> 0), // 捕捉独立种子流,与战斗 rng 物理隔离
+    catchRng: createRNG((seed ^ 0x5eed) >>> 0), // 捕捉独立种子流，与战斗 rng 物理隔离
     caught: [],
     round: 1, units, formation,
     items: { ...items },
@@ -165,9 +169,9 @@ export function effStat(state, unit, key) {
   return Math.max(1, v);
 }
 
-// 战场态势·结阵类(pairGuard):指定敌方单位凑够数目同时在场,敌方全体减伤;折损其一立解。
-// 走减伤而非加防:伤害公式里防御是减项(atk×倍率 − def×0.5),对 def 加成三成只抵掉个位数
-// 伤害,玩家根本看不出结阵在起作用。减伤是乘项,才撑得起「先拆结阵还是先打主将」这个选择。
+// 战场态势·结阵类(pairGuard)：指定敌方单位凑够数目同时在场，敌方全体减伤;折损其一立解。
+// 走减伤而非加防：伤害公式里防御是减项(atk×倍率 − def×0.5)，对 def 加成三成只抵掉个位数
+// 伤害，玩家根本看不出结阵在起作用。减伤是乘项，才撑得起「先拆结阵还是先打主将」这个选择。
 function pairGuardReduce(state, defender) {
   const fr = state.def?.fieldRule;
   if (defender.side !== 'enemy' || fr?.kind !== 'pairGuard') return 0;
@@ -175,7 +179,7 @@ function pairGuardReduce(state, defender) {
   return standing >= (fr.count ?? 2) ? (fr.reduce ?? 0) : 0;
 }
 
-// 行动队列:速度降序;同速我方先、id 小先(完全确定)
+// 行动队列：速度降序;同速我方先、id 小先(完全确定)
 export function buildActionQueue(state) {
   return state.units
     .filter((u) => u.alive)
@@ -203,9 +207,9 @@ export function calcDamage(state, attacker, defender, skill) {
   dmg *= rfloat(rng, 0.9, 1.1);
   if (defender.defending) dmg *= 0.5;
   dmg *= 1 - buffVal(defender, 'dmg_reduce');
-  dmg *= 1 - pairGuardReduce(state, defender); // 战场态势·结阵:双妖将同在则敌方全体减伤
-  dmg *= 1 + buffVal(defender, 'vulnerable'); // 真扇落雨破绽:按 buff 数值增伤
-  if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) dmg *= 0.5; // 玄甲龟将:被克减半
+  dmg *= 1 - pairGuardReduce(state, defender); // 战场态势·结阵：双妖将同在则敌方全体减伤
+  dmg *= 1 + buffVal(defender, 'vulnerable'); // 真扇落雨破绽：按 buff 数值增伤
+  if (rel === 'ke' && defender.buffs.some((b) => b.id === 'ke_shield')) dmg *= 0.5; // 玄甲龟将：被克减半
   const res = defender.resist?.[attacker.element] ?? 0; // 法宝五行抗性(可选入参)
   if (res) dmg *= 1 - res;
   if (defender.side === 'party') {
@@ -221,8 +225,8 @@ export function hitChance(state, attacker, skill) {
 }
 
 // ---------- 伤害预览 ----------
-// 与 calcDamage 同一公式、同一确定修正顺序,但不消耗 state.rng(悬停预览用)。
-// 只取浮动区间两端:实际结算的非暴击伤害必落在 [min,max],暴击必落在 [critMin,critMax]。
+// 与 calcDamage 同一公式、同一确定修正顺序，但不消耗 state.rng(悬停预览用)。
+// 只取浮动区间两端：实际结算的非暴击伤害必落在 [min,max],暴击必落在 [critMin,critMax]。
 // test/battle.mjs 据此断言「预览与实际结算一致」。
 export function previewDamage(state, attacker, defender, skill) {
   const atkStat = skill.kind === 'mag' ? effStat(state, attacker, 'mag') : effStat(state, attacker, 'atk');
@@ -231,7 +235,7 @@ export function previewDamage(state, attacker, defender, skill) {
   if (base < 1) base = 1;
   const rel = elementRelation(attacker.element, defender.element);
   const dmg = base * elementCoef(rel);
-  // 确定修正,与 calcDamage 逐项对应(防御/减伤/破绽/龟甲/抗性/阵型)
+  // 确定修正，与 calcDamage 逐项对应(防御/减伤/破绽/龟甲/抗性/阵型)
   let m = 1;
   if (defender.defending) m *= 0.5;
   m *= 1 - buffVal(defender, 'dmg_reduce');
@@ -259,13 +263,41 @@ export function previewDamage(state, attacker, defender, skill) {
 }
 
 // ---------- 指令执行 ----------
+// 愤怒：只有我方受伤时积累，按失血比例折算(定值，不占 rng)
+function gainSp(unit, amount) {
+  if (unit.side !== 'party' || amount <= 0) return;
+  const gain = Math.max(SP.minGain, Math.round((amount / unit.maxHp) * 100 * SP.gainPerHpPct));
+  unit.sp = Math.min(SP.max, (unit.sp ?? 0) + gain);
+}
+
+function execStunt(state, events, unit, stuntId, targetId) {
+  const st = STUNTS[stuntId];
+  if (!st || (unit.sp ?? 0) < st.sp) {
+    events.push({ t: 'info', text: 'fallback_attack', unit: unit.id });
+    const t = targetsFor(state, unit, BASIC_ATTACK, targetId)[0];
+    if (t) damageTarget(state, events, unit, t, BASIC_ATTACK);
+    return;
+  }
+  unit.sp -= st.sp;
+  if (st.healPct) {
+    events.push({ t: 'action', actor: unit.id, name: st.name, skill: true });
+    for (const t of aliveUnits(state, unit.side)) {
+      const amount = Math.max(1, Math.round(t.maxHp * st.healPct));
+      t.hp = Math.min(t.maxHp, t.hp + amount);
+      events.push({ t: 'heal', actor: unit.id, target: t.id, amount });
+    }
+    return;
+  }
+  execSkill(state, events, unit, st, targetId, stuntId);
+}
+
 function applyBuff(unit, buff) {
   unit.buffs.push({ id: buff.id, val: buff.val ?? 0, turns: buff.turns });
 }
 
 function damageTarget(state, events, attacker, target, skill) {
   if (!target || !target.alive) return;
-  // 避火符:抵挡一次火系伤害
+  // 避火符：抵挡一次火系伤害
   if (attacker.element === '火') {
     const wardIdx = target.buffs.findIndex((b) => b.id === 'huo_ward');
     if (wardIdx >= 0) {
@@ -278,10 +310,22 @@ function damageTarget(state, events, attacker, target, skill) {
     events.push({ t: 'miss', actor: attacker.id, target: target.id });
     return;
   }
-  const { amount, crit, rel } = calcDamage(state, attacker, target, skill);
+  const { amount: rawAmount, crit, rel } = calcDamage(state, attacker, target, skill);
+  // 保护：单体物理打向被保护者时，由保护者代受七成
+  const guard = skill.target === 'enemy' && skill.kind === 'phy' ? protectorOf(state, target) : null;
+  if (guard) {
+    const amount = Math.max(1, Math.round(rawAmount * 0.7));
+    guard.hp = Math.max(0, guard.hp - amount);
+    gainSp(guard, amount);
+    events.push({ t: 'damage', actor: attacker.id, target: guard.id, amount, crit, rel, kind: skill.kind, protectFor: target.id });
+    checkDeath(state, events, guard);
+    return;
+  }
+  const amount = rawAmount;
   target.hp = Math.max(0, target.hp - amount);
+  gainSp(target, amount);
   events.push({ t: 'damage', actor: attacker.id, target: target.id, amount, crit, rel, kind: skill.kind });
-  // 连击:暴击时 25% 概率追加一次减伤基础攻击
+  // 连击：暴击时 25% 概率追加一次减伤基础攻击
   if (crit && target.hp > 0 && chance(state.rng, 0.25)) {
     const extra = calcDamage(state, attacker, target, BASIC_ATTACK);
     const amt = Math.max(1, Math.round(extra.amount * 0.6));
@@ -296,10 +340,16 @@ function damageTarget(state, events, attacker, target, skill) {
   checkDeath(state, events, target);
 }
 
+function protectorOf(state, target) {
+  const id = state.protect?.[target.id];
+  const g = id ? getUnit(state, id) : null;
+  return g && g.alive && g.id !== target.id ? g : null;
+}
+
 function checkDeath(state, events, unit) {
   if (unit.alive && unit.hp <= 0) {
     if (unit.nextPhase) {
-      // Boss 换阶段:恢复满血、清增益、换皮换属性(继承战斗分级)
+      // Boss 换阶段：恢复满血、清增益、换皮换属性(继承战斗分级)
       const def = ENEMIES[unit.nextPhase];
       const stats = unitLevelStats(def, unit.level ?? 1);
       unit.defKey = def.key; unit.name = def.name; unit.portrait = def.portrait;
@@ -313,7 +363,7 @@ function checkDeath(state, events, unit) {
       unit.heavyName = def.heavyName ?? null;
       unit.buffs = []; unit.form = null;
       events.push({ t: 'phase', unit: unit.id, name: unit.name, portrait: unit.portrait, element: unit.element, big: unit.big });
-      // 八戒+土地接力:阶段转换时全队回复(数据驱动)
+      // 八戒+土地接力：阶段转换时全队回复(数据驱动)
       if (state.def.phaseHeal) {
         for (const a of aliveUnits(state, 'party')) {
           const amount = Math.max(1, Math.round(a.maxHp * state.def.phaseHeal));
@@ -325,7 +375,7 @@ function checkDeath(state, events, unit) {
     }
     unit.alive = false;
     events.push({ t: 'death', unit: unit.id });
-    // 战场态势·结阵类:结阵单位阵亡致数目不足,结阵立解(飘字/横幅由界面播)
+    // 战场态势·结阵类：结阵单位阵亡致数目不足，结阵立解(飘字/横幅由界面播)
     const fr = state.def?.fieldRule;
     if (fr?.kind === 'pairGuard' && unit.side === 'enemy' && unit.defKey === fr.unitKey
       && aliveUnits(state, 'enemy').filter((u) => u.defKey === fr.unitKey).length < (fr.count ?? 2)) {
@@ -341,7 +391,7 @@ function targetsFor(state, actor, skill, targetId) {
     case 'enemy': {
       let t = targetId ? getUnit(state, targetId) : null;
       if (!t || !t.alive || t.side === actor.side) t = pick(state.rng, foes); // 目标已倒则改打随机活敌
-      return t ? [t] : []; // 一个敌人都不剩(如助战补刀)时返回空,不返回 [undefined]
+      return t ? [t] : []; // 一个敌人都不剩(如助战补刀)时返回空，不返回 [undefined]
     }
     case 'enemies': return foes;
     case 'ally': {
@@ -356,12 +406,15 @@ function targetsFor(state, actor, skill, targetId) {
 }
 
 function execSkill(state, events, actor, skill, targetId, skillKey = null) {
-  // 召唤:spawn 新单位入队(数据驱动,不占额外随机)
+  // 召唤:spawn 新单位入队(数据驱动，不占额外随机)
   if (skill.summon) {
     events.push({ t: 'action', actor: actor.id, name: skill.name, skill: true });
-    const level = state.def.enemyLevel ?? 1;
+    const level = state.enemyLevel;
     for (let i = 0; i < skill.summon.count; i++) {
       const nu = makeUnit(skill.summon.key, actor.side, level, { id: `${actor.side[0]}${state.units.length}` });
+      // 站位：顶替第一个已倒下/被收服的同侧单位(界面据此把新兵放进空出的车道位，不压到对面)
+      const vacated = state.units.find((u) => u.side === actor.side && !u.alive && !u.replacedBy);
+      if (vacated) { vacated.replacedBy = nu.id; nu.replaces = vacated.id; }
       state.units.push(nu);
       actor.summonCount = (actor.summonCount ?? 0) + 1;
       events.push({ t: 'summon', actor: actor.id, unit: nu.id, key: skill.summon.key, name: nu.name });
@@ -374,7 +427,7 @@ function execSkill(state, events, actor, skill, targetId, skillKey = null) {
   if (targets.length === 0) return;
   events.push({ t: 'action', actor: actor.id, name: skill.name, skill: true });
   if (skill.heal) {
-    // 治疗技:灵力加成,无命中/五行
+    // 治疗技：灵力加成，无命中/五行
     const amount = Math.max(1, Math.round(effStat(state, actor, 'mag') * skill.heal));
     for (const t of targets) {
       t.hp = Math.min(t.maxHp, t.hp + amount);
@@ -386,6 +439,10 @@ function execSkill(state, events, actor, skill, targetId, skillKey = null) {
     for (const t of targets) {
       if (skill.buff.chance && !chance(state.rng, skill.buff.chance)) {
         events.push({ t: 'resist', actor: actor.id, target: t.id, buff: skill.buff.id });
+        continue;
+      }
+      if (skill.buff.id === 'spd_down' && t.immuneSpdDown) {
+        events.push({ t: 'immune', actor: actor.id, target: t.id, buff: 'spd_down' });
         continue;
       }
       applyBuff(t, skill.buff);
@@ -403,28 +460,37 @@ function execItem(state, events, actor, itemKey, targetId) {
     events.push({ t: 'info', text: 'no_item' });
     return;
   }
-  if (item.type === 'heal') {
-    const t = targetsFor(state, actor, { target: 'ally' }, targetId)[0];
-    const amount = Math.round(t.maxHp * item.val);
-    t.hp = Math.min(t.maxHp, t.hp + amount);
+  if (item.type === 'revive') {
+    const t = targetId ? getUnit(state, targetId) : state.units.find((u) => u.side === actor.side && !u.alive);
+    if (!t || t.alive || t.side !== actor.side) { events.push({ t: 'info', text: 'revive_none' }); return; }
+    t.alive = true;
+    t.hp = Math.max(1, Math.round(t.maxHp * item.val));
+    t.buffs = [];
     state.items[itemKey] -= 1;
     events.push({ t: 'item', actor: actor.id, item: itemKey, target: t.id });
+    events.push({ t: 'revive', actor: actor.id, target: t.id, amount: t.hp });
+  } else if (item.type === 'heal') {
+    const t = targetsFor(state, actor, { target: 'ally' }, targetId)[0];
+    const amount = Math.round(t.maxHp * item.val);
+    state.items[itemKey] -= 1;
+    events.push({ t: 'item', actor: actor.id, item: itemKey, target: t.id });
+    t.hp = Math.min(t.maxHp, t.hp + amount);
     events.push({ t: 'heal', actor: actor.id, target: t.id, amount });
   } else if (item.type === 'mp') {
     const t = targetsFor(state, actor, { target: 'ally' }, targetId)[0];
-    t.mp = Math.min(t.maxMp, t.mp + item.val);
     state.items[itemKey] -= 1;
     events.push({ t: 'item', actor: actor.id, item: itemKey, target: t.id });
+    t.mp = Math.min(t.maxMp, t.mp + item.val);
     events.push({ t: 'mp', target: t.id, amount: item.val });
   } else if (item.type === 'buffitem') {
-    // 增益物品:醒酒石/避火符等,给友方挂短时增益
+    // 增益物品：醒酒石/避火符等，给友方挂短时增益
     const t = targetsFor(state, actor, { target: 'ally' }, targetId)[0];
     applyBuff(t, item.buff);
     state.items[itemKey] -= 1;
     events.push({ t: 'item', actor: actor.id, item: itemKey, target: t.id });
     events.push({ t: 'buff', actor: actor.id, target: t.id, buff: item.buff.id, val: item.buff.val, turns: item.buff.turns });
   } else if (item.type === 'catch') {
-    // 捕妖绳:剧情门控捕捉;判定走独立 catchRng,不插入战斗 rng 序列
+    // 捕妖绳：剧情门控捕捉;判定走独立 catchRng,不插入战斗 rng 序列
     const foes = aliveUnits(state, 'enemy').filter((e) => e.catchKey);
     const t = targetId ? getUnit(state, targetId) : foes[0];
     if (!t || !t.alive || t.side !== 'enemy' || !t.catchKey) {
@@ -433,7 +499,7 @@ function execItem(state, events, actor, itemKey, targetId) {
     }
     if (t.hp / t.maxHp > 0.4) {
       events.push({ t: 'info', text: 'catch_hp', unit: t.id });
-      return; // 血气方刚,拒捕不耗绳
+      return; // 血气方刚，拒捕不耗绳
     }
     state.items[itemKey] -= 1;
     events.push({ t: 'item', actor: actor.id, item: itemKey, target: t.id });
@@ -458,7 +524,7 @@ function execItem(state, events, actor, itemKey, targetId) {
     state.items[itemKey] -= 1;
     events.push({ t: 'item', actor: actor.id, item: itemKey, stage: state.fanStage });
     if (state.fanStage === 1) {
-      // 一息火:清敌方全部增益,敌方全体攻击-30%(无视属性)
+      // 一息火：清敌方全部增益，敌方全体攻击-30%(无视属性)
       for (const e of aliveUnits(state, 'enemy')) {
         e.buffs = e.buffs.filter((b) => b.id === 'def_down' || b.id === 'stun' || b.id === 'vulnerable');
         applyBuff(e, { id: 'atk_down', val: 0.3, turns: 3 });
@@ -466,14 +532,14 @@ function execItem(state, events, actor, itemKey, targetId) {
       }
       events.push({ t: 'info', text: 'fan1' });
     } else if (state.fanStage === 2) {
-      // 二生风:全队速度+30%
+      // 二生风：全队速度+30%
       for (const a of aliveUnits(state, 'party')) {
         applyBuff(a, { id: 'spd_up', val: 0.3, turns: 3 });
         events.push({ t: 'buff', actor: actor.id, target: a.id, buff: 'spd_up', val: 0.3, turns: 3 });
       }
       events.push({ t: 'info', text: 'fan2' });
     } else if (state.fanStage === 3) {
-      // 三落雨:全队持续回血;敌方全体破防25%+破绽(受伤+60%),无视属性
+      // 三落雨：全队持续回血;敌方全体破防25%+破绽(受伤+60%)，无视属性
       for (const a of aliveUnits(state, 'party')) {
         applyBuff(a, { id: 'regen', val: 0.08, turns: 3 });
         events.push({ t: 'buff', actor: actor.id, target: a.id, buff: 'regen', val: 0.08, turns: 3 });
@@ -493,7 +559,7 @@ function execItem(state, events, actor, itemKey, targetId) {
 function execTransform(state, events, actor, formId) {
   const form = FORMS[formId];
   if (!form || !actor.hasTransform) return;
-  // 战斗1教学彩蛋:罗刹女体弱时变化 → 化虫入腹取胜
+  // 战斗1教学彩蛋：罗刹女体弱时变化 → 化虫入腹取胜
   const fin = state.def.transformFinisher;
   if (fin) {
     const boss = state.units.find((u) => u.side === 'enemy' && u.alive && u.defKey === fin.bossKey);
@@ -504,7 +570,7 @@ function execTransform(state, events, actor, formId) {
       events.push({ t: 'finisher', actor: actor.id, target: boss.id });
       boss.alive = false;
       events.push({ t: 'death', unit: boss.id });
-      // 主将被擒,余众溃散(忠于原著:罗刹女交扇,侍婢不敢再战)
+      // 主将被擒，余众溃散(忠于原著：罗刹女交扇，侍婢不敢再战)
       for (const e of aliveUnits(state, 'enemy')) {
         e.alive = false;
         events.push({ t: 'rout', unit: e.id });
@@ -549,7 +615,7 @@ export function aiCommand(state, unit) {
     .map((k) => ({ key: k, def: SKILLS[k] }))
     .filter((s) => s.def && s.def.mp <= unit.mp);
   const lowestHp = (arr) => arr.reduce((a, b) => (a.hp <= b.hp ? a : b));
-  // 召唤技:冷却完毕且未达上限、场上有位即召(决定论,不占 rng)
+  // 召唤技：冷却完毕且未达上限、场上有位即召(决定论，不占 rng)
   const summonSkill = usable.find((s) => s.def.summon);
   if (summonSkill) {
     const cd = unit.cooldowns?.[summonSkill.key] ?? 0;
@@ -559,17 +625,17 @@ export function aiCommand(state, unit) {
       return { type: 'skill', skillId: summonSkill.key };
     }
   }
-  // 治疗型:友方有重伤(≤55%)即抢救血量最低者
+  // 治疗型：友方有重伤(≤55%)即抢救血量最低者
   const healSkill = usable.find((s) => s.def.heal);
   if (healSkill) {
     const friends = aliveUnits(state, unit.side);
     const hurt = friends.filter((f) => f.hp / f.maxHp <= 0.55);
     if (hurt.length > 0) return { type: 'skill', skillId: healSkill.key, targetId: lowestHp(hurt).id };
   }
-  // 辅助型:有机会先上增益/减益
+  // 辅助型：有机会先上增益/减益
   const support = usable.find((s) => s.def.buff && s.def.target === 'party' && !unit.buffs.some((b) => b.id === s.def.buff.id));
   if (support && chance(rng, 0.5)) return { type: 'skill', skillId: support.key };
-  // 群体技:活敌≥2 时半概率使用
+  // 群体技：活敌≥2 时半概率使用
   const aoe = usable.filter((s) => s.def.target === 'enemies');
   if (aoe.length > 0 && foes.length >= 2 && chance(rng, 0.55)) {
     return { type: 'skill', skillId: pick(rng, aoe).key };
@@ -584,20 +650,20 @@ export function aiCommand(state, unit) {
   return { type: 'attack', targetId: atkTarget.id };
 }
 
-// 敌方择敌:相克体系对双方同时成立,敌方也要读五行,否则相克只是玩家的单向福利。
-// 优先级(全程决定论,不消耗 rng,保持同种子可复现):
-//   1. 会克我的目标 —— 玩家把悟空变成克我的形态、或换上克我的携宠,敌方就集火它;
+// 敌方择敌：相克体系对双方同时成立，敌方也要读五行，否则相克只是玩家的单向福利。
+// 优先级(全程决定论，不消耗 rng,保持同种子可复现):
+//   1. 会克我的目标 —— 玩家把悟空变成克我的形态、或换上克我的携宠，敌方就集火它;
 //      这是敌方对「玩家已选策略」的直接反应。
 //   2. 给全队上增益的支援位 —— 罗汉金身 / 金睛这类正在生效的团队增益源先拆。
 //   3. 我能克的目标 —— 同等条件下打伤害效率最高的。
-//   同档内取血量最低者,保留原有的集火手感。
+//   同档内取血量最低者，保留原有的集火手感。
 function enemyTarget(state, unit, foes) {
   const SUPPORT_BUFFS = ['dmg_reduce', 'hit_up'];
   const score = (f) => {
     let s = 0;
-    if (elementRelation(f.element, unit.element) === 'ke') s += 4; // 它克我:威胁最高
+    if (elementRelation(f.element, unit.element) === 'ke') s += 4; // 它克我：威胁最高
     if (f.buffs.some((b) => SUPPORT_BUFFS.includes(b.id))) s += 2; // 团队增益源
-    if (elementRelation(unit.element, f.element) === 'ke') s += 1; // 我克它:效率
+    if (elementRelation(unit.element, f.element) === 'ke') s += 1; // 我克它：效率
     return s;
   };
   let best = foes[0], bestScore = score(foes[0]);
@@ -608,7 +674,7 @@ function enemyTarget(state, unit, foes) {
   return best;
 }
 
-// ---------- 阵型(战斗中免费切换,每回合一次) ----------
+// ---------- 阵型(战斗中免费切换，每回合一次) ----------
 export function switchFormation(state, formationId) {
   if (!FORMATIONS[formationId]) return null;
   if (state.formationSwitched) return null;
@@ -622,8 +688,11 @@ export function switchFormation(state, formationId) {
 function execHeavy(state, events, unit) {
   const foes = aliveUnits(state, 'party');
   if (foes.length === 0) return;
-  const target = foes.reduce((a, b) => (a.hp <= b.hp ? a : b));
-  let amount = Math.round(target.maxHp * 0.6 * rfloat(state.rng, 0.9, 1.1));
+  const marked = foes.reduce((a, b) => (a.hp <= b.hp ? a : b));
+  let amount = Math.round(marked.maxHp * 0.6 * rfloat(state.rng, 0.9, 1.1));
+  const guard = protectorOf(state, marked);
+  const target = guard ?? marked;
+  if (guard) amount = Math.round(amount * 0.7);
   let mitigated = false;
   if (target.defending) { amount = Math.round(amount * 0.5); mitigated = true; }
   const dr = buffVal(target, 'dmg_reduce');
@@ -632,7 +701,7 @@ function execHeavy(state, events, unit) {
   if (f?.mods?.dmgTaken) amount = Math.round(amount * f.mods.dmgTaken);
   amount = Math.max(1, amount);
   target.hp = Math.max(0, target.hp - amount);
-  events.push({ t: 'heavy', actor: unit.id, target: target.id, amount, mitigated, name: unit.heavyName ?? '重击' });
+  events.push({ t: 'heavy', actor: unit.id, target: target.id, amount, mitigated, name: unit.heavyName ?? '重击', protectFor: guard ? marked.id : undefined });
   checkDeath(state, events, target);
 }
 
@@ -658,6 +727,10 @@ function execCommand(state, events, unit, cmd) {
       unit.mp -= skill.mp;
       execSkill(state, events, unit, skill, cmd.targetId, cmd.skillId);
     }
+  } else if (cmd.type === 'protect') {
+    const t = getUnit(state, cmd.targetId);
+    events.push({ t: 'action', actor: unit.id, name: '保护', skill: false });
+    if (t?.alive && t.id !== unit.id) events.push({ t: 'protect', unit: unit.id, target: t.id });
   } else if (cmd.type === 'defend') {
     unit.defending = true;
     const mpBack = Math.max(1, Math.round(unit.maxMp * 0.1));
@@ -667,6 +740,8 @@ function execCommand(state, events, unit, cmd) {
     execItem(state, events, unit, cmd.itemId, cmd.targetId);
   } else if (cmd.type === 'transform') {
     execTransform(state, events, unit, cmd.formId);
+  } else if (cmd.type === 'stunt') {
+    execStunt(state, events, unit, cmd.stuntId, cmd.targetId);
   } else if (cmd.type === 'flee') {
     if (state.def.boss) {
       events.push({ t: 'flee', success: false });
@@ -680,7 +755,7 @@ function execCommand(state, events, unit, cmd) {
 }
 
 // ---------- 回合 ----------
-// 胜负判定:任何可能让一方全灭的结算之后都要跑一次,否则队列会带着空目标继续行动。
+// 胜负判定：任何可能让一方全灭的结算之后都要跑一次，否则队列会带着空目标继续行动。
 function settleOutcome(state) {
   if (state.over) return false;
   if (aliveUnits(state, 'enemy').length === 0) { state.over = true; state.winner = 'party'; return true; }
@@ -688,20 +763,48 @@ function settleOutcome(state) {
   return false;
 }
 
+// 显示快照：界面按事件逐个播放时，血条/法力/状态签取「这一事件发生后」的值,
+// 而不是整回合结算完的终值(界面打开 state.trackDisplay 才记录;node 自测不付这笔开销)。
+export function displaySnapshot(state) {
+  const snap = {};
+  for (const u of state.units) {
+    snap[u.id] = {
+      hp: u.hp, maxHp: u.maxHp, mp: u.mp, maxMp: u.maxMp, sp: u.sp ?? 0, alive: u.alive,
+      element: u.element, form: u.form ? u.form.id : null, defending: u.defending,
+      buffs: u.buffs.map((b) => ({ id: b.id, turns: b.turns })),
+    };
+  }
+  return snap;
+}
+
 export function executeRound(state, commands) {
   const events = [];
   if (state.over) return events;
-  // 补齐:敌方 AI;我方缺指令的按自动
+  if (state.trackDisplay) {
+    const push = events.push.bind(events);
+    events.push = (...evs) => {
+      const snap = displaySnapshot(state);
+      for (const e of evs) e.snap = snap;
+      return push(...evs);
+    };
+  }
+  // 补齐：敌方 AI;我方缺指令的按自动
   for (const u of state.units) {
     if (!u.alive) continue;
     if (!commands[u.id]) {
       commands[u.id] = u.side === 'enemy' ? aiCommand(state, u) : { type: 'defend' };
     }
   }
+  // 保护在下令时即生效(整回合有效，不看保护者的出手先后)
+  state.protect = {};
+  for (const u of aliveUnits(state, 'party')) {
+    const c = commands[u.id];
+    if (c?.type === 'protect' && c.targetId && c.targetId !== u.id) state.protect[c.targetId] = u.id;
+  }
   const queue = buildActionQueue(state);
   events.push({ t: 'round', round: state.round, queue: [...queue] });
 
-  // 剧情桥段(吹飞/赴宴而走等):到回合触发,演出退出,非失败
+  // 剧情桥段(吹飞/赴宴而走等)：到回合触发，演出退出，非失败
   if (state.def.storyExit && state.def.storyExit.round === state.round) {
     const lead = aliveUnits(state, 'enemy')[0];
     events.push({ t: state.def.storyExit.kind === 'retreat' ? 'story_retreat' : 'story_blow', actor: lead ? lead.id : null });
@@ -712,7 +815,7 @@ export function executeRound(state, commands) {
     return events;
   }
 
-  // 众神围剿(门控):目标 BOSS 血气≤阈值时,支援一次性登场
+  // 众神围剿(门控)：目标 BOSS 血气≤阈值时，支援一次性登场
   if (state.def.godAssist && !state.godAssisted) {
     const ga = state.def.godAssist;
     const boss = state.units.find((u) => u.side === 'enemy' && u.alive && u.defKey === ga.bossKey);
@@ -726,7 +829,7 @@ export function executeRound(state, commands) {
         events.push({ t: 'buff', actor: null, target: boss.id, buff: ga.debuff.id, val: ga.debuff.val, turns: ga.debuff.turns });
       }
       checkDeath(state, events, boss);
-      // 助战可能补掉最后一个敌人:不在此判胜负,队列会带着空目标继续行动。
+      // 助战可能补掉最后一个敌人：不在此判胜负，队列会带着空目标继续行动。
       if (settleOutcome(state)) {
         events.push({ t: 'battle_end', winner: state.winner, fled: false });
         state.round += 1;
@@ -735,7 +838,7 @@ export function executeRound(state, commands) {
     }
   }
 
-  // BOSS:每 3 回合蓄力预警(仅 BOSS 级;小怪不蓄力,避免同回合多重重击砸向最低血者)
+  // BOSS:每 3 回合蓄力预警(仅 BOSS 级;小怪不蓄力，避免同回合多重重击砸向最低血者)
   // 白牛真身每回合狂暴。使用独立 enrage id，既能与普通攻击增益区分，
   // 也让一扇息火清层这条现成交互在界面上可读。
   if (state.def.boss) {
@@ -771,7 +874,7 @@ export function executeRound(state, commands) {
       events.push({ t: 'stun', unit: unit.id });
       continue;
     }
-    // BOSS 蓄力:充满后以重击替代本回合行动
+    // BOSS 蓄力：充满后以重击替代本回合行动
     if (unit.side === 'enemy' && unit.charge > 0) {
       unit.charge -= 1;
       if (unit.charge === 0) {
@@ -787,23 +890,23 @@ export function executeRound(state, commands) {
     settleOutcome(state); // 每次行动后判定胜负
   }
 
-  // 回合末:增益、变化与技能冷却计时
+  // 回合末：增益、变化与技能冷却计时
   for (const u of state.units) {
     if (u.cooldowns) for (const k of Object.keys(u.cooldowns)) u.cooldowns[k] = Math.max(0, u.cooldowns[k] - 1);
     for (const b of u.buffs) b.turns -= 1;
     const expired = u.buffs.filter((b) => b.turns <= 0);
-    for (const b of expired) events.push({ t: 'buff_end', unit: u.id, buff: b.id });
     u.buffs = u.buffs.filter((b) => b.turns > 0);
+    for (const b of expired) events.push({ t: 'buff_end', unit: u.id, buff: b.id });
     if (u.form) {
       u.form.turns -= 1;
       if (u.form.turns <= 0) {
-        events.push({ t: 'form_end', unit: u.id });
         u.form = null;
         u.element = u.baseElement;
+        events.push({ t: 'form_end', unit: u.id });
       }
     }
   }
-  // 战场态势·地火炙烤类(roundEndBurn):回合末灼烧我方非豁免五行单位;
+  // 战场态势·地火炙烤类(roundEndBurn)：回合末灼烧我方非豁免五行单位;
   // 定值结算不占 rng;法宝五行抗性(避火锦)对灼伤同样减免
   const fieldRule = state.def.fieldRule;
   if (!state.over && fieldRule?.kind === 'roundEndBurn') {
@@ -825,7 +928,7 @@ export function executeRound(state, commands) {
 }
 
 // ---------- 胜利升级 ----------
-// 每位参战单位升一级,返回升级明细(新技能解锁)
+// 每位参战单位升一级，返回升级明细(新技能解锁)
 export function levelUpParty(partyLevels) {
   const result = {};
   for (const [key, lv] of Object.entries(partyLevels)) {

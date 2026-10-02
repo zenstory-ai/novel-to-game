@@ -1,4 +1,4 @@
-// 资产加载与回退:图片缺失时一律回退色块头像 / 渐变背景,保证没美术也能跑。
+// 资产加载与回退：图片缺失时一律回退色块头像 / 渐变背景，保证没美术也能跑。
 
 const unitPaths = {
   wukong: 'assets/units/wukong.webp', bajie: 'assets/units/bajie.webp', sha: 'assets/units/sha.webp',
@@ -9,18 +9,31 @@ const unitPaths = {
   yumian: 'assets/units/yumian.webp', yaojiang: 'assets/units/yaojiang.webp',
   nezha: 'assets/units/nezha.webp', litianwang: 'assets/units/litianwang.webp',
   lingji: 'assets/units/lingji.webp',
+  gaoshao: 'assets/units/gaoshao.webp', laozhe: 'assets/units/laozhe.webp',
+  // 七十二变四形态 + 碧波潭螃蟹(悟空变化后的立绘，缺图时界面回退五行色调)
+  form_shenjiang: 'assets/units/form_shenjiang.webp', form_lieyuan: 'assets/units/form_lieyuan.webp',
+  form_xuangui: 'assets/units/form_xuangui.webp', form_chongzi: 'assets/units/form_chongzi.webp',
+  crab: 'assets/units/crab.webp',
 };
+// 道具/兵甲图标(128px 彩绘);缺图回退字形徽
+const ITEM_KEYS = ['jinchuang', 'dahuandan', 'falidan', 'wubaodan', 'xingshi', 'bihuofu', 'buyaosheng', 'fakefan', 'truefan', 'huihun',
+  'jingtie', 'mianjia', 'bintie', 'xipijia', 'ruyibang_jing', 'suozijia', 'fengchiguan'];
+const ITEM_GLYPH = { jinchuang: '药', dahuandan: '丹', falidan: '丹', wubaodan: '丹', xingshi: '石', bihuofu: '符', buyaosheng: '绳', fakefan: '扇', truefan: '扇', huihun: '魂' };
 const bgPaths = {
   cuiyun: 'assets/bg/cuiyun.jpg?v=20260905', huoyan: 'assets/bg/huoyan.jpg?v=20260905',
   'huoyan-rain': 'assets/bg/huoyan-rain.jpg?v=20260905',
   leiji: 'assets/bg/leiji.jpg?v=20260905', overworld: 'assets/bg/overworld.jpg?v=20260905',
   moyundong: 'assets/bg/moyundong.jpg?v=20260905', bibotan: 'assets/bg/bibotan.jpg?v=20260905',
+  ending: 'assets/bg/ending.jpg',
+  // 2.5D 行走场景图(梦幻式大地图)
+  'map-village': 'assets/scene/map-village.jpg', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg',
+  'map-huokou': 'assets/scene/map-huokou.jpg', 'map-jilei': 'assets/scene/map-jilei.jpg',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
 };
-// 法宝物件图:灵吉授宝二选一那一屏用。两张是一组互斥选项,主色与母题各不相犯——
-// 定风丹走朱与墨(风线截断),避火锦走水青与金线(火舌偏开),并排一眼看出是两样东西。
+// 法宝物件图：灵吉授宝二选一那一屏用。两张是一组互斥选项，主色与母题各不相犯——
+// 定风丹走朱与墨(风线截断)，避火锦走水青与金线(火舌偏开)，并排一眼看出是两样东西。
 const treasurePaths = {
   dingfengdan: 'assets/treasure/dingfengdan.jpg',
   bihuojin: 'assets/treasure/bihuojin.jpg',
@@ -33,7 +46,7 @@ const fallbackColors = {
   niumowang: '#5a4a7a', whitebull: '#d8d4c8', pixie: '#2a6b8a',
   mob_fire1: '#a83a2a', mob_fire2: '#c2542a',
   yumian: '#8a6a8a', yaojiang: '#6a6a7a', nezha: '#b8542e', litianwang: '#7a6a4a',
-  lingji: '#d8b84a',
+  lingji: '#d8b84a', gaoshao: '#c9905a', laozhe: '#4a5a7a',
 };
 // 回退背景渐变(按背景键): [上, 中, 下]
 const fallbackBg = {
@@ -63,6 +76,7 @@ export async function loadAssets() {
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
   for (const [k, p] of Object.entries(treasurePaths)) jobs.push(loadOne(p).then((i) => (images[`t:${k}`] = i)));
+  for (const k of ITEM_KEYS) jobs.push(loadOne(`assets/items/${k}.webp`).then((i) => (images[`i:${k}`] = i)));
   await Promise.all(jobs);
   return images;
 }
@@ -93,11 +107,32 @@ export function unitURL(key, name = '') {
   return blockCache[key];
 }
 
+export function hasUnitImage(key) {
+  return !!images[`u:${key}`];
+}
+
+// 道具/兵甲图标:<img> 或回退为金框字形徽(装备按槽位取「兵」「甲」)
+export function itemIcon(key, { slot = null, cls = '' } = {}) {
+  const img = images[`i:${key}`];
+  if (img) {
+    const node = document.createElement('img');
+    node.className = `item-icon ${cls}`.trim();
+    node.src = img.src;
+    node.alt = '';
+    node.draggable = false;
+    return node;
+  }
+  const node = document.createElement('span');
+  node.className = `icon-badge item-glyph ${cls}`.trim();
+  node.textContent = ITEM_GLYPH[key] ?? (slot === 'weapon' ? '兵' : slot === 'armor' ? '甲' : '物');
+  return node;
+}
+
 export function unitImage(key) {
   return images[`u:${key}`] ?? null;
 }
 
-// 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里,没美术照样能选。
+// 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里，没美术照样能选。
 export function treasureURL(key) {
   return images[`t:${key}`]?.src ?? null;
 }
@@ -107,6 +142,12 @@ export function bgStyle(key) {
   if (img) return { backgroundImage: `url(${img.src})`, backgroundSize: 'cover', backgroundPosition: 'center' };
   const [a, b, c] = fallbackBg[key] ?? ['#222', '#444', '#222'];
   return { backgroundImage: `linear-gradient(180deg, ${a} 0%, ${b} 55%, ${c} 100%)` };
+}
+
+// 行走场景底图;缺图时退回同地点的战斗背景，仍可行走
+const mapFallback = { 'map-village': 'overworld', 'map-cuiyun': 'cuiyun', 'map-huokou': 'huoyan', 'map-jilei': 'moyundong' };
+export function bgImage(key) {
+  return images[`b:${key}`] ?? images[`b:${mapFallback[key]}`] ?? null;
 }
 
 export function bgURL(key) {
