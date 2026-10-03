@@ -46,6 +46,8 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
    存在 `signature_command` 时再执行可选合同的专属边界。
 3. 保留能复现问题的初态与输入路径，涉及随机性时固定 seed；修订后重放失败路径与相邻反例。
 4. 回写实际工具链、install/build/start 命令和版本；未知值写 `NOT_AVAILABLE: 原因`，不猜。
+   实际候选与 GAME_DESIGN、ART_DIRECTION 的事实描述不符时，交回对应 owner 修订或在 BUILD_BRIEF 标明冲突，
+   不留下描述已不存在的玩法、表现或声音的文档。
 
 `whitebox` 到此按 build-brief-contract「完成证据」运行最窄检查并交回 design owner；设计修订后
 重放受影响路径，直到最大风险已被实际暴露或当前方向被否决。
