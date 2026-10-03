@@ -88,6 +88,11 @@ Interactive fiction is a first-class track: continuous scenes, dialogue, testimo
 
 ## Install
 
+### ClawHub
+
+ClawHub distribution is governed by the repository's [explicit publish inventory](.clawhub/publish.json), with discovery through [ClawHub](https://clawhub.ai/). A skill-specific link is added here only after its publisher, version, and anonymous accessibility are verified, so this README never presents a nonexistent listing as live.
+
+
 Prerequisite: you already use Claude Code, Codex, or Kimi Code, and `npx` (Node.js) runs in your terminal.
 
 | Agent CLI | Install | Invoke |

@@ -90,6 +90,11 @@ https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 ## 安装
 
+### ClawHub
+
+ClawHub 分发由仓库中的 [显式发布清单](.clawhub/publish.json) 管理，并通过 [ClawHub](https://clawhub.ai/) 提供发现入口。具体 skill 链接只有在发布者、版本和匿名访问均验证后才会写入本文档，避免把尚不存在的条目当成已上架。
+
+
 前提：你已经在用 Claude Code、Codex 或 Kimi Code，终端能运行 `npx`（Node.js）。
 
 | Agent CLI | 安装命令 | 调用方式 |
