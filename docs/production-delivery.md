@@ -1,19 +1,26 @@
 # Production delivery: responsibility and evidence
 
-The three example sites have native Vercel Git production deployments. The
-existing `deploy.yml` also runs a Vercel CLI producer, so production currently has
-two paths. This change **does not remove either producer or change platform
-settings**. Hosted main merges are held until that production-policy boundary is
-approved and read back.
+The three example sites use native Vercel Git integration as their single
+production producer. The duplicate Actions CLI producer (`deploy.yml`) is
+retired after the owner's production-policy approval and authenticated readback
+of all three projects' production checks on 2026-10-03. No Vercel token or
+deployment command is required by repository workflows.
 
-## Chosen target, not yet enabled
+## Configured production promotion policy
 
-Use native Vercel Git integration as the single producer. Configure Vercel
-Deployment Checks against exact source CI before production custom-domain
-promotion, then verify the project/check configuration and only then retire the
-Actions CLI producer. Vercel may build/deploy before checks complete; these checks
-are a promotion gate, not a pre-deployment barrier. Do not treat this target as
-already enabled. No CI-owned alternative deploy path is activated here.
+Each canonical project (`jinpingmei`, `xiyouji`, `project-plateau`) retains its
+existing repository, main branch, root directory, Git deployment integration
+and automatic production-domain assignment. Vercel Deployment Checks require
+both `repository` and `ClawHub inventory validation / distribute` from GitHub
+before production custom-domain promotion. Both check bindings were verified
+after reloading each project's settings page.
+
+Vercel may build/deploy before checks complete: this is a promotion gate, not a
+pre-deployment barrier. Configuration readback is not proof of a new deployment's
+promotion behavior. Do not force a deployment solely to manufacture that proof;
+record the next applicable native Git deployment and its check/promotion state.
+Ordinary push-triggered GitHub checks do not need a `repository_dispatch` status
+action. No CI-owned alternative deploy path is activated here.
 
 ## Read-only observation
 
@@ -31,8 +38,10 @@ API/auth/rate errors or non-200 readiness are failures, never absence-as-success
 
 ## Remaining platform evidence
 
-Before claiming production delivery alignment, read back each canonical Vercel
-project's repository, main branch, root directory, deployment ID/source SHA,
-Deployment Check binding and successful check/promotion state. Enabling that
-platform policy requires the separately requested production-rule approval; it
-does not authorize a tag, public package release or deliberate redeployment.
+Before claiming live production promotion has been exercised, read back each
+canonical Vercel project's deployment ID/source SHA, Deployment Check binding
+and successful check/promotion state. If unchanged example files make native
+Git skip a build, report that explicitly; do not pretend the previously deployed
+SHA is the new main commit. The approval permits these hosted main merges, not
+a tag or public package release. Platform operators can force-promote and bypass
+checks, so repository observation does not claim an unbypassable guarantee.
