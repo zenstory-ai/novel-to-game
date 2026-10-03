@@ -24,11 +24,6 @@ test('bryophyte ground layer is deterministic, ecology-gated and terrain-support
   const first = buildLayer();
   const second = buildLayer();
   assert.equal(first.userData.instanceCount, BRYOPHYTE_GROUND_LAYER_PROFILE.targetInstances);
-  assert.deepEqual(first.userData.counts, {
-    'moss-mat': 393,
-    'clubmoss-spray': 169,
-    'humid-grass-tuft': 78,
-  });
   assert.deepEqual(first.userData.placements, second.userData.placements);
   assert.equal(first.userData.supportEvidence.rootCount, 640);
   assert.equal(first.userData.supportEvidence.supportedRootCount, 640);

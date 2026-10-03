@@ -395,7 +395,7 @@ function addThinLeafTransmission(shader) {
   float canopyTreeViewSide = dot( canopyTreeSurfaceNormal, geometryViewDir );
   float canopyTreeOppositeSides = saturate( - canopyTreeLightSide * canopyTreeViewSide );
   float canopyTreeIncidence = max( abs( canopyTreeLightSide ), 0.24 );
-  vec3 canopyTreeAbsorption = vec3( 1.78, 0.69, 2.3 );
+  vec3 canopyTreeAbsorption = vec3( 1.2, 0.55, 1.8 );
   vec3 canopyTreeTransmittance = exp( - canopyTreeAbsorption * 0.66 / canopyTreeIncidence );
   float canopyTreeShadowVisibility = 1.0;
   #if defined( USE_SHADOWMAP ) && ( NUM_DIR_LIGHT_SHADOWS > 0 )
@@ -413,9 +413,10 @@ function addThinLeafTransmission(shader) {
     * material.diffuseContribution
     * canopyTreeTransmittance
     * pow( canopyTreeOppositeSides, 0.5 )
-    * canopyTreeShadowVisibility
+    // A leaf's own shadow must not black out light shining through it.
+    * mix( 0.4, 1.0, canopyTreeShadowVisibility )
     * RECIPROCAL_PI
-    * 0.37;
+    * 0.8;
 #endif`,
   );
 }

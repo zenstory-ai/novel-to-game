@@ -5,7 +5,7 @@ import { updateCanopyTreeLibraryWind } from './canopy-tree-library.js';
 import { updateFernLibraryWind } from './fern-library.js';
 import { updateGroundCoverLibraryWind } from './ground-cover-library.js';
 import { updateHeroGingkoWind } from './hero-gingko.js';
-import { applyHy3dIguanodonPose } from './hy3d-iguanodon.js';
+import { applyHy3dIguanodonLook, applyHy3dIguanodonPose } from './hy3d-iguanodon.js';
 import { applyHy3dPterodactylPose } from './hy3d-pterodactyl.js';
 import { terrainHeight } from './terrain.js';
 import { updateTreeFernLibraryWind } from './tree-fern-library.js';
@@ -54,13 +54,33 @@ export function createWorldAnimationController({
   let hasRenderedThreatFrame = false;
   let previousWorldElapsed = null;
   const attackAnchor = new THREE.Vector3();
+  let attackHeading = 0;
   let attackEntryPosition = null;
   let attackEntryScale = null;
   let attackEntryElapsed = 0;
   let attackExitPosition = null;
   let attackExitScale = null;
   let attackExitElapsed = 0;
+  const familyOffsets = family.map(() => new THREE.Vector3());
+  const familyLook = family.map(() => ({ value: 0 }));
+  const playAngles = family.map(() => 0);
+  const scoutHead = new THREE.Vector3();
   return {
+    // A new run starts with the threat and the family as authored.
+    resetRun() {
+      renderedThreatState = 'distant';
+      renderedAttackStage = 'orbit';
+      renderedAttackProgress = 0;
+      previousThreatAwareness = null;
+      visualOrbitAwareness = 0;
+      attackEntryPosition = null;
+      attackEntryScale = null;
+      attackExitPosition = null;
+      attackExitScale = null;
+      familyOffsets.forEach((offset) => offset.set(0, 0, 0));
+      familyLook.forEach((look) => { look.value = 0; });
+      playAngles.fill(0);
+    },
     update(elapsed, reducedMotion = false, runtime = {}) {
       const awareness = Math.max(0, Math.min(3, runtime.threatAwareness ?? 0));
       const visualQuality = ['low', 'balanced', 'high'].includes(runtime.quality)
@@ -116,12 +136,24 @@ export function createWorldAnimationController({
       const leavingAttack = awareness !== 3 && previousThreatAwareness === 3;
       if (enteringAttack) {
         attackAnchor.set(playerPosition.x, 0, playerPosition.z);
+        attackHeading = Number.isFinite(runtime.playerHeading) ? runtime.playerHeading : 0;
         attackEntryPosition = hasRenderedThreatFrame ? pterodactyls[0].position.clone() : null;
         attackEntryScale = hasRenderedThreatFrame ? pterodactyls[0].scale.x : null;
         attackEntryElapsed = elapsed;
         attackExitPosition = null;
         attackExitScale = null;
-      } else if (leavingAttack) {
+      } else if (awareness === 3 && deltaSeconds > 0) {
+        // The circle drifts after a scout who walks on, at a hunting pace.
+        const chaseX = playerPosition.x - attackAnchor.x;
+        const chaseZ = playerPosition.z - attackAnchor.z;
+        const chase = Math.hypot(chaseX, chaseZ);
+        const step = Math.min(chase, deltaSeconds * 3.2);
+        if (chase > 1e-6) {
+          attackAnchor.x += (chaseX / chase) * step;
+          attackAnchor.z += (chaseZ / chase) * step;
+        }
+      }
+      if (leavingAttack) {
         attackExitPosition = pterodactyls[0].position.clone();
         attackExitScale = pterodactyls[0].scale.x;
         attackExitElapsed = elapsed;
@@ -257,11 +289,15 @@ export function createWorldAnimationController({
           const flight = pterodactylAttackFlightState({
             attackClock,
             attackOrigin: attackAnchor,
+            attackHeading,
+            strikeTarget: playerPosition,
             reducedMotion,
           });
           const nextFlight = pterodactylAttackFlightState({
             attackClock: attackClock + 1 / 120,
             attackOrigin: attackAnchor,
+            attackHeading,
+            strikeTarget: playerPosition,
             reducedMotion,
           });
           const { pose: attackPose } = flight;
@@ -270,11 +306,10 @@ export function createWorldAnimationController({
           attackRecovery = attackPose.recovery;
           renderedAttackStage = attackPose.stage;
           renderedAttackProgress = diveApproach;
-          // Graze the creek-side route edge instead of flying into the exact
-          // camera centre. Orient against this same authored curve so the
-          // animal cannot slide sideways or pitch upward while descending.
+          // Orient against the same authored curve so the animal cannot slide
+          // sideways while circling or pitch upward while descending.
           const attackScale = mesh.userData.baseScale
-            * (0.96 + diveApproach * 0.5);
+            * (1.05 + diveApproach * 0.4);
           const transition = attackEntryPosition
             ? THREE.MathUtils.smoothstep(
               elapsed - attackEntryElapsed,
@@ -345,7 +380,7 @@ export function createWorldAnimationController({
         ));
         mesh.name = `threat.pterodactyl.${isPrimary ? renderedThreatState : 'distant'}`;
         const authoredWingFold = isPrimary && awareness === 3 && !runtime.inCover
-          ? Math.max(attackWingFold, 0.1 + diveApproach * 0.7)
+          ? Math.max(attackWingFold, diveApproach * 0.8)
           : 0;
         const wingFold = THREE.MathUtils.lerp(
           mesh.userData.renderedWingFold ?? authoredWingFold,
@@ -392,8 +427,9 @@ export function createWorldAnimationController({
         mesh.userData.rig.tail.rotation.y = Math.sin(angle * 1.4) * 0.08;
         const directAttack = isPrimary && awareness === 3 && !runtime.inCover;
         const rollAmplitude = awareness === 3 ? 0.08 : 0.16 + awareness * 0.035;
+        // Circling banks into the turn; the committed dive levels out.
         const authoredFlightRoll = directAttack
-          ? -0.04 - diveApproach * 0.05 + attackRecovery * 0.1
+          ? THREE.MathUtils.lerp(-0.42, -0.06, diveApproach) + attackRecovery * 0.1
           : Math.sin(angle * 2.4) * rollAmplitude;
         const flightRoll = THREE.MathUtils.lerp(
           mesh.userData.renderedFlightRoll ?? authoredFlightRoll,
@@ -429,18 +465,16 @@ export function createWorldAnimationController({
       pterodactylShadow.visible = shadowVisible;
       if (shadowVisible) {
         const shadowTarget = awareness === 3
-          ? attackAnchor
+          ? playerPosition
           : PTERODACTYL_ORBIT_CENTER;
         const attackShadowPull = awareness === 3
-          ? 0.3 + renderedAttackProgress * 0.32
+          ? 0.18 + renderedAttackProgress * 0.5
           : 0.38;
         const shadowX = THREE.MathUtils.lerp(primaryThreat.position.x, shadowTarget.x, attackShadowPull);
         const shadowZ = THREE.MathUtils.lerp(
           primaryThreat.position.z,
-          shadowTarget.z - (awareness === 3
-            ? THREE.MathUtils.lerp(3.8, 1.2, renderedAttackProgress)
-            : 3.8),
-          awareness === 3 ? 0.3 + renderedAttackProgress * 0.28 : 0.36,
+          shadowTarget.z - (awareness === 3 ? 0 : 3.8),
+          awareness === 3 ? 0.18 + renderedAttackProgress * 0.5 : 0.36,
         );
         const shadowTargetPosition = pterodactylShadow.userData.targetPosition.set(
           shadowX,
@@ -448,7 +482,7 @@ export function createWorldAnimationController({
           shadowZ,
         );
         const shadowBlend = pterodactylShadow.userData.wasVisible
-          ? deltaSeconds > 0 ? 1 - Math.exp(-deltaSeconds * 8) : 1
+          ? deltaSeconds > 0 ? 1 - Math.exp(-deltaSeconds * 6) : 1
           : 1;
         if (pterodactylShadow.userData.wasVisible) {
           pterodactylShadow.position.lerp(shadowTargetPosition, shadowBlend);
@@ -496,21 +530,66 @@ export function createWorldAnimationController({
         const familyAlarm = renderedFamilyMoment === 'glade-alarm';
         const motion = reducedMotion ? 0.12 : 1;
         const breath = Math.sin(elapsed * 0.82 + phase);
-        animal.position.x = baseX;
-        animal.position.z = baseZ;
-        animal.position.y = baseY + breath * 0.012 * motion;
-        animal.rotation.y = baseHeading;
+
+        // A startled animal steps a few metres away from the scout, then
+        // drifts home once the glade is quiet again.
+        const offset = familyOffsets[index];
+        const scout = runtime.playerPosition;
+        if (scout && deltaSeconds > 0) {
+          const awayX = baseX + offset.x - scout.x;
+          const awayZ = baseZ + offset.z - scout.z;
+          const distance = Math.hypot(awayX, awayZ);
+          if (runtime.familyStartled && distance < 13 && distance > 1e-3) {
+            const step = Math.min(deltaSeconds * 2.6, Math.max(0, 5 - offset.length()));
+            offset.x += (awayX / distance) * step;
+            offset.z += (awayZ / distance) * step;
+          } else if (!runtime.familyStartled) {
+            const back = Math.min(offset.length(), deltaSeconds * 0.7);
+            if (back > 0) offset.addScaledVector(offset.clone().normalize(), -back);
+          }
+        }
+
+        // The young run a short closed loop that starts and ends at home.
+        let loopX = 0;
+        let loopZ = 0;
+        let loopYaw = 0;
+        if (behaviorRole === 'young-play') {
+          const lap = Math.PI * 2;
+          const running = youngPlay && !reducedMotion;
+          const atHome = playAngles[index] % lap < 1e-3;
+          if (deltaSeconds > 0 && (running || !atHome)) {
+            const next = playAngles[index] + deltaSeconds * 1.6;
+            playAngles[index] = !running && Math.floor(next / lap) > Math.floor(playAngles[index] / lap)
+              ? Math.floor(next / lap) * lap
+              : next;
+          }
+          const theta = playAngles[index];
+          const a = 2.2;
+          const b = (animal.userData.baseX < 0 ? 1 : -1) * 1.1;
+          const localX = a * Math.sin(theta);
+          const localZ = b * (1 - Math.cos(theta));
+          loopX = localX * Math.cos(baseHeading) + localZ * Math.sin(baseHeading);
+          loopZ = -localX * Math.sin(baseHeading) + localZ * Math.cos(baseHeading);
+          loopYaw = Math.atan2(-b * Math.sin(theta), a * Math.cos(theta));
+        }
+        const standX = baseX + offset.x + loopX;
+        const standZ = baseZ + offset.z + loopZ;
+        animal.position.x = standX;
+        animal.position.z = standZ;
+        animal.position.y = terrainHeight(standX, standZ) + (baseY - terrainHeight(baseX, baseZ))
+          + breath * 0.012 * motion;
+        animal.rotation.y = baseHeading + loopYaw;
         animal.rotation.z = Math.sin(elapsed * 0.45 + index) * 0.004 * motion;
 
         const contactShadow = familyContactShadows.children[index];
         const contactScale = animal.userData.young ? 0.88 : 1.36;
         contactShadow.visible = animal.visible;
         contactShadow.position.set(
-          baseX,
-          terrainHeight(baseX, baseZ) + 0.045,
-          baseZ,
+          standX,
+          terrainHeight(standX, standZ) + 0.045,
+          standZ,
         );
-        contactShadow.rotation.y = baseHeading;
+        contactShadow.rotation.y = baseHeading + loopYaw;
         contactShadow.scale.set(contactScale * 1.55, 1, contactScale * 0.68);
 
         rig.neckPivot.rotation.z = restPose.neckZ + breath * 0.018 * motion;
@@ -569,8 +648,6 @@ export function createWorldAnimationController({
             Math.max(0, playSignal) * 0.132
               - Math.max(0, -playSignal) * 0.045
           ) * leadWeight * motion;
-          animal.rotation.y = baseHeading
-            + socialTurn * (0.15 + Math.sin(playPhase * 0.72) * 0.2) * motion;
           animal.rotation.z += strideSignal * 0.072 * leadWeight * motion;
           rig.neckPivot.rotation.z = restPose.neckZ + 0.26 + playSignal * 0.34 * motion;
           rig.headPivot.rotation.z = restPose.headZ + 0.12 - playSignal * 0.3 * motion;
@@ -626,6 +703,19 @@ export function createWorldAnimationController({
           });
         } else if (behaviorRole !== 'graze') {
           applyHy3dIguanodonPose(animal);
+        }
+
+        // Within fifteen metres the animal keeps an eye on the scout.
+        const look = familyLook[index];
+        let lookTarget = 0;
+        if (scout && runtime.reachedGlade && !youngPlay) {
+          const distance = Math.hypot(standX - scout.x, standZ - scout.z);
+          lookTarget = THREE.MathUtils.clamp((15 - distance) / 4, 0, 1);
+        }
+        look.value += (lookTarget - look.value) * (deltaSeconds > 0 ? 1 - Math.exp(-deltaSeconds * 3) : 1);
+        if (scout && look.value > 0.01) {
+          scoutHead.set(scout.x, terrainHeight(scout.x, scout.z) + 1.7, scout.z);
+          applyHy3dIguanodonLook(animal, scoutHead, look.value);
         }
       });
       const branchPull = renderedFamilyMoment === 'glade-branch-pull';

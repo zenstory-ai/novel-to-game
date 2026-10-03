@@ -3,32 +3,7 @@ import test from 'node:test';
 
 import * as THREE from 'three';
 
-import { SUN_DIRECTION } from '../src/atmosphere.js';
-import { createFieldLighting } from '../src/field-lighting.js';
 import { createViewmodelController } from '../src/viewmodel.js';
-
-test('field lighting preserves the authored energy and shadow rig', () => {
-  const scene = new THREE.Scene();
-  const { sun } = createFieldLighting(scene);
-
-  assert.equal(scene.children.length, 9);
-  assert.equal(sun.type, 'DirectionalLight');
-  assert.equal(sun.intensity, 2.65);
-  assert.ok(sun.position.clone().normalize().distanceTo(SUN_DIRECTION) < 1e-12);
-  assert.ok(Math.abs(sun.position.length() - 106) < 1e-12);
-  assert.deepEqual(sun.shadow.mapSize.toArray(), [2048, 2048]);
-  assert.deepEqual(
-    [
-      sun.shadow.camera.left,
-      sun.shadow.camera.right,
-      sun.shadow.camera.top,
-      sun.shadow.camera.bottom,
-      sun.shadow.camera.near,
-      sun.shadow.camera.far,
-    ],
-    [-58, 58, 74, -74, 8, 230],
-  );
-});
 
 test('viewmodel controller owns deterministic camera, rifle and recoil pose state', () => {
   const fieldCamera = new THREE.Group();

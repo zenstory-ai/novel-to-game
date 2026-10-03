@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { SUN_DIRECTION } from './atmosphere-sky.js';
 import {
   BROOK_FREE_SURFACE_PROFILE,
   BROOK_OBSTACLE_FLOW_PROFILE,
@@ -25,12 +26,12 @@ function createBrookMaterial(textures, bedTextures) {
       flowRoughness: { value: textures.roughness },
       flowNormal: { value: textures.normal },
       channelBed: { value: bedTextures.albedo },
-      shallowColor: { value: new THREE.Color(0x6f978b) },
-      deepColor: { value: new THREE.Color(0x285d68) },
-      skyColor: { value: new THREE.Color(0x94b3b1) },
+      shallowColor: { value: new THREE.Color(0x52675b) },
+      deepColor: { value: new THREE.Color(0x1e3431) },
+      skyColor: { value: new THREE.Color(0x7fa3b4) },
       foamColor: { value: new THREE.Color(0xd0d5c5) },
-      sunColor: { value: new THREE.Color(0xd9b37d) },
-      sunDirection: { value: new THREE.Vector3(-0.44, 0.55, 0.71).normalize() },
+      sunColor: { value: new THREE.Color(0xffd7a0) },
+      sunDirection: { value: SUN_DIRECTION },
       sceneReflectionPanorama: { value: fallbackReflection },
       planarReflection: { value: fallbackReflection },
       planarReflectionMatrix: { value: new THREE.Matrix4() },
@@ -52,7 +53,7 @@ function createBrookMaterial(textures, bedTextures) {
       bedTransmissionMix: { value: 0.68 },
       ssrSteps: { value: BROOK_REFLECTION_PROFILE.stepsByQuality.balanced },
       ssrRange: { value: BROOK_REFLECTION_PROFILE.maximumRangeMeters },
-      ssrStrength: { value: 0.76 },
+      ssrStrength: { value: 0.4 },
       ssrThickness: { value: BROOK_REFLECTION_PROFILE.constantThicknessMeters },
       ssrThicknessSlope: {
         value: BROOK_REFLECTION_PROFILE.depthScaledThicknessPerMeter,
@@ -525,9 +526,9 @@ function createBrookMaterial(textures, bedTextures) {
         );
         vec2 broadUv = vec2(
           vUv.x * 3.4,
-          vUv.y * 11.0 - time * 0.34 * signedFlow
+          vUv.y * 7.0 - time * 0.34 * signedFlow
         ) + obstacleSlope * vec2(3.6, 2.25);
-        vec2 fineUv = rotateUv(0.49) * vec2(vUv.x * 7.2, vUv.y * 23.0)
+        vec2 fineUv = rotateUv(0.49) * vec2(vUv.x * 7.2, vUv.y * 15.0)
           + vec2(time * 0.11 * signedFlow, -time * 0.61 * signedFlow)
           + obstacleSlope * vec2(7.8, 5.4);
         vec3 broadNormal = unpackFlowNormal(texture2D(flowNormal, broadUv).xyz);
@@ -653,7 +654,7 @@ function createBrookMaterial(textures, bedTextures) {
         float reflectionStrength = clamp(
           fresnel + roughness * 0.012,
           0.02037,
-          0.72
+          0.5
         );
         float warmReflection = pow(max(dot(reflect(-normalize(sunDirection), surfaceNormal), viewDirection), 0.0), 54.0);
         vec3 reflectedSky = mix(skyColor, sunColor, warmReflection * 0.48);
@@ -737,7 +738,7 @@ function createBrookMaterial(textures, bedTextures) {
           screenSpaceReflection.rgb,
           screenSpaceConfidence
         );
-        vec3 colour = mix(waterColor, reflectedScene, reflectionStrength);
+        vec3 colour = mix(waterColor, min(reflectedScene * 0.82, vec3(1.0)), reflectionStrength);
 
         float bankContact = 1.0 - smoothstep(0.055, 0.22, edgeDistance);
         float foamNoise = broadNormal.x * 0.44 + fineNormal.y * 0.31 + mineralNoise * 0.4;
@@ -758,10 +759,26 @@ function createBrookMaterial(textures, bedTextures) {
         );
         colour = mix(colour, foamColor, foam);
 
-        float feather = smoothstep(0.0, 0.82, vRibbonColor.a);
-        // The shader already resolves an approximate transmitted riverbed, so
-        // keep the channel core nearly opaque and only feather the physical bank.
-        float alpha = feather * clamp(0.88 + fresnel * 0.08 + foam * 0.08, 0.0, 0.98);
+        // The ribbon's own edge never draws a line: it fades out across the last
+        // few percent of its width, wherever the bank actually is.
+        float feather = smoothstep(0.0, 0.82, vRibbonColor.a)
+          * smoothstep(0.0, 0.06, edgeDistance);
+        // Shallow water shows the real bed through it; only a few centimetres
+        // of depth make the channel read as water, so there is no hard pale arc.
+        // The depth is the lesser of the hydrology column and the measured
+        // height of the rendered ground (basin, meadow, bank) under this point,
+        // so a grassy bank just below the surface reads as wet grass, not a sheet.
+        float renderedColumn = max(
+          dot(vViewPosition - opaqueViewPosition, geometricNormalView),
+          0.0
+        );
+        float alphaDepth = mix(
+          waterDepthMeters,
+          min(waterDepthMeters, renderedColumn),
+          sceneDepthValid
+        );
+        float bodyOpacity = smoothstep(0.02, 0.5, alphaDepth);
+        float alpha = feather * clamp(bodyOpacity * 0.8 + fresnel * 0.12 + foam * 0.1, 0.0, 0.94);
         gl_FragColor = vec4(colour, alpha);
         #include <fog_fragment>
       }

@@ -237,6 +237,10 @@ function createBrookSceneCapture(scene, brook, hydrology, suppressedObjects = []
   const savedViewport = new THREE.Vector4();
   const savedScissor = new THREE.Vector4();
   let captureRequested = true;
+  let nextCapture = 'refraction';
+  const viewFrustum = new THREE.Frustum();
+  const frustumMatrix = new THREE.Matrix4();
+  const reachSphere = new THREE.Sphere();
   let lastCaptureFrame = -Infinity;
   const status = {
     status: 'pending-renderer',
@@ -362,7 +366,7 @@ function createBrookSceneCapture(scene, brook, hydrology, suppressedObjects = []
       material.uniforms.ssrSteps.value = BROOK_REFLECTION_PROFILE.stepsByQuality[
         status.quality
       ];
-      material.uniforms.ssrStrength.value = status.quality === 'high' ? 0.86 : 0.76;
+      material.uniforms.ssrStrength.value = status.quality === 'high' ? 0.5 : 0.4;
       status.ssrSteps = BROOK_REFLECTION_PROFILE.stepsByQuality[status.quality];
       status.ssrMode = status.refractionCaptures > 0
         ? 'same-camera-depth-bounded-screen-space-reflection'
@@ -414,6 +418,21 @@ function createBrookSceneCapture(scene, brook, hydrology, suppressedObjects = []
       if (!captureRequested && (!cameraMoved || frameIndex - lastCaptureFrame < captureInterval)) {
         return;
       }
+      // Skip both captures when no reach of the brook is near and in view.
+      viewFrustum.setFromProjectionMatrix(
+        frustumMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
+      );
+      const brookInView = reflectionReaches.some((reach) => {
+        reachSphere.center.copy(reach.center);
+        reachSphere.radius = 9;
+        return reach.center.distanceTo(cameraPosition) < 40 && viewFrustum.intersectsSphere(reachSphere);
+      });
+      if (!captureRequested && !brookInView) return;
+      // Refraction and reflection alternate, so one capture frame costs one extra scene draw.
+      const captureBoth = captureRequested || cameraJumped;
+      const doRefraction = captureBoth || nextCapture === 'refraction';
+      const doReflection = captureBoth || nextCapture === 'reflection';
+      nextCapture = nextCapture === 'refraction' ? 'reflection' : 'refraction';
       selectActiveReach(captureRequested || cameraJumped);
       const hiddenObjects = [brook, ...suppressedObjects].filter(Boolean);
       const visibility = hiddenObjects.map((object) => object.visible);
@@ -427,7 +446,7 @@ function createBrookSceneCapture(scene, brook, hydrology, suppressedObjects = []
       renderer.xr.enabled = false;
       renderer.shadowMap.autoUpdate = false;
       const captureErrors = [];
-      try {
+      if (doRefraction) try {
         renderer.setRenderTarget(refractionTarget);
         renderer.setViewport(0, 0, status.refractionResolution[0], status.refractionResolution[1]);
         renderer.setScissor(0, 0, status.refractionResolution[0], status.refractionResolution[1]);
@@ -447,15 +466,17 @@ function createBrookSceneCapture(scene, brook, hydrology, suppressedObjects = []
         captureErrors.push(`refraction: ${error instanceof Error ? error.message : String(error)}`);
       }
       try {
-        reflector.onBeforeRender(renderer, scene, camera);
-        reflectorInverse.copy(reflector.matrixWorld).invert();
-        planarMatrix
-          .copy(reflector.material.uniforms.textureMatrix.value)
-          .multiply(reflectorInverse);
-        material.uniforms.planarReflection.value = planarTarget.texture;
-        material.uniforms.planarReflectionReady.value = 1;
-        status.planarCaptures += 1;
-        status.reflectionMode = 'local-planar-plus-scene-layout-probe';
+        if (doReflection) {
+          reflector.onBeforeRender(renderer, scene, camera);
+          reflectorInverse.copy(reflector.matrixWorld).invert();
+          planarMatrix
+            .copy(reflector.material.uniforms.textureMatrix.value)
+            .multiply(reflectorInverse);
+          material.uniforms.planarReflection.value = planarTarget.texture;
+          material.uniforms.planarReflectionReady.value = 1;
+          status.planarCaptures += 1;
+          status.reflectionMode = 'local-planar-plus-scene-layout-probe';
+        }
       } catch (error) {
         material.uniforms.planarReflectionReady.value = 0;
         status.reflectionMode = 'scene-layout-equirectangular-probe-fallback';

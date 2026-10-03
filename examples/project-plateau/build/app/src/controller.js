@@ -9,8 +9,6 @@ const GAMEPLAY_KEY_CODES = new Set([
   'ShiftLeft',
   'ShiftRight',
   'KeyC',
-  'ControlLeft',
-  'ControlRight',
   'Space',
   'ArrowUp',
   'ArrowDown',

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyFoliageLight } from './foliage-light.js';
 import {
   createCylinderBetween,
   createVerticalLoft,
@@ -777,14 +778,14 @@ const shared = {
     emissiveIntensity: 0.025,
     envMapIntensity: 0.52,
   }),
-  fernMaterial: new THREE.MeshStandardMaterial({
+  fernMaterial: applyFoliageLight(new THREE.MeshStandardMaterial({
     color: 0xffffff,
     vertexColors: true,
     roughness: 0.86,
     side: THREE.DoubleSide,
     flatShading: false,
     envMapIntensity: 0.5,
-  }),
+  })),
   treeFernTrunkMaterial: new THREE.MeshStandardMaterial({
     color: 0xffffff,
     vertexColors: true,

@@ -11,6 +11,7 @@ import {
   loadCanopyTreeLibraryTemplate,
 } from './canopy-tree-library.js';
 import {
+  COVER_BAND_TREE_FERNS,
   COVER_RIPARIAN_TREE_LAYOUT,
   FERN_LIBRARY_LAYOUT,
   HABITAT_TREE_LAYOUT,
@@ -72,6 +73,7 @@ export function createWorldAssetVisualLoader({
   basalt,
   brookBoulder,
   brookResponse,
+  coverBand,
   environmentDensity,
   family,
   fieldCamera,
@@ -186,6 +188,12 @@ export function createWorldAssetVisualLoader({
             habitatAccents.treeFernAssetAnchor,
             template,
             HABITAT_TREE_LAYOUT,
+            { terrainHeight, terrainGradient, terrainWetness },
+          );
+          attachTreeFernLibraryVisual(
+            coverBand.userData.treeFernAnchor,
+            template,
+            COVER_BAND_TREE_FERNS,
             { terrainHeight, terrainGradient, terrainWetness },
           );
         },

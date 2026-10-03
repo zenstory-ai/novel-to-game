@@ -35,9 +35,7 @@
 
       <section id="title-screen" aria-labelledby="game-title">
         <div class="glass-plate" aria-hidden="true">
-          <span class="plate-register">PLATE IV · INNER BEND</span>
           <span class="plate-scale">WEST OF FORT CHALLENGER · 5:40 PM</span>
-          <span class="plate-wing"></span>
         </div>
         <div class="title-copy">
           <p class="eyebrow">From Malone's unopened field case</p>
@@ -53,9 +51,10 @@
 
       <section id="field-order" class="card" hidden aria-labelledby="order-title">
         <p id="order-title" class="eyebrow">A note left on the plate case</p>
-        <p>Malone — take four clean plates to the river bend. Bring back one thing London cannot explain away.</p>
+        <p>Malone — take four clean plates to the river bend. Bring back one thing London cannot explain away. Keep one plate for whatever comes down to drink.</p>
         <p class="order-condition">Read the mud before you raise the camera. If the family stirs, watch before you move.</p>
-        <p class="order-controls">Move [WASD] · Look [Mouse / Arrows] · Examine traces [E] · Pause [P]</p>
+        <p class="order-warning">Wings follow the flash of a shutter: get under the trees, or show them the rifle.</p>
+        <p class="order-controls">Move [WASD] · Look [Mouse / Arrows] · Examine traces [E] · Camera [hold Right Mouse or Q, click Left] · Pause [P]</p>
         <button id="dismiss-order" type="button">Shoulder the case</button>
       </section>
 
@@ -63,9 +62,10 @@
         <p id="pause-label" class="eyebrow">PAUSED</p>
         <h2 id="pause-title">A breath beneath the trees.</h2>
         <p>The valley waits while you gather yourself.</p>
-        <p class="pause-controls">Move [WASD] · Look [Mouse / Arrows] · Sprint [Shift] · Crouch [C] · Jump [Space] · Examine traces [E] · Camera [Right Mouse + Left Mouse] · Rifle [F + Left Mouse] · Drop case [Hold G]</p>
+        <p class="pause-controls">Move [WASD] · Look [Mouse / Arrows] · Sprint [Shift] · Crouch [C] · Jump [Space] · Examine traces [E] · Camera [hold Right Mouse or Q, then Left Mouse or Space] · Rifle [hold F, then Left Mouse] · Drop case [Hold G]</p>
         <div class="pause-actions">
           <button id="resume-button" type="button">Step back onto the trail</button>
+          <button id="pause-settings" type="button" class="secondary">Open the field kit</button>
           <button id="restart-button" type="button" class="secondary">Return to the morning order</button>
         </div>
       </section>
@@ -80,6 +80,8 @@
           <p id="terminal-result-copy"></p>
           <p id="terminal-detail"></p>
           <p id="terminal-callback" hidden></p>
+          <p id="terminal-next" hidden></p>
+          <ul id="terminal-ledger" class="terminal-ledger" aria-label="Species on glass"></ul>
           <button id="terminal-restart" type="button">Walk the bend again</button>
         </div>
       </section>
@@ -88,8 +90,8 @@
         <button class="panel-close" type="button" aria-label="Close settings">×</button>
         <p class="eyebrow">Inside the field case</p>
         <h2 id="settings-title">Make the kit your own</h2>
-        <label><input id="reduced-motion" type="checkbox" /> Reduced motion</label>
-        <label><input id="captions-enabled" type="checkbox" checked /> Sound captions</label>
+        <label class="check"><input id="reduced-motion" type="checkbox" /> Reduced motion</label>
+        <label class="check"><input id="captions-enabled" type="checkbox" checked /> Sound captions</label>
         <label>
           Text size
           <select id="text-scale">
@@ -139,17 +141,19 @@
           <p class="eyebrow">Plate <span id="preview-number">I</span></p>
           <div class="preview-image" aria-hidden="true"><span></span></div>
           <p id="preview-copy"></p>
+          <ul id="preview-grade" class="plate-grade"></ul>
+          <p id="preview-verdict"></p>
         </section>
         <p id="contact-note" hidden></p>
         <p id="caption-line" hidden></p>
-        <p id="boundary-note" hidden>The red bank rises sheer here.</p>
-        <p id="light-watch" hidden><span id="light-seconds">Full light</span></p>
+        <p id="boundary-note" hidden>Broken ground and thorn turn you back this way.</p>
+        <p id="light-watch" hidden><span id="light-seconds">Full light</span><span id="light-bar" aria-hidden="true"></span></p>
         <p id="control-hint">Walk [WASD] · Look [Mouse / Arrows] · Read the ground [E] · Take breath [P]</p>
         <div id="cartridge-display" hidden aria-label="Two rifle cartridges">
           <span></span><span></span>
         </div>
-        <div id="plate-rail" hidden aria-label="Four unexposed glass plates">
-          <span></span><span></span><span></span><span></span>
+        <div id="plate-rail" hidden aria-label="Four glass plates">
+          <span>I</span><span>II</span><span>III</span><span>IV</span>
         </div>
       </div>
 

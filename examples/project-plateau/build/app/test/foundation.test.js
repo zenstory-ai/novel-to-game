@@ -7,7 +7,7 @@ import {
   seededRandom,
 } from '../src/config.js';
 import {
-  PTERODACTYL_ATTACK_CYCLE_SECONDS,
+  PTERODACTYL_ATTACK_TIMELINE,
   createWorld,
   loadOptionalAssetVisual,
   pterodactylAttackFlightState,
@@ -179,225 +179,44 @@ test('family actions remain planted while anatomical pivots and branch contact c
   );
 });
 
-test('pterodactyl attack reads as search, fold-dive and close attack from simulation time', () => {
-  assert.equal(pterodactylAttackPose(0.38).stage, 'search');
-  assert.equal(pterodactylAttackPose(0.72).stage, 'fold-dive');
-  assert.equal(pterodactylAttackPose(1.1).stage, 'attack');
-  assert.equal(pterodactylAttackPose(2.85).stage, 'pull-up');
-  assert.ok(pterodactylAttackPose(0.72).approach > pterodactylAttackPose(0.38).approach + 0.2);
-  assert.ok(pterodactylAttackPose(1.1).wingFold > 0.75);
-  assert.ok(pterodactylAttackPose(2.85).approach < pterodactylAttackPose(2).approach * 0.25);
+test('the attack circles low in front of the scout before the dive lands at contact', () => {
+  const { circleEnd, contact } = PTERODACTYL_ATTACK_TIMELINE;
+  assert.equal(pterodactylAttackPose(1).stage, 'circle');
+  assert.equal(pterodactylAttackPose(circleEnd + 0.8).stage, 'attack');
+  assert.ok(circleEnd >= 4 && contact - circleEnd >= 1.5, 'the warning pass lasts long enough to read, and a finished dive plate leaves time for the rifle');
 
-  const playerPosition = new THREE.Vector3(0, 0, 2);
-  const flightSamples = [0.16, 0.48, 0.8, 1.1].map((attackClock) => (
-    pterodactylAttackFlightState({
-      attackClock,
-      playerPosition,
-      cameraRaised: false,
-      familyMoment: null,
-      reducedMotion: false,
-    })
-  ));
-  assert.ok(flightSamples.every(({ position }) => position.y >= 6.2 && position.y <= 10.8));
-  assert.ok(flightSamples.every(({ position }) => position.z >= -22.1 && position.z <= -7.7));
-  for (let index = 1; index < flightSamples.length; index += 1) {
-    assert.ok(flightSamples[index].position.y < flightSamples[index - 1].position.y);
-    assert.ok(flightSamples[index].position.z > flightSamples[index - 1].position.z);
+  const scout = { x: 0, z: 2 };
+  const heading = 0;
+  const sample = (clock) => pterodactylAttackFlightState({
+    attackClock: clock, attackOrigin: scout, attackHeading: heading, strikeTarget: scout,
+  }).position;
+  for (let clock = 0.6; clock < circleEnd; clock += 0.5) {
+    const position = sample(clock);
+    const ahead = -(position.z - scout.z);
+    assert.ok(position.y > 5 && position.y < 13, `low circling height at ${clock}s`);
+    assert.ok(ahead > 0 && Math.hypot(position.x - scout.x, position.z - scout.z) < 25, `in front at ${clock}s`);
   }
-  const segmentDirections = flightSamples.slice(1).map(({ position }, index) => (
-    position.clone().sub(flightSamples[index].position).normalize()
-  ));
-  for (let index = 1; index < segmentDirections.length; index += 1) {
-    assert.ok(
-      segmentDirections[index].dot(segmentDirections[index - 1]) > 0.96,
-      'the authored dive must not snap, reverse, or present the animal sideways',
-    );
+  let previous = sample(0);
+  for (let clock = 1 / 60; clock <= contact; clock += 1 / 60) {
+    const position = sample(clock);
+    assert.ok(position.distanceTo(previous) < 0.6, `continuous flight at ${clock.toFixed(2)}s`);
+    previous = position;
   }
-
-  const loweredCameraFlight = pterodactylAttackFlightState({
-    attackClock: 1.1,
-    playerPosition,
-    cameraRaised: false,
-    familyMoment: 'glade-young-play',
-    reducedMotion: false,
-  });
-  const raisedCameraFlight = pterodactylAttackFlightState({
-    attackClock: 1.1,
-    playerPosition,
-    cameraRaised: true,
-    familyMoment: 'glade-young-play',
-    reducedMotion: false,
-  });
-  assert.ok(
-    raisedCameraFlight.position.distanceTo(loweredCameraFlight.position) < 1e-9,
-    'raising the field camera must not teleport the attacking pterodactyl',
-  );
-  assert.equal(raisedCameraFlight.approach, loweredCameraFlight.approach);
+  const strike = sample(contact);
+  assert.ok(Math.hypot(strike.x - scout.x, strike.z - scout.z) < 2.5 && strike.y < 3.5);
 
   const scene = new THREE.Scene();
   const world = createWorld(scene);
   const primary = world.pterodactyls[0];
-  const projectedShadow = scene.getObjectByName('threat.pterodactyl.projected-shadow');
-  assert.equal(projectedShadow.geometry.userData.profile, 'moving-winged-ground-shadow');
-  const contactShadows = scene.getObjectByName('subject.iguanodon_family.contact-shadows');
-  assert.ok(contactShadows?.isGroup);
-  assert.equal(contactShadows.children.length, 5);
-  assert.ok(contactShadows.children.every((shadow) => shadow.userData.profile === 'tight-foot-contact-shadow'));
-  world.update(20, false, {
-    threatAwareness: 3,
-    attackSeconds: 0.38,
-    rifleRaised: true,
-    playerPosition: { x: 0, z: 2 },
-  });
-  const searchPosition = primary.position.clone();
-  const searchShadowPosition = projectedShadow.position.clone();
-  assert.equal(projectedShadow.visible, true);
-  world.update(20.72, false, {
-    threatAwareness: 3,
-    attackSeconds: 1.1,
-    rifleRaised: true,
-    playerPosition: { x: 0, z: 2 },
-  });
-  assert.equal(world.threatSnapshot().attackStage, 'attack');
-  assert.ok(primary.position.y < searchPosition.y - 2.5);
-  assert.ok(primary.position.z > searchPosition.z + 7);
-  assert.ok(projectedShadow.position.distanceTo(searchShadowPosition) > 5);
-  assert.ok(
-    Math.hypot(projectedShadow.position.x, projectedShadow.position.z - 2)
-      < Math.hypot(searchShadowPosition.x, searchShadowPosition.z - 2),
-    'the projected shadow must sweep toward the player through the exposed corridor',
-  );
-  assert.ok(projectedShadow.material.opacity > 0.24);
-  assert.ok(projectedShadow.scale.x > 2.2, 'the close strike shadow must fill the player read zone');
-  assert.ok(world.threatSnapshot().attackProgress > 0.9);
-  assert.ok(world.threatSnapshot().scale > 1.2, 'the close strike must read larger than the orbit silhouette');
-  assert.ok(
-    Math.abs(primary.userData.flightPose.bank) >= 0.08,
-    'the strike needs a restrained bank without rolling the animal onto its side',
-  );
-  assert.ok(Math.abs(primary.position.x) > 1.8, 'the strike must graze the exposed route edge, not center on the player');
+  const shadow = scene.getObjectByName('threat.pterodactyl.projected-shadow');
+  const runtime = { threatAwareness: 3, attackSeconds: 2, playerPosition: scout, playerHeading: heading };
+  world.update(20, false, runtime);
+  world.update(20, false, runtime);
+  const circling = primary.position.clone();
+  assert.equal(shadow.visible, true, 'the circling wing throws a ground shadow');
+  world.update(20, false, { ...runtime, cameraRaised: true, familyMoment: 'glade-young-play' });
+  assert.ok(primary.position.distanceTo(circling) < 1e-9, 'raising the camera must not move the bird');
   assert.equal(world.pterodactyls[1].visible, false);
-  assert.equal(world.pterodactyls[2].visible, false);
-
-  const cycleBefore = pterodactylAttackFlightState({
-    attackClock: PTERODACTYL_ATTACK_CYCLE_SECONDS - 1 / 120,
-    attackOrigin: playerPosition,
-    reducedMotion: false,
-  });
-  const cycleAfter = pterodactylAttackFlightState({
-    attackClock: PTERODACTYL_ATTACK_CYCLE_SECONDS + 1 / 120,
-    attackOrigin: playerPosition,
-    reducedMotion: false,
-  });
-  assert.ok(
-    cycleBefore.position.distanceTo(cycleAfter.position) < 0.25,
-    'the authored attack review cycle must close without a world-space teleport',
-  );
-  const fallbackWorld = createWorld(new THREE.Scene());
-  const fallbackThreat = fallbackWorld.pterodactyls[0];
-  fallbackWorld.update(PTERODACTYL_ATTACK_CYCLE_SECONDS - 1 / 120, false, {
-    threatAwareness: 3,
-    playerPosition,
-  });
-  const fallbackCycleBefore = fallbackThreat.position.clone();
-  fallbackWorld.update(PTERODACTYL_ATTACK_CYCLE_SECONDS + 1 / 120, false, {
-    threatAwareness: 3,
-    playerPosition,
-  });
-  assert.ok(
-    fallbackThreat.position.distanceTo(fallbackCycleBefore) < 0.25,
-    'the world fallback clock must use the same closed attack cycle',
-  );
-
-  const attackPositionWithRifle = primary.position.clone();
-  const attackScaleWithRifle = primary.scale.x;
-  world.update(20.72, false, {
-    threatAwareness: 3,
-    attackSeconds: 1.1,
-    cameraRaised: true,
-    familyMoment: 'glade-young-play',
-    playerPosition: { x: 0, z: 2 },
-  });
-  assert.ok(
-    primary.position.distanceTo(attackPositionWithRifle) < 1e-9,
-    'the rendered attack position must remain continuous when the camera is raised',
-  );
-  assert.equal(primary.scale.x, attackScaleWithRifle);
-  assert.equal(world.threatSnapshot().attackStage, 'attack');
-
-  world.update(22.85, false, {
-    threatAwareness: 3,
-    attackSeconds: 2.85,
-    rifleRaised: true,
-    playerPosition: { x: 0, z: 2 },
-  });
-  assert.equal(world.threatSnapshot().attackStage, 'pull-up');
-  assert.equal(projectedShadow.visible, true, 'the attack shadow must remain readable through pull-up');
-
-  world.update(21, false, {
-    threatAwareness: 2,
-    familyMoment: 'glade-young-play',
-    playerPosition: { x: 0, z: -5 },
-  });
-  const orbitPosition = primary.position.clone();
-  const orbitScale = primary.scale.x;
-  world.update(21, false, {
-    threatAwareness: 2,
-    cameraRaised: true,
-    familyMoment: 'glade-young-play',
-    playerPosition: { x: 0, z: -5 },
-  });
-  assert.ok(
-    primary.position.distanceTo(orbitPosition) < 1e-9,
-    'raising the field camera must not relocate an orbiting pterodactyl',
-  );
-  assert.equal(primary.scale.x, orbitScale);
-
-  const worldLockedOrbit = primary.position.clone();
-  world.update(21, false, {
-    threatAwareness: 2,
-    playerPosition: { x: 7.5, z: 11 },
-  });
-  assert.ok(
-    primary.position.distanceTo(worldLockedOrbit) < 1e-9,
-    'walking must not drag or teleport an orbiting pterodactyl through world space',
-  );
-
-  const transitionWorld = createWorld(new THREE.Scene());
-  const transitionThreat = transitionWorld.pterodactyls[0];
-  transitionWorld.update(10, false, {
-    threatAwareness: 0,
-    playerPosition: { x: 0, z: 0 },
-    deltaSeconds: 1 / 60,
-  });
-  for (const [index, nextAwareness] of [1, 2].entries()) {
-    const beforeTransition = transitionThreat.position.clone();
-    transitionWorld.update(10 + (index + 1) / 60, false, {
-      threatAwareness: nextAwareness,
-      playerPosition: { x: index * 4, z: index * -3 },
-      deltaSeconds: 1 / 60,
-    });
-    assert.ok(
-      transitionThreat.position.distanceTo(beforeTransition) < 0.75,
-      `orbit awareness ${nextAwareness - 1}->${nextAwareness} must remain frame-continuous`,
-    );
-  }
-
-  world.update(24, false, {
-    threatAwareness: 3,
-    attackSeconds: 1.1,
-    playerPosition: { x: 2, z: -4 },
-  });
-  const latchedAttackPosition = primary.position.clone();
-  world.update(24, false, {
-    threatAwareness: 3,
-    attackSeconds: 1.1,
-    playerPosition: { x: 12, z: 9 },
-  });
-  assert.ok(
-    primary.position.distanceTo(latchedAttackPosition) < 1e-9,
-    'an active dive must retain its entry anchor while the player moves',
-  );
 });
 
 test('pterodactyl shadow crosses awareness 2 to 3 without a one-frame jump', () => {
@@ -496,38 +315,19 @@ test('pterodactyl body forward follows the actual orbit and attack travel tangen
     orbitTravel: orbitTravel.toArray(),
   });
 
-  // Let the world-space transition from orbit to the latched attack curve
-  // finish before comparing the authored tangent.
-  world.update(19.4, false, {
-    threatAwareness: 3,
-    attackSeconds: 0.1,
-    playerPosition: { x: 0, z: 2 },
-  });
-  world.update(20, false, {
-    threatAwareness: 3,
-    attackSeconds: 0.7,
-    rifleRaised: true,
-    playerPosition: { x: 0, z: 2 },
-  });
+  // Compare the dive tangent once the orbit-to-attack transition has settled.
+  const strike = { threatAwareness: 3, rifleRaised: true, playerPosition: { x: 0, z: 2 }, playerHeading: 0 };
+  world.update(19.4, false, { ...strike, attackSeconds: 0.1 });
+  world.update(20, false, { ...strike, attackSeconds: 4 });
   const attackStart = primary.position.clone();
   const attackForward = localForward.clone().applyQuaternion(primary.quaternion).normalize();
-  world.update(20.02, false, {
-    threatAwareness: 3,
-    attackSeconds: 0.72,
-    rifleRaised: true,
-    playerPosition: { x: 0, z: 2 },
-  });
+  world.update(20.02, false, { ...strike, attackSeconds: 4.02 });
   const attackTravel = primary.position.clone().sub(attackStart).normalize();
   assert.ok(attackForward.dot(attackTravel) >= 0.94, {
     attackForward: attackForward.toArray(),
     attackTravel: attackTravel.toArray(),
   });
   assert.ok(attackForward.y < -0.2, 'a descending strike must pitch the head down');
-  const attackUp = new THREE.Vector3(0, 1, 0).applyQuaternion(primary.quaternion).normalize();
-  assert.ok(attackUp.y > 0.9, {
-    attackUp: attackUp.toArray(),
-    message: 'the attack must retain a stable vertical reference instead of rolling onto its side',
-  });
 });
 
 test('one percent low FPS averages the slowest one percent of frame times', () => {

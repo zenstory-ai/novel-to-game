@@ -6,8 +6,7 @@ targetFinish: playable-prototype
 
 Build a self-contained desktop WebGL2 prototype in English. One real-input run must
 leave Fort Challenger, photograph a prehistoric family, survive the ecosystem response,
-return with a designed evidence result and restart cleanly within the approved 1–3
-minute session.
+return with a designed evidence result and restart cleanly within the approved session.
 
 The build implements the approved `GAME_DESIGN.md` and `ART_DIRECTION.md`; it must not
 replace the non-lethal scout fantasy with combat, crafting, a cinematic or a dashboard.
@@ -37,8 +36,9 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
    space with readable landmarks, cover and collision.
 2. Four physical plates whose two-axis live camera direction, exposure stability, captured
    obstruction, scale and distinct behaviour are checked throughout the exposure; empty, edge,
-   clear and smeared frames remain legible while recording stays live and exposed. Plate meaning
-   and its preview commit together at the final boundary. Crouching before the shutter braces the
+   clear and smeared frames remain legible while recording stays live and exposed; a body only at
+   the rim reads as off the glass, never as an animal that moved. Plate meaning and its preview
+   commit together at the final boundary, the preview rendered through the same lens that graded it. Crouching before the shutter braces the
    camera without removing exposure risk, while a continuously framed moving wing may be tracked.
 3. Readable iguanodon routine/young-play/branch-pull/alarm windows and pterodactyl
    distant/watch/search/attack states. Family behaviours and the optional committed-dive plate
@@ -46,7 +46,7 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
    creek scale, degrades rather than letting repeated shutters replace observation.
 4. Canopy cover, one recoverable contact, two rifle cartridges and the downstream cost
    of firing.
-5. A 180-second light budget, four alive result bands, deadline/contact failure and one
+5. A 300-second light budget, four alive result bands, deadline/contact failure and one
    clean restart state.
 6. A reduced edge HUD, first-use contextual prompts, qualitative daylight, physical
    plate-by-plate result review, captions and accessibility settings using the approved
@@ -58,22 +58,41 @@ accessible fallback. Returning across the Fort threshold after leaving must reso
 record even when the scout turns back before the glade.
 
 The representative Strong path records brook and basalt scale, reads the family, aims at
-young play, crouches under cover to widen the dive, returns for the later branch pull, returns
-without firing and reaches the Strong field record. An off-subject frame and a duplicate
+young play and the later branch pull from the thorn blind, crouching under cover to let the
+wings lose interest, returns without firing and reaches the Strong field record. An off-subject frame and a duplicate
 behaviour must score lower. A second Strong route may replace one family angle with a stable
 committed-dive plate, but must leave only a short camera-to-rifle response window. A fired-shot
 route must change later threat or route state.
 
+The optional stegosaurus beat (Chapter XII) starts from the first glade arrival; a framed plate
+while it drinks is a distinct behaviour. Every developed plate shows qualitative grade stamps
+(frame, detail, range, behaviour) and the results list which species reached glass.
+
 ## Required runtime assets
 
 The playable candidate needs the connected route, field camera, plate case, period
-rifle, adult/young family, pterodactyl, functional light, UI and directional audio.
+rifle, adult/young family, pterodactyl, stegosaurus, the baked ground layers, functional
+light, UI and directional audio.
 Their states and local source files belong in `asset-ledger.json`. Extra flora, markings,
 rookery population, volumetric humidity and secondary result animation are degradable.
 
 Focal tool or creature load failure blocks the candidate; it must not silently pass with
 an invisible substitute. Generated or licensed assets remain local and follow the rights
 boundary recorded in the ledger.
+
+## Look and asset pipeline
+
+The look is set in `../design/ART_DIRECTION.md` (Rendering look). Blender is the offline
+asset tool; its headless scripts live in `app/scripts/blender/` and regenerate committed
+outputs deterministically:
+
+- `bake_ground_textures.py` → `public/assets/ground/ground-{albedo,normal,orh}.jpg`: five
+  2 m tiles of scattered leaves, twigs, moss, pebbles over periodic heightfields, rendered
+  top-down by Cycles (diffuse colour, normal, depth, AO, roughness AOV), stacked as array
+  layers.
+- `build_stegosaurus.py` → `public/assets/stegosaurus-v1.glb`: Skin-modifier body, rigid
+  plates and thagomizer, procedural skin baked to 1k albedo/normal, auto-weighted rig with
+  Walk and Drink actions.
 
 ## Implementation freedom
 
@@ -106,7 +125,7 @@ complete path and atomically writes:
 
 - `../../qa/verification.json`: schema-v3 decision with launch, render, input, core loop,
   designed outcome and restart;
-- `../evidence/current-run/report.json`: environment, input trace and three representative
+- `../evidence/current-run/report.json`: environment, input trace and four representative
   checkpoints from that same run.
 
 Project-specific unit tests remain diagnostic regression for adopted systems; they do not

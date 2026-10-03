@@ -8,9 +8,11 @@ export const TRACK_IMPRESSION = Object.freeze({
 });
 
 export const COVER_ARCH_LAYOUT = Object.freeze([
-  Object.freeze({ centerX: -7, z: 28, spread: 3.5 }),
+  // Pair 0 straddles the brook (its east tree used to stand mid-stream) and
+  // pair 2 keeps its east trunk a metre clear of the water's edge.
+  Object.freeze({ centerX: -10.6, z: 28, spread: 3 }),
   Object.freeze({ centerX: -12, z: 18, spread: 3.82 }),
-  Object.freeze({ centerX: -17, z: 8, spread: 3.5 }),
+  Object.freeze({ centerX: -17.2, z: 8, spread: 3.4 }),
   Object.freeze({ centerX: -22, z: -3, spread: 3.82 }),
   Object.freeze({ centerX: -13, z: 13, spread: 3.5 }),
 ]);
@@ -19,6 +21,79 @@ export const COVER_ARCH_LAYOUT = Object.freeze([
 // them as individual riparian trees rather than five load-bearing arches. The
 // scale, age and wind history vary above ground only; x/z remain the authored
 // collision and terrain-ecology sources.
+// The thorn and tree-fern band the scout can hide under: a walkable corridor
+// west of the trail from the brook bar to a blind at the glade edge. Its
+// centreline and half-width are the only definition of cover; the meshes are
+// placed along the same line so what reads as shelter is shelter.
+export const COVER_BAND = Object.freeze({
+  halfWidth: 2.2,
+  centerline: Object.freeze([
+    [-3.6, 31], [-3.6, 24], [-3.8, 14], [-3.4, 5], [-2.2, -3], [-1.4, -9], [-0.8, -13.5],
+  ].map((point) => Object.freeze(point))),
+  // The southern end opens toward the family: the glade-edge blind.
+  blind: Object.freeze({ x: -1.1, z: -11.5 }),
+});
+
+export function coverBandDistance(x, z) {
+  const line = COVER_BAND.centerline;
+  let best = Infinity;
+  for (let index = 1; index < line.length; index += 1) {
+    const [ax, az] = line[index - 1];
+    const [bx, bz] = line[index];
+    const dx = bx - ax;
+    const dz = bz - az;
+    const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz)));
+    best = Math.min(best, Math.hypot(x - (ax + dx * t), z - (az + dz * t)));
+  }
+  return best;
+}
+
+export function coverBandContains(x, z) {
+  return coverBandDistance(x, z) <= COVER_BAND.halfWidth;
+}
+
+// Points every `spacing` metres along the band centreline, with the unit
+// normal pointing to the east (+x) side of the walk.
+export function coverBandSamples(spacing) {
+  const samples = [];
+  const line = COVER_BAND.centerline;
+  let carried = 0;
+  for (let index = 1; index < line.length; index += 1) {
+    const [ax, az] = line[index - 1];
+    const [bx, bz] = line[index];
+    const length = Math.hypot(bx - ax, bz - az);
+    const tx = (bx - ax) / length;
+    const tz = (bz - az) / length;
+    for (let distance = carried; distance < length; distance += spacing) {
+      samples.push(Object.freeze({
+        x: ax + tx * distance,
+        z: az + tz * distance,
+        normalX: -tz,
+        normalZ: tx,
+        yaw: Math.atan2(tx, tz),
+      }));
+      carried = distance + spacing - length;
+    }
+  }
+  return samples;
+}
+
+// Tree ferns stand just outside both edges of the band, staggered, so their
+// crowns meet over the walk; the blind's open south end stays clear.
+export const COVER_BAND_TREE_FERNS = Object.freeze(coverBandSamples(2.7).flatMap((sample, index) => {
+  if (sample.z < COVER_BAND.blind.z + 1) return [];
+  const side = index % 2 === 0 ? 1 : -1;
+  // Irregular set-backs and ages so the band reads as growth, not a planting.
+  const offset = COVER_BAND.halfWidth + 0.55 + ((index * 53) % 7) * 0.12;
+  const scale = 0.7 + ((index * 37) % 11) * 0.045;
+  return [Object.freeze([
+    sample.x + sample.normalX * offset * side,
+    sample.z + sample.normalZ * offset * side,
+    scale,
+    (index * 1.618) % (Math.PI * 2),
+  ])];
+}));
+
 const COVER_RIPARIAN_GROWTH = Object.freeze([
   Object.freeze([0.82, -0.34, 'elliptic-waxy', 'submature', 0.08]),
   Object.freeze([0.94, 0.76, 'compound-lanceolate', 'mature', 0.04]),
@@ -148,7 +223,7 @@ export const NON_COLUMNAR_ROCK_LAYOUT = Object.freeze([
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
   }),
   Object.freeze({
-    id: 'brook-cobble-east-3', family: 'fluvial-cobble', x: -3.8, z: 10.2,
+    id: 'brook-cobble-east-3', family: 'fluvial-cobble', x: -6.7, z: 10.2,
     yaw: 0.4, scale: [0.5, 0.52, 0.42], burial: 0.06,
     solid: true, collisionRadius: 0.5, collisionHeight: 0.43,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyCreatureSkin } from './creature-skin.js';
 
 export const HY3D_PTERODACTYL_ASSET = Object.freeze({
   url: '/assets/pterodactyl-hy3d-v35-stylized.glb',
@@ -121,8 +122,7 @@ function prepareMaterial(material) {
     material.emissiveIntensity = 0.028;
   }
   if (material.normalScale) material.normalScale.multiplyScalar(0.76);
-  material.needsUpdate = true;
-  return material;
+  return applyCreatureSkin(material, { rim: 0.6, belly: 0.3 });
 }
 
 function prepareTemplate(source) {

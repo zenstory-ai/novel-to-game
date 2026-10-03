@@ -2,20 +2,22 @@
 
 ## Player promise
 
-In one 1–3 minute first-person expedition, cross a readable prehistoric basin,
+In one first-person expedition of at most five minutes of daylight, cross a readable prehistoric basin,
 photograph behaviour that can survive scrutiny, escape the ecosystem's response and
 return the physical plates to Fort Challenger.
 
 The player is a forward scout, not a hunter. Success comes from reading terrain,
 exposure and animal behaviour; defense only reopens an escape route. The design adapts
 the novel's disputed sightings, dangerous field observations and damaged-proof return
-from Chapters 4, 10–12 and 16.
+from Chapters 4, 10–12 and 16, including Malone's stegosaurus at the drinking-place.
 
 ## Experience profile and pillars
 
 - **Type:** real-time first-person 3D connected-zone survival adventure.
 - **Mastery:** route knowledge, observation timing and threat reading; no build grind.
-- **Session:** 180 seconds available; a learned path finishes in 45–120 seconds.
+- **Session:** 300 seconds of light per run; a learned path finishes in about 90 seconds, a
+  first run that waits for the stegosaurus uses most of the light, and a first visit with a
+  restart lasts 5–10 minutes.
 - **Outcome:** the physical record that reaches Fort, not enemies defeated.
 
 Three pillars govern every system:
@@ -56,12 +58,12 @@ move and inspect → choose a view → expose a plate → read the response
 The player carries four glass plates. Raising the field camera exposes the player;
 releasing the shutter spends one plate after a live two-second commitment. A plate earns visible
 cues for subject visibility, scale, ecological context or a distinct behaviour, up to eight
-total authored points across the run. The camera reads both axes of the scout's live view:
-turning or pitching away records an empty plate, an edge frame records form only, and a clear
-view can record context or behaviour. Losing the subject, behaviour window or clear composition
-during the exposure lowers the final plate even if the shutter began clean. Panning across a
-static subject smears decisive detail down to at most one cue and removes behaviour proof;
-crouching before the shutter braces the camera and widens the stable tolerance. A continuously
+total authored points across the run. A plate is graded from what the long lens (26°) holds:
+each animal is projected through the live camera, so an animal off the glass records nothing,
+one cut at the edge, behind leaves or far away records form only (one cue), and a clear,
+near-enough view can record context or behaviour. Behaviour is judged at the click; losing the
+animal or an alarm mid-exposure still lowers the plate. Panning across a static subject smears
+decisive detail down to at most one cue; crouching or cover braces the camera. A continuously
 framed pterodactyl can instead be tracked through its motion. Repeating any two-cue composition,
 including basalt or creek scale, cannot replace a new angle. The preview shows the final-boundary
 composition and named evidence captured, not an earlier shutter snapshot or abstract quality bar.
@@ -70,37 +72,47 @@ composition and named evidence captured, not an earlier shutter snapshot or abst
 
 The iguanodon family cycles through routine feeding, young play and an adult branch pull after
 the scout deliberately lowers tools and holds the group in a clear, still view for about a
-second and a half. The explicit examine
+second and a half. Walking upright within about eight metres (four crouched) alarms the family:
+the window closes and the nearest animals step away. Within fifteen metres they watch the scout. The explicit examine
 input remains an accessible alternative, but the primary verb is watching rather than pressing
 a scan button. Posture plus directional sound announce each short window. At high
 threat the family shifts to alarm, closing the undisturbed behaviour opportunity until the
-scout restores distance. The pterodactyl moves through distant, watch, search and attack
+scout restores distance. About eight seconds after the scout first reaches the glade, the stegosaurus walks out of the
+western trees, drinks broadside at the brook for thirty seconds and lumbers away (Chapter XII:
+"the very creature which Maple White had preserved in his sketch-book"). A framed plate while
+it drinks is a distinct two-cue behaviour; walking or edge frames record form only. It is
+optional, slow and off the walking line, so waiting for it is a choice against the light and
+the wings. The pterodactyl moves through distant, watch, search and attack
 behaviour. Its numeric state is hidden; silhouette, call, shadow and flight path communicate
-it. During the committed part of a dive, looking up and holding the wing in frame can earn two
-behaviour cues, creating a genuine camera-versus-rifle decision with only a short tool-swap
-window before contact. Dense canopy breaks a dive but obstructs photography. The family
+it. Each open exposure raises its attention one step (never more); arriving in the glade only
+puts it on watch, so an attack needs two open plates, or one and a sprint. The attack is a
+low, slow circle in front of the scout for four seconds, then a dive that lands at five and a half:
+time to reach the thorns, raise the rifle, or photograph the circling wing (two cues) and still
+swap to the rifle. Contact cracks the latest plate. The family
 withdraws rather than becoming combat targets.
 
 ### Route and defense
 
-Open basalt offers scale and clean framing but high exposure. Canopy offers safety and
-poor framing. Remaining still under cover lets a dive widen; crouching makes that recovery
-faster, turning concealment into an active fieldcraft choice rather than dead waiting. A timely
-rifle shot consumes a cartridge and shears away one dive; its noise makes the direct creek
-route less safe. The long thorn route is slower but offers cover. Leaving navigable space
+Open basalt offers scale and clean framing but high exposure. Cover is one visible band of
+thorn arches and tree ferns west of the trail, ending in a blind at the glade edge with a clear
+view of the family; under it no strike lands, and staying (faster crouched) lets a dive widen.
+A timely rifle shot consumes a cartridge and shears away one dive; its noise makes the direct
+creek route less safe. Routes cost only their walking time; a scout who drops the case moves
+faster. Leaving navigable space
 returns the player to stable ground rather than causing an invisible death.
 
 ### State budget
 
 | State | Values and consequence |
 |---|---|
-| Light | 180 seconds; expiry outside Fort fails the run |
+| Light | 300 seconds; expiry outside Fort fails the run |
 | Plates | Four physical slots; each becomes unexposed, recorded, cracked or lost |
 | Evidence | 0–8 internal authored cues derived from captured conditions; the UI names observations rather than showing a score |
 | Exposure stability | Live angular drift; bracing widens tolerance, smear removes decisive detail |
 | Body margin | One recoverable contact; a second unblocked hit fails |
 | Rifle | Two cartridges; firing changes threat and return conditions |
 | Behaviour cycle | Routine, young play, branch pull or alarm; the live moment determines the plate |
+| Stegosaurus | Absent, approach, drinking, leaving; one deterministic timeline from first glade arrival |
 | Route history | Observation position, cover use, shot history and chosen return persist to result |
 
 No outcome-changing randomness is required. Pause and focus loss freeze input, time and
@@ -108,10 +120,13 @@ pending consumption. Restart restores one clean initial state.
 
 ## Results and failure
 
-Alive results are **No record** (0), **Insufficient** (1–3), **Corroborating**
+Each developed plate is graded on the spot in words, not numbers: frame (clean / cut at the
+edge / empty), detail (sharp / smeared), range (close / fair / distant / overhead) and
+behaviour (named or none), with one line of what the sceptic Summerlee would say. Alive
+results are **No record** (0), **Insufficient** (1–3), **Corroborating**
 (4–5) and **Strong field record** (6–8). Results first place the surviving physical
-plates, annotate the concrete observation on each, then state what the route and threat did
-to the record. Exact cue totals and remaining seconds stay out of the player-facing verdict.
+plates with the same stamps, list which species reached glass, then state what the route
+and threat did to the record. Exact cue totals and remaining seconds stay out of the player-facing verdict.
 Cracked or lost plates cannot contribute. Crossing back into Fort after leaving resolves a
 turnback even if the scout never reached the glade, so retreat is a valid weak result rather
 than a dead end.
@@ -132,9 +147,18 @@ held beneath the cause card. Restart is the only reset.
 5. **Altered return:** the player chooses covered thorns or exposed creek under the
    consequences of prior exposure and gunfire, then reaches Fort.
 
-The first controllable frame centres the track and brook edge. No minimap, objective
-arrow or lore panel competes with it. Contextual prompts disappear after use; route and
-threat information stays in the world.
+The first controllable frame centres the track toward the dark canopy; the brook comes
+into view a few steps on. No minimap, objective arrow or lore panel competes with it.
+Contextual prompts clear when their condition ends, and onboarding prompts show once per
+run. Route and threat information stays in the world, except the two centred banners:
+the attack banner (what is circling, where the nearest cover lies, crouch and rifle keys)
+and the contact banner that names the plate broken.
+
+| Genre shell | State | How |
+|---|---|---|
+| Entry and movement | Implemented | Title → field order note → first-person control on the track |
+| Objective guidance | Degraded | Order note, contextual prompts, directional captions, threat banner and camp smoke instead of a waypoint |
+| Progression and return | Not done | No meta-progression; the result board's species checklist and next-band line give the reason to return |
 
 ## Feedback and interface
 
@@ -145,8 +169,10 @@ threat information stays in the world.
   developed preview names what the plate actually retained.
 - The exposure line changes when the camera is braced, steady or already smeared; it never
   rewinds a committed plate or guarantees the shutter will remain safe.
-- Calls, wing shadow and flight path carry threat escalation; colour is redundant.
-- Edge UI shows physical plate state, qualitative remaining light and cartridges. It never
+- Calls, wing shadow and flight path carry threat escalation; a committed dive also closes
+  and desaturates the frame edges with a slow pulse. Colour is never the only signal.
+- Edge UI shows physical plate state and qualitative remaining light; cartridges appear once
+  the rifle is relevant (raised once, or an attack is live). It never
   exposes awareness, cue totals or exact seconds as numbers or turns the centre into a dashboard.
 - Reduced motion removes head bob, shake and FOV kick while retaining timing and state.
 - Text scales to 150%; captions identify direction and source for important calls.
@@ -159,15 +185,16 @@ objective messages and claims that London now believes.
 ## Playable prototype and boundaries
 
 A representative Strong path leaves Fort, records the brook and basalt scale, reads the
-family, aims at and captures young play, breaks the dive by crouching under cover, returns
-for the later branch pull, then takes the covered route and restarts cleanly. Looking away,
+family from the thorn blind, captures young play and the later branch pull from cover,
+then walks back under the thorn band and restarts cleanly. Looking away,
 moving during exposure, shooting the same behaviour twice and photographing the alarm state
 must all produce weaker records. An alternate Strong path can combine basalt scale, one family
 behaviour and a committed pterodactyl dive, but requires finishing the exposure and swapping to
 the rifle before contact; firing then carries the downstream route cost. Exact inputs and
 current evidence belong to the build verifier, not this design document.
 
-The prototype includes one connected route, four plates, one family, one threat, cover,
+The prototype includes one connected route, four plates, one family, one optional
+stegosaurus beat, one threat, cover,
 two defensive shots, four alive result bands, two failures and restart. It excludes a
 full plateau, crafting, progression, loot, killing, multiple weapons, dialogue choices,
 multiplayer, mobile/touch, backend and modern adaptation imagery.

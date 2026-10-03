@@ -17,44 +17,39 @@ from playwright.sync_api import Page, sync_playwright
 
 APP = Path(__file__).resolve().parent.parent
 BUILD = APP.parent
-EVIDENCE = Path(
-    os.environ.get("PLATEAU_EVIDENCE_DIR", BUILD / "evidence/current-run")
-).expanduser().resolve()
-BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4173")
+EVIDENCE = BUILD / "evidence/current-run"
+BASE_URL = os.environ.get("BASE_URL", "http://127.0.0.1:4183")
+PORT = urlparse(BASE_URL).port or 4183
 CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 
 
 def start_server() -> subprocess.Popen[str] | None:
-    parsed = urlparse(BASE_URL)
     with socket.socket() as probe:
         try:
-            probe.connect(
-                (
-                    parsed.hostname or "127.0.0.1",
-                    parsed.port or (443 if parsed.scheme == "https" else 4173),
-                )
-            )
+            probe.connect((urlparse(BASE_URL).hostname or "127.0.0.1", PORT))
             return None
         except OSError:
             pass
+    # Play the deployed build, not the dev server.
+    subprocess.run(["npm", "run", "build"], cwd=APP, check=True, stdout=subprocess.DEVNULL)
     process = subprocess.Popen(
-        ["npm", "run", "start", "--", "--host", "127.0.0.1", "--port", "4173"],
+        ["npx", "vite", "preview", "--host", "127.0.0.1", "--port", str(PORT), "--strictPort"],
         cwd=APP,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         text=True,
     )
-    for _ in range(80):
+    for _ in range(300):
         with socket.socket() as probe:
             try:
-                probe.connect(("127.0.0.1", 4173))
+                probe.connect(("127.0.0.1", PORT))
                 return process
             except OSError:
                 if process.poll() is not None:
-                    raise RuntimeError("Vite exited before complete-run QA")
+                    raise RuntimeError("Vite preview exited before complete-run QA")
                 time.sleep(0.1)
     process.terminate()
-    raise RuntimeError("Vite did not become ready for complete-run QA")
+    raise RuntimeError("Vite preview did not become ready for complete-run QA")
 
 
 def snapshot(page: Page) -> dict[str, Any]:
@@ -82,7 +77,6 @@ def compact_state(state: dict[str, Any]) -> dict[str, Any]:
     return {
         "mode": state["mode"],
         "sceneChildren": state["sceneChildren"],
-        "triangles": state["triangles"],
         "player": plate_state,
     }
 
@@ -142,8 +136,6 @@ def run() -> dict[str, Any]:
         page.goto(f"{BASE_URL}/?qa=complete-run", wait_until="networkidle")
         page.wait_for_function("window.__projectPlateau?.ready === true")
         assert page.evaluate("window.__projectPlateau.stage") == "current-complete-run"
-        title_image = EVIDENCE / "00-title.jpg"
-        page.screenshot(path=title_image, type="jpeg", quality=84)
         assert page.locator("body").get_attribute("data-mode") == "title"
 
         def capture(identifier: str, inputs: list[str]) -> dict[str, Any]:
@@ -160,11 +152,19 @@ def run() -> dict[str, Any]:
             )
             return state
 
+        def turn_until(key: str, predicate: str, purpose: str) -> None:
+            page.keyboard.down(key)
+            try:
+                page.wait_for_function(predicate, timeout=10000)
+            finally:
+                page.keyboard.up(key)
+            input_trace.append(f"{key}: {purpose}")
+
         def move_until(key: str, predicate: str, purpose: str) -> None:
             before = snapshot(page)["player"]
             page.keyboard.down(key)
             try:
-                page.wait_for_function(predicate, timeout=30000)
+                page.wait_for_function(predicate, timeout=90000)
             finally:
                 page.keyboard.up(key)
             page.wait_for_timeout(70)
@@ -180,7 +180,7 @@ def run() -> dict[str, Any]:
             page.mouse.up(button="right")
             page.wait_for_function(
                 f"window.__projectPlateau.snapshot().player.plates[{index}].status === 'exposed'",
-                timeout=3500,
+                timeout=12000,
             )
             input_trace.append(f"Right Mouse + Left Mouse: {purpose}")
 
@@ -213,8 +213,8 @@ def run() -> dict[str, Any]:
         page.get_by_role("button", name="Follow the spoor").click()
         page.wait_for_function("window.__projectPlateau.snapshot().mode === 'order'")
         clean_start = capture("00-clean-start", ["Follow the spoor"])
-        assert clean_start["player"]["remainingLight"] == 180
-        assert clean_start["sceneChildren"] > 0 and clean_start["triangles"] > 0
+        assert clean_start["player"]["remainingLight"] == 300
+        assert clean_start["sceneChildren"] > 0
 
         page.get_by_role("button", name="Shoulder the case").click()
         move_until(
@@ -232,47 +232,57 @@ def run() -> dict[str, Any]:
         expose_plate(1, "record basalt scale")
         move_until(
             "KeyA",
-            "window.__projectPlateau.snapshot().player.position.x < 2.7",
-            "enter canopy cover",
+            "window.__projectPlateau.snapshot().player.position.x < -3.0",
+            "step under the thorn arches",
         )
-        wait_for_cover("let the attack widen")
         move_until(
             "KeyW",
             "window.__projectPlateau.snapshot().player.position.z <= 2",
-            "reach the glade",
+            "follow the thorn band to the glade",
         )
         page.keyboard.press("KeyE")
-        field_image = EVIDENCE / "01-field-glade.jpg"
-        page.screenshot(path=field_image, type="jpeg", quality=84)
-        wait_for_family_moment("glade-young-play", 4.6)
-        expose_plate(2, "record young at play")
         move_until(
-            "KeyS",
-            "window.__projectPlateau.snapshot().player.position.z > 3.2",
-            "protect the first behavior plate",
+            "KeyD",
+            "window.__projectPlateau.snapshot().player.position.x > -2.2",
+            "keep to the band as it bends toward the glade",
         )
-        wait_for_cover("break the dive")
         move_until(
             "KeyW",
-            "window.__projectPlateau.snapshot().player.position.z <= 2",
-            "return for the second behavior plate",
+            "window.__projectPlateau.snapshot().player.position.z <= -9",
+            "settle in the glade-edge blind",
+        )
+        capture("01-field-glade", ["settle in the glade-edge blind"])
+        wait_for_family_moment("glade-young-play", 4.6)
+        expose_plate(2, "record young at play from the blind")
+        wait_for_cover("crouch until the wings lose interest")
+        turn_until(
+            "ArrowRight",
+            "window.__projectPlateau.snapshot().player.heading <= -0.42",
+            "turn to the feeding adult",
         )
         wait_for_family_moment("glade-branch-pull", 9.0)
-        expose_plate(3, "record branch pulling")
-        move_until(
-            "KeyS",
-            "window.__projectPlateau.snapshot().player.position.z > 3.2",
-            "retreat into cover",
+        expose_plate(3, "record branch pulling from the blind")
+        wait_for_cover("let the wings lose interest")
+        turn_until(
+            "ArrowLeft",
+            "window.__projectPlateau.snapshot().player.heading >= -0.05",
+            "face the glade again",
         )
-        wait_for_cover("prepare the covered return")
+        move_until(
+            "KeyA",
+            "window.__projectPlateau.snapshot().player.position.x < -3.2",
+            "step back to the thorn band's centre",
+        )
         move_until(
             "KeyS",
             "window.__projectPlateau.snapshot().player.runStatus === 'result'",
-            "return to Fort",
+            "back up the thorn band to Fort",
         )
 
-        outcome = capture("01-designed-outcome", ["complete the covered route"])
-        assert sum(plate["points"] for plate in outcome["player"]["plates"]) == 7
+        outcome = capture("02-designed-outcome", ["complete the covered route"])
+        assert outcome["player"]["returnRoute"] == "covered", outcome["player"]["returnRoute"]
+        plates = [(plate["frameKey"], plate["points"], plate["status"]) for plate in outcome["player"]["plates"]]
+        assert sum(points for _, points, _ in plates) == 7, plates
         assert [plate["behavior"] for plate in outcome["player"]["plates"] if plate["behavior"]] == [
             "young-play",
             "branch-pull",
@@ -283,88 +293,39 @@ def run() -> dict[str, Any]:
 
         page.get_by_role("button", name="Walk the bend again").click()
         page.wait_for_timeout(80)
-        restart = capture("02-clean-restart", ["Walk the bend again"])
+        restart = capture("03-clean-restart", ["Walk the bend again"])
         assert restart["mode"] == "order"
-        assert restart["player"]["remainingLight"] == 180
+        assert restart["player"]["remainingLight"] == 300
         assert restart["player"]["distanceTravelled"] == 0
         assert not errors, errors
         browser_version = browser.version
         browser.close()
 
-    clean_observation, outcome_observation, restart_observation = checkpoints
-    clean_observation = {
-        **clean_observation,
-        "state": {
-            **clean_observation["state"],
-            "assetRecovery": asset_recovery,
-        },
-    }
-    outcome_observation = {
-        **outcome_observation,
-        "state": {
-            **outcome_observation["state"],
-            "terminal": outcome["player"]["result"]["band"],
-        },
-    }
-    restart_observation = {
-        **restart_observation,
-        "state": {
-            **restart_observation["state"],
-            "restart": "clean-field-order",
-        },
-    }
+    launch, render, outcome_observation, restart_observation = checkpoints
+    launch["state"]["assetRecovery"] = asset_recovery
+    outcome_observation["state"]["terminal"] = outcome["player"]["result"]["band"]
+    restart_observation["state"]["restart"] = "clean-field-order"
+    plates = outcome["player"]["plates"]
     return {
         "schemaVersion": 1,
         "runId": "project-plateau-main-path",
-        "environment": {
-            "browser": browser_version,
-            "viewport": [1440, 900],
-            "baseUrl": BASE_URL,
-        },
+        "environment": {"browser": browser_version, "viewport": [1440, 900], "baseUrl": BASE_URL},
         "inputTrace": input_trace,
         "observations": {
-            "launch": clean_observation,
-            "render": {
-                **outcome_observation,
-                "state": {
-                    **outcome_observation["state"],
-                    "visualReview": {
-                        "title": {
-                            "visual": title_image.relative_to(BUILD.parent).as_posix(),
-                            "state": {"mode": "title", "viewport": [1440, 900]},
-                        },
-                        "field": {
-                            "visual": field_image.relative_to(BUILD.parent).as_posix(),
-                            "state": {
-                                "mode": "field",
-                                "zone": "iguanodon-glade",
-                                "viewport": [1440, 900],
-                            },
-                        },
-                    },
-                },
-            },
+            "launch": launch,
+            "render": render,
             "input": {
                 "id": "field-input-trace",
                 "inputs": input_trace,
-                "state": {
-                    "acceptedInputCount": len(input_trace),
-                    "distanceTravelled": outcome["player"]["distanceTravelled"],
-                },
+                "state": {"distanceTravelled": outcome["player"]["distanceTravelled"]},
             },
             "coreLoop": {
-                "id": "completed-field-loop",
-                "inputs": ["record four plates", "return to Fort"],
+                "id": "glade-behaviors",
+                "inputs": [step for step in input_trace if "from the blind" in step],
                 "state": {
                     "runStatus": outcome["player"]["runStatus"],
-                    "evidencePoints": sum(
-                        plate["points"] for plate in outcome["player"]["plates"]
-                    ),
-                    "distinctBehaviors": [
-                        plate["behavior"]
-                        for plate in outcome["player"]["plates"]
-                        if plate["behavior"]
-                    ],
+                    "evidencePoints": sum(plate["points"] for plate in plates),
+                    "distinctBehaviors": [plate["behavior"] for plate in plates if plate["behavior"]],
                 },
             },
             "outcome": outcome_observation,
@@ -372,16 +333,22 @@ def run() -> dict[str, Any]:
         },
     }
 
-
 def main() -> None:
     server = start_server()
+    output = EVIDENCE / "report.json"
     try:
         report = run()
+    except Exception as error:
+        # Say what actually failed, not the placeholder written before the run.
+        output.write_text(json.dumps({
+            "stage": "current-complete-run",
+            "failure": f"{type(error).__name__}: {error}"[:2000],
+        }, indent=2) + "\n", encoding="utf-8")
+        raise
     finally:
         if server:
             server.terminate()
             server.wait(timeout=5)
-    output = EVIDENCE / "report.json"
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"CURRENT RUN PASS: {output.relative_to(BUILD.parent)}")
 

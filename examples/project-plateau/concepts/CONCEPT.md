@@ -3,7 +3,7 @@
 ## Selected direction
 
 **Proof Before Dark** is a free, single-player, first-person 3D survival-adventure
-slice for desktop web. In one 1–3 minute run, the player leaves Fort Challenger,
+slice for desktop web. In one run of at most five minutes of daylight, the player leaves Fort Challenger,
 records credible evidence of a living prehistoric ecosystem, survives its response
 and returns with the plates intact.
 

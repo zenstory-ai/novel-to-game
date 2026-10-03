@@ -16,6 +16,8 @@ test('gameplay keys are accepted only by an active unpaused field view', () => {
   assert.equal(shouldCaptureGameplayKey('KeyW', { ...activeField, paused: true }), false);
   assert.equal(shouldCaptureGameplayKey('KeyW', { ...activeField, cameraMode: 'order' }), false);
   assert.equal(shouldCaptureGameplayKey('KeyF', activeField), false);
+  // Ctrl is never a game key: Ctrl+W closes the tab and Ctrl+Arrow switches spaces.
+  assert.equal(shouldCaptureGameplayKey('ControlLeft', activeField), false);
 });
 
 test('mouse deltas update heading and pitch with explicit signs and clamps', () => {

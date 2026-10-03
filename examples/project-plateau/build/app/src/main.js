@@ -10,10 +10,15 @@ import { DAYLIGHT_ENERGY_PROFILE } from './daylight-energy.js';
 import {
   daylightCondition,
   frameConditionCopy,
+  gradeForPlate,
+  nextBandCopy,
   noteForPlate,
+  verdictForPlate,
   routeConsequence,
 } from './field-journal.js';
+import { PLATE_WINDOW, createFrameEvidenceProbe } from './frame-evidence.js';
 import { createFieldLighting } from './field-lighting.js';
+import { createDaylightClock } from './daylight-clock.js';
 import { createFieldPostprocessing } from './field-postprocessing.js';
 import { createHeightFogController } from './height-fog.js';
 import {
@@ -31,7 +36,9 @@ import {
 } from './settings.js';
 import {
   ABANDON_HOLD_SECONDS,
+  CONTACT_SECONDS,
   EXPOSURE_SECONDS,
+  INITIAL_LIGHT_SECONDS,
   MAX_STEADY_DRIFT_RADIANS,
   abandonPromptDue,
   createPlayerState,
@@ -46,11 +53,16 @@ import {
   startExposure,
   stepPlayer,
 } from './simulation.js';
-import { terrainHeight } from './terrain.js';
+import { brookFluvialProcessAt, terrainHeight } from './terrain.js';
 import { createViewmodelController } from './viewmodel.js';
 import { createWorld } from './world.js';
+import { createGrassField } from './grass-field.js';
+import { createFieldMotes } from './field-motes.js';
+import { createStegosaurus } from './stegosaurus.js';
+import { stegosaurusPose } from './stegosaurus-path.js';
 import { hideLoading, showLoading } from './loading-screen.js';
 import { createFrameCommitGate } from './frame-commit-gate.js';
+import { COVER_BAND } from './environment-layout.js';
 
 const canvas = document.querySelector('#game-canvas');
 const runtimeError = document.querySelector('#runtime-error');
@@ -70,6 +82,9 @@ const platePreview = document.querySelector('#plate-preview');
 const previewImage = platePreview.querySelector('.preview-image');
 const previewNumber = document.querySelector('#preview-number');
 const previewCopy = document.querySelector('#preview-copy');
+const previewGrade = document.querySelector('#preview-grade');
+const previewVerdict = document.querySelector('#preview-verdict');
+const terminalLedger = document.querySelector('#terminal-ledger');
 const contactNote = document.querySelector('#contact-note');
 const plateRail = document.querySelector('#plate-rail');
 const plateSlots = [...plateRail.children];
@@ -78,6 +93,7 @@ const cartridgeSlots = [...cartridgeDisplay.children];
 const captionLine = document.querySelector('#caption-line');
 const lightWatch = document.querySelector('#light-watch');
 const lightSeconds = document.querySelector('#light-seconds');
+const lightBar = document.querySelector('#light-bar');
 const terminalPanel = document.querySelector('#terminal-panel');
 const terminalBoardSlots = [...terminalPanel.querySelector('.terminal-board').children];
 const terminalEyebrow = document.querySelector('#terminal-eyebrow');
@@ -85,6 +101,7 @@ const terminalTitle = document.querySelector('#terminal-title');
 const terminalResultCopy = document.querySelector('#terminal-result-copy');
 const terminalDetail = document.querySelector('#terminal-detail');
 const terminalCallback = document.querySelector('#terminal-callback');
+const terminalNext = document.querySelector('#terminal-next');
 document.querySelector('#build-badge').textContent = 'Challenger expedition · field copy';
 const query = new URLSearchParams(window.location.search);
 const systemReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -110,14 +127,14 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(qualityRenderPixelRatio(window.devicePixelRatio, presentationSettings.quality));
 renderer.setSize(window.innerWidth, window.innerHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMapping = THREE.AgXToneMapping;
 renderer.toneMappingExposure = DAYLIGHT_ENERGY_PROFILE.toneMappingExposure;
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x367c8e);
-scene.fog = new THREE.FogExp2(0x78a1a3, DAYLIGHT_ENERGY_PROFILE.fogDensityPerMeter);
+scene.background = new THREE.Color(0x8fb4c2);
+scene.fog = new THREE.FogExp2(0x8fb0b8, DAYLIGHT_ENERGY_PROFILE.fogDensityPerMeter);
 const atmosphere = createAtmosphere(scene);
 const atmosphereEnvironment = applyAtmosphereEnvironment(scene, renderer);
 
@@ -128,19 +145,24 @@ const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerH
 const titleCameraPosition = new THREE.Vector3(-3.5, 1.7, 16);
 const titleCameraTarget = new THREE.Vector3(0, 1.2, -33);
 
-const { sun } = createFieldLighting(scene);
+const { sun, hemisphere, follow: followSunShadow } = createFieldLighting(scene);
+const daylight = createDaylightClock({
+  scene, renderer, sun, hemisphere, environment: atmosphereEnvironment,
+});
 const world = createWorld(scene);
+const grassField = createGrassField(scene, world.terrain);
+const fieldMotes = createFieldMotes(scene);
+const stegosaurus = createStegosaurus(scene);
 const heightFog = createHeightFogController(camera, SUN_DIRECTION);
 heightFog.applyTo(scene);
-atmosphere.userData.applyCloudShadowsTo(scene);
 let hy3dVisualPromise = null;
 function ensureHy3dVisuals() {
   if (!hy3dVisualPromise) {
-    hy3dVisualPromise = world.enableHy3dVisuals()
-      .then((result) => {
+    hy3dVisualPromise = Promise.all([world.enableHy3dVisuals(), stegosaurus.load()])
+      .then(async ([result]) => {
         heightFog.applyTo(scene);
-        atmosphere.userData.applyCloudShadowsTo(scene);
         world.requestBrookReflectionRefresh();
+        await prewarmShaders();
         return result;
       })
       .catch((error) => {
@@ -150,8 +172,29 @@ function ensureHy3dVisuals() {
   }
   return hy3dVisualPromise;
 }
+const frameProbe = createFrameEvidenceProbe({
+  camera,
+  terrainHeight,
+  subjects: () => [
+    ...world.family.map((animal) => ({
+      subject: 'iguanodon', role: animal.userData.behaviorRole, object: animal,
+    })),
+    { subject: 'stegosaurus', object: stegosaurus.anchor },
+    { subject: 'pterodactyl', object: world.pterodactyls[0] },
+  ],
+  occluders: () => world.plateOccluders,
+  lensFov: () => (player.cameraRaised ? RAISED_CAMERA_FOV : null),
+});
+// Only measure the glass when a plate or the family reading depends on it.
+function measureFrameEvidence(canopy = false) {
+  const needed = player.cameraRaised
+    || player.pendingExposure
+    || (player.zone === 'iguanodon-glade' && !player.observedBehavior);
+  return needed ? frameProbe.measure({ canopy }) : [];
+}
 const {
   composer,
+  gradePass,
   gtaoPass,
   fxaaPass,
   smaaPass,
@@ -159,7 +202,6 @@ const {
   renderer,
   scene,
   camera,
-  excludedRoots: [world.fieldCamera, world.rifle],
   width: window.innerWidth,
   height: window.innerHeight,
   pixelRatio: qualityRenderPixelRatio(window.devicePixelRatio, presentationSettings.quality),
@@ -167,21 +209,35 @@ const {
 scene.add(camera);
 camera.add(world.fieldCamera);
 camera.add(world.rifle);
+let threatPulse = 0;
+// Redundant tension cue beside call, shadow and flight path: the frame edges
+// close in and lose colour while a dive is committed. Never the only signal.
+function composerThreat(state) {
+  const target = !runActive || state.paused ? 0
+    : state.threatState === 'attack' ? 1 : state.threatState === 'search' ? 0.35 : 0;
+  threatPulse += (target - threatPulse) * 0.08;
+  gradePass.uniforms.threat.value = threatPulse;
+  gradePass.uniforms.time.value = visualElapsed;
+}
 const viewmodel = createViewmodelController({
   fieldCamera: world.fieldCamera,
   rifle: world.rifle,
 });
-const clock = new THREE.Clock();
+const clock = new THREE.Timer();
+const listenerForward = new THREE.Vector3();
 const fieldAudio = new FieldAudio();
 const pressed = new Set();
+// Right mouse or Q: either held keeps the camera up.
+const cameraHolds = new Set();
 let jumpQueued = false;
 let player = createPlayerState();
-let smoothedEyeHeight = 3.45;
+let smoothedEyeHeight = 1.8;
 let lastCameraMotionAt = null;
 let runActive = false;
 let cameraMode = 'title';
 let renderScheduleAt = 0;
 let renderedFrameCount = 0;
+let stillFrameDirty = true;
 let firstRenderedAt = null;
 let visualElapsed = 0;
 const assetFrameCommit = createFrameCommitGate();
@@ -191,8 +247,24 @@ let observedBoundaryRecoveries = 0;
 let observationNoticeUntil = 0;
 let contactNoticeUntil = 0;
 let captionNoticeUntil = 0;
+let lastStegosaurusPhase = 'absent';
+let coverCaptionAllowedAt = 0;
+let crackedPreviewIndex = -1;
+let crackedPreviewUntil = 0;
+
+function renderGrade(list, plate) {
+  list.replaceChildren(...gradeForPlate(plate).map(({ label, good }) => {
+    const item = document.createElement('li');
+    item.textContent = label;
+    item.dataset.good = good === null ? 'neutral' : good ? 'true' : 'false';
+    return item;
+  }));
+}
 
 const ROMAN_PLATES = ['I', 'II', 'III', 'IV'];
+// A period long-focus lens: raising the camera narrows the view enough that
+// framing an animal is a real decision.
+const RAISED_CAMERA_FOV = 26;
 let plateImages = Array(ROMAN_PLATES.length).fill(null);
 let plateCaptureGeneration = 0;
 let pendingPlateCapture = null;
@@ -210,22 +282,9 @@ function clearPlateImages() {
   terminalBoardSlots.forEach((slot) => applyPlateImage(slot, null));
 }
 
-let droppedCase = null;
-
-function hideDroppedCase() {
-  if (!droppedCase) return;
-  scene.remove(droppedCase);
-  droppedCase.traverse((object) => {
-    if (object.isMesh) {
-      object.geometry.dispose();
-      object.material.dispose();
-    }
-  });
-  droppedCase = null;
-}
-
-function showDroppedCase(position, heading) {
-  hideDroppedCase();
+// The dropped case is built once, hidden, so leaving it in the basin never
+// creates materials (and shader links) in the middle of a run.
+const droppedCase = (() => {
   const group = new THREE.Group();
   const body = new THREE.Mesh(
     new THREE.BoxGeometry(0.62, 0.2, 0.44),
@@ -246,14 +305,57 @@ function showDroppedCase(position, heading) {
   group.traverse((object) => {
     if (object.isMesh) object.castShadow = true;
   });
+  group.visible = false;
+  scene.add(group);
+  return group;
+})();
+
+function hideDroppedCase() {
+  droppedCase.visible = false;
+}
+
+function showDroppedCase(position, heading) {
   // The scout casts the case forward off the shoulder so the drop lands inside
-  // a level first-person view (the eye sits ~3.45m above the ground plane).
+  // a level first-person view.
   const landingX = position.x - Math.sin(heading) * 5.6;
   const landingZ = position.z - Math.cos(heading) * 5.6;
-  group.position.set(landingX, terrainHeight(landingX, landingZ) + 0.02, landingZ);
-  group.rotation.y = heading + 0.45;
-  scene.add(group);
-  droppedCase = group;
+  droppedCase.position.set(landingX, terrainHeight(landingX, landingZ) + 0.02, landingZ);
+  droppedCase.rotation.y = heading + 0.45;
+  droppedCase.visible = true;
+}
+
+// Link every shader the run can show while the loading card is still up: the
+// stegosaurus, the dropped case and the dive are revealed for one compile and
+// one throwaway frame, then put back as they were.
+async function prewarmShaders() {
+  const revealed = [stegosaurus.anchor, droppedCase, ...world.pterodactyls].map((object) => {
+    const before = { object, visible: object.visible, culled: [] };
+    object.visible = true;
+    object.traverse((child) => {
+      if (!child.isMesh) return;
+      before.culled.push([child, child.frustumCulled]);
+      child.frustumCulled = false;
+    });
+    return before;
+  });
+  // Everything else hidden at the title (field viewmodel, boulders, the hero
+  // tree) is compiled here too, so the first click into the field does not
+  // stall on new programs. Lights stay as they are: they change every key.
+  const hidden = [];
+  scene.traverse((object) => {
+    if (!object.visible && !object.isLight) hidden.push(object);
+  });
+  hidden.forEach((object) => { object.visible = true; });
+  try {
+    await renderer.compileAsync(scene, camera);
+    composer.render();
+  } finally {
+    hidden.forEach((object) => { object.visible = false; });
+    revealed.forEach(({ object, visible, culled }) => {
+      object.visible = visible;
+      culled.forEach(([child, frustumCulled]) => { child.frustumCulled = frustumCulled; });
+    });
+  }
 }
 
 function queuePlateCapture(plateIndex) {
@@ -263,16 +365,44 @@ function queuePlateCapture(plateIndex) {
   };
 }
 
+// Store only the glass window, small, and develop it off the main thread's
+// critical path: a cropped bitmap snapshot, then an S-curve, a little sepia
+// and a vignette, encoded asynchronously.
 function encodeRenderedPlate(capture) {
-  canvas.toBlob((blob) => {
-    if (!blob) return;
-    const reader = new FileReader();
-    reader.addEventListener('loadend', () => {
+  const width = canvas.width;
+  const height = canvas.height;
+  const sx = Math.round(((PLATE_WINDOW.left + 1) / 2) * width);
+  const sy = Math.round(((1 - PLATE_WINDOW.top) / 2) * height);
+  const sw = Math.round(((PLATE_WINDOW.right - PLATE_WINDOW.left) / 2) * width);
+  const sh = Math.round(((PLATE_WINDOW.top - PLATE_WINDOW.bottom) / 2) * height);
+  createImageBitmap(canvas, sx, sy, sw, sh, { resizeWidth: 480, resizeQuality: 'medium' })
+    .then((bitmap) => {
+      const plate = new OffscreenCanvas(bitmap.width, bitmap.height);
+      const context = plate.getContext('2d');
+      context.filter = 'grayscale(1) sepia(.32) contrast(1.32) brightness(1.04)';
+      context.drawImage(bitmap, 0, 0);
+      context.filter = 'none';
+      const vignette = context.createRadialGradient(
+        plate.width / 2, plate.height / 2, plate.height * 0.32,
+        plate.width / 2, plate.height / 2, plate.width * 0.62,
+      );
+      vignette.addColorStop(0, 'rgba(24,18,12,0)');
+      vignette.addColorStop(1, 'rgba(24,18,12,.55)');
+      context.fillStyle = vignette;
+      context.fillRect(0, 0, plate.width, plate.height);
+      bitmap.close();
+      return plate.convertToBlob({ type: 'image/jpeg', quality: 0.82 });
+    })
+    .then((blob) => new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.addEventListener('loadend', () => resolve(reader.result), { once: true });
+      reader.readAsDataURL(blob);
+    }))
+    .then((dataUrl) => {
       if (capture.generation !== plateCaptureGeneration) return;
-      plateImages[capture.plateIndex] = typeof reader.result === 'string' ? reader.result : null;
-    }, { once: true });
-    reader.readAsDataURL(blob);
-  }, 'image/jpeg', 0.8);
+      plateImages[capture.plateIndex] = typeof dataUrl === 'string' ? dataUrl : null;
+    })
+    .catch(() => {});
 }
 
 function syncSettingsControls() {
@@ -325,8 +455,34 @@ function emitCue(cue, duration) {
 }
 
 const ABANDON_PROMPT_COPY = 'Leave the plate case and run [Hold G] — nothing on glass comes home.';
+const DOYLE_STEGOSAURUS_LINE = 'Arched back, triangular fringes, a bird-like head held low: the creature from Maple White\'s sketch-book, come down to drink.';
 
+// Where a place lies, in words relative to where the scout faces.
+function directionTo(target) {
+  const bearing = Math.atan2(-(target.x - player.position.x), -(target.z - player.position.z));
+  const relative = Math.atan2(Math.sin(bearing - player.heading), Math.cos(bearing - player.heading));
+  if (Math.abs(relative) < Math.PI / 4) return 'ahead';
+  if (Math.abs(relative) > (Math.PI * 3) / 4) return 'behind you';
+  return relative > 0 ? 'to your left' : 'to your right';
+}
+
+function coverDirection() {
+  let best = null;
+  for (const [x, z] of COVER_BAND.centerline) {
+    const distance = Math.hypot(x - player.position.x, z - player.position.z);
+    if (!best || distance < best.distance) best = { x, z, distance };
+  }
+  return directionTo(best);
+}
+
+// One prompt slot, in priority order: the dive, the exposure in hand, the
+// family's live behaviour, the drinking stegosaurus, then everything else.
 function contextualCopy() {
+  if (player.threatState === 'attack') {
+    return player.inCover
+      ? 'Wings hammer the leaves overhead. Stay under them, keep low [C].'
+      : `Wings circling low · Get under the thorns ${coverDirection()} · Keep low [C] · Rifle [F]`;
+  }
   if (player.pendingExposure) {
     return player.pendingExposure.maxCameraDrift
       > (player.pendingExposure.driftLimit ?? MAX_STEADY_DRIFT_RADIANS)
@@ -335,31 +491,12 @@ function contextualCopy() {
   }
   if (player.cameraRaised) {
     const frame = frameForState(player);
-    if (frame.key === 'empty-sky') return 'The wing has slipped beyond the plate.';
-    if (player.threatState === 'attack' && frame.subject !== 'pterodactyl') {
-      return 'Wingbeats pass over the hooded camera.';
-    }
+    if (frame.key === 'subject-glimpse') return 'Only the rim of a body touches the glass. Centre it, or close in.';
     if (frame.composition === 'empty') return 'Only the river light reaches the glass.';
-    if (frame.key === 'pterodactyl-dive') return 'The wing folds into its dive.';
-    if (frame.key === 'glade-form') return 'The family settles on the pale bar.';
     if (frame.key.endsWith('-repeat')) return 'That movement is already in the case.';
     return player.stance === 'crouch' || player.inCover
-      ? 'Draw the dark slide [Left Mouse]'
-      : 'Brace low [C], or draw the slide [Left Mouse]';
-  }
-  if (player.threatState === 'attack' && player.inCover) {
-    return 'Wings hammer the leaves overhead. Keep low [C].';
-  }
-  if (player.threatState === 'attack') {
-    return 'The shadow is dropping · Camera [Right Mouse] · Rifle [F]';
-  }
-  // A held release must always show its progress, even where the prompt is not due.
-  if (!player.caseAbandoned && player.abandonHoldSeconds > 0) return ABANDON_PROMPT_COPY;
-  if (abandonPromptDue(player)) return ABANDON_PROMPT_COPY;
-  if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Three toes in the wet bar. Read them [E].';
-  if (player.zone === 'brook-blind') return 'The spoor turns downriver. Raise the camera [Right Mouse].';
-  if (player.zone === 'iguanodon-glade' && !player.observedBehavior) {
-    return player.familyFocusSeconds > 0 ? 'Stay with them.' : 'Stop. Let the family forget you are here.';
+      ? 'Draw the dark slide [Left Mouse / Space]'
+      : 'Brace low [C], or draw the slide [Left Mouse / Space]';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-young-play') {
     return 'The young break into a run across the bar.';
@@ -368,22 +505,67 @@ function contextualCopy() {
     return 'The feeding adult draws the whole bough down.';
   }
   if (player.zone === 'iguanodon-glade' && player.familyMoment === 'glade-alarm') {
-    return 'The family has heard the wings. Break the dive before you lose another plate.';
+    return player.familyAlarmSeconds > 0
+      ? 'Too close. Back off, or crouch [C], and let them settle.'
+      : 'The family has heard the wings. Break the dive before you lose another plate.';
+  }
+  const stegoPose = stegosaurusPose(player.stegosaurusClock);
+  const stegoOnGlass = player.plates.some((plate) => plate.subject === 'stegosaurus' && plate.points >= 2);
+  if (stegoPose.phase === 'drinking' && !stegoOnGlass && player.zone !== 'fort') {
+    const where = directionTo(stegoPose);
+    return `Something heavy drinks at the brook ${where === 'ahead' ? 'ahead of you' : where}.`;
+  }
+  // A held release must always show its progress, even where the prompt is not due.
+  if (!player.caseAbandoned && player.abandonHoldSeconds > 0) return ABANDON_PROMPT_COPY;
+  if (abandonPromptDue(player)) return ABANDON_PROMPT_COPY;
+  if (player.zone === 'brook-blind' && !player.examinedTrack) return 'Three toes in the wet bar. Read them [E].';
+  // Onboarding, once: after the first plate the brook is just the way home.
+  if (player.zone === 'brook-blind' && player.plates.every((plate) => plate.status === 'unexposed')) {
+    return 'The spoor turns downriver. Raise the camera [Hold Right Mouse or Q].';
+  }
+  if (player.zone === 'iguanodon-glade' && !player.observedBehavior) {
+    if (!player.inCover) return `Watch from the thorn blind ${coverDirection()}; the wings cannot reach under it.`;
+    return player.familyFocusSeconds > 0 ? 'Stay with them.' : 'Stop. Let the family forget you are here.';
   }
   if (player.returnRoute === 'covered') return 'Under the thorns now. Fort smoke shows through the leaves.';
   if (player.returnRoute === 'exposed') return 'Stay with the bright creek. There is nowhere to hide.';
-  if (player.reachedGlade && player.zone === 'iguanodon-glade' && player.observedBehavior) {
-    return 'Fort smoke lies uphill: the long green tunnel, or the quick open creek.';
+  const platesSpent = player.plates.every((plate) => plate.status !== 'unexposed');
+  if (player.reachedGlade && player.zone === 'iguanodon-glade' && platesSpent) {
+    return 'Fort smoke lies north: back under the thorn arches, or the quick open creek.';
   }
   return '';
+}
+
+function renderPreview(plate, label, verdict) {
+  const gradeKey = `${plate.index}:${plate.status}:${plate.frameKey}:${plateCaptureGeneration}`;
+  previewNumber.textContent = ROMAN_PLATES[plate.index];
+  previewCopy.textContent = label;
+  platePreview.dataset.status = plate.status;
+  if (previewGrade.dataset.plate !== gradeKey) {
+    previewGrade.dataset.plate = gradeKey;
+    // A struck plate keeps its stamps, struck through: what it held is gone.
+    renderGrade(previewGrade, plate.status === 'cracked' ? { ...plate, status: 'exposed' } : plate);
+    if (plate.status === 'cracked') {
+      previewGrade.querySelectorAll('li').forEach((item) => { item.dataset.good = 'struck'; });
+    }
+    previewVerdict.textContent = verdict;
+  }
+  previewImage.dataset.frame = plate.frameKey ?? 'empty';
+  applyPlateImage(previewImage, plateImages[plate.index]);
 }
 
 function updateFieldHud(now) {
   const currentFrame = player.pendingExposure ?? frameForState(player);
   const prompt = contextualCopy();
-  const showFieldNote = Boolean(player.lastObservation && now < observationNoticeUntil);
+  const attackLive = player.threatState === 'attack';
+  const behaviourLive = player.zone === 'iguanodon-glade'
+    && ['glade-young-play', 'glade-branch-pull', 'glade-alarm'].includes(player.familyMoment);
+  // The raised camera owns the top of the view: its frame condition must stay readable.
+  const showFieldNote = Boolean(player.lastObservation && now < observationNoticeUntil && !player.cameraRaised);
   contextPrompt.textContent = prompt;
-  contextPrompt.hidden = !prompt || player.failed || showFieldNote;
+  contextPrompt.classList.toggle('urgent', attackLive && !player.failed);
+  // A field note never hides the dive warning or a live behaviour cue.
+  contextPrompt.hidden = !prompt || player.failed || (showFieldNote && !attackLive && !behaviourLive);
   const holdProgress = !player.caseAbandoned && player.abandonHoldSeconds > 0
     ? Math.min(1, player.abandonHoldSeconds / ABANDON_HOLD_SECONDS)
     : 0;
@@ -407,41 +589,48 @@ function updateFieldHud(now) {
     : 0;
   commitLine.style.setProperty('--commit-progress', `${Math.max(0, Math.min(100, commitProgress))}%`);
   document.body.dataset.camera = player.cameraRaised ? 'raised' : 'folded';
+  document.body.dataset.cover = player.inCover ? 'true' : 'false';
 
   document.body.dataset.rifle = player.rifleRaised ? 'raised' : 'lowered';
-  cartridgeDisplay.hidden = !(player.rifleRevealed || player.threatState === 'attack');
+  cartridgeDisplay.hidden = !(player.rifleRevealed || attackLive);
   cartridgeSlots.forEach((slot, index) => {
     slot.classList.toggle('spent', index >= player.cartridges);
   });
 
-  plateRail.hidden = !player.plateRailRevealed || player.caseAbandoned;
+  // The four plates and the light are the stakes: show them from the first step.
+  plateRail.hidden = player.caseAbandoned;
   plateSlots.forEach((slot, index) => {
     const plate = player.plates[index];
     slot.dataset.status = plate.status;
     slot.dataset.frame = plate.frameKey ?? 'empty';
+    slot.textContent = plate.status === 'cracked' ? '✕' : ROMAN_PLATES[index];
     slot.setAttribute(
       'aria-label',
       `Plate ${ROMAN_PLATES[index]}: ${plate.status}${plate.status === 'exposed' ? ` — ${noteForPlate(plate)}` : ''}`,
     );
   });
 
-  lightWatch.hidden = !player.plateRailRevealed;
+  lightWatch.hidden = false;
   lightSeconds.textContent = daylightCondition(player.remainingLight);
+  lightBar.style.setProperty('--light', `${((player.remainingLight / INITIAL_LIGHT_SECONDS) * 100).toFixed(1)}%`);
 
+  const crackedPlate = crackedPreviewUntil > now ? player.plates[crackedPreviewIndex] : null;
   const previewPlate = player.lastProofEvent
     ? player.plates[player.lastProofEvent.plateIndex]
     : null;
-  const showPreview = player.previewSeconds > 0
+  const showProof = player.previewSeconds > 0
     && !player.caseAbandoned
     && player.lastProofEvent
-    && previewPlate?.status === 'exposed';
-  platePreview.hidden = !showPreview;
-  if (showPreview) {
-    const { plateIndex, frameKey } = player.lastProofEvent;
-    previewNumber.textContent = ROMAN_PLATES[plateIndex];
-    previewCopy.textContent = player.lastProofEvent.label;
-    previewImage.dataset.frame = frameKey;
-    applyPlateImage(previewImage, plateImages[plateIndex]);
+    && previewPlate?.status === 'exposed'
+    && !attackLive;
+  platePreview.hidden = !(crackedPlate?.status === 'cracked' || showProof);
+  if (crackedPlate?.status === 'cracked') {
+    renderPreview(crackedPlate, 'The wing struck the case.', 'Broken glass proves nothing.');
+  } else if (showProof) {
+    const label = player.lastProofEvent.behavior === 'drinking'
+      ? DOYLE_STEGOSAURUS_LINE
+      : player.lastProofEvent.label;
+    renderPreview(previewPlate, label, verdictForPlate(previewPlate));
   }
 
   fieldNote.hidden = !showFieldNote;
@@ -463,7 +652,7 @@ function updateFieldHud(now) {
 function setCameraToPlayer(now = performance.now()) {
   const speed = Math.hypot(player.velocity?.x ?? 0, player.velocity?.z ?? 0);
   const moving = speed > 0.08;
-  const desiredEyeHeight = player.stance === 'crouch' ? 2.55 : 3.45;
+  const desiredEyeHeight = player.stance === 'crouch' ? 1.15 : 1.8;
   const cameraDelta = lastCameraMotionAt === null
     ? 0
     : Math.max(0, Math.min((now - lastCameraMotionAt) / 1000, 0.1));
@@ -483,7 +672,7 @@ function setCameraToPlayer(now = performance.now()) {
   );
   camera.rotation.set(player.pitch, player.heading, 0, 'YXZ');
   const sprintFov = player.stance === 'sprint' ? Math.min(2.4, speed * 0.35) : 0;
-  const desiredFov = player.cameraRaised ? 58 : player.rifleRaised ? 66 : 70 + sprintFov;
+  const desiredFov = player.cameraRaised ? RAISED_CAMERA_FOV : player.rifleRaised ? 66 : 70 + sprintFov;
   const nextFov = camera.fov + (desiredFov - camera.fov) * (1 - Math.exp(-10 * cameraDelta));
   if (Math.abs(camera.fov - nextFov) > 0.001) {
     camera.fov = nextFov;
@@ -530,7 +719,7 @@ function inputSnapshot() {
     forward: Number(pressed.has('KeyW')) - Number(pressed.has('KeyS')),
     right: Number(pressed.has('KeyD')) - Number(pressed.has('KeyA')),
     sprint: pressed.has('ShiftLeft') || pressed.has('ShiftRight'),
-    crouch: pressed.has('KeyC') || pressed.has('ControlLeft') || pressed.has('ControlRight'),
+    crouch: pressed.has('KeyC'),
     abandon: pressed.has('KeyG'),
     jump: jumpQueued,
     heading: player.heading,
@@ -544,6 +733,7 @@ function inputSnapshot() {
 
 function clearTransientInput() {
   pressed.clear();
+  cameraHolds.clear();
   jumpQueued = false;
   player = releaseTransientTools(player);
 }
@@ -566,6 +756,7 @@ function requestFieldPointerLock() {
 function presentTerminal() {
   if (!player.result) return;
   emitCue(player.result.kind === 'alive' ? 'result' : 'failure', 3200);
+  fieldAudio.setThreatState('distant');
   clearTransientInput();
   runActive = false;
   cameraMode = 'terminal';
@@ -585,6 +776,10 @@ function presentTerminal() {
     slot.dataset.frame = plate.frameKey ?? 'empty';
     slot.dataset.note = !leftInBasin ? noteForPlate(plate) : '';
     applyPlateImage(slot, !leftInBasin && plate.status === 'exposed' ? plateImages[index] : null);
+    const stamps = document.createElement('ul');
+    stamps.className = 'plate-grade';
+    if (!leftInBasin) renderGrade(stamps, plate);
+    slot.replaceChildren(stamps);
     slot.setAttribute(
       'aria-label',
       leftInBasin
@@ -593,6 +788,19 @@ function presentTerminal() {
     );
   });
 
+  const kept = player.result.caseAbandoned ? [] : player.plates.filter((plate) => plate.status === 'exposed' && plate.points > 0);
+  const species = [
+    ['Iguanodon family', kept.some((plate) => plate.subject === 'iguanodon-family')],
+    ['Pterodactyl', kept.some((plate) => plate.subject === 'pterodactyl')],
+    ['Stegosaurus', kept.some((plate) => plate.subject === 'stegosaurus')],
+  ];
+  terminalLedger.replaceChildren(...species.map(([name, recorded]) => {
+    const item = document.createElement('li');
+    item.textContent = `${name} — ${recorded ? 'on glass' : 'not recorded'}`;
+    item.dataset.recorded = recorded ? 'true' : 'false';
+    return item;
+  }));
+  terminalLedger.hidden = player.result.kind !== 'alive';
   if (player.result.kind === 'alive') {
     terminalEyebrow.textContent = 'The case opened at Fort Challenger';
     terminalTitle.textContent = player.result.title;
@@ -608,10 +816,16 @@ function presentTerminal() {
       player.result.aerialEvidence
         ? 'One plate fixes the wing at the instant it commits to the dive.'
         : null,
+      player.result.stegosaurusEvidence
+        ? "And Maple White's sketch has its witness: the stegosaurus at the drinking-place."
+        : null,
     ].filter(Boolean).join(' ');
     terminalCallback.hidden = !callback;
     terminalCallback.textContent = callback;
+    terminalNext.textContent = nextBandCopy(player.result);
+    terminalNext.hidden = !terminalNext.textContent;
   } else {
+    terminalNext.hidden = true;
     terminalEyebrow.textContent = 'The case never reached the fort';
     terminalTitle.textContent = player.result.title;
     terminalResultCopy.textContent = player.result.copy;
@@ -624,6 +838,7 @@ function presentTerminal() {
 function returnToFieldOrder() {
   clearTransientInput();
   player = createPlayerState();
+  daylight.reset(visualElapsed);
   clearPlateImages();
   hideDroppedCase();
   runActive = false;
@@ -636,9 +851,17 @@ function returnToFieldOrder() {
 
 function beginRun() {
   clearTransientInput();
+  lastStegosaurusPhase = 'absent';
+  crackedPreviewIndex = -1;
+  crackedPreviewUntil = 0;
   player = restartPlayer(player);
   clearPlateImages();
   hideDroppedCase();
+  // A restart mid-dive must not carry the old threat into the new run.
+  world.resetRun();
+  daylight.reset(visualElapsed);
+  threatPulse = 0;
+  smoothedEyeHeight = 1.8;
   fieldAudio.resetRun();
   runActive = true;
   observedBoundaryRecoveries = 0;
@@ -658,9 +881,9 @@ function pauseRun(reason = 'manual') {
   clearTransientInput();
   player = setPaused(player, true, reason);
   pauseLabel.textContent = reason === 'window-inactive'
-    ? 'PAUSED — WINDOW INACTIVE'
+    ? 'PAUSED — THE VALLEY WAITS'
     : reason === 'pointer-lock-unavailable'
-      ? 'POINTER LOCK UNAVAILABLE'
+      ? 'CLICK THE VALLEY TO TAKE UP THE CAMERA AGAIN'
       : 'PAUSED';
   pausePanel.hidden = false;
   document.body.dataset.mode = 'paused';
@@ -688,6 +911,9 @@ function worldRuntime(deltaSeconds = 0) {
     brookResponse: player.brookResponse,
     inCover: player.inCover,
     familyMoment: player.pendingExposure?.familyMoment ?? player.familyMoment,
+    familyStartled: player.familyAlarmSeconds > 0,
+    playerHeading: player.heading,
+    reachedGlade: player.reachedGlade,
     quality: presentationSettings.quality,
     deltaSeconds,
   };
@@ -704,7 +930,15 @@ function update(deltaSeconds, now) {
     const previousRoute = player.returnRoute;
     const previousBrookResponse = player.brookResponse;
     const previousCaseAbandoned = player.caseAbandoned;
-    player = stepPlayer(player, inputSnapshot(), deltaSeconds);
+    const previousReachedGlade = player.reachedGlade;
+    const previousInCover = player.inCover;
+    const previousPlateStatus = player.plates.map((plate) => plate.status);
+    const closingExposure = Boolean(player.pendingExposure)
+      && player.pendingExposure.remainingSeconds <= deltaSeconds + 1e-6;
+    const input = inputSnapshot();
+    input.frameEvidence = measureFrameEvidence(closingExposure);
+    player = stepPlayer(player, input, deltaSeconds);
+    if (!previousReachedGlade && player.reachedGlade) emitCue('stegosaurus', 3400);
     if (player.threatState !== previousThreatState) {
       fieldAudio.setThreatState(player.threatState);
       if (player.threatState !== 'distant') showCaption(player.threatState);
@@ -721,7 +955,10 @@ function update(deltaSeconds, now) {
       queuePlateCapture(player.lastProofEvent.plateIndex);
       emitCue('plate-slide');
     }
-    if (player.returnRoute !== previousRoute && player.returnRoute === 'covered') emitCue('cover');
+    if (!previousInCover && player.inCover && now > coverCaptionAllowedAt) {
+      emitCue('cover', 2200);
+      coverCaptionAllowedAt = now + 8000;
+    }
     if (!previousCaseAbandoned && player.caseAbandoned) {
       emitCue('case-drop', 3000);
       observationNoticeUntil = now + 3400;
@@ -731,15 +968,32 @@ function update(deltaSeconds, now) {
       emitCue('brook-response', 3000);
     }
     if (player.contactCount > previousContacts) {
-      emitCue('contact', 2800);
-      contactNoticeUntil = now + 3200;
-      const cracked = player.plates.find((plate) => plate.status === 'cracked');
+      emitCue('contact', 3200);
+      contactNoticeUntil = now + 3600;
+      const cracked = player.plates.find(
+        (plate, index) => plate.status === 'cracked' && previousPlateStatus[index] !== 'cracked',
+      );
       contactNote.textContent = cracked
         ? `The case takes the blow. Plate ${ROMAN_PLATES[cracked.index]} breaks inside.`
         : 'The case takes the blow. It will not survive another.';
+      if (cracked) {
+        crackedPreviewIndex = cracked.index;
+        crackedPreviewUntil = now + 4200;
+      }
     }
     if (previousRunStatus === 'active' && player.runStatus !== 'active') presentTerminal();
     visualElapsed += deltaSeconds;
+    daylight.update(1 - player.remainingLight / INITIAL_LIGHT_SECONDS, visualElapsed);
+    camera.getWorldDirection(listenerForward);
+    fieldAudio.update({
+      listener: camera.position,
+      forward: listenerForward,
+      brookDistance: brookFluvialProcessAt(player.position.x, player.position.z).distance,
+      wingPosition: world.pterodactyls[0].position,
+      distanceTravelled: player.distanceTravelled,
+      stance: player.stance,
+      elapsed: visualElapsed,
+    });
   } else if (!runActive && cameraMode !== 'terminal') {
     visualElapsed += deltaSeconds;
   }
@@ -748,6 +1002,18 @@ function update(deltaSeconds, now) {
     reducedMotion || player.paused || cameraMode === 'terminal',
     worldRuntime(deltaSeconds),
   );
+  const frozen = reducedMotion || player.paused || cameraMode === 'terminal';
+  const stegoPose = stegosaurus.update(
+    runActive ? player.stegosaurusClock : null,
+    player.paused || cameraMode === 'terminal' ? 0 : deltaSeconds,
+    frozen,
+    runActive ? player.position : null,
+  );
+  if (runActive && stegoPose.phase !== lastStegosaurusPhase) {
+    if (stegoPose.phase === 'drinking') showCaption('stegosaurus-drinking', 4200);
+    lastStegosaurusPhase = stegoPose.phase;
+  }
+  composerThreat(player);
   atmosphere.userData.update(
     visualElapsed,
     reducedMotion || player.paused || cameraMode === 'terminal',
@@ -776,16 +1042,33 @@ function animate(frameTime) {
     return;
   }
   renderScheduleAt = advanceRenderSchedule(frameTime, renderScheduleAt, renderInterval);
+  clock.update(frameTime);
   const deltaSeconds = Math.min(clock.getDelta(), 0.05);
+  // A paused run or the result board is a still picture: render it once,
+  // then idle until something changes it.
+  const still = runActive ? player.paused : cameraMode === 'terminal';
+  if (still && !stillFrameDirty) {
+    requestAnimationFrame(animate);
+    return;
+  }
+  stillFrameDirty = !still;
   const now = performance.now();
   update(deltaSeconds, now);
   const capture = pendingPlateCapture;
   const cameraWasVisible = capture ? world.fieldCamera.visible : false;
   const rifleWasVisible = capture ? world.rifle.visible : false;
+  // The plate keeps what the graded lens held, not the wider view the eye is
+  // already easing back to once the camera comes down.
+  const eyeFov = capture ? camera.fov : null;
   if (capture) {
     world.fieldCamera.visible = false;
     world.rifle.visible = false;
+    camera.fov = RAISED_CAMERA_FOV;
+    camera.updateProjectionMatrix();
   }
+  followSunShadow(camera);
+  grassField.update(camera, visualElapsed, reducedMotion);
+  fieldMotes.update(camera, visualElapsed, reducedMotion, renderer.getPixelRatio());
   world.prepareBrookRender(
     renderer,
     camera,
@@ -802,6 +1085,8 @@ function animate(frameTime) {
     encodeRenderedPlate(capture);
     world.fieldCamera.visible = cameraWasVisible;
     world.rifle.visible = rifleWasVisible;
+    camera.fov = eyeFov;
+    camera.updateProjectionMatrix();
   }
   renderedFrameCount += 1;
   firstRenderedAt ??= now;
@@ -809,6 +1094,7 @@ function animate(frameTime) {
 }
 
 function resize() {
+  stillFrameDirty = true;
   const width = window.innerWidth;
   const height = window.innerHeight;
   const pixelRatio = qualityRenderPixelRatio(window.devicePixelRatio, presentationSettings.quality);
@@ -860,7 +1146,11 @@ async function enterBasin() {
   }
 }
 
-enterButton.addEventListener('click', enterBasin);
+enterButton.addEventListener('click', () => {
+  // Normally already built while idle on the title; this is the fallback.
+  fieldAudio.prepare();
+  void enterBasin();
+});
 document.querySelector('#retry-runtime').addEventListener('click', enterBasin);
 document.querySelector('#dismiss-order').addEventListener('click', () => {
   document.querySelector('#field-order').hidden = true;
@@ -869,9 +1159,17 @@ document.querySelector('#dismiss-order').addEventListener('click', () => {
 document.querySelector('#resume-button').addEventListener('click', resumeRun);
 document.querySelector('#restart-button').addEventListener('click', beginRun);
 document.querySelector('#terminal-restart').addEventListener('click', returnToFieldOrder);
-document.querySelector('#settings-button').addEventListener('click', () => {
+function openSettings() {
   closePanels();
   document.querySelector('#settings-panel').hidden = false;
+}
+document.querySelector('#settings-button').addEventListener('click', openSettings);
+document.querySelector('#pause-settings').addEventListener('click', openSettings);
+document.addEventListener('click', (event) => {
+  const panel = document.querySelector('#settings-panel');
+  if (panel.hidden || panel.contains(event.target)) return;
+  if (event.target.closest('#settings-button, #pause-settings')) return;
+  closePanels();
 });
 document.querySelector('#credits-button').addEventListener('click', () => {
   closePanels();
@@ -923,8 +1221,21 @@ document.addEventListener('keydown', (event) => {
     }
     return;
   }
+  if (event.code === 'Escape' && !document.querySelector('#settings-panel').hidden) {
+    closePanels();
+    return;
+  }
   if (event.code === 'KeyF' && runActive && !player.paused) {
     player = setRifleRaised(player, true);
+    return;
+  }
+  if (event.code === 'KeyQ' && !event.repeat && runActive && !player.paused && cameraMode === 'field') {
+    holdCamera('KeyQ', true);
+    return;
+  }
+  if (event.code === 'Space' && player.cameraRaised && runActive && !player.paused) {
+    event.preventDefault();
+    if (!event.repeat) exposePlate();
     return;
   }
   const captureGameplayKey = shouldCaptureGameplayKey(event.code, {
@@ -941,15 +1252,28 @@ document.addEventListener('keydown', (event) => {
 });
 document.addEventListener('keyup', (event) => {
   if (event.code === 'KeyF') player = setRifleRaised(player, false);
+  if (event.code === 'KeyQ') holdCamera('KeyQ', false);
   pressed.delete(event.code);
 });
+
+function holdCamera(source, held) {
+  if (held) cameraHolds.add(source);
+  else cameraHolds.delete(source);
+  const wasRaised = player.cameraRaised;
+  player = setCameraRaised(player, cameraHolds.size > 0);
+  if (!wasRaised && player.cameraRaised) emitCue('camera-raise');
+}
+
+function exposePlate() {
+  const hadPendingExposure = Boolean(player.pendingExposure);
+  player = startExposure(player, frameProbe.measure({ canopy: true }));
+  if (!hadPendingExposure && player.pendingExposure) emitCue('shutter');
+}
 document.addEventListener('mousedown', (event) => {
   if (!runActive || player.paused || cameraMode !== 'field') return;
   if (event.button === 2) {
     event.preventDefault();
-    const wasRaised = player.cameraRaised;
-    player = setCameraRaised(player, true);
-    if (!wasRaised && player.cameraRaised) emitCue('camera-raise');
+    holdCamera('mouse', true);
   } else if (event.button === 0 && player.rifleRaised) {
     event.preventDefault();
     const previousShotCount = player.shotCount;
@@ -959,29 +1283,29 @@ document.addEventListener('mousedown', (event) => {
       emitCue('rifle', 3200);
       contactNoticeUntil = performance.now() + 2600;
       contactNote.textContent = player.lastThreatEvent === 'defensive-shot-interrupt'
-        ? 'RIFLE REPORT — THE DIVE SHEARS AWAY.'
-        : 'RIFLE REPORT — THE DIVE WAS NOT COMMITTED.';
+        ? 'Rifle report — the dive shears away.'
+        : player.lastThreatEvent === 'defensive-shot-too-late'
+          ? 'Too late — the wings have already passed.'
+          : 'Rifle report — nothing was diving yet.';
     }
   } else if (event.button === 0 && player.cameraRaised) {
     event.preventDefault();
-    const hadPendingExposure = Boolean(player.pendingExposure);
-    player = startExposure(player);
-    if (!hadPendingExposure && player.pendingExposure) {
-      emitCue('shutter');
-    }
+    exposePlate();
   }
 });
 document.addEventListener('mouseup', (event) => {
-  if (event.button === 2) player = setCameraRaised(player, false);
+  if (event.button === 2) holdCamera('mouse', false);
 });
 document.addEventListener('contextmenu', (event) => {
   if (runActive && !player.paused) event.preventDefault();
 });
 document.addEventListener('mousemove', (event) => {
   if (document.pointerLockElement !== canvas || player.paused || cameraMode !== 'field') return;
+  // Through the long lens the same hand movement turns the view less.
+  const lensScale = player.cameraRaised ? camera.fov / 70 : 1;
   const orientation = applyLookDelta(player, event, {
-    horizontal: 0.002 * presentationSettings.lookSensitivity,
-    vertical: 0.0016 * presentationSettings.lookSensitivity,
+    horizontal: 0.002 * presentationSettings.lookSensitivity * lensScale,
+    vertical: 0.0016 * presentationSettings.lookSensitivity * lensScale,
   });
   player.heading = orientation.heading;
   player.pitch = orientation.pitch;
@@ -1045,16 +1369,35 @@ window.__projectPlateau = {
       renderer: this.renderer,
       player: playerSnapshot(),
       sceneChildren: scene.children.length,
-      triangles: renderer.info.render.triangles,
+      renderedFrames: renderedFrameCount,
     };
   },
 };
+
+// Review-only handle for placing the scout during visual checks (?dev).
+if (query.has('dev')) {
+  window.__projectPlateau.dev = {
+    THREE, scene, camera, renderer, world, stegosaurus,
+    set(changes) {
+      player = { ...player, ...changes };
+      stillFrameDirty = true;
+    },
+    evidence: (canopy = false) => frameProbe.measure({ canopy }),
+    frame: () => frameForState(player),
+  };
+}
 
 setView(query.get('view') === 'glade' ? 'glade' : 'title');
 requestAnimationFrame(animate);
 showLoading('Holding the silver plate until the valley settles…', 'assets');
 ensureHy3dVisuals()
   .then(() => assetFrameCommit.wait())
+  .then(() => {
+    // Build the suspended sound graph while the title sits idle, not on the
+    // click that leaves it; the run start only resumes it.
+    const idle = window.requestIdleCallback ?? ((callback) => setTimeout(callback, 400));
+    idle(() => fieldAudio.prepare(), { timeout: 3000 });
+  })
   .catch((error) => {
     console.error('Project Plateau title assets failed to settle.', error);
     hideLoading();

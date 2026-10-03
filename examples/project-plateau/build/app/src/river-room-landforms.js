@@ -3,8 +3,9 @@ import * as THREE from 'three';
 import { seededRandom } from './config.js';
 import { createDeadwoodMaterial, createDriftwoodGeometry } from './deadwood-rendering.js';
 import { createWeatheredRockGeometry } from './rock-rendering.js';
-import { terrainHeight } from './terrain.js';
-import { soilTextures } from './terrain-material-textures.js';
+import { brookFluvialProcessAt, terrainHeight } from './terrain.js';
+import { createGroundLayers } from './ground-layers.js';
+import { createGroundMaterial } from './terrain-ground-material.js';
 import { shared } from './vegetation-rendering.js';
 
 export const RIVER_ROOM_PROFILE = Object.freeze({
@@ -21,7 +22,7 @@ export const RIVER_ROOM_PROFILE = Object.freeze({
   collisionRole: 'non-solid-scenic-landform',
 });
 
-function makeTerraceRibbon({ name, points, outward, width, height, seed }) {
+function makeTerraceRibbon({ name, points, outward, width, height, seed }, groundTextures) {
   const random = seededRandom(seed);
   const positions = [];
   const colors = [];
@@ -82,78 +83,11 @@ function makeTerraceRibbon({ name, points, outward, width, height, seed }) {
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
-  const material = new THREE.MeshStandardMaterial({
-    color: 0xa78a70,
-    vertexColors: true,
-    roughness: 0.94,
-    metalness: 0,
+  const material = createGroundMaterial(groundTextures, {
+    masks: { rock: 0.8, mud: 0.5, moss: 0.35, litter: 0.2 },
     side: THREE.DoubleSide,
+    tileMeters: 5.5,
   });
-  material.onBeforeCompile = (shader) => {
-    shader.uniforms.riverRoomSoilAlbedo = { value: soilTextures.albedo };
-    shader.uniforms.riverRoomSoilRoughness = { value: soilTextures.roughness };
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', `
-        #include <common>
-        varying vec3 vRiverRoomWorldPosition;
-      `)
-      .replace('#include <worldpos_vertex>', `
-        #include <worldpos_vertex>
-        vRiverRoomWorldPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;
-      `);
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', `
-        #include <common>
-        uniform sampler2D riverRoomSoilAlbedo;
-        uniform sampler2D riverRoomSoilRoughness;
-        varying vec3 vRiverRoomWorldPosition;
-
-        vec4 sampleRiverRoomSoil(sampler2D surfaceMap, vec3 p, vec3 n) {
-          vec3 weights = pow(abs(n), vec3(5.0));
-          weights /= max(weights.x + weights.y + weights.z, 0.0001);
-          return texture2D(surfaceMap, p.zy) * weights.x
-            + texture2D(surfaceMap, p.xz) * weights.y
-            + texture2D(surfaceMap, p.xy) * weights.z;
-        }
-      `)
-      .replace('#include <map_fragment>', `
-        #include <map_fragment>
-        vec3 riverRoomNormal = normalize(cross(
-          dFdx(vRiverRoomWorldPosition),
-          dFdy(vRiverRoomWorldPosition)
-        ));
-        vec4 riverRoomSoil = sampleRiverRoomSoil(
-          riverRoomSoilAlbedo,
-          vRiverRoomWorldPosition * 0.085,
-          riverRoomNormal
-        );
-        float riverRoomStrata = 0.5 + 0.5 * sin(
-          vRiverRoomWorldPosition.y * 8.5
-          + riverRoomSoil.r * 4.2
-          + vRiverRoomWorldPosition.z * 0.075
-        );
-        float riverRoomBand = smoothstep(0.28, 0.72, riverRoomStrata);
-        diffuseColor.rgb *= mix(
-          vec3(0.66, 0.55, 0.44),
-          vec3(1.08, 0.91, 0.7),
-          riverRoomSoil.rgb * 0.7 + riverRoomBand * 0.3
-        );
-      `)
-      .replace('#include <roughnessmap_fragment>', `
-        #include <roughnessmap_fragment>
-        vec3 riverRoomRoughNormal = normalize(cross(
-          dFdx(vRiverRoomWorldPosition),
-          dFdy(vRiverRoomWorldPosition)
-        ));
-        float riverRoomRoughness = sampleRiverRoomSoil(
-          riverRoomSoilRoughness,
-          vRiverRoomWorldPosition * 0.085,
-          riverRoomRoughNormal
-        ).g;
-        roughnessFactor = mix(0.82, 1.0, riverRoomRoughness);
-      `);
-  };
-  material.customProgramCacheKey = () => 'river-room-triplanar-strata-v1';
   const terrace = new THREE.Mesh(geometry, material);
   terrace.name = name;
   terrace.castShadow = true;
@@ -163,10 +97,20 @@ function makeTerraceRibbon({ name, points, outward, width, height, seed }) {
   return terrace;
 }
 
-function makeGroundPatch(name, x, z, radiusX, radiusZ, seed, palette) {
+function makeGroundPatch(name, x, z, radiusX, radiusZ, seed, palette, groundTextures) {
   const random = seededRandom(seed);
-  const segments = 48;
-  const rings = 5;
+  const segments = 72;
+  const rings = 10;
+  const isWater = name.includes('backwater');
+  // A dry patch ends at the brook bank: inside the wetted channel its vertices
+  // sink under the terrain, so the water lies over the channel bed, never over
+  // a sheet of meadow with a straight polygon edge.
+  const surfaceY = (px, pz) => {
+    const lift = terrainHeight(px, pz) + 0.055;
+    if (isWater) return lift;
+    const channel = 1 - THREE.MathUtils.smoothstep(brookFluvialProcessAt(px, pz).distance, 1.9, 2.7);
+    return lift - channel * 0.25;
+  };
   const positions = [x, terrainHeight(x, z) + 0.045, z];
   const colors = [];
   const indices = [];
@@ -188,7 +132,7 @@ function makeGroundPatch(name, x, z, radiusX, radiusZ, seed, palette) {
       const scallop = THREE.MathUtils.lerp(1, edgeShape[index], radial);
       const px = x + Math.cos(angle) * radiusX * scallop * radial;
       const pz = z + Math.sin(angle) * radiusZ * scallop * radial;
-      positions.push(px, terrainHeight(px, pz) + 0.055, pz);
+      positions.push(px, surfaceY(px, pz), pz);
       const color = centre.clone().lerp(edgeColors[index], radial);
       colors.push(color.r, color.g, color.b);
     }
@@ -213,69 +157,19 @@ function makeGroundPatch(name, x, z, radiusX, radiusZ, seed, palette) {
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
-  const isWater = name.includes('backwater');
   const isMeadow = name.includes('meadow');
-  const material = new THREE.MeshStandardMaterial({
-    // Keep the authored vertex palette in a bounded soil family. Pure white
-    // allowed late-day direct light to wash the gravel and meadow into blank
-    // polygons even though the texture shader had compiled successfully.
-    color: isWater ? 0xffffff : isMeadow ? 0x586751 : 0x746f62,
-    vertexColors: true,
-    roughness: isWater ? 0.24 : 0.9,
-    metalness: isWater ? 0.08 : 0,
-    transparent: isWater,
-    opacity: isWater ? 0.76 : 1,
-    depthWrite: !isWater,
+  const material = createGroundMaterial(groundTextures, {
+    masks: isWater
+      ? { mud: 1, gravel: 0.25, wet: 1 }
+      : isMeadow ? { moss: 0.8, litter: 0.45 } : { gravel: 1, mud: 0.35, wet: 0.25 },
     side: THREE.DoubleSide,
   });
-  if (!isWater) {
-    material.onBeforeCompile = (shader) => {
-      shader.uniforms.riverRoomGroundAlbedo = { value: soilTextures.albedo };
-      shader.uniforms.riverRoomGroundRoughness = { value: soilTextures.roughness };
-      shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', `
-          #include <common>
-          varying vec3 vRiverRoomGroundWorld;
-        `)
-        .replace('#include <worldpos_vertex>', `
-          #include <worldpos_vertex>
-          vRiverRoomGroundWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;
-        `);
-      shader.fragmentShader = shader.fragmentShader
-        .replace('#include <common>', `
-          #include <common>
-          uniform sampler2D riverRoomGroundAlbedo;
-          uniform sampler2D riverRoomGroundRoughness;
-          varying vec3 vRiverRoomGroundWorld;
-        `)
-        .replace('#include <map_fragment>', `
-          #include <map_fragment>
-          vec2 riverRoomGroundUv = vRiverRoomGroundWorld.xz * 0.19 + vec2(0.23, -0.17);
-          vec3 riverRoomGroundSample = texture2D(
-            riverRoomGroundAlbedo,
-            riverRoomGroundUv
-          ).rgb;
-          diffuseColor.rgb *= mix(
-            vec3(0.7, 0.72, 0.66),
-            vec3(1.08, 1.04, 0.94),
-            riverRoomGroundSample
-          );
-        `)
-        .replace('#include <roughnessmap_fragment>', `
-          #include <roughnessmap_fragment>
-          float riverRoomGroundRoughnessSample = texture2D(
-            riverRoomGroundRoughness,
-            vRiverRoomGroundWorld.xz * 0.19 + vec2(0.23, -0.17)
-          ).g;
-          roughnessFactor = mix(0.82, 1.0, riverRoomGroundRoughnessSample);
-        `);
-    };
-    material.customProgramCacheKey = () => `river-room-ground-${isMeadow ? 'meadow' : 'gravel'}-v1`;
-  }
+  material.polygonOffset = true;
+  material.polygonOffsetFactor = -1;
+  material.polygonOffsetUnits = -2;
   const patch = new THREE.Mesh(geometry, material);
   patch.name = name;
-  patch.receiveShadow = !isWater;
-  patch.renderOrder = isWater ? 2 : 0;
+  patch.receiveShadow = true;
   patch.userData.collisionRole = 'non-solid-surface-read';
   return patch;
 }
@@ -293,16 +187,10 @@ function makeMeadowTufts() {
   const counts = shared.groundCoverGeometries.map((_, variant) => (
     Math.floor((RIVER_ROOM_PROFILE.meadowTufts + 2 - variant) / 3)
   ));
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x60755f,
-    vertexColors: true,
-    roughness: 0.91,
-    metalness: 0,
-    side: THREE.DoubleSide,
-    envMapIntensity: 0.38,
-  });
+  // Same lit, sun-transmitting foliage material and lightness range as the
+  // bank sedges: a dark tint on a dark base read as near-black cut-outs.
   const meshes = shared.groundCoverGeometries.map((geometry, variant) => {
-    const mesh = new THREE.InstancedMesh(geometry, material, counts[variant]);
+    const mesh = new THREE.InstancedMesh(geometry, shared.fernMaterial, counts[variant]);
     mesh.name = `world.river-room.meadow-tufts-${variant + 1}`;
     mesh.receiveShadow = true;
     mesh.userData.collisionRole = 'non-solid-pliant-meadow';
@@ -329,9 +217,9 @@ function makeMeadowTufts() {
     const meshIndex = indices[variant];
     meshes[variant].setMatrixAt(meshIndex, dummy.matrix);
     color.setHSL(
-      0.24 + random() * 0.075,
-      0.34 + random() * 0.2,
-      0.145 + random() * 0.075,
+      0.22 + random() * 0.07,
+      0.26 + random() * 0.12,
+      0.23 + random() * 0.08,
     );
     meshes[variant].setColorAt(meshIndex, color);
     indices[variant] += 1;
@@ -369,7 +257,7 @@ function makeBankSedges() {
     dummy.scale.set(scale * (0.55 + random() * 0.2), scale, scale * 0.72);
     dummy.updateMatrix();
     mesh.setMatrixAt(index, dummy.matrix);
-    color.setHSL(0.28 + random() * 0.08, 0.34 + random() * 0.18, 0.19 + random() * 0.08);
+    color.setHSL(0.2 + random() * 0.07, 0.26 + random() * 0.08, 0.36 + random() * 0.12);
     mesh.setColorAt(index, color);
   }
   mesh.name = 'world.river-room.bank-sedge-masses';
@@ -502,29 +390,30 @@ function makeBoundaryStillLife() {
   return group;
 }
 
-export function makeRiverRoomLandforms(scene) {
+export function makeRiverRoomLandforms(scene, groundLayers = createGroundLayers()) {
+  const groundTextures = groundLayers.textures;
   const group = new THREE.Group();
   group.name = 'world.river-room.incised-basin';
   group.userData.profile = RIVER_ROOM_PROFILE;
   const terraces = [
-    makeTerraceRibbon({ name: 'world.river-room.east-red-earth-terrace', points: [[30.6, 8], [30.8, -6], [30.5, -20], [30.9, -35], [30.6, -52]], outward: [1, 0], width: 18, height: 5.4, seed: 4101 }),
-    makeTerraceRibbon({ name: 'world.river-room.west-wet-terrace', points: [[-25, 12], [-23, -3], [-26, -18], [-24, -35], [-28, -51]], outward: [-1, 0], width: 5, height: 0.28, seed: 4117 }),
-    makeTerraceRibbon({ name: 'world.river-room.far-terrace-west', points: [[-36, -91], [-28, -91.4], [-20, -91.2], [-10, -91.5]], outward: [0, -1], width: 18, height: 6.2, seed: 4133 }),
-    makeTerraceRibbon({ name: 'world.river-room.far-terrace-east', points: [[8, -91.5], [18, -91.2], [28, -91.6], [38, -91.3]], outward: [0, -1], width: 18, height: 6.4, seed: 4153 }),
+    makeTerraceRibbon({ name: 'world.river-room.east-red-earth-terrace', points: [[30.6, 8], [30.8, -6], [30.5, -20], [30.9, -35], [30.6, -52]], outward: [1, 0], width: 18, height: 5.4, seed: 4101 }, groundTextures),
+    makeTerraceRibbon({ name: 'world.river-room.west-wet-terrace', points: [[-25, 12], [-23, -3], [-26, -18], [-24, -35], [-28, -51]], outward: [-1, 0], width: 5, height: 0.28, seed: 4117 }, groundTextures),
+    makeTerraceRibbon({ name: 'world.river-room.far-terrace-west', points: [[-36, -91], [-28, -91.4], [-20, -91.2], [-10, -91.5]], outward: [0, -1], width: 18, height: 6.2, seed: 4133 }, groundTextures),
+    makeTerraceRibbon({ name: 'world.river-room.far-terrace-east', points: [[8, -91.5], [18, -91.2], [28, -91.6], [38, -91.3]], outward: [0, -1], width: 18, height: 6.4, seed: 4153 }, groundTextures),
   ];
   const pointBars = [
-    makeGroundPatch('world.river-room.family-point-bar', -7.5, -31, 10, 15, 611, [0x7f7458, 0x9c8a60, 0x655f4b]),
-    makeGroundPatch('world.river-room.track-point-bar', -10.5, 19, 7.5, 12, 641, [0x766d55, 0x927f58, 0x5e5948]),
+    makeGroundPatch('world.river-room.family-point-bar', -7.5, -31, 10, 15, 611, [0x7f7458, 0x9c8a60, 0x655f4b], groundTextures),
+    makeGroundPatch('world.river-room.track-point-bar', -10.5, 19, 7.5, 12, 641, [0x766d55, 0x927f58, 0x5e5948], groundTextures),
   ];
   const backwaters = [
-    makeGroundPatch('world.river-room.backwater-west', -19, -29, 4.8, 8.5, 677, [0x5a9694, 0x76b7b0, 0x3f7778]),
-    makeGroundPatch('world.river-room.backwater-south', -8, -49, 5.6, 5.2, 691, [0x568c8e, 0x79b4ad, 0x3c7074]),
+    makeGroundPatch('world.river-room.backwater-west', -19, -29, 4.8, 8.5, 677, [0x5a9694, 0x76b7b0, 0x3f7778], groundTextures),
+    makeGroundPatch('world.river-room.backwater-south', -8, -49, 5.6, 5.2, 691, [0x568c8e, 0x79b4ad, 0x3c7074], groundTextures),
   ];
   const meadowMats = [
-    makeGroundPatch('world.river-room.meadow-near-west', -18, -7, 11, 18, 733, [0x506044, 0x687650, 0x3f523b]),
-    makeGroundPatch('world.river-room.meadow-near-east', 19, -8, 8, 17, 751, [0x596449, 0x71805a, 0x46553e]),
-    makeGroundPatch('world.river-room.meadow-family-west', -21, -39, 9, 14, 769, [0x4b5e43, 0x65754f, 0x3d503a]),
-    makeGroundPatch('world.river-room.meadow-family-east', 21, -42, 7, 13, 787, [0x536448, 0x6a7952, 0x40533c]),
+    makeGroundPatch('world.river-room.meadow-near-west', -18, -7, 11, 18, 733, [0x506044, 0x687650, 0x3f523b], groundTextures),
+    makeGroundPatch('world.river-room.meadow-near-east', 19, -8, 8, 17, 751, [0x596449, 0x71805a, 0x46553e], groundTextures),
+    makeGroundPatch('world.river-room.meadow-family-west', -21, -39, 9, 14, 769, [0x4b5e43, 0x65754f, 0x3d503a], groundTextures),
+    makeGroundPatch('world.river-room.meadow-family-east', 21, -42, 7, 13, 787, [0x536448, 0x6a7952, 0x40533c], groundTextures),
   ];
   const bankSedges = makeBankSedges();
   const meadowTufts = makeMeadowTufts();

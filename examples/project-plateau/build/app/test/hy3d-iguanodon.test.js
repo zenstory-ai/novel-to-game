@@ -78,6 +78,7 @@ test('cached loader fetches once and reuses a prepared template', async () => {
   );
   assert.match(mesh.material.customProgramCacheKey(), /bounded-dry-skin-roughness-v1/);
   const shader = {
+    uniforms: {},
     vertexShader: '',
     fragmentShader: '#include <roughnessmap_fragment>',
   };

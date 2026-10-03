@@ -3,13 +3,14 @@ import test from 'node:test';
 import {
   ABANDON_HOLD_SECONDS,
   ABANDONED_RECORD_COPY,
+  CASE_FREE_SPEED_MULTIPLIER,
   INITIAL_LIGHT_SECONDS,
-  RETURN_ROUTE_SECONDS,
   abandonPromptDue,
   applyThreatContact,
   createPlayerState,
   intactEvidence,
   restartPlayer,
+  secondsToFort,
   setCameraRaised,
   startExposure,
   stepPlayer,
@@ -132,36 +133,22 @@ test('the camera cannot be raised once the case is left behind', () => {
   assert.equal(attempted.cameraRaised, false);
 });
 
-test('any committed return route costs eight seconds once the case is down', () => {
-  const covered = commitRoute(holdAbandon(gladeStateWithProof(), 1), { x: 0, z: 18 });
-  assert.equal(covered.returnRoute, 'covered');
-  assert.equal(covered.returnCostSeconds, RETURN_ROUTE_SECONDS.abandoned);
-  assert.ok(
-    Math.abs(covered.remainingLight - (INITIAL_LIGHT_SECONDS - 1 - RETURN_ROUTE_SECONDS.abandoned - 0.1)) < 1e-8,
-    covered.remainingLight,
-  );
+test('a scout who leaves the case behind travels light, and no route costs hidden light', () => {
+  const carried = commitRoute(gladeStateWithProof(), { x: -3.7, z: 18 });
+  assert.equal(carried.returnRoute, 'covered');
+  assert.ok(Math.abs(carried.remainingLight - (INITIAL_LIGHT_SECONDS - 0.1)) < 1e-8);
 
-  const exposed = commitRoute(holdAbandon(gladeStateWithProof(), 1), { x: 7, z: 18 });
-  assert.equal(exposed.returnRoute, 'exposed');
-  assert.equal(exposed.returnCostSeconds, RETURN_ROUTE_SECONDS.abandoned);
-
-  const fired = gladeStateWithProof();
-  fired.gunshotFired = true;
-  const exposedAfterShot = commitRoute(holdAbandon(fired, 1), { x: 7, z: 18 });
-  assert.equal(exposedAfterShot.returnCostSeconds, RETURN_ROUTE_SECONDS.abandoned);
-});
-
-test('the three existing route costs are unchanged while the case is carried', () => {
-  const covered = commitRoute(gladeStateWithProof(), { x: 0, z: 18 });
-  assert.equal(covered.returnCostSeconds, RETURN_ROUTE_SECONDS.covered);
-
-  const exposed = commitRoute(gladeStateWithProof(), { x: 7, z: 18 });
-  assert.equal(exposed.returnCostSeconds, RETURN_ROUTE_SECONDS.exposed);
-
-  const fired = gladeStateWithProof();
-  fired.gunshotFired = true;
-  const exposedAfterShot = commitRoute(fired, { x: 7, z: 18 });
-  assert.equal(exposedAfterShot.returnCostSeconds, RETURN_ROUTE_SECONDS.exposedAfterShot);
+  const dropped = holdAbandon(gladeStateWithProof(), 1);
+  const light = { ...dropped, position: { x: 6, z: -8 }, lastStablePosition: { x: 6, z: -8 } };
+  let freed = light;
+  let laden = { ...light, caseAbandoned: false };
+  for (let step = 0; step < 20; step += 1) {
+    freed = stepPlayer(freed, { forward: -1 }, 0.1);
+    laden = stepPlayer(laden, { forward: -1 }, 0.1);
+  }
+  const freedSpeed = Math.hypot(freed.velocity.x, freed.velocity.z);
+  const ladenSpeed = Math.hypot(laden.velocity.x, laden.velocity.z);
+  assert.ok(Math.abs(freedSpeed / ladenSpeed - CASE_FREE_SPEED_MULTIPLIER) < 0.02);
 });
 
 test('the creek case-strike cannot fire after the case is abandoned', () => {
@@ -187,7 +174,7 @@ test('a dive contact after the drop costs body margin but cannot crack the case'
 });
 
 test('the deliberate trade resolves to the no-record band with its own honest copy', () => {
-  let player = commitRoute(holdAbandon(gladeStateWithProof(), 1), { x: 0, z: 18 });
+  let player = commitRoute(holdAbandon(gladeStateWithProof(), 1), { x: -3.7, z: 18 });
   player = commitRoute(player, { x: 0, z: 70 });
   assert.equal(player.runStatus, 'result');
   assert.equal(player.result.kind, 'alive');
@@ -202,7 +189,7 @@ test('the deliberate trade resolves to the no-record band with its own honest co
 test('a carried-but-empty return keeps the original no-record copy', () => {
   let player = createPlayerState();
   player.reachedGlade = true;
-  player = commitRoute(player, { x: 0, z: 18 });
+  player = commitRoute(player, { x: -3.7, z: 18 });
   player = commitRoute(player, { x: 0, z: 70 });
   assert.equal(player.result.band, 'returned-without-record');
   assert.equal(
@@ -216,7 +203,7 @@ test('a carried-but-empty return keeps the original no-record copy', () => {
 test('identical abandon inputs produce identical outcomes', () => {
   const runOnce = () => {
     let player = holdAbandon(gladeStateWithProof(), 1);
-    player = commitRoute(player, { x: 0, z: 18 });
+    player = commitRoute(player, { x: -3.7, z: 18 });
     return commitRoute(player, { x: 0, z: 70 });
   };
   const first = runOnce();
@@ -241,23 +228,16 @@ test('identical abandon inputs produce identical outcomes', () => {
   );
 });
 
-test('the abandon prompt is due only when the covered route can no longer make it', () => {
+test('the abandon prompt is due only when the walk home no longer fits the light', () => {
   assert.equal(abandonPromptDue(createPlayerState()), false);
 
   const atGlade = gladeStateWithProof();
   assert.equal(abandonPromptDue(atGlade), false);
 
-  const lowLight = { ...atGlade, remainingLight: RETURN_ROUTE_SECONDS.covered - 0.1 };
-  assert.equal(abandonPromptDue(lowLight), true);
-
-  const exactBudget = { ...atGlade, remainingLight: RETURN_ROUTE_SECONDS.covered };
-  assert.equal(abandonPromptDue(exactBudget), false);
-
-  const routeCommitted = { ...lowLight, returnRoute: 'covered' };
-  assert.equal(abandonPromptDue(routeCommitted), false);
-
-  const abandoned = { ...lowLight, caseAbandoned: true };
-  assert.equal(abandonPromptDue(abandoned), false);
+  const walkHome = secondsToFort(atGlade.position) + 4;
+  assert.equal(abandonPromptDue({ ...atGlade, remainingLight: walkHome - 0.1 }), true);
+  assert.equal(abandonPromptDue({ ...atGlade, remainingLight: walkHome }), false);
+  assert.equal(abandonPromptDue({ ...atGlade, remainingLight: 1, caseAbandoned: true }), false);
 });
 
 test('restart clears the drop, the hold and every unrecoverable mark', () => {

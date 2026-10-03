@@ -8,6 +8,7 @@ import { makeNonColumnarRockFamilies } from './rock-rendering.js';
 import { applyBrookObstacleFlowField } from './brook-material.js';
 import { createBrookSceneCapture } from './brook-scene-capture.js';
 import { createWorldAnimationController } from './world-animation.js';
+import { createGroundLayers } from './ground-layers.js';
 import { createWorldAssetVisualLoader } from './world-asset-visuals.js';
 import { createWorldAssetSnapshot } from './world-snapshot.js';
 import { makeRiverRoomLandforms, makeRouteAndBrook, makeTerrain } from './world-terrain.js';
@@ -27,7 +28,7 @@ import {
   makeRifleMount,
 } from './world-landmarks.js';
 import {
-  PTERODACTYL_ATTACK_CYCLE_SECONDS,
+  PTERODACTYL_ATTACK_TIMELINE,
   makeFamily,
   makeFamilyContactShadows,
   makeFeedingBranch,
@@ -42,7 +43,7 @@ import {
 export { terrainHeight } from './terrain.js';
 export { CANOPY_WIND_PROFILE } from './vegetation-leaf-materials.js';
 export {
-  PTERODACTYL_ATTACK_CYCLE_SECONDS,
+  PTERODACTYL_ATTACK_TIMELINE,
   pterodactylAttackFlightState,
   pterodactylAttackPose,
   pterodactylWingBeat,
@@ -50,12 +51,18 @@ export {
 
 export { loadOptionalAssetVisual } from './world-asset-visuals.js';
 
+import { makeCoverBand } from './cover-band.js';
+import { createCliffRing } from './cliff-ring.js';
+
 export function createWorld(scene) {
-  const terrain = makeTerrain(scene);
+  const groundLayers = createGroundLayers();
+  const terrain = makeTerrain(scene, groundLayers);
   const routeAndBrook = makeRouteAndBrook(scene);
-  const riverRoom = makeRiverRoomLandforms(scene);
+  const riverRoom = makeRiverRoomLandforms(scene, groundLayers);
   const brookBoulder = makeBrookBoulder(scene);
   const riparianCover = makeRiparianCover(scene);
+  const coverBand = makeCoverBand(scene);
+  const cliffRing = createCliffRing(scene);
   const coverArches = riparianCover.group;
   const vegetation = placeVegetation(scene);
   const nonColumnarRockFamilies = makeNonColumnarRockFamilies(scene);
@@ -118,11 +125,12 @@ export function createWorld(scene) {
       rifle,
     ],
   );
-  const enableHy3dVisuals = createWorldAssetVisualLoader({
+  const enableAssetVisuals = createWorldAssetVisualLoader({
     accentFernAssetAnchor,
     basalt,
     brookBoulder,
     brookResponse,
+    coverBand,
     environmentDensity,
     family,
     fieldCamera,
@@ -162,6 +170,11 @@ export function createWorld(scene) {
     family,
     vegetation,
     coverArches,
+    coverBand,
+    // What can stand between the lens and an animal for plate grading. The
+    // thorn band is the scout's own shelter and is shot through, not graded.
+    plateOccluders: [brookResponse, riparianCover.assetAnchor],
+    resetRun: animationController.resetRun,
     habitatAccents,
     degradableGroundAccents,
     environmentDensity,
@@ -175,7 +188,12 @@ export function createWorld(scene) {
     nonColumnarRockFamilies,
     fieldCamera,
     rifle,
-    enableHy3dVisuals,
+    terrain,
+    enableHy3dVisuals() {
+      // The far wall is scenery: if it cannot load, the valley still plays.
+      const cliff = cliffRing.load().catch(() => null);
+      return Promise.all([enableAssetVisuals(), groundLayers.load(), cliff]).then(([result]) => result);
+    },
     prepareBrookRender(renderer, camera, quality = 'balanced', frameIndex = 0) {
       brookSceneCapture.prepare(renderer, camera, quality, frameIndex);
     },
