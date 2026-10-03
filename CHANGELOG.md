@@ -11,6 +11,10 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Changed
+
+- game-build now hands a factual mismatch between the built candidate and GAME_DESIGN or ART_DIRECTION back to the owning stage, or marks it as a conflict in BUILD_BRIEF, instead of leaving documents that describe play, presentation or sound that no longer exists. ClawHub: `game-build` 1.1.0, `novel-to-game` 1.0.2. A companion sentence restoring the on-screen-text rule for narrative-led designs lost its blind A/B (7.33 vs 6.92, eight samples per arm) and was not shipped; see the [decision note](.agents/notes/implemented/process/2026-10-03-build-writes-back-design-drift.md).
+
 ## [0.5.0] - 2026-10-02
 
 ### Changed
