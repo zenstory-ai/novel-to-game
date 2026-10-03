@@ -343,6 +343,13 @@ export async function runBattleScreen(ctx) {
       uc.chips.appendChild(chip);
     }
     if (v.defending) uc.chips.appendChild(el('span', 'buff-chip', TEXT.float.defend));
+    // 化虫入腹的窗口：罗刹女气血跌破阈值即挂「疲态」签，玩家看得见何时可以智取
+    const fin = state.def.transformFinisher;
+    if (fin && v.alive && u.defKey === fin.bossKey && v.hp / v.maxHp <= fin.hpBelow) {
+      const wc = el('span', 'buff-chip', TEXT.ui.weary);
+      wc.dataset.buff = 'weary';
+      uc.chips.appendChild(wc);
+    }
   }
 
   function refreshAll() {

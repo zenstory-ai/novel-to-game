@@ -86,15 +86,15 @@ export function createBattleAnimator({
     return fx.play('puff', uc.card, { D: duration() });
   }
 
-  // 战况一行：谁打谁、掉多少、克/暴击/被克
+  // 战况一行：谁打谁、掉多少、相克/暴击/受克
   function damageLine(ev) {
     const a = getUnit(state, ev.actor), d = getUnit(state, ev.target);
     if (!a || !d) return;
     const tags = [];
-    if (ev.rel === 'ke') tags.push('克！');
+    if (ev.rel === 'ke') tags.push('相克');
     if (ev.crit) tags.push('暴击');
     if (ev.combo) tags.push('连击');
-    if (ev.rel === 'beike') tags.push('被克');
+    if (ev.rel === 'beike') tags.push('受克');
     if (ev.protectFor) tags.push(`替${getUnit(state, ev.protectFor)?.name ?? ''}挡下`);
     const cls = ev.crit ? 'crit' : ev.rel === 'ke' ? 'ke' : ev.rel === 'beike' ? 'beike' : '';
     pushLog(`${a.name} → ${d.name} −${ev.amount}${tags.length ? ` ${tags.join(' ')}` : ''}`, cls);

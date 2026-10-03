@@ -113,7 +113,7 @@ export function createHub(deps) {
     }
     for (const a of list) {
       if (step.scene === sceneId && step.actor === a.id) a.mark = '!';
-      else if (a.id === 'tudi' && bountyOpen() && (sceneId === 'village' || b.report)) a.mark = b.report ? '?' : !b.accepted ? '!' : null;
+      else if (a.id === 'tudi' && bountyOpen() && (sceneId === 'village' || b.report)) a.mark = b.report ? '?' : !b.accepted ? '令' : null; // 日常用「令」，不与主线「!」混
     }
     if (b.demon && b.demon.scene === sceneId) {
       list.push({ id: b.demon.id, unit: b.demon.unit, name: b.demon.name, title: '封妖令', x: b.demon.x, y: b.demon.y, h: 112, kind: 'demon', wander: true, seed: b.demon.seed });

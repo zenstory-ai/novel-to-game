@@ -153,7 +153,7 @@ export function createBattleCommands({
       }
       return [{
         main: `${label} → 敌方全体 ×${foes.length}`,
-        side: `每敌约 ${lo}~${hi}${keN ? ` · 克 ${keN} 敌` : ''}${bkN ? ` · 被克 ${bkN} 敌` : ''}`,
+        side: `每敌约 ${lo}~${hi}${keN ? ` · 克 ${keN} 敌` : ''}${bkN ? ` · 受克 ${bkN} 敌` : ''}`,
         cls: keN ? 'good' : bkN ? 'bad' : 'none',
       }];
     }
@@ -632,6 +632,8 @@ export function createBattleCommands({
     cmdMenu.innerHTML = '';
     const wrap = el('div', 'cmd-list');
     const foes = aliveUnits(state, 'enemy');
+    const fin = state.def.transformFinisher;
+    const finisherOpen = !!fin && foes.some((e) => e.defKey === fin.bossKey && e.hp / e.maxHp <= fin.hpBelow);
     for (const [sk, st] of Object.entries(STUNTS)) {
       const item = el('button', 'btn cmd-item stunt');
       item.dataset.stunt = sk;
@@ -653,7 +655,8 @@ export function createBattleCommands({
     for (const [fk, f] of Object.entries(u.hasTransform ? FORMS : {})) {
       // 五行杠杆提示：该形态能克到场上哪个活敌
       const countered = foes.filter((e) => elementRelation(f.element, e.element) === 'ke');
-      const hint = countered.length > 0 ? ` · 克${countered[0].element}·${countered[0].name}` : '';
+      let hint = countered.length > 0 ? ` · 克${countered[0].element}·${countered[0].name}` : '';
+      if (fk === 'chongzi' && finisherOpen) hint = ' · 此刻可化虫入腹，一举取胜';
       const item = el('button', 'btn cmd-item');
       item.dataset.form = fk;
       const nm = el('span', 'cmd-item-name', `${TEXT.commands.transform} · ${f.name}`);
@@ -661,7 +664,7 @@ export function createBattleCommands({
       item.append(nm, meta);
       item.title = f.desc;
       attachPreview(item, () => [`${f.name}:${f.desc}${hint}`]);
-      if (countered.length > 0) item.classList.add('counter');
+      if (countered.length > 0 || (fk === 'chongzi' && finisherOpen)) item.classList.add('counter');
       item.onclick = () => resolve({ type: 'transform', formId: fk });
       wrap.appendChild(item);
     }

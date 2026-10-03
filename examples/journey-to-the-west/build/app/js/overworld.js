@@ -244,6 +244,11 @@ export function runScene(ctx) {
     return portals.find((p) => Math.hypot((p.x * S - wx) / 1.6, p.y * S - wy) < 52) ?? null;
   }
 
+  // 阵名字画在阵上方(或下方)，点字也算点阵：屏幕坐标对上一帧画出的字框
+  function hitPortalLabel(sx, sy) {
+    return portals.find((p) => p.labelBox && sx >= p.labelBox.l - 4 && sx <= p.labelBox.r + 4 && sy >= p.labelBox.t - 4 && sy <= p.labelBox.b + 4) ?? null;
+  }
+
   function onClick(ev) {
     if (busy || disposed || document.querySelector('.dlg-box, .modal-mask, .npc-menu')) return;
     const r = canvas.getBoundingClientRect();
@@ -251,6 +256,8 @@ export function runScene(ctx) {
     audio.unlock();
     const a = hitActor(wx, wy);
     if (a) { audio.sfx('click'); approachActor(a.id); return; }
+    const pl = hitPortalLabel(ev.clientX - r.left, ev.clientY - r.top);
+    if (pl) { approachPortal(pl.id); return; }
     const p = hitPortal(wx, wy);
     if (p) { approachPortal(p.id); return; }
     dropPending();
@@ -262,7 +269,7 @@ export function runScene(ctx) {
   canvas.addEventListener('mousemove', (ev) => {
     const r = canvas.getBoundingClientRect();
     const wx = ev.clientX - r.left + cam.x, wy = ev.clientY - r.top + cam.y;
-    canvas.style.cursor = hitActor(wx, wy) || hitPortal(wx, wy) ? 'pointer' : '';
+    canvas.style.cursor = hitActor(wx, wy) || hitPortalLabel(ev.clientX - r.left, ev.clientY - r.top) || hitPortal(wx, wy) ? 'pointer' : '';
   });
 
   function onKey(ev) {
@@ -419,15 +426,16 @@ export function runScene(ctx) {
   function drawMark(e, mark, now) {
     const x = e.x - cam.x, y = e.y - cam.y - e.h - 26 - Math.abs(Math.sin(now / 260)) * 8;
     g.save();
-    g.font = 'bold 40px "Songti SC", serif';
+    const daily = mark === '令';
+    g.font = daily ? 'bold 28px "Songti SC", serif' : 'bold 40px "Songti SC", serif';
     g.textAlign = 'center';
     g.textBaseline = 'middle';
     g.lineWidth = 6;
     g.strokeStyle = '#4a1d08';
     g.strokeText(mark, x, y);
     const grad = g.createLinearGradient(0, y - 18, 0, y + 18);
-    grad.addColorStop(0, '#fff6a8');
-    grad.addColorStop(1, mark === '?' ? '#e2b13c' : '#ffb21e');
+    grad.addColorStop(0, daily ? '#e6fbff' : '#fff6a8');
+    grad.addColorStop(1, daily ? '#4fc3e8' : mark === '?' ? '#e2b13c' : '#ffb21e');
     g.fillStyle = grad;
     g.fillText(mark, x, y);
     g.restore();
@@ -468,10 +476,15 @@ export function runScene(ctx) {
     g.restore();
   }
 
-  // 传送阵字:画在人物之上(不被站在阵边的妖怪挡字);对白/菜单打开时不画;
-  // 压到 HUD 就挪到阵下方,再不行就不画(小地图上仍有阵眼)
+  // 传送阵字:对白/菜单打开时不画;压到 HUD 或 NPC/妖怪(身子+头顶标记+名牌,与 hitActor 同一块点击区)
+  // 就挪到阵下方,再不行就不画(小地图上仍有阵眼)——字永远不盖人,点人永远点得到人
+  const overActor = (box) => actors.some((a) => {
+    const x = a.wx - cam.x, y = a.wy - cam.y, hw = Math.max(34, a.h * 0.32);
+    return box.l < x + hw && box.r > x - hw && box.t < y + 40 && box.b > y - a.h - 70;
+  });
   function drawPortalLabel(p) {
     const x = p.x * S - cam.x, y = p.y * S - cam.y;
+    p.labelBox = null;
     if (document.body.classList.contains('dlg-open') || document.body.classList.contains('modal-open') || document.querySelector('.npc-menu')) return;
     const text = p.locked ? `${p.label}（未开）` : `→ ${p.label}`;
     g.font = 'bold 15px "Songti SC", "STSong", serif';
@@ -479,8 +492,9 @@ export function runScene(ctx) {
     const lx = Math.max(w / 2 + 12, Math.min(cam.vw - w / 2 - 12, x));
     for (const ly of [y - 52, y + 22]) {
       const box = { l: lx - w / 2, r: lx + w / 2, t: ly - 2, b: ly + 20 };
-      if (ly < 8 || ly > cam.vh - 26 || hits(box)) continue;
+      if (ly < 8 || ly > cam.vh - 26 || hits(box) || overActor(box)) continue;
       label(text, lx, ly, p.locked ? '#c9c9c9' : NAME_COLORS.portal, 15);
+      p.labelBox = box;
       return;
     }
   }

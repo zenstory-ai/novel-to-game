@@ -759,6 +759,8 @@ async function startNewJourney() {
 // 序幕：问土地
 async function storyTudi() {
   await showDialog(app, TEXT.story.tudiTalk);
+  const it = campaign.items;
+  logLine('sys', `获得 ${ITEMS.jinchuang.name}×${it.jinchuang ?? 0}、${ITEMS.falidan.name}×${it.falidan ?? 0}、${ITEMS.buyaosheng.name}×${it.buyaosheng ?? 0}`);
   campaign.flags.tudi = true;
   hub.setHint(null);
   hub.flashTracker(false);
