@@ -163,38 +163,21 @@
 }
 .fx-tint.on { opacity: 1; }
 
-/* ---------- 节奏开关组(简报二.5):收进顶栏「设」下拉(简报 T7) ---------- */
-.battle-toggles {
-  position: absolute; top: 52px; right: 276px; z-index: 6;
-  display: flex; gap: 6px;
-}
-/* 下拉内改竖排,与存档/读档等系统项同列 */
-.topbar-dropdown .battle-toggles {
-  position: static;
-  flex-direction: column;
+/* ---------- 设置下拉:音乐/音效五档 + 战斗节奏开关(战斗内外同一处) ---------- */
+.topbar-prefs {
+  display: flex; flex-direction: column; gap: 6px;
   margin-top: 2px; padding-top: 8px;
-  border-top: 1px solid rgba(201, 162, 39, 0.45);
+  border-top: 1px solid rgba(91, 68, 52, .25);
 }
-.topbar-dropdown .battle-toggles .toggle-btn { width: 100%; text-align: left; }
-.toggle-btn {
-  padding: 4px 10px; font-size: 12px; letter-spacing: 1px;
-  color: rgba(244, 234, 210, 0.85);
-  background: linear-gradient(180deg, rgba(84, 64, 44, 0.9), rgba(58, 42, 28, 0.9));
-  border: 1.5px solid rgba(201, 162, 39, 0.6);
-  border-radius: 4px;
-  text-shadow: 0 1px 1px #000;
+.pref-row { display: grid; grid-template-columns: 34px 28px 44px 28px; align-items: center; gap: 4px; font-size: 13px; color: #414244; }
+.pref-step { padding: 0; height: 26px; font-size: 14px; }
+.pref-val { text-align: center; font-variant-numeric: tabular-nums; color: #8f392b; }
+.pref-toggles { display: flex; flex-direction: column; gap: 4px; }
+.pref-toggle {
+  padding: 4px 10px; font-size: 12px; letter-spacing: 1px; text-align: left;
+  color: #414244; background: #fffdf6; border: 1px solid rgba(91, 68, 52, .3); border-radius: 6px;
 }
-.toggle-btn.on {
-  color: #fff;
-  background: linear-gradient(180deg, var(--zhu-hi), var(--zhu));
-  border-color: var(--gold-hi);
-  box-shadow: 0 0 8px rgba(168, 50, 42, 0.5);
-}
-
-/* 窄视口:开关已收进「设」下拉,只收紧按钮本身 */
-@media (max-width: 1360px) {
-  .toggle-btn { padding: 4px 7px; font-size: 11px; }
-}
+.pref-toggle.on { color: #fff9ed; background: #ae402b; border-color: #ae402b; }
 
 /* ---------- 非游玩阶段隐藏顶栏(标题/结局,简报 T7) ---------- */
 body.no-topbar #topbar { display: none; }

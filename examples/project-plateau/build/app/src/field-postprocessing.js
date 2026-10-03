@@ -1,7 +1,9 @@
+import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
@@ -11,26 +13,20 @@ export function createFieldPostprocessing({
   renderer,
   scene,
   camera,
-  excludedRoots,
   width,
   height,
   pixelRatio,
 }) {
-  const gtaoExcluded = [...excludedRoots];
-  scene.traverse((object) => {
-    if (!object.isMesh && !object.isSprite) return;
-    if (gtaoExcluded.some((root) => root === object || root.getObjectById?.(object.id))) return;
-    if (object.userData.gtaoExcluded) {
-      gtaoExcluded.push(object);
-      return;
-    }
-    const materials = Array.isArray(object.material) ? object.material : [object.material];
-    if (materials.some((material) => material?.transparent || material?.opacity < 1)) {
-      gtaoExcluded.push(object);
-    }
+  // One depth texture is shared by both composer buffers, so whichever buffer
+  // the scene pass lands in, GTAO reads the main pass's depth and rebuilds
+  // normals from it instead of drawing the whole scene a second time.
+  const sceneDepth = new THREE.DepthTexture(width * pixelRatio, height * pixelRatio);
+  const target = new THREE.WebGLRenderTarget(width * pixelRatio, height * pixelRatio, {
+    type: THREE.HalfFloatType,
+    depthTexture: sceneDepth,
   });
-  gtaoExcluded.forEach((object) => { object.userData.gtaoExcluded = true; });
-  const composer = new EffectComposer(renderer);
+  const composer = new EffectComposer(renderer, target);
+  composer.renderTarget2.depthTexture = sceneDepth;
   composer.setPixelRatio(pixelRatio);
   composer.setSize(width, height);
   composer.addPass(new RenderPass(scene, camera));
@@ -51,26 +47,30 @@ export function createFieldPostprocessing({
     },
     CONTACT_OCCLUSION_PROFILE.denoise,
   );
-  const renderGtao = gtaoPass.render.bind(gtaoPass);
-  gtaoPass.render = (...args) => {
-    const visibility = gtaoExcluded.map((object) => object.visible);
-    gtaoExcluded.forEach((object) => { object.visible = false; });
-    try {
-      return renderGtao(...args);
-    } finally {
-      gtaoExcluded.forEach((object, index) => { object.visible = visibility[index]; });
-    }
-  };
+  // Swap in the shared depth after construction: passing it to the
+  // constructor trips a three r185 GTAOPass bug in its debug depth material.
+  gtaoPass.setGBuffer(sceneDepth);
   gtaoPass.blendIntensity = CONTACT_OCCLUSION_PROFILE.blendIntensity;
   gtaoPass.userData = {
     radiusMeters: CONTACT_OCCLUSION_PROFILE.radiusMeters,
     role: CONTACT_OCCLUSION_PROFILE.role,
   };
   composer.addPass(gtaoPass);
+  // Bloom works on the linear HDR buffer before tone mapping, so only the sun,
+  // its glow and wet speculars spill; lit foliage stays crisp.
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(Math.round(width / 2), Math.round(height / 2)),
+    0.16,
+    0.5,
+    1.4,
+  );
+  composer.addPass(bloomPass);
   const fieldGradePass = new ShaderPass({
     name: 'ProjectPlateauFieldGrade',
     uniforms: {
       tDiffuse: { value: null },
+      threat: { value: 0 },
+      time: { value: 0 },
     },
     vertexShader: `
       varying vec2 vUv;
@@ -82,6 +82,8 @@ export function createFieldPostprocessing({
     fragmentShader: `
       varying vec2 vUv;
       uniform sampler2D tDiffuse;
+      uniform float threat;
+      uniform float time;
 
       float fieldHash(vec2 p) {
         return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -89,35 +91,39 @@ export function createFieldPostprocessing({
 
       void main() {
         vec4 source = texture2D(tDiffuse, vUv);
-        float luma = dot(source.rgb, vec3(0.2126, 0.7152, 0.0722));
-        vec3 color = mix(vec3(luma), source.rgb, 1.105);
-        // A restrained toe and shoulder keep the humid fill while separating
-        // trunks, wet ground and the warm sky. This is a field-photography
-        // grade, not a full-screen period tint.
-        color = max(color, vec3(0.0));
-        color = max((color - 0.18) * 1.07 + 0.18, vec3(0.0));
-        float gradedLuma = dot(color, vec3(0.2126, 0.7152, 0.0722));
-        float shadowWeight = 1.0 - smoothstep(0.1, 0.48, gradedLuma);
-        float highlightWeight = smoothstep(0.42, 0.88, gradedLuma);
-        color = mix(color, color * vec3(0.91, 1.015, 1.04), shadowWeight * 0.09);
-        color = mix(color, color * vec3(1.055, 1.015, 0.92), highlightWeight * 0.065);
-        vec2 centred = (vUv - 0.5) * vec2(1.0, 0.82);
-        float vignette = smoothstep(0.34, 0.76, dot(centred, centred));
-        color *= 1.0 - vignette * 0.105;
-        float grain = fieldHash(gl_FragCoord.xy) - 0.5;
-        color += grain * 0.0015;
+        vec3 color = max(source.rgb, vec3(0.0));
+        // Linear-light grade ahead of AgX: richer mid saturation, teal in the
+        // shade, amber in the sun. AgX then rolls highlights off filmically.
+        // Log-space contrast around mid grey restores the punch AgX trades away.
+        color = pow(color / 0.18 + 1e-5, vec3(1.14)) * 0.18;
+        float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
+        color = mix(vec3(luma), color, 1.22);
+        float shade = 1.0 - smoothstep(0.02, 0.35, luma);
+        float light = smoothstep(0.35, 1.6, luma);
+        color *= mix(vec3(1.0), vec3(0.86, 0.98, 1.1), shade * 0.55);
+        color *= mix(vec3(1.0), vec3(1.08, 1.0, 0.86), light * 0.5);
+        vec2 centred = (vUv - 0.5) * vec2(1.0, 0.78);
+        float vignette = smoothstep(0.18, 0.62, dot(centred, centred) * 1.6);
+        color *= 1.0 - vignette * 0.28;
+        float threatEdge = smoothstep(0.1, 0.75, dot(centred, centred) * 2.2);
+        float heartbeat = 0.75 + 0.25 * pow(abs(sin(time * 2.6)), 6.0);
+        color = mix(color, vec3(dot(color, vec3(0.2126, 0.7152, 0.0722))), threat * 0.35);
+        color *= 1.0 - threatEdge * threat * 0.55 * heartbeat;
+        float grain = fieldHash(gl_FragCoord.xy + fract(luma * 91.0)) - 0.5;
+        color *= 1.0 + grain * 0.035;
         gl_FragColor = vec4(max(color, 0.0), source.a);
       }
     `,
   });
-  fieldGradePass.material.name = 'Project Plateau restrained field grade';
+  fieldGradePass.material.name = 'Project Plateau field grade';
   composer.addPass(fieldGradePass);
+  // Tone map before anti-aliasing so edge filters see display-referred values.
+  composer.addPass(new OutputPass());
   const fxaaPass = new ShaderPass(FXAAShader);
   fxaaPass.material.name = 'Project Plateau single-pass FXAA';
   composer.addPass(fxaaPass);
   const smaaPass = new SMAAPass(width, height);
   smaaPass.name = 'Project Plateau balanced/high SMAA';
   composer.addPass(smaaPass);
-  composer.addPass(new OutputPass());
-  return { composer, gtaoPass, fxaaPass, smaaPass };
+  return { composer, gradePass: fieldGradePass, gtaoPass, bloomPass, fxaaPass, smaaPass };
 }

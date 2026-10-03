@@ -1,250 +1,131 @@
 {
   "schemaVersion": 1,
-  "runId": "jin-ping-mei-visual-reconstruction-2026-09-05",
+  "runId": "jin-ping-mei-galgame-2026-10",
   "environment": {
-    "candidate": "2026-09 标题与开场视觉重构候选",
-    "runtimeDigestSha256": "6104e309b165b057e94c619516c4d726100975d0b6136c10b646248c878ab12f",
-    "browser": {
-      "name": "Chromium",
-      "version": "145.0.7632.6"
-    },
-    "testedRuntime": "临时本地 HTTP 服务 + Python Playwright",
-    "seed": 42,
-    "mode": "每屏第一项可行主动作的快速完整路径",
-    "inputMode": "Playwright locator.click；不使用 force；DOM 只负责读取候选 selector",
-    "timestamp": "2026-09-20T16:44:16.820087+00:00",
-    "errors": {
-      "console": [],
-      "http": []
-    },
-    "limitations": [
-      {
-        "scope": "路径覆盖",
-        "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。"
-      },
-      {
-        "scope": "输入覆盖",
-        "reason": "本次使用 Playwright locator.click 且不使用 force；没有复测 2026-08 的全键盘正常速度路径。"
-      },
-      {
-        "scope": "响应式覆盖",
-        "reason": "五档视口覆盖标题与首日，390×844 和 1280×800 覆盖夜访，1280×800 覆盖本次结局；未声明五档完整二十日矩阵。"
-      },
-      {
-        "scope": "体验判断",
-        "reason": "自动化只证明当前候选可启动、渲染、输入、走到结果并重开，不判断主观吸引力、长期平衡或其他浏览器。"
-      }
-    ]
+    "browser": "Chromium 145.0.7632.6",
+    "viewport": "1440x900",
+    "runtime": "临时本地 HTTP 服务 + Python Playwright",
+    "timestamp": "2026-10-03T04:57:54+00:00"
   },
   "inputTrace": [
-    "以 Playwright 点击确认年龄门并进入五院标题。",
-    "点击进入首日，完成正堂选择与三拍后章，再真实进入吴月娘夜访并选择第一项路线回答。",
-    "继续以 Playwright locator.click 激活每屏第一项可见可行主动作；主流程动作计数 562。",
-    "到达第二十日失稳结局后点击“换一套暗线”，确认新 seed 回到第一日正堂。"
+    "点击年龄门确认，进入动画标题。",
+    "设置里把文字速度调到瞬间；开始游戏后用鼠标点击和回车各推进一句。",
+    "在三人同场的晚饭戏截图；快存、推进两句、快读回到同一句；滚轮上翻打开回看记录后关闭。",
+    "走到「吴月娘篇 · 良缘结局 · 月下焚香」。",
+    "点开原著命数页（第七十九回、第一百回）后回到标题。",
+    "回到标题后重新开始，回到序章第一句。"
   ],
   "observations": {
     "launch": {
-      "id": "age-gate-to-five-court-title",
+      "id": "age-gate-then-title",
       "inputs": [
-        "打开 seed=42",
-        "点击我已成年"
+        "打开页面",
+        "点击「我已成年，进入」"
       ],
       "state": {
-        "ageGateVisible": true,
-        "adultAssetRequestsBeforeConfirmation": 0,
-        "preAgeImageRequests": [
-          "http://127.0.0.1:64602/assets/cg/group/title_new_guofeng.webp",
-          "http://127.0.0.1:64602/assets/bg/compound_new_guofeng.webp"
-        ],
-        "titleVisible": true,
-        "titleCourtCount": 5
+        "ageGateFirst": true,
+        "adultRequestsBeforeConfirm": 0,
+        "titleMenu": [
+          "开始游戏",
+          "继续",
+          "读取",
+          "鉴赏",
+          "设置",
+          "退出"
+        ]
       },
-      "visual": "qa/evidence/visual-reconstruction-title.jpg"
+      "visual": "screenshots/title.jpg"
     },
     "render": {
-      "id": "title-opening-night-ending-rendered",
+      "id": "adv-scene-three-sprites",
       "inputs": [
-        "检查五档标题与首日",
-        "检查移动端及桌面夜访",
-        "检查桌面结局"
+        "读到晚饭戏玉楼开口"
       ],
       "state": {
-        "titleViewports": [
-          {
-            "name": "mobile",
-            "width": 390,
-            "height": 844,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "portrait-tablet",
-            "width": 768,
-            "height": 1024,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "tablet",
-            "width": 1024,
-            "height": 768,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "desktop",
-            "width": 1280,
-            "height": 800,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "wide",
-            "width": 1920,
-            "height": 1080,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          }
+        "nameplate": "玉楼 · 第三房",
+        "sprites": [
+          "yue:dim",
+          "pan:dim",
+          "meng:speaking"
         ],
-        "openingViewports": [
-          {
-            "name": "mobile",
-            "width": 390,
-            "height": 844,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "portrait-tablet",
-            "width": 768,
-            "height": 1024,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "tablet",
-            "width": 1024,
-            "height": 768,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "desktop",
-            "width": 1280,
-            "height": 800,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "wide",
-            "width": 1920,
-            "height": 1080,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          }
-        ],
-        "nightVisitViewports": [
-          {
-            "name": "mobile",
-            "width": 390,
-            "height": 844,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          },
-          {
-            "name": "desktop",
-            "width": 1280,
-            "height": 800,
-            "horizontalOverflow": false,
-            "verticalPageOverflow": false,
-            "mainPanelOverflow": false,
-            "enabledControlsInViewport": true
-          }
-        ],
-        "endingViewport": {
-          "width": 1280,
-          "height": 800
-        },
-        "horizontalOverflowCount": 0,
-        "mainPanelOverflowCount": 0,
-        "enabledControlsOutsideViewportCount": 0
+        "spritesLoaded": true,
+        "background": "hall"
       },
-      "visual": "qa/evidence/visual-reconstruction-day.jpg"
+      "visual": "screenshots/adv.jpg"
     },
     "input": {
-      "id": "visible-enabled-controls-accepted",
+      "id": "click-enter-wheel-quicksave",
       "inputs": [
-        "Playwright locator.click",
-        "不使用 force",
-        "DOM 仅选择下一 locator"
+        "设置滑杆",
+        "鼠标点击",
+        "回车",
+        "快存／快读",
+        "滚轮回看",
+        "选项点击"
       ],
       "state": {
-        "mainPathActionCount": 562,
-        "openingChoiceAccepted": true,
-        "nightVisitAccepted": true,
-        "routeResultVisible": true,
-        "consoleErrors": [],
-        "httpErrors": []
-      },
-      "visual": "qa/evidence/visual-reconstruction-night-visit.jpg"
+        "firstLine": "清河县的春天来得迟，一来就是满街柳絮。",
+        "afterClick": "县门前那间生药铺，是你西门庆起家的地方。银子、药材、官面上的人情，都从这道柜台过。",
+        "afterEnter": "「爹！爹——大娘差我来请，说清明的席面要商量，叫您今日务必早些回去。」",
+        "savedLine": "「五妹妹这张嘴，清明不唱曲儿可惜了。到时候你弹琵琶，我拨月琴，叫亲戚们听听咱们宅里的热闹。」",
+        "restoredLine": "「五妹妹这张嘴，清明不唱曲儿可惜了。到时候你弹琵琶，我拨月琴，叫亲戚们听听咱们宅里的热闹。」",
+        "backlogEntries": 28
+      }
     },
     "coreLoop": {
-      "id": "twenty-day-fast-path-complete",
+      "id": "common-route-to-branch",
       "inputs": [
-        "从第一日正堂持续选择每屏第一项可行主动作"
+        "立刻回家",
+        "看向月娘",
+        "正院 · 月娘还在",
+        "先别吵",
+        "箱子我替你守着",
+        "听月娘的",
+        "正院 · 月娘",
+        "沉下脸",
+        "给月娘"
       ],
       "state": {
-        "day": 20,
-        "phase": "ending",
-        "historyCount": 206
+        "chapters": [
+          "第一章",
+          "第二章",
+          "第三章",
+          "第四章",
+          "第五章",
+          "第六章"
+        ],
+        "openDoors": [
+          "正院 · 吴月娘",
+          "东院 · 李瓶儿"
+        ]
       }
     },
     "outcome": {
-      "id": "day-20-unstable-ending",
+      "id": "yue-good-ending",
       "inputs": [
-        "完成第二十日最终选择并读取结局"
+        "按计划在每个选项处点击",
+        "读完月娘线"
       ],
       "state": {
-        "terminal": "day-20-unstable-ending",
-        "day": 20,
-        "phase": "ending",
-        "endingId": "unstable",
-        "endingTitle": "五处各自封灯"
+        "endingCard": "吴月娘篇 · 良缘结局 / 月下焚香 / 终 / 点击继续",
+        "recorded": [
+          "yue_good"
+        ],
+        "terminal": "yue_good",
+        "fatePage": "吴月娘"
       },
-      "visual": "qa/evidence/visual-reconstruction-ending.jpg"
+      "visual": "qa/evidence/ending.jpg"
     },
     "restart": {
-      "id": "new-seed-day-1-opening",
+      "id": "title-new-game",
       "inputs": [
-        "点击换一套暗线"
+        "结局后回到标题",
+        "点击「开始游戏」"
       ],
       "state": {
-        "restart": "day-1-opening-new-seed",
-        "day": 1,
-        "phase": "opening",
-        "seedChanged": true
+        "continueEnabled": true,
+        "firstLine": "清河县的春天来得迟，一来就是满街柳絮。",
+        "restart": "prologue-first-line"
       }
     }
   }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { AUDIO_CAPTIONS, FieldAudio, captionForCue } from '../src/audio.js';
+import { AUDIO_CAPTIONS, FieldAudio, brookBedGain, captionForCue } from '../src/audio.js';
 
 const CORE_CUES = [
   'field-start',
@@ -66,4 +66,10 @@ test('cue history remains bounded during a long field session', () => {
   audio.resetRun();
   assert.deepEqual(audio.snapshot().recentCues, []);
   assert.equal(audio.snapshot().threatState, 'distant');
+});
+
+test('the brook bed is loud at the water and gone well away from it', () => {
+  assert.ok(brookBedGain(3) > 0.4);
+  assert.ok(brookBedGain(15) < brookBedGain(3) / 2);
+  assert.equal(brookBedGain(30), 0);
 });

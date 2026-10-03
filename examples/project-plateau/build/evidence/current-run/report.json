@@ -2,29 +2,30 @@
   "schemaVersion": 1,
   "runId": "project-plateau-main-path",
   "environment": {
-    "browser": "152.0.7977.77",
+    "browser": "154.0.8037.97",
     "viewport": [
       1440,
       900
     ],
-    "baseUrl": "http://127.0.0.1:4173"
+    "baseUrl": "http://127.0.0.1:4183"
   },
   "inputTrace": [
     "KeyW: reach the brook",
     "Right Mouse + Left Mouse: record the brook",
     "KeyW: reach the basalt shelf",
     "Right Mouse + Left Mouse: record basalt scale",
-    "KeyA: enter canopy cover",
-    "hold KeyC under cover: let the attack widen",
-    "KeyW: reach the glade",
-    "Right Mouse + Left Mouse: record young at play",
-    "KeyS: protect the first behavior plate",
-    "hold KeyC under cover: break the dive",
-    "KeyW: return for the second behavior plate",
-    "Right Mouse + Left Mouse: record branch pulling",
-    "KeyS: retreat into cover",
-    "hold KeyC under cover: prepare the covered return",
-    "KeyS: return to Fort"
+    "KeyA: step under the thorn arches",
+    "KeyW: follow the thorn band to the glade",
+    "KeyD: keep to the band as it bends toward the glade",
+    "KeyW: settle in the glade-edge blind",
+    "Right Mouse + Left Mouse: record young at play from the blind",
+    "hold KeyC under cover: crouch until the wings lose interest",
+    "ArrowRight: turn to the feeding adult",
+    "Right Mouse + Left Mouse: record branch pulling from the blind",
+    "hold KeyC under cover: let the wings lose interest",
+    "ArrowLeft: face the glade again",
+    "KeyA: step back to the thorn band's centre",
+    "KeyS: back up the thorn band to Fort"
   ],
   "observations": {
     "launch": {
@@ -35,13 +36,12 @@
       "state": {
         "mode": "order",
         "sceneChildren": 73,
-        "triangles": 1,
         "player": {
           "position": {
             "x": 3,
             "z": 70
           },
-          "remainingLight": 180,
+          "remainingLight": 300,
           "distanceTravelled": 0,
           "plateStatus": [
             "unexposed",
@@ -69,76 +69,51 @@
       "visual": "build/evidence/current-run/00-clean-start.jpg"
     },
     "render": {
-      "id": "01-designed-outcome",
+      "id": "01-field-glade",
       "inputs": [
-        "complete the covered route"
+        "settle in the glade-edge blind"
       ],
       "state": {
-        "mode": "terminal",
+        "mode": "field",
         "sceneChildren": 73,
-        "triangles": 1,
         "player": {
           "position": {
-            "x": 2.394,
-            "z": 62.032
+            "x": -1.341,
+            "z": -10.03
           },
-          "remainingLight": 92.313,
-          "distanceTravelled": 134.062,
+          "remainingLight": 271.635,
+          "distanceTravelled": 91.384,
           "plateStatus": [
             "exposed",
             "exposed",
-            "exposed",
-            "exposed"
+            "unexposed",
+            "unexposed"
           ],
           "platePoints": [
             1,
             2,
-            2,
-            2
+            0,
+            0
           ],
           "bodyMargin": 1,
-          "returnRoute": "covered",
-          "runStatus": "result",
-          "resultBand": "strong-field-record",
+          "returnRoute": null,
+          "runStatus": "active",
+          "resultBand": null,
           "plateFrames": [
-            "brook-partial",
+            "brook-flank",
             "basalt-scale",
-            "glade-young-play",
-            "glade-branch-pull"
+            null,
+            null
           ],
           "plateBehaviors": [
             null,
             null,
-            "young-play",
-            "branch-pull"
+            null,
+            null
           ]
-        },
-        "terminal": "strong-field-record",
-        "visualReview": {
-          "title": {
-            "visual": "build/evidence/current-run/00-title.jpg",
-            "state": {
-              "mode": "title",
-              "viewport": [
-                1440,
-                900
-              ]
-            }
-          },
-          "field": {
-            "visual": "build/evidence/current-run/01-field-glade.jpg",
-            "state": {
-              "mode": "field",
-              "zone": "iguanodon-glade",
-              "viewport": [
-                1440,
-                900
-              ]
-            }
-          }
         }
       },
-      "visual": "build/evidence/current-run/01-designed-outcome.jpg"
+      "visual": "build/evidence/current-run/01-field-glade.jpg"
     },
     "input": {
       "id": "field-input-trace",
@@ -147,28 +122,28 @@
         "Right Mouse + Left Mouse: record the brook",
         "KeyW: reach the basalt shelf",
         "Right Mouse + Left Mouse: record basalt scale",
-        "KeyA: enter canopy cover",
-        "hold KeyC under cover: let the attack widen",
-        "KeyW: reach the glade",
-        "Right Mouse + Left Mouse: record young at play",
-        "KeyS: protect the first behavior plate",
-        "hold KeyC under cover: break the dive",
-        "KeyW: return for the second behavior plate",
-        "Right Mouse + Left Mouse: record branch pulling",
-        "KeyS: retreat into cover",
-        "hold KeyC under cover: prepare the covered return",
-        "KeyS: return to Fort"
+        "KeyA: step under the thorn arches",
+        "KeyW: follow the thorn band to the glade",
+        "KeyD: keep to the band as it bends toward the glade",
+        "KeyW: settle in the glade-edge blind",
+        "Right Mouse + Left Mouse: record young at play from the blind",
+        "hold KeyC under cover: crouch until the wings lose interest",
+        "ArrowRight: turn to the feeding adult",
+        "Right Mouse + Left Mouse: record branch pulling from the blind",
+        "hold KeyC under cover: let the wings lose interest",
+        "ArrowLeft: face the glade again",
+        "KeyA: step back to the thorn band's centre",
+        "KeyS: back up the thorn band to Fort"
       ],
       "state": {
-        "acceptedInputCount": 15,
-        "distanceTravelled": 134.062
+        "distanceTravelled": 166.157
       }
     },
     "coreLoop": {
-      "id": "completed-field-loop",
+      "id": "glade-behaviors",
       "inputs": [
-        "record four plates",
-        "return to Fort"
+        "Right Mouse + Left Mouse: record young at play from the blind",
+        "Right Mouse + Left Mouse: record branch pulling from the blind"
       ],
       "state": {
         "runStatus": "result",
@@ -180,21 +155,20 @@
       }
     },
     "outcome": {
-      "id": "01-designed-outcome",
+      "id": "02-designed-outcome",
       "inputs": [
         "complete the covered route"
       ],
       "state": {
         "mode": "terminal",
         "sceneChildren": 73,
-        "triangles": 1,
         "player": {
           "position": {
-            "x": 2.394,
-            "z": 62.032
+            "x": -4.762,
+            "z": 62.045
           },
-          "remainingLight": 92.313,
-          "distanceTravelled": 134.062,
+          "remainingLight": 239.086,
+          "distanceTravelled": 166.157,
           "plateStatus": [
             "exposed",
             "exposed",
@@ -212,7 +186,7 @@
           "runStatus": "result",
           "resultBand": "strong-field-record",
           "plateFrames": [
-            "brook-partial",
+            "brook-flank",
             "basalt-scale",
             "glade-young-play",
             "glade-branch-pull"
@@ -226,23 +200,22 @@
         },
         "terminal": "strong-field-record"
       },
-      "visual": "build/evidence/current-run/01-designed-outcome.jpg"
+      "visual": "build/evidence/current-run/02-designed-outcome.jpg"
     },
     "restart": {
-      "id": "02-clean-restart",
+      "id": "03-clean-restart",
       "inputs": [
         "Walk the bend again"
       ],
       "state": {
         "mode": "order",
         "sceneChildren": 73,
-        "triangles": 1,
         "player": {
           "position": {
             "x": 3,
             "z": 70
           },
-          "remainingLight": 180,
+          "remainingLight": 300,
           "distanceTravelled": 0,
           "plateStatus": [
             "unexposed",
@@ -263,7 +236,7 @@
         },
         "restart": "clean-field-order"
       },
-      "visual": "build/evidence/current-run/02-clean-restart.jpg"
+      "visual": "build/evidence/current-run/03-clean-restart.jpg"
     }
   }
 }

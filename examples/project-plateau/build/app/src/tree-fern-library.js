@@ -243,7 +243,7 @@ function addThinLeafTransmission(shader) {
   float treeFernViewSide = dot( treeFernSurfaceNormal, geometryViewDir );
   float treeFernOppositeSides = saturate( - treeFernLightSide * treeFernViewSide );
   float treeFernIncidence = max( abs( treeFernLightSide ), 0.24 );
-  vec3 treeFernAbsorption = vec3( 1.82, 0.72, 2.36 );
+  vec3 treeFernAbsorption = vec3( 1.2, 0.55, 1.8 );
   vec3 treeFernTransmittance = exp( - treeFernAbsorption * 0.68 / treeFernIncidence );
   float treeFernShadowVisibility = 1.0;
   #if defined( USE_SHADOWMAP ) && ( NUM_DIR_LIGHT_SHADOWS > 0 )
@@ -261,9 +261,9 @@ function addThinLeafTransmission(shader) {
     * material.diffuseContribution
     * treeFernTransmittance
     * pow( treeFernOppositeSides, 0.48 )
-    * treeFernShadowVisibility
+    * mix( 0.4, 1.0, treeFernShadowVisibility )
     * RECIPROCAL_PI
-    * 0.38;
+    * 0.8;
 #endif`,
   );
 }

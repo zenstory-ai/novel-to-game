@@ -11,29 +11,30 @@ import { terrainHeight } from './terrain.js';
 import { createCylinderBetween, primitive } from './world-rendering.js';
 import { shared } from './vegetation-rendering.js';
 
+// The committed attack on the simulation's attack clock: a slow, low circle
+// in front of the scout (readable, photographable, with a ground shadow), then
+// the fold and the dive that lands at contact.
+export const PTERODACTYL_ATTACK_TIMELINE = Object.freeze({
+  circleEnd: 4,
+  contact: 5.5, // matches CONTACT_SECONDS in simulation.js
+});
+
 export function pterodactylAttackPose(attackSeconds = 0, reducedMotion = false) {
   const clock = Math.max(0, Number.isFinite(attackSeconds) ? attackSeconds : 0);
-  // The threat must already be crossing the exposed corridor when the player
-  // reaches for the rifle. Delaying all approach motion until 0.34 s left the
-  // first defensive read as a distant bird in empty sky.
-  const rawApproach = THREE.MathUtils.clamp((clock - 0.18) / 0.74, 0, 1);
+  const { circleEnd, contact } = PTERODACTYL_ATTACK_TIMELINE;
+  const rawApproach = THREE.MathUtils.clamp((clock - circleEnd) / (contact - circleEnd), 0, 1);
   const easedApproach = rawApproach * rawApproach * (3 - 2 * rawApproach);
-  const rawRecovery = THREE.MathUtils.clamp((clock - 2.24) / (3.05 - 2.24), 0, 1);
-  const recovery = rawRecovery * rawRecovery * (3 - 2 * rawRecovery);
-  const attackEnvelope = easedApproach * (1 - recovery);
-  const approach = reducedMotion ? attackEnvelope * 0.38 : attackEnvelope;
-  const rawFlightProgress = THREE.MathUtils.clamp((clock - 0.12) / 1.4, 0, 1);
-  const easedFlightProgress = rawFlightProgress * rawFlightProgress * (3 - 2 * rawFlightProgress);
-  const stage = clock < 0.5
-    ? 'search'
-    : clock < 0.92 ? 'fold-dive' : clock < 2.24 ? 'attack' : 'pull-up';
+  const approach = reducedMotion ? easedApproach * 0.6 : easedApproach;
+  const stage = clock < circleEnd
+    ? 'circle'
+    : clock < circleEnd + 0.6 ? 'fold-dive' : clock < contact ? 'attack' : 'pull-up';
   return {
     stage,
     approach,
-    recovery,
-    flightProgress: reducedMotion ? easedFlightProgress * 0.38 : easedFlightProgress,
-    wingFold: THREE.MathUtils.clamp(0.08 + approach * 0.74, 0, 0.82),
-    pitch: THREE.MathUtils.lerp(0.06 + approach * 0.5, -0.2, recovery),
+    recovery: 0,
+    flightProgress: rawApproach,
+    wingFold: THREE.MathUtils.clamp(0.06 + approach * 0.76, 0, 0.82),
+    pitch: 0.06 + approach * 0.5,
   };
 }
 
@@ -49,7 +50,6 @@ export function pterodactylWingBeat(elapsed, phase = 0, awareness = 0, reducedMo
 
 const PTERODACTYL_WORLD_UP = new THREE.Vector3(0, 1, 0);
 const THREAT_TRANSITION_SECONDS = 0.55;
-export const PTERODACTYL_ATTACK_CYCLE_SECONDS = 4.4;
 
 function alignPterodactylToTravel(mesh, velocity, roll = 0) {
   if (velocity.lengthSq() <= 1e-10) return;
@@ -88,67 +88,62 @@ function cubicBezierPoint(start, controlA, controlB, end, progress) {
   );
 }
 
+const ATTACK_CIRCLE = Object.freeze({
+  ahead: 15,
+  startRadius: 9,
+  radius: 6,
+  startHeight: 12,
+  height: 6.8,
+  angularSpeed: 0.45,
+});
+
+function circlePoint(origin, heading, clock) {
+  const forwardX = -Math.sin(heading);
+  const forwardZ = -Math.cos(heading);
+  const settle = THREE.MathUtils.smoothstep(clock, 0, 2.4);
+  const radius = THREE.MathUtils.lerp(ATTACK_CIRCLE.startRadius, ATTACK_CIRCLE.radius, settle);
+  const height = THREE.MathUtils.lerp(ATTACK_CIRCLE.startHeight, ATTACK_CIRCLE.height, settle);
+  // Start on the far side of the circle and sweep across the scout's view.
+  const angle = heading + Math.PI / 2 + clock * ATTACK_CIRCLE.angularSpeed;
+  return new THREE.Vector3(
+    origin.x + forwardX * ATTACK_CIRCLE.ahead + Math.cos(angle) * radius,
+    height + Math.sin(clock * 1.7) * 0.35,
+    origin.z + forwardZ * ATTACK_CIRCLE.ahead - Math.sin(angle) * radius,
+  );
+}
+
 export function pterodactylAttackFlightState({
   attackClock,
   attackOrigin,
-  playerPosition,
-  reducedMotion,
+  attackHeading = 0,
+  strikeTarget = null,
+  reducedMotion = false,
 }) {
-  const finiteClock = Number.isFinite(attackClock) ? attackClock : 0;
-  const cycleClock = ((finiteClock % PTERODACTYL_ATTACK_CYCLE_SECONDS)
-    + PTERODACTYL_ATTACK_CYCLE_SECONDS) % PTERODACTYL_ATTACK_CYCLE_SECONDS;
-  const pose = pterodactylAttackPose(cycleClock, reducedMotion);
-  const approach = pose.approach;
-  const flightProgress = pose.flightProgress;
-  const diveStart = new THREE.Vector3(-4.6, 10.4, -24);
-  const diveControlA = new THREE.Vector3(-4.05, 10.05, -20);
-  const diveControlB = new THREE.Vector3(-3.15, 7.45, -13.5);
-  const diveEnd = new THREE.Vector3(-2.6, 6.5, -9.8);
-  const divePosition = cubicBezierPoint(
-    diveStart,
-    diveControlA,
-    diveControlB,
-    diveEnd,
-    flightProgress,
+  const clock = Math.max(0, Number.isFinite(attackClock) ? attackClock : 0);
+  const pose = pterodactylAttackPose(clock, reducedMotion);
+  const origin = attackOrigin ?? { x: 0, z: 0 };
+  const { circleEnd } = PTERODACTYL_ATTACK_TIMELINE;
+  if (clock < circleEnd) {
+    return { pose, approach: pose.approach, position: circlePoint(origin, attackHeading, clock) };
+  }
+  // The dive leaves the circle on its tangent and grazes the scout's shoulder.
+  const start = circlePoint(origin, attackHeading, circleEnd);
+  const tangent = circlePoint(origin, attackHeading, circleEnd + 0.25).sub(start).multiplyScalar(4);
+  const target = strikeTarget ?? origin;
+  const end = new THREE.Vector3(
+    target.x + Math.cos(attackHeading) * 1.4,
+    2.7,
+    target.z - Math.sin(attackHeading) * 1.4,
   );
-  const recoveryProgress = pose.recovery;
-  const recoveryPosition = cubicBezierPoint(
-    diveEnd,
-    new THREE.Vector3(-1.9, 6.55, -7.3),
-    new THREE.Vector3(2.8, 9.2, -3.2),
-    new THREE.Vector3(7.5, 12.2, 1.4),
-    recoveryProgress,
+  // The wings fold and the body drops first, then levels into the strike.
+  const position = cubicBezierPoint(
+    start,
+    start.clone().addScaledVector(tangent, 0.5).add(new THREE.Vector3(0, -2.4, 0)),
+    end.clone().add(new THREE.Vector3(0, 0.4, 0)),
+    end,
+    Math.min(1, pose.flightProgress),
   );
-  const attackPosition = divePosition.lerp(recoveryPosition, recoveryProgress);
-  // The visual-review cycle continues through a wide, high return arc and
-  // meets the next dive at the same point and tangent. The former 3.2-second
-  // modulo jumped directly from recoveryEnd to diveStart by ~28 world units.
-  const returnProgress = THREE.MathUtils.smoothstep(
-    cycleClock,
-    3.05,
-    PTERODACTYL_ATTACK_CYCLE_SECONDS,
-  );
-  const returnPosition = cubicBezierPoint(
-    new THREE.Vector3(7.5, 12.2, 1.4),
-    new THREE.Vector3(9.85, 13.7, 3.7),
-    new THREE.Vector3(-5.15, 10.75, -28),
-    diveStart,
-    returnProgress,
-  );
-  const authoredPosition = cycleClock > 3.05 ? returnPosition : attackPosition;
-  // `playerPosition` remains as a compatibility alias for authored/test
-  // callers. The live world passes a position latched once when the attack
-  // begins; it must never pass the player's continuously changing position.
-  const origin = attackOrigin ?? playerPosition ?? { x: 0, z: 0 };
-  return {
-    pose,
-    approach,
-    position: authoredPosition.add(new THREE.Vector3(
-      origin.x,
-      0,
-      origin.z,
-    )),
-  };
+  return { pose, approach: pose.approach, position };
 }
 
 function makeIguanodon(scene, x, z, scale, heading, young, behaviorRole) {

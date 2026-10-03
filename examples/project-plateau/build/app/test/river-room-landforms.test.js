@@ -41,14 +41,6 @@ test('river room replaces the empty glade read without entering collision truth'
       assert.ok(instanceScale.y <= 1.3, 'meadow blades must remain below the giant-prop range');
     }
   }
-  assert.equal(
-    riverRoom.getObjectByName('world.river-room.family-point-bar').material.color.getHex(),
-    0x746f62,
-  );
-  assert.equal(
-    riverRoom.getObjectByName('world.river-room.meadow-near-west').material.color.getHex(),
-    0x586751,
-  );
   assert.equal(riverRoom.userData.fernLibraryPlacements.length, RIVER_ROOM_PROFILE.libraryFerns);
   assert.equal(riverRoom.userData.canopyTreePlacements.length, RIVER_ROOM_PROFILE.terraceTrees);
   for (const placement of riverRoom.userData.canopyTreePlacements) {

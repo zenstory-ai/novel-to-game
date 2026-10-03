@@ -1,4 +1,4 @@
-// 战斗事件演出:只解释 engine 事件,不参与数值结算或指令选择。
+// 战斗事件演出：只解释 engine 事件，不参与数值结算或指令选择。
 
 import { SKILLS, FORMATIONS, ITEMS } from './data.js';
 import { getUnit } from './engine.js';
@@ -19,11 +19,12 @@ export function createBattleAnimator({
   duration,
   skipEffects,
   shakeEnabled,
-  refreshAll,
   renderOrderBar,
   renderUnits,
   pushLog,
   setJumpedIds,
+  sync,
+  showActing,
 }) {
   let transformHinted = false;
   let sawFinisher = false;
@@ -34,8 +35,8 @@ export function createBattleAnimator({
   // ---------- 事件动画 ----------
   function cardOf(id) { return cardByUnit.get(id); }
 
-  // 标志性法术 → 演出种类(简报二.4):火/水/金身各有专属粒子+色调,不再共用通用特效。
-  // 只给标志性技能(玩家绝技与 BOSS 大招);小怪的寻常火弹走通用音效,避免场场连播演出拖节奏。
+  // 标志性法术 → 演出种类(简报二.4)：火/水/金身各有专属粒子+色调，不再共用通用特效。
+  // 只给标志性技能(玩家绝技与 BOSS 大招);小怪的寻常火弹走通用音效，避免场场连播演出拖节奏。
   const skillKeyByName = Object.fromEntries(Object.entries(SKILLS).map(([k, s]) => [s.name, k]));
   const SPELL_FX = {
     lieyan_quan: 'fire', huolian: 'fire', fenye: 'fire', chiyan: 'fire',
@@ -43,7 +44,7 @@ export function createBattleAnimator({
     pishuijue: 'water', xuanbing_ji: 'water', jinglang: 'water', bingfeng: 'water',
     luohanjinshen: 'gold', hufa: 'gold', gangtie: 'gold', huoyan: 'gold',
     douzhan: 'gold', jinjing: 'gold', guiyuan: 'water',
-    shanfeng: 'wind', // 罗刹女招牌·芭蕉扇风(一借核心意象,非小怪寻常技)
+    shanfeng: 'wind', // 罗刹女招牌·芭蕉扇风(一借核心意象，非小怪寻常技)
   };
 
   async function showBanner(text, cls = '') {
@@ -54,13 +55,49 @@ export function createBattleAnimator({
     banner.style.display = 'none';
   }
 
+  // 梦幻式扑击：冲到目标身侧(约八成五的路程)→ 停顿出手 → 退回原位;移动中压在众人之上
   function lunge(actorId, targetId) {
     const a = cardOf(actorId), t = cardOf(targetId);
-    if (!a || !t) return;
+    if (!a || !t || actorId === targetId) return Promise.resolve();
     const ar = a.card.getBoundingClientRect(), tr = t.card.getBoundingClientRect();
-    const dx = (tr.left - ar.left) * 0.24, dy = (tr.top - ar.top) * 0.24;
+    const zoom = parseFloat(a.card.style.zoom) || 1;
+    const acx = ar.left + ar.width / 2, tcx = tr.left + tr.width / 2;
+    const side = tcx > acx ? -1 : 1; // 停在目标靠近自己的一侧
+    const gapX = (tcx + side * tr.width * 0.55) - acx;
+    const dx = (gapX * 0.85) / zoom;
+    const dy = ((tr.bottom - ar.bottom) * 0.85) / zoom;
+    const D = duration();
+    const go = 160 * D, hold = 120 * D, back = 160 * D;
+    a.card.style.zIndex = '30';
+    a.card.style.transition = `transform ${go}ms cubic-bezier(.3,.7,.4,1)`;
     a.card.style.transform = `translate(${dx}px, ${dy}px)`;
-    setTimeout(() => { a.card.style.transform = ''; }, 200 * duration() + 60);
+    setTimeout(() => {
+      a.card.style.transition = `transform ${back}ms ease-in-out`;
+      a.card.style.transform = '';
+      setTimeout(() => { a.card.style.zIndex = ''; a.card.style.transition = ''; }, back + 30);
+    }, go + hold);
+    return sleep(go);
+  }
+
+  function puff(id) {
+    const uc = cardOf(id);
+    if (!uc) return Promise.resolve();
+    audio.sfx('transform');
+    return fx.play('puff', uc.card, { D: duration() });
+  }
+
+  // 战况一行：谁打谁、掉多少、相克/暴击/受克
+  function damageLine(ev) {
+    const a = getUnit(state, ev.actor), d = getUnit(state, ev.target);
+    if (!a || !d) return;
+    const tags = [];
+    if (ev.rel === 'ke') tags.push('相克');
+    if (ev.crit) tags.push('暴击');
+    if (ev.combo) tags.push('连击');
+    if (ev.rel === 'beike') tags.push('受克');
+    if (ev.protectFor) tags.push(`替${getUnit(state, ev.protectFor)?.name ?? ''}挡下`);
+    const cls = ev.crit ? 'crit' : ev.rel === 'ke' ? 'ke' : ev.rel === 'beike' ? 'beike' : '';
+    pushLog(`${a.name} → ${d.name} −${ev.amount}${tags.length ? ` ${tags.join(' ')}` : ''}`, cls);
   }
 
   function shake(id, hard = false) {
@@ -80,7 +117,7 @@ export function createBattleAnimator({
     setTimeout(() => uc.img.classList.remove('hit-flash'), 380);
   }
 
-  // 屏幕震动:克制幅度(2px),暴击/克制命中更重(4px);可关(简报二.1)
+  // 屏幕震动：克制幅度(2px)，暴击/克制命中更重(4px);可关(简报二.1)
   function quake(heavy = false) {
     if (!shakeEnabled()) return;
     field.classList.remove('quake', 'quake-hi');
@@ -89,7 +126,7 @@ export function createBattleAnimator({
     setTimeout(() => field.classList.remove('quake', 'quake-hi'), 500);
   }
 
-  // 飘字错层:同一目标同时多个飘字时向下排
+  // 飘字错层：同一目标同时多个飘字时向下排
   function nextSlot(id) {
     const n = (floatSlots.get(id) ?? 0) + 1;
     floatSlots.set(id, n);
@@ -106,11 +143,11 @@ export function createBattleAnimator({
 
   async function playEvents(events) {
     const done = [];
-    let burnFxPlayed = false; // 地火灼伤同回合可能连跳多人,音效只播一记
+    let burnFxPlayed = false; // 地火灼伤同回合可能连跳多人，音效只播一记
     for (const ev of events) {
       switch (ev.t) {
         case 'round':
-          // 与上回合顺序比较,标出插到更前的单位(抢位)
+          // 与上回合顺序比较，标出插到更前的单位(抢位)
           jumpedIds = prevQueue.length
             ? ev.queue.filter((id, i) => {
                 const before = prevQueue.indexOf(id);
@@ -119,21 +156,23 @@ export function createBattleAnimator({
             : [];
           prevQueue = [...ev.queue];
           setJumpedIds(jumpedIds);
-          refreshAll();
+          sync(ev);
           renderOrderBar();
           break;
         case 'turn':
           renderOrderBar(ev.unit, done);
+          showActing?.(ev.unit);
           break;
         case 'action': {
           const u = getUnit(state, ev.actor);
           const uc = u ? cardOf(ev.actor) : null;
           if (uc) floatText(uc.anchor, ev.name, 'info');
-          if (u) pushLog(`${u.name} · ${ev.name}`);
+          if (u && ev.skill) pushLog(`${u.name} · ${ev.name}`, 'skill');
+          sync(ev); // 法力在报招时扣下
           if (ev.skill) {
             const fxKind = SPELL_FX[skillKeyByName[ev.name]];
             if (fxKind && uc) {
-              // 标志性法术演出:粒子 + 背景色调突变 + 音效(跳过演出时缩为一道色闪)
+              // 标志性法术演出：粒子 + 背景色调突变 + 音效(跳过演出时缩为一道色闪)
               audio.sfx(fxKind === 'fire' ? 'firefx' : fxKind === 'water' ? 'waterfx' : fxKind === 'wind' ? 'fan2' : 'skill');
               await fx.play(fxKind, uc.card, { D: duration(), skipFx: skipEffects() });
             } else {
@@ -146,9 +185,11 @@ export function createBattleAnimator({
           break;
         }
         case 'damage': {
-          lunge(ev.actor, ev.target);
-          await sleep(120 * duration());
+          if (ev.kind === 'phy' && !ev.combo) await lunge(ev.actor, ev.protectFor ?? ev.target);
+          else await sleep(160 * duration());
+          damageLine(ev);
           const uc = cardOf(ev.target);
+          if (ev.protectFor && uc) stampText(uc.anchor, '保护', 'ke-stamp');
           if (uc) {
             const slot = nextSlot(ev.target);
             const hard = !!(ev.crit || ev.rel === 'ke'); // 暴击/克制命中明显更重(简报二.1)
@@ -163,7 +204,7 @@ export function createBattleAnimator({
               if (ev.amount > 200) cls += ' huge';
               floatText(uc.anchor, `${ev.amount}`, cls, slot);
               if (ev.crit) stampText(uc.anchor, TEXT.float.crit, 'crit-stamp');
-              // 五行教学:克制命中时在目标身上盖「金克木」三字印(简报二.3)
+              // 五行教学：克制命中时在目标身上盖「金克木」三字印(简报二.3)
               if (ev.rel === 'ke') {
                 const atkU = getUnit(state, ev.actor);
                 const defU = getUnit(state, ev.target);
@@ -180,7 +221,7 @@ export function createBattleAnimator({
             else if (ev.rel === 'beike') audio.sfx('thud');
             else audio.sfx('hit');
           }
-          refreshAll();
+          sync(ev);
           await sleep(300 * duration());
           break;
         }
@@ -195,31 +236,56 @@ export function createBattleAnimator({
           const uc = cardOf(ev.target);
           if (uc) floatText(uc.anchor, TEXT.float.heal.replace('{n}', ev.amount), 'heal');
           audio.sfx('heal');
-          refreshAll();
+          const hu = getUnit(state, ev.target);
+          if (hu && !ev.regen) pushLog(`${hu.name} 回复 ${ev.amount}`, 'heal');
+          sync(ev);
           await sleep(220 * duration());
           break;
         }
         case 'mp': {
           const uc = cardOf(ev.target);
           if (uc) floatText(uc.anchor, TEXT.float.mpUp.replace('{n}', ev.amount), 'mpup');
-          refreshAll();
+          sync(ev);
           break;
         }
         case 'buff': {
           const uc = cardOf(ev.target);
           if (uc) floatText(uc.anchor, TEXT.buffNames[ev.buff] ?? ev.buff, 'buff');
-          // 定风丹护体:免疫减速时给出可辨识演出(简报二.4)
-          if (ev.buff === 'spd_down') {
-            const tu = getUnit(state, ev.target);
-            if (tu?.immuneSpdDown && uc) {
-              stampText(uc.anchor, '定风丹', 'ke-stamp');
-              floatText(uc.anchor, TEXT.battle.dingfeng, 'ke');
-              audio.sfx('ke');
-              await fx.play('ward', uc.card, { D: duration(), skipFx: skipEffects() });
-            }
-          }
-          refreshAll();
+          sync(ev);
           await sleep(160 * duration());
+          break;
+        }
+        case 'immune': {
+          // 定风丹护体：减速根本不落身，只飘「定风」并给一道金光(简报二.4)
+          const uc = cardOf(ev.target);
+          if (uc) {
+            stampText(uc.anchor, '定风丹', 'ke-stamp');
+            floatText(uc.anchor, TEXT.battle.dingfeng, 'ke');
+          }
+          audio.sfx('ke');
+          if (uc) await fx.play('ward', uc.card, { D: duration(), skipFx: skipEffects() });
+          break;
+        }
+        case 'protect': {
+          const uc = cardOf(ev.target);
+          if (uc) floatText(uc.anchor, '受保护', 'buff');
+          const g = getUnit(state, ev.unit), t = getUnit(state, ev.target);
+          if (g && t) pushLog(`${g.name} 护住 ${t.name}`, 'skill');
+          await sleep(160 * duration());
+          break;
+        }
+        case 'revive': {
+          const uc = cardOf(ev.target);
+          sync(ev);
+          if (uc) {
+            uc.card.classList.add('flash');
+            floatText(uc.anchor, '回魂！', 'heal');
+            setTimeout(() => uc.card.classList.remove('flash'), 500 * duration());
+          }
+          audio.sfx('heal');
+          const t = getUnit(state, ev.target);
+          if (t) pushLog(`${t.name} 醒转归队`, 'heal');
+          await sleep(320 * duration());
           break;
         }
         case 'resist': {
@@ -230,7 +296,7 @@ export function createBattleAnimator({
         case 'defend': {
           const uc = cardOf(ev.unit);
           if (uc) floatText(uc.anchor, TEXT.float.defend, 'buff');
-          refreshAll();
+          sync(ev);
           await sleep(140 * duration());
           break;
         }
@@ -241,23 +307,27 @@ export function createBattleAnimator({
           break;
         }
         case 'transform': {
+          // 一团墨烟 → 烟里换上形态立绘(与指令台头像一起换)
           const uc = cardOf(ev.actor);
           const actorU = getUnit(state, ev.actor);
-          if (actorU) pushLog(`${actorU.name} 变化 · ${ev.name}`);
+          if (actorU) pushLog(`${actorU.name} 变化 · ${ev.name}`, 'skill');
+          await puff(ev.actor);
+          sync(ev);
+          showActing?.(ev.actor);
           if (uc) {
             uc.card.classList.add('flash');
             floatText(uc.anchor, TEXT.float.transform.replace('{name}', ev.name), 'ke');
             setTimeout(() => uc.card.classList.remove('flash'), 500 * duration());
           }
-          audio.sfx('transform');
-          refreshAll();
-          await sleep(360 * duration());
+          await sleep(300 * duration());
           break;
         }
         case 'form_end': {
           const uc = cardOf(ev.unit);
+          await puff(ev.unit);
+          sync(ev);
           if (uc) floatText(uc.anchor, TEXT.float.formEnd, 'info');
-          refreshAll();
+          await sleep(160 * duration());
           break;
         }
         case 'finisher': {
@@ -276,7 +346,7 @@ export function createBattleAnimator({
         case 'reinforce': {
           const uc = cardOf(ev.target);
           if (uc) floatText(uc.anchor, TEXT.float.heal.replace('{n}', ev.amount), 'heal');
-          refreshAll();
+          sync(ev);
           break;
         }
         case 'phase': {
@@ -290,16 +360,15 @@ export function createBattleAnimator({
           audio.sfx('telegraph');
           await showBanner(TEXT.story.phase2[0].text, 'phase-banner');
           quake(true);
-          refreshAll();
+          sync(ev);
           await sleep(300 * duration());
           break;
         }
         case 'death': {
           const uc = cardOf(ev.unit);
           const deadU = getUnit(state, ev.unit);
-          if (deadU) pushLog(`${deadU.name} 败退`);
-          if (uc) uc.card.classList.add('dead');
-          refreshAll();
+          if (deadU) pushLog(deadU.side === 'party' ? `${deadU.name} 倒下了` : `${deadU.name} 败退`, deadU.side === 'party' ? 'beike' : '');
+          sync(ev);
           await sleep(320 * duration());
           break;
         }
@@ -315,7 +384,10 @@ export function createBattleAnimator({
           const ac = cardOf(ev.actor);
           if (ac) ac.card.classList.remove('charging');
           const uc = cardOf(ev.target);
-          lunge(ev.actor, ev.target);
+          await lunge(ev.actor, ev.target);
+          const hu = getUnit(state, ev.target), hb = getUnit(state, ev.actor);
+          if (hu && hb) pushLog(`${hb.name} · ${ev.name} → ${hu.name} −${ev.amount}${ev.protectFor ? ' 保护' : ''}`, 'crit');
+          if (ev.protectFor && uc) floatText(uc.anchor, '保护', 'ke', 1);
           if (uc) {
             floatText(uc.anchor, `${ev.amount}`, 'heavy', 0);
             stampText(uc.anchor, ev.name, 'heavy-stamp');
@@ -325,34 +397,36 @@ export function createBattleAnimator({
           }
           quake(true);
           audio.sfx('heavy');
-          refreshAll();
+          sync(ev);
           await sleep(420 * duration());
           break;
         }
         case 'caught': {
-          const uc = cardOf(ev.target);
-          if (uc) uc.card.classList.add('dead');
-          // 只留 toast 一条通道:同一句提示不再「飘字+顶部横幅」两处绘制(记录缺陷 R2)
-          pushLog(`收服 ${ev.name}`);
+          sync(ev);
+          // 收服是一桩大事：场中央盖一枚不透明的印，与「此战得胜」同一种分量
+          pushLog(`收服 ${ev.name}`, 'ke');
           audio.sfx('levelup');
-          toast(root, `收服了 ${ev.name}!可在「召唤兽」中安排上阵`);
-          await sleep(420 * duration());
+          const seal = el('div', 'seal-toast');
+          seal.append(el('div', 'seal-toast-title', `收服 · ${ev.name}`), el('div', 'seal-toast-sub', '战后可在【召唤兽】里安排上阵'));
+          field.appendChild(seal);
+          await sleep(1300 * duration() + 300);
+          seal.remove();
           break;
         }
         case 'catch_fail': {
           const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, '挣脱了!', 'miss');
+          if (uc) floatText(uc.anchor, '挣脱了！', 'miss');
           await sleep(240 * duration());
           break;
         }
         case 'ward': {
           const uc = cardOf(ev.target);
-          if (uc) floatText(uc.anchor, '避火!', 'buff');
+          if (uc) floatText(uc.anchor, '避火！', 'buff');
           await sleep(200 * duration());
           break;
         }
         case 'story_blow': {
-          // 罗刹女祭真扇:悟空被吹飞(演出)——满场风痕,阴风骤起
+          // 罗刹女祭真扇：悟空被吹飞(演出)——满场风痕，阴风骤起
           audio.sfx('fan2');
           const bossUc = ev.actor ? cardOf(ev.actor) : null;
           if (bossUc) {
@@ -364,7 +438,7 @@ export function createBattleAnimator({
           const wk = cardOf('p0');
           if (wk) {
             wk.card.classList.add('blown');
-            floatText(wk.anchor, '吹飞五万里!', 'heavy');
+            floatText(wk.anchor, '吹飞五万里！', 'heavy');
           }
           quake(true);
           await fxP;
@@ -384,35 +458,35 @@ export function createBattleAnimator({
           break;
         }
         case 'summon': {
+          sync(ev);
           renderUnits();
           const uc = cardOf(ev.unit);
           if (uc) {
-            floatText(uc.anchor, `${ev.name} 来援!`, 'buff');
+            floatText(uc.anchor, `${ev.name} 来援！`, 'buff');
             uc.card.classList.add('flash');
             setTimeout(() => uc.card.classList.remove('flash'), 500 * duration());
           }
           audio.sfx('telegraph');
-          refreshAll();
+          sync(ev);
           await sleep(320 * duration());
           break;
         }
         case 'rout': {
           const uc = cardOf(ev.unit);
           if (uc) {
-            floatText(uc.anchor, '溃散!', 'miss');
-            uc.card.classList.add('dead');
+            floatText(uc.anchor, '溃散！', 'miss');
           }
-          refreshAll();
+          sync(ev);
           await sleep(240 * duration());
           break;
         }
         case 'god_assist': {
-          // 众神围剿:哪吒登场助战(门控演出)
+          // 众神围剿：哪吒登场助战(门控演出)
           audio.sfx('victory');
           const overlay = el('div', 'god-overlay');
           const img = el('img');
           img.src = unitURL('nezha', '哪');
-          const tx = el('div', 'finisher-text', `${ev.name} 率众神前来助战!`);
+          const tx = el('div', 'finisher-text', `${ev.name} 率众神前来助战！`);
           overlay.append(img, tx);
           field.appendChild(overlay);
           const uc = cardOf(ev.target);
@@ -422,9 +496,9 @@ export function createBattleAnimator({
             flashHit(ev.target);
           }
           quake(true);
+          sync(ev);
           await sleep(1600 * duration());
           overlay.remove();
-          refreshAll();
           break;
         }
         case 'flee': {
@@ -435,14 +509,14 @@ export function createBattleAnimator({
         case 'formation': {
           const f = FORMATIONS[ev.formation];
           await showBanner(`${TEXT.commands.formation} · ${f.name}`);
-          refreshAll();
+          sync(ev);
           break;
         }
         case 'auto': break;
         case 'item': {
           const it = ITEMS[ev.item];
           if (ev.item === 'truefan' && ev.stage) {
-            // 真扇三段专属演出:一息火(灰烬)/二生风(风痕)/三落雨(甘霖),各不相同
+            // 真扇三段专属演出：一息火(灰烬)/二生风(风痕)/三落雨(甘霖)，各不相同
             audio.sfx(`fan${ev.stage}`);
             await showBanner(it.name, 'fan-banner');
             await fx.play(`fan${ev.stage}`, null, { D: duration(), skipFx: skipEffects() });
@@ -467,9 +541,9 @@ export function createBattleAnimator({
           await sleep(200 * duration());
           break;
         }
-        case 'buff_end': refreshAll(); break;
+        case 'buff_end': sync(ev); break;
         case 'field_burn': {
-          // 战场态势·地火炙烤:与「克!」同一套反馈语言——数字+印章+受击抖动
+          // 战场态势·地火炙烤：与「克!」同一套反馈语言——数字+印章+受击抖动
           const uc = cardOf(ev.target);
           if (uc) {
             const slot = nextSlot(ev.target);
@@ -478,19 +552,19 @@ export function createBattleAnimator({
             shake(ev.target);
             flashHit(ev.target);
             const u = getUnit(state, ev.target);
-            if (u) pushLog(`${state.def.fieldRule?.name ?? '地火'} · ${u.name} -${ev.amount}`);
+            if (u) pushLog(`${state.def.fieldRule?.name ?? '地火'} · ${u.name} −${ev.amount}`, 'burn');
           }
           if (!burnFxPlayed) { audio.sfx('firefx'); burnFxPlayed = true; }
-          refreshAll();
+          sync(ev);
           await sleep(260 * duration());
           break;
         }
         case 'field_break': {
-          // 结阵被破:横幅+常驻条变灰,敌方防御回落当场可见
+          // 结阵被破：横幅+常驻条变灰，敌方防御回落当场可见
           pushLog(`${ev.name} 已破`);
           audio.sfx('ke');
-          await showBanner(`${ev.name} · 破!`, 'phase-banner');
-          refreshAll();
+          await showBanner(`${ev.name} · 破！`, 'phase-banner');
+          sync(ev);
           await sleep(240 * duration());
           break;
         }
@@ -500,9 +574,10 @@ export function createBattleAnimator({
         const idx = buildActionQueueDoneIndex(ev);
         if (idx) done.push(idx);
       }
+      sync(ev); // 每个事件播完，画面就停在它发生后的样子
       // 速度变化(生风/变化/换阵/增益到期)后立即重排顺序条
       if (['buff', 'transform', 'form_end', 'formation', 'buff_end'].includes(ev.t)) renderOrderBar();
-      // 教学提示:罗刹女体弱 → 提示变化
+      // 教学提示：罗刹女体弱 → 提示变化
       if (!transformHinted && state.def.transformFinisher && ev.t === 'damage') {
         const fin = state.def.transformFinisher;
         const boss = state.units.find((x) => x.side === 'enemy' && x.defKey === fin.bossKey);
@@ -515,7 +590,7 @@ export function createBattleAnimator({
   }
 
   function buildActionQueueDoneIndex(ev) {
-    // 行动完成的单位(用于顺序条勾销):在 turn 事件后该单位即视为已行动
+    // 行动完成的单位(用于顺序条勾销)：在 turn 事件后该单位即视为已行动
     if (ev.t === 'turn') return ev.unit;
     return null;
   }

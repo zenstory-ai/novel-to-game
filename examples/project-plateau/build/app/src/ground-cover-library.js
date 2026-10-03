@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyFoliageLight } from './foliage-light.js';
 
 import {
   VEGETATION_ALBEDO_PROFILE,
@@ -336,6 +337,7 @@ function createGroundCoverMaterials() {
       architectureProfile: GROUND_COVER_ARCHITECTURE_PROFILE,
     };
   }
+  applyFoliageLight(leaf, 0.6);
   return Object.freeze({ structure, leaf, textures, windUniforms });
 }
 

@@ -9,6 +9,7 @@ import {
   updatePendingExposure,
 } from './field-photography.js';
 import { integrateMovement } from './simulation-movement.js';
+import { FAMILY_LAYOUT, coverBandContains } from './environment-layout.js';
 export {
   FAMILY_BEHAVIOR_CYCLE_SECONDS,
   MAX_STEADY_DRIFT_RADIANS,
@@ -32,16 +33,19 @@ export const INITIAL_PLAYER = Object.freeze({
 });
 
 export const EXPOSURE_SECONDS = 2;
-export const CONTACT_SECONDS = 3;
-export const INITIAL_LIGHT_SECONDS = 180;
+// The committed attack: a visible low circling pass, then the dive. Contact
+// lands at the end, so one open exposure can be answered by cover or the rifle.
+export const CONTACT_SECONDS = 5.5;
+export const INITIAL_LIGHT_SECONDS = 300;
 export const FAMILY_OBSERVE_SECONDS = 1.35;
 export const ABANDON_HOLD_SECONDS = 0.8;
-export const RETURN_ROUTE_SECONDS = Object.freeze({
-  covered: 28,
-  exposed: 12,
-  exposedAfterShot: 18,
-  abandoned: 8,
-});
+// Walking home is the only cost of a route: no hidden deductions. A scout who
+// leaves the case behind travels light.
+export const CASE_FREE_SPEED_MULTIPLIER = 1.3;
+// Within this many metres (half that when crouched) the family notices the scout.
+export const FAMILY_NOTICE_METERS = Object.freeze({ upright: 8, crouch: 4 });
+export const FAMILY_ALARM_SECONDS = 6;
+const FORT_LINE_Z = 62;
 export const ABANDONED_RECORD_COPY = 'The case stayed in the basin. The plates stayed with it.';
 export const RESULT_BANDS = Object.freeze([
   Object.freeze({
@@ -90,6 +94,7 @@ function copyState(state, changes = {}) {
     velocity: clonePosition(state.velocity ?? { x: 0, z: 0 }),
     plates: state.plates.map(clonePlate),
     pendingExposure: state.pendingExposure ? { ...state.pendingExposure } : null,
+    frameEvidence: state.frameEvidence ?? [],
     ...changes,
   };
 }
@@ -107,6 +112,7 @@ function emptyPlate(index) {
     composition: null,
     subject: null,
     behavior: null,
+    range: null,
     recoverable: true,
   };
 }
@@ -146,10 +152,13 @@ export function createPlayerState() {
     familyFocusSeconds: 0,
     familyBehaviorSeconds: 0,
     familyMoment: 'glade-routine',
+    familyAlarmSeconds: 0,
+    stegosaurusClock: null,
     lastObservation: null,
     cameraRaised: false,
     plateRailRevealed: false,
     pendingExposure: null,
+    frameEvidence: [],
     previewSeconds: 0,
     lastProofEvent: null,
     plates: Array.from({ length: 4 }, (_, index) => emptyPlate(index)),
@@ -163,9 +172,9 @@ export function createPlayerState() {
     failed: false,
     failureCause: null,
     contactCount: 0,
+    lastContactAt: null,
     remainingLight: INITIAL_LIGHT_SECONDS,
     returnRoute: null,
-    returnCostSeconds: 0,
     returnStrike: false,
     caseAbandoned: false,
     caseDropPosition: null,
@@ -191,11 +200,24 @@ export function setPaused(state, paused, reason = null) {
 }
 
 export function zoneForPosition(position, reachedGlade = false) {
-  if (position.z >= 62) return 'fort';
+  if (position.z >= FORT_LINE_Z) return 'fort';
   if (position.z >= 34) return 'brook-blind';
   if (position.z <= 3) return 'iguanodon-glade';
-  if (reachedGlade) return position.x < 3 ? 'covered-return' : 'exposed-creek';
-  return position.x < 3 ? 'canopy-overlook' : 'basalt-shelf';
+  const covered = coverBandContains(position.x, position.z);
+  if (reachedGlade) return covered ? 'covered-return' : 'exposed-creek';
+  return covered ? 'canopy-overlook' : 'basalt-shelf';
+}
+
+// Seconds a walking scout needs to reach the fort line from here.
+export function secondsToFort(position) {
+  return Math.max(0, FORT_LINE_Z - position.z) / SPEED.walk;
+}
+
+function nearestFamilyDistance(position) {
+  return FAMILY_LAYOUT.reduce(
+    (best, animal) => Math.min(best, Math.hypot(animal.x - position.x, animal.z - position.z)),
+    Infinity,
+  );
 }
 
 export function examine(state) {
@@ -235,8 +257,7 @@ export function abandonAvailable(state) {
 export function abandonPromptDue(state) {
   return abandonAvailable(state)
     && state.reachedGlade
-    && !state.returnRoute
-    && state.remainingLight < RETURN_ROUTE_SECONDS.covered;
+    && state.remainingLight < secondsToFort(state.position) + 4;
 }
 
 export function resultBandForEvidence(points) {
@@ -259,14 +280,16 @@ export function setCameraRaised(state, raised) {
   });
 }
 
-export function startExposure(state) {
+export function startExposure(state, frameEvidence = state.frameEvidence) {
   if (state.paused || state.failed || !state.cameraRaised || state.pendingExposure) {
     return copyState(state);
   }
   const plateIndex = state.plates.findIndex((plate) => plate.status === 'unexposed');
   if (plateIndex < 0) return copyState(state, { cameraRaised: false, lastEvent: 'camera:no-plates' });
+  const evidenced = { ...state, frameEvidence: frameEvidence ?? [] };
   return copyState(state, {
-    pendingExposure: createPendingExposure(state, plateIndex, EXPOSURE_SECONDS),
+    frameEvidence: evidenced.frameEvidence,
+    pendingExposure: createPendingExposure(evidenced, plateIndex, EXPOSURE_SECONDS),
     previewSeconds: 0,
     velocity: { x: 0, z: 0 },
     rifleRaised: false,
@@ -299,6 +322,10 @@ export function fireDefensiveShot(state) {
   }
   const interrupted = state.threatAwareness === 3;
   const awareness = interrupted ? Math.max(0, state.threatAwareness - 2) : state.threatAwareness;
+  const tooLate = !interrupted
+    && state.lastContactAt !== null
+    && state.elapsedSeconds - state.lastContactAt < 4;
+  const missedEvent = tooLate ? 'defensive-shot-too-late' : 'defensive-shot-missed-window';
   return copyState(state, {
     cartridges: state.cartridges - 1,
     rifleRaised: false,
@@ -309,21 +336,18 @@ export function fireDefensiveShot(state) {
     threatAwareness: awareness,
     threatState: THREAT_STATES[awareness],
     attackSeconds: 0,
-    lastThreatEvent: interrupted ? 'defensive-shot-interrupt' : 'defensive-shot-missed-window',
-    lastEvent: interrupted ? 'rifle:interrupt' : 'rifle:missed-window',
+    lastThreatEvent: interrupted ? 'defensive-shot-interrupt' : missedEvent,
+    lastEvent: interrupted ? 'rifle:interrupt' : tooLate ? 'rifle:too-late' : 'rifle:missed-window',
   });
 }
 
-function highestValueIntactPlateIndex(plates) {
-  let best = -1;
-  let bestPoints = -1;
-  plates.forEach((plate, index) => {
-    if (plate.status === 'exposed' && plate.points > bestPoints) {
-      best = index;
-      bestPoints = plate.points;
-    }
-  });
-  return best;
+// Plates are exposed in order, so the latest intact plate is the last one:
+// the blow lands on the glass the flash just gave away.
+function latestIntactPlateIndex(plates) {
+  for (let index = plates.length - 1; index >= 0; index -= 1) {
+    if (plates[index].status === 'exposed') return index;
+  }
+  return -1;
 }
 
 export function applyThreatContact(state) {
@@ -338,13 +362,14 @@ export function applyThreatContact(state) {
         cause: 'second-unblocked-strike',
         title: 'The wings came round again',
         copy: 'The second pass found you beneath open sky.',
-        cue: 'Reach the thorn cover, or turn the dive before it reaches the case.',
+        cue: 'When the wings circle low, get under the thorn arches west of the trail, or show them the rifle.',
       },
       rifleRaised: false,
       cameraRaised: false,
       pendingExposure: null,
       attackSeconds: 0,
       contactCount: state.contactCount + 1,
+      lastContactAt: state.elapsedSeconds,
       lastThreatEvent: 'second-contact-failure',
       lastEvent: 'failure:second-contact',
     });
@@ -352,7 +377,7 @@ export function applyThreatContact(state) {
 
   const plates = state.plates.map(clonePlate);
   // With the case left in the basin there is no case strapped to the scout to strike.
-  const crackedIndex = state.caseAbandoned ? -1 : highestValueIntactPlateIndex(plates);
+  const crackedIndex = state.caseAbandoned ? -1 : latestIntactPlateIndex(plates);
   if (crackedIndex >= 0) {
     plates[crackedIndex] = {
       ...plates[crackedIndex],
@@ -368,6 +393,7 @@ export function applyThreatContact(state) {
     pendingExposure: null,
     attackSeconds: 0,
     contactCount: state.contactCount + 1,
+    lastContactAt: state.elapsedSeconds,
     threatAwareness: 1,
     threatState: 'watch',
     lastThreatEvent: 'contact-recovered',
@@ -375,9 +401,9 @@ export function applyThreatContact(state) {
   });
 }
 
-function crackHighestValuePlate(state) {
+function crackLatestPlate(state) {
   const plates = state.plates.map(clonePlate);
-  const crackedIndex = highestValueIntactPlateIndex(plates);
+  const crackedIndex = latestIntactPlateIndex(plates);
   if (crackedIndex >= 0) {
     plates[crackedIndex] = {
       ...plates[crackedIndex],
@@ -420,23 +446,14 @@ function commitReturnRoute(state, zone) {
   if (zone !== 'covered-return' && zone !== 'exposed-creek') return state;
 
   const route = zone === 'covered-return' ? 'covered' : 'exposed';
-  const cost = state.caseAbandoned
-    ? RETURN_ROUTE_SECONDS.abandoned
-    : route === 'covered'
-      ? RETURN_ROUTE_SECONDS.covered
-      : state.gunshotFired
-        ? RETURN_ROUTE_SECONDS.exposedAfterShot
-        : RETURN_ROUTE_SECONDS.exposed;
   let next = copyState(state, {
     returnRoute: route,
-    returnCostSeconds: cost,
-    remainingLight: Math.max(0, state.remainingLight - cost),
     lastEvent: `return:${route}:committed`,
     brookResponse: route === 'exposed' && state.gunshotFired ? 'brush-moving' : state.brookResponse,
   });
 
   if (route === 'exposed' && state.threatAwareness === 3 && !state.gunshotFired && !state.caseAbandoned) {
-    const strike = crackHighestValuePlate(next);
+    const strike = crackLatestPlate(next);
     next = copyState(next, {
       plates: strike.plates,
       returnStrike: true,
@@ -456,7 +473,10 @@ function submitAtFort(state) {
   const evidence = intactEvidence(state);
   const band = resultBandForEvidence(evidence);
   const aerialEvidence = state.plates.some(
-    (plate) => plate.status === 'exposed' && plate.behavior === 'predatory-dive',
+    (plate) => plate.status === 'exposed' && plate.points >= 2 && plate.behavior === 'predatory-dive',
+  );
+  const stegosaurusEvidence = state.plates.some(
+    (plate) => plate.status === 'exposed' && plate.points >= 2 && plate.behavior === 'drinking',
   );
   const gunshotCallback = state.gunshotFired
     ? 'The report carried. Something answered by the brook.'
@@ -481,11 +501,13 @@ function submitAtFort(state) {
       caseAbandoned: state.caseAbandoned,
       abandonedPlates: state.abandonedPlates,
       aerialEvidence,
+      stegosaurusEvidence,
       gunshotCallback,
       returnStrike: state.returnStrike,
       gunshotFired: state.gunshotFired,
       recordCallback: [
         aerialEvidence ? 'The plate fixes the wing at the instant it commits to the dive.' : null,
+        stegosaurusEvidence ? "Maple White's sketch has its witness: the stegosaurus at the drinking-place." : null,
         gunshotCallback,
       ].filter(Boolean).join(' ') || null,
     },
@@ -506,15 +528,17 @@ function failForTimeout(state) {
       cause: 'remaining-light-expired',
       title: 'Night reached the river first',
       copy: 'The pale bar vanished, then the spoor, then the road to Fort Challenger.',
-      cue: 'Next time, leave the last plate unmade or take the bright creek while it can still be read.',
+      cue: state.plates.some((plate) => plate.status !== 'unexposed')
+        ? 'Next time, leave the last plate unmade or take the bright creek while it can still be read.'
+        : 'The sun does not wait for a decision — keep moving down the spoor.',
     },
     lastEvent: 'failure:remaining-light-expired',
   });
 }
 
-function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
+function updateThreatState(state, zone, position, stance, deltaSeconds, travelled) {
   const entered = zone !== state.zone;
-  const inCover = zone === 'canopy-overlook' || zone === 'covered-return';
+  const inCover = coverBandContains(position.x, position.z);
   let awareness = state.threatAwareness;
   const coverRecoveryRate = stance === 'crouch' ? CROUCH_COVER_RECOVERY_MULTIPLIER : 1;
   let coverSeconds = inCover ? state.coverSeconds + deltaSeconds * coverRecoveryRate : 0;
@@ -529,8 +553,8 @@ function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
     event = 'territory-watch';
   }
   if (entered && zone === 'iguanodon-glade') {
-    awareness = Math.max(awareness, 2);
-    event = 'glade-search';
+    awareness = Math.max(awareness, 1);
+    event = 'glade-watch';
   }
   if (sprintExposureSeconds >= 1 && !sprintEscalationCharged) {
     awareness = Math.min(3, awareness + 1);
@@ -557,7 +581,10 @@ function updateThreatState(state, zone, stance, deltaSeconds, travelled) {
 
 function finalizeExposure(state, pending, threat) {
   const proof = proofForExposure(pending);
-  const exposureRisk = pending.maxExposureRisk ?? pending.exposure;
+  // A shutter tells the wings where you are, but one plate never adds more
+  // than one step: an attack needs two open exposures, or one and a sprint.
+  const exposureRisk = Math.min(1, pending.maxExposureRisk ?? pending.exposure ?? 0);
+  const range = proof.points > 0 ? proof.range ?? null : null;
   const plates = state.plates.map(clonePlate);
   plates[pending.plateIndex] = {
     ...plates[pending.plateIndex],
@@ -565,17 +592,18 @@ function finalizeExposure(state, pending, threat) {
     points: proof.points,
     label: proof.label,
     frameKey: proof.key,
-    sourceFrameKey: pending.key,
+    sourceFrameKey: pending.openFrame?.key ?? pending.key,
     stability: proof.stability,
     composition: proof.composition,
     subject: proof.subject,
     behavior: proof.behavior,
+    range,
   };
   const awareness = Math.min(3, threat.awareness + exposureRisk);
   return {
     plates,
     pendingExposure: null,
-    previewSeconds: 4,
+    previewSeconds: 5.5,
     cameraRaised: false,
     threatAwareness: awareness,
     threatState: THREAT_STATES[awareness],
@@ -583,7 +611,7 @@ function finalizeExposure(state, pending, threat) {
     lastProofEvent: {
       plateIndex: pending.plateIndex,
       frameKey: proof.key,
-      sourceFrameKey: pending.key,
+      sourceFrameKey: pending.openFrame?.key ?? pending.key,
       stability: proof.stability,
       points: proof.points,
       label: proof.label,
@@ -591,6 +619,7 @@ function finalizeExposure(state, pending, threat) {
       composition: proof.composition,
       subject: proof.subject,
       behavior: proof.behavior,
+      range,
       familyMoment: pending.familyMoment,
     },
     lastEvent: `plate:${pending.plateIndex + 1}:exposed`,
@@ -600,6 +629,8 @@ function finalizeExposure(state, pending, threat) {
 export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const deltaSeconds = Math.max(0, Math.min(rawDeltaSeconds, 1));
   if (state.paused || state.runStatus !== 'active') return copyState(state);
+  // What the live camera sees this frame, measured by the renderer.
+  const frameEvidence = Array.isArray(input.frameEvidence) ? input.frameEvidence : state.frameEvidence ?? [];
 
   const heading = (Number.isFinite(input.heading) ? input.heading : state.heading)
     + (input.lookHorizontal ?? 0) * KEYBOARD_LOOK_RADIANS_PER_SECOND.horizontal * deltaSeconds;
@@ -616,7 +647,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const stance = input.crouch ? 'crouch' : input.sprint ? 'sprint' : 'walk';
   const toolMultiplier = state.pendingExposure ? 0 : state.cameraRaised ? 0.35 : 1;
   const axes = planarAxesForHeading(heading);
-  const targetSpeed = SPEED[stance] * toolMultiplier;
+  const targetSpeed = SPEED[stance] * toolMultiplier * (state.caseAbandoned ? CASE_FREE_SPEED_MULTIPLIER : 1);
   const targetVelocity = {
     x: (axes.forward.x * normalizedForward + axes.right.x * normalizedRight) * targetSpeed,
     z: (axes.forward.z * normalizedForward + axes.right.z * normalizedRight) * targetSpeed,
@@ -643,10 +674,16 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const travelled = resolved.travelled;
   const reachedGlade = state.reachedGlade || resolved.position.z <= 3;
   const zone = zoneForPosition(resolved.position, reachedGlade);
-  const threat = updateThreatState(state, zone, stance, deltaSeconds, travelled);
+  const threat = updateThreatState(state, zone, resolved.position, stance, deltaSeconds, travelled);
+  const noticeRadius = stance === 'crouch' ? FAMILY_NOTICE_METERS.crouch : FAMILY_NOTICE_METERS.upright;
+  const familyNoticed = reachedGlade && nearestFamilyDistance(resolved.position) < noticeRadius;
+  const familyAlarmSeconds = familyNoticed
+    ? FAMILY_ALARM_SECONDS
+    : Math.max(0, (state.familyAlarmSeconds ?? 0) - deltaSeconds);
   const familyFocusFrame = !state.observedBehavior && zone === 'iguanodon-glade'
     ? frameForState({
       ...state,
+      frameEvidence,
       position: resolved.position,
       heading,
       pitch,
@@ -679,16 +716,20 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     observedBehavior,
     threatAwareness: threat.awareness,
     familyBehaviorSeconds,
+    familyAlarmSeconds,
   });
   const zoneHistory = zone === state.zone ? [...state.zoneHistory] : [...state.zoneHistory, zone];
   const exposureFrame = state.pendingExposure
     ? frameForState({
       ...state,
+      frameEvidence,
+      position: resolved.position,
       heading,
       pitch,
       zone,
       reachedGlade,
       familyBehaviorSeconds,
+      familyAlarmSeconds,
       familyMoment,
       threatAwareness: threat.awareness,
       threatState: threat.threatState,
@@ -729,6 +770,9 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     familyFocusSeconds,
     familyBehaviorSeconds,
     familyMoment,
+    familyAlarmSeconds,
+    frameEvidence,
+    stegosaurusClock: reachedGlade ? (state.stegosaurusClock ?? 0) + deltaSeconds : null,
     inCover: threat.inCover,
     coverSeconds: threat.coverSeconds,
     sprintExposureSeconds: threat.sprintExposureSeconds,
@@ -739,6 +783,13 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     pendingExposure,
     previewSeconds: Math.max(0, state.previewSeconds - deltaSeconds),
   });
+
+  if (familyNoticed && !(state.familyAlarmSeconds > 0)) {
+    next = copyState(next, {
+      lastObservation: 'Too close. Every head comes up, and the young shy back from you.',
+      lastEvent: 'family:noticed-scout',
+    });
+  }
 
   if (observedNow) {
     next = copyState(next, {
@@ -768,14 +819,14 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   if (returnedToFort && !next.returnRoute) {
     next = copyState(next, {
       returnRoute: 'turnback',
-      returnCostSeconds: 0,
       lastEvent: 'return:turnback:committed',
     });
   }
   if (returnedToFort) return submitAtFort(next);
   if (next.remainingLight <= 0 && zone !== 'fort') return failForTimeout(next);
 
-  const attackSeconds = next.threatAwareness === 3 && !next.inCover
+  // The attack clock starts on the frame the attack begins, never earlier.
+  const attackSeconds = next.threatAwareness === 3 && !next.inCover && state.threatAwareness === 3
     ? next.attackSeconds + deltaSeconds
     : 0;
   next.attackSeconds = attackSeconds;

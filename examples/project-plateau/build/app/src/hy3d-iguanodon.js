@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { applyCreatureSkin } from './creature-skin.js';
 
 export const HY3D_IGUANODON_ASSET = Object.freeze({
   url: '/assets/iguanodon-hy3d-v35-stylized.glb',
@@ -13,14 +14,14 @@ export const HY3D_IGUANODON_ASSET = Object.freeze({
 export const IGUANODON_SKIN_SURFACE = Object.freeze({
   model: 'opaque-non-emissive-biological-dielectric',
   baseColourSource: 'authored-hy3d-albedo-with-neutral-olive-calibration',
-  albedoMultiplierLinear: Object.freeze([0.7, 0.64, 0.52]),
+  albedoMultiplierLinear: Object.freeze([0.8, 0.74, 0.6]),
   roughnessSource: 'authored-packed-map-green-channel',
   roughnessFactor: 1,
   roughnessRange: Object.freeze([0.72, 0.94]),
   roughnessRemap: 'authored-green-linearly-remapped-into-dry-scaled-skin-range',
   approximateIndexOfRefraction: 1.42,
   specularIntensity: 0.92,
-  environmentIntensity: 0.48,
+  environmentIntensity: 0.8,
   normalSource: 'authored-tangent-space-map-with-restored-unit-strength',
   normalScale: Object.freeze([1, 1]),
   clearcoat: 0,
@@ -132,7 +133,13 @@ export const HY3D_POSE_TARGETS = Object.freeze([
   'tailLeft',
   'tailRight',
   'juvenile',
+  'lookLeft',
+  'lookRight',
 ]);
+
+// Largest head turn the look morphs carry, in radians.
+export const HY3D_LOOK_RADIANS = 0.6;
+const NECK_PIVOT = Object.freeze({ x: -0.075, z: 0 });
 
 function smoothstep(edge0, edge1, value) {
   const t = THREE.MathUtils.clamp((value - edge0) / (edge1 - edge0), 0, 1);
@@ -264,6 +271,15 @@ function createPoseAttribute(position, poseName) {
       nextY += swingFore * 0.094;
       nextX += swingHind * 0.038;
       nextY += swingHind * 0.088;
+    } else if (poseName === 'lookLeft' || poseName === 'lookRight') {
+      // Swing the neck and head about a vertical axis at the shoulders.
+      const angle = (poseName === 'lookLeft' ? 1 : -1) * HY3D_LOOK_RADIANS;
+      const dx = x - NECK_PIVOT.x;
+      const dz = z - NECK_PIVOT.z;
+      const swungX = NECK_PIVOT.x + dx * Math.cos(angle) + dz * Math.sin(angle);
+      const swungZ = NECK_PIVOT.z - dx * Math.sin(angle) + dz * Math.cos(angle);
+      nextX = THREE.MathUtils.lerp(x, swungX, neckInfluence);
+      nextZ = THREE.MathUtils.lerp(z, swungZ, neckInfluence);
     } else if (poseName === 'tailLeft' || poseName === 'tailRight') {
       const tailInfluence = smoothstep(0.22, 0.69, x);
       const direction = poseName === 'tailLeft' ? 1 : -1;
@@ -385,8 +401,7 @@ function prepareMaterial(material) {
     );
   };
   prepared.customProgramCacheKey = () => 'bounded-dry-skin-roughness-v1';
-  prepared.needsUpdate = true;
-  return prepared;
+  return applyCreatureSkin(prepared);
 }
 
 export function createCachedHy3dIguanodonLoader({
@@ -452,6 +467,25 @@ export function applyHy3dIguanodonPose(animal, pose = {}) {
         : pose[target] ?? 0;
       mesh.morphTargetInfluences[index] = THREE.MathUtils.clamp(requested, 0, 1);
     }
+  }
+}
+
+const lookLocal = new THREE.Vector3();
+
+// Turns the head toward a world point (the scout) by up to HY3D_LOOK_RADIANS,
+// blended by `weight`. Call after applyHy3dIguanodonPose, which resets it.
+export function applyHy3dIguanodonLook(animal, worldPoint, weight) {
+  const morphMeshes = animal.userData.hy3dVisual?.userData.morphMeshes ?? [];
+  for (const mesh of morphMeshes) {
+    lookLocal.copy(worldPoint);
+    mesh.worldToLocal(lookLocal);
+    const yaw = Math.atan2(lookLocal.z - NECK_PIVOT.z, -(lookLocal.x - NECK_PIVOT.x));
+    const turn = THREE.MathUtils.clamp(yaw / HY3D_LOOK_RADIANS, -1, 1) * weight;
+    const left = mesh.morphTargetDictionary.lookLeft;
+    const right = mesh.morphTargetDictionary.lookRight;
+    // lookLeft swings the head toward local +z, the side a positive yaw names.
+    if (left !== undefined) mesh.morphTargetInfluences[left] = Math.max(0, turn);
+    if (right !== undefined) mesh.morphTargetInfluences[right] = Math.max(0, -turn);
   }
 }
 

@@ -237,6 +237,15 @@
   border: 1px solid var(--gold); border-radius: 2px; padding: 0 4px;
   text-shadow: 0 1px 1px #000;
 }
+.buff-chip[data-buff="weary"] {
+  font-size: 14px; font-weight: 700; padding: 1px 8px;
+  color: #fff4c2; border-color: #ffd34a;
+  background: rgba(70, 52, 10, 0.92);
+  box-shadow: 0 0 8px rgba(255, 211, 74, 0.7);
+  animation: weary-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes weary-pulse { from { box-shadow: 0 0 4px rgba(255, 211, 74, 0.4); } to { box-shadow: 0 0 12px rgba(255, 211, 74, 0.95); } }
+@media (prefers-reduced-motion: reduce) { .buff-chip[data-buff="weary"] { animation: none; } }
 .buff-chip[data-buff="enrage"] {
   color: #ffe0c6; border-color: #ff7a4a;
   background: rgba(126, 34, 22, 0.90);

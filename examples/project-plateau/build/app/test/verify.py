@@ -47,10 +47,25 @@ def write_verification(passed: bool) -> None:
                 {
                     "scope": "tested runtime",
                     "reason": (
-                        "The run used local desktop Chromium; other browsers, GPUs "
-                        "and devices were not exercised."
+                        "The run used local desktop Chromium on one Apple M1 Pro; other "
+                        "browsers, GPUs and devices were not exercised."
                     ),
-                }
+                },
+                {
+                    "scope": "optional stegosaurus beat",
+                    "reason": (
+                        "The complete run does not photograph the stegosaurus; its "
+                        "framing rule is covered by one unit test only."
+                    ),
+                },
+                {
+                    "scope": "look, sound and hitches",
+                    "reason": (
+                        "Visual quality is a reviewed judgment; the sound beds were not heard on "
+                        "laptop speakers and frame hitches were not measured on an unloaded or "
+                        "low-end machine."
+                    ),
+                },
             ],
         },
     )

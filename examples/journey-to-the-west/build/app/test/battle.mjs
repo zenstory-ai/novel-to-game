@@ -8,6 +8,7 @@ import {
 import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
 import { settleLevelUp, recommendAlloc, applyRecommend, allocatePoint, allocateSkillPoint, applyRecommendSkills } from '../js/growth.js';
+import { grantExp, expToNext, bountyReward, buy, equipItem, applyLoot, gearOf } from '../js/progress.js';
 
 let passed = 0, failed = 0;
 function ok(cond, name, extra = '') {
@@ -293,6 +294,14 @@ section('BOSS 蓄力预警 → 重击');
   const ratio = heavy.amount / target.maxHp;
   ok(ratio > 0.22 && ratio < 0.45, `防御下重击≈30%最大血 (实测 ${(ratio * 100).toFixed(0)}%)`);
   ok(heavy.mitigated === true, '重击被防御减伤(mitigated)');
+  // 保护:八戒护住沙僧时,点名沙僧的重击改由八戒代受七成
+  const s2 = createBattle({ battleId: 'niumowang', party, seed: 5 });
+  for (let i = 0; i < 3; i++) executeRound(s2, defendAll());
+  const sha2 = getUnit(s2, 'p2');
+  sha2.hp = 100;
+  const evsP = executeRound(s2, { ...defendAll(), p1: { type: 'protect', targetId: 'p2' } });
+  const hp = evsP.find((e) => e.t === 'heavy');
+  ok(hp?.target === 'p1' && hp.protectFor === 'p2' && sha2.hp === 100, '保护:点名沙僧的重击落在八戒身上,沙僧不掉血');
 }
 
 // ---------- 14. BOSS 战自动只普攻 ----------
@@ -542,6 +551,12 @@ section('增益物品(醒酒石/避火符)');
   const fireHitOnBajie = evs2.find((e) => e.t === 'damage' && e.target === 'p1');
   const warded = evs2.some((e) => e.t === 'ward' && e.target === 'p1');
   ok(warded || !fireHitOnBajie, '避火符抵挡火系攻击(触发即见 ward 事件)');
+  // 九转回魂丹:救起倒下的伙伴,带 25% 气血归队
+  const r = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 8, items: { huihun: 1 } });
+  const fallen = getUnit(r, 'p2');
+  fallen.alive = false; fallen.hp = 0;
+  executeRound(r, { p0: { type: 'item', itemId: 'huihun', targetId: 'p2' }, p1: { type: 'defend' } });
+  ok(r.items.huihun === 0 && (fallen.alive || r.over), '回魂丹:倒下的伙伴醒转归队并耗去一颗');
 }
 
 // ---------- 25. 治疗技(归元静心) ----------
@@ -810,6 +825,10 @@ section('法宝二选一(规则型)');
   const wkWind = getUnit(sWind, 'p0');
   wkWind.buffs.push({ ...SKILLS.shanfeng.buff });
   ok(effStat(sWind, wkWind, 'spd') === effStat(sWind, { ...wkWind, buffs: [] }, 'spd'), '选定风丹:扇风减速不落身');
+  // 实战:罗刹女扇风扫过全队,持定风丹者身上根本不挂「减速」,只记一次「定风」
+  const sFan = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 3, treasure: 'dingfengdan' });
+  const evFan = executeRound(sFan, { e0: { type: 'skill', skillId: 'shanfeng' }, p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' } });
+  ok(evFan.some((e) => e.t === 'immune') && aliveUnits(sFan, 'party').every((u) => !u.buffs.some((b) => b.id === 'spd_down')), '定风丹:扇风后我方无人挂减速,飘「定风」');
   const sNoTre = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 1 });
   const wkNoTre = getUnit(sNoTre, 'p0');
   wkNoTre.buffs.push({ ...SKILLS.shanfeng.buff });
@@ -953,6 +972,28 @@ section('杂兵战真决策(自动 vs 对症)');
   ok(yS.wins === 5 && yA.wins < yS.wins, `摩云洞前:对症 5/5,自动不再包办通关 (${yA.wins}/${yS.wins})`);
   ok(yS.total < yA.total, `妖将结阵:对症 ${yS.total} 回合 < 全程自动 ${yA.total} 回合(5 种子合计)`);
   ok(yS.total < yL.total, `妖将结阵:先拆结阵 ${yS.total} 回合 < 集火主将 ${yL.total} 回合(5 种子合计)`);
+}
+
+// ---------- 38. 场景养成:日常封妖只能领先剧情一级,决战仍须用对真扇 ----------
+section('日常历练上限与决战平衡');
+{
+  const c = { levels: { wukong: 2, bajie: 2, sha: 2 }, storyLevel: 2, exp: 0, pets: [], items: {}, money: 0, skillLevels: {} };
+  const first = grantExp(c, 10_000);
+  ok(c.levels.wukong === 3 && c.levels.sha === 3 && first.capped, '历练再多也只升到剧情等级 +1');
+  ok(c.exp === expToNext(3), '封顶后历练停在满条,不溢出');
+  const r1 = bountyReward(c, 4, 777), r2 = bountyReward(c, 4, 777);
+  ok(JSON.stringify(r1) === JSON.stringify(r2), '同环同种子:封妖奖励可复现');
+  c.money = 500;
+  ok(buy(c, { equip: 'jingtie', price: 260 }) && c.money === 240 && equipItem(c, 'wukong', 'jingtie'), '买兵器扣银两并可换上');
+  applyLoot(c, { equips: ['bintie'] });
+  ok(equipItem(c, 'wukong', 'bintie') && c.equipBag.jingtie === 1 && gearOf(c, 'wukong')[0] === 'bintie', '换装:旧兵器退回背包');
+  // 刷到上限并穿满二阶,全程自动仍打不下积雷山决战(真扇与指令依旧是胜负手)
+  let autoWins = 0;
+  for (const seed of [42, 7, 101, 2026, 31337]) {
+    const party = ['wukong', 'bajie', 'sha', 'pixie'].map((key) => ({ key, level: 7, equip: ['bintie', 'xipijia'] }));
+    if (runBattle(seed, 'niumowang', party, { items: { truefan: 3, jinchuang: 3 } }).state.winner === 'party') autoWins += 1;
+  }
+  ok(autoWins === 0, `决战:Lv7 二阶全套全程自动 ${autoWins}/5 胜`);
 }
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败`);

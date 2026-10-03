@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { PALETTE } from './config.js';
 import { FORT_FIREPIT, FORT_TENT_LAYOUT, HERO_GINGKO_LAYOUT } from './environment-layout.js';
 import { terrainHeight } from './terrain.js';
-import { createCylinderBetween, createVerticalLoft, primitive } from './world-rendering.js';
+import { createCylinderBetween, primitive } from './world-rendering.js';
 import { shared } from './vegetation-rendering.js';
 
 function createTentPanelGeometry(vertices, indices) {
@@ -159,6 +159,33 @@ function makeAFrameTent() {
   return tent;
 }
 
+function makeFlameTexture() {
+  const size = 64;
+  const data = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const u = (x / (size - 1)) * 2 - 1;
+      const v = y / (size - 1);
+      // Teardrop: wide and hot at the base, narrowing to a tip.
+      const width = 0.95 * (1 - v) ** 0.7 + 0.02;
+      const edge = 1 - THREE.MathUtils.smoothstep(Math.abs(u) / width, 0.35, 1);
+      const fade = THREE.MathUtils.smoothstep(v, 0, 0.12) * (1 - THREE.MathUtils.smoothstep(v, 0.55, 1));
+      const index = (y * size + x) * 4;
+      const heat = Math.round(255 * edge * fade);
+      data[index] = 255;
+      data[index + 1] = 255;
+      data[index + 2] = 255;
+      data[index + 3] = heat;
+    }
+  }
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.needsUpdate = true;
+  texture.name = 'world.material.flame-card';
+  return texture;
+}
+
 function makeSmokeTexture() {
   const size = 64;
   const data = new Uint8Array(size * size * 4);
@@ -234,27 +261,29 @@ function makeFort(scene) {
   }
   const flameGroup = new THREE.Group();
   flameGroup.name = 'camp-flames';
+  // Crossed flame cards with a soft teardrop texture; additive, so the fire
+  // glows instead of reading as a solid cone.
+  const flameTexture = makeFlameTexture();
   const flameColors = [0xffb23e, 0xf4762b, 0xffd77a];
   [[-0.2, 0.02, 1.14], [0.18, -0.08, 1.34], [0.02, 0.18, 0.96]].forEach(
     ([x, z, height], index) => {
-      const flameGeometry = createVerticalLoft([
-        [0, 0, 0, 0.15, 0.12],
-        [height * 0.28, 0.035, -0.02, 0.2, 0.15],
-        [height * 0.64, -0.045, 0.025, 0.11, 0.085],
-        [height, 0.035, -0.015, 0.012, 0.012],
-      ], 6);
-      flameGeometry.computeVertexNormals();
-      const flame = new THREE.Mesh(
-        flameGeometry,
-        new THREE.MeshBasicMaterial({
-          color: flameColors[index],
-          transparent: true,
-          opacity: 0.95,
-          depthWrite: false,
-          toneMapped: false,
-        }),
-      );
-      flame.position.set(x, 0.34, z);
+      const material = new THREE.MeshBasicMaterial({
+        map: flameTexture,
+        color: flameColors[index],
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      });
+      const flame = new THREE.Group();
+      for (const turn of [0, Math.PI / 2]) {
+        const card = new THREE.Mesh(new THREE.PlaneGeometry(height * 0.42, height), material);
+        card.position.y = height * 0.5;
+        card.rotation.y = turn;
+        flame.add(card);
+      }
+      flame.position.set(x, 0.3, z);
       flame.userData.baseScale = 1.68 + index * 0.14;
       flameGroup.add(flame);
     },
@@ -269,26 +298,31 @@ function makeFort(scene) {
 
   const smoke = new THREE.Group();
   const smokeTexture = makeSmokeTexture();
-  for (let index = 0; index < 9; index += 1) {
-    const smokeColor = new THREE.Color(PALETTE.smoke).lerp(
-      new THREE.Color(0xd1ad78),
-      (1 - index / 8) * 0.22,
-    );
+  // A column tall enough to stand above the trees from the glade: it thins,
+  // widens and leans downwind as it rises.
+  const SMOKE_WISPS = 24;
+  for (let index = 0; index < SMOKE_WISPS; index += 1) {
+    const rise = index / (SMOKE_WISPS - 1);
+    // Above the treetops the column turns to a darker wood-smoke grey so it
+    // separates from pale sky and cloud when seen from the glade.
+    const smokeColor = new THREE.Color(PALETTE.smoke)
+      .lerp(new THREE.Color(0xd1ad78), (1 - rise) * 0.22)
+      .lerp(new THREE.Color(0x77736c), THREE.MathUtils.smoothstep(rise, 0.2, 0.55) * 0.75);
     const wisp = new THREE.Sprite(new THREE.SpriteMaterial({
       map: smokeTexture,
       color: smokeColor,
       transparent: true,
-      opacity: 0.31 - index * 0.012,
+      opacity: 0.42 - rise * 0.1,
       depthWrite: false,
     }));
-    const windLean = -index * 0.18;
-    const baseX = windLean + Math.sin(index * 1.61) * (0.08 + index * 0.012);
-    const baseY = 0.58 + index * 0.79;
+    const windLean = -rise * rise * 7.5;
+    const baseX = windLean + Math.sin(index * 1.61) * (0.08 + rise * 0.6);
+    const baseY = 0.58 + rise * rise * 4 + rise * 26;
     wisp.position.set(baseX, baseY, Math.cos(index * 1.27) * 0.16);
     wisp.userData.baseX = baseX;
     wisp.userData.baseY = baseY;
     wisp.userData.baseRotation = Math.sin(index * 2.17) * 0.2;
-    wisp.scale.set(1.58 + index * 0.15, 1.9 + index * 0.22, 1);
+    wisp.scale.set(1.58 + rise * 6.5, 1.9 + rise * 7, 1);
     wisp.material.rotation = wisp.userData.baseRotation;
     wisp.renderOrder = 1;
     smoke.add(wisp);
@@ -312,22 +346,14 @@ function makeFort(scene) {
   signalPole.name = 'signal-pole';
   signalPole.position.y = 2.4;
   signalPole.castShadow = true;
-  const flagGeometry = createTentPanelGeometry(
-    [
-      0, 0.56, 0,
-      0, -0.56, 0,
-      -1.3, -0.42, 0,
-      -1.3, 0.42, 0,
-      -2.6, -0.5, 0,
-      -2.6, 0.08, 0,
-    ],
-    [0, 1, 2, 0, 2, 3, 3, 2, 4, 3, 4, 5],
-  );
+  // A cloth grid fine enough for the travelling wave to read as a flag.
+  const flagGeometry = new THREE.PlaneGeometry(2.6, 1.0, 14, 5);
+  flagGeometry.translate(-1.3, 0, 0);
   const signalFlag = new THREE.Mesh(
     flagGeometry,
     new THREE.MeshStandardMaterial({
-      color: 0xb75236,
-      emissive: 0x3a140d,
+      color: 0x9e2a2b,
+      emissive: 0x2e0b0a,
       emissiveIntensity: 0.36,
       roughness: 0.88,
       side: THREE.DoubleSide,

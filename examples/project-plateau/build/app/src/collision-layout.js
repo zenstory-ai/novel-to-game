@@ -1,5 +1,6 @@
 import {
   BROOK_BOULDER,
+  COVER_BAND_TREE_FERNS,
   COVER_RIPARIAN_TREE_LAYOUT,
   FAMILY_LAYOUT,
   FEEDING_BRANCH,
@@ -143,6 +144,17 @@ const habitatTreeColliders = HABITAT_TREE_LAYOUT.map(([x, z, scale], index) => c
   visualIndex: index,
 }));
 
+const coverBandColliders = COVER_BAND_TREE_FERNS.map(([x, z, scale], index) => circle({
+  id: `cover-band-tree-fern-${index + 1}`,
+  x,
+  z,
+  radius: 0.34 * scale,
+  height: scale * 3.2,
+  category: 'tree-trunk',
+  visualAnchor: 'world.cover-band.tree-ferns',
+  visualIndex: index,
+}));
+
 const vegetationTreeColliders = VEGETATION_LAYOUT.trees
   .filter((tree) => (
     tree.x >= NAVIGATION_BOUNDS.minX - 1
@@ -227,6 +239,7 @@ export const STATIC_COLLIDERS = Object.freeze([
   }),
   ...archTrunkColliders,
   ...habitatTreeColliders,
+  ...coverBandColliders,
   ...vegetationTreeColliders,
   ...authoredRockColliders,
   circle({

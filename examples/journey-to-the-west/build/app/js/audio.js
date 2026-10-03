@@ -1,8 +1,8 @@
-// 音频引擎:Web Audio 程序化合成,零素材零依赖。
+// 音频引擎:Web Audio 程序化合成，零素材零依赖。
 // 古风五声音阶(宫商角徵羽)+ 木鱼/板鼓打击感;分场景 BGM + 全套战斗 SFX。
-// 一切方法在 AudioContext 不可用时静默降级,绝不影响游戏运行。
+// 一切方法在 AudioContext 不可用时静默降级，绝不影响游戏运行。
 
-// 五声音阶(半音):宫 商 角 徵 羽
+// 五声音阶(半音)：宫 商 角 徵 羽
 const PENTA = [0, 2, 4, 7, 9];
 const BASE = 220; // A3
 
@@ -42,6 +42,15 @@ const SCENES = {
 };
 
 const MUTE_KEY = 'xiyou_mute';
+const VOL_KEYS = { bgm: 'xiyou_vol_bgm', sfx: 'xiyou_vol_sfx' };
+const VOL_BASE = { bgm: 0.5, sfx: 0.7 };
+function readVol(kind) {
+  try {
+    const raw = localStorage.getItem(VOL_KEYS[kind]);
+    const v = Number(raw);
+    return raw == null || Number.isNaN(v) ? 1 : Math.max(0, Math.min(1, v));
+  } catch { return 1; }
+}
 
 class AudioEngine {
   constructor() {
@@ -51,10 +60,11 @@ class AudioEngine {
     this.sfxGain = null;
     this.bgm = null; // {scene, timer, nextNote}
     this.muted = localStorage.getItem(MUTE_KEY) === '1';
+    this.vol = { bgm: readVol('bgm'), sfx: readVol('sfx') }; // 0~1，五档
     this._noiseBuf = null;
   }
 
-  // 需用户手势调用:创建/恢复 AudioContext
+  // 需用户手势调用：创建/恢复 AudioContext
   unlock() {
     try {
       if (!this.ctx) {
@@ -65,10 +75,10 @@ class AudioEngine {
         this.master.gain.value = this.muted ? 0 : 0.6;
         this.master.connect(this.ctx.destination);
         this.bgmGain = this.ctx.createGain();
-        this.bgmGain.gain.value = 0.5;
+        this.bgmGain.gain.value = VOL_BASE.bgm * this.vol.bgm;
         this.bgmGain.connect(this.master);
         this.sfxGain = this.ctx.createGain();
-        this.sfxGain.gain.value = 0.7;
+        this.sfxGain.gain.value = VOL_BASE.sfx * this.vol.sfx;
         this.sfxGain.connect(this.master);
       }
       if (this.ctx.state === 'suspended') this.ctx.resume();
@@ -87,6 +97,14 @@ class AudioEngine {
     }
   }
 
+  // 音乐/音效分开调(0~1)，持久化
+  setVolume(kind, v) {
+    this.vol[kind] = Math.max(0, Math.min(1, v));
+    try { localStorage.setItem(VOL_KEYS[kind], String(this.vol[kind])); } catch { /* ignore */ }
+    const node = kind === 'bgm' ? this.bgmGain : this.sfxGain;
+    if (node) node.gain.setTargetAtTime(VOL_BASE[kind] * this.vol[kind], this.ctx.currentTime, 0.05);
+  }
+
   toggleMuted() {
     this.setMuted(!this.muted);
     return this.muted;
@@ -102,17 +120,26 @@ class AudioEngine {
     const beatLen = 60 / cfg.bpm;
     const totalBeats = cfg.melody.reduce((a, n) => a + n[2], 0);
     const loopLen = totalBeats * beatLen;
-    const state = { scene, next: this.ctx.currentTime + 0.08, beatLen, loopLen, cfg };
+    // 每首曲子挂自己的增益节点：切曲时整轨淡出，已排程的音符不会和新曲叠在一起
+    const out = this.ctx.createGain();
+    out.gain.value = 1;
+    out.connect(this.bgmGain);
+    const state = { scene, next: this.ctx.currentTime + 0.08, beatLen, loopLen, cfg, out };
     state.timer = setInterval(() => this._scheduleLoop(state), 300);
     this._scheduleLoop(state);
     this.bgm = state;
   }
 
-  stopBGM() {
-    if (this.bgm) {
-      clearInterval(this.bgm.timer);
-      this.bgm = null;
-    }
+  stopBGM(fade = 0.08) {
+    if (!this.bgm) return;
+    const { timer, out } = this.bgm;
+    clearInterval(timer);
+    this.bgm = null;
+    try {
+      out.gain.cancelScheduledValues(this.ctx.currentTime);
+      out.gain.setTargetAtTime(0, this.ctx.currentTime, fade);
+      setTimeout(() => { try { out.disconnect(); } catch { /* ignore */ } }, Math.max(400, fade * 5000));
+    } catch { /* ignore */ }
   }
 
   _scheduleLoop(st) {
@@ -128,20 +155,20 @@ class AudioEngine {
     const { cfg, beatLen } = st;
     let t = t0;
     for (const [deg, oct, beats] of cfg.melody) {
-      this._tone(freq(deg, oct), t, beats * beatLen * 0.92, cfg.wave, cfg.vol, this.bgmGain, 0.02, 0.08);
+      this._tone(freq(deg, oct), t, beats * beatLen * 0.92, cfg.wave, cfg.vol, st.out, 0.02, 0.08);
       t += beats * beatLen;
     }
     // 低音 drone:每循环均布
     const perBeat = st.loopLen / cfg.bass.length;
     cfg.bass.forEach((deg, i) => {
-      this._tone(freq(deg, -1), t0 + i * perBeat, perBeat * 0.9, 'sine', cfg.vol * 0.7, this.bgmGain, 0.05, 0.1);
+      this._tone(freq(deg, -1), t0 + i * perBeat, perBeat * 0.9, 'sine', cfg.vol * 0.7, st.out, 0.05, 0.1);
     });
-    // 木鱼/板鼓:按拍位
+    // 木鱼/板鼓：按拍位
     const beatDur = st.loopLen / 8;
     cfg.perc.forEach((b, i) => {
       const pt = t0 + b * beatDur;
-      if (i % 4 === 0) this._drum(pt, cfg.percVol, this.bgmGain); // 板鼓重拍
-      else this._woodblock(pt, cfg.percVol * 0.8, this.bgmGain);
+      if (i % 4 === 0) this._drum(pt, cfg.percVol, st.out); // 板鼓重拍
+      else this._woodblock(pt, cfg.percVol * 0.8, st.out);
     });
   }
 
@@ -195,13 +222,13 @@ class AudioEngine {
     } catch { /* ignore */ }
   }
 
-  // 木鱼:短促高频敲击
+  // 木鱼：短促高频敲击
   _woodblock(t, vol, dest) {
     this._tone(920, t, 0.05, 'sine', vol, dest, 0.002, 0.03);
     this._noise(t, 0.03, vol * 0.5, dest, 2400, 4);
   }
 
-  // 板鼓:低频膜击
+  // 板鼓：低频膜击
   _drum(t, vol, dest) {
     if (!this.ctx) return;
     try {
@@ -271,25 +298,25 @@ class AudioEngine {
         this._noise(t, 0.3, 0.26, out, 500, 1);
         this._tone(70, t, 0.3, 'sawtooth', 0.14, out, 0.005, 0.15);
         break;
-      case 'fan1': // 息火:低鸣熄灭
+      case 'fan1': // 息火：低鸣熄灭
         this._noise(t, 0.5, 0.16, out, 300, 1);
         this._tone(140, t, 0.45, 'sine', 0.14, out, 0.02, 0.3);
         break;
-      case 'fan2': // 生风:气流上扬
+      case 'fan2': // 生风：气流上扬
         this._noise(t, 0.6, 0.16, out, 900, 1);
         this._tone(freq(4, 0), t, 0.4, 'triangle', 0.1, out, 0.05, 0.2);
         this._tone(freq(7, 0), t + 0.12, 0.35, 'triangle', 0.1, out, 0.05, 0.2);
         break;
-      case 'fan3': // 落雨:密集雨点+清铃
+      case 'fan3': // 落雨：密集雨点+清铃
         for (let i = 0; i < 7; i++) this._noise(t + i * 0.06, 0.05, 0.08, out, 3000 + i * 300, 4);
         this._tone(freq(9, 0), t + 0.1, 0.4, 'sine', 0.12, out, 0.02, 0.25);
         break;
-      case 'firefx': // 火系演出:轰燃+余焰
+      case 'firefx': // 火系演出：轰燃+余焰
         this._noise(t, 0.5, 0.2, out, 500, 1);
         this._tone(90, t, 0.4, 'sawtooth', 0.12, out, 0.01, 0.25);
         this._noise(t + 0.15, 0.35, 0.1, out, 1800, 2);
         break;
-      case 'waterfx': // 水系演出:浪涌+清音
+      case 'waterfx': // 水系演出：浪涌+清音
         this._noise(t, 0.45, 0.16, out, 900, 1.5);
         [4, 7].forEach((d, i) => this._tone(freq(d, 0), t + 0.08 + i * 0.09, 0.22, 'sine', 0.1, out, 0.02, 0.12));
         break;
@@ -303,6 +330,27 @@ class AudioEngine {
         break;
       case 'defeat':
         [4, 2, 0].forEach((d, i) => this._tone(freq(d, -1), t + i * 0.18, 0.3, 'triangle', 0.14, out, 0.01, 0.15));
+        break;
+      case 'step': // 行路脚步：很轻的沙土声
+        this._noise(t, 0.04, 0.05, out, 700, 1.2);
+        break;
+      case 'coin': // 得银两
+        this._tone(2093, t, 0.08, 'triangle', 0.12, out, 0.001, 0.04);
+        this._tone(2637, t + 0.06, 0.12, 'triangle', 0.1, out, 0.001, 0.06);
+        break;
+      case 'quest': // 任务完成/接取：一声铃
+        [7, 9, 12].forEach((d, i) => this._tone(freq(d, 0), t + i * 0.09, 0.22, 'sine', 0.13, out, 0.01, 0.12));
+        break;
+      case 'portal': // 传送：气流上扬
+        this._noise(t, 0.45, 0.12, out, 1400, 2);
+        this._tone(freq(4, 0), t, 0.35, 'sine', 0.1, out, 0.04, 0.2);
+        break;
+      case 'encounter': // 入战：铜锣一声(低鼓击 + 两个不协和泛音拖长尾)
+        this._drum(t, 0.42, out);
+        this._noise(t, 0.6, 0.12, out, 1100, 0.8);
+        this._tone(147, t, 1.4, 'triangle', 0.16, out, 0.002, 1.1);
+        this._tone(311, t + 0.01, 1.1, 'sine', 0.09, out, 0.002, 0.9);
+        this._tone(467, t + 0.02, 0.8, 'sine', 0.05, out, 0.002, 0.6);
         break;
       default:
         break;

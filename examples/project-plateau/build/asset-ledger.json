@@ -11,17 +11,6 @@
       "fallback": "Readable primitive geometry with the same route, collision, cover, and landmarks."
     },
     {
-      "key": "world.atmosphere.anti_solar_double_depth_cloud_field",
-      "status": "adopted",
-      "source": [
-        "app/src/atmosphere.js",
-        "app/src/overhead-cloud-field.js",
-        "app/src/main.js"
-      ],
-      "rights": "Project-original code-authored output.",
-      "fallback": "Low quality disables the overhead deck and its direct-light attenuation while retaining the eleven-bank system's 56 bounded lit cloud puffs; terrain lighting, navigation and collision remain authoritative."
-    },
-    {
       "key": "world.connected_route.brook_hydrology",
       "status": "adopted",
       "source": [
@@ -152,7 +141,7 @@
         "app/src/fern-library.js"
       ],
       "rights": "Project-original code-authored output.",
-      "fallback": "The former three procedural instanced fern families, twelve foreground-depth fronds, twenty-four tree-fern skirts and sixty-four degradable wetland/margin accents remain available if an original instance batch cannot attach. The brook-response fallback is separately bounded to five dark 0.31\u20130.345-scale fronds rather than restoring the former oversized pale cluster."
+      "fallback": "The former three procedural instanced fern families, twelve foreground-depth fronds, twenty-four tree-fern skirts and sixty-four degradable wetland/margin accents remain available if an original instance batch cannot attach. The brook-response fallback is separately bounded to five dark 0.31–0.345-scale fronds rather than restoring the former oversized pale cluster."
     },
     {
       "key": "world.environment_density.ground_cover_library",
@@ -317,11 +306,10 @@
         "app/src/daylight-energy.js",
         "app/src/height-fog.js",
         "app/src/atmosphere.js",
-        "app/src/overhead-cloud-field.js",
         "app/src/main.js",
         "app/src/world.js"
       ],
-      "fallback": "Directional sun, hemisphere light and FogExp2 preserve route and threat readability if PMREM or analytic height fog is unavailable; low quality disables the overhead cloud deck and its direct-light attenuation."
+      "fallback": "Directional sun, hemisphere light and FogExp2 preserve route and threat readability if PMREM or analytic height fog is unavailable."
     },
     {
       "key": "audio.core_world",
@@ -341,6 +329,73 @@
         "app/src/styles.css"
       ],
       "fallback": "Core route remains playable at default presentation settings."
+    },
+    {
+      "key": "world.atmosphere.painted_sky_and_low_sun",
+      "status": "adopted",
+      "source": [
+        "app/src/atmosphere-sky.js",
+        "app/src/field-lighting.js",
+        "app/src/field-postprocessing.js"
+      ],
+      "rights": "Project-original code-authored output.",
+      "fallback": "Low quality drops GTAO and SMAA; the painted sky, sun, hemisphere fill and fog remain."
+    },
+    {
+      "key": "world.connected_route.blender_ground_layers",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/ground/ground-albedo.jpg",
+        "app/public/assets/ground/ground-normal.jpg",
+        "app/public/assets/ground/ground-orh.jpg",
+        "app/scripts/blender/bake_ground_textures.py",
+        "app/src/ground-layers.js",
+        "app/src/terrain-ground-material.js"
+      ],
+      "rights": "Project-original Blender-baked output.",
+      "fallback": "None at runtime: the layers load with the required assets and a failure shows the retry card."
+    },
+    {
+      "key": "world.ground.instanced_grass_field",
+      "status": "adopted",
+      "source": [
+        "app/src/grass-field.js"
+      ],
+      "rights": "Project-original code-authored output.",
+      "fallback": "Non-solid scenery; terrain moss and litter remain if the rings are removed."
+    },
+    {
+      "key": "subject.stegosaurus",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/stegosaurus-v1.glb",
+        "app/scripts/blender/build_stegosaurus.py",
+        "app/src/stegosaurus.js",
+        "app/src/stegosaurus-path.js"
+      ],
+      "rights": "Project-original Blender-built output; no modern adaptation design referenced.",
+      "fallback": "None: required asset; a load failure blocks readiness and shows the retry card."
+    },
+    {
+      "key": "world.atmosphere.cliff_ring",
+      "status": "adopted",
+      "source": [
+        "app/public/assets/cliff-ring-v1.glb",
+        "app/scripts/blender/build_cliff_ring.py",
+        "app/src/cliff-ring.js"
+      ],
+      "rights": "Project-original code-authored output (Blender 5.2 headless; textures computed in numpy).",
+      "fallback": "If the GLB cannot load the valley plays unchanged; only the far wall above the trees is missing."
+    },
+    {
+      "key": "world.cover_band",
+      "status": "adopted",
+      "source": [
+        "app/src/cover-band.js",
+        "app/src/environment-layout.js"
+      ],
+      "rights": "Project-original code-authored output.",
+      "fallback": "The thorn arches are procedural; if the tree-fern library cannot load, the arches and leaves still mark the band, and cover remains defined by the same centreline."
     }
   ]
 }

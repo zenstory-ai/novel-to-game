@@ -1,4 +1,4 @@
-<!-- Last synced with README.md: 2026-09-18 -->
+<!-- Last synced with README.md: 2026-10-02 -->
 
 <p align="center">
   <img src="https://zenstory.ai/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
@@ -41,33 +41,39 @@ NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Co
 
 ### 西游记 · 三借芭蕉扇
 
-[![积雷山决战中敌我阵列完整留在木刻舞台，下方轻绢指令台与人物画面彼此分离](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+<p>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="师徒一行站在彩绘的火焰山庄里，四角是小地图、任务追踪、聊天栏与功能按钮" width="49%"></a>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/battle.jpg" alt="积雷山之战：牛魔王一方在左、悟空一行在右，上缘行动顺序条，下方指令面板" width="49%"></a>
+</p>
 
-**一扇吹出五万里。这口气，一回合一回合打回来。**
+**一扇吹出五万里。走回去，接任务，一回合一回合把火焰山打回来。**
 
-你指挥孙悟空一行三借芭蕉扇：算五行、循火脉残图寻宝、在收手与深入之间下注、排阵型、变形取巧硬闯不进的地方，把一个正面打不过的牛魔王，打成落在火焰山上的一场雨。
+一款以第五十九至六十一回为本的《梦幻西游》式回合制 RPG。在四张彩绘场景里点地行走，找头顶「!」的 NPC，点任务追踪自动寻路过去，主线之间还能领可重复的封妖令日常。攒历练与银两，逛商店、换装备、研习法术、带召唤兽上阵；再用五行相克、愤怒特技和悟空的七十二变打指令回合制战斗，把一个正面打不过的牛魔王，打成落在火焰山上的一场雨。
 
 **[浏览器试玩](https://xiyouji.vibecoco.ai)** · [改编工作区](examples/journey-to-the-west/) · 设计估时 45–90 分钟 · 全年龄 · 可玩原型
 
 ### 金瓶梅 · 风月总账
 
-[![西门宅中五人隔着总账看向玩家](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+<p>
+  <a href="https://jinpingmei.vibecoco.ai"><img src="examples/jin-ping-mei/screenshots/title.jpg" alt="动画标题：西门宅五人站在春日庭院里，旁边是书名与菜单" width="49%"></a>
+  <a href="https://jinpingmei.vibecoco.ai"><img src="examples/jin-ping-mei/screenshots/adv.jpg" alt="晚饭戏：三位女主站在堂中，孟玉楼在带名牌的文本框里说话，下方是 ADV 功能栏" width="49%"></a>
+</p>
 
-**今夜进谁的门，明早谁来敲你的门。**
+**那年春天，五扇门都为你留过灯。你说过的话，她们都记得。**
 
-二十日，五处院门。平衡银钱、官势、声名、见光与宅门损耗，守住每个人亲口说出的规矩，让不同院门在真实危局中建立互信，最后面对一笔由所有选择和记忆共同写成的总账。
+一款 galgame 式古风恋爱 ADV，时间是李瓶儿刚过门的那个春天。共通线把五个女人放到同一张饭桌、同一场夜雨、同一席清明宴上；你的选择在每个人那里攒下的心意，决定分岔那夜哪扇院门还亮着灯。五条个人线各有良缘、寻常、错过三种结局（连同无人留灯共十六个），每个个人结局之后都翻开一页原著里她的命数（无人留灯则翻到西门庆之死与宅门散去）。自动、只跳已读的快进、回看、隐藏、快存、缩略图存档和回到上一选项一应俱全，另有 CG 鉴赏、回想、音乐室和结局流程图。
 
-**[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [改编工作区](examples/jin-ping-mei/) · 设计估时 60–90 分钟 · 18+ · 可玩原型
+**[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [改编工作区](examples/jin-ping-mei/) · 设计估时单周目 20–30 分钟，五线全收 1–1.5 小时 · 18+ · 可玩原型
 
 ### Project Plateau · 失落的世界 · 3D
 
-这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。玩家穿过连通的高原，观察共同生活的禽龙家庭，在空中威胁下拍完四张玻璃底片，再带着幸存的影像返回。
+这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。西斜的低太阳下，从挑战者堡出发，穿过齐膝的草，沿一条荆棘拱廊找掩护，用长焦镜头曝光四张玻璃底片。每张底片当场按实时取景里真正框住的东西评定，盖上评语印章，再配一句多疑的萨默利教授的话。翼手龙先盘旋再俯冲，一头剑龙可能走下溪边饮水，你只有 300 秒天光把底片带回去。
 
-桌面浏览器可完整试玩，其他设备可直接观看 15 秒实机预览。
+桌面浏览器可完整试玩，其他设备可直接观看 15 秒实机预览，它录自当前构建。
 
-https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
+https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [改编工作区](examples/project-plateau/) · [反馈体验](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 设计估时 1–3 分钟一局 · 桌面 WebGL2 · 可玩原型
+**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [改编工作区](examples/project-plateau/) · [反馈体验](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 设计估时 5–10 分钟（每局 300 秒天光） · 桌面 WebGL2 · 可玩原型
 
 ## 这是什么
 
@@ -75,11 +81,12 @@ https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
 
 - **每个设计决定都引用原著。** 拆解阶段读完全书，写出 `SOURCE_BIBLE`：硬规则、关键角色目标、转折结局和标志性锚点都标注章回或文件位置，改编边界表每行带证据位置。原作事实分为 `immutable`、`adaptable`、`open`、`conflicted` 四种边界；原著没有定义的部分标为设计发明，不会被悄悄写成事实。
 - **游戏形态是一个有记录的决定，不是默认值。** 概念阶段比较真实的替代方向，用具名的硬否决淘汰不合格方向（核心循环与原作中心张力无关；删掉专有名词后只剩通用模板；玩家只是花资源放行既定剧情）。概念、世界设计与美术方向分别由不同阶段写进各自的文档，构建阶段不得静默重做。
+- **借成熟品类，就连同它的外壳一起借。** 玩家认出一类游戏，靠的不只是核心玩法；系统玩法项目要用一张短表写清该品类的外壳（进入世界、目标指引、成长与回访理由）哪些实现、哪些降级、哪些不做以及为什么，并写清第一分钟玩家看到什么。《梦幻西游》式的 RPG 不会只交出一串战斗关卡。
 - **面向简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单；`quick` 模式下只在平台、权利、尺度等阻断项上停下等你裁决）锁定平台、引擎、目标运行时和实际可用的测试运行时。工具链缺失时不得悄悄改做网页。设计文档是不绑定引擎的 Markdown，归你所有。
 - **QA 是一次真实运行、六项检查和如实写下的限制。** 构建在测试运行时里真正启动，一次完整运行证明 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项。趣味、平衡、其他浏览器和权利只写成限制项（limitation），不写成 PASS。
 - **语音默认关闭，默认在构建期生成。** 除非美术方向选用语音，没有任何台词会发给语音合成服务；运行时合成须经产品简报明确批准；小说和设计文档从不上传。
 
-互动叙事是一等赛道：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。
+互动叙事是一等赛道：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。人物路线的关键选择针对该人物自己的心结或议程，关系进展由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕上的数值。
 
 ## 安装
 
@@ -139,7 +146,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## 看看它的输出
 
-下面每段节选都摘自本仓库的文件；两个中文示例的文档是简体中文，原样引用，Project Plateau 的文档是英文，此处译成中文并标注（译），原文均有链接。省略处以“…”标出。
+下面每段节选都摘自本仓库的文件；两个中文示例的文档是简体中文，原样引用；Project Plateau 的文档是英文，其中 Markdown 节选译成中文并标注（译），JSON 记录保留英文原样，在前后正文里说明。原文均有链接。省略处以“…”标出。
 
 ### 设计文档长什么样
 
@@ -180,14 +187,28 @@ codex plugin add novel-to-game@novel-to-game-skills
 拖下去必被反杀，所以「三扇何时开」是决战的核心决策。
 ```
 
-[`design/ART_DIRECTION.md`](examples/journey-to-the-west/design/ART_DIRECTION.md) 让每一扇改写整张背景，而不是闪一个图标：
+同一份文档还列出了战斗之外的品类外壳，写明哪些实现、降级或不做（原表 8 行，节选 4 行）：
 
 ```markdown
-- **真扇三段 · 世界重印**：真扇是 BOSS 战翻盘关键，逐段改写火焰山这张风景——
-  一息火：清敌增益、敌军减攻，朱红火层落为骨白余热；
-  二生风：全队加速，青白风纹扫过、清去浮灰；
-  三落雨：全队持续回血、敌军破防并显露破绽，深蓝雨点落在余火之上。
-  …
+| 品类外壳 | 状态 | 做法 / 理由 |
+|---|---|---|
+| 进入世界与移动 | 实现 | 四张可走 3/4 场景（火焰山庄、翠云山、火口、积雷山），点地行走、方向键行走，青色传送阵（点阵或点阵名） |
+| 目标指引 / 追踪 | 实现 | 主线 NPC 头顶「!」，右侧任务追踪点一下自动寻路、可跨图；左上小地图 |
+…
+| 召唤兽 | 降级 | 两只固定宠（辟水金睛兽、可捕的火妖）选一上阵；无收集池、繁殖、洗练——一段 45-90 分钟战役用不上 |
+…
+| 组队 / 交易 / PVP | 不做 | 单机离线作品，没有第二位玩家；师徒四人就是固定队伍 |
+```
+
+[`design/ART_DIRECTION.md`](examples/journey-to-the-west/design/ART_DIRECTION.md) 以同品类的实机截图为成色标尺，再给真扇每一扇各自的演出，把对世界的持久改变留给结局：
+
+```markdown
+**随手一张实机截图，应像《梦幻西游》《问道》这类回合制西游网游里的一张游戏画面**：3/4 俯视的
+彩绘行走场景、四角压着 HUD 小卡、头顶名字与任务标记；战斗是敌左我右两排立绘、上缘行动顺序条、
+底部指令面板。借的是品类的形制与可读性，不借它们的 Q 版大头、描边和具体角色设计。
+…
+5. **真扇三段**：每段一条青绿描边横幅，接一段两三秒的全屏着色与粒子——息火落灰、生风风痕、
+   落雨雨线。持久的世界改变放在结局：火焰山换成雨后无明火的新地景（`huoyan-rain`），重开按钮常驻。
 ```
 
 而 [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) 记录了真实浏览器跑到这个结局并重开的那次运行：
@@ -212,36 +233,48 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ### 一个选择怎样被后文记住
 
-[《金瓶梅》](examples/jin-ping-mei/)是关系与宅门经营的示例。它的 [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) 用一句话写下承诺，并为每根体验支柱写明可观察证据和会否决它的现象（原表 5 行，节选 3 行）：
+[《金瓶梅》](examples/jin-ping-mei/)是恋爱 ADV 的示例。它从二十日宅门账务模拟重做成了 galgame，[`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) 现在给每位女主写下她要什么、一道只有玩家看得到的伤口，各自钉到回目（原表 5 行，节选 3 行）：
 
 ```markdown
-核心句：**今夜进谁的门，明早谁拿着昨夜的证据来找你。**
+核心句：**你说过的话，她们都记得。**
 …
-| 支柱 | 可观察证据 | 否决现象 |
-| --- | --- | --- |
-| 五人都能主动改变局面 | 五名女主各有八段路线、独立拒绝和外部能力 | 只换名字、立绘或好感数 |
-…
-| 成人内容由同意与关系赢得 | 邀请、继续／停止、再次确认、次晨回响 | 用银钱、名分、免罚换亲密 |
-| 经营与关系互相提供动作 | 五人的能力分别解决账、谎、货、门路和实物证据 | 最优玩法是避开人物内容 |
+| 人物 | 她要什么 | 她的伤口 | 原作依据 |
+|---|---|---|---|
+| 吴月娘 | 重要的事先问她 | 只在人前是正头娘子 | 第1、21回 |
+| 潘金莲 | 被看见、被优先选择 | 除了你看她那一眼，什么都没有 | 第8、9、38回 |
+| 李瓶儿 | 安全与确定 | 先被看成箱子，后被看成人 | 第14、16、19回 |
 ```
 
-[`design/GAME_DESIGN.md`](examples/jin-ping-mei/design/GAME_DESIGN.md) 随后禁止“按完选项只回一句话就散场”：
+[`design/GAME_DESIGN.md`](examples/jin-ping-mei/design/GAME_DESIGN.md) 让好感不上屏，让每条路线的关键抉择对准她的伤口，并写明结局怎么判（路线表原 5 行，节选 2 行）：
 
 ```markdown
-- 路线选择必须产生本人回应、旁院回应、玩家处置与至少两日后的旧话追账；旧话回来时连续演出“本人逐字复述→旁院说明外溢代价→玩家兑现／重写／否认→双院结果”四拍，每拍可续读。成熟关系还会触发一次由女主发起的黄昏邀约。
-- 次晨优先由被冷落或掌握具体证据的人发起，不生成无来源妒意。
+选择不显示数值。好感只有三种出口：她的表情与台词；分岔夜院门是否「亮着灯」；系统菜单里可选的「心意」一瞥
+（只有她的神色和「灯亮着／灯将熄」，不给档位与数字）。规则在第一章由月娘说出：清明席散那夜，还亮着灯的门才进得去。
+…
+| 人物 | 原作依据 | 关键抉择（正确做法） | 良缘 | 寻常 | 错过 |
+|---|---|---|---|---|---|
+…
+| 潘金莲 | 第8、38回：寄词盼人、雪夜弄琵琶 | 不替她开瓶儿的箱子，但今夜陪她 | 琵琶不冷 | 半掩的角门 | 扇子落地 |
+| 李瓶儿 | 第14、19回：过墙托付、入门受冷 | 不收她的钥匙；当众说她的银子是她的 | 钥匙在她手里 | 窗下的茶 | 箱笼 |
+…
+结局判定：关键抉择做错 → 错过；做对且该人心意 ≥7 并在最后一问说真话 → 良缘；其余 → 寻常。
 ```
 
-这款游戏的 QA 记录对“怎么玩的”写得很坦白。[`qa/verification.json`](examples/jin-ping-mei/qa/verification.json) 六项全部 PASS，第一条限制项是：
+每个个人结局之后都翻开一页原著里她的命数，同一份文档写得很直白：结局只决定这一春你们说成了什么，页脚明写改不了她在书里的去处。
+
+这款游戏的 QA 记录对“玩到了多少”写得很坦白。[`qa/verification.json`](examples/jin-ping-mei/qa/verification.json) 里完整浏览器运行停在 `yue_good`，六项全部 PASS，第一条和最后一条限制项是：
 
 ```json
 {
   "scope": "路径覆盖",
-  "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。"
+  "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
+},
+…
+{
+  "scope": "体验判断",
+  "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
 }
 ```
-
-设计文档自己也划了同一条线：自动化只证明内容存在、可达、可读且状态后果真实；主观吸引力、节奏与平衡不由机器下结论。
 
 ### QA 记录承认自己没测什么
 
@@ -256,7 +289,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 则选定方向被证伪。`GAME_DESIGN.md` 必须定义这条因果链，并保住不致命的侦察幻想。
 ```
 
-`npm run verify` 用键鼠事件驱动真实构建，在同一次运行里写出输入轨迹和 `qa/verification.json`。[`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) 里的输入轨迹就是整次远征：
+`npm run verify` 用键鼠事件驱动真实构建，在同一次运行里写出输入轨迹和 `qa/verification.json`。[`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) 里的输入轨迹就是整次远征——沿荆棘带走到观察掩体，再原路退回：
 
 ```json
 "inputTrace": [
@@ -264,16 +297,17 @@ codex plugin add novel-to-game@novel-to-game-skills
   "Right Mouse + Left Mouse: record the brook",
   "KeyW: reach the basalt shelf",
   "Right Mouse + Left Mouse: record basalt scale",
-  "KeyA: enter canopy cover",
-  "hold KeyC under cover: let the attack widen",
-  "KeyW: reach the glade",
-  "Right Mouse + Left Mouse: record young at play",
+  "KeyA: step under the thorn arches",
   …
-  "KeyS: return to Fort"
-],
+  "KeyW: settle in the glade-edge blind",
+  "Right Mouse + Left Mouse: record young at play from the blind",
+  "hold KeyC under cover: crouch until the wings lose interest",
+  …
+  "KeyS: back up the thorn band to Fort"
+]
 ```
 
-[`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) 则写明这个 PASS 到底意味着什么（译）：
+[`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) 写明这个 PASS 到底意味着什么（译）：
 
 ```markdown
 …
@@ -282,7 +316,22 @@ PASS 只在记录下来的本地桌面浏览器里证明这六项效果。
 已清权、公网托管，也不证明其他浏览器、GPU 和设备。
 ```
 
-证据也会反过来砍产品。产品简报记录了第一次实测跑完整条路线只用了 55.2 秒，推翻了原计划的 5–8 分钟单局，于是产品边界被压到 1–3 分钟一局，而不是往路线里塞等待（见 [`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md)）。
+[`qa/verification.json`](examples/project-plateau/qa/verification.json) 则点名这次运行漏掉了什么，包括新加的剑龙段落：
+
+```json
+{
+  "scope": "optional stegosaurus beat",
+  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
+},
+{
+  "scope": "look, sound and hitches",
+  "reason": "Visual quality is a reviewed judgment; the sound beds were not heard on laptop speakers and frame hitches were not measured on an unloaded or low-end machine."
+}
+```
+
+也就是：完整运行没有拍剑龙，它的取景规则只有一个单元测试覆盖；画面质量是人工评审的判断，环境声没在笔记本扬声器上听过，卡顿也没在空载或低端机器上测过。
+
+单局时长改过两次，一次因为实测证据，一次出于负责人的决定，[`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) 把两步都留着。第一次实测跑完整条路线只用了 55.2 秒，推翻了原计划的 5–8 分钟单局，于是边界被压到 1–3 分钟一局、180 秒天光，而不是往路线里塞等待。后来负责人要求一次 5–10 分钟的到访，天光预算提到 300 秒，填进去的是新的决策（可选的第十二章剑龙段落和逐张底片评定），而不是更长的路；熟练的 Strong 路线仍约 90 秒跑完。
 
 ## 第一条请求
 
@@ -361,7 +410,7 @@ game-adaptations/<project>/
 
 ### 完整跑一次要多久、花多少钱？
 
-不止一句提示词的事。Agent 要读完整本小说、写五份设计文档、构建并跑 QA，每个阶段都是一次独立的 skill 调用，所以一次完整运行很长，可能跨多次会话（金瓶梅示例的进度文件里有两个不同日期的条目）。token 费用按你所用编码 Agent 的计费；除非美术方向选用图片或语音生成（见下面 GPU 一条），不产生其他费用。公开示例的进度文件没有记录耗时和 token 数，所以这里不给具体数字。
+不止一句提示词的事。Agent 要读完整本小说、写五份设计文档、构建并跑 QA，每个阶段都是一次独立的 skill 调用，所以一次完整运行很长，可能跨多次会话。token 费用按你所用编码 Agent 的计费；除非美术方向选用图片或语音生成（见下面 GPU 一条），不产生其他费用。公开示例的进度文件没有记录耗时和 token 数，所以这里不给具体数字。
 
 ### 会话中途断了，能接着做吗？
 
@@ -373,7 +422,7 @@ game-adaptations/<project>/
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
-不需要 GPU，也不需要单独的模型：拆解、设计和代码都由你已在用的编码 Agent 的模型完成。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例在 `build/art/generated-art.json` 里记录了全部 41 张图由 Codex 内置的图像工具生成）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。付费服务是 Agent 开始前会停下来问你的问题之一。见[语音资产生产合同](skills/game-build/references/tts-production-contract.md)。
+不需要 GPU，也不需要单独的模型：拆解、设计和代码都由你已在用的编码 Agent 的模型完成。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例的图由 Codex 内置的图像工具生成，大部分在 `build/art/generated-art.json` 里按批次记录）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。付费服务是 Agent 开始前会停下来问你的问题之一。见[语音资产生产合同](skills/game-build/references/tts-production-contract.md)。
 
 ### 怎么知道它做出来的游戏真的能跑？QA 里的 PASS 是什么意思？
 

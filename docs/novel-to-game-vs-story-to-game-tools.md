@@ -51,13 +51,13 @@ A one-line "turn this book into a game" prompt usually produces a reskin or a cl
 
 ## What "evidence-based QA" means
 
-QA does not ask whether the game is fun. It launches the build on the selected runtime and records, in one complete execution, that it starts, renders, accepts input, runs the core loop, reaches at least one designed outcome, restarts, and states its limitations. The record is `qa/verification.json` with screenshots. Subjective quality is reported as observation, not verdict.
+QA does not ask whether the game is fun. It launches the build on the selected runtime and records, in one complete execution, that it starts, renders, accepts input, runs the core loop, reaches at least one designed outcome, restarts, and states its limitations. The record is `qa/verification.json`, which points to the run's evidence, such as screenshots and the input trace. Subjective quality is reported as observation, not verdict.
 
 ## Public examples
 
-- Journey to the West, Three Borrowings of the Banana Fan: turn-based, 45 to 90 minutes, [play](https://xiyouji.vibecoco.ai), [case study](../examples/journey-to-the-west/)
-- Jin Ping Mei, Ledger of Desire: household-management narrative, 18+, [play](https://jinpingmei.vibecoco.ai), [case study](../examples/jin-ping-mei/)
-- Project Plateau, The Lost World: first-person 3D field photography, desktop WebGL2, [play](https://plateau.vibecoco.ai), [case study](../examples/project-plateau/)
+- Journey to the West, Three Borrowings of the Banana Fan: a Fantasy Westward Journey-style turn-based RPG with walkable scene maps, NPC quests and command-turn battles, design estimate 45 to 90 minutes, [play](https://xiyouji.vibecoco.ai), [case study](../examples/journey-to-the-west/)
+- Jin Ping Mei, Ledger of Desire: galgame-style romance ADV with five heroine routes and 16 endings, 18+, [play](https://jinpingmei.vibecoco.ai), [case study](../examples/jin-ping-mei/)
+- Project Plateau, The Lost World: first-person 3D field photography, 300 seconds of light per run, desktop WebGL2, [play](https://plateau.vibecoco.ai), [case study](../examples/project-plateau/)
 
 Each case study links source provenance, concept trade-offs, design and art direction, runnable source, and the QA evidence.
 
@@ -70,8 +70,10 @@ Each case study links source provenance, concept trade-offs, design and art dire
 ## Start
 
 ```bash
-npx skills add zenstory-ai/novel-to-game -y -g
+npx skills add zenstory-ai/novel-to-game -g -y -a claude-code -s '*'
 ```
+
+For Codex or Kimi Code, replace `claude-code` with `codex` or `kimi-code-cli`.
 
 Planning-only first brief, no build:
 

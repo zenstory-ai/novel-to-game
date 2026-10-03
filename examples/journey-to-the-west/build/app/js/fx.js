@@ -1,10 +1,10 @@
-// 战斗演出层:Canvas 粒子 + 背景色调突变,零素材零依赖(简报二.4)。
-// 标志性法术各有可辨识的 2-3 秒演出:真扇三段(息火/生风/落雨)、火系、水系、金身、定风丹。
-// 粒子轨迹只用演出专用视觉随机(与战斗 rng 物理隔离,不影响可复现约束);全项目禁 Math.random。
+// 战斗演出层:Canvas 粒子 + 背景色调突变，零素材零依赖(简报二.4)。
+// 标志性法术各有可辨识的 2-3 秒演出：真扇三段(息火/生风/落雨)、火系、水系、金身、定风丹。
+// 粒子轨迹只用演出专用视觉随机(与战斗 rng 物理隔离，不影响可复现约束);全项目禁 Math.random。
 
 import { createRNG } from './rng.js';
 
-const vrng = createRNG(0xf2a7); // 只决定粒子轨迹,与战斗结算无关
+const vrng = createRNG(0xf2a7); // 只决定粒子轨迹，与战斗结算无关
 const rf = (a, b) => a + vrng() * (b - a);
 
 export class FxLayer {
@@ -38,7 +38,7 @@ export class FxLayer {
     this.tintEl.remove();
   }
 
-  // 背景色调突变:铺一层彩色渐变,达到峰值后退回(演出的「变天」感)
+  // 背景色调突变：铺一层彩色渐变，达到峰值后退回(演出的「变天」感)
   tint(css, ms) {
     const el = this.tintEl;
     el.style.background = css;
@@ -108,6 +108,27 @@ export class FxLayer {
     };
   }
 
+  // 墨烟：七十二变一团墨色烟雾，向外鼓开、淡去
+  smoke(x, y) {
+    const a = rf(0, Math.PI * 2);
+    const sp = rf(30, 110);
+    const tone = Math.floor(rf(40, 120));
+    return {
+      x: x + rf(-20, 20), y: y + rf(-30, 30), vx: Math.cos(a) * sp, vy: Math.sin(a) * sp * 0.7 - 20,
+      life: rf(0.45, 0.8), maxLife: 0.8, size: rf(16, 34),
+      draw(g, dt) {
+        this.x += this.vx * dt; this.y += this.vy * dt;
+        this.vx *= 0.94; this.vy *= 0.94; this.size += 46 * dt;
+        g.globalAlpha = Math.max(0, (this.life / this.maxLife) * 0.55);
+        g.fillStyle = `rgb(${tone}, ${tone - 10}, ${tone - 18})`;
+        g.beginPath();
+        g.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        g.fill();
+        g.globalAlpha = 1;
+      },
+    };
+  }
+
   drop(x, y) {
     const sp = rf(120, 240);
     return {
@@ -127,7 +148,7 @@ export class FxLayer {
   }
 
   streak(y) {
-    // 横向风痕:长线条从右往左掠过全场
+    // 横向风痕：长线条从右往左掠过全场
     const h = this.canvas.height;
     const w = this.canvas.width;
     return {
@@ -150,7 +171,7 @@ export class FxLayer {
   }
 
   mote(x, y) {
-    // 金身光尘:绕锚点缓升
+    // 金身光尘：绕锚点缓升
     return {
       x: x + rf(-56, 56), y: y + rf(-10, 70),
       vx: rf(-8, 8), vy: -rf(22, 60),
@@ -189,7 +210,7 @@ export class FxLayer {
   }
 
   ash() {
-    // 熄火余烬:灰白碎屑缓缓飘落
+    // 熄火余烬：灰白碎屑缓缓飘落
     const w = this.canvas.width, h = this.canvas.height;
     return {
       x: rf(0, w), y: rf(0, h * 0.5), vx: rf(-26, 10), vy: rf(18, 60),
@@ -207,10 +228,15 @@ export class FxLayer {
 
   // ---------- 标志性演出 ----------
   // kind: fire/water/gold/wind/fan1/fan2/fan3/backfire/ward
-  // 时长 2-3 秒(随加速系数缩放);skipFx 时只保留一道短色闪,保证节奏。
+  // 时长 2-3 秒(随加速系数缩放);skipFx 时只保留一道短色闪，保证节奏。
   play(kind, card, { D = 1, skipFx = false } = {}) {
     const anchor = this.anchorOf(card);
     const W = this.canvas.width;
+    if (kind === 'puff') {
+      // 变化的墨烟不算「标志性演出」：跳过演出时也保留(很短)，否则换形没有过门
+      this.spawn(26, () => this.smoke(anchor.x, anchor.y));
+      return sleepMs(240 * D);
+    }
     if (skipFx) {
       const flash = {
         fire: 'linear-gradient(180deg, rgba(255,110,40,0.20), rgba(120,20,8,0.24))',
@@ -248,34 +274,34 @@ export class FxLayer {
         this.tint('linear-gradient(180deg, rgba(170,225,230,0.20), rgba(40,80,90,0.14))', ms);
         this.spawn(38, () => this.streak());
         break;
-      case 'fan1': // 一息火:火色褪为灰烬
+      case 'fan1': // 一息火：火色褪为灰烬
         ms = 2400;
         this.tint('linear-gradient(180deg, rgba(205,212,200,0.26), rgba(50,58,52,0.30))', ms);
         this.spawn(40, () => this.ash());
         this.spawn(14, () => this.streak());
         break;
-      case 'fan2': // 二生风:满场风痕
+      case 'fan2': // 二生风：满场风痕
         ms = 2300;
         this.tint('linear-gradient(180deg, rgba(150,220,230,0.28), rgba(30,70,90,0.20))', ms);
         this.spawn(56, () => this.streak());
         break;
-      case 'fan3': // 三落雨:甘霖普降
+      case 'fan3': // 三落雨：甘霖普降
         ms = 2600;
         this.tint('linear-gradient(180deg, rgba(90,150,220,0.30), rgba(20,40,80,0.34))', ms);
         this.spawn(90, () => this.rainLine());
         break;
-      case 'backfire': // 假扇反噬:火势倒卷
+      case 'backfire': // 假扇反噬：火势倒卷
         ms = 2200;
         this.tint('radial-gradient(ellipse at 30% 30%, rgba(255,80,30,0.34), rgba(140,20,8,0.22) 70%, transparent)', ms);
         this.spawn(52, () => this.ember(rf(W * 0.1, W * 0.5), rf(this.canvas.height * 0.2, this.canvas.height * 0.7), true));
         break;
-      case 'ward': // 定风丹:一点金光定住风势——金色风痕在锚点周遭骤停收束
+      case 'ward': // 定风丹：一点金光定住风势——金色风痕在锚点周遭骤停收束
         ms = 1100;
         this.tint('radial-gradient(ellipse at 50% 50%, rgba(230,199,102,0.26), rgba(60,120,110,0.10) 55%, transparent 70%)', ms);
         this.spawn(18, () => this.mote(anchor.x, anchor.y));
         this.spawn(10, () => {
           const s = this.streak(anchor.y + rf(-40, 40));
-          s.vx *= 0.35; s.color = `rgba(230, 215, 150, ${rf(0.4, 0.75)})`; // 风痕被「定」住:慢、短、金
+          s.vx *= 0.35; s.color = `rgba(230, 215, 150, ${rf(0.4, 0.75)})`; // 风痕被「定」住：慢、短、金
           return s;
         });
         break;

@@ -1,10 +1,10 @@
-// 成长结算(纯函数,node 可测):升级发点、修炼点投法、加点/推荐加点。
-// 决定论:全部定值或按权重整数分配,不引入新随机;捕捉判定在 engine 走独立 catchRng。
+// 成长结算(纯函数,node 可测)：升级发点、修炼点投法、加点/推荐加点。
+// 决定论：全部定值或按权重整数分配，不引入新随机;捕捉判定在 engine 走独立 catchRng。
 
 import { GROWTH, PARTY, SKILLS } from './data.js';
 import { skillsAtLevel } from './engine.js';
 
-// 升级结算:每位 +N 潜力点、+1 修炼点。法术熟练不再自动进阶——
+// 升级结算：每位 +N 潜力点、+1 修炼点。法术熟练不再自动进阶——
 // 修炼点由玩家在「角色」面板投给某一个已习得法术(见 allocateSkillPoint)。
 // ups: levelUpParty 的返回 {key:{level,newSkills}};campaign 就地修改
 export function settleLevelUp(campaign, ups) {
@@ -20,7 +20,7 @@ export function settleLevelUp(campaign, ups) {
   return granted;
 }
 
-// 修炼点投法:投给某已习得法术,熟练 +1(上限 GROWTH.skillRankCap);不洗点
+// 修炼点投法：投给某已习得法术，熟练 +1(上限 GROWTH.skillRankCap);不洗点
 export function allocateSkillPoint(campaign, key, skillId) {
   const def = PARTY[key];
   campaign.skillPoints = campaign.skillPoints ?? {};
@@ -36,8 +36,8 @@ export function allocateSkillPoint(campaign, key, skillId) {
   return true;
 }
 
-// 推荐修炼选法:与推荐加点同一套确定性权重——该单位 攻/灵 权重决定偏物理还是偏法术,
-// 候选按(方向相符 → 倍率 → 回复)排序、键名兜底,取未满级者之首。定值排序,不引入新随机。
+// 推荐修炼选法：与推荐加点同一套确定性权重——该单位 攻/灵 权重决定偏物理还是偏法术,
+// 候选按(方向相符 → 倍率 → 回复)排序、键名兜底，取未满级者之首。定值排序，不引入新随机。
 export function recommendSkillPick(campaign, key) {
   const def = PARTY[key];
   if (!def) return null;
@@ -54,7 +54,7 @@ export function recommendSkillPick(campaign, key) {
   return [...learned].sort((a, b) => score(b) - score(a) || (a < b ? -1 : 1))[0];
 }
 
-// 一键推荐修炼:把某单位全部修炼点按上述权重逐点投完(受熟练上限保护)
+// 一键推荐修炼：把某单位全部修炼点按上述权重逐点投完(受熟练上限保护)
 export function applyRecommendSkills(campaign, key) {
   let used = 0;
   for (;;) {
@@ -65,7 +65,7 @@ export function applyRecommendSkills(campaign, key) {
   return used;
 }
 
-// 推荐加点:按 PARTY.recommendedAlloc 权重整数分配(确定、可复现)
+// 推荐加点：按 PARTY.recommendedAlloc 权重整数分配(确定、可复现)
 export function recommendAlloc(def, points) {
   const weights = def.recommendedAlloc ?? { 攻: 1 };
   const total = Object.values(weights).reduce((a, b) => a + b, 0);
@@ -106,7 +106,7 @@ export function allocatePoint(campaign, key, stat, delta) {
   return false;
 }
 
-// 一键推荐加点:把某单位全部 pending 按权重投入(受 statCap 保护)
+// 一键推荐加点：把某单位全部 pending 按权重投入(受 statCap 保护)
 export function applyRecommend(campaign, key) {
   const def = PARTY[key];
   const pending = campaign.pendingPoints[key] ?? 0;

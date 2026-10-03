@@ -224,6 +224,8 @@ button:focus-visible {
 
 .unit-card { width: 168px; z-index: 4; }
 .unit-card.party[data-portrait="wukong"] .unit-portrait { transform: none; }
+/* 悟空立绘本就朝左、不镜像,呼吸帧不能套 breatheFlip,否则插值过 scaleX(0) 被压成一道虚影 */
+.unit-card.party[data-portrait="wukong"].commanding .unit-portrait { animation-name: breathe; }
 .unit-portrait {
   width: 218px;
   height: 326px;
@@ -286,7 +288,8 @@ button:focus-visible {
 .cmd-btn.selected .icon-badge, .cmd-btn.kbd-focus .icon-badge { color: #fff9ed; }
 .cmd-grid { gap: 8px; }
 .wuxing-ring {
-  position: absolute; left: 24px; bottom: 8px; z-index: 7;
+  /* 落在名字/提示那一栏下方，不压立绘的下半身和兵器 */
+  position: absolute; left: 168px; bottom: 8px; z-index: 7;
   margin-left: 0;
   color: #3e3c38;
   border-color: rgba(88, 68, 52, .22);
@@ -333,6 +336,149 @@ button:focus-visible {
 .ending-root { background: #ccd7d4; }
 .ending-bg { filter: none; }
 .ending-panel { color: #343432; }
+
+/* ---------- 打磨:读得清的血条、跟着动画走的飘字、形态立绘 ---------- */
+.unit-bars { width: 132px; }
+.bar { height: 10px; }
+.bar.hp { height: 15px; }
+.bar.hp .bar-text {
+  font-size: 12px; line-height: 14px; font-weight: bold; letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 2px #000, 0 1px 1px #000, 1px 0 1px #000, -1px 0 1px #000;
+}
+.bar.mp .bar-text { display: none; }
+.bar.sp .bar-text { font-size: 9px; line-height: 9px; }
+/* 状态签一律「名·N回合」:小一号、不折行 */
+.buff-chip { white-space: nowrap; font-size: 10.5px; }
+.buff-chip.form-chip { color: #fff8e6; border-color: transparent; font-weight: bold; letter-spacing: 1px; }
+.buff-chip.form-chip[data-el="金"] { background: #a8831f; }
+.buff-chip.form-chip[data-el="木"] { background: #3e7d3a; }
+.buff-chip.form-chip[data-el="水"] { background: #24607e; }
+.buff-chip.form-chip[data-el="火"] { background: #a8382a; }
+.buff-chip.form-chip[data-el="土"] { background: #7d5a34; }
+/* 形态立绘与悟空原画同朝向:不镜像 */
+.unit-card.party.form-art .unit-portrait { transform: none; }
+.unit-card.party.form-art.commanding .unit-portrait { animation-name: breathe; }
+.unit-card.transformed.form-art .unit-portrait { filter: drop-shadow(0 9px 8px rgba(31, 24, 20, .35)); }
+/* 缺形态图时:按五行给原立绘染色 */
+.unit-card.form-tint[data-form="shenjiang"] .unit-portrait { filter: sepia(.6) saturate(2.2) hue-rotate(-8deg) brightness(1.08) drop-shadow(0 0 10px rgba(230, 190, 60, .9)); }
+.unit-card.form-tint[data-form="lieyuan"] .unit-portrait { filter: sepia(.5) saturate(2.6) hue-rotate(-35deg) drop-shadow(0 0 10px rgba(230, 80, 40, .9)); }
+.unit-card.form-tint[data-form="xuangui"] .unit-portrait { filter: grayscale(.4) sepia(.3) hue-rotate(170deg) saturate(1.6) brightness(.85) drop-shadow(0 0 10px rgba(60, 140, 200, .9)); }
+.unit-card.form-tint[data-form="chongzi"] .unit-portrait { filter: sepia(.4) saturate(1.8) hue-rotate(30deg) drop-shadow(0 0 10px rgba(200, 220, 90, .9)); }
+
+.unit-card.small .unit-portrait { height: 236px; }
+
+/* 倒下的伙伴:躺倒在原地、灰而半透明,名字还在(可被回魂丹救起) */
+/* 只躺立绘:绕自身中心转、缩到本卡宽内并压回脚线，不横进邻位的名牌血条;名牌与牌条栈原位不动 */
+.unit-card.party.dead { opacity: .62; filter: grayscale(1); z-index: 3; }
+.unit-card.party.dead .unit-portrait { transform: translateY(36px) rotate(-84deg) scale(.74) !important; transform-origin: 50% 50%; animation: none !important; }
+.unit-card.party.dead .unit-name { display: block; opacity: .9; }
+.unit-card.party.dead .elem-badge { display: none; }
+.unit-card.party.dead .unit-bars { display: flex; visibility: hidden; }
+.unit-card.party.dead .buff-chips { display: flex; visibility: hidden; }
+.unit-card.dead.revivable { pointer-events: auto; opacity: .9; cursor: pointer; }
+.unit-card.dead.revivable .unit-portrait { outline: 3px dashed #4fe06a; outline-offset: 2px; }
+
+/* 飘字:红、大、带深描边,落在胸口高度;暴击更大,治疗绿 */
+.unit-card .float-anchor { top: 35%; }
+/* 3px 深描边+暗晕：火口橙底、受击泛红的立绘上也压得住数字 */
+.float-text { -webkit-text-stroke: 3px #2a0e08; paint-order: stroke fill; text-shadow: 0 2px 0 #1a0804, 0 0 8px rgba(10, 4, 2, .9), 0 0 3px rgba(10, 4, 2, .9); }
+.unit-card.enemy .float-text.dmg,
+.unit-card.enemy .float-text.ke-big,
+.unit-card.enemy .float-text.beike,
+.unit-card.enemy .float-text.combo-dmg { color: #ff3b2f; }
+.unit-card.party .float-text.dmg,
+.unit-card.party .float-text.ke-big,
+.unit-card.party .float-text.beike,
+.unit-card.party .float-text.combo-dmg { color: #ff6a4a; }
+.float-text.dmg, .float-text.ke-big, .float-text.beike, .float-text.combo-dmg {
+  font-size: 30px; font-weight: 900; animation: dmgBounce 1.25s ease-out forwards;
+}
+.float-text.ke-big { font-size: 34px; }
+.float-text.crit { font-size: 40px; }
+.float-text.huge { font-size: 40px; }
+.float-text.heal { color: #4fe06a; font-size: 26px; font-weight: 900; }
+@keyframes dmgBounce {
+  0% { opacity: 0; margin-top: 0; transform: translateX(-50%) scale(1.4); }
+  14% { opacity: 1; transform: translateX(-50%) scale(1); }
+  70% { opacity: 1; }
+  100% { opacity: 0; margin-top: -54px; transform: translateX(-50%) scale(1); }
+}
+
+/* 印章(克/暴击/连击)挂在数字上方,不再盖住伤害数字 */
+.unit-card .float-stamp { top: -64px; }
+.unit-card .float-stamp.crit-stamp { top: -102px; }
+
+/* 收服印:场中央一枚不透明的朱印卡 */
+.seal-toast {
+  position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) rotate(-3deg);
+  z-index: 26; pointer-events: none; text-align: center;
+  padding: 18px 38px; background: #b33a26; color: #fff6e2;
+  border: 4px double #f4cf88; box-shadow: 0 12px 40px rgba(40, 14, 8, .45);
+  animation: sealIn .32s cubic-bezier(.2,1.4,.4,1);
+}
+.seal-toast-title { font-size: 32px; letter-spacing: 8px; font-weight: bold; }
+.seal-toast-sub { margin-top: 6px; font-size: 14px; letter-spacing: 2px; opacity: .92; }
+@keyframes sealIn { from { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(1.6); } }
+
+/* 指令台:十个指令两行;选目标时菜单变淡但可点(点别的指令即撤销选目标) */
+.cmd-grid { grid-template-columns: repeat(5, 1fr); }
+.cmd-btn { letter-spacing: 2px; }
+.cmd-grid.picking, .cmd-list.picking { opacity: .55; }
+.cmd-cancel-chip {
+  position: absolute; right: 18px; top: -46px; z-index: 12;
+  padding: 6px 16px; font-size: 14px; letter-spacing: 2px;
+  background: #fffaf0; color: #a53925; border: 1px solid #a5392566; border-radius: 16px;
+}
+.cmd-menu { position: relative; }
+.cmd-item.with-icon { flex-direction: row; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; }
+.item-icon { width: 40px; height: 40px; display: block; flex: none; border-radius: 7px; }
+.item-icon.sm { width: 34px; height: 34px; }
+.item-icon.xs { width: 22px; height: 22px; border-radius: 4px; }
+.cmd-avatar.enemy { transform: scaleX(-1); }
+
+/* 挂机中·接手 */
+.auto-all-chip {
+  position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 9;
+  padding: 7px 20px; font-size: 15px; letter-spacing: 3px;
+  background: #ae402b; color: #fff9ed; border: 0; border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(80, 30, 20, .3); animation: autoPulse 1.6s ease-in-out infinite;
+}
+.auto-all-chip[hidden] { display: none; }
+@keyframes autoPulse { 50% { filter: brightness(1.15); } }
+
+/* 战况:逐行长出来,克/暴击/被克着色 */
+.battle-report-lines { gap: 4px; }
+.battle-report-line { font-size: 14px; letter-spacing: 1px; padding-bottom: 2px; }
+.battle-report-line.fresh { animation: logIn .25s ease; font-weight: bold; }
+.battle-report-line.ke { color: #b8860b; }
+.battle-report-line.crit { color: #c0321f; }
+.battle-report-line.beike { color: #7a7066; }
+.battle-report-line.heal { color: #2f7d3d; }
+.battle-report-line.burn { color: #c25a1e; }
+.battle-report-line.skill { color: #24607e; }
+@keyframes logIn { from { opacity: 0; transform: translateY(6px); } }
+
+/* 预览条:贴在指令台上沿,窄、不折行,不压敌人头顶的五行徽 */
+/* 放在天空一带(行动顺序条下方正中):人物都站在下半场,不会压到谁的五行徽或血条 */
+.battle-root .cmd-preview { top: 62px; bottom: auto; left: 50%; transform: translateX(-50%); max-width: 46vw; padding: 6px 14px; z-index: 40; }
+.pv-line { display: flex; flex-wrap: wrap; column-gap: 10px; }
+.pv-main { white-space: nowrap; }
+.pv-side { display: inline-flex; flex-wrap: wrap; column-gap: 8px; }
+.pv-seg { white-space: nowrap; }
+.defeat-hint { margin-top: 10px; padding: 8px 12px; border-left: 3px solid #a53925; background: rgba(165, 57, 37, .07); color: #6a2a18; line-height: 1.7; }
+
+/* 战斗中只留「设置」:队伍按钮由战场自己的阵型钮与指令代替 */
+body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
+
+@media (max-height: 820px) {
+  /* 矮屏:法术/道具/特技菜单排成五列网格,「返回」固定在第一格,不会被挤出指令台 */
+  .cmd-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-content: start; }
+  .cmd-list .cmd-item { min-height: 52px; min-width: 0; padding: 5px 9px; }
+  .cmd-list > .cmd-btn[data-cmd="back"] { order: -1; min-height: 52px; }
+  .cmd-item-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .cmd-item-meta { font-size: 10.5px; line-height: 1.35; }
+}
 
 @media (max-width: 1360px) {
   .cmd-status { width: 30%; }

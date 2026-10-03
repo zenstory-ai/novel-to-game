@@ -2,10 +2,10 @@
   "name": "jinpingmei-fengyue-ledger",
   "private": true,
   "type": "module",
-  "description": "《金瓶梅·风月总账》20日男性第一人称成人后宫关系模拟：五条深线、五院共约、联院协力与公开问责",
+  "description": "《金瓶梅·风月总账》18+ 古风恋爱 ADV：共通线、五位女主路线、十六个结局与原著命数",
   "scripts": {
     "start": "python3 -m http.server 5173",
-    "verify:model": "node ../../qa/verify_playable_model.mjs",
+    "verify:model": "node test/lint_script.mjs",
     "verify:visual": "python3 test/verify_visual.py --write-evidence"
   }
 }

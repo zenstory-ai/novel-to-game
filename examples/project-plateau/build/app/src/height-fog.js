@@ -161,7 +161,7 @@ export function createHeightFogController(
   const uniforms = {
     plateauFogCameraPosition: { value: camera.position },
     plateauFogSunDirection: { value: sunDirection },
-    plateauFogSunColor: { value: new THREE.Color(0xffbd70) },
+    plateauFogSunColor: { value: new THREE.Color(0xffd29a) },
     plateauFogBaseHeight: { value: profile.baseHeightMeters },
     plateauFogScaleHeight: { value: profile.scaleHeightMeters },
     plateauFogExtinction: { value: profile.extinctionAtBasePerMeter },
@@ -185,7 +185,8 @@ export function createHeightFogController(
       materials.forEach((material) => {
         if (installedMaterials.has(material)) return;
         installedMaterials.add(material);
-        if (material.isShaderMaterial) {
+        // Sprites have no `transformed` vertex; they keep three's built-in fog.
+        if (material.isShaderMaterial || material.isSpriteMaterial) {
           skippedShaderMaterialCount += 1;
           return;
         }

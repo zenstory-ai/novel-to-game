@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { applyFoliageLight } from './foliage-light.js';
 
 import {
   VEGETATION_ALBEDO_PROFILE,
@@ -277,6 +278,7 @@ function createFernMaterials() {
       albedoProfile: VEGETATION_ALBEDO_PROFILE.version,
     };
   }
+  applyFoliageLight(leaf, 0.6);
   return Object.freeze({ structure, leaf, textures, windUniforms });
 }
 

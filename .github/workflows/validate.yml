@@ -25,7 +25,7 @@ jobs:
       - name: Verify Jin Ping Mei playable model
         working-directory: examples/jin-ping-mei/build/app
         run: npm run verify:model
-      - name: Test Journey to the West systems and design contract
+      - name: Test Journey to the West systems
         working-directory: examples/journey-to-the-west/build/app
         run: npm test
       - name: Install Project Plateau dependencies

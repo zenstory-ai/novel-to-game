@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "generatedAt": "2026-08-25",
   "toolVersion": "Codex built-in image_gen",
-  "usage": "《金瓶梅·风月总账》四十一张运行图的二维新国风彻底重塑",
+  "usage": "《金瓶梅·风月总账》78 张运行图：2026-08 二维新国风重塑（含身份母版）留用 38 张，2026-10-02 galgame 改造新增 40 张",
   "reason": "旧棕黑 CG、古画册页样张、真人古装样张和现代时尚样张分别被判定为太暗、太旧、太真实和太现代。最终批准方向为完整晚明世界中的成熟理想化二维叙事游戏插画。",
   "externalStyleResearch": {
     "source": "https://github.com/freestylefly/awesome-gpt-image-2",
@@ -68,12 +68,6 @@
       "path": "app/assets/heroine/xuee/night.webp",
       "sourceOutput": "codex-imagegen:exec-262bebeb-8053-46d6-a1ff-5afd4a8811fa.png",
       "anchors": "琥珀与深青、米账、仓绳、灶火"
-    },
-    {
-      "character": "李娇儿",
-      "path": "app/assets/household/li_jiaoer.webp",
-      "sourceOutput": "codex-imagegen:exec-24cda691-c334-48cc-b23b-e4feefe8e8c8.png",
-      "anchors": "梅紫与赭金、契纸、银秤、印匣"
     }
   ],
   "batches": [
@@ -81,59 +75,138 @@
       "usage": "世界与入口",
       "promptSummary": "春日高机位宅院和明亮门槛催账；压力由契纸、人物姿态和受阻门槛表达。",
       "assets": [
-        ["app/assets/bg/compound_new_guofeng.webp", "codex-imagegen:exec-c623d43c-e15a-4472-b9f4-f748ad848b56.png"],
-        ["app/assets/scene/gate_collector.webp", "codex-imagegen:exec-a7b0d1b1-e316-41b6-ad57-86d009bfbada.png"]
+        [
+          "app/assets/bg/compound_new_guofeng.webp",
+          "codex-imagegen:exec-c623d43c-e15a-4472-b9f4-f748ad848b56.png"
+        ],
+        [
+          "app/assets/scene/gate_collector.webp",
+          "codex-imagegen:exec-a7b0d1b1-e316-41b6-ad57-86d009bfbada.png"
+        ]
       ]
     },
     {
       "usage": "五人前奏与关系落定",
       "promptSummary": "同一身份母版的夜间关系 CG；以目光、开掌、钥匙、出口和共享日用表达成年人的主动选择，完整着装，无性行为。",
       "assets": [
-        ["app/assets/cg/yue/prelude.webp", "codex-imagegen:exec-1ac36cb6-30a6-413d-812c-4b1b482b8b2a.png"],
-        ["app/assets/cg/yue/explicit.webp", "codex-imagegen:exec-65126819-70a1-4773-9759-706eaf51e6e1.png"],
-        ["app/assets/cg/pan/prelude.webp", "codex-imagegen:exec-dcd0c85d-b0b1-4ae3-973f-40f8e2fa65e5.png"],
-        ["app/assets/cg/pan/explicit.webp", "codex-imagegen:exec-ae6c99ab-27ce-4652-81d1-2af468e8260a.png"],
-        ["app/assets/cg/pinger/prelude.webp", "codex-imagegen:exec-01830d1b-2d87-4e97-b97c-92f15ced287c.png"],
-        ["app/assets/cg/pinger/explicit.webp", "codex-imagegen:exec-a985ad93-a833-4272-b41e-ed493997eca4.png"],
-        ["app/assets/cg/meng/prelude.webp", "codex-imagegen:exec-f6a3adb4-0335-497b-8509-ee2c09f61780.png"],
-        ["app/assets/cg/meng/explicit.webp", "codex-imagegen:exec-00c1529b-543e-42fc-8dad-3de16000a529.png"],
-        ["app/assets/cg/xuee/prelude.webp", "codex-imagegen:exec-48622697-5ef3-443e-9a34-83e4a9c25859.png"],
-        ["app/assets/cg/xuee/explicit.webp", "codex-imagegen:exec-216df76e-b036-443a-9e70-529f2b12cdba.png"]
+        [
+          "app/assets/cg/yue/prelude.webp",
+          "codex-imagegen:exec-1ac36cb6-30a6-413d-812c-4b1b482b8b2a.png"
+        ],
+        [
+          "app/assets/cg/yue/explicit.webp",
+          "codex-imagegen:exec-65126819-70a1-4773-9759-706eaf51e6e1.png"
+        ],
+        [
+          "app/assets/cg/pan/prelude.webp",
+          "codex-imagegen:exec-dcd0c85d-b0b1-4ae3-973f-40f8e2fa65e5.png"
+        ],
+        [
+          "app/assets/cg/pan/explicit.webp",
+          "codex-imagegen:exec-ae6c99ab-27ce-4652-81d1-2af468e8260a.png"
+        ],
+        [
+          "app/assets/cg/pinger/prelude.webp",
+          "codex-imagegen:exec-01830d1b-2d87-4e97-b97c-92f15ced287c.png"
+        ],
+        [
+          "app/assets/cg/pinger/explicit.webp",
+          "codex-imagegen:exec-a985ad93-a833-4272-b41e-ed493997eca4.png"
+        ],
+        [
+          "app/assets/cg/meng/prelude.webp",
+          "codex-imagegen:exec-f6a3adb4-0335-497b-8509-ee2c09f61780.png"
+        ],
+        [
+          "app/assets/cg/meng/explicit.webp",
+          "codex-imagegen:exec-00c1529b-543e-42fc-8dad-3de16000a529.png"
+        ],
+        [
+          "app/assets/cg/xuee/prelude.webp",
+          "codex-imagegen:exec-48622697-5ef3-443e-9a34-83e4a9c25859.png"
+        ],
+        [
+          "app/assets/cg/xuee/explicit.webp",
+          "codex-imagegen:exec-216df76e-b036-443a-9e70-529f2b12cdba.png"
+        ]
       ]
     },
     {
       "usage": "五人公开关系与共同办事",
       "promptSummary": "五人以交叉视线、递证、按账、留座和轮值器物形成真实关系动作，不做并排群像。",
       "assets": [
-        ["app/assets/cg/group/public_day5.webp", "codex-imagegen:exec-32d97fcc-b83b-41f4-8bae-d8e5bf286910.png"],
-        ["app/assets/cg/group/public_day10.webp", "codex-imagegen:exec-60f375a8-ae0f-426d-9de2-fdbda4649142.png"],
-        ["app/assets/cg/group/public_day15.webp", "codex-imagegen:exec-0be274e2-1562-4cb6-9354-7d437b27aa43.png"],
-        ["app/assets/cg/group/inner_court_alliance.webp", "codex-imagegen:exec-7651ef0d-f27b-4ed1-86f7-7aaa5d049f99.png"],
-        ["app/assets/cg/group/inner_court_accord_five.webp", "codex-imagegen:exec-1bc7fb07-e6df-4974-b802-69f6f32cf44b.png"],
-        ["app/assets/cg/group/inner_court_afterglow_five.webp", "codex-imagegen:exec-19692392-08c1-4eeb-8c63-ea86b1a2e07b.png"]
+        [
+          "app/assets/cg/group/public_day5.webp",
+          "codex-imagegen:exec-32d97fcc-b83b-41f4-8bae-d8e5bf286910.png"
+        ],
+        [
+          "app/assets/cg/group/public_day10.webp",
+          "codex-imagegen:exec-60f375a8-ae0f-426d-9de2-fdbda4649142.png"
+        ],
+        [
+          "app/assets/cg/group/inner_court_alliance.webp",
+          "codex-imagegen:exec-7651ef0d-f27b-4ed1-86f7-7aaa5d049f99.png"
+        ],
+        [
+          "app/assets/cg/group/inner_court_afterglow_five.webp",
+          "codex-imagegen:exec-19692392-08c1-4eeb-8c63-ea86b1a2e07b.png"
+        ]
       ]
     },
     {
       "usage": "五组双院结果",
       "promptSummary": "两名对应成年女性共同作用于一件证物；脸、衣色、器物和方法冲突继承身份母版。",
       "assets": [
-        ["app/assets/cg/joint/yue_pan.webp", "codex-imagegen:exec-74e2b0e8-c46f-45c7-8ee6-e4ee651bd56d.png"],
-        ["app/assets/cg/joint/yue_pinger.webp", "codex-imagegen:exec-35f35c39-8dfc-40b2-bfaa-f6071929cdb0.png"],
-        ["app/assets/cg/joint/pan_pinger.webp", "codex-imagegen:exec-a0bb4acc-0a64-444d-9c5a-30b2d0fad595.png"],
-        ["app/assets/cg/joint/yue_meng.webp", "codex-imagegen:exec-02c5f590-a171-4fa0-8a79-b0324079a512.png"],
-        ["app/assets/cg/joint/pan_xuee.webp", "codex-imagegen:exec-5af38352-b063-4dbe-9b4a-af807faa2f94.png"]
+        [
+          "app/assets/cg/joint/yue_pan.webp",
+          "codex-imagegen:exec-74e2b0e8-c46f-45c7-8ee6-e4ee651bd56d.png"
+        ],
+        [
+          "app/assets/cg/joint/yue_pinger.webp",
+          "codex-imagegen:exec-35f35c39-8dfc-40b2-bfaa-f6071929cdb0.png"
+        ],
+        [
+          "app/assets/cg/joint/pan_pinger.webp",
+          "codex-imagegen:exec-a0bb4acc-0a64-444d-9c5a-30b2d0fad595.png"
+        ],
+        [
+          "app/assets/cg/joint/yue_meng.webp",
+          "codex-imagegen:exec-02c5f590-a171-4fa0-8a79-b0324079a512.png"
+        ],
+        [
+          "app/assets/cg/joint/pan_xuee.webp",
+          "codex-imagegen:exec-5af38352-b063-4dbe-9b4a-af807faa2f94.png"
+        ]
       ]
     },
     {
       "usage": "五张个人终章与命数空宅",
       "promptSummary": "人物用钥匙、席位、退路、名帖、停灶和轮值执行最后规则；命数页以无人空宅、六把钥匙和五张名签承接固定历史。",
       "assets": [
-        ["app/assets/cg/finale/yue.webp", "codex-imagegen:exec-a0272894-bfa1-44e7-a15f-a749322db57f.png"],
-        ["app/assets/cg/finale/pan.webp", "codex-imagegen:exec-4ab8a42b-3d8b-4f81-8864-82ec3366b40f.png"],
-        ["app/assets/cg/finale/pinger.webp", "codex-imagegen:exec-8c08054f-b78f-492d-8187-6b80dcaecc73.png"],
-        ["app/assets/cg/finale/meng.webp", "codex-imagegen:exec-d3764cf3-67a3-4ae7-b98d-1b4f26083aea.png"],
-        ["app/assets/cg/finale/xuee.webp", "codex-imagegen:exec-ed7203e7-bcbb-4829-b1c1-417ee44cedf8.png"],
-        ["app/assets/cg/finale/fate_coda.webp", "codex-imagegen:exec-c29af8f8-fca4-4f71-aef0-5af5a4dd4d2a.png"]
+        [
+          "app/assets/cg/finale/yue.webp",
+          "codex-imagegen:exec-a0272894-bfa1-44e7-a15f-a749322db57f.png"
+        ],
+        [
+          "app/assets/cg/finale/pan.webp",
+          "codex-imagegen:exec-4ab8a42b-3d8b-4f81-8864-82ec3366b40f.png"
+        ],
+        [
+          "app/assets/cg/finale/pinger.webp",
+          "codex-imagegen:exec-8c08054f-b78f-492d-8187-6b80dcaecc73.png"
+        ],
+        [
+          "app/assets/cg/finale/meng.webp",
+          "codex-imagegen:exec-d3764cf3-67a3-4ae7-b98d-1b4f26083aea.png"
+        ],
+        [
+          "app/assets/cg/finale/xuee.webp",
+          "codex-imagegen:exec-ed7203e7-bcbb-4829-b1c1-417ee44cedf8.png"
+        ],
+        [
+          "app/assets/cg/finale/fate_coda.webp",
+          "codex-imagegen:exec-c29af8f8-fca4-4f71-aef0-5af5a4dd4d2a.png"
+        ]
       ],
       "editNote": "月娘、瓶儿、雪娥终章使用 image_gen 二次编辑清除模型伪文字。"
     },
@@ -141,21 +214,85 @@
       "usage": "五张中局转折",
       "promptSummary": "空主位与轮值钥匙、矛盾口风与封口银、破锁空匣与退路、名帖网络、冷灶拒印分别成为可读危机。",
       "assets": [
-        ["app/assets/cg/milestone/yue.webp", "codex-imagegen:exec-a84bb537-8fc2-4844-9d40-f6552b28fb4c.png"],
-        ["app/assets/cg/milestone/pan.webp", "codex-imagegen:exec-debb4c41-2c4e-41b8-8eff-3e1a272184ec.png"],
-        ["app/assets/cg/milestone/pinger.webp", "codex-imagegen:exec-43cace36-0bee-41d1-aa84-798882ad6d49.png"],
-        ["app/assets/cg/milestone/meng.webp", "codex-imagegen:exec-3adba92b-e8cf-4103-adf7-ac81026dbf41.png"],
-        ["app/assets/cg/milestone/xuee.webp", "codex-imagegen:exec-de699d51-80ee-4cc5-93d7-c0553f705f0f.png"]
+        [
+          "app/assets/cg/milestone/yue.webp",
+          "codex-imagegen:exec-a84bb537-8fc2-4844-9d40-f6552b28fb4c.png"
+        ],
+        [
+          "app/assets/cg/milestone/pan.webp",
+          "codex-imagegen:exec-debb4c41-2c4e-41b8-8eff-3e1a272184ec.png"
+        ],
+        [
+          "app/assets/cg/milestone/pinger.webp",
+          "codex-imagegen:exec-43cace36-0bee-41d1-aa84-798882ad6d49.png"
+        ],
+        [
+          "app/assets/cg/milestone/meng.webp",
+          "codex-imagegen:exec-3adba92b-e8cf-4103-adf7-ac81026dbf41.png"
+        ],
+        [
+          "app/assets/cg/milestone/xuee.webp",
+          "codex-imagegen:exec-de699d51-80ee-4cc5-93d7-c0553f705f0f.png"
+        ]
       ],
       "editNote": "月娘、玉楼、雪娥转折图使用 image_gen 二次编辑清除模型伪文字。"
+    },
+    {
+      "date": "2026-10-02",
+      "tool": "codex exec 内置 image_gen（编辑模式以已批准身份母版为参考）",
+      "purpose": "galgame 改造：透明底立绘五人×六张（平＋五种表情）、九张全屏场景、一张月娘拜月 CG",
+      "assets": [
+        "app/assets/sprite/yue/neutral.webp",
+        "app/assets/sprite/yue/smile.webp",
+        "app/assets/sprite/yue/angry.webp",
+        "app/assets/sprite/yue/sad.webp",
+        "app/assets/sprite/yue/blush.webp",
+        "app/assets/sprite/yue/surprised.webp",
+        "app/assets/sprite/pan/neutral.webp",
+        "app/assets/sprite/pan/smile.webp",
+        "app/assets/sprite/pan/angry.webp",
+        "app/assets/sprite/pan/sad.webp",
+        "app/assets/sprite/pan/blush.webp",
+        "app/assets/sprite/pan/surprised.webp",
+        "app/assets/sprite/pinger/neutral.webp",
+        "app/assets/sprite/pinger/smile.webp",
+        "app/assets/sprite/pinger/angry.webp",
+        "app/assets/sprite/pinger/sad.webp",
+        "app/assets/sprite/pinger/blush.webp",
+        "app/assets/sprite/pinger/surprised.webp",
+        "app/assets/sprite/meng/neutral.webp",
+        "app/assets/sprite/meng/smile.webp",
+        "app/assets/sprite/meng/angry.webp",
+        "app/assets/sprite/meng/sad.webp",
+        "app/assets/sprite/meng/blush.webp",
+        "app/assets/sprite/meng/surprised.webp",
+        "app/assets/sprite/xuee/neutral.webp",
+        "app/assets/sprite/xuee/smile.webp",
+        "app/assets/sprite/xuee/angry.webp",
+        "app/assets/sprite/xuee/sad.webp",
+        "app/assets/sprite/xuee/blush.webp",
+        "app/assets/sprite/xuee/surprised.webp",
+        "app/assets/bg/hall.webp",
+        "app/assets/bg/garden.webp",
+        "app/assets/bg/chamber.webp",
+        "app/assets/bg/court_night.webp",
+        "app/assets/bg/street.webp",
+        "app/assets/bg/street_dawn.webp",
+        "app/assets/bg/kitchen.webp",
+        "app/assets/bg/court_rain.webp",
+        "app/assets/bg/temple.webp",
+        "app/assets/cg/yue/moon.webp"
+      ],
+      "promptSummary": "立绘：以 heroine/<名>/night.webp 为身份参考，生成 1024×1536 透明底腰上至大腿立绘，成年、完整着装、非露骨；差分以基础立绘为编辑输入，只改表情。场景：以 compound_new_guofeng.webp 为画风参考，平视、前景地面留给立绘，无人物无文字。月娘拜月 CG：以 heroine/yue/night.webp 为身份参考，月下庭院拜月，成年、完整着装、非成人内容。",
+      "postProcessing": "立绘统一缩放到 800×1200 webp q84，不裁切以保证差分逐帧对齐；场景 1536×1024 webp q80。CG 保持原始比例 webp。"
     }
   ],
   "postProcessing": {
     "command": "cwebp -q 88 -m 6 -metadata none",
-    "assetCount": 41,
-    "totalBytes": 10938766,
-    "intermediatePolicy": "image_gen 原始 PNG 留在工具缓存，不复制进仓库；运行目录只保留四十一张新 WebP。",
+    "assetCount": 78,
+    "totalBytes": 18714684,
+    "intermediatePolicy": "image_gen 原始 PNG 留在工具缓存，不复制进仓库；运行目录只保留本账目所列 WebP。",
     "reproducible": false
   },
-  "acceptance": "人工巡检身份母版、个人夜景、五人群像、双院结果、终章与中局转折；浏览器 QA 另验证四十一张 URL 解码、旧资产清零、目标视口、流程输入和控制台。"
+  "acceptance": "人工巡检身份母版、立绘差分逐帧对齐、个人夜景、群像与终章；浏览器 QA（test/verify_visual.py）验证完整路径上的图片解码、目标视口、流程输入和控制台。"
 }

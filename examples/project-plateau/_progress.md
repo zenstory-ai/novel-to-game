@@ -8,8 +8,9 @@
 
 ## Current result
 
-- Scope complete: all 16 chapters are covered, and the field-record survival direction plus art direction remain
-  inside the approved 1–3 minute prototype boundary.
+- Scope complete: all 16 chapters are covered. 2026-10 overhaul: low-sun lighting, Blender-baked ground,
+  instanced grass, human eye height, the Chapter XII stegosaurus beat, per-plate grading and a 300-second light
+  budget toward a 5–10 minute visit.
 - Playable loop complete: photographs read both axes of the scout's live camera, drift can smear decisive detail,
   crouching braces the plate, and the family exposes distinct young-play and branch-pull windows. A committed
   pterodactyl dive is now an optional two-cue risk shot: finishing it leaves a short camera-to-rifle swap before

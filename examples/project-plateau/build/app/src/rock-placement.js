@@ -28,7 +28,12 @@ function settleRockOnTerrain(target, geometry, placement) {
       terrainHeight(rockSupportPoint.x, rockSupportPoint.z) - rockSupportPoint.y,
     );
   }
-  const burial = placement.burial ?? 0.04;
+  // Bedded slabs on the incised bank sink about a third of their height so no
+  // underside shows toward the route.
+  const slabSink = placement.family === 'bedded-slab'
+    ? (geometry.boundingBox.max.y - geometry.boundingBox.min.y) * placement.scale[1] * 0.3
+    : 0;
+  const burial = Math.max(placement.burial ?? 0.04, slabSink);
   target.position.y = Math.max(...requiredOffsets) - burial;
   target.updateMatrix();
 
