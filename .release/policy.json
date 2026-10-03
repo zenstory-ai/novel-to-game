@@ -41,10 +41,11 @@
     "VERSION",
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
-    ".claude-plugin/marketplace.json"
+    ".claude-plugin/marketplace.json",
+    ".agents/skills"
   ],
   "excludePaths": [
-    ".agents",
+    ".agents/notes",
     ".clawhub",
     ".github",
     ".release"
