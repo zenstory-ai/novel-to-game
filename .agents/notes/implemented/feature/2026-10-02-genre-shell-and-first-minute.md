@@ -54,6 +54,9 @@ Sonnet 无工具生成，Opus/Sonnet/Codex 三名盲评，五轴 1–10）：
 - concept · RPG：对照 6.91，实验 7.04（实验 14 胜 9 负），未检出回退。
 - 第二轮 narrative-design · ADV（每组 n=4，对照取已含第一轮改动的 HEAD）：对照 7.18，实验 7.40，fidelity +0.58，组内 sd 由 0.69 降到 0.37。
 
+- 第三轮（终审修订，每组 n=3，对照取修订前 HEAD）：art-direction「品类成色」限定为 `targetFinish: graybox` 以外、措辞改为“而不是技术演示”，
+  7.53 对 7.80（sd 0.35 / 0.33）；concept-method 外壳四项改用与 world-design 一致的措辞，7.09 对 6.96（sd 0.78 / 0.68），未检出回退。
+
 只报告“未检出回退 / 改进”，不把主观趣味写成确定结论。
 
 来源：49dd1c1、b36a989
