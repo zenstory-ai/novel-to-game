@@ -39,33 +39,39 @@ Each game links to the adaptation workspace behind it: source provenance, the co
 
 ### Journey to the West · Three Borrowings of the Banana Fan
 
-[![Wukong's party and the Bull Demon King's formation remain fully visible above a separate light-silk command tray on the Jilei Mountain stage](examples/journey-to-the-west/screenshots/hero.jpg)](https://xiyouji.vibecoco.ai)
+<p>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="Wukong's party in the painted Flame Mountain village, with minimap, quest tracker, chat log and function buttons in the corners" width="49%"></a>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/battle.jpg" alt="Jilei Mountain battle: the Bull Demon King's side on the left, Wukong's party on the right, action-order bar above and command panel below" width="49%"></a>
+</p>
 
-**One wave of a fan blew you fifty thousand li. Take the mountain back one turn at a time.**
+**One wave of a fan blew you fifty thousand li. Walk back, take the quest, and win the mountain one turn at a time.**
 
-Command Wukong's party through the three borrowings of the Banana-Leaf Fan: read the five-element wheel, follow a fire-vein treasure map, decide when to press deeper or bank the haul, set your formation, transform your way in where force will not work, and turn a demon king who outclasses you into a rainstorm over the Mountain of Flames.
+A Fantasy Westward Journey-style turn-based RPG built on chapters 59–61. Click to walk four painted scene maps, find the NPCs marked "!", let the quest tracker auto-path you there, and take the repeatable demon-bounty daily between story fights. Earn experience and silver, shop, swap gear, study skills and field a pet; then win command-turn battles with the five-element wheel, rage stunts and Wukong's seventy-two transformations, until a demon king who outclasses you ends as rain over the Mountain of Flames.
 
 **[Play in browser](https://xiyouji.vibecoco.ai)** · [Adaptation workspace](examples/journey-to-the-west/) · design estimate: 45–90 min · all ages · playable prototype
 
 ### Jin Ping Mei · Ledger of Desire
 
-[![Five women of the Ximen household face the player across the household ledger](examples/jin-ping-mei/screenshots/title.jpg)](https://jinpingmei.vibecoco.ai)
+<p>
+  <a href="https://jinpingmei.vibecoco.ai"><img src="examples/jin-ping-mei/screenshots/title.jpg" alt="Animated title screen: the five women of the Ximen household in a spring courtyard beside the title and menu" width="49%"></a>
+  <a href="https://jinpingmei.vibecoco.ai"><img src="examples/jin-ping-mei/screenshots/adv.jpg" alt="Dinner scene: three heroines standing in the hall while Meng Yulou speaks in a name-plated text box above the ADV control bar" width="49%"></a>
+</p>
 
-**Choose whose door you enter tonight. Find out whose door knocks in the morning.**
+**That spring, five doors kept a lamp lit for you. Whatever you say, they remember.**
 
-Twenty days, five courtyards. Keep silver, influence, reputation, exposure, and household strain in balance; respect each woman's terms; build trust through shared crises; and face a final ledger shaped by what everyone chose and remembers.
+A galgame-style romance ADV set in the Ximen household the spring after Li Ping'er marries in. A common route puts all five women at one table, in one night of rain and at one Qingming feast; what your choices build with each of them decides which courtyard doors are still lit on the night the routes split. Each of the five heroine routes has a good, an ordinary and a missed ending (16 endings, counting the one where no lamp is left), and every heroine ending turns to a fixed page of what the novel does to her (the no-lamp ending turns to Ximen Qing's death and the household scattering). Auto, read-only skip, backlog, hide, quick save, thumbnail saves and rollback are there, with a CG gallery, scene replay, music room and ending flowchart.
 
-**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Adaptation workspace](examples/jin-ping-mei/) · design estimate: 60–90 min · 18+ · playable prototype
+**[Play in browser](https://jinpingmei.vibecoco.ai)** · [Adaptation workspace](examples/jin-ping-mei/) · design estimate: 20–30 min per route, 1–1.5 h for all five · 18+ · playable prototype
 
 ### Project Plateau · The Lost World · 3D
 
-A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Cross a connected plateau, observe a living Iguanodon family, expose four glass plates under aerial pressure, and return with the views that survived.
+A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Under a low western sun, walk out from Fort Challenger through knee-high grass, keep to a band of thorn arches for cover, and expose four glass plates through a long lens. Each plate is graded on the spot from what the live camera actually framed, with stamps and a line from the sceptical Summerlee. A pterodactyl circles before it dives, a stegosaurus may come down to drink at the brook, and you have 300 seconds of light to bring the plates back.
 
-Play the full expedition on desktop, or watch the 15-second gameplay preview on other devices.
+Play the full expedition on desktop, or watch the preview on other devices. It is a real capture of the current build (a 9-second excerpt; click for the 15-second video).
 
-https://github.com/user-attachments/assets/27819247-4e4d-4bf0-8f0f-43d4125c4d45
+[![Gameplay capture: an Iguanodon family crossing the glade in low western light, then the field camera raised to frame the young](examples/project-plateau/screenshots/preview.gif)](examples/project-plateau/screenshots/preview.mp4)
 
-**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Adaptation workspace](examples/project-plateau/) · [Share feedback](https://github.com/zenstory-ai/novel-to-game/discussions/7) · design estimate: 1–3 min · desktop WebGL2 · playable prototype
+**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Adaptation workspace](examples/project-plateau/) · [Share feedback](https://github.com/zenstory-ai/novel-to-game/discussions/7) · design estimate: 5–10 min (300 s of light per run) · desktop WebGL2 · playable prototype
 
 ## What it is
 
@@ -73,11 +79,12 @@ There is no GPU, no hosted service, and no bundled engine: the skills run on the
 
 - **Every design decision cites the novel.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
 - **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
+- **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
 - **Built for the runtime the brief locks.** The product brief, the one-page requirements sheet the agent drafts first (in `quick` it stops for your decision only on blocking items such as platform, rights, or adult content), locks platform, engine, target runtime, and the runtime actually available for testing. A missing toolchain may not silently become a web build. The design documents are engine-independent Markdown you own.
 - **QA is one real run, six checks, and honest limitations.** The build is launched on the tested runtime and one complete execution proves `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart`. Fun, balance, other browsers, and rights are written as limitations, never as PASS.
 - **Voice is opt-in and generated at build time by default.** No line goes to a text-to-speech provider unless art direction chooses voice; runtime synthesis needs the product brief's explicit approval, and the novel and design documents are never uploaded.
 
-Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game.
+Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
 
 ## Install
 
@@ -132,7 +139,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## See what it produces
 
-Every excerpt below is copied from a file in this repository; the two Chinese examples keep their documents in Simplified Chinese, so those excerpts are translated here and marked as such, with the originals linked. Cuts are marked with "…".
+Every excerpt below is copied from a file in this repository; the two Chinese examples keep their documents in Simplified Chinese, so their Markdown excerpts are translated here and marked as such, while JSON records are quoted as they are and glossed in the surrounding text. The originals are linked. Cuts are marked with "…".
 
 ### What the design documents look like
 
@@ -171,14 +178,28 @@ taking down the White Bull's true form with your companion beast and transformat
 and dragging it out means you will be killed in turn, so "when to open the third wave" is the core decision of the finale.
 ```
 
-[`design/ART_DIRECTION.md`](examples/journey-to-the-west/design/ART_DIRECTION.md) makes each wave rewrite the backdrop rather than flash an icon (translated):
+The same document lists the genre's shell around those battles, and what was implemented, degraded, or dropped (translated; 4 of the table's 8 rows):
 
 ```markdown
-- **Three waves of the true fan · reprinting the world**: the true fan is the turnaround of the boss fight, and each wave rewrites the Flame Mountain landscape —
-  first wave, quell fire: enemy buffs cleared, enemy attack reduced, the vermilion fire layer sinks to bone-white afterglow;
-  second wave, raise wind: whole party faster, blue-white wind lines sweep across and clear the floating ash;
-  third wave, bring rain: party heals over time, enemy guard broken and exposed, deep-blue raindrops fall on the embers.
-  …
+| Genre shell | State | How / why |
+|---|---|---|
+| Entering the world and moving | Implemented | Four walkable 3/4 scenes (Flame Mountain village, Cuiyun Mountain, the fire mouth, Jilei Mountain); click-to-walk, arrow-key walking, teal teleport circles (click the circle or its name) |
+| Objective guidance / tracking | Implemented | "!" above main-quest NPCs; one click on the quest tracker on the right auto-paths, across maps too; minimap at top left |
+…
+| Pets | Degraded | Two fixed pets (the Water-Repelling Golden-Eyed Beast and a catchable fire demon), one in battle; no collection pool, breeding, or rerolling — a 45–90 minute campaign has no use for them |
+…
+| Parties / trading / PVP | Not done | A single-player offline game with no second player; master and three disciples are the fixed party |
+```
+
+[`design/ART_DIRECTION.md`](examples/journey-to-the-west/design/ART_DIRECTION.md) sets the bar as the genre's own screenshots, then gives each wave of the fan its own effect and saves the lasting change to the world for the ending (translated):
+
+```markdown
+**Any in-game screenshot, taken at random, should look like a game screen from a turn-based Journey to the West online game such as Fantasy Westward Journey or Wen Dao**: painted 3/4 top-down walking scenes,
+small HUD cards pinned to the four corners, names and quest markers over heads; battles with two rows of standing figures, enemy left and party right, an action-order bar along the top and a command panel at the bottom.
+What is borrowed is the genre's form and readability, not their chibi big heads, outlines, or specific character designs.
+…
+5. **The true fan's three waves**: each wave gets a teal-outlined banner, followed by two or three seconds of full-screen tint and particles — ash settling as the fire is quelled, wind streaks, rain lines.
+   The lasting change to the world belongs to the ending: the Mountain of Flames becomes a new rain-soaked landscape with no open flame (`huoyan-rain`), with the restart button always visible.
 ```
 
 And [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) records the real browser run that reached that ending and started over:
@@ -203,36 +224,50 @@ And [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) 
 
 ### How a choice is written so the game remembers it
 
-[Jin Ping Mei](examples/jin-ping-mei/) is the relationship-and-household example. Its [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) states the promise in one sentence and, for each experience pillar, the observable evidence and the symptom that would kill it (translated; 3 of 5 pillar rows):
+[Jin Ping Mei](examples/jin-ping-mei/) is the romance-ADV example. It was rebuilt from a 20-day household-ledger simulation into a galgame, and [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) now gives each heroine something she wants and a wound only the player gets to see, each pinned to chapters (translated; 3 of the table's 5 rows):
 
 ```markdown
-Core sentence: **Whose door you enter tonight, and who comes to you in the morning holding last night's evidence.**
+Core sentence: **Whatever you said, they remember.**
 …
-| Pillar | Observable evidence | Veto symptom |
-| --- | --- | --- |
-| All five women can change the situation on their own | Each has eight route segments, her own refusals and an outside capability | Only names, portraits or affection numbers are swapped |
-…
-| Adult content is earned through consent and relationship | Invitation, continue / stop, re-confirmation, next-morning echo | Intimacy bought with silver, status or immunity from punishment |
-| Management and relationships supply each other's actions | Each of the five women's abilities handles one thing: accounts, lies, goods, connections, or physical evidence | The optimal play is to skip the character content |
+| Character | What she wants | Her wound | Source basis |
+|---|---|---|---|
+| Wu Yueniang | To be asked first about what matters | She is the principal wife only in front of others | Chapters 1, 21 |
+| Pan Jinlian | To be seen, to be chosen first | Apart from the way you look at her, she has nothing | Chapters 8, 9, 38 |
+| Li Ping'er | Safety and certainty | Seen first as a trunk of valuables, only later as a person | Chapters 14, 16, 19 |
 ```
 
-[`design/GAME_DESIGN.md`](examples/jin-ping-mei/design/GAME_DESIGN.md) then forbids the "pick an option, get a line, scene over" pattern (translated):
+[`design/GAME_DESIGN.md`](examples/jin-ping-mei/design/GAME_DESIGN.md) keeps affection off the screen, aims each route's key choice at her wound, and says what decides the ending (translated; 2 of the route table's 5 rows):
 
 ```markdown
-- A route choice must produce her own reply, a reply from a neighbouring courtyard, the player's handling of it, and, at least two days later, the old words coming back to be settled. When they come back, four beats play in order — she repeats them word for word → the neighbouring courtyard names the cost that spilled over → the player honours, rewrites, or denies them → the outcome in both courtyards — and each beat can be opened and read in full. A mature relationship also triggers one dusk invitation that she initiates.
-- The next morning's first scene belongs to whoever was neglected or holds concrete evidence; no jealousy appears without a source.
+Choices show no numbers. Affection has only three outlets: her expression and lines; whether her courtyard door is "lit" on the night the routes split; and an optional "feelings" glance in the system menu
+(only her look and "the lamp is lit / the lamp is going out", no tiers and no numbers). Yueniang states the rule in the first chapter: on the night the Qingming feast breaks up, only a door still lit can be entered.
+…
+| Character | Source basis | Key choice (the right move) | Good | Ordinary | Missed |
+|---|---|---|---|---|---|
+…
+| Pan Jinlian | Chapters 8, 38: sends verses longing for him; plays the pipa on a snowy night | Do not open Ping'er's trunks for her, but stay with her tonight | The pipa is not cold | The side gate left ajar | The fan falls |
+| Li Ping'er | Chapters 14, 19: entrusts herself over the garden wall; met coldly when she marries in | Do not take her keys; say in front of everyone that her silver is hers | The keys in her hand | Tea under the window | The trunks |
+…
+Ending rule: get the key choice wrong → Missed; get it right, with her affection ≥7 and the truth told at the last question → Good; otherwise → Ordinary.
 ```
 
-The QA record for this game is candid about how it was played. In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), all six checks pass and the first limitation reads:
+Every heroine ending then turns to a page of what the novel does to her, and the same document is plain about it: the ending decides only what the two of you made of this one spring, and the page footer says it cannot change where she goes in the book.
+
+The QA record is candid about how much of that was played. In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the complete browser run ends at `yue_good` and all six checks pass; the first and last limitations read:
 
 ```json
 {
   "scope": "路径覆盖",
-  "reason": "快速路径在每屏选择第一项可行主动作，只到达一个失稳结局；没有穷举其他选项或结局。"
+  "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
+},
+…
+{
+  "scope": "体验判断",
+  "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
 }
 ```
 
-That is: the fast path picked the first feasible main action on every screen and reached one unstable ending; other options and endings were not exhausted. The design document itself draws the same line: the machine only proves that content exists, is reachable and readable, and that state consequences are real; subjective appeal, pacing, and balance are not settled by automation.
+That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one. Automation proves the game launches, renders, takes input, reaches an ending and restarts; it does not judge whether the story moves anyone or whether the pacing is right.
 
 ### What the QA record admits it did not test
 
@@ -249,7 +284,7 @@ plate, or if recording never changes a later route or defense decision. `GAME_DE
 must define that causal chain and preserve the non-lethal scout fantasy.
 ```
 
-`npm run verify` drives the real build with keyboard and mouse events and writes the input trace and `qa/verification.json` in the same run. The trace in [`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) is the whole expedition:
+`npm run verify` drives the real build with keyboard and mouse events and writes the input trace and `qa/verification.json` in the same run. The trace in [`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) is the whole expedition, out along the thorn band to the blind and back:
 
 ```json
 "inputTrace": [
@@ -257,16 +292,17 @@ must define that causal chain and preserve the non-lethal scout fantasy.
   "Right Mouse + Left Mouse: record the brook",
   "KeyW: reach the basalt shelf",
   "Right Mouse + Left Mouse: record basalt scale",
-  "KeyA: enter canopy cover",
-  "hold KeyC under cover: let the attack widen",
-  "KeyW: reach the glade",
-  "Right Mouse + Left Mouse: record young at play",
+  "KeyA: step under the thorn arches",
   …
-  "KeyS: return to Fort"
-],
+  "KeyW: settle in the glade-edge blind",
+  "Right Mouse + Left Mouse: record young at play from the blind",
+  "hold KeyC under cover: crouch until the wings lose interest",
+  …
+  "KeyS: back up the thorn band to Fort"
+]
 ```
 
-And [`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) says exactly what that PASS means:
+[`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) says exactly what that PASS means:
 
 ```markdown
 …
@@ -275,7 +311,20 @@ desktop browser. It does not prove subjective visual quality, comfort, fun, bala
 rights clearance, public hosting or other browsers, GPUs and devices.
 ```
 
-Evidence also cuts the other way. The product brief records that the first measured run crossed the whole route in 55.2 seconds, which falsified the planned 5–8 minute session, so the product boundary was cut to a 1–3 minute run instead of padding the route with waits ([`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md)).
+And [`qa/verification.json`](examples/project-plateau/qa/verification.json) names what this run left out, including the new stegosaurus beat:
+
+```json
+{
+  "scope": "optional stegosaurus beat",
+  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
+},
+{
+  "scope": "look, sound and hitches",
+  "reason": "Visual quality is a reviewed judgment; the sound beds were not heard on laptop speakers and frame hitches were not measured on an unloaded or low-end machine."
+}
+```
+
+Evidence also moved the session length, twice, and [`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) keeps both steps. The first measured run crossed the whole route in 55.2 seconds, which falsified the planned 5–8 minute session, so the boundary was cut to a 1–3 minute run with 180 seconds of light instead of padding the route with waits. When the owner later asked for a longer 5–10 minute visit, the light budget went to 300 seconds and was filled with new decisions (the optional Chapter XII stegosaurus beat and plate-by-plate grading) rather than more walking; a learned Strong path still finishes in about 90 seconds.
 
 ## Your first request
 
@@ -355,7 +404,7 @@ Say so in the request, as the second example above does. That locks `experienceP
 
 ### How long does a full run take, and what does it cost?
 
-Longer than one prompt. The agent reads the whole novel, writes five design documents, builds, and runs QA, and each stage is a separate skill call, so a full run is long and may span more than one session (the Jin Ping Mei example's progress file carries entries from two different days). Token spend is whatever your coding agent bills; nothing else is paid unless art direction opts into image or voice generation (see the GPU question below). The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+Longer than one prompt. The agent reads the whole novel, writes five design documents, builds, and runs QA, and each stage is a separate skill call, so a full run is long and may span more than one session. Token spend is whatever your coding agent bills; nothing else is paid unless art direction opts into image or voice generation (see the GPU question below). The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 
@@ -367,7 +416,7 @@ You choose, and the product brief locks it: platform, production engine, target 
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
-No GPU and no separate model: analysis, design, and code are written by the model of the coding agent you already use. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records all 41 of its images as generated with Codex's built-in image tool, in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. Paid services are one of the things the agent stops to ask about before it starts. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
+No GPU and no separate model: analysis, design, and code are written by the model of the coding agent you already use. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. Paid services are one of the things the agent stops to ask about before it starts. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 

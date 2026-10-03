@@ -11,6 +11,19 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Changed
+
+- Inherited the genre shell along with a borrowed genre: the concept method no longer lets a "not borrowed" list drop the parts players use to recognise the genre (entering the world, objective guidance, progression and reasons to return, reading and control conveniences), and system-led or hybrid world designs now carry a short shell table (implemented / degraded / not done, with reasons) plus what the first minute shows. Art direction gains a genre-quality bar measured against mainstream screenshots of the same genre, with 3D finish built in the order light → materials and ground → geometry. Narrative-led designs are exempt from the shell table after blind A/B showed it crowding out their buildability; the evidence is in the decision note.
+- Character routes in narrative design now aim each key choice at that character's own wound or agenda rather than a reply that would please anyone, and show relationship progress through reactions, forms of address, places that open and things entrusted instead of on-screen numbers. Blind A/B on an ADV fixture scored 7.40 vs 7.18 for the previous wording (four samples per arm); the evidence is in the [decision note](.agents/notes/implemented/feature/2026-10-02-genre-shell-and-first-minute.md).
+- Rebuilt Journey to the West as a Fantasy Westward Journey-style RPG: the command-turn battles now sit inside four painted click-to-walk scene maps with NPC quests marked "!" and "?", a quest tracker with auto-path, a minimap, chat channels, a repeatable demon-bounty daily, experience, silver, shops, gear, skill study, a pet panel, rage stunts and form sprites for the seventy-two transformations.
+- Rebuilt Jin Ping Mei from a 20-day household-ledger simulation into a galgame-style romance ADV: a common route, an affection-gated door choice, five heroine routes with 16 endings, standing sprites with expressions, auto / read-only skip / backlog / hide / quick save / thumbnail saves / rollback, a CG gallery, scene replay, music room, ending flowchart and a fixed page of each heroine's fate in the novel. Age gating and adult-CG consent gating are kept.
+- Overhauled the Project Plateau look (a low western sun, AgX tone mapping, ambient occlusion, bloom and a colour grade, Blender-baked ground textures, dense grass, a 1.8 m eye height and a distant cliff ring) and deepened its photo loop: a thorn-arch cover band with a blind, plates graded from what the live camera framed with stamps and a line from Summerlee, a long lens, a pterodactyl that circles before it dives, an optional stegosaurus at the brook, and 300 seconds of light for a 5–10 minute visit.
+- The README shows the rebuilt examples with new screenshots, an inline GIF captured from the Project Plateau build, and fresh excerpts.
+
+### Removed
+
+- Removed the Journey to the West design contract (`qa/design-contract.json`) and its checker (`qa/verify_design_contract.mjs`): a duplicate numeric source of truth beside the game's own data files.
+
 ## [0.4.0] - 2026-09-21
 
 ### Added
