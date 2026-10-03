@@ -1,0 +1,68 @@
+name: Public deployment observation
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact protected-main commit deployed by all three Vercel projects
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: deployment-observation-${{ inputs.source_sha }}
+  cancel-in-progress: false
+jobs:
+  observe:
+    name: Observe source-associated public deployments (not a gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      deployments: read
+      actions: read
+      checks: read
+    steps:
+      - name: Require trusted main dispatch
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          SOURCE_REF: ${{ github.ref }}
+        run: |
+          [[ "$SOURCE_REF" == refs/heads/main ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          path: source
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: zenstory-ai/.github
+          ref: d098c09a27f8fe58ccf3a13a894ecc3804747b7c
+          path: controls
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.12'
+      - name: Prove exact main product and inventory CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          git -C source fetch origin "$SOURCE_SHA"
+          python controls/scripts/source_release.py ci-proof --root source \
+            --repository "$GITHUB_REPOSITORY" --sha "$SOURCE_SHA" --output artifacts/ci-proof.json
+      - name: Observe latest production deployments and public reachability
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          python source/scripts/deployment_receipt.py --sha "$SOURCE_SHA" \
+            --ci-proof artifacts/ci-proof.json --output artifacts/deployment-receipt.json
+          cat artifacts/deployment-receipt.json
+          echo '### Post-deployment observation; provider gate NOT_VERIFIED' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: deployment-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts
+          if-no-files-found: error
+          retention-days: 14
