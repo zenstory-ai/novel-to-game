@@ -249,8 +249,6 @@ img.focus-right { object-fit: cover; object-position: 100% 50%; transform: scale
 .peek-card { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px 14px; border-radius: 12px; border-top: 4px solid var(--accent); background: rgba(255, 255, 255, 0.6); }
 .peek-card img { width: 100%; aspect-ratio: 1; object-fit: cover; object-position: 50% 6%; border-radius: 8px; }
 .peek-card b { font: 600 16px var(--serif); letter-spacing: 0.12em; }
-.hearts { color: var(--accent); letter-spacing: 0.25em; }
-.peek-card small { color: var(--ink-soft); }
 .lantern { margin-top: 4px; padding: 2px 10px; border-radius: 999px; font: 13px var(--serif); letter-spacing: 0.12em; }
 .lantern.lit { background: rgba(214, 140, 60, 0.16); color: #a2531f; box-shadow: 0 0 10px rgba(240, 170, 80, 0.35); }
 .lantern.dim { background: rgba(60, 50, 64, 0.08); color: #7d7280; }

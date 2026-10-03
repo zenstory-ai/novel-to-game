@@ -57,6 +57,8 @@ export default String.raw`
 @show yue 中 平
 月娘：官人回来了。坐吧，清明的事，大家都等着。
 @if f:late -> dinner_late
+月娘(笑)：……难得，天没黑透就进了门。
+她亲手给你盛了一碗饭，搁在你面前。
 @jump dinner_talk
 
 # dinner_late
@@ -67,6 +69,7 @@ export default String.raw`
 
 # dinner_talk
 月娘：七日后清明，后花园荷亭摆席，请几家亲戚，也是给瓶儿妹妹一个正经的场面——叫外头人知道，她进的是西门家的正门。
+月娘：席散那一夜，各房掌不掌灯，由各房自己定。还为官人亮着灯的门，官人才进得去。
 @show pinger 右 羞
 瓶儿(羞)：大姐姐费心了……
 @show pan 左 笑
@@ -120,13 +123,13 @@ export default String.raw`
 @bgm night
 晚饭散得不算愉快，也不算难堪。宅子大，灯一盏盏熄下去，人心里的事却没熄。
 你在回廊下站了一会儿。春夜的风里有花香，也有不知哪一处院子没关紧的窗。
-今夜，你想先去看看谁？
+今夜，你想去看看谁？
 @choice
-- 正院 · 月娘还在灯下看账 -> n1_yue {yue+1}
-- 花园角门 · 有人在弹琵琶 -> n1_pan {pan+1}
-- 东院 · 瓶儿的窗还亮着 -> n1_pinger {pinger+1}
-- 西厢 · 隐约有月琴声 -> n1_meng {meng+1}
-- 灶上 · 那里还有火光 -> n1_xuee {xuee+1 f:xuee_morning}
+- 正院 · 月娘还在灯下看账 -> n1_yue {yue+2}
+- 花园角门 · 有人在弹琵琶 -> n1_pan {pan+2}
+- 东院 · 瓶儿的窗还亮着 -> n1_pinger {pinger+2}
+- 西厢 · 隐约有月琴声 -> n1_meng {meng+2}
+- 灶上 · 那里还有火光 -> n1_xuee {xuee+2 f:xuee_morning}
 
 # n1_yue
 @bg hall fade

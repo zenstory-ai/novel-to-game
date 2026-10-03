@@ -5,7 +5,7 @@
     "browser": "Chromium 145.0.7632.6",
     "viewport": "1440x900",
     "runtime": "临时本地 HTTP 服务 + Python Playwright",
-    "timestamp": "2026-10-02T20:34:04+00:00"
+    "timestamp": "2026-10-03T02:29:34+00:00"
   },
   "inputTrace": [
     "点击年龄门确认，进入动画标题。",
@@ -69,7 +69,7 @@
         "afterEnter": "「爹！爹——大娘差我来请，说清明的席面要商量，叫您今日务必早些回去。」",
         "savedLine": "「五妹妹这张嘴，清明不唱曲儿可惜了。到时候你弹琵琶，我拨月琴，叫亲戚们听听咱们宅里的热闹。」",
         "restoredLine": "「五妹妹这张嘴，清明不唱曲儿可惜了。到时候你弹琵琶，我拨月琴，叫亲戚们听听咱们宅里的热闹。」",
-        "backlogEntries": 25
+        "backlogEntries": 28
       }
     },
     "coreLoop": {

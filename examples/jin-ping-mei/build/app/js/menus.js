@@ -150,13 +150,13 @@ function systemHtml() {
     <button class="btn primary" data-act="close" data-focus>继续游戏</button>
   </div>`;
 }
-const HEART = ['尚浅', '寻常', '有意', '倾心', '情深'];
+// 心意一瞥只给她的神色和院门灯，不给档位
 function peekHtml() {
   return `<p class="peek-note">只是一眼。清明席散之后，只有还为你亮着灯的门，才会开。</p><div class="peek">${HEROINES.map((h) => {
     const v = story.vars.aff[h] ?? 0;
-    const lvl = v <= 0 ? 0 : v < 3 ? 1 : v < 6 ? 2 : v < 9 ? 3 : 4;
+    const face = v >= 6 ? 'blush' : v >= 1 ? 'smile' : 'neutral';
     const lit = v >= ROUTE_MIN;
-    return `<div class="peek-card" style="--accent:${CAST[h].color}"><img src="assets/sprite/${h}/${lvl >= 3 ? 'blush' : lvl >= 1 ? 'smile' : 'neutral'}.webp" alt=""><b>${CAST[h].full}</b><span class="hearts">${'❀'.repeat(lvl)}${'·'.repeat(4 - lvl)}</span><small>${HEART[lvl]}</small><span class="lantern ${lit ? 'lit' : 'dim'}">${lit ? '灯亮着' : '灯将熄'}</span></div>`;
+    return `<div class="peek-card" style="--accent:${CAST[h].color}"><img src="assets/sprite/${h}/${face}.webp" alt=""><b>${CAST[h].full}</b><span class="lantern ${lit ? 'lit' : 'dim'}">${lit ? '灯亮着' : '灯将熄'}</span></div>`;
   }).join('')}</div>`;
 }
 
