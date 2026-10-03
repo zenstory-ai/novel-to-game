@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "generatedAt": "2026-08-25",
   "toolVersion": "Codex built-in image_gen",
-  "usage": "《金瓶梅·风月总账》四十一张运行图的二维新国风彻底重塑",
+  "usage": "《金瓶梅·风月总账》78 张运行图：2026-08 二维新国风重塑（含身份母版）留用 38 张，2026-10-02 galgame 改造新增 40 张",
   "reason": "旧棕黑 CG、古画册页样张、真人古装样张和现代时尚样张分别被判定为太暗、太旧、太真实和太现代。最终批准方向为完整晚明世界中的成熟理想化二维叙事游戏插画。",
   "externalStyleResearch": {
     "source": "https://github.com/freestylefly/awesome-gpt-image-2",
@@ -240,51 +240,59 @@
     {
       "date": "2026-10-02",
       "tool": "codex exec 内置 image_gen（编辑模式以已批准身份母版为参考）",
-      "purpose": "galgame 改造：透明底立绘五人×五差分、六张全屏场景",
+      "purpose": "galgame 改造：透明底立绘五人×六张（平＋五种表情）、九张全屏场景、一张月娘拜月 CG",
       "assets": [
         "app/assets/sprite/yue/neutral.webp",
         "app/assets/sprite/yue/smile.webp",
         "app/assets/sprite/yue/angry.webp",
         "app/assets/sprite/yue/sad.webp",
         "app/assets/sprite/yue/blush.webp",
+        "app/assets/sprite/yue/surprised.webp",
         "app/assets/sprite/pan/neutral.webp",
         "app/assets/sprite/pan/smile.webp",
         "app/assets/sprite/pan/angry.webp",
         "app/assets/sprite/pan/sad.webp",
         "app/assets/sprite/pan/blush.webp",
+        "app/assets/sprite/pan/surprised.webp",
         "app/assets/sprite/pinger/neutral.webp",
         "app/assets/sprite/pinger/smile.webp",
         "app/assets/sprite/pinger/angry.webp",
         "app/assets/sprite/pinger/sad.webp",
         "app/assets/sprite/pinger/blush.webp",
+        "app/assets/sprite/pinger/surprised.webp",
         "app/assets/sprite/meng/neutral.webp",
         "app/assets/sprite/meng/smile.webp",
         "app/assets/sprite/meng/angry.webp",
         "app/assets/sprite/meng/sad.webp",
         "app/assets/sprite/meng/blush.webp",
+        "app/assets/sprite/meng/surprised.webp",
         "app/assets/sprite/xuee/neutral.webp",
         "app/assets/sprite/xuee/smile.webp",
         "app/assets/sprite/xuee/angry.webp",
         "app/assets/sprite/xuee/sad.webp",
         "app/assets/sprite/xuee/blush.webp",
+        "app/assets/sprite/xuee/surprised.webp",
         "app/assets/bg/hall.webp",
         "app/assets/bg/garden.webp",
         "app/assets/bg/chamber.webp",
         "app/assets/bg/court_night.webp",
         "app/assets/bg/street.webp",
         "app/assets/bg/street_dawn.webp",
-        "app/assets/bg/kitchen.webp"
+        "app/assets/bg/kitchen.webp",
+        "app/assets/bg/court_rain.webp",
+        "app/assets/bg/temple.webp",
+        "app/assets/cg/yue/moon.webp"
       ],
-      "promptSummary": "立绘：以 heroine/<名>/night.webp 为身份参考，生成 1024×1536 透明底腰上至大腿立绘，成年、完整着装、非露骨；差分以基础立绘为编辑输入，只改表情。场景：以 compound_new_guofeng.webp 为画风参考，平视、前景地面留给立绘，无人物无文字。",
-      "postProcessing": "立绘统一缩放到 800×1200 webp q84，不裁切以保证差分逐帧对齐；场景 1536×1024 webp q80。"
+      "promptSummary": "立绘：以 heroine/<名>/night.webp 为身份参考，生成 1024×1536 透明底腰上至大腿立绘，成年、完整着装、非露骨；差分以基础立绘为编辑输入，只改表情。场景：以 compound_new_guofeng.webp 为画风参考，平视、前景地面留给立绘，无人物无文字。月娘拜月 CG：以 heroine/yue/night.webp 为身份参考，月下庭院拜月，成年、完整着装、非成人内容。",
+      "postProcessing": "立绘统一缩放到 800×1200 webp q84，不裁切以保证差分逐帧对齐；场景 1536×1024 webp q80。CG 保持原始比例 webp。"
     }
   ],
   "postProcessing": {
     "command": "cwebp -q 88 -m 6 -metadata none",
-    "assetCount": 41,
-    "totalBytes": 10938766,
-    "intermediatePolicy": "image_gen 原始 PNG 留在工具缓存，不复制进仓库；运行目录只保留四十一张新 WebP。",
+    "assetCount": 78,
+    "totalBytes": 18714684,
+    "intermediatePolicy": "image_gen 原始 PNG 留在工具缓存，不复制进仓库；运行目录只保留本账目所列 WebP。",
     "reproducible": false
   },
-  "acceptance": "人工巡检身份母版、个人夜景、五人群像、双院结果、终章与中局转折；浏览器 QA 另验证四十一张 URL 解码、旧资产清零、目标视口、流程输入和控制台。"
+  "acceptance": "人工巡检身份母版、立绘差分逐帧对齐、个人夜景、群像与终章；浏览器 QA（test/verify_visual.py）验证完整路径上的图片解码、目标视口、流程输入和控制台。"
 }

@@ -86,11 +86,13 @@ export function startReplay(label) {
 }
 
 export function loadSnapshot(record, { keepStack = false } = {}) {
+  // 先验再拆：读不出的存档不动当前画面
+  if (!labels[record?.snap?.label]) { toast('这份存档对应的剧本已改动，读不出来了'); return; }
   closeMenu();
   const tail = record.backlog ?? [];
   clearBacklog(tail.slice(0, -1));
   resetStage();
-  try { story.restore(record.snap); } catch { toast('这份存档对应的剧本已改动，读不出来了'); return; }
+  story.restore(record.snap);
   if (!keepStack) choiceStack.length = 0;
   enterGame();
   ui.line = record.line ?? null;
@@ -403,6 +405,8 @@ export function setSkip(on) {
   if (on && ui.typing) finishTyping(); else rearmWait();
 }
 function stopModes() {
+  clearInterval(ui.typing?.timer); // 读档/回标题时打断旧行的打字机，免得它改写新画面
+  ui.typing = null;
   ui.auto = false;
   ui.skip = false;
   ui.ctrl = false;

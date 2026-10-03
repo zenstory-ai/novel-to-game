@@ -324,7 +324,7 @@ And [`qa/verification.json`](examples/project-plateau/qa/verification.json) name
 }
 ```
 
-Evidence also moved the session length, twice, and [`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) keeps both steps. The first measured run crossed the whole route in 55.2 seconds, which falsified the planned 5–8 minute session, so the boundary was cut to a 1–3 minute run with 180 seconds of light instead of padding the route with waits. When the owner later asked for a longer 5–10 minute visit, the light budget went to 300 seconds and was filled with new decisions (the optional Chapter XII stegosaurus beat and plate-by-plate grading) rather than more walking; a learned Strong path still finishes in about 90 seconds.
+The session length moved twice, once on evidence and once on an owner decision, and [`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) keeps both steps. The first measured run crossed the whole route in 55.2 seconds, which falsified the planned 5–8 minute session, so the boundary was cut to a 1–3 minute run with 180 seconds of light instead of padding the route with waits. When the owner later asked for a longer 5–10 minute visit, the light budget went to 300 seconds and was filled with new decisions (the optional Chapter XII stegosaurus beat and plate-by-plate grading) rather than more walking; a learned Strong path still finishes in about 90 seconds.
 
 ## Your first request
 

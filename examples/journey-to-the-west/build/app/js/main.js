@@ -318,7 +318,7 @@ function gearCells(key, onChange) {
 
 function showHeroPanel(onClose) {
   const rebuild = () => {
-    saveGame(true);
+    if (!storyUnsettled) saveGame(true); // 剧情未了结时不落盘，否则会存下「已升级但关卡未推进」
     refreshGrowthNotice();
     closeOpenPanel?.();
     togglePanel('hero');
@@ -357,7 +357,7 @@ function showHeroPanel(onClose) {
 
 function showBagPanel(onClose) {
   const rebuild = () => {
-    saveGame(true);
+    if (!storyUnsettled) saveGame(true); // 剧情未了结时不落盘，否则会存下「已升级但关卡未推进」
     closeOpenPanel?.();
     togglePanel('bag');
   };
@@ -416,7 +416,7 @@ function showBagPanel(onClose) {
 
 function showPetPanel(onClose) {
   const rebuild = () => {
-    saveGame(true);
+    if (!storyUnsettled) saveGame(true); // 剧情未了结时不落盘，否则会存下「已升级但关卡未推进」
     closeOpenPanel?.();
     togglePanel('pet');
   };
@@ -841,6 +841,7 @@ function applyTreasureResult(result) {
 }
 
 async function storyTreasure() {
+  hub.scene?.hide(); // 寻宝期间场景停帧，回来由 hub 重新进场
   setPhase('treasure');
   clearScreens();
   setStoryBg('huoyan');

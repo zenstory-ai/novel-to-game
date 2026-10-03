@@ -21,6 +21,7 @@ journal interaction. The prototype exists to answer that question.
 
 ## Locked product frame
 
+- experienceProfile: `system-led`.
 - English-first international audience; no knowledge of the novel required.
 - Desktop WebGL2, keyboard and mouse, connected first-person 3D spaces.
 - Teen-equivalent peril, no gore, backend, monetization or multiplayer.

@@ -22,7 +22,6 @@ Project Plateau 平光、单色地表、相机过高，一局 1–3 分钟。继
 - 验证仍是一条权威命令、六项检查；《西游记》删除与 `data.js` 重复的第二数值事实源
   （`qa/design-contract.json` 与其检查脚本）。
 
-来源：本分支（feat/example-playability-overhaul）
 
 ## Alternatives considered
 
@@ -45,3 +44,5 @@ Project Plateau 平光、单色地表、相机过高，一局 1–3 分钟。继
 `python3 test/verify.py`（西游记）、`python3 test/verify_visual.py --write-evidence` 与 `node test/lint_script.mjs`
 （金瓶梅）、`npm test && npm run build && npm run verify`（Plateau）均通过，`qa/verification.json` 六项 PASS；
 `python3 scripts/validate_repo.py` 与 `python3 -m unittest discover -s tests` 通过。
+
+来源：708888b、aa2eafb、f39c11b、39edbc8、f1f6b45

@@ -13,6 +13,7 @@ from Chapters 4, 10–12 and 16, including Malone's stegosaurus at the drinking-
 
 ## Experience profile and pillars
 
+- **experienceProfile:** `system-led`.
 - **Type:** real-time first-person 3D connected-zone survival adventure.
 - **Mastery:** route knowledge, observation timing and threat reading; no build grind.
 - **Session:** 300 seconds of light per run; a learned path finishes in about 90 seconds, a

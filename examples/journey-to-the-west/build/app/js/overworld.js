@@ -620,8 +620,12 @@ export function runScene(ctx) {
       if (p) return { x: r.left + p.x * S - cam.x, y: r.top + p.y * S - cam.y };
       return null;
     },
-    hide() { wrap.style.display = 'none'; },
-    show() { wrap.style.display = ''; },
+    // 隐藏即停帧：战斗与寻宝期间不在底下逐帧绘制
+    hide() { wrap.style.display = 'none'; cancelAnimationFrame(raf); raf = 0; },
+    show() {
+      wrap.style.display = '';
+      if (!raf && !disposed) { last = performance.now(); raf = requestAnimationFrame(frame); }
+    },
     dispose() {
       disposed = true;
       cancelAnimationFrame(raf);

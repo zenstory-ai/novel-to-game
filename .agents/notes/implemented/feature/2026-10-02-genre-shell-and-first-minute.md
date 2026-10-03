@@ -13,17 +13,16 @@ Project Plateau 平光、单色地表、相机过高，三维质感像玩具。�
 
 ## Decision
 
-- `game-concept/references/concept-method.md`：借用成熟品类时，外壳（进入世界、目标指引、成长回访、阅读与操作便利）
+- `game-concept/references/concept-method.md`：借用成熟品类时，外壳（进入世界与移动、目标指引、成长与回访理由、阅读与操作便利）
   随类型继承；拒绝项只排除商业化、社交、长线数值或受保护素材。
 - `game-world-design/references/world-design-method.md` 新增「品类外壳与第一分钟」，**仅用于 `system-led` 或 `hybrid`**：
   在体验合同里用一张短表把外壳标为实现 / 降级 / 不做与理由，切片缩小内容量不砍外壳，外壳不按“改变核心决策”裁剪；
   外壳操作只写进可执行切片合同的完整路径，不另写规则；第一分钟给出招牌画面与熟悉的指引。
 - `game-world-design/references/narrative-design-method.md`：人物路线的关键选择针对该人物自己的心结或议程，
   关系进展优先由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕数值（《金瓶梅》重做的经验）。
-- `game-art-direction/references/art-direction-method.md` 新增「品类成色」：以同品类主流作品实机截图为标尺；
+- `game-art-direction/references/art-direction-method.md` 新增「品类成色」：以同品类主流作品实机截图为标尺（`targetFinish: graybox` 不适用；审阅后补的范围限定，只收窄与 targetFinish 合同冲突的措辞，未另做 A/B）；
   三维质感按光照层次与色调 → 材质分层与地表 → 几何细节的顺序投入。同文件删去与 SKILL.md 重复的语音一句。
 
-来源：本分支（feat/example-playability-overhaul）
 
 ## Alternatives considered
 
@@ -39,6 +38,8 @@ Project Plateau 平光、单色地表、相机过高，三维质感像玩具。�
 
 - 收益：系统主导项目的 GAME_DESIGN 会显式交代场景行走、任务追踪、日常环等外壳，构建阶段不再只做战斗关卡。
 - 代价：叙事主导项目没有得到新的外壳约束，《金瓶梅》式的 ADV 外壳仍依赖 art-direction 的对白区一句和构建者经验。
+- 预算：skills 行数由 1059 增至 1077（仍在总预算 1300 内），对应的删减只有语音半句；净增按上面的 A/B 收益接受，
+  不作为“加一条不删一条”的先例。外壳清单在 concept 与 world-design 各写一次（跨 skill 不得互引），前三项措辞一致；world-design 不列“阅读与操作便利”，因它只用于系统主导项目，叙事项目的阅读便利由 art-direction 的对白区承担。
 - 重访信号：若叙事项目再次交出缺回看/存档/立绘差分的构建，先在 art-direction 的叙事层要求上做 A/B，而不是回到 world-design。
 
 ## Verification
@@ -49,8 +50,10 @@ Sonnet 无工具生成，Opus/Sonnet/Codex 三名盲评，五轴 1–10）：
 - world-design · RPG：对照 6.71 / 7.07，实验 7.13 / 7.31（两轮均胜，attraction +0.7~+1.1，buildability 未降）。
 - world-design · ADV（限定 `system-led`/`hybrid` 后）：实验 7.29；对照两次独立抽样 7.47 与 6.84（合并 7.16），
   组间抽样差大于实验差，判定“未检出回退”。
-- art-direction · 3D：7.44 对 7.44（attraction +0.33），未检出回退。
-- concept · RPG：6.91 对 7.04（14 胜 9 负），未检出回退。
-- 第二轮 narrative-design · ADV（每组 n=4，对照取已含第一轮改动的 HEAD）：7.18 对 7.40，fidelity +0.58，组内 sd 由 0.69 降到 0.37。
+- art-direction · 3D：对照 7.44，实验 7.44（实验 attraction +0.33），未检出回退。
+- concept · RPG：对照 6.91，实验 7.04（实验 14 胜 9 负），未检出回退。
+- 第二轮 narrative-design · ADV（每组 n=4，对照取已含第一轮改动的 HEAD）：对照 7.18，实验 7.40，fidelity +0.58，组内 sd 由 0.69 降到 0.37。
 
 只报告“未检出回退 / 改进”，不把主观趣味写成确定结论。
+
+来源：49dd1c1、b36a989

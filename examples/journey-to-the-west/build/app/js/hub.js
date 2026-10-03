@@ -345,11 +345,12 @@ export function createHub(deps) {
       b.demon = null;
       b.report = true;
       logLine('sys', `封妖令第${ringNo}环完成：${lines.join('，')}`);
+      const leveled = Object.keys(ups).length > 0;
+      if (leveled) deps.onBountyLevelUp(ups); // 先发潜力点/修炼点再存档，否则升级后立刻关页会丢点
       deps.save(true);
       enter(ctl.sceneId, [d.x, d.y + 40]);
       audio.sfx('coin');
-      if (Object.keys(ups).length) {
-        deps.onBountyLevelUp(ups);
+      if (leveled) {
         const lv = c.levels.wukong;
         ctl.levelUpFx();
         audio.sfx('levelup');

@@ -306,11 +306,10 @@
         "app/src/daylight-energy.js",
         "app/src/height-fog.js",
         "app/src/atmosphere.js",
-        "app/src/overhead-cloud-field.js",
         "app/src/main.js",
         "app/src/world.js"
       ],
-      "fallback": "Directional sun, hemisphere light and FogExp2 preserve route and threat readability if PMREM or analytic height fog is unavailable; low quality disables the overhead cloud deck and its direct-light attenuation."
+      "fallback": "Directional sun, hemisphere light and FogExp2 preserve route and threat readability if PMREM or analytic height fog is unavailable."
     },
     {
       "key": "audio.core_world",
