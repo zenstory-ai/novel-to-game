@@ -11,6 +11,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-02
+
 ### Changed
 
 - Inherited the genre shell along with a borrowed genre: the concept method no longer lets a "not borrowed" list drop the parts players use to recognise the genre (entering the world, objective guidance, progression and reasons to return, reading and control conveniences), and system-led or hybrid world designs now carry a short shell table (implemented / degraded / not done, with reasons) plus what the first minute shows. Art direction gains a genre-quality bar measured against mainstream screenshots of the same genre (not applied at `targetFinish: graybox`), with 3D finish built in the order light → materials and ground → geometry. Narrative-led designs are exempt from the shell table after blind A/B showed it crowding out their buildability; the evidence is in the decision note.
@@ -117,7 +119,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.2.0...v0.3.0
