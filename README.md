@@ -67,9 +67,9 @@ A galgame-style romance ADV set in the Ximen household the spring after Li Ping'
 
 A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Under a low western sun, walk out from Fort Challenger through knee-high grass, keep to a band of thorn arches for cover, and expose four glass plates through a long lens. Each plate is graded on the spot from what the live camera actually framed, with stamps and a line from the sceptical Summerlee. A pterodactyl circles before it dives, a stegosaurus may come down to drink at the brook, and you have 300 seconds of light to bring the plates back.
 
-Play the full expedition on desktop, or watch the preview on other devices. It is a real capture of the current build (a 9-second excerpt; click for the 15-second video).
+Play the full expedition on desktop, or watch the 15-second gameplay preview on other devices. It is a real capture of the current build.
 
-[![Gameplay capture: an Iguanodon family crossing the glade in low western light, then the field camera raised to frame the young](examples/project-plateau/screenshots/preview.gif)](examples/project-plateau/screenshots/preview.mp4)
+https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 **[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Adaptation workspace](examples/project-plateau/) · [Share feedback](https://github.com/zenstory-ai/novel-to-game/discussions/7) · design estimate: 5–10 min (300 s of light per run) · desktop WebGL2 · playable prototype
 

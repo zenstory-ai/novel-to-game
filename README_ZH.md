@@ -69,9 +69,9 @@ NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Co
 
 这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。西斜的低太阳下，从挑战者堡出发，穿过齐膝的草，沿一条荆棘拱廊找掩护，用长焦镜头曝光四张玻璃底片。每张底片当场按实时取景里真正框住的东西评定，盖上评语印章，再配一句多疑的萨默利教授的话。翼手龙先盘旋再俯冲，一头剑龙可能走下溪边饮水，你只有 300 秒天光把底片带回去。
 
-桌面浏览器可完整试玩，其他设备可观看下面的预览。它是当前构建的实机录屏（节选 9 秒；点开是 15 秒完整视频）。
+桌面浏览器可完整试玩，其他设备可直接观看 15 秒实机预览，它录自当前构建。
 
-[![实机录屏：西斜低光里禽龙一家穿过林间空地，随后举起野外相机对准幼崽取景](examples/project-plateau/screenshots/preview.gif)](examples/project-plateau/screenshots/preview.mp4)
+https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 **[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [改编工作区](examples/project-plateau/) · [反馈体验](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 设计估时 5–10 分钟（每局 300 秒天光） · 桌面 WebGL2 · 可玩原型
 
