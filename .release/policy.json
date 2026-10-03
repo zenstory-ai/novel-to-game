@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "repository": "zenstory-ai/novel-to-game",
+  "versionFiles": [
+    {
+      "path": "VERSION",
+      "format": "text"
+    },
+    {
+      "path": ".claude-plugin/plugin.json",
+      "format": "json",
+      "pointer": "/version"
+    },
+    {
+      "path": ".codex-plugin/plugin.json",
+      "format": "json",
+      "pointer": "/version"
+    },
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "format": "json",
+      "pointer": "/metadata/version"
+    },
+    {
+      "path": ".claude-plugin/marketplace.json",
+      "format": "json",
+      "pointer": "/plugins/0/version"
+    }
+  ],
+  "changelog": "CHANGELOG.md",
+  "requiredPaths": [
+    "README.md",
+    "README_ZH.md",
+    "skills/game-art-direction/SKILL.md",
+    "skills/game-build/SKILL.md",
+    "skills/game-concept/SKILL.md",
+    "skills/game-qa/SKILL.md",
+    "skills/game-world-design/SKILL.md",
+    "skills/novel-game-analyze/SKILL.md",
+    "skills/novel-to-game/SKILL.md",
+    "VERSION",
+    ".claude-plugin/plugin.json",
+    ".codex-plugin/plugin.json",
+    ".claude-plugin/marketplace.json"
+  ],
+  "excludePaths": [
+    ".agents",
+    ".clawhub",
+    ".github",
+    ".release"
+  ],
+  "ciWorkflows": [
+    {
+      "file": "validate.yml",
+      "jobs": [
+        "repository"
+      ]
+    },
+    {
+      "file": "validate-clawhub.yml",
+      "jobs": [
+        "guard-central-ref",
+        "ClawHub inventory validation / distribute"
+      ]
+    }
+  ]
+}
