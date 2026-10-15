@@ -44,7 +44,7 @@ description: "Design game concepts from a novel. From SOURCE_BIBLE and PRODUCT_B
 3. 紧凑先例说明；
 4. 候选概念卡：主类型、`experienceProfile`、借用/拒绝的玩法先例、核心动作与循环、压力、失败、
    世界响应；说明玩家身份如何形成反复行动、执行阻力与可观察变化，不要求独立的固定键名。
-   `signature_command` 按方法「身份专属命令」写值或 `N/A`；最后说明原作张力如何由玩家亲手 enact、
+   `signature_command` 按方法「身份专属命令」写值或 `N/A`；最后说明原作张力如何由玩家行动体现、
    招牌画面、最小验证切片、最大风险和否决观察；
 5. 硬否决结果、关键取舍、推荐与选择状态；
 6. 选定方向的玩家能动性合同、不可妥协体验承诺；

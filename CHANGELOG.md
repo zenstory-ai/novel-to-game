@@ -11,6 +11,10 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Fixed
+
+- 精修七个技能及当前文档，明确需求确认与原著证据的范围；双语 README 按实际硬件、费用与六项 QA 记录说明能力。将《金瓶梅》示例的文案规则与人物声口原样移到游戏设计，来源资料只保留事实和准确链接，并校正既定 18+ 展示边界；《西游记》的引用回目、战斗顺序及计数按原文和现有实现修正。保留全部 badcase、配对示例、原文、游戏源码与真实 QA 记录；四个改动技能包升补丁号并更新依赖锁。
+
 ### Changed
 
 - game-build now hands a factual mismatch between the built candidate and GAME_DESIGN or ART_DIRECTION back to the owning stage, or marks it as a conflict in BUILD_BRIEF, instead of leaving documents that describe play, presentation or sound that no longer exists. ClawHub: `game-build` 1.1.0, `novel-to-game` 1.0.2. A companion sentence restoring the on-screen-text rule for narrative-led designs lost its blind A/B (7.33 vs 6.92, eight samples per arm) and was not shipped; see the [decision note](.agents/notes/implemented/process/2026-10-03-build-writes-back-design-drift.md).

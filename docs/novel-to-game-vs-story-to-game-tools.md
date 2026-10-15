@@ -1,18 +1,16 @@
 # Turning a novel into a playable game: NovelToGame compared with story-to-game builders
 
-**Short answer:** NovelToGame (`zenstory-ai/novel-to-game`, MIT, 7 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds for the runtime you choose, and ends with evidence-based QA that launches the actual build. Three public adaptations are playable in a browser today, including a first-person WebGL2 3D game.
-
-This page is for people comparing "story to game" options. It describes what this repo does and, where a competitor is named, only what that competitor states publicly.
+NovelToGame (`zenstory-ai/novel-to-game`, MIT, 7 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds for the runtime you choose, and ends with evidence-based QA that launches the actual build. Three public adaptations are playable in a browser today, including a first-person WebGL2 3D game.
 
 ## Three shapes of tool
 
 | Shape | Example | What you get | Where the design lives |
 |---|---|---|---|
-| Hosted engine with a story-to-game feature | Summer Engine's Story-to-Game (a Godot 4 compatible visual-novel builder, per its site) | A visual novel built inside that engine from your story | Inside the product |
+| Desktop engine with a story-to-game feature | [Summer Engine Story-to-Game](https://www.summerengine.com/story-to-game), a Godot 4 compatible engine | An editable, exportable game project; the user chooses the genre | In project scenes and scripts |
 | Single-purpose open-source script | Various "Story-to-game" repositories on GitHub | A generated game in one fixed format | In the script's template |
 | Agent skill pipeline | NovelToGame | Source-cited design documents plus a build for the engine or platform you approve, plus a QA record | In Markdown files you own, engine-independent |
 
-The first two decide the game shape for you. NovelToGame makes the shape a documented decision with a named owner, and keeps the design documents independent of any single model or engine.
+Engine-based generators and template scripts have their own production workflows; check the supported formats and editing tools before choosing one. NovelToGame makes the game shape an explicit design decision and keeps the design documents independent of any single model or engine.
 
 ## The pipeline
 
@@ -47,7 +45,7 @@ game-adaptations/<project>/
 
 ## What "source-grounded" means
 
-A one-line "turn this book into a game" prompt usually produces a reskin or a clickable plot summary. The analysis skill instead cites the text for every rule, space and character motive it extracts, so a later design decision can be traced back to a passage. Additions the author approves are labelled as additions; open questions stay open rather than being filled in silently.
+A one-line "turn this book into a game" prompt usually produces a reskin or a clickable plot summary. The analysis skill cites the text for hard rules, key character goals, turning points, endings and signature anchors, so later design decisions can be traced back to their source evidence. Additions the author approves are labelled as additions; open questions stay open rather than being filled in silently.
 
 ## What "evidence-based QA" means
 

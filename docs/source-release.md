@@ -1,8 +1,7 @@
 # Source release
 
 This repository publishes a tracked-source archive through the reviewed shared
-ZenStory source-release controls. This rollout establishes the existing version;
-it does not create a tag or release.
+ZenStory source-release controls.
 
 ## Contract
 

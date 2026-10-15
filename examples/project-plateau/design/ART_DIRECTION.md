@@ -172,5 +172,5 @@ and evidence outcomes are unchanged by the look.
 The river room keeps its incised terraces, point bars, backwaters and meadow masses
 outside the protected walking seam (east of x=29 / south of z=-90 for high walls; ≤0.3 m
 inside the basin). Scenes: Fort threshold, track bend, family crossing, return fork, and the
-title as a live silver plate onto the same world. Chapter XII adds a fifth: the
+title as a live silver plate onto the same world. Chapter XII adds another moment: the
 stegosaurus drinking broadside at the west bank of the brook beyond the glade.

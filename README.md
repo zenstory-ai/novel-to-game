@@ -31,7 +31,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The three public examples below play in a browser right now, no install.
+NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The three examples below are browser games and include links to their playable builds.
 
 ## Play Online
 
@@ -75,13 +75,13 @@ https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 ## What it is
 
-There is no GPU, no hosted service, and no bundled engine: the skills run on the model of whichever agent you installed them into. A one-line "turn this book into a game" prompt usually yields a reskin or a clickable plot summary, so the work is split into stages. Each stage owns one document, and every decision in it has to cite evidence:
+The skills run on your coding agent's model and organize adaptation into stages. Each stage owns a document, with source evidence separated from design choices:
 
-- **Every design decision cites the novel.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
+- **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
 - **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
 - **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
 - **Built for the runtime the brief locks.** The product brief, the one-page requirements sheet the agent drafts first (in `quick` it stops for your decision only on blocking items such as platform, rights, or adult content), locks platform, engine, target runtime, and the runtime actually available for testing. A missing toolchain may not silently become a web build. The design documents are engine-independent Markdown you own.
-- **QA is one real run, six checks, and honest limitations.** The build is launched on the tested runtime and one complete execution proves `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart`. Fun, balance, other browsers, and rights are written as limitations, never as PASS.
+- **QA is one real run, six checks, and honest limitations.** The build is launched on the tested runtime and one complete execution proves `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart`. Untested environments are listed as limitations; this PASS does not establish fun, balance or rights clearance.
 - **Voice is opt-in and generated at build time by default.** No line goes to a text-to-speech provider unless art direction chooses voice; runtime synthesis needs the product brief's explicit approval, and the novel and design documents are never uploaded.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
@@ -90,8 +90,7 @@ Interactive fiction is a first-class track: continuous scenes, dialogue, testimo
 
 ### ClawHub
 
-ClawHub distribution is governed by the repository's [explicit publish inventory](.clawhub/publish.json), with discovery through [ClawHub](https://clawhub.ai/). A skill-specific link is added here only after its publisher, version, and anonymous accessibility are verified, so this README never presents a nonexistent listing as live.
-
+ClawHub distribution is governed by the repository's [explicit publish inventory](.clawhub/publish.json), with discovery through [ClawHub](https://clawhub.ai/).
 
 Prerequisite: you already use Claude Code, Codex, or Kimi Code, and `npx` (Node.js) runs in your terminal.
 
@@ -140,7 +139,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 </details>
 
-> Changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/zenstory-ai/novel-to-game/releases). The repository moved from `worldwonderer/novel-to-game` to `zenstory-ai/novel-to-game`; install and marketplace commands from older docs no longer resolve, and the commands above are current.
+> Changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/zenstory-ai/novel-to-game/releases).
 
 ## See what it produces
 
@@ -409,7 +408,7 @@ Say so in the request, as the second example above does. That locks `experienceP
 
 ### How long does a full run take, and what does it cost?
 
-Longer than one prompt. The agent reads the whole novel, writes five design documents, builds, and runs QA, and each stage is a separate skill call, so a full run is long and may span more than one session. Token spend is whatever your coding agent bills; nothing else is paid unless art direction opts into image or voice generation (see the GPU question below). The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 
@@ -421,7 +420,7 @@ You choose, and the product brief locks it: platform, production engine, target 
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
-No GPU and no separate model: analysis, design, and code are written by the model of the coding agent you already use. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. Paid services are one of the things the agent stops to ask about before it starts. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
+For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. Paid services are one of the things the agent stops to ask about before it starts. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 
