@@ -17,6 +17,8 @@ Status: implemented
 - 编排器只记录两项完成检查：`scope`（brief、bible、三份设计交接存在且不冲突）与 `playable`（六项 QA 证据齐全，见 [six-check-minimal-qa-contract](../testing/2026-08-06-six-check-minimal-qa-contract.md)）；`_progress.md` never 复制 QA 明细。
 - 工具链不可用时只能用 brief 已批准的替代运行时，替代结果 never 证明目标平台已通过。
 
+2026-10-15 补漏复核使 `game-world-design` 的描述和 Codex 默认请求与同一 owner 合同一致：交付 `GAME_DESIGN` 及可供构建的切片设计，原型实现仍由 `game-build` 负责。正文流程、产物和分工不变。
+
 来源：958056a、15c6663、70ee654 (#2)、1f9ba53、45d2c3c、6c450da (#20)、e737787 (#38)
 
 ## Alternatives considered
@@ -28,3 +30,7 @@ Status: implemented
 
 - 收益：任何阶段的争议都有唯一 owner 文件可改，实现层不能把策划问题吞掉；`resume` 能从最早不成立的检查继续。
 - 代价：三份设计文档与 brief 的字段（`targetFinish`、`experienceProfile`、运行时）必须保持一致，校验器只机械核对 `targetFinish`，`experienceProfile` 的一致性归编排器的 `scope` 检查，运行时字段由 QA 读取时冲突报错；早期工作区缺 `experienceProfile` 只允许补记一次，不得据此重做概念。
+
+## Verification
+
+2026-10-15 补漏：七份 Codex 界面元数据均按五步审阅，其余六份保留。现有仓库验证（7 skills）、15 项测试和七包 ClawHub 离线校验通过；变更包更新补丁版本、锁定摘要及精确伴随版本。独立复核确认正文工作流与全部案例不变。

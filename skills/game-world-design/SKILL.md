@@ -1,6 +1,6 @@
 ---
 name: game-world-design
-description: "Design game experience, systems, and levels. Converge the chosen concept into one GAME_DESIGN defining the player promise, core loop, how the world responds, the systems actually needed, level pacing, feedback, failure, and a fully playable prototype. Use for design the game world, deepen the gameplay and levels, write the game design document, design the branching story structure, scenes, dialogue and consequences. 游戏体验、系统与关卡策划。把选定概念收束为一份 GAME_DESIGN，定义玩家承诺、核心循环、世界响应、必要系统、关卡节奏、反馈、失败和可完整游玩的原型。用于设计游戏世界、深化玩法和关卡、设计互动叙事的场景对白与分支因果等需求。"
+description: "Design game experience, systems, and levels. Converge the chosen concept into one GAME_DESIGN defining the player promise, core loop, how the world responds, the systems actually needed, level pacing, feedback, failure, and the specification for a complete playable slice. Use for design the game world, deepen the gameplay and levels, write the game design document, design the branching story structure, scenes, dialogue and consequences. 游戏体验、系统与关卡策划。把选定概念收束为一份 GAME_DESIGN，定义玩家承诺、核心循环、世界响应、必要系统、关卡节奏、反馈、失败及可供构建的完整切片设计。用于设计游戏世界、深化玩法和关卡、设计互动叙事的场景对白与分支因果等需求。"
 ---
 # 游戏体验与世界设计
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Game World Design"
   short_description: "Design the playable world, systems, and levels · 设计可玩的世界、系统与关卡体验"
-  default_prompt: "Use $game-world-design to deepen this concept into a playable world and a complete prototype."
+  default_prompt: "Use $game-world-design to write GAME_DESIGN for this concept, defining the world, systems, levels, and a complete playable slice for the build stage."
