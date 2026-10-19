@@ -21,7 +21,8 @@ description: "Turn a novel into a fully playable game on the selected target pla
 ## 模式
 
 - `quick`：默认；用推荐草案推进，比较有效替代后自动选择并完成全流程。
-- `director`：给出候选和推荐后停靠，等待用户选方向；已有明确选择时不重复停靠。
+- `director`：在概念方向、白盒试玩后的内容取舍和视觉目标候选三处给出候选与推荐后停靠，等待用户选择；
+  已有明确选择时不重复停靠。
 - `resume`：读取 `_progress.md` 和实际产物，从最早未完成的交接继续。
 
 ## 流程
@@ -33,8 +34,10 @@ description: "Turn a novel into a fully playable game on the selected target pla
    不适用时明确 `N/A`；`director` 的待决方向在此停靠。
 5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`，其中锁定最大设计风险与最小可执行切片。
 6. 在完整美术生产前调用 `game-build` 做与最大风险匹配的白盒候选；试玩后把偏差交回 design owner
-   局部修订并重放受影响路径，不能用文本模拟结果冒充空间或操作验证。
-7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包。
+   局部修订并重放受影响路径，不能用文本模拟结果冒充空间或操作验证；随后按流程契约做第一次预算与
+   范围复盘，据此请 design owner 调整剧情与关卡内容量。
+7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包，目标图选定后
+   才进入批量资产生产。
 8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
    product/design/art/build 归属回流，不让实现阶段静默重做策划。
 

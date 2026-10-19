@@ -11,6 +11,10 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Added
+
+- game-build gains an opt-in route for 2.5D characters that need consistent multi-direction, multi-action sprites: generate a 3D model from the approved character target, auto-rig it, render every direction and action through the game's own camera and light, then pack an atlas and check turns, foot sliding and pivot jitter in the real game view ([decision note](.agents/notes/implemented/feature/2026-10-19-baked-sprite-workflow.md)).
+
 ### Fixed
 
 - 精修七个技能及当前文档，明确需求确认与原著证据的范围；双语 README 按实际硬件、费用与六项 QA 记录说明能力。将《金瓶梅》示例的文案规则与人物声口原样移到游戏设计，来源资料只保留事实和准确链接，并校正既定 18+ 展示边界；《西游记》的引用回目、战斗顺序及计数按原文和现有实现修正。保留全部 badcase、配对示例、原文、游戏源码与真实 QA 记录；四个改动技能包升补丁号并更新依赖锁。
@@ -18,6 +22,10 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 ### Changed
 
 - game-build now hands a factual mismatch between the built candidate and GAME_DESIGN or ART_DIRECTION back to the owning stage, or marks it as a conflict in BUILD_BRIEF, instead of leaving documents that describe play, presentation or sound that no longer exists. ClawHub: `game-build` 1.1.0, `novel-to-game` 1.0.2. A companion sentence restoring the on-screen-text rule for narrative-led designs lost its blind A/B (7.33 vs 6.92, eight samples per arm) and was not shipped; see the [decision note](.agents/notes/implemented/process/2026-10-03-build-writes-back-design-drift.md).
+- The brief now records a production budget, and the pipeline reviews remaining budget against remaining scope twice, after the whitebox playtest and once about half the production must-haves are done. Rising per-task cost or parallel agents repeatedly editing the same files mean the project is near its ceiling: stop adding content, cut by what the player actually sees, and polish the always-on-screen interface and player character before scenes. The whitebox playtest now asks what players keep coming back to, and the story, dialogue and level budget set during concept and design is revised against that answer; `director` mode can pause there for a real target player. Concept selection also weighs content cost, favouring content that scales by recombination over a bespoke scene per chapter ([decision note](.agents/notes/implemented/process/2026-10-19-budget-rescope-and-whitebox-fun-check.md)).
+- Visual targets come as about three distinct original candidates per identity anchor, key moment and main screen; `director` mode pauses for the user's pick, `quick` mode picks against the written criteria, and batch asset production starts only after the pick. In production, game-build compares runtime screenshots side by side with each approved target, fixes the listed differences, and stops after two rounds without improvement, recording what remains in BUILD_BRIEF ([decision note](.agents/notes/implemented/feature/2026-10-19-visual-target-pick-and-runtime-match.md)).
+- When the same feel or presentation problem survives two fixes, game-build stops trying new variations and first looks up how shipped games solved it in public talks, postmortems or open-source code ([decision note](.agents/notes/implemented/process/2026-10-19-build-stuck-research-escalation.md)).
+- None of the changes above went through the blind A/B or end-to-end build evaluation used for earlier skill changes. ClawHub: `game-art-direction` 1.2.0, `game-build` 1.2.0, `game-concept` 1.2.0, `novel-to-game` 1.1.0.
 
 ## [0.5.0] - 2026-10-02
 

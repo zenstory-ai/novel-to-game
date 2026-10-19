@@ -37,6 +37,8 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
   [playable-model-contract.md](references/playable-model-contract.md) 的相关部分。
 - 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。
 - 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。
+- 2.5D 角色或物件需要多方向、多动作且身份一致的序列帧时，读取
+  [baked-sprite-workflow.md](references/baked-sprite-workflow.md)。
 
 ## 共同构建循环
 
@@ -45,6 +47,8 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 2. 实现 GAME_DESIGN 的状态、动作与结果；使用生成模型时，模型只解释输入和结果，规则器拥有提交权。
    存在 `signature_command` 时再执行可选合同的专属边界。
 3. 保留能复现问题的初态与输入路径，涉及随机性时固定 seed；修订后重放失败路径与相邻反例。
+   同一手感或表现问题连续两次修复无效时停止换方案，先查成熟作品处理同类问题的公开资料（开发者
+   演讲、技术复盘或开源实现），理解其原理后再实现。
 4. 回写实际工具链、install/build/start 命令和版本；未知值写 `NOT_AVAILABLE: 原因`，不猜。
    实际候选与 GAME_DESIGN、ART_DIRECTION 的事实描述不符时，交回对应 owner 修订或在 BUILD_BRIEF 标明冲突，
    不留下描述已不存在的玩法、表现或声音的文档。
@@ -59,7 +63,9 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 6. 运行最窄的开发检查与启动 smoke，修复构建失败、阻断日志、资源失败和崩溃；替代运行时未覆盖的
    目标平台输入、性能、打包或设备项写入 limitation。
 7. 达到 brief 的 `targetFinish`；更高完成度只处理已批准的焦点资产和招牌时刻，不制造与可玩闭环
-   无关的发布审计。
+   无关的发布审计。有批准目标图的界面与焦点资产，在目标视口截取实际运行画面与目标图并排比对，
+   逐项列出布局、比例、字体、色光与层级差异后修正；连续两轮没有改善就停止，把剩余差异写进
+   BUILD_BRIEF 的限制，不修改目标图去迁就实现。
 8. 交给 `game-qa`；诊断、复跑与事实源规则见契约「完成证据」。
 
 ## 输出
