@@ -39,6 +39,7 @@ existing ownership, rights, version/hash, scan and anonymous-audit gates remain
 authoritative.
 
 The caller currently pins shared source controls to `d098c09a27f8fe58ccf3a13a894ecc3804747b7c`.
-When upgrading controls, change all four references together and pass the
-source-bound pin contract before merging. The separate ClawHub writer pin is
+When upgrading controls, change every reference together (four in
+`release.yml`, one in `deployment-readiness.yml`) and pass the source-bound pin
+contract before merging. The separate ClawHub writer pin is
 unchanged and remains independently reviewed.

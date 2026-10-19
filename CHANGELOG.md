@@ -11,21 +11,34 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-19
+
 ### Added
 
 - game-build gains an opt-in route for 2.5D characters that need consistent multi-direction, multi-action sprites: generate a 3D model from the approved character target, auto-rig it, render every direction and action through the game's own camera and light, then pack an atlas and check turns, foot sliding and pivot jitter in the real game view ([decision note](.agents/notes/implemented/feature/2026-10-19-baked-sprite-workflow.md)).
-
-### Fixed
-
-- Polished all seven skills and the current docs, clarifying the scope of requirements intake and source evidence; both READMEs now describe capability in terms of actual hardware, cost and six-check QA records. The Jin Ping Mei example's copy rules and character voices moved unchanged into its game design, its source notes keep only facts and accurate links, and its established 18+ display boundary was corrected; Journey to the West's cited chapters, battle order and counts were fixed against the source text and the current implementation. All bad cases, paired examples, source texts, game code and real QA records are kept; the four changed skill packages get patch bumps and refreshed dependency locks.
+- A source-bound release workflow: a stable `vX.Y.Z` tag on green `main` publishes an append-only source archive, verifies it anonymously, and hands the exact tag and commit to the ClawHub workflow; pull requests and manual runs only validate ([docs/source-release.md](docs/source-release.md)).
+- A read-only, manually triggered deployment observation that ties the exact `main` commit's CI to the latest Vercel production deployment of each example and to its public origin, without deployment credentials ([docs/production-delivery.md](docs/production-delivery.md)).
+- `CLAUDE.md` imports `AGENTS.md`, so Claude Code loads the repository contract.
 
 ### Changed
 
-- game-build now hands a factual mismatch between the built candidate and GAME_DESIGN or ART_DIRECTION back to the owning stage, or marks it as a conflict in BUILD_BRIEF, instead of leaving documents that describe play, presentation or sound that no longer exists. ClawHub: `game-build` 1.1.0, `novel-to-game` 1.0.2. A companion sentence restoring the on-screen-text rule for narrative-led designs lost its blind A/B (7.33 vs 6.92, eight samples per arm) and was not shipped; see the [decision note](.agents/notes/implemented/process/2026-10-03-build-writes-back-design-drift.md).
+- game-build now hands a factual mismatch between the built candidate and GAME_DESIGN or ART_DIRECTION back to the owning stage, or marks it as a conflict in BUILD_BRIEF, instead of leaving documents that describe play, presentation or sound that no longer exists. A companion sentence restoring the on-screen-text rule for narrative-led designs lost its blind A/B (7.33 vs 6.92, eight samples per arm) and was not shipped; see the [decision note](.agents/notes/implemented/process/2026-10-03-build-writes-back-design-drift.md).
 - The brief now records a production budget, and the pipeline reviews remaining budget against remaining scope twice, after the whitebox playtest and once about half the production must-haves are done. Rising per-task cost or parallel agents repeatedly editing the same files mean the project is near its ceiling: stop adding content, cut by what the player actually sees, and polish the always-on-screen interface and player character before scenes. The whitebox playtest now asks what players keep coming back to, and the story, dialogue and level budget set during concept and design is revised against that answer; `director` mode can pause there for a real target player. Concept selection also weighs content cost, favouring content that scales by recombination over a bespoke scene per chapter ([decision note](.agents/notes/implemented/process/2026-10-19-budget-rescope-and-whitebox-fun-check.md)).
 - Visual targets come as about three distinct original candidates per identity anchor, key moment and main screen; `director` mode pauses for the user's pick, `quick` mode picks against the written criteria, and batch asset production starts only after the pick. In production, game-build compares runtime screenshots side by side with each approved target, fixes the listed differences, and stops after two rounds without improvement, recording what remains in BUILD_BRIEF ([decision note](.agents/notes/implemented/feature/2026-10-19-visual-target-pick-and-runtime-match.md)).
 - When the same feel or presentation problem survives two fixes, game-build stops trying new variations and first looks up how shipped games solved it in public talks, postmortems or open-source code ([decision note](.agents/notes/implemented/process/2026-10-19-build-stuck-research-escalation.md)).
-- None of the changes above went through the blind A/B or end-to-end build evaluation used for earlier skill changes. ClawHub: `game-art-direction` 1.2.0, `game-build` 1.2.0, `game-concept` 1.2.0, `novel-to-game` 1.1.0.
+- The budget, visual-target, runtime-match, stuck-research and baked-sprite changes in this release were not run through the blind A/B or end-to-end build evaluation used for earlier skill changes.
+- ClawHub pull-request validation runs offline against pinned central controls, and remote writers fail closed.
+- ClawHub packages in this release: `game-art-direction` 1.2.0, `game-build` 1.2.0, `game-concept` 1.2.0, `game-qa` 1.0.1, `game-world-design` 1.1.1, `novel-to-game` 1.1.0; `novel-game-analyze` stays at 1.0.0.
+
+### Removed
+
+- Removed the Actions CLI deployer (`deploy.yml`); native Vercel Git integration is now the single production producer for the three examples, gated on the `repository` and ClawHub inventory checks.
+
+### Fixed
+
+- Polished all seven skills and the current docs, clarifying the scope of requirements intake and source evidence; both READMEs now describe capability in terms of actual hardware, cost and six-check QA records. The Jin Ping Mei example's copy rules and character voices moved unchanged into its game design, its source notes keep only facts and accurate links, and its established 18+ display boundary was corrected; Journey to the West's cited chapters, battle order and counts were fixed against the source text and the current implementation. All bad cases, paired examples, source texts, game code and real QA records are kept.
+- The `game-world-design` description and Codex default prompt now promise a `GAME_DESIGN` with a buildable slice specification; the prototype itself stays with `game-build`.
+- Journey to the West's concept and build brief now list the white-bull phase before the gods' gated assist, matching the game design and the build.
 
 ## [0.5.0] - 2026-10-02
 
@@ -136,7 +149,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.0...v0.3.1

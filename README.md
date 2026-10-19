@@ -359,7 +359,7 @@ Keep the choices and outcomes bounded; show each option's evidence, cost, visibl
 Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
 ```
 
-`quick` is the default: the agent drafts a product brief with sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to pick the concept yourself; the agent stops at the concept stage with candidates and a recommendation, unless you have already named a direction.
+`quick` is the default: the agent drafts a product brief with sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at three points (the concept, what to cut after the whitebox playtest, and the visual target images) unless you have already decided.
 
 ## Workflow
 
@@ -367,7 +367,7 @@ Label allowed additions and unresolved questions. Deliver design notes only—do
 Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
 ```
 
-After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The production build targets the approved runtime and prepares one authoritative verification command. QA may diagnose, fix, and rerun, but the final record binds all six checks to the same complete run; findings flow back to the product, design, art, or build document that owns them.
+After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The whitebox playtest also shows which part players keep coming back to, so the story, dialogue and level budget is revised against it, and the brief's production budget is checked against the remaining scope there and again halfway through production. The production build targets the approved runtime and prepares one authoritative verification command. QA may diagnose, fix, and rerun, but the final record binds all six checks to the same complete run; findings flow back to the product, design, art, or build document that owns them.
 
 ## Skills
 
@@ -408,7 +408,7 @@ Say so in the request, as the second example above does. That locks `experienceP
 
 ### How long does a full run take, and what does it cost?
 
-The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and the run checks the remaining scope against it after the whitebox and halfway through production, cutting content before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 

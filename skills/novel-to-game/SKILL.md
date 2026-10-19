@@ -36,7 +36,7 @@ description: "Turn a novel into a fully playable game on the selected target pla
 6. 在完整美术生产前调用 `game-build` 做与最大风险匹配的白盒候选；试玩后把偏差交回 design owner
    局部修订并重放受影响路径，不能用文本模拟结果冒充空间或操作验证；随后按流程契约做第一次预算与
    范围复盘，据此请 design owner 调整剧情与关卡内容量。
-7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有目标成色需要时再制作视觉目标包，目标图选定后
+7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有高风险歧义或目标成色需要时再制作视觉目标包，目标图选定后
    才进入批量资产生产。
 8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
    product/design/art/build 归属回流，不让实现阶段静默重做策划。
