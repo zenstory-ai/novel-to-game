@@ -17,7 +17,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ### Fixed
 
-- 精修七个技能及当前文档，明确需求确认与原著证据的范围；双语 README 按实际硬件、费用与六项 QA 记录说明能力。将《金瓶梅》示例的文案规则与人物声口原样移到游戏设计，来源资料只保留事实和准确链接，并校正既定 18+ 展示边界；《西游记》的引用回目、战斗顺序及计数按原文和现有实现修正。保留全部 badcase、配对示例、原文、游戏源码与真实 QA 记录；四个改动技能包升补丁号并更新依赖锁。
+- Polished all seven skills and the current docs, clarifying the scope of requirements intake and source evidence; both READMEs now describe capability in terms of actual hardware, cost and six-check QA records. The Jin Ping Mei example's copy rules and character voices moved unchanged into its game design, its source notes keep only facts and accurate links, and its established 18+ display boundary was corrected; Journey to the West's cited chapters, battle order and counts were fixed against the source text and the current implementation. All bad cases, paired examples, source texts, game code and real QA records are kept; the four changed skill packages get patch bumps and refreshed dependency locks.
 
 ### Changed
 
