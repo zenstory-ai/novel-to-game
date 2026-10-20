@@ -35,6 +35,8 @@ Status: implemented
 - 代价：README 英文 232→420 行、中文 231→421 行；节选引用了示例文件的具体内容，示例改写时要跟着改（`validate_repo.py` 不检查节选是否仍与来源一致）。
 - 未做：没有给示例目录补 README；没有录制流程视频；没有为 README 新增测试；「跑多久、花多少」只能如实说没有记录。
 
+后续变化：仓库迁移引用块在 #73 删除；示例链接顺序校验在 #62 随 `validate_readme_example_order` 一并删除，中英结构一致改由评审维持。
+
 ## Verification
 
 - `python3 scripts/validate_repo.py` 通过（7 skills）；`python3 -m unittest discover -s tests` 11 项通过。

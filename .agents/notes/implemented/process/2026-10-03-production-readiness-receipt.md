@@ -17,7 +17,7 @@ Status: implemented
 
 ## Consequences
 
-回执是部署后观察，不阻止已有生产部署。GitHub 部署记录只能证明报告的 source SHA，不能独立证明自定义域名正服务该版本。平台授权与配置回读之前，CD 对齐仍未完成。
+回执是部署后观察，不阻止已有生产部署。GitHub 部署记录只能证明报告的 source SHA，不能独立证明自定义域名正服务该版本。同日的后续决定把 Vercel Git 集成定为唯一生产者并删除 Actions 部署路径，见 [native-production-single-producer](2026-10-03-native-production-single-producer.md)。平台授权与配置回读之前，CD 对齐仍未完成。
 
 ## Verification
 

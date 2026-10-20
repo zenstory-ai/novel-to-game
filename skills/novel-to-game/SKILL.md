@@ -21,8 +21,8 @@ description: "Turn a novel into a fully playable game on the selected target pla
 ## 模式
 
 - `quick`：默认；用推荐草案推进，比较有效替代后自动选择并完成全流程。
-- `director`：在概念方向、白盒试玩后的内容取舍和视觉目标候选三处给出候选与推荐后停靠，等待用户选择；
-  已有明确选择时不重复停靠。
+- `director`：在概念方向、白盒试玩后的内容取舍（可在此请目标玩家试玩）和视觉目标候选（仅制作视觉目标包时）
+  给出候选与推荐后停靠，等待用户选择；已有明确选择时不重复停靠。
 - `resume`：读取 `_progress.md` 和实际产物，从最早未完成的交接继续。
 
 ## 流程

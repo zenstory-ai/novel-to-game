@@ -27,4 +27,4 @@ Status: implemented
 - 收益：main 上 `build/app` 的每次变更自动上线，改一个示例不会重发另外两个。
 - 代价：token 仍是账号级 CLI token，1db32e6 建议换成项目级，仓库历史里未见完成记录；新增示例要同时加路径过滤、job 与 Vercel 项目 ID，测试只能发现漏掉的路径过滤，发现不了漏掉的 job。
 
-2026-10-03 起 `deploy.yml` 与上文的根目录断言测试已删除，三个示例改由 Vercel 原生 Git 集成作为唯一生产者，见 [native-production-single-producer](2026-10-03-native-production-single-producer.md)。本记录保留当时的决定与理由。
+2026-10-03 起 `deploy.yml` 与上文的根目录断言测试已删除，三个示例改由 Vercel 原生 Git 集成作为唯一生产者，见 [native-production-single-producer](2026-10-03-native-production-single-producer.md)。

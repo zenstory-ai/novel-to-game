@@ -212,7 +212,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "7e9bce06af954c883bcda5be25a33c64068bdec8591f2abb72ebcbcf2a8e961f",
+      "packageDigest": "3a8d5452b4b77c9d736c303b913be8aa15ddf9477bde089132295528232e8d79",
       "path": "skills/novel-to-game",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -235,7 +235,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.1.0"
+      "version": "1.1.1"
     }
   ]
 }

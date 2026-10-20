@@ -359,7 +359,7 @@ Keep the choices and outcomes bounded; show each option's evidence, cost, visibl
 Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
 ```
 
-`quick` is the default: the agent drafts a product brief with sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at three points (the concept, what to cut after the whitebox playtest, and the visual target images) unless you have already decided.
+`quick` is the default: the agent drafts a product brief with sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the whitebox playtest (where you can bring in a target player), and at the visual target images when a target pack is made, unless you have already decided.
 
 ## Workflow
 
