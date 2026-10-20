@@ -11,11 +11,14 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-20
+
 ### Changed
 
-- `novel-to-game` now says exactly where `director` stops: the concept, what to cut after the whitebox playtest (where a target player can be brought in), and the visual targets only when a target pack is made. ClawHub: `novel-to-game` 1.1.1.
-- Each rule now appears once inside its skill. game-build keeps its design boundary in `SKILL.md` and its required-asset failure rule in the build brief contract, and the Blender, sprite, media, voice and playable-model references no longer repeat them. game-qa keeps "exactly six checks" and the evidence-layer rule only in the QA contract. novel-game-analyze states the full-coverage rule four times instead of six; its cast roster and per-fact table are now described as lookups for later stages, not as "handoff gate" baselines that no skill defines. The orchestrator states the low-risk/high-risk intake rule three times instead of five, and its pipeline contract drops three paragraphs that game-build already owns or that no longer apply. Six negations of rules that never existed are gone. Skills shrink from 1126 to 1106 lines with no intended behaviour change ([decision note](.agents/notes/implemented/simplification/2026-10-20-skill-intra-duplication-cleanup.md)). No blind A/B (maintainer decision, 2026-10-20). ClawHub: `game-art-direction` 1.2.1, `game-build` 1.2.1, `game-concept` 1.2.1, `game-qa` 1.0.2, `novel-game-analyze` 1.0.1, `novel-to-game` 1.1.2.
+- `novel-to-game` now says exactly where `director` stops: the concept, what to cut after the whitebox playtest (where a target player can be brought in), and the visual targets only when a target pack is made.
+- Each rule now appears once inside its skill. game-build keeps its design boundary in `SKILL.md` and its required-asset failure rule in the build brief contract, and the Blender, sprite, media, voice and playable-model references no longer repeat them. game-qa keeps "exactly six checks" and the evidence-layer rule only in the QA contract. novel-game-analyze states the full-coverage rule four times instead of six; its cast roster and per-fact table are now described as lookups for later stages, not as "handoff gate" baselines that no skill defines. The orchestrator states the low-risk/high-risk intake rule three times instead of five, and its pipeline contract drops three paragraphs that game-build already owns or that no longer apply. Six negations of rules that never existed are gone. Skills shrink from 1126 to 1106 lines with no intended behaviour change ([decision note](.agents/notes/implemented/simplification/2026-10-20-skill-intra-duplication-cleanup.md)). No blind A/B (maintainer decision, 2026-10-20).
 - The three example games drop defensive code that could never fire: fallbacks on state that is always initialised, nested runtime freezes, eleven copies of one GLB loader, explanation strings nobody reads, and empty catches around Web Audio synthesis. Storage, save, network and browser-capability boundaries are unchanged ([decision note](.agents/notes/implemented/simplification/2026-10-20-example-code-defensive-cleanup.md)).
+- ClawHub packages in this release: `game-art-direction` 1.2.1, `game-build` 1.2.1, `game-concept` 1.2.1, `game-qa` 1.0.2, `novel-game-analyze` 1.0.1, `novel-to-game` 1.1.2; `game-world-design` stays at 1.1.1.
 
 ### Removed
 
@@ -166,7 +169,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.3.1...v0.4.0
