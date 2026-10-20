@@ -1,8 +1,8 @@
 import * as THREE from 'three';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const HY3D_FIELD_CAMERA_ASSET = Object.freeze({
   url: '/assets/field-camera-hands-hy3d-v31-50k-v4-rear-view-1k.glb',
-  version: 'hy3d-v3.1-field-camera-hands-v4-rear-view-50k-1k',
   bytes: 1_108_408,
   triangles: 50_000,
   textureSize: 1024,
@@ -11,7 +11,7 @@ export const HY3D_FIELD_CAMERA_ASSET = Object.freeze({
   sourceAssetId: 'd9fa9671-32b3-4599-92b4-7982203ab6e7',
   sourceReferenceSha256: '65fb884ff960f61716b0fb09ab1df5af6be7b216d38a0cd05d2ddc7f23545582',
   integratedHands: 2,
-  gripRoles: Object.freeze(['camera-left-grip', 'camera-right-grip']),
+  gripRoles: ['camera-left-grip', 'camera-right-grip'],
 });
 
 const MODEL_SCALE = 2.2;
@@ -43,28 +43,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedHy3dFieldCameraLoader({
-  assetUrl = HY3D_FIELD_CAMERA_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedHy3dFieldCameraLoader({ assetUrl = HY3D_FIELD_CAMERA_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadHy3dFieldCameraTemplate = createCachedHy3dFieldCameraLoader();

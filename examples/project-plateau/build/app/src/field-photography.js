@@ -24,7 +24,7 @@ export const FRAME_EVIDENCE_THRESHOLDS = Object.freeze({
 // two-second exposure can finish with time left to swap to the rifle.
 export const DIVE_SECONDS = Object.freeze({ min: 0.6, max: 4 });
 
-const COMPOSITION_QUALITY = Object.freeze({ empty: 0, unread: 0, occluded: 1, edge: 1, clear: 2 });
+const COMPOSITION_QUALITY = { empty: 0, unread: 0, occluded: 1, edge: 1, clear: 2 };
 
 // An animal larger than the plate is still a clean frame when its body is on
 // the glass with only its head and tail cut.
@@ -180,23 +180,23 @@ function stegosaurusFrameForState(state, evidence, familyMoment) {
   };
 }
 
-const ZONE_FRAMES = Object.freeze({
-  'brook-blind': Object.freeze({
+const ZONE_FRAMES = {
+  'brook-blind': {
     key: 'brook-flank', points: 1, label: 'The family far down the bar, small on the glass.', exposure: 1,
-  }),
-  'canopy-overlook': Object.freeze({
+  },
+  'canopy-overlook': {
     key: 'canopy-flank', points: 1, label: 'A full flank clears the fern roof.', exposure: 1,
-  }),
-  'basalt-shelf': Object.freeze({
+  },
+  'basalt-shelf': {
     key: 'basalt-scale', points: 2, label: 'The adult passes beneath the red stone wall.', exposure: 2,
-  }),
-  'covered-return': Object.freeze({
+  },
+  'covered-return': {
     key: 'return-occluded', points: 1, label: 'Thorn closes across the body.', exposure: 1,
-  }),
-  'exposed-creek': Object.freeze({
+  },
+  'exposed-creek': {
     key: 'creek-scale', points: 2, label: 'Animal and open creek share the plate.', exposure: 2,
-  }),
-});
+  },
+};
 
 export function familyMomentForState(state) {
   if (state.reachedGlade && (state.threatAwareness >= 3 || (state.familyAlarmSeconds ?? 0) > 0)) {
@@ -211,10 +211,10 @@ export function familyMomentForState(state) {
   return 'glade-routine';
 }
 
-const BEHAVIOUR_ROLES = Object.freeze({
+const BEHAVIOUR_ROLES = {
   'glade-young-play': 'young-play',
   'glade-branch-pull': 'branch-pull',
-});
+};
 
 function gladeFrame(state, familyMoment, behaviourOnGlass) {
   if (familyMoment === 'glade-alarm') {
@@ -331,7 +331,7 @@ function worseComposition(first, second) {
     : first;
 }
 
-const RANGE_ORDER = Object.freeze({ close: 2, fair: 1, distant: 0 });
+const RANGE_ORDER = { close: 2, fair: 1, distant: 0 };
 
 function worseRange(first, second) {
   if (!first) return second;

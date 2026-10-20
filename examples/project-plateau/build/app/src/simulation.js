@@ -26,7 +26,7 @@ export {
 import { terrainHeight } from './terrain.js';
 
 export const INITIAL_PLAYER = Object.freeze({
-  position: Object.freeze({ x: 3, z: 70 }),
+  position: { x: 3, z: 70 },
   groundY: terrainHeight(3, 70),
   heading: 0,
   pitch: 0,
@@ -48,35 +48,35 @@ export const FAMILY_ALARM_SECONDS = 6;
 const FORT_LINE_Z = 62;
 export const ABANDONED_RECORD_COPY = 'The case stayed in the basin. The plates stayed with it.';
 export const RESULT_BANDS = Object.freeze([
-  Object.freeze({
+  {
     key: 'returned-without-record', min: 0, max: 0,
     title: 'Only your word came home',
     copy: 'The fire heard your account. London will ask for the glass.',
-  }),
-  Object.freeze({
+  },
+  {
     key: 'insufficient-record', min: 1, max: 3,
     title: 'A shape in the silver',
     copy: 'Something enormous crossed the plate, but never long enough to settle the argument.',
-  }),
-  Object.freeze({
+  },
+  {
     key: 'corroborating-record', min: 4, max: 5,
     title: 'Two plates tell the same story',
     copy: 'A living body appears from more than one angle. Challenger finally has an answer to carry home.',
-  }),
-  Object.freeze({
+  },
+  {
     key: 'strong-field-record', min: 6, max: 8,
     title: 'The river bend lives on glass',
     copy: 'Body, scale and movement survived the road to camp. No one can call the valley empty now.',
-  }),
+  },
 ]);
 
-const SPEED = Object.freeze({ walk: 4.2, sprint: 6.8, crouch: 2.2 });
-const ACCELERATION = Object.freeze({ walk: 18, sprint: 18, crouch: 16 });
+const SPEED = { walk: 4.2, sprint: 6.8, crouch: 2.2 };
+const ACCELERATION = { walk: 18, sprint: 18, crouch: 16 };
 const DECELERATION = 18;
 const REVERSAL_ACCELERATION = 30;
-const KEYBOARD_LOOK_RADIANS_PER_SECOND = Object.freeze({ horizontal: 1.2, vertical: 1 });
+const KEYBOARD_LOOK_RADIANS_PER_SECOND = { horizontal: 1.2, vertical: 1 };
 const CROUCH_COVER_RECOVERY_MULTIPLIER = 1.8;
-const THREAT_STATES = Object.freeze(['distant', 'watch', 'search', 'attack']);
+const THREAT_STATES = ['distant', 'watch', 'search', 'attack'];
 
 function clonePosition(position) {
   return { x: position.x, z: position.z };
@@ -91,10 +91,9 @@ function copyState(state, changes = {}) {
     ...state,
     position: clonePosition(state.position),
     lastStablePosition: clonePosition(state.lastStablePosition),
-    velocity: clonePosition(state.velocity ?? { x: 0, z: 0 }),
+    velocity: clonePosition(state.velocity),
     plates: state.plates.map(clonePlate),
     pendingExposure: state.pendingExposure ? { ...state.pendingExposure } : null,
-    frameEvidence: state.frameEvidence ?? [],
     ...changes,
   };
 }
@@ -415,7 +414,7 @@ function crackLatestPlate(state) {
   return { plates, crackedIndex };
 }
 
-const PLATE_COUNT_WORDS = Object.freeze(['No', 'One', 'Two', 'Three', 'Four']);
+const PLATE_COUNT_WORDS = ['No', 'One', 'Two', 'Three', 'Four'];
 
 function commitCaseAbandon(state) {
   const abandonedPlates = state.plates.filter((plate) => plate.status === 'exposed').length;
@@ -630,7 +629,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const deltaSeconds = Math.max(0, Math.min(rawDeltaSeconds, 1));
   if (state.paused || state.runStatus !== 'active') return copyState(state);
   // What the live camera sees this frame, measured by the renderer.
-  const frameEvidence = Array.isArray(input.frameEvidence) ? input.frameEvidence : state.frameEvidence ?? [];
+  const frameEvidence = Array.isArray(input.frameEvidence) ? input.frameEvidence : state.frameEvidence;
 
   const heading = (Number.isFinite(input.heading) ? input.heading : state.heading)
     + (input.lookHorizontal ?? 0) * KEYBOARD_LOOK_RADIANS_PER_SECOND.horizontal * deltaSeconds;
@@ -652,7 +651,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
     x: (axes.forward.x * normalizedForward + axes.right.x * normalizedRight) * targetSpeed,
     z: (axes.forward.z * normalizedForward + axes.right.z * normalizedRight) * targetSpeed,
   };
-  const velocity = state.velocity ?? { x: 0, z: 0 };
+  const { velocity } = state;
   const reversing = (velocity.x * targetVelocity.x + velocity.z * targetVelocity.z) < 0;
   const response = magnitude <= 1e-8
     ? DECELERATION
@@ -679,7 +678,7 @@ export function stepPlayer(state, input = {}, rawDeltaSeconds = 0) {
   const familyNoticed = reachedGlade && nearestFamilyDistance(resolved.position) < noticeRadius;
   const familyAlarmSeconds = familyNoticed
     ? FAMILY_ALARM_SECONDS
-    : Math.max(0, (state.familyAlarmSeconds ?? 0) - deltaSeconds);
+    : Math.max(0, state.familyAlarmSeconds - deltaSeconds);
   const familyFocusFrame = !state.observedBehavior && zone === 'iguanodon-glade'
     ? frameForState({
       ...state,

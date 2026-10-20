@@ -3,13 +3,9 @@ import test from 'node:test';
 
 import * as THREE from 'three';
 
-import {
-  makeDegradableGroundAccents,
-  makeEnvironmentDensity,
-  makeHabitatAccents,
-  makeRiparianCover,
-  placeVegetation,
-} from '../src/world-vegetation.js';
+import { makeHabitatAccents, placeVegetation } from '../src/authored-vegetation.js';
+import { makeDegradableGroundAccents, makeEnvironmentDensity } from '../src/environment-density.js';
+import { makeRiparianCover } from '../src/riparian-cover.js';
 
 test('vegetation factories preserve their authored scene contract', () => {
   const scene = new THREE.Scene();

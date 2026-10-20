@@ -23,7 +23,6 @@ test('boundary forest succession is deterministic, cohort-based and age stratifi
   const first = build();
   const second = build();
   assert.deepEqual(first, second);
-  assert.equal(first.profile.version, 'terrain-sourced-boundary-forest-succession-v2');
   assert.equal(first.summary.instanceCount, 144);
   assert.equal(first.summary.cohortCount, FOREST_SUCCESSION_COHORTS.length);
   assert.ok(Object.values(first.summary.cohortCounts).every((count) => count === 12));
@@ -51,10 +50,6 @@ test('every load-bearing boundary trunk remains outside navigation and supported
     assert.ok(tree.windDamage >= 0.08 && tree.windDamage <= 0.72);
     assert.ok(tree.crownRadiusMeters > tree.trunkClearanceRadius);
   }
-  assert.equal(
-    forest.profile.collisionModel,
-    'load-bearing-trunks-wholly-outside-navigation-crowns-may-overhang',
-  );
 });
 
 test('age variation follows coupled height, diameter and crown allometry', () => {

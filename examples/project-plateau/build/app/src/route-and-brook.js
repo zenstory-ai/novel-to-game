@@ -496,14 +496,14 @@ function makeRouteAndBrook(scene) {
       burial: 0.03,
       solid: false,
     });
-    brookStoneSupportEvidence.push(Object.freeze({
+    brookStoneSupportEvidence.push({
       ...support,
       depositionClass,
       channelDistance: Number(process.distance.toFixed(4)),
       pointBarProcess: Number(process.pointBar.toFixed(4)),
       pointBarDeposit: Number(ecology.pointBarDeposit.toFixed(4)),
       routeWear: Number(ecology.routeWear.toFixed(4)),
-    }));
+    });
     brookObstacleCandidates.push(renderedRockObstacleCandidate(
       support.id,
       depositionClass,
@@ -637,11 +637,11 @@ function makeRouteAndBrook(scene) {
     brook,
     brookHydrology,
     driftwood: driftwoodMeshes,
-    driftwoodSupportEvidence: Object.freeze(driftwoodSupportEvidence),
+    driftwoodSupportEvidence: driftwoodSupportEvidence,
     brookRipples,
     brookStones,
     brookPoints,
-    brookObstacleCandidates: Object.freeze(brookObstacleCandidates),
+    brookObstacleCandidates: brookObstacleCandidates,
   };
 }
 

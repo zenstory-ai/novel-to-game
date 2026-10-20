@@ -474,26 +474,26 @@ function makeBrookResponse(scene) {
 
   const assetAnchor = new THREE.Group();
   assetAnchor.name = 'world.connected_route.brook-response.asset-anchor';
-  assetAnchor.userData.fallbackMeshes = Object.freeze([group]);
-  assetAnchor.userData.placements = Object.freeze([
+  assetAnchor.userData.fallbackMeshes = [group];
+  assetAnchor.userData.placements = [
     [-1.25, 0.1, 0.24, -0.45],
     [-0.62, 0.5, 0.28, 0.72],
     [0.03, 0.86, 0.25, -0.18],
     [0.72, 0.08, 0.29, 0.42],
     [1.34, 0.44, 0.23, -0.68],
-  ].map(([offsetX, offsetZ, scale, rotation], index) => Object.freeze({
+  ].map(([offsetX, offsetZ, scale, rotation], index) => ({
     index,
     x: group.position.x + offsetX,
     z: group.position.z + offsetZ,
     scale,
     variantIndex: 0,
     rotation,
-    instanceScale: Object.freeze([scale, scale * 0.9, scale]),
-    color: Object.freeze([0.322, 0.095, 0.46 + (index % 3) * 0.025]),
+    instanceScale: [scale, scale * 0.9, scale],
+    color: [0.322, 0.095, 0.46 + (index % 3) * 0.025],
     sourceRole: 'brook-response-humid-brush-replacement',
     maxDiameterMeters: 1.12,
     maxHeightMeters: 0.46,
-  })));
+  }));
   group.userData.assetAnchor = assetAnchor;
   scene.add(group, assetAnchor);
   return group;

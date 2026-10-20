@@ -9,9 +9,9 @@ export const STEGOSAURUS_TIMELINE = Object.freeze({
   leaving: 16,
 });
 
-const START = Object.freeze({ x: -41, z: -20 });
-const DRINK = Object.freeze({ x: -13.8, z: -11.5 });
-const EXIT = Object.freeze({ x: -42, z: -2 });
+const START = { x: -41, z: -20 };
+const DRINK = { x: -13.8, z: -11.5 };
+const EXIT = { x: -42, z: -2 };
 // Head to the north-east bank: broadside to the glade, muzzle in the brook.
 const DRINK_HEADING = 2.5;
 

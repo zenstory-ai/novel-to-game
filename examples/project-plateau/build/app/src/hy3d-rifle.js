@@ -1,8 +1,8 @@
 import * as THREE from 'three';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const HY3D_RIFLE_ASSET = Object.freeze({
   url: '/assets/expedition-rifle-hands-hy3d-v31-50k-1k.glb',
-  version: 'hy3d-v3.1-expedition-rifle-hands-v1-50k-1k',
   bytes: 1_000_112,
   triangles: 50_000,
   textureSize: 1024,
@@ -11,7 +11,7 @@ export const HY3D_RIFLE_ASSET = Object.freeze({
   sourceAssetId: '93f11215-ec3c-4c65-aff9-832045ac73ef',
   sourceReferenceSha256: 'cb0da7f456853c68960623e4d1b5d9160a89dd0d11d4d1d3ba5d4b0dda829c89',
   integratedHands: 2,
-  gripRoles: Object.freeze(['fore-end-support', 'trigger-grip']),
+  gripRoles: ['fore-end-support', 'trigger-grip'],
 });
 
 const MODEL_SCALE = 4.3;
@@ -43,28 +43,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedHy3dRifleLoader({
-  assetUrl = HY3D_RIFLE_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedHy3dRifleLoader({ assetUrl = HY3D_RIFLE_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadHy3dRifleTemplate = createCachedHy3dRifleLoader();

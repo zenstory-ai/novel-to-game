@@ -90,11 +90,11 @@ function createBasaltDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.basalt-albedo', albedoData, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.basalt-roughness', roughnessData),
     height: makeTexture('world.material.basalt-height', heightData),
-  });
+  };
 }
 
 function createRockDetailTextures() {
@@ -172,11 +172,11 @@ function createRockDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.weathered-rock-albedo', albedoData, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.weathered-rock-roughness', roughnessData),
     height: makeTexture('world.material.weathered-rock-height', heightData),
-  });
+  };
 }
 
 function createNonColumnarRockMaterial(family) {
@@ -321,11 +321,11 @@ function createNonColumnarRockMaterial(family) {
       `);
   };
   material.customProgramCacheKey = () => `non-columnar-rock-triplanar-v2-${family}`;
-  material.userData.triplanarTextures = Object.freeze({
+  material.userData.triplanarTextures = {
     albedo: rockTextures.albedo,
     roughness: rockTextures.roughness,
     height: rockTextures.height,
-  });
+  };
   material.userData.mapping = 'seam-free-object-space-triplanar';
   return material;
 }

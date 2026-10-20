@@ -5,11 +5,8 @@ import { seededRandom } from './config.js';
 export const BRYOPHYTE_GROUND_LAYER_PROFILE = Object.freeze({
   version: 'supported-bryophyte-herbaceous-ground-layer-v2',
   targetInstances: 640,
-  variantIds: Object.freeze(['moss-mat', 'clubmoss-spray', 'humid-grass-tuft']),
+  variantIds: ['moss-mat', 'clubmoss-spray', 'humid-grass-tuft'],
   drawCalls: 3,
-  sourceModel: 'terrain-bryophyte-humus-wet-bank-slope-and-disturbance',
-  supportModel: 'terrain-height-subgrade-rhizome-with-bounded-burial',
-  loadPath: 'subgrade-rhizome-to-closed-creeping-stems-or-cambered-blade-volumes',
   collisionRole: 'non-solid-compressible-ground-vegetation',
   energyModel: 'opaque-non-emissive-zero-metalness-organic-dielectric',
 });
@@ -355,20 +352,20 @@ export function createBryophyteGroundLayer({
   const group = new THREE.Group();
   group.name = 'world.environment-density.bryophyte-ground-layer';
   group.add(...meshes);
-  const supportEvidence = Object.freeze({
+  const supportEvidence = {
     rootCount: placements.length,
     supportedRootCount: placements.length,
     supportRatio: placements.length > 0 ? 1 : 0,
     minimumRootClearance: -burialDepth,
     maximumRootClearance: -burialDepth,
     settlementAxis: 'world-gravity-for-stems-terrain-normal-for-low-moss-mats',
-  });
+  };
   group.userData.profile = BRYOPHYTE_GROUND_LAYER_PROFILE.version;
   group.userData.instanceCount = placements.length;
-  group.userData.counts = Object.freeze(Object.fromEntries(
+  group.userData.counts = Object.fromEntries(
     BRYOPHYTE_GROUND_LAYER_PROFILE.variantIds.map((variantId, index) => [variantId, counts[index]]),
-  ));
-  group.userData.placements = Object.freeze(placements.map((placement) => Object.freeze(placement)));
+  );
+  group.userData.placements = placements;
   group.userData.supportEvidence = supportEvidence;
   group.userData.collisionRole = BRYOPHYTE_GROUND_LAYER_PROFILE.collisionRole;
   group.userData.energyModel = BRYOPHYTE_GROUND_LAYER_PROFILE.energyModel;

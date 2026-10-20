@@ -6,6 +6,7 @@ import {
   vegetationLeafTint,
   vegetationStructureTint,
 } from './vegetation-albedo.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const CANOPY_TREE_LIBRARY_ASSET = Object.freeze({
   url: '/assets/canopy-tree-library-original-v7.glb',
@@ -13,22 +14,21 @@ export const CANOPY_TREE_LIBRARY_ASSET = Object.freeze({
   triangles: 33_102,
   drawCalls: 8,
   variantCount: 4,
-  variantIds: Object.freeze([
+  variantIds: [
     'humid-buttress-broadleaf',
     'open-asymmetric-broadleaf',
     'plate-barked-compound-broadleaf',
     'layered-araucaria',
-  ]),
+  ],
   supportPlaneY: -0.22,
 });
 
 export const CANOPY_TREE_WIND_PROFILE = Object.freeze({
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.095,
   verticalTipDisplacementMeters: 0.022,
   macroFrequencyHz: 0.43,
   flutterFrequencyHz: 1.48,
-  flexAttribute: 'uv1-y',
   supportModel: 'fixed-root-trunk-and-branches-with-progressively-flexible-attached-leaves',
   shadowModel: 'identical-colour-and-depth-pass-displacement-function-and-uniforms',
 });
@@ -42,32 +42,22 @@ export const CANOPY_TREE_LEAF_RETENTION_PROFILE = Object.freeze({
   maximumSlopeLoss: 0.025,
   maximumDrynessLoss: 0.025,
   maximumIndividualLoss: 0.018,
-  ageBaseline: Object.freeze({
+  ageBaseline: {
     mature: 0.9,
     submature: 0.935,
     pioneer: 0.95,
     unspecified: 0.92,
-  }),
-  temporalModel: 'stable-per-instance-no-camera-or-time-dependent-leaf-popping',
+  },
   shadowModel: 'identical-colour-and-depth-pass-leaf-rejection',
 });
 
 export const CANOPY_TREE_SURFACE_VARIATION_PROFILE = Object.freeze({
   version: 'stable-individual-bark-scar-and-lamina-damage-v1',
-  structureModel:
-    'instance-ranked-trunk-localised-healed-scar-with-callus-and-exposed-heartwood-response',
-  leafModel:
-    'stable-per-leaf-edge-notches-and-rare-lamina-perforation-from-authored-retention-rank',
-  structureVariationSource: 'stable-tree-index-rank-plus-recorded-wind-damage',
-  leafVariationSource: 'asset-authored-uv1-x-stable-complete-lamina-rank',
   maximumScarHeightMeters: 0.96,
   maximumScarAngularFraction: 0.22,
   damagedLeafRankThreshold: 0.72,
   perforatedLeafRankThreshold: 0.92,
-  temporalModel: 'stable-no-time-or-camera-dependent-surface-popping',
   shadowModel: 'identical-partial-lamina-rejection-in-colour-and-depth-passes',
-  evidenceBoundary:
-    'bounded-surface-history-does-not-claim-species-specific-palaeobotanical-damage-rates',
 });
 
 const ROOT_BURIAL_DEPTH = 0.025;
@@ -103,28 +93,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedCanopyTreeLibraryLoader({
-  assetUrl = CANOPY_TREE_LIBRARY_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedCanopyTreeLibraryLoader({ assetUrl = CANOPY_TREE_LIBRARY_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadCanopyTreeLibraryTemplate = createCachedCanopyTreeLibraryLoader();
@@ -160,7 +130,7 @@ function correlatedTextures({ size, prefix, repeat, sample }) {
       height.set([heightByte, heightByte, heightByte, 255], offset);
     }
   }
-  return Object.freeze({
+  return {
     albedo: makeTexture(
       `world.material.${prefix}-albedo`, albedo, size, THREE.SRGBColorSpace, repeat,
     ),
@@ -170,7 +140,7 @@ function correlatedTextures({ size, prefix, repeat, sample }) {
     height: makeTexture(
       `world.material.${prefix}-height`, height, size, THREE.NoColorSpace, repeat,
     ),
-  });
+  };
 }
 
 export function createCanopyTreeSurfaceTextures(size = 64) {
@@ -208,7 +178,7 @@ export function createCanopyTreeSurfaceTextures(size = 64) {
       return [value * 0.73, value * 0.96, value * 0.65, 0.94 - midrib * 0.075 - veins * 0.02, 0.34 + midrib * 0.44 + veins * 0.15];
     },
   });
-  return Object.freeze({ wetBark, plateBark, leaf });
+  return { wetBark, plateBark, leaf };
 }
 
 function injectCanopyTreeWindVertex(shader, uniforms, leafRetention = false) {
@@ -423,11 +393,11 @@ function addThinLeafTransmission(shader) {
 
 function createCanopyTreeMaterials() {
   const textures = createCanopyTreeSurfaceTextures();
-  const windUniforms = Object.freeze({
+  const windUniforms = {
     time: { value: 0 },
     strength: { value: CANOPY_TREE_WIND_PROFILE.horizontalTipDisplacementMeters },
     verticalStrength: { value: CANOPY_TREE_WIND_PROFILE.verticalTipDisplacementMeters },
-  });
+  };
   function structureMaterial(barkFamily) {
     const bark = barkFamily === 'plate-barked' ? textures.plateBark : textures.wetBark;
     const material = new THREE.MeshStandardMaterial({
@@ -458,15 +428,15 @@ function createCanopyTreeMaterials() {
     });
     return material;
   }
-  const structures = Object.freeze({
+  const structures = {
     'wet-furrowed': structureMaterial('wet-furrowed'),
     'plate-barked': structureMaterial('plate-barked'),
-  });
-  const leaves = Object.freeze({
+  };
+  const leaves = {
     'elliptic-waxy': leafMaterial('elliptic-waxy'),
     'compound-lanceolate': leafMaterial('compound-lanceolate'),
     'araucaria-whorl': leafMaterial('araucaria-whorl'),
-  });
+  };
   for (const [family, material] of Object.entries(structures)) {
     material.onBeforeCompile = (shader) => {
       injectCanopyTreeWindVertex(shader, windUniforms);
@@ -512,7 +482,7 @@ function createCanopyTreeMaterials() {
       surfaceVariationModel: CANOPY_TREE_SURFACE_VARIATION_PROFILE,
     };
   }
-  return Object.freeze({ structures, leaves, textures, windUniforms });
+  return { structures, leaves, textures, windUniforms };
 }
 
 function createCanopyTreeDepthMaterial(sourceMaterial) {
@@ -553,13 +523,13 @@ function extractVariants(template) {
       if (!structure || !leaves) {
         throw new Error(`Canopy tree variant ${group.userData.variantId} is missing its load path`);
       }
-      return Object.freeze({
+      return {
         id: group.userData.variantId,
         family: group.userData.family,
         barkFamily: group.userData.barkFamily,
         structure: structure.geometry,
         leaves: leaves.geometry,
-      });
+      };
     });
 }
 
@@ -574,7 +544,7 @@ export function classifyCanopyTreeHabitat(tree, { terrainGradient, terrainWetnes
       : tree.openCanopyExposure && wetness < 0.2
         ? 1
         : wetness >= 0.1 ? 0 : 1;
-  return Object.freeze({
+  return {
     variantIndex,
     slope,
     wetness,
@@ -583,7 +553,7 @@ export function classifyCanopyTreeHabitat(tree, { terrainGradient, terrainWetnes
       : variantIndex === 1
         ? 'drained-open-broadleaf'
         : variantIndex === 2 ? 'plate-barked-compound-margin' : 'raised-araucaria-tier',
-  });
+  };
 }
 
 function stableIndividualRank(index = 0) {
@@ -608,7 +578,7 @@ export function canopyTreeLeafRetention(tree, habitat) {
     profile.minimumRetention,
     profile.maximumRetention,
   );
-  return Object.freeze({
+  return {
     retention,
     ageClass,
     ageBaseline,
@@ -617,7 +587,7 @@ export function canopyTreeLeafRetention(tree, habitat) {
     drynessStress,
     individualRank,
     sourceModel: profile.sourceModel,
-  });
+  };
 }
 
 function supportPoints(geometry) {
@@ -653,10 +623,10 @@ function canopyTreeInstanceMatrix(tree, geometry, terrainHeight) {
   });
   position.y = Math.min(...requiredY) - ROOT_BURIAL_DEPTH;
   matrix.compose(position, quaternion, scale);
-  return Object.freeze({
+  return {
     matrix,
     position: position.clone(),
-  });
+  };
 }
 
 export function attachCanopyTreeLibraryVisual(anchor, template, trees, {

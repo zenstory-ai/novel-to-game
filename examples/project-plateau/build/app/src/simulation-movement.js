@@ -235,16 +235,11 @@ export function integrateMovement(state, targetVelocity, response, deltaSeconds,
   const stepCount = Math.max(1, Math.ceil(deltaSeconds / FIXED_MOVEMENT_STEP));
   const stepSeconds = deltaSeconds / stepCount;
   let position = clonePosition(state.position);
-  let velocity = clonePosition(state.velocity ?? { x: 0, z: 0 });
+  let velocity = clonePosition(state.velocity);
   let travelled = 0;
   let collision = null;
   let boundaryRecovered = false;
-  let groundY = Number.isFinite(state.groundY)
-    ? state.groundY
-    : terrainHeight(position.x, position.z);
-  let verticalOffset = Math.max(0, Number(state.verticalOffset) || 0);
-  let verticalVelocity = Number(state.verticalVelocity) || 0;
-  let grounded = state.grounded ?? verticalOffset <= 1e-8;
+  let { groundY, verticalOffset, verticalVelocity, grounded } = state;
   let worldFootY = groundY + verticalOffset;
   let jumped = false;
   let landed = false;

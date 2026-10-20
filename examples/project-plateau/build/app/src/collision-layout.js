@@ -36,7 +36,7 @@ function circle({
   visualAnchor,
   visualIndex = null,
 }) {
-  return Object.freeze({
+  return {
     id,
     type: 'circle',
     x,
@@ -47,7 +47,7 @@ function circle({
     category,
     visualAnchor,
     visualIndex,
-  });
+  };
 }
 
 function orientedBox({
@@ -62,7 +62,7 @@ function orientedBox({
   visualAnchor,
   visualIndex = null,
 }) {
-  return Object.freeze({
+  return {
     id,
     type: 'oriented-box',
     x,
@@ -75,7 +75,7 @@ function orientedBox({
     category,
     visualAnchor,
     visualIndex,
-  });
+  };
 }
 
 function horizontalCapsule({
@@ -92,7 +92,7 @@ function horizontalCapsule({
   visualX,
   visualZ,
 }) {
-  return Object.freeze({
+  return {
     id,
     type: 'horizontal-capsule',
     x,
@@ -107,7 +107,7 @@ function horizontalCapsule({
     visualIndex,
     visualX,
     visualZ,
-  });
+  };
 }
 
 const tentColliders = FORT_TENT_LAYOUT.map((tent, index) => orientedBox({
@@ -253,15 +253,14 @@ export const STATIC_COLLIDERS = Object.freeze([
 ]);
 
 export const NON_SOLID_COLLISION_POLICY = Object.freeze({
-  lowDecor: Object.freeze([
+  lowDecor: [
     'ferns',
     'ground-stones',
     'brook-stones',
     'driftwood',
     'basalt-rubble',
     'ridge-foot-talus-beyond-navigation-boundary',
-  ]),
-  traversableSurface: Object.freeze(['brook-water', 'route-ribbons']),
-  airborneThreat: 'state-driven-contact; no ground capsule',
+  ],
+  traversableSurface: ['brook-water', 'route-ribbons'],
   canopy: 'visual cover only; trunks remain solid',
 });

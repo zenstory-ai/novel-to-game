@@ -152,7 +152,6 @@ test('gingko visual attaches once and preserves grounded fallback behavior', asy
   assert.equal(first.position.y, 0.022);
   assert.equal(first.userData.supportModel,
     'terrain-root-flare-to-collared-scaffold-to-short-shoot-fan-leaf');
-  assert.equal(first.userData.energyModel, 'non-emissive-dielectric-bark-and-leaf-albedo');
   assert.equal(first.userData.supportSnapshot, null);
   assert.equal(first.userData.surfaceProfile.version, HERO_GINGKO_SURFACE_PROFILE.version);
   updateHeroGingkoWind(anchor, 8.5, false);

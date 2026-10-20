@@ -7,24 +7,24 @@ import { renderedRockObstacleCandidate, settleRockOnTerrain } from './rock-place
 
 function makeNonColumnarRockFamilies(scene) {
   const familySpecs = [
-    Object.freeze({
+    {
       family: 'fluvial-cobble',
       name: 'world.connected_route.rock-family.fluvial-cobbles',
       distribution: 'historical-high-flow-lag-now-immobile-under-present-brook',
       collisionRole: 'static-solid-historical-lag-clasts',
-    }),
-    Object.freeze({
+    },
+    {
       family: 'bedded-slab',
       name: 'world.connected_route.rock-family.bedded-glade-slabs',
       distribution: 'dry-glade-bowl-margin-bedding-exposure',
       collisionRole: 'static-solid-margin-slabs',
-    }),
-    Object.freeze({
+    },
+    {
       family: 'angular-talus',
       name: 'world.ridge-foot.rock-family.angular-talus',
       distribution: 'ridge-apron-downslope-talus-beyond-route',
       collisionRole: 'non-solid-beyond-navigation-boundary',
-    }),
+    },
   ];
   const group = new THREE.Group();
   const tint = new THREE.Color();
@@ -65,12 +65,12 @@ function makeNonColumnarRockFamilies(scene) {
     mesh.receiveShadow = true;
     mesh.userData.family = spec.family;
     mesh.userData.collisionRole = spec.collisionRole;
-    mesh.userData.supportEvidence = Object.freeze(supportEvidence);
+    mesh.userData.supportEvidence = supportEvidence;
     group.add(mesh);
   });
   group.name = 'world.authored-non-columnar-rock-families';
   group.userData.profile = 'three-geology-specific-non-columnar-rock-families';
-  group.userData.brookObstacleCandidates = Object.freeze(brookObstacleCandidates);
+  group.userData.brookObstacleCandidates = brookObstacleCandidates;
   scene.add(group);
   return group;
 }

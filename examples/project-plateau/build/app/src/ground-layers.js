@@ -5,11 +5,11 @@ import * as THREE from 'three';
 export const GROUND_LAYER_NAMES = Object.freeze(['litter', 'moss', 'mud', 'gravel', 'rock']);
 export const GROUND_TILE_METERS = 2.6;
 
-const STRIPS = Object.freeze({
+const STRIPS = {
   albedo: 'assets/ground/ground-albedo.jpg',
   normal: 'assets/ground/ground-normal.jpg',
   orh: 'assets/ground/ground-orh.jpg',
-});
+};
 
 function placeholderArray(color) {
   const data = new Uint8Array(4 * GROUND_LAYER_NAMES.length);

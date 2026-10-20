@@ -1,7 +1,7 @@
 export function createFrameCommitGate() {
   let waiters = [];
 
-  return Object.freeze({
+  return {
     wait() {
       return new Promise((resolve) => {
         waiters.push(resolve);
@@ -17,5 +17,5 @@ export function createFrameCommitGate() {
     pending() {
       return waiters.length > 0;
     },
-  });
+  };
 }

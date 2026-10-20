@@ -20,10 +20,10 @@ export const AUDIO_CAPTIONS = Object.freeze({
   failure: '[the field sound narrows to wind and brook]',
 });
 
-const DEFAULT_VOLUMES = Object.freeze({ ambience: 0.34, effects: 0.72, music: 0.2 });
+const DEFAULT_VOLUMES = { ambience: 0.34, effects: 0.72, music: 0.2 };
 // Bed levels are chosen to be heard on laptop speakers at the default volumes:
 // nothing that carries meaning sits below about 90 Hz.
-const BED_LEVELS = Object.freeze({ brook: 0.55, insects: 0.09, wind: 0.22 });
+const BED_LEVELS = { brook: 0.55, insects: 0.09, wind: 0.22 };
 const STEP_METERS = 0.78;
 
 export function captionForCue(cue) {

@@ -195,15 +195,15 @@ function createCanopyClusterGeometry(accent = false) {
   return geometry;
 }
 
-const CANOPY_PRIMARY_BRANCHES = Object.freeze([
+const CANOPY_PRIMARY_BRANCHES = [
   [[0, 0, 0], [-1.55, 0.72, 0.32], 0.2, 0.085],
   [[0.04, 0.08, 0], [1.48, 0.62, 0.52], 0.19, 0.08],
   [[0, 0.16, -0.03], [-0.5, 1.08, -1.28], 0.17, 0.065],
   [[0.03, 0.24, 0.04], [0.72, 1.26, -0.72], 0.16, 0.06],
   [[-0.02, 0.34, 0.06], [0.18, 1.58, 0.66], 0.145, 0.052],
-]);
+];
 
-const CANOPY_SECONDARY_BRANCHES = Object.freeze([
+const CANOPY_SECONDARY_BRANCHES = [
   [[-1.24, 0.61, 0.26], [-2.08, 0.92, 0.78], 0.09, 0.035],
   [[-1.18, 0.58, 0.22], [-1.74, 1.04, -0.42], 0.08, 0.03],
   [[1.16, 0.52, 0.42], [2.02, 0.86, 0.12], 0.085, 0.032],
@@ -212,9 +212,9 @@ const CANOPY_SECONDARY_BRANCHES = Object.freeze([
   [[0.58, 1.09, -0.62], [1.18, 1.52, -1.18], 0.068, 0.024],
   [[0.16, 1.36, 0.54], [-0.32, 1.91, 1.08], 0.062, 0.022],
   [[0.17, 1.38, 0.55], [0.72, 1.84, 0.92], 0.058, 0.02],
-]);
+];
 
-const CANOPY_LEAF_ANCHORS = Object.freeze(CANOPY_SECONDARY_BRANCHES.map(([, end]) => end));
+const CANOPY_LEAF_ANCHORS = CANOPY_SECONDARY_BRANCHES.map(([, end]) => end);
 
 function createCanopyBranchGeometry() {
   // One visible load path runs from the trunk crown into every major leaf

@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   textScale: '1',
   quality: 'balanced',
   lookSensitivity: 1,
-  volumes: Object.freeze({ ambience: 0.34, effects: 0.72, music: 0.2 }),
+  volumes: { ambience: 0.34, effects: 0.72, music: 0.2 },
 });
 
 const TEXT_SCALES = new Set(['1', '1.25', '1.5']);

@@ -2,32 +2,29 @@ import { seededRandom } from './config.js';
 
 export const FOREST_SUCCESSION_PROFILE = Object.freeze({
   version: 'terrain-sourced-boundary-forest-succession-v2',
-  placementModel: 'twelve-cohorts-with-golden-angle-age-strata',
   supportModel: 'vertical-trunk-centre-root-plane-buried-at-rendered-terrain-height',
-  collisionModel: 'load-bearing-trunks-wholly-outside-navigation-crowns-may-overhang',
-  growthModel: 'age-stratified-whole-tree-original-assets-with-allometric-fallback-lod',
   boundaryClearanceMeters: 2.8,
   crownOverlapThreshold: 0.92,
-  ageClasses: Object.freeze({
-    mature: Object.freeze({ minimumHeightScale: 0.82, maximumHeightScale: 1.2 }),
-    submature: Object.freeze({ minimumHeightScale: 0.58, maximumHeightScale: 0.8 }),
-    pioneer: Object.freeze({ minimumHeightScale: 0.36, maximumHeightScale: 0.55 }),
-  }),
+  ageClasses: {
+    mature: { minimumHeightScale: 0.82, maximumHeightScale: 1.2 },
+    submature: { minimumHeightScale: 0.58, maximumHeightScale: 0.8 },
+    pioneer: { minimumHeightScale: 0.36, maximumHeightScale: 0.55 },
+  },
 });
 
 export const FOREST_SUCCESSION_COHORTS = Object.freeze([
-  Object.freeze({ id: 'south-west-ridge', boundary: 'south', x: -68, z: -101, radiusX: 13, radiusZ: 7, exposure: 0.72 }),
-  Object.freeze({ id: 'south-west-saddle', boundary: 'south', x: -42, z: -103, radiusX: 12, radiusZ: 7, exposure: 0.61 }),
-  Object.freeze({ id: 'south-hollow-head', boundary: 'south', x: -15, z: -101, radiusX: 12, radiusZ: 7, exposure: 0.43 }),
-  Object.freeze({ id: 'south-central-rise', boundary: 'south', x: 12, z: -103, radiusX: 12, radiusZ: 7, exposure: 0.58 }),
-  Object.freeze({ id: 'south-east-shoulder', boundary: 'south', x: 39, z: -102, radiusX: 12, radiusZ: 7, exposure: 0.76 }),
-  Object.freeze({ id: 'south-east-ridge', boundary: 'south', x: 67, z: -100, radiusX: 13, radiusZ: 7, exposure: 0.84 }),
-  Object.freeze({ id: 'west-glade-edge', boundary: 'west', x: -51, z: -46, radiusX: 7, radiusZ: 15, exposure: 0.46 }),
-  Object.freeze({ id: 'west-brook-edge', boundary: 'west', x: -52, z: -10, radiusX: 7, radiusZ: 15, exposure: 0.36 }),
-  Object.freeze({ id: 'west-return-edge', boundary: 'west', x: -52, z: 31, radiusX: 7, radiusZ: 16, exposure: 0.52 }),
-  Object.freeze({ id: 'east-glade-edge', boundary: 'east', x: 38, z: -47, radiusX: 7, radiusZ: 15, exposure: 0.63 }),
-  Object.freeze({ id: 'east-basalt-edge', boundary: 'east', x: 39, z: -9, radiusX: 7, radiusZ: 15, exposure: 0.78 }),
-  Object.freeze({ id: 'east-return-edge', boundary: 'east', x: 39, z: 32, radiusX: 7, radiusZ: 16, exposure: 0.69 }),
+  { id: 'south-west-ridge', boundary: 'south', x: -68, z: -101, radiusX: 13, radiusZ: 7, exposure: 0.72 },
+  { id: 'south-west-saddle', boundary: 'south', x: -42, z: -103, radiusX: 12, radiusZ: 7, exposure: 0.61 },
+  { id: 'south-hollow-head', boundary: 'south', x: -15, z: -101, radiusX: 12, radiusZ: 7, exposure: 0.43 },
+  { id: 'south-central-rise', boundary: 'south', x: 12, z: -103, radiusX: 12, radiusZ: 7, exposure: 0.58 },
+  { id: 'south-east-shoulder', boundary: 'south', x: 39, z: -102, radiusX: 12, radiusZ: 7, exposure: 0.76 },
+  { id: 'south-east-ridge', boundary: 'south', x: 67, z: -100, radiusX: 13, radiusZ: 7, exposure: 0.84 },
+  { id: 'west-glade-edge', boundary: 'west', x: -51, z: -46, radiusX: 7, radiusZ: 15, exposure: 0.46 },
+  { id: 'west-brook-edge', boundary: 'west', x: -52, z: -10, radiusX: 7, radiusZ: 15, exposure: 0.36 },
+  { id: 'west-return-edge', boundary: 'west', x: -52, z: 31, radiusX: 7, radiusZ: 16, exposure: 0.52 },
+  { id: 'east-glade-edge', boundary: 'east', x: 38, z: -47, radiusX: 7, radiusZ: 15, exposure: 0.63 },
+  { id: 'east-basalt-edge', boundary: 'east', x: 39, z: -9, radiusX: 7, radiusZ: 15, exposure: 0.78 },
+  { id: 'east-return-edge', boundary: 'east', x: 39, z: 32, radiusX: 7, radiusZ: 16, exposure: 0.69 },
 ]);
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
@@ -91,7 +88,7 @@ function overlapSummary(placements) {
       }
     }
   }
-  return Object.freeze({ links, linkedTreeCount: linked.size });
+  return { links, linkedTreeCount: linked.size };
 }
 
 export function createForestSuccessionLayout({
@@ -150,18 +147,18 @@ export function createForestSuccessionLayout({
     const crownVerticalScale = heightScale ** 0.96 * (0.91 + random() * 0.15);
     const yaw = random() * Math.PI * 2;
     const windSign = cohort.boundary === 'west' ? 1 : -1;
-    const crownOffset = Object.freeze([
+    const crownOffset = [
       windSign * windDamage * heightScale * 0.34,
       (random() - 0.5) * windDamage * heightScale * 0.18,
-    ]);
-    const crownScale = Object.freeze([
+    ];
+    const crownScale = [
       crownRadialScale * (1 - windDamage * 0.13),
       crownVerticalScale * (1 - windDamage * 0.09),
       crownRadialScale * (0.92 + random() * 0.13),
-    ]);
+    ];
     const crownRadiusMeters = (crownVariant === 1 ? 2.65 : crownVariant === 2 ? 2.25 : 2.9)
       * Math.max(crownScale[0], crownScale[2]);
-    const placement = Object.freeze({
+    const placement = {
       index,
       cohortId: cohort.id,
       boundary: cohort.boundary,
@@ -174,7 +171,7 @@ export function createForestSuccessionLayout({
       ageClass,
       heightScale,
       radialScale,
-      trunkScale: Object.freeze([radialScale, heightScale, radialScale]),
+      trunkScale: [radialScale, heightScale, radialScale],
       trunkClearanceRadius: 0.62 * radialScale,
       crownVariant,
       crownScale,
@@ -184,7 +181,7 @@ export function createForestSuccessionLayout({
       yaw,
       individual: (localIndex + cohortIndex / FOREST_SUCCESSION_COHORTS.length)
         / perCohort,
-    });
+    };
     if (!outsideNavigation(placement, navigationBounds)) {
       throw new Error(`Forest cohort ${cohort.id} placed a load-bearing trunk inside navigation`);
     }
@@ -195,26 +192,26 @@ export function createForestSuccessionLayout({
   }
 
   const overlap = overlapSummary(placements);
-  return Object.freeze({
+  return {
     profile: FOREST_SUCCESSION_PROFILE,
-    placements: Object.freeze(placements),
-    summary: Object.freeze({
+    placements: placements,
+    summary: {
       instanceCount: placements.length,
       cohortCount: FOREST_SUCCESSION_COHORTS.length,
-      cohortCounts: Object.freeze(cohortCounts),
-      ageCounts: Object.freeze(ageCounts),
-      crownVariantCounts: Object.freeze(crownVariantCounts),
+      cohortCounts: cohortCounts,
+      ageCounts: ageCounts,
+      crownVariantCounts: crownVariantCounts,
       outsideNavigationCount: placements.filter((placement) => (
         outsideNavigation(placement, navigationBounds)
       )).length,
       crownOverlapLinks: overlap.links,
       overlapLinkedTreeCount: overlap.linkedTreeCount,
       maximumSlope: Math.max(...placements.map(({ slope }) => slope)),
-      wetnessRange: Object.freeze([
+      wetnessRange: [
         Math.min(...placements.map(({ wetness }) => wetness)),
         Math.max(...placements.map(({ wetness }) => wetness)),
-      ]),
+      ],
       maximumWindDamage: Math.max(...placements.map(({ windDamage }) => windDamage)),
-    }),
-  });
+    },
+  };
 }

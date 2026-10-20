@@ -45,7 +45,7 @@ function settleRockOnTerrain(target, geometry, placement) {
       rockSupportPoint.y - terrainHeight(rockSupportPoint.x, rockSupportPoint.z),
     );
   }
-  return Object.freeze({
+  return {
     id: placement.id,
     x: placement.x,
     z: placement.z,
@@ -57,7 +57,7 @@ function settleRockOnTerrain(target, geometry, placement) {
     contactVertexCount: supportClearances.filter((clearance) => clearance <= 0.025).length,
     supportVertexCount: supportClearances.length,
     solid: placement.solid,
-  });
+  };
 }
 
 function renderedRockObstacleCandidate(id, sourceClass, geometry, matrix) {
@@ -65,7 +65,7 @@ function renderedRockObstacleCandidate(id, sourceClass, geometry, matrix) {
   const worldBounds = geometry.boundingBox.clone().applyMatrix4(matrix);
   const center = worldBounds.getCenter(new THREE.Vector3());
   const size = worldBounds.getSize(new THREE.Vector3());
-  return Object.freeze({
+  return {
     id,
     sourceClass,
     x: center.x,
@@ -74,7 +74,7 @@ function renderedRockObstacleCandidate(id, sourceClass, geometry, matrix) {
     topElevation: worldBounds.max.y,
     bottomElevation: worldBounds.min.y,
     bedElevation: terrainHeight(center.x, center.z),
-  });
+  };
 }
 
 export { renderedRockObstacleCandidate, settleRockOnTerrain };

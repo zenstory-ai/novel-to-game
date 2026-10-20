@@ -7,6 +7,7 @@ import {
   vegetationLeafTint,
   vegetationStructureTint,
 } from './vegetation-albedo.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const FERN_LIBRARY_ASSET = Object.freeze({
   url: '/assets/fern-library-original-v1.glb',
@@ -14,27 +15,26 @@ export const FERN_LIBRARY_ASSET = Object.freeze({
   triangles: 6_594,
   drawCalls: 6,
   variantCount: 3,
-  variantIds: Object.freeze([
+  variantIds: [
     'brook-arch-fern',
     'upland-feather-fern',
     'low-cycad-fern',
-  ]),
+  ],
   supportPlaneY: -0.12,
 });
 
 export const FERN_WIND_PROFILE = Object.freeze({
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.105,
   verticalTipDisplacementMeters: 0.024,
   macroFrequencyHz: 0.74,
   flutterFrequencyHz: 2.05,
-  flexAttribute: 'uv1-y',
   supportModel: 'buried-rhizome-fixed-rachis-and-leaflets-progressively-flexible',
   shadowModel: 'identical-colour-and-depth-pass-displacement-function-and-uniforms',
 });
 
 const FERN_BURIAL_DEPTH = 0.03;
-const SUPPORT_CLEARANCE_RANGE = Object.freeze([-0.055, 0.018]);
+const SUPPORT_CLEARANCE_RANGE = [-0.055, 0.018];
 
 function prepareMaterial(material) {
   if (!material) return material;
@@ -66,28 +66,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedFernLibraryLoader({
-  assetUrl = FERN_LIBRARY_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedFernLibraryLoader({ assetUrl = FERN_LIBRARY_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadFernLibraryTemplate = createCachedFernLibraryLoader();
@@ -144,11 +124,11 @@ export function createFernSurfaceTextures(size = 64) {
       heightData.set([heightByte, heightByte, heightByte, 255], offset);
     }
   }
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.fern-leaf-albedo', albedoData, size, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.fern-leaf-roughness', roughnessData, size),
     height: makeTexture('world.material.fern-leaf-height', heightData, size),
-  });
+  };
 }
 
 function injectFernWindVertex(shader, uniforms) {
@@ -233,11 +213,11 @@ function addThinLeafTransmission(shader) {
 
 function createFernMaterials() {
   const textures = createFernSurfaceTextures();
-  const windUniforms = Object.freeze({
+  const windUniforms = {
     time: { value: 0 },
     strength: { value: FERN_WIND_PROFILE.horizontalTipDisplacementMeters },
     verticalStrength: { value: FERN_WIND_PROFILE.verticalTipDisplacementMeters },
-  });
+  };
   const structure = new THREE.MeshStandardMaterial({
     color: VEGETATION_BASE_COLOURS.fernStructure,
     vertexColors: true,
@@ -279,7 +259,7 @@ function createFernMaterials() {
     };
   }
   applyFoliageLight(leaf, 0.6);
-  return Object.freeze({ structure, leaf, textures, windUniforms });
+  return { structure, leaf, textures, windUniforms };
 }
 
 function createFernDepthMaterial(sourceMaterial) {
@@ -314,11 +294,11 @@ function extractVariants(template) {
       if (!structure || !leaflets) {
         throw new Error(`Fern variant ${group.userData.variantId} is missing its load path`);
       }
-      return Object.freeze({
+      return {
         id: group.userData.variantId,
         structure: structure.geometry,
         leaflets: leaflets.geometry,
-      });
+      };
     });
 }
 
@@ -329,14 +309,14 @@ export function classifyFernHabitat(placement, { terrainGradient, terrainWetness
   const variantIndex = wetness >= 0.18
     ? 0
     : slope >= 0.08 ? 1 : placement.variantIndex;
-  return Object.freeze({
+  return {
     variantIndex,
     slope,
     wetness,
     niche: variantIndex === 0
       ? 'humid-brook-margin'
       : variantIndex === 1 ? 'drained-upland-slope' : 'sheltered-low-understory',
-  });
+  };
 }
 
 function supportPoints(geometry) {
@@ -409,7 +389,7 @@ function fernInstanceMatrix(placement, geometry, terrainHeight, terrainGradient)
   );
   position.y += settlementAdjustment;
   matrix.compose(position, quaternion, scale);
-  return Object.freeze({ matrix });
+  return { matrix };
 }
 
 export function attachFernLibraryVisual(anchor, template, placements, {

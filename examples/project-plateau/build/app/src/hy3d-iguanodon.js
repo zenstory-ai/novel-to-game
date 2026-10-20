@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { applyCreatureSkin } from './creature-skin.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const HY3D_IGUANODON_ASSET = Object.freeze({
   url: '/assets/iguanodon-hy3d-v35-stylized.glb',
-  version: 'hy3d-v3.5-stylized-25k-1k',
   bytes: 1_089_008,
   triangles: 24_996,
   textureSize: 1024,
@@ -12,22 +12,18 @@ export const HY3D_IGUANODON_ASSET = Object.freeze({
 });
 
 export const IGUANODON_SKIN_SURFACE = Object.freeze({
-  model: 'opaque-non-emissive-biological-dielectric',
-  baseColourSource: 'authored-hy3d-albedo-with-neutral-olive-calibration',
-  albedoMultiplierLinear: Object.freeze([0.8, 0.74, 0.6]),
+  albedoMultiplierLinear: [0.8, 0.74, 0.6],
   roughnessSource: 'authored-packed-map-green-channel',
   roughnessFactor: 1,
-  roughnessRange: Object.freeze([0.72, 0.94]),
+  roughnessRange: [0.72, 0.94],
   roughnessRemap: 'authored-green-linearly-remapped-into-dry-scaled-skin-range',
   approximateIndexOfRefraction: 1.42,
   specularIntensity: 0.92,
   environmentIntensity: 0.8,
-  normalSource: 'authored-tangent-space-map-with-restored-unit-strength',
-  normalScale: Object.freeze([1, 1]),
+  normalScale: [1, 1],
   clearcoat: 0,
   transmission: 0,
   emission: 0,
-  evidenceBoundary: 'bounded-skin-optics-not-a-claim-about-extinct-species-pigmentation',
 });
 
 const ADULT_MODEL_SCALE = 8.25;
@@ -139,7 +135,7 @@ export const HY3D_POSE_TARGETS = Object.freeze([
 
 // Largest head turn the look morphs carry, in radians.
 export const HY3D_LOOK_RADIANS = 0.6;
-const NECK_PIVOT = Object.freeze({ x: -0.075, z: 0 });
+const NECK_PIVOT = { x: -0.075, z: 0 };
 
 function smoothstep(edge0, edge1, value) {
   const t = THREE.MathUtils.clamp((value - edge0) / (edge1 - edge0), 0, 1);
@@ -382,12 +378,12 @@ function prepareMaterial(material) {
     ...material.userData,
     surface: 'calibrated-opaque-dielectric-skin-with-bounded-authored-roughness',
     skinSurface: IGUANODON_SKIN_SURFACE,
-    roughnessRemap: Object.freeze({
+    roughnessRemap: {
       version: 'bounded-dry-skin-roughness-v1',
       source: IGUANODON_SKIN_SURFACE.roughnessSource,
       range: [...IGUANODON_SKIN_SURFACE.roughnessRange],
       model: IGUANODON_SKIN_SURFACE.roughnessRemap,
-    }),
+    },
   };
   const previousOnBeforeCompile = prepared.onBeforeCompile.bind(prepared);
   prepared.onBeforeCompile = (shader, renderer) => {
@@ -404,29 +400,8 @@ function prepareMaterial(material) {
   return applyCreatureSkin(prepared);
 }
 
-export function createCachedHy3dIguanodonLoader({
-  assetUrl = HY3D_IGUANODON_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedHy3dIguanodonLoader({ assetUrl = HY3D_IGUANODON_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadHy3dIguanodonTemplate = createCachedHy3dIguanodonLoader();

@@ -82,19 +82,19 @@ function makeDegradableGroundAccents(scene) {
     ];
     color.setHSL(...wetlandColor);
     wetland.setColorAt(index, color);
-    fernLibraryPlacements.push(Object.freeze({
+    fernLibraryPlacements.push({
       index,
       x,
       z: finalZ,
       scale: scale * 0.32,
       variantIndex: 0,
       rotation,
-      instanceScale: Object.freeze(instanceScale.map((value) => value * 0.32)),
-      color: Object.freeze(wetlandColor),
+      instanceScale: instanceScale.map((value) => value * 0.32),
+      color: wetlandColor,
       sourceRole: 'degradable-wetland-accent-replacement',
       maxDiameterMeters: 1.4,
       maxHeightMeters: 0.5,
-    }));
+    });
   }
 
   // Alternate route margins and depth bands so the plateau no longer reads
@@ -130,19 +130,19 @@ function makeDegradableGroundAccents(scene) {
     margins.setColorAt(index, color);
     const matureScale = Math.min(0.72, scale * 0.28);
     const scaleRatio = matureScale / scale;
-    fernLibraryPlacements.push(Object.freeze({
+    fernLibraryPlacements.push({
       index: wetlandCount + index,
       x,
       z,
       scale: matureScale,
       variantIndex: 2,
       rotation,
-      instanceScale: Object.freeze(instanceScale.map((value) => value * scaleRatio)),
-      color: Object.freeze(marginColor),
+      instanceScale: instanceScale.map((value) => value * scaleRatio),
+      color: marginColor,
       sourceRole: 'degradable-margin-accent-replacement',
       maxDiameterMeters: nearBand ? 2.6 : 1.8,
       maxHeightMeters: nearBand ? 1.4 : 0.9,
-    }));
+    });
   }
 
   wetland.name = 'world.connected_route.degradable-wetland-accents';
@@ -155,8 +155,8 @@ function makeDegradableGroundAccents(scene) {
   group.name = 'world.connected_route.degradable-ground-accents';
   group.userData.profile = 'deterministic-non-solid-instanced-accents';
   group.userData.instanceCount = wetlandCount + marginCount;
-  group.userData.fernLibraryPlacements = Object.freeze(fernLibraryPlacements);
-  group.userData.proceduralFallbackMeshes = Object.freeze([wetland, margins]);
+  group.userData.fernLibraryPlacements = fernLibraryPlacements;
+  group.userData.proceduralFallbackMeshes = [wetland, margins];
   group.add(wetland, margins);
   scene.add(group);
   return group;
@@ -308,17 +308,17 @@ function makeEnvironmentDensity(scene) {
     ];
     color.setHSL(...coverColor);
     mesh.setColorAt(instanceIndex, color);
-    coverPlacements.push(Object.freeze({
+    coverPlacements.push({
       index,
       x,
       z,
       scale,
       variantIndex: variant,
       rotation,
-      instanceScale: Object.freeze(instanceScale),
-      color: Object.freeze(coverColor),
+      instanceScale: instanceScale,
+      color: coverColor,
       microclimate: cluster.microclimate,
-    }));
+    });
     coverIndices[variant] += 1;
   }
 
@@ -333,8 +333,8 @@ function makeEnvironmentDensity(scene) {
     terrainWetness,
     navigationBounds: NAVIGATION_BOUNDS,
   });
-  const forestEdgeTrees = Object.freeze(forestSuccession.placements
-    .map((placement, index) => Object.freeze({
+  const forestEdgeTrees = forestSuccession.placements
+    .map((placement, index) => ({
       index,
       x: placement.x,
       z: placement.z,
@@ -350,14 +350,14 @@ function makeEnvironmentDensity(scene) {
       successionCohortId: placement.cohortId,
       successionAgeClass: placement.ageClass,
       successionWindDamage: placement.windDamage,
-    })));
+    }));
   // Keep the old low-detail batch only as a complete loading fallback. At the
   // accepted runtime all twelve cohorts use the same root-to-leaf original
   // asset, so the southern skyline cannot collapse into unrelated pale blobs.
   const simplifiedForestPlacements = forestSuccession.placements;
   const forestEdgeAssetAnchor = new THREE.Group();
   forestEdgeAssetAnchor.name = 'world.environment-density.forest-edge.original-canopy-anchor';
-  forestEdgeAssetAnchor.userData.fallbackMeshes = Object.freeze([]);
+  forestEdgeAssetAnchor.userData.fallbackMeshes = [];
   forestEdgeAssetAnchor.userData.placements = forestEdgeTrees;
   forestEdgeTrees.forEach((tree) => {
     const anchor = new THREE.Group();
@@ -484,10 +484,10 @@ function makeEnvironmentDensity(scene) {
     mesh.castShadow = false;
     mesh.receiveShadow = true;
   });
-  forestEdgeAssetAnchor.userData.fallbackMeshes = Object.freeze([
+  forestEdgeAssetAnchor.userData.fallbackMeshes = [
     distantTrunks,
     ...distantCrownMeshes,
-  ]);
+  ];
 
   const deadfallMaterial = createDeadwoodMaterial();
   const deadfallMeshes = [0, 1, 2].map((variant) => {
@@ -575,8 +575,8 @@ function makeEnvironmentDensity(scene) {
     + bryophyteGroundLayer.userData.instanceCount
     + SCENE_BUDGET.distantTrees * 2
     + SCENE_BUDGET.deadfall;
-  group.userData.groundCoverMeshes = Object.freeze(coverMeshes);
-  group.userData.groundCoverPlacements = Object.freeze(coverPlacements);
+  group.userData.groundCoverMeshes = coverMeshes;
+  group.userData.groundCoverPlacements = coverPlacements;
   group.userData.groundCoverAssetAnchor = groundCoverAssetAnchor;
   group.userData.collisionRole = 'non-solid-visual-accent';
   scene.add(group);

@@ -61,7 +61,6 @@ test('height fog controller patches physical materials once and reports its boun
   const first = controller.applyTo(scene);
   const second = controller.applyTo(scene);
 
-  assert.equal(first.version, 'analytic-height-aerial-perspective-v1');
   assert.equal(first.installedMaterialCount, 1);
   assert.equal(first.skippedShaderMaterialCount, 1);
   assert.deepEqual(second, first);

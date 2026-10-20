@@ -5,59 +5,34 @@ export const BROOK_HYDROLOGY_PROFILE = Object.freeze({
   waterClearanceMeters: 0.12,
   minimumDownstreamGrade: 0.0008,
   reflectionReachSampleSpan: 4,
-  drainageModel: 'two-headwater-reaches-drain-to-saturated-infiltration-hollow',
-  crossChannelSurfaceModel: 'gravity-level-cross-section',
-  surfaceEnergyModel:
-    'downstream-grade-and-rendered-obstacle-coupled-ripple-roughness-and-aeration',
-  reflectionModel: 'camera-selected-local-tangent-plane-with-spatial-validity-mask',
 });
 
 export const BROOK_REFLECTION_PROFILE = Object.freeze({
-  version: 'bounded-screen-space-over-planar-brook-reflection-v1',
-  model: 'screen-space-reflected-ray-over-local-planar-and-scene-probe-fallback',
-  opaqueSceneSource: 'same-camera-colour-and-depth-capture-with-water-suppressed',
-  rayMarch: 'perspective-correct-screen-segment-with-depth-thickness-gate',
   maximumRangeMeters: 38,
   constantThicknessMeters: 0.12,
   depthScaledThicknessPerMeter: 0.008,
-  stepsByQuality: Object.freeze({ low: 0, balanced: 12, high: 20 }),
-  confidenceModel: 'viewport-edge-hit-thickness-and-above-surface-gates',
-  fallback: 'camera-selected-local-planar-then-scene-layout-equirectangular-probe',
-  evidenceBoundary:
-    'screen-space-rays-cannot-recover-occluded-or-off-screen-geometry-and-never-replace-the-fallback',
+  stepsByQuality: { low: 0, balanced: 12, high: 20 },
 });
 
 export const BROOK_OBSTACLE_FLOW_PROFILE = Object.freeze({
   version: 'rendered-clast-coupled-bounded-obstacle-flow-v1',
-  model: 'local-potential-flow-deflection-with-downstream-vortex-shedding-and-aeration',
-  candidateSource:
-    'rendered-terrain-settled-active-bedload-and-historical-flood-lag-world-bounds',
   maximumObstacleCount: 12,
-  activeCountByQuality: Object.freeze({ low: 4, balanced: 8, high: 12 }),
+  activeCountByQuality: { low: 4, balanced: 8, high: 12 },
   maximumChannelDistanceFraction: 0.54,
   minimumUpperColumnContact: 0.16,
-  radiusRangeMeters: Object.freeze([0.07, 0.68]),
-  wakeLengthRangeMeters: Object.freeze([0.42, 3.1]),
+  radiusRangeMeters: [0.07, 0.68],
+  wakeLengthRangeMeters: [0.42, 3.1],
   maximumSurfaceNormalSlope: 0.052,
   maximumAeration: 0.31,
-  evidenceBoundary:
-    'local-bounded-cylinder-and-shedding-approximation-not-cfd-discharge-or-transport-proof',
 });
 
 export const BROOK_FREE_SURFACE_PROFILE = Object.freeze({
-  version: 'tessellated-obstacle-coupled-free-surface-v1',
-  model:
-    'gravity-base-level-with-clast-pressure-speedup-and-downstream-shedding-displacement',
   longitudinalSubdivisions: 4,
   crossSectionVertices: 13,
   maximumDisplacementMeters: 0.038,
   maximumUpstreamCompressionMeters: 0.032,
   maximumSideDrawdownMeters: 0.012,
   maximumWakeAmplitudeMeters: 0.018,
-  volumeContract:
-    'zero-mean-oscillatory-wake-with-local-upstream-rise-and-side-drawdown-over-fixed-base-level',
-  evidenceBoundary:
-    'centimetre-bounded-visual-free-surface-not-shallow-water-cfd-or-volume-conservation-proof',
 });
 
 // The channel ribbon bakes its centreline into world-space vertices, so the mesh
@@ -70,12 +45,8 @@ export const BROOK_FREE_SURFACE_PROFILE = Object.freeze({
 // is drawn before every standing transparent element rather than racing them on
 // a sort key that does not describe where the water is.
 export const BROOK_SURFACE_DRAW_PROFILE = Object.freeze({
-  version: 'explicit-ground-surface-transparent-draw-order-v1',
   surfaceRenderOrder: -1,
   standingTransparentRenderOrder: 0,
-  sortHazard: 'world-space-baked-ribbon-origin-does-not-track-visible-water',
-  evidenceBoundary:
-    'fixes-whole-object-transparent-draw-order-only-not-per-fragment-depth-sorting',
 });
 
 function horizontalDistance(start, end) {
@@ -131,7 +102,7 @@ export function brookFlowFrameAt(points, hydrology, x, z) {
     interpolation,
   );
   const branchDirection = index < hydrology.confluenceIndex ? 1 : -1;
-  return Object.freeze({
+  return {
     segmentIndex: index,
     interpolation,
     channelDistance: nearest.distance,
@@ -141,7 +112,7 @@ export function brookFlowFrameAt(points, hydrology, x, z) {
       nearest.tangentX * branchDirection,
       nearest.tangentZ * branchDirection,
     ),
-  });
+  };
 }
 
 export function buildBrookObstacleFlowField(points, hydrology, candidates, options = {}) {
@@ -163,10 +134,10 @@ export function buildBrookObstacleFlowField(points, hydrology, candidates, optio
       candidate?.bottomElevation,
     ].every(Number.isFinite);
     if (!finiteCandidate || !candidate?.id) {
-      rejected.push(Object.freeze({
+      rejected.push({
         id: candidate?.id ?? 'unknown-candidate',
         reason: 'invalid-rendered-world-bounds',
-      }));
+      });
       continue;
     }
     const frame = brookFlowFrameAt(points, hydrology, candidate.x, candidate.z);
@@ -193,7 +164,7 @@ export function buildBrookObstacleFlowField(points, hydrology, candidates, optio
       rejectionReason = 'too-deep-to-resolve-at-free-surface';
     }
     if (rejectionReason) {
-      rejected.push(Object.freeze({ id: candidate.id, reason: rejectionReason }));
+      rejected.push({ id: candidate.id, reason: rejectionReason });
       continue;
     }
 
@@ -242,7 +213,7 @@ export function buildBrookObstacleFlowField(points, hydrology, candidates, optio
     const impact = surfaceContact
       * (radiusMeters + wakeLengthMeters * 0.16)
       * (0.45 + frame.flowEnergy * 0.55);
-    obstacles.push(Object.freeze({
+    obstacles.push({
       id: candidate.id,
       sourceClass: candidate.sourceClass ?? 'rendered-clast',
       x: candidate.x,
@@ -265,32 +236,32 @@ export function buildBrookObstacleFlowField(points, hydrology, candidates, optio
       aeration,
       roughnessGain,
       impact,
-    }));
+    });
   }
 
   obstacles.sort((left, right) => right.impact - left.impact || left.id.localeCompare(right.id));
-  const selected = Object.freeze(obstacles.slice(0, profile.maximumObstacleCount));
+  const selected = obstacles.slice(0, profile.maximumObstacleCount);
   const selectedIds = new Set(selected.map(({ id }) => id));
   obstacles.slice(profile.maximumObstacleCount).forEach(({ id }) => {
-    rejected.push(Object.freeze({ id, reason: 'bounded-uniform-budget' }));
+    rejected.push({ id, reason: 'bounded-uniform-budget' });
   });
-  return Object.freeze({
+  return {
     profile,
     candidateCount: candidates.length,
     qualifyingCount: obstacles.length,
     selected,
-    rejected: Object.freeze(rejected),
-    selectedSourceClasses: Object.freeze([...new Set(
+    rejected: rejected,
+    selectedSourceClasses: [...new Set(
       selected.map(({ sourceClass }) => sourceClass),
-    )]),
+    )],
     maximumNormalSlope: selected.length > 0
       ? Math.max(...selected.map(({ normalSlope }) => normalSlope))
       : 0,
     maximumAeration: selected.length > 0
       ? Math.max(...selected.map(({ aeration }) => aeration))
       : 0,
-    selectedIds: Object.freeze([...selectedIds]),
-  });
+    selectedIds: [...selectedIds],
+  };
 }
 
 function buildReflectionReach(
@@ -336,7 +307,7 @@ function buildReflectionReach(
   const downstreamDrop = branch === 'north-headwater'
     ? waterLevels[startIndex] - waterLevels[endIndex]
     : waterLevels[endIndex] - waterLevels[startIndex];
-  return Object.freeze({
+  return {
     id,
     branch,
     startIndex,
@@ -350,7 +321,7 @@ function buildReflectionReach(
     halfWidth: width * 0.5 + 0.45,
     maxSurfaceDeviation,
     downstreamDrop,
-  });
+  };
 }
 
 function buildReflectionReaches(points, waterLevels, confluenceIndex, width, sampleSpan) {
@@ -371,7 +342,7 @@ function buildReflectionReaches(points, waterLevels, confluenceIndex, width, sam
   };
   addBranch(0, confluenceIndex, 'north-headwater');
   addBranch(confluenceIndex, points.length - 1, 'south-headwater');
-  return Object.freeze(reaches);
+  return reaches;
 }
 
 export function buildBrookHydrology(points, sampleBedHeight, options = {}) {
@@ -458,13 +429,13 @@ export function buildBrookHydrology(points, sampleBedHeight, options = {}) {
   const maximumBedClearance = Math.max(
     ...waterLevels.map((height, index) => height - bedLevels[index]),
   );
-  return Object.freeze({
+  return {
     profile: BROOK_HYDROLOGY_PROFILE,
-    bedLevels: Object.freeze(bedLevels),
-    waterLevels: Object.freeze(waterLevels),
-    flowDirections: Object.freeze(flowDirections),
-    localDownstreamGrades: Object.freeze(localDownstreamGrades),
-    flowEnergies: Object.freeze(flowEnergies),
+    bedLevels: bedLevels,
+    waterLevels: waterLevels,
+    flowDirections: flowDirections,
+    localDownstreamGrades: localDownstreamGrades,
+    flowEnergies: flowEnergies,
     confluenceIndex,
     confluence: new THREE.Vector3(
       points[confluenceIndex].x,
@@ -478,5 +449,5 @@ export function buildBrookHydrology(points, sampleBedHeight, options = {}) {
     maximumBedClearance,
     crossChannelGrade: 0,
     reaches,
-  });
+  };
 }

@@ -14,9 +14,6 @@ export const RIDGE_SURFACE_PROFILE = Object.freeze({
   maximumVegetatedSoilBlend: 0.46,
   maximumSlopeSubstrateBlend: 0.36,
   maximumStoneBlend: 0.45,
-  temporalModel: 'stable-world-space-no-camera-or-time-dependent-pattern',
-  evidenceBoundary:
-    'distant-surface-response-does-not-add-collision-or-claim-surveyed-geology',
 });
 
 function createRidge(name, frontZ, depth, baseY, peakRange, color, seed, connectToTerrain = false) {
@@ -276,10 +273,10 @@ function createRidge(name, frontZ, depth, baseY, peakRange, color, seed, connect
     isNearRidge: connectToTerrain,
   });
   ridge.add(forest);
-  ridge.userData.forest = Object.freeze({
+  ridge.userData.forest = {
     ...forest.userData.summary,
     ridgeSurface: RIDGE_SURFACE_PROFILE,
-  });
+  };
   return ridge;
 }
 
@@ -880,7 +877,7 @@ function createRidgeForest({
     group.add(mesh);
   }
 
-  const summary = Object.freeze({
+  const summary = {
     profile: 'terrain-cohort-and-understory-sourced-ridge-forest-v5',
     ridge: ridgeName,
     instanceCount: placements.length,
@@ -890,7 +887,7 @@ function createRidgeForest({
     totalCrownCount: broadCrownPlacements.length + narrowPlacements.length,
     drawCalls: 3,
     samplesPerSurfaceCell: 2,
-    crownArchitectureCounts: Object.freeze(Object.fromEntries([
+    crownArchitectureCounts: Object.fromEntries([
       'juvenile-pioneer',
       'layered-mature',
       'weathered-emergent',
@@ -899,7 +896,7 @@ function createRidgeForest({
       allCrownPlacements.filter(
         (placement) => placement.crownArchitecture === architecture,
       ).length,
-    ]))),
+    ])),
     sourceDamagedCrownCount: allCrownPlacements.filter(
       (placement) => placement.crownVariation[3] >= 0.5,
     ).length,
@@ -916,28 +913,28 @@ function createRidgeForest({
     narrowCrownTriangleCount: narrowCrownGeometry.userData.triangleCount,
     sourceModel:
       'ridge-slope-drainage-height-and-exposed-stone-tree-plus-gap-understory-establishment',
-    supportEvidence: Object.freeze({
+    supportEvidence: {
       rootCount: placements.length,
       supportedRootCount: placements.length,
       supportRatio: placements.length > 0 ? 1 : 0,
       maximumRootClearance: 0,
       maximumRootEmbedding: 0.06,
       interpolation: 'barycentric-on-rendered-ridge-triangles',
-    }),
+    },
     crownAttachment: 'closed-crown-base-overlaps-load-bearing-trunk-top',
-    understorySupport: Object.freeze({
+    understorySupport: {
       rootCount: understoryPlacements.length,
       supportedRootCount: understoryPlacements.length,
       supportRatio: understoryPlacements.length > 0 ? 1 : 0,
       maximumRootClearance: 0,
       maximumRootEmbedding: 0.045,
       interpolation: 'barycentric-on-rendered-ridge-triangles',
-    }),
+    },
     crownSurface:
       'closed-branch-supported-leaf-cohort-and-whorl-crowns-with-age-asymmetry-and-source-damage',
     lighting: 'fogged-non-emissive-opaque-dielectric',
     collisionRole: 'non-solid-distant-background-vegetation',
-  });
+  };
   group.userData.profile = summary.profile;
   group.userData.summary = summary;
   group.userData.placements = placements.map((placement) => ({ ...placement }));

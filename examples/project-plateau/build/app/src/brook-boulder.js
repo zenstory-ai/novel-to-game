@@ -1,8 +1,8 @@
 import * as THREE from 'three';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const BROOK_BOULDER_ASSET = Object.freeze({
   url: '/assets/brook-boulder-original-v6.glb',
-  version: 'original-brook-boulder-v6',
   bytes: 225_260,
   triangles: 1_626,
   massTriangles: 1_344,
@@ -10,17 +10,14 @@ export const BROOK_BOULDER_ASSET = Object.freeze({
   drawCalls: 6,
   fragmentCount: 5,
   supportPlaneY: -0.56,
-  provenance: 'project-original-deterministic-offline-authored-geometry',
-  generator: 'app/scripts/generate-brook-boulder.mjs',
-  rights: 'project-original-code-authored-output',
   supportModel: 'broad-buried-mass-base-with-independent-sediment-supported-spall',
   collisionRole: 'solid-main-mass-with-non-solid-sub-step-spall-apron',
   transportClass: 'immobile-residual-bank-erratic-reexposed-on-inner-bend',
   normalModel: 'forty-two-degree-selective-fracture-crease-with-continuous-weathered-normals',
-  localBounds: Object.freeze({
-    min: Object.freeze([-1.282905101776123, -0.5600000023841858, -1.121328592300415]),
-    max: Object.freeze([1.2698676586151123, 0.5580000281333923, 1.0035854578018188]),
-  }),
+  localBounds: {
+    min: [-1.282905101776123, -0.5600000023841858, -1.121328592300415],
+    max: [1.2698676586151123, 0.5580000281333923, 1.0035854578018188],
+  },
 });
 
 function prepareMaterial(material) {
@@ -56,28 +53,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedBrookBoulderLoader({
-  assetUrl = BROOK_BOULDER_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedBrookBoulderLoader({ assetUrl = BROOK_BOULDER_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadBrookBoulderTemplate = createCachedBrookBoulderLoader();
@@ -231,19 +208,19 @@ function applySurfaceTextures(material, surfaceTextures, objectName) {
     mapping: 'seam-free-object-space-triplanar-albedo-roughness-relief',
     energyModel: 'non-emissive-dielectric-rock-albedo',
     albedoModel: 'coordinate-weathering-and-porosity-varied-capillary-front',
-    capillaryBand: Object.freeze({
+    capillaryBand: {
       nominalFrontY: -0.455,
       porosityVariationMeters: 0.09,
       lowerTransitionMeters: 0.08,
       upperTransitionMeters: 0.07,
       saturatedRoughness: 0.74,
       porositySource: 'same-correlated-height-field-as-optical-relief',
-    }),
-    triplanarTextures: Object.freeze({
+    },
+    triplanarTextures: {
       albedo: surfaceTextures?.albedo ?? null,
       roughness: surfaceTextures?.roughness ?? null,
       height: surfaceTextures?.height ?? null,
-    }),
+    },
     reliefScale: spall ? 0.16 : 0.24,
   };
   prepared.needsUpdate = true;

@@ -10,11 +10,11 @@ export const TRACK_IMPRESSION = Object.freeze({
 export const COVER_ARCH_LAYOUT = Object.freeze([
   // Pair 0 straddles the brook (its east tree used to stand mid-stream) and
   // pair 2 keeps its east trunk a metre clear of the water's edge.
-  Object.freeze({ centerX: -10.6, z: 28, spread: 3 }),
-  Object.freeze({ centerX: -12, z: 18, spread: 3.82 }),
-  Object.freeze({ centerX: -17.2, z: 8, spread: 3.4 }),
-  Object.freeze({ centerX: -22, z: -3, spread: 3.82 }),
-  Object.freeze({ centerX: -13, z: 13, spread: 3.5 }),
+  { centerX: -10.6, z: 28, spread: 3 },
+  { centerX: -12, z: 18, spread: 3.82 },
+  { centerX: -17.2, z: 8, spread: 3.4 },
+  { centerX: -22, z: -3, spread: 3.82 },
+  { centerX: -13, z: 13, spread: 3.5 },
 ]);
 
 // Preserve the approved ten trunk/root anchors and route clearance, but treat
@@ -27,11 +27,11 @@ export const COVER_ARCH_LAYOUT = Object.freeze([
 // placed along the same line so what reads as shelter is shelter.
 export const COVER_BAND = Object.freeze({
   halfWidth: 2.2,
-  centerline: Object.freeze([
+  centerline: [
     [-3.6, 31], [-3.6, 24], [-3.8, 14], [-3.4, 5], [-2.2, -3], [-1.4, -9], [-0.8, -13.5],
-  ].map((point) => Object.freeze(point))),
+  ],
   // The southern end opens toward the family: the glade-edge blind.
-  blind: Object.freeze({ x: -1.1, z: -11.5 }),
+  blind: { x: -1.1, z: -11.5 },
 });
 
 export function coverBandDistance(x, z) {
@@ -65,13 +65,13 @@ export function coverBandSamples(spacing) {
     const tx = (bx - ax) / length;
     const tz = (bz - az) / length;
     for (let distance = carried; distance < length; distance += spacing) {
-      samples.push(Object.freeze({
+      samples.push({
         x: ax + tx * distance,
         z: az + tz * distance,
         normalX: -tz,
         normalZ: tx,
         yaw: Math.atan2(tx, tz),
-      }));
+      });
       carried = distance + spacing - length;
     }
   }
@@ -86,33 +86,33 @@ export const COVER_BAND_TREE_FERNS = Object.freeze(coverBandSamples(2.7).flatMap
   // Irregular set-backs and ages so the band reads as growth, not a planting.
   const offset = COVER_BAND.halfWidth + 0.55 + ((index * 53) % 7) * 0.12;
   const scale = 0.7 + ((index * 37) % 11) * 0.045;
-  return [Object.freeze([
+  return [[
     sample.x + sample.normalX * offset * side,
     sample.z + sample.normalZ * offset * side,
     scale,
     (index * 1.618) % (Math.PI * 2),
-  ])];
+  ]];
 }));
 
-const COVER_RIPARIAN_GROWTH = Object.freeze([
-  Object.freeze([0.82, -0.34, 'elliptic-waxy', 'submature', 0.08]),
-  Object.freeze([0.94, 0.76, 'compound-lanceolate', 'mature', 0.04]),
-  Object.freeze([0.88, 1.42, 'elliptic-waxy', 'mature', 0.06]),
-  Object.freeze([0.76, -1.08, 'elliptic-waxy', 'pioneer', 0.18]),
-  Object.freeze([0.96, 2.18, 'compound-lanceolate', 'mature', 0.05]),
-  Object.freeze([0.84, -2.46, 'elliptic-waxy', 'submature', 0.13]),
-  Object.freeze([0.79, 0.28, 'elliptic-waxy', 'pioneer', 0.2]),
-  Object.freeze([0.92, 2.92, 'compound-lanceolate', 'mature', 0.07]),
-  Object.freeze([0.86, -1.72, 'elliptic-waxy', 'submature', 0.12]),
-  Object.freeze([0.9, 1.05, 'elliptic-waxy', 'mature', 0.09]),
-]);
+const COVER_RIPARIAN_GROWTH = [
+  [0.82, -0.34, 'elliptic-waxy', 'submature', 0.08],
+  [0.94, 0.76, 'compound-lanceolate', 'mature', 0.04],
+  [0.88, 1.42, 'elliptic-waxy', 'mature', 0.06],
+  [0.76, -1.08, 'elliptic-waxy', 'pioneer', 0.18],
+  [0.96, 2.18, 'compound-lanceolate', 'mature', 0.05],
+  [0.84, -2.46, 'elliptic-waxy', 'submature', 0.13],
+  [0.79, 0.28, 'elliptic-waxy', 'pioneer', 0.2],
+  [0.92, 2.92, 'compound-lanceolate', 'mature', 0.07],
+  [0.86, -1.72, 'elliptic-waxy', 'submature', 0.12],
+  [0.9, 1.05, 'elliptic-waxy', 'mature', 0.09],
+];
 
 export const COVER_RIPARIAN_TREE_LAYOUT = Object.freeze(COVER_ARCH_LAYOUT.flatMap(
   ({ centerX, z, spread }, pairIndex) => [-1, 1].map((side, sideIndex) => {
     const index = pairIndex * 2 + sideIndex;
     const [scale, trunkYaw, leafFamily, successionAgeClass, successionWindDamage] =
       COVER_RIPARIAN_GROWTH[index];
-    return Object.freeze({
+    return {
       index,
       pairIndex,
       side: side < 0 ? 'left' : 'right',
@@ -127,7 +127,7 @@ export const COVER_RIPARIAN_TREE_LAYOUT = Object.freeze(COVER_ARCH_LAYOUT.flatMa
       openCanopyExposure: index === 6,
       successionAgeClass,
       successionWindDamage,
-    });
+    };
   }),
 ));
 
@@ -138,7 +138,7 @@ export const HABITAT_TREE_LAYOUT = Object.freeze([
   [-24.5, -13, 1.26, 4.2], [25.5, -18, 1.02, 2.85],
   [-24, -42, 1.14, 5.1], [25, -49, 1.04, 1.75],
   [-28, -67, 1.22, 3.25], [27, -70, 0.94, 0.35],
-].map((placement) => Object.freeze(placement)));
+]);
 
 export const FOREGROUND_FROND_LAYOUT = Object.freeze([
   [-10.5, 54, 1.7, 0.2], [11.8, 43, 1.45, 2.6],
@@ -147,11 +147,11 @@ export const FOREGROUND_FROND_LAYOUT = Object.freeze([
   [-15.8, -27, 2.08, 4.2], [15.4, -39, 1.78, 2.85],
   [-17.2, -51, 2.16, 5.1], [17.5, -60, 1.72, 1.75],
   [-18.5, -71, 2.24, 3.25], [18.2, -78, 1.82, 0.35],
-].map((placement) => Object.freeze(placement)));
+]);
 
 export const FORT_TENT_LAYOUT = Object.freeze([
-  Object.freeze({ id: 'fort-tent-west', x: -3, z: 80, rotation: Math.PI / 4 }),
-  Object.freeze({ id: 'fort-tent-east', x: 5, z: 84, rotation: Math.PI / 4 }),
+  { id: 'fort-tent-west', x: -3, z: 80, rotation: Math.PI / 4 },
+  { id: 'fort-tent-east', x: 5, z: 84, rotation: Math.PI / 4 },
 ]);
 
 export const FORT_FIREPIT = Object.freeze({ id: 'fort-firepit', x: -8, z: 78 });
@@ -165,9 +165,9 @@ export const HERO_GINGKO_LAYOUT = Object.freeze({
   collisionHeight: 12.8,
 });
 export const BASALT_FORMATION_LAYOUT = Object.freeze([
-  Object.freeze({ x: 37.5, z: -50, yaw: 0.22, dipX: -0.018, dipZ: 0.032 }),
-  Object.freeze({ x: 36.5, z: -26, yaw: -0.18, dipX: 0.026, dipZ: -0.022 }),
-  Object.freeze({ x: 37.5, z: -3, yaw: 0.34, dipX: -0.012, dipZ: 0.024 }),
+  { x: 37.5, z: -50, yaw: 0.22, dipX: -0.018, dipZ: 0.032 },
+  { x: 36.5, z: -26, yaw: -0.18, dipX: 0.026, dipZ: -0.022 },
+  { x: 37.5, z: -3, yaw: 0.34, dipX: -0.012, dipZ: 0.024 },
 ]);
 export const BROOK_BOULDER = Object.freeze({
   id: 'brook-boulder',
@@ -176,18 +176,14 @@ export const BROOK_BOULDER = Object.freeze({
   collisionRadius: 1.45,
   collisionHeight: 1.2,
   transportClass: 'immobile-residual-bank-erratic-reexposed-on-inner-bend',
-  presentFlowMobility: 'immobile',
 });
 
 export const FLUVIAL_ROCK_TRANSPORT_PROFILE = Object.freeze({
-  model: 'active-bedload-historical-flood-lag-and-residual-bank-erratic',
   brookWidthMeters: 3.4,
-  presentMobileLongAxisMeters: Object.freeze([0.16, 0.55]),
-  historicalLagLongAxisMeters: Object.freeze([1.06, 1.32]),
+  presentMobileLongAxisMeters: [0.16, 0.55],
+  historicalLagLongAxisMeters: [1.06, 1.32],
   historicalLagMaximumBrookWidthFraction: 0.39,
   residualErraticLongAxisMeters: 2.48,
-  mobilityContract: 'only-non-solid-sub-step-clasts-move-with-present-flow',
-  hydraulicEvidenceBoundary: 'grade-only-water-model-does-not-prove-exact-transport-competence',
 });
 
 // These rocks are authored as geological placements rather than uniform set
@@ -198,98 +194,98 @@ export const FLUVIAL_ROCK_TRANSPORT_PROFILE = Object.freeze({
 // collect at the ridge apron beyond the navigation boundary. Playable rocks
 // carry matching static colliders; ridge-foot talus is explicitly distant.
 export const NON_COLUMNAR_ROCK_LAYOUT = Object.freeze([
-  Object.freeze({
+  {
     id: 'brook-cobble-east-1', family: 'fluvial-cobble', x: -9.6, z: 37.1,
     yaw: 0.34, scale: [0.62, 0.61, 0.5], burial: 0.075,
     solid: true, collisionRadius: 0.62, collisionHeight: 0.47,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
-  Object.freeze({
+  },
+  {
     id: 'brook-cobble-west-1', family: 'fluvial-cobble', x: -17.8, z: 47,
     yaw: -0.22, scale: [0.56, 0.56, 0.45], burial: 0.07,
     solid: true, collisionRadius: 0.56, collisionHeight: 0.44,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
-  Object.freeze({
+  },
+  {
     id: 'brook-cobble-east-2', family: 'fluvial-cobble', x: -5.2, z: 27.8,
     yaw: 0.29, scale: [0.52, 0.54, 0.43], burial: 0.065,
     solid: true, collisionRadius: 0.52, collisionHeight: 0.43,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
-  Object.freeze({
+  },
+  {
     id: 'brook-cobble-west-2', family: 'fluvial-cobble', x: -16.1, z: 20.4,
     yaw: -0.18, scale: [0.6, 0.58, 0.48], burial: 0.08,
     solid: true, collisionRadius: 0.6, collisionHeight: 0.45,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
-  Object.freeze({
+  },
+  {
     id: 'brook-cobble-east-3', family: 'fluvial-cobble', x: -6.7, z: 10.2,
     yaw: 0.4, scale: [0.5, 0.52, 0.42], burial: 0.06,
     solid: true, collisionRadius: 0.5, collisionHeight: 0.43,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
-  Object.freeze({
+  },
+  {
     id: 'brook-cobble-west-3', family: 'fluvial-cobble', x: -16.7, z: 2.8,
     yaw: -0.12, scale: [0.55, 0.56, 0.45], burial: 0.07,
     solid: true, collisionRadius: 0.55, collisionHeight: 0.44,
     transportClass: 'historical-high-flow-rounded-lag', presentFlowMobility: 'immobile',
-  }),
+  },
 
-  Object.freeze({
+  {
     id: 'glade-slab-west-1', family: 'bedded-slab', x: -18.5, z: -19.5,
     yaw: -0.46, scale: [1.34, 1.22, 1.02], burial: 0.06,
     solid: true, collisionRadius: 1.12, collisionHeight: 0.72,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'glade-slab-west-2', family: 'bedded-slab', x: -21.5, z: -34.5,
     yaw: -0.2, scale: [1.12, 1.08, 0.86], burial: 0.055,
     solid: true, collisionRadius: 0.94, collisionHeight: 0.64,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'glade-slab-west-3', family: 'bedded-slab', x: -16.8, z: -49,
     yaw: 0.31, scale: [1.26, 1.16, 0.92], burial: 0.065,
     solid: true, collisionRadius: 1.04, collisionHeight: 0.68,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'glade-slab-east-1', family: 'bedded-slab', x: 24.2, z: -21.5,
     yaw: 0.62, scale: [0.78, 0.72, 0.64], burial: 0.06,
     solid: true, collisionRadius: 0.8, collisionHeight: 0.44,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'glade-slab-east-2', family: 'bedded-slab', x: 22.8, z: -36.5,
     yaw: 0.18, scale: [1.38, 1.26, 1.0], burial: 0.065,
     solid: true, collisionRadius: 1.14, collisionHeight: 0.74,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'glade-slab-east-3', family: 'bedded-slab', x: 16.4, z: -52,
     yaw: -0.28, scale: [1.08, 1.04, 0.84], burial: 0.055,
     solid: true, collisionRadius: 0.9, collisionHeight: 0.62,
-  }),
+  },
 
-  Object.freeze({
+  {
     id: 'ridge-talus-west-1', family: 'angular-talus', x: -38, z: -92,
     yaw: -0.24, scale: [1.72, 1.12, 1.34], burial: 0.09, solid: false,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'ridge-talus-west-2', family: 'angular-talus', x: -49, z: -96,
     yaw: 0.26, scale: [1.34, 0.92, 1.1], burial: 0.08, solid: false,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'ridge-talus-centre-1', family: 'angular-talus', x: -13, z: -95,
     yaw: -0.1, scale: [1.48, 1.02, 1.2], burial: 0.085, solid: false,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'ridge-talus-centre-2', family: 'angular-talus', x: 7, z: -98,
     yaw: 0.36, scale: [1.24, 0.84, 1.02], burial: 0.075, solid: false,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'ridge-talus-east-1', family: 'angular-talus', x: 28, z: -93,
     yaw: 0.18, scale: [1.6, 1.08, 1.26], burial: 0.09, solid: false,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'ridge-talus-east-2', family: 'angular-talus', x: 43, z: -97,
     yaw: -0.3, scale: [1.3, 0.9, 1.08], burial: 0.08, solid: false,
-  }),
+  },
 ]);
 // The branch tip is authored to meet the branch-pulling adult's jaw at the
 // peak of the pull. Keep this placement coupled to the contact regression in
@@ -299,11 +295,11 @@ export const FEEDING_BRANCH = Object.freeze({ id: 'feeding-branch', x: 18.35, z:
 export const PTERODACTYL_ORBIT_CENTER = Object.freeze({ x: 0, z: -9 });
 
 export const FAMILY_LAYOUT = Object.freeze([
-  Object.freeze({ id: 'iguanodon-adult-graze', x: -8, z: -31, scale: 1.22, heading: -0.32, young: false, behaviorRole: 'graze' }),
-  Object.freeze({ id: 'iguanodon-adult-branch', x: 10.5, z: -39, scale: 1.14, heading: 0.18, young: false, behaviorRole: 'branch-pull' }),
-  Object.freeze({ id: 'iguanodon-young-play-a', x: -2.2, z: -24.8, scale: 0.72, heading: 0.58, young: true, behaviorRole: 'young-play' }),
-  Object.freeze({ id: 'iguanodon-young-play-b', x: 3.4, z: -27.2, scale: 0.66, heading: 0.58 + Math.PI, young: true, behaviorRole: 'young-play' }),
-  Object.freeze({ id: 'iguanodon-young-close', x: 2.5, z: -35, scale: 0.73, heading: 2.15, young: true, behaviorRole: 'stay-close' }),
+  { id: 'iguanodon-adult-graze', x: -8, z: -31, scale: 1.22, heading: -0.32, young: false, behaviorRole: 'graze' },
+  { id: 'iguanodon-adult-branch', x: 10.5, z: -39, scale: 1.14, heading: 0.18, young: false, behaviorRole: 'branch-pull' },
+  { id: 'iguanodon-young-play-a', x: -2.2, z: -24.8, scale: 0.72, heading: 0.58, young: true, behaviorRole: 'young-play' },
+  { id: 'iguanodon-young-play-b', x: 3.4, z: -27.2, scale: 0.66, heading: 0.58 + Math.PI, young: true, behaviorRole: 'young-play' },
+  { id: 'iguanodon-young-close', x: 2.5, z: -35, scale: 0.73, heading: 2.15, young: true, behaviorRole: 'stay-close' },
 ]);
 
 function createVegetationLayout() {
@@ -401,7 +397,7 @@ function createVegetationLayout() {
         scale * (0.7 + random() * 0.18),
       ];
     }
-    trees.push(Object.freeze(tree));
+    trees.push(tree);
   }
 
   for (let index = 0; index < SCENE_BUDGET.ferns; index += 1) {
@@ -427,7 +423,7 @@ function createVegetationLayout() {
     const variantScale = variantIndex === 1
       ? [0.78, 1.18, 0.8]
       : variantIndex === 2 ? [1.28, 0.72, 1.18] : [1, 1, 1];
-    ferns.push(Object.freeze({
+    ferns.push({
       index,
       x,
       z,
@@ -444,14 +440,14 @@ function createVegetationLayout() {
         0.2 + random() * 0.12,
         0.12 + random() * 0.045,
       ],
-    }));
+    });
   }
 
   for (let index = 0; index < 96; index += 1) {
     const x = (random() - 0.5) * 125;
     const z = (random() - 0.5) * 160;
     const scale = 0.24 + random() * 0.82;
-    stones.push(Object.freeze({
+    stones.push({
       index,
       x,
       z,
@@ -463,14 +459,14 @@ function createVegetationLayout() {
         0.1 + random() * 0.1,
         0.23 + random() * 0.08,
       ],
-    }));
+    });
   }
 
-  return Object.freeze({
-    trees: Object.freeze(trees),
-    ferns: Object.freeze(ferns),
-    stones: Object.freeze(stones),
-  });
+  return {
+    trees: trees,
+    ferns: ferns,
+    stones: stones,
+  };
 }
 
 export const VEGETATION_LAYOUT = createVegetationLayout();
@@ -484,20 +480,20 @@ export const FERN_LIBRARY_LAYOUT = Object.freeze([
   ...VEGETATION_LAYOUT.ferns,
   ...FOREGROUND_FROND_LAYOUT.map(([x, z, scale, yaw], offset) => {
     const matureScale = scale * 0.23;
-    return Object.freeze({
+    return {
       index: VEGETATION_LAYOUT.ferns.length + offset,
       x,
       z,
       scale: matureScale,
       variantIndex: 2,
       rotation: yaw,
-      instanceScale: Object.freeze([
+      instanceScale: [
         matureScale * 1.04,
         matureScale * 0.86,
         matureScale,
-      ]),
-      color: Object.freeze([0.305 + (offset % 3) * 0.006, 0.24, 0.13]),
+      ],
+      color: [0.305 + (offset % 3) * 0.006, 0.24, 0.13],
       sourceRole: 'foreground-depth-frond-replacement',
-    });
+    };
   }),
 ]);

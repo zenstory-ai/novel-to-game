@@ -218,11 +218,11 @@ function createSoilDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.soil-albedo', albedoData, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.soil-roughness', roughnessData),
     height: makeTexture('world.material.soil-macro-detail', heightData),
-  });
+  };
 }
 
 function createTerrainMacroControlTexture() {
@@ -370,11 +370,11 @@ function createWaterDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.brook-albedo', albedoData, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.brook-roughness', roughnessData),
     normal: makeTexture('world.material.brook-normal', normalData),
-  });
+  };
 }
 
 const soilTextures = createSoilDetailTextures();

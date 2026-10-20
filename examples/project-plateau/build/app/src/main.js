@@ -650,7 +650,7 @@ function updateFieldHud(now) {
 }
 
 function setCameraToPlayer(now = performance.now()) {
-  const speed = Math.hypot(player.velocity?.x ?? 0, player.velocity?.z ?? 0);
+  const speed = Math.hypot(player.velocity.x, player.velocity.z);
   const moving = speed > 0.08;
   const desiredEyeHeight = player.stance === 'crouch' ? 1.15 : 1.8;
   const cameraDelta = lastCameraMotionAt === null
@@ -665,7 +665,7 @@ function setCameraToPlayer(now = performance.now()) {
   camera.position.set(
     player.position.x,
     terrainHeight(player.position.x, player.position.z)
-      + (player.verticalOffset ?? 0)
+      + player.verticalOffset
       + smoothedEyeHeight
       + bob,
     player.position.z,
@@ -1118,6 +1118,17 @@ function closePanels() {
   document.querySelector('#credits-panel').hidden = true;
 }
 
+function showRuntimeError(error) {
+  hideLoading();
+  window.__projectPlateau.ready = false;
+  runtimeErrorCopy.textContent = error instanceof Error
+    ? error.message
+    : 'Something needed for the expedition is missing from the local case.';
+  document.querySelector('#retry-runtime').hidden = false;
+  runtimeError.hidden = false;
+  document.body.dataset.mode = 'runtime-error';
+}
+
 async function enterBasin() {
   closePanels();
   runtimeError.hidden = true;
@@ -1130,17 +1141,10 @@ async function enterBasin() {
     document.querySelector('#field-order').hidden = false;
     await assetFrameCommit.wait();
   } catch (error) {
-    hideLoading();
     clearTransientInput();
     runActive = false;
-    window.__projectPlateau.ready = false;
-    runtimeErrorCopy.textContent = error instanceof Error
-      ? error.message
-      : 'Something needed for the expedition is missing from the local case.';
     document.querySelector('#field-order').hidden = true;
-    document.querySelector('#retry-runtime').hidden = false;
-    runtimeError.hidden = false;
-    document.body.dataset.mode = 'runtime-error';
+    showRuntimeError(error);
   } finally {
     enterButton.disabled = false;
   }
@@ -1341,12 +1345,12 @@ function playerSnapshot() {
       z: Number(player.lastStablePosition.z.toFixed(3)),
     },
     velocity: {
-      x: Number((player.velocity?.x ?? 0).toFixed(3)),
-      z: Number((player.velocity?.z ?? 0).toFixed(3)),
+      x: Number(player.velocity.x.toFixed(3)),
+      z: Number(player.velocity.z.toFixed(3)),
     },
     groundY: Number(player.groundY.toFixed(3)),
-    verticalOffset: Number((player.verticalOffset ?? 0).toFixed(3)),
-    verticalVelocity: Number((player.verticalVelocity ?? 0).toFixed(3)),
+    verticalOffset: Number(player.verticalOffset.toFixed(3)),
+    verticalVelocity: Number(player.verticalVelocity.toFixed(3)),
     grounded: player.grounded,
     heading: Number(player.heading.toFixed(4)),
     pitch: Number(player.pitch.toFixed(4)),
@@ -1400,12 +1404,5 @@ ensureHy3dVisuals()
   })
   .catch((error) => {
     console.error('Project Plateau title assets failed to settle.', error);
-    hideLoading();
-    window.__projectPlateau.ready = false;
-    runtimeErrorCopy.textContent = error instanceof Error
-      ? error.message
-      : 'Something needed for the expedition is missing from the local case.';
-    document.querySelector('#retry-runtime').hidden = false;
-    runtimeError.hidden = false;
-    document.body.dataset.mode = 'runtime-error';
+    showRuntimeError(error);
   });

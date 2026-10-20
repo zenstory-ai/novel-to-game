@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import { applyCreatureSkin } from './creature-skin.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const HY3D_PTERODACTYL_ASSET = Object.freeze({
   url: '/assets/pterodactyl-hy3d-v35-stylized.glb',
-  version: 'hy3d-v3.5-stylized-30k-1k',
   bytes: 1_327_456,
   triangles: 30_496,
   textureSize: 1024,
@@ -155,28 +155,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedHy3dPterodactylLoader({
-  assetUrl = HY3D_PTERODACTYL_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedHy3dPterodactylLoader({ assetUrl = HY3D_PTERODACTYL_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadHy3dPterodactylTemplate = createCachedHy3dPterodactylLoader();

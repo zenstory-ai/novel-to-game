@@ -229,7 +229,7 @@ function createWeatheredRockGeometry(seed, detail = 2) {
 }
 
 const NON_COLUMNAR_ROCK_PROFILES = Object.freeze({
-  'fluvial-cobble': Object.freeze({
+  'fluvial-cobble': {
     seed: 31,
     profile: 'historical-high-flow-rounded-lag-clast',
     fractureModel: 'long-duration-abrasion-with-muted-broad-faces',
@@ -237,23 +237,23 @@ const NON_COLUMNAR_ROCK_PROFILES = Object.freeze({
     flatShading: false,
     bumpScale: 0.023,
     moistureModel: 'porosity-varied-low-capillary-front',
-  }),
-  'bedded-slab': Object.freeze({
+  },
+  'bedded-slab': {
     seed: 47,
     profile: 'joint-bounded-tabular-plateau-slab',
     fractureModel: 'closed-irregular-ring-stack-with-two-load-bearing-bedding-ledges',
     materialColor: 0x5a5044,
     flatShading: false,
     bumpScale: 0.029,
-  }),
-  'angular-talus': Object.freeze({
+  },
+  'angular-talus': {
     seed: 73,
     profile: 'joint-bounded-angular-talus-block',
     fractureModel: 'three-broad-joint-planes-with-sharp-spall-faces',
     materialColor: 0x57483d,
     flatShading: true,
     bumpScale: 0.034,
-  }),
+  },
 });
 
 function createBeddedSlabGeometry() {

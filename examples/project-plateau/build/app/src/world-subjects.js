@@ -88,14 +88,14 @@ function cubicBezierPoint(start, controlA, controlB, end, progress) {
   );
 }
 
-const ATTACK_CIRCLE = Object.freeze({
+const ATTACK_CIRCLE = {
   ahead: 15,
   startRadius: 9,
   radius: 6,
   startHeight: 12,
   height: 6.8,
   angularSpeed: 0.45,
-});
+};
 
 function circlePoint(origin, heading, clock) {
   const forwardX = -Math.sin(heading);

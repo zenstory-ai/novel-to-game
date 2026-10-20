@@ -7,6 +7,7 @@ import {
   vegetationLeafTint,
   vegetationStructureTint,
 } from './vegetation-albedo.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const GROUND_COVER_LIBRARY_ASSET = Object.freeze({
   url: '/assets/ground-cover-library-original-v3.glb',
@@ -14,33 +15,29 @@ export const GROUND_COVER_LIBRARY_ASSET = Object.freeze({
   triangles: 2_712,
   drawCalls: 6,
   variantCount: 3,
-  variantIds: Object.freeze([
+  variantIds: [
     'brook-arrowhead-colony',
     'shade-elliptic-rosette',
     'slope-sedge-fan',
-  ]),
+  ],
   supportPlaneY: -0.08,
 });
 
 export const GROUND_COVER_ARCHITECTURE_PROFILE = Object.freeze({
-  model: 'mixed-age-asymmetric-petiole-and-leaf-hierarchy',
-  leafPhaseAttribute: 'uv1-x',
   petioleRadialSegments: 6,
-  maximumPetioleRadiusMetersByVariant: Object.freeze([0.011, 0.0095, 0.008]),
+  maximumPetioleRadiusMetersByVariant: [0.011, 0.0095, 0.008],
   instanceYawVariationRadians: 0.11,
   instanceRadialVariation: 0.14,
   instanceVerticalVariationMeters: 0.022,
   maximumAttachmentGapMeters: 0.0001,
-  attachmentModel: 'shared-leaf-phase-and-flex-at-closed-petiole-to-lamina-junction',
 });
 
 export const GROUND_COVER_WIND_PROFILE = Object.freeze({
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.065,
   verticalTipDisplacementMeters: 0.014,
   macroFrequencyHz: 0.78,
   flutterFrequencyHz: 2.45,
-  flexAttribute: 'uv1-y',
   supportModel: 'subgrade-rhizome-fixed-petiole-and-leaf-progressively-flexible',
   shadowModel: 'identical-colour-and-depth-pass-displacement-function-and-uniforms',
 });
@@ -50,19 +47,19 @@ export const GROUND_COVER_WIND_PROFILE = Object.freeze({
 // leaves. Each family is therefore constrained to a measured mature envelope;
 // these are geometry scales, so roots, stems, leaves and wind all remain coupled.
 export const GROUND_COVER_DIMENSION_PROFILE = Object.freeze([
-  Object.freeze({
+  {
     id: 'brook-arrowhead-colony', scale: 0.36, maxDiameterMeters: 0.88, maxHeightMeters: 0.38,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'shade-elliptic-rosette', scale: 0.31, maxDiameterMeters: 0.66, maxHeightMeters: 0.23,
-  }),
-  Object.freeze({
+  },
+  {
     id: 'slope-sedge-fan', scale: 0.36, maxDiameterMeters: 0.74, maxHeightMeters: 0.56,
-  }),
+  },
 ]);
 
 const BURIAL_DEPTH = 0.052;
-const SUPPORT_CLEARANCE_RANGE = Object.freeze([-0.065, -0.035]);
+const SUPPORT_CLEARANCE_RANGE = [-0.065, -0.035];
 
 function prepareMaterial(material) {
   if (!material) return material;
@@ -93,28 +90,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedGroundCoverLibraryLoader({
-  assetUrl = GROUND_COVER_LIBRARY_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedGroundCoverLibraryLoader({ assetUrl = GROUND_COVER_LIBRARY_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadGroundCoverLibraryTemplate = createCachedGroundCoverLibraryLoader();
@@ -163,7 +140,7 @@ export function createGroundCoverSurfaceTextures(size = 96) {
       heightData.set([heightByte, heightByte, heightByte, 255], offset);
     }
   }
-  return Object.freeze({
+  return {
     albedo: makeTexture(
       'world.material.ground-cover-leaf-albedo',
       albedoData,
@@ -172,7 +149,7 @@ export function createGroundCoverSurfaceTextures(size = 96) {
     ),
     roughness: makeTexture('world.material.ground-cover-leaf-roughness', roughnessData, size),
     height: makeTexture('world.material.ground-cover-leaf-height', heightData, size),
-  });
+  };
 }
 
 function injectGroundCoverWindVertex(shader, uniforms) {
@@ -289,11 +266,11 @@ function addThinLeafTransmission(shader) {
 
 function createGroundCoverMaterials() {
   const textures = createGroundCoverSurfaceTextures();
-  const windUniforms = Object.freeze({
+  const windUniforms = {
     time: { value: 0 },
     strength: { value: GROUND_COVER_WIND_PROFILE.horizontalTipDisplacementMeters },
     verticalStrength: { value: GROUND_COVER_WIND_PROFILE.verticalTipDisplacementMeters },
-  });
+  };
   const structure = new THREE.MeshStandardMaterial({
     color: VEGETATION_BASE_COLOURS.groundCoverStructure,
     vertexColors: true,
@@ -338,7 +315,7 @@ function createGroundCoverMaterials() {
     };
   }
   applyFoliageLight(leaf, 0.6);
-  return Object.freeze({ structure, leaf, textures, windUniforms });
+  return { structure, leaf, textures, windUniforms };
 }
 
 function createGroundCoverDepthMaterial(sourceMaterial) {
@@ -375,11 +352,11 @@ function extractVariants(template) {
       if (!structure || !leaves) {
         throw new Error(`Ground-cover variant ${group.userData.variantId} is missing its load path`);
       }
-      return Object.freeze({
+      return {
         id: group.userData.variantId,
         structure: structure.geometry,
         leaves: leaves.geometry,
-      });
+      };
     });
 }
 
@@ -398,7 +375,7 @@ export function classifyGroundCoverHabitat(placement, { terrainGradient }) {
     variantIndex = 1;
     niche = 'canopy-shade-rosette';
   }
-  return Object.freeze({ variantIndex, niche, slope });
+  return { variantIndex, niche, slope };
 }
 
 function supportPoints(geometry) {
@@ -496,7 +473,7 @@ function instanceMatrix(placement, geometry, terrainHeight, terrainGradient, var
     );
     position.y += adjustment;
     matrix.compose(position, quaternion, scale);
-    return Object.freeze({ matrix });
+    return { matrix };
   }
 
   // An analytic escarpment can put a generated point exactly across a sharp

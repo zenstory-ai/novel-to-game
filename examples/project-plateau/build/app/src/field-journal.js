@@ -1,4 +1,4 @@
-const PLATE_NOTES = Object.freeze({
+const PLATE_NOTES = {
   'brook-partial': 'A flank beyond the wet fern',
   'brook-flank': 'The family far down the bar',
   'subject-occluded': 'A body behind leaves',
@@ -28,9 +28,9 @@ const PLATE_NOTES = Object.freeze({
   'stegosaurus-drinking-repeat': 'The plated drinker once more',
   'stegosaurus-walking': 'A plated back among the reeds',
   'stegosaurus-edge': 'A plated tail leaving the plate',
-});
+};
 
-const FRAME_CONDITIONS = Object.freeze({
+const FRAME_CONDITIONS = {
   'empty-fort': 'Nothing living on the plate.',
   'brook-unread': 'Only mud reaches the glass.',
   'brook-partial': 'Wet fern crosses the flank.',
@@ -58,21 +58,21 @@ const FRAME_CONDITIONS = Object.freeze({
   'stegosaurus-drinking-repeat': 'That drinking pose is already in the case.',
   'stegosaurus-walking': 'The plated back is moving.',
   'stegosaurus-edge': 'The tail is leaving the plate.',
-});
+};
 
-const BEHAVIOUR_NAMES = Object.freeze({
+const BEHAVIOUR_NAMES = {
   'young-play': 'Young at play',
   'branch-pull': 'Bough drawn down',
   'predatory-dive': 'Hunting pass',
   drinking: 'Drinking',
   alarm: 'Alarm only',
-});
+};
 
-const RANGE_NAMES = Object.freeze({
+const RANGE_NAMES = {
   close: ['Close', true],
   fair: ['Fair range', true],
   distant: ['Distant', false],
-});
+};
 
 function framingStamp(plate) {
   if (plate.composition === 'clear') return ['Clean frame', true];
