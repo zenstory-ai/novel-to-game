@@ -8,7 +8,7 @@ import {
 import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
 import { settleLevelUp, recommendAlloc, applyRecommend, allocatePoint, allocateSkillPoint, applyRecommendSkills } from '../js/growth.js';
-import { grantExp, expToNext, bountyReward, buy, equipItem, applyLoot, gearOf } from '../js/progress.js';
+import { newCampaign, grantExp, expToNext, bountyReward, buy, equipItem, applyLoot, gearOf } from '../js/progress.js';
 
 let passed = 0, failed = 0;
 function ok(cond, name, extra = '') {
@@ -436,7 +436,7 @@ section('武器装备与规则型法宝');
 // ---------- 21. 升级结算:发点+修炼点,推荐加点确定 ----------
 section('升级结算(发点/修炼点/推荐加点)');
 {
-  const mkCampaign = () => ({ pendingPoints: {}, skillLevels: {}, skillPoints: {}, alloc: {}, levels: { wukong: 1, bajie: 1, sha: 1 } });
+  const mkCampaign = () => newCampaign(1);
   const c1 = mkCampaign(), c2 = mkCampaign();
   const ups = levelUpParty({ wukong: 1, bajie: 1, sha: 1 });
   settleLevelUp(c1, ups);
@@ -458,8 +458,7 @@ section('升级结算(发点/修炼点/推荐加点)');
   c4.pendingPoints.sha = 5;
   ok(allocatePoint(c4, 'sha', '防', 1) && c4.alloc.sha['防'] === 1 && c4.pendingPoints.sha === 4, '手动+1 成功');
   ok(allocatePoint(c4, 'sha', '防', -1) && c4.pendingPoints.sha === 5, '洗回 +1');
-  ok(!allocatePoint(c4, 'sha', '防', 1) || true, '空点不炸');
-  ok(!allocatePoint({ pendingPoints: { sha: 0 }, alloc: {} }, 'sha', '防', 1), '无点时投点被拒');
+  ok(!allocatePoint(mkCampaign(), 'sha', '防', 1), '无点时投点被拒');
   // 修炼点:手动投法
   const c5 = mkCampaign();
   c5.levels.wukong = 2; c5.skillPoints.wukong = 2;
@@ -487,7 +486,8 @@ section('结算隔离:不占战斗 rng');
   };
   const before = runOnce();
   // 中间做一整套升级结算(含推荐加点)
-  const c = { pendingPoints: { wukong: 9 }, skillLevels: {}, alloc: {} };
+  const c = newCampaign(1);
+  c.pendingPoints.wukong = 9;
   settleLevelUp(c, levelUpParty({ wukong: 1 }));
   applyRecommend(c, 'wukong');
   const after = runOnce();
@@ -977,7 +977,7 @@ section('杂兵战真决策(自动 vs 对症)');
 // ---------- 38. 场景养成:日常封妖只能领先剧情一级,决战仍须用对真扇 ----------
 section('日常历练上限与决战平衡');
 {
-  const c = { levels: { wukong: 2, bajie: 2, sha: 2 }, storyLevel: 2, exp: 0, pets: [], items: {}, money: 0, skillLevels: {} };
+  const c = Object.assign(newCampaign(1), { levels: { wukong: 2, bajie: 2, sha: 2 }, storyLevel: 2, money: 0 });
   const first = grantExp(c, 10_000);
   ok(c.levels.wukong === 3 && c.levels.sha === 3 && first.capped, '历练再多也只升到剧情等级 +1');
   ok(c.exp === expToNext(3), '封顶后历练停在满条,不溢出');

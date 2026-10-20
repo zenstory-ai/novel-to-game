@@ -19,7 +19,7 @@ const stageAtLeast = (c, s) => STAGE_ORDER.indexOf(c.stage) >= STAGE_ORDER.index
 // 主线当前一步：标题、说明、目标场景与 NPC(头上挂「!」)
 export function mainStep(c) {
   const s = c.stage;
-  if (s === 'prologue' && !c.flags?.tudi) return { title: '问路土地', text: '火焰山挡住西路。到土地庙前，向头顶有「!」的土地打听过山之法。', scene: 'village', actor: 'tudi' };
+  if (s === 'prologue' && !c.flags.tudi) return { title: '问路土地', text: '火焰山挡住西路。到土地庙前，向头顶有「!」的土地打听过山之法。', scene: 'village', actor: 'tudi' };
   // here:人已在目标场景时换一句就地的说法，不再叫人「经村南山路」
   if (s === 'prologue' && !c.luosha1Done) return { title: '一借芭蕉扇', text: '芭蕉扇在翠云山芭蕉洞的罗刹女手里。从村南山路上翠云山。', here: '罗刹女就守在芭蕉洞前，上前好言相借。', scene: 'cuiyun', actor: 'luosha' };
   if (s === 'prologue') return { title: '二借芭蕉扇', text: '得了灵吉菩萨的法宝，再上芭蕉洞找罗刹女。', here: '芭蕉洞前，再向罗刹女借一回扇。', scene: 'cuiyun', actor: 'luosha' };
@@ -160,9 +160,9 @@ export function createHub(deps) {
     const c = C();
     ctl.setActors(actorsFor(ctl.sceneId));
     ctl.setPortals(Object.entries(SCENES[ctl.sceneId].portals).map(([id, p]) => ({ id, to: p.to, x: p.at[0], y: p.at[1], label: p.label, locked: portalLocked(c, p.to) })));
-    const lv = c.levels.wukong ?? 1;
+    const lv = c.levels.wukong;
     const st = unitLevelStats(PARTY.wukong, lv, c.alloc.wukong ?? null);
-    hud.setHero({ unit: 'wukong', name: '孙悟空', level: lv, hp: st.hp, mp: st.mp, exp: c.exp ?? 0, expNeed: expToNext(lv), capped: lv >= levelCap(c), money: c.money ?? 0 });
+    hud.setHero({ unit: 'wukong', name: '孙悟空', level: lv, hp: st.hp, mp: st.mp, exp: c.exp, expNeed: expToNext(lv), capped: lv >= levelCap(c), money: c.money });
     const pet = c.pets.find((p) => p.active);
     if (pet) {
       const plv = c.levels[pet.key] ?? 1;
@@ -388,13 +388,13 @@ export function createHub(deps) {
     let close = null;
     const render = () => {
       const c = C();
-      const nodes = [el('p', 'panel-note', `现有银两 ${c.money ?? 0}。买下的兵甲在【角色】面板换上。`)];
+      const nodes = [el('p', 'panel-note', `现有银两 ${c.money}。买下的兵甲在【角色】面板换上。`)];
       for (const good of shop.goods) {
         const row = el('div', 'list-row shop-row');
         const desc = good.item ? ITEMS[good.item].desc : `${EQUIPS[good.equip].desc}`;
-        const owned = good.item ? (c.items[good.item] ?? 0) : (c.equipBag?.[good.equip] ?? 0);
+        const owned = good.item ? (c.items[good.item] ?? 0) : (c.equipBag[good.equip] ?? 0);
         row.append(itemIcon(good.item ?? good.equip, { slot: good.equip ? EQUIPS[good.equip].slot : null }), el('span', 'shop-name', goodName(good)), el('span', 'shop-desc', `${desc} · 已有 ${owned}`), el('span', 'shop-price', `${good.price} 两`));
-        const btn = el('button', `btn stat-btn wide${(c.money ?? 0) >= good.price ? '' : ' disabled'}`, '购买');
+        const btn = el('button', `btn stat-btn wide${c.money >= good.price ? '' : ' disabled'}`, '购买');
         btn.dataset.buy = good.item ?? good.equip;
         btn.addEventListener('click', () => {
           if (!buy(C(), good)) { toast(app, '银两不够。'); return; }

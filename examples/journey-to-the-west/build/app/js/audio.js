@@ -135,11 +135,9 @@ class AudioEngine {
     const { timer, out } = this.bgm;
     clearInterval(timer);
     this.bgm = null;
-    try {
-      out.gain.cancelScheduledValues(this.ctx.currentTime);
-      out.gain.setTargetAtTime(0, this.ctx.currentTime, fade);
-      setTimeout(() => { try { out.disconnect(); } catch { /* ignore */ } }, Math.max(400, fade * 5000));
-    } catch { /* ignore */ }
+    out.gain.cancelScheduledValues(this.ctx.currentTime);
+    out.gain.setTargetAtTime(0, this.ctx.currentTime, fade);
+    setTimeout(() => out.disconnect(), Math.max(400, fade * 5000));
   }
 
   _scheduleLoop(st) {
@@ -175,51 +173,47 @@ class AudioEngine {
   // ---------- 基础合成 ----------
   _tone(f, t, dur, wave, vol, dest, attack = 0.005, release = 0.06) {
     if (!this.ctx) return;
-    try {
-      const o = this.ctx.createOscillator();
-      const g = this.ctx.createGain();
-      o.type = wave;
-      o.frequency.value = f;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol, t + attack);
-      g.gain.setValueAtTime(vol * 0.8, t + Math.max(attack, dur - release));
-      g.gain.linearRampToValueAtTime(0.0001, t + dur);
-      o.connect(g).connect(dest);
-      o.start(t);
-      o.stop(t + dur + 0.05);
-    } catch { /* ignore */ }
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = wave;
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + attack);
+    g.gain.setValueAtTime(vol * 0.8, t + Math.max(attack, dur - release));
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(dest);
+    o.start(t);
+    o.stop(t + dur + 0.05);
   }
 
   _noise(t, dur, vol, dest, filterFreq = 1200, q = 1) {
     if (!this.ctx) return;
-    try {
-      if (!this._noiseBuf) {
-        // 噪声缓冲用固定种子的 mulberry32 生成(全项目禁 Math.random;听感无差异)
-        let a = 0xa3d9;
-        const len = this.ctx.sampleRate * 0.5;
-        this._noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
-        const d = this._noiseBuf.getChannelData(0);
-        for (let i = 0; i < len; i++) {
-          a |= 0;
-          a = (a + 0x6d2b79f5) | 0;
-          let z = Math.imul(a ^ (a >>> 15), 1 | a);
-          z = (z + Math.imul(z ^ (z >>> 7), 61 | z)) ^ z;
-          d[i] = (((z ^ (z >>> 14)) >>> 0) / 4294967296) * 2 - 1;
-        }
+    if (!this._noiseBuf) {
+      // 噪声缓冲用固定种子的 mulberry32 生成(全项目禁 Math.random;听感无差异)
+      let a = 0xa3d9;
+      const len = this.ctx.sampleRate * 0.5;
+      this._noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+      const d = this._noiseBuf.getChannelData(0);
+      for (let i = 0; i < len; i++) {
+        a |= 0;
+        a = (a + 0x6d2b79f5) | 0;
+        let z = Math.imul(a ^ (a >>> 15), 1 | a);
+        z = (z + Math.imul(z ^ (z >>> 7), 61 | z)) ^ z;
+        d[i] = (((z ^ (z >>> 14)) >>> 0) / 4294967296) * 2 - 1;
       }
-      const src = this.ctx.createBufferSource();
-      src.buffer = this._noiseBuf;
-      const f = this.ctx.createBiquadFilter();
-      f.type = 'bandpass';
-      f.frequency.value = filterFreq;
-      f.Q.value = q;
-      const g = this.ctx.createGain();
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      src.connect(f).connect(g).connect(dest);
-      src.start(t);
-      src.stop(t + dur + 0.02);
-    } catch { /* ignore */ }
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = this._noiseBuf;
+    const f = this.ctx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.frequency.value = filterFreq;
+    f.Q.value = q;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(f).connect(g).connect(dest);
+    src.start(t);
+    src.stop(t + dur + 0.02);
   }
 
   // 木鱼：短促高频敲击
@@ -231,18 +225,16 @@ class AudioEngine {
   // 板鼓：低频膜击
   _drum(t, vol, dest) {
     if (!this.ctx) return;
-    try {
-      const o = this.ctx.createOscillator();
-      const g = this.ctx.createGain();
-      o.type = 'sine';
-      o.frequency.setValueAtTime(160, t);
-      o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
-      o.connect(g).connect(dest);
-      o.start(t);
-      o.stop(t + 0.2);
-    } catch { /* ignore */ }
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(160, t);
+    o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g).connect(dest);
+    o.start(t);
+    o.stop(t + 0.2);
     this._noise(t, 0.05, vol * 0.4, dest, 800, 2);
   }
 

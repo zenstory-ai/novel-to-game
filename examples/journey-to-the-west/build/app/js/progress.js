@@ -6,6 +6,29 @@ import { levelUpParty } from './engine.js';
 import { createRNG, chance } from './rng.js';
 
 export const PARTY_KEYS = ['wukong', 'bajie', 'sha'];
+export const SAVE_VERSION = 5;
+
+// 新开一局的战役状态;读档时缺的顶层字段也按它补齐，各处可直接读顶层字段
+export function newCampaign(seedBase) {
+  return {
+    version: SAVE_VERSION,
+    stage: 'prologue', // prologue → pre_fire → treasure_fire → pre_yumian → pre_niu1 → pre_boss → done
+    levels: { wukong: 1, bajie: 1, sha: 1, pixie: 1 },
+    storyLevel: 1, // 剧情设计等级;日常封妖最多领先一级
+    exp: 0, money: 100,
+    alloc: {}, skillLevels: {}, pendingPoints: {}, skillPoints: {},
+    gear: {}, equipBag: {}, treasure: null,
+    flags: {}, bounty: null, world: null,
+    pets: [], // [{key, active}]
+    petJoined: false,
+    formation: 'tiangang',
+    items: { jinchuang: 2, falidan: 1, buyaosheng: 2 },
+    seedBase,
+    battlesWon: 0,
+    hunts: {},
+    chaptersSeen: {}, // 三借章节卡各只亮一次(简报三.1)
+  };
+}
 
 export function expToNext(level) {
   return ECONOMY.expBase * level;
@@ -13,13 +36,13 @@ export function expToNext(level) {
 
 // 本章等级上限：剧情设计等级 +1。日常最多领先一级，剧情战的难度曲线不被刷穿。
 export function levelCap(campaign) {
-  return (campaign.storyLevel ?? 1) + 1;
+  return campaign.storyLevel + 1;
 }
 
 // 参与升级的成员：三位师兄弟 + 上阵召唤兽
 function growingMembers(campaign) {
   const keys = [...PARTY_KEYS];
-  const pet = campaign.pets?.find((p) => p.active);
+  const pet = campaign.pets.find((p) => p.active);
   if (pet) keys.push(pet.key);
   return keys;
 }
@@ -28,9 +51,9 @@ function growingMembers(campaign) {
 export function grantExp(campaign, amount) {
   const ups = {};
   const cap = levelCap(campaign);
-  campaign.exp = (campaign.exp ?? 0) + Math.max(0, Math.round(amount));
+  campaign.exp = campaign.exp + Math.max(0, Math.round(amount));
   for (;;) {
-    const lv = campaign.levels.wukong ?? 1;
+    const lv = campaign.levels.wukong;
     const need = expToNext(lv);
     if (lv >= cap) {
       campaign.exp = Math.min(campaign.exp, need);
@@ -54,7 +77,7 @@ export function grantExp(campaign, amount) {
 // 封妖奖励：历练按当前所需比例、银两随环数递增、掉落走种子流;第十环必得二阶装备。
 export function bountyReward(campaign, ring, seed) {
   const rng = createRNG(seed >>> 0);
-  const lv = campaign.levels.wukong ?? 1;
+  const lv = campaign.levels.wukong;
   const reward = {
     exp: Math.round(expToNext(lv) * ECONOMY.bountyExpPct),
     money: ECONOMY.bountyMoney[0] + ECONOMY.bountyMoney[1] * ring,
@@ -73,15 +96,14 @@ export function bountyReward(campaign, ring, seed) {
 }
 
 export function applyLoot(campaign, { money = 0, items = {}, equips = [] }) {
-  campaign.money = (campaign.money ?? 0) + money;
+  campaign.money = campaign.money + money;
   for (const [k, n] of Object.entries(items)) campaign.items[k] = (campaign.items[k] ?? 0) + n;
-  campaign.equipBag = campaign.equipBag ?? {};
   for (const k of equips) campaign.equipBag[k] = (campaign.equipBag[k] ?? 0) + 1;
 }
 
 // 商店购买：银两不足返回 false
 export function buy(campaign, good) {
-  if ((campaign.money ?? 0) < good.price) return false;
+  if (campaign.money < good.price) return false;
   campaign.money -= good.price;
   applyLoot(campaign, good.item ? { items: { [good.item]: 1 } } : { equips: [good.equip] });
   return true;
@@ -94,9 +116,7 @@ export function goodName(good) {
 // 装备槽：把背包中一件装备穿到某人对应槽位，原装备退回背包
 export function equipItem(campaign, unitKey, equipKey) {
   const eq = EQUIPS[equipKey];
-  campaign.equipBag = campaign.equipBag ?? {};
   if (!eq || !(campaign.equipBag[equipKey] > 0)) return false;
-  campaign.gear = campaign.gear ?? {};
   const slots = (campaign.gear[unitKey] = campaign.gear[unitKey] ?? {});
   const old = slots[eq.slot];
   campaign.equipBag[equipKey] -= 1;
@@ -106,7 +126,7 @@ export function equipItem(campaign, unitKey, equipKey) {
 }
 
 export function gearOf(campaign, unitKey) {
-  const slots = campaign.gear?.[unitKey] ?? {};
+  const slots = campaign.gear[unitKey] ?? {};
   return [slots.weapon, slots.armor].filter(Boolean);
 }
 
@@ -120,7 +140,7 @@ export function studySkill(campaign, unitKey, skillId) {
   campaign.skillLevels[unitKey] = campaign.skillLevels[unitKey] ?? {};
   const cur = campaign.skillLevels[unitKey][skillId] ?? 1;
   const cost = studyCost(cur);
-  if (cur >= GROWTH.skillRankCap || cost == null || (campaign.money ?? 0) < cost) return false;
+  if (cur >= GROWTH.skillRankCap || cost == null || campaign.money < cost) return false;
   campaign.money -= cost;
   campaign.skillLevels[unitKey][skillId] = cur + 1;
   return true;

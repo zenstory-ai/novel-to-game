@@ -267,12 +267,12 @@ export function previewDamage(state, attacker, defender, skill) {
 function gainSp(unit, amount) {
   if (unit.side !== 'party' || amount <= 0) return;
   const gain = Math.max(SP.minGain, Math.round((amount / unit.maxHp) * 100 * SP.gainPerHpPct));
-  unit.sp = Math.min(SP.max, (unit.sp ?? 0) + gain);
+  unit.sp = Math.min(SP.max, unit.sp + gain);
 }
 
 function execStunt(state, events, unit, stuntId, targetId) {
   const st = STUNTS[stuntId];
-  if (!st || (unit.sp ?? 0) < st.sp) {
+  if (!st || unit.sp < st.sp) {
     events.push({ t: 'info', text: 'fallback_attack', unit: unit.id });
     const t = targetsFor(state, unit, BASIC_ATTACK, targetId)[0];
     if (t) damageTarget(state, events, unit, t, BASIC_ATTACK);
@@ -416,7 +416,7 @@ function execSkill(state, events, actor, skill, targetId, skillKey = null) {
       const vacated = state.units.find((u) => u.side === actor.side && !u.alive && !u.replacedBy);
       if (vacated) { vacated.replacedBy = nu.id; nu.replaces = vacated.id; }
       state.units.push(nu);
-      actor.summonCount = (actor.summonCount ?? 0) + 1;
+      actor.summonCount += 1;
       events.push({ t: 'summon', actor: actor.id, unit: nu.id, key: skill.summon.key, name: nu.name });
     }
     actor.cooldowns = actor.cooldowns ?? {};
@@ -619,7 +619,7 @@ export function aiCommand(state, unit) {
   const summonSkill = usable.find((s) => s.def.summon);
   if (summonSkill) {
     const cd = unit.cooldowns?.[summonSkill.key] ?? 0;
-    const used = unit.summonCount ?? 0;
+    const used = unit.summonCount;
     const maxN = summonSkill.def.summon.maxSummons ?? 99;
     if (cd <= 0 && used < maxN && aliveUnits(state, unit.side).length < 6) {
       return { type: 'skill', skillId: summonSkill.key };
@@ -769,7 +769,7 @@ export function displaySnapshot(state) {
   const snap = {};
   for (const u of state.units) {
     snap[u.id] = {
-      hp: u.hp, maxHp: u.maxHp, mp: u.mp, maxMp: u.maxMp, sp: u.sp ?? 0, alive: u.alive,
+      hp: u.hp, maxHp: u.maxHp, mp: u.mp, maxMp: u.maxMp, sp: u.sp, alive: u.alive,
       element: u.element, form: u.form ? u.form.id : null, defending: u.defending,
       buffs: u.buffs.map((b) => ({ id: b.id, turns: b.turns })),
     };

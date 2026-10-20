@@ -479,7 +479,7 @@ export function createBattleCommands({
       bSp.title = TEXT.battle.specialTip;
       attachPreview(bSp, () => [TEXT.battle.specialTip]);
       // 人人可用愤怒特技;悟空另有七十二变
-      attachPreview(bSp, () => [`${TEXT.battle.specialTip} · 愤怒 ${u.sp ?? 0}/${SP.max}`]);
+      attachPreview(bSp, () => [`${TEXT.battle.specialTip} · 愤怒 ${u.sp}/${SP.max}`]);
       bSp.onclick = () => specialMenu(u, resolve);
       const bAuto = cmdButton(TEXT.commands.auto, 'auto');
       bAuto.title = TEXT.battle.autoTip;
@@ -637,9 +637,9 @@ export function createBattleCommands({
     for (const [sk, st] of Object.entries(STUNTS)) {
       const item = el('button', 'btn cmd-item stunt');
       item.dataset.stunt = sk;
-      item.append(el('span', 'cmd-item-name', `特技 · ${st.name}`), el('span', 'cmd-item-meta', `${st.desc} · 现有 ${u.sp ?? 0}`));
-      attachPreview(item, () => [`${st.name}:${st.desc}`, `愤怒 ${u.sp ?? 0}/${SP.max} · 受伤越重攒得越快`]);
-      if ((u.sp ?? 0) < st.sp) {
+      item.append(el('span', 'cmd-item-name', `特技 · ${st.name}`), el('span', 'cmd-item-meta', `${st.desc} · 现有 ${u.sp}`));
+      attachPreview(item, () => [`${st.name}:${st.desc}`, `愤怒 ${u.sp}/${SP.max} · 受伤越重攒得越快`]);
+      if (u.sp < st.sp) {
         item.classList.add('disabled');
         item.title = `愤怒不足(需 ${st.sp})`;
       } else {

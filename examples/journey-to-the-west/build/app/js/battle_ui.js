@@ -303,9 +303,9 @@ export async function runBattleScreen(ctx) {
       uc.mpBar.wrap.title = `法力 ${v.mp}/${v.maxMp}`;
     }
     if (uc.spBar) {
-      setBar(uc.spBar, (v.sp ?? 0) / SP.max);
-      uc.spBar.text.textContent = `怒${v.sp ?? 0}`;
-      uc.spBar.wrap.classList.toggle('ready', (v.sp ?? 0) >= 60);
+      setBar(uc.spBar, v.sp / SP.max);
+      uc.spBar.text.textContent = `怒${v.sp}`;
+      uc.spBar.wrap.classList.toggle('ready', v.sp >= 60);
     }
     uc.name.textContent = u.name;
     uc.badge.textContent = v.element;
