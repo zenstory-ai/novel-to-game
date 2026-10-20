@@ -17,6 +17,11 @@
       "pointer": "/version"
     },
     {
+      "path": "kimi.plugin.json",
+      "format": "json",
+      "pointer": "/version"
+    },
+    {
       "path": ".claude-plugin/marketplace.json",
       "format": "json",
       "pointer": "/metadata/version"
@@ -41,6 +46,7 @@
     "VERSION",
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
+    "kimi.plugin.json",
     ".claude-plugin/marketplace.json",
     ".agents/skills"
   ],

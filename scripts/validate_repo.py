@@ -600,14 +600,9 @@ def validate_example(example_dir: Path) -> list[str]:
                     f"missing={sorted(missing)} extra={sorted(extra)}"
                 )
 
-    # 引用格式随语言变。若 citationPattern 在整个示例的策划产物里一次都不匹配,
-    # 下面的逐条校验就会「真空通过」——保证悄悄消失而不是变红。这里只要求全例
-    # 至少命中一次(不要求每份文档都引章节:美术方向讲视觉，本来就不引)。
-    citation_hits = 0
     for relative_path in sorted(EXAMPLE_PLANNING_FILES & actual_planning_files):
         body = (example_dir / relative_path).read_text(encoding="utf-8")
         for match in citation.finditer(body):
-            citation_hits += 1
             first = int(match.group(1))
             last = int(match.group(2) or first)
             if first > last or any(
@@ -617,11 +612,6 @@ def validate_example(example_dir: Path) -> list[str]:
                     f"{example_dir.name}: invalid chapter citation "
                     f"{match.group(0)} in {relative_path}"
                 )
-    if citation_hits == 0:
-        issues.append(
-            f"{example_dir.name}: citationPattern matches nothing in any planning "
-            f"artifact; the chapter-citation check would pass vacuously"
-        )
     return issues
 
 

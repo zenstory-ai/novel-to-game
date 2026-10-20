@@ -37,8 +37,7 @@ def select_status(rows):
 def make_receipt(sha, ci, projects):
     return {"schemaVersion": 1, "repository": REPOSITORY, "sourceSha": sha,
             "kind": "POST_DEPLOYMENT_OBSERVATION", "ci": ci, "projects": projects,
-            "providerGate": "NOT_VERIFIED", "customDomainSourceBinding": "NOT_VERIFIED",
-            "note": "GitHub reports source-associated deployment IDs. Public reachability is not proof that custom domains serve those exact bytes, nor a pre-promotion CI gate."}
+            "providerGate": "NOT_VERIFIED", "customDomainSourceBinding": "NOT_VERIFIED"}
 
 
 def github(path):
