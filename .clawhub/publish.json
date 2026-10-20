@@ -20,7 +20,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "0cb6e5d552853a1765a330c3a52297dbfc3159e1b60ac7214fed50ae1a7bd5ba",
+      "packageDigest": "24dbf3ef43122bf1cbc38a25f26e66d6a3dc694cba3ebd57f41a5c274e6e2fd6",
       "path": "skills/game-art-direction",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -36,7 +36,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "catalogMigration": true,
@@ -52,7 +52,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "b7772147d2d4e377b05e1dedd3033a9e12560b9d7d6edcb8fac05811f5f5f560",
+      "packageDigest": "354354893fbc8192b93525f04bf469cc806f288968b6ce7fbe54d4f541788b4d",
       "path": "skills/game-build",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -68,7 +68,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "catalogMigration": true,
@@ -84,7 +84,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "b9cc8cf98055874a9404da348e5e8a75c4c2a6216e40ec79c1f48c37f733d68d",
+      "packageDigest": "baafbec440879fac042372cc3834d36cc85b0493a05c83de141fe7988dfed826",
       "path": "skills/game-concept",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -100,7 +100,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "catalogMigration": true,
@@ -116,7 +116,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "4ff6a58b9a09d8c122e17f576dca6f4db75bc903af5f15e8df44cf3aec02cd1d",
+      "packageDigest": "b0d22155c0dcc09d1ba1b292ace12637967bcf315126712239d69853cd159327",
       "path": "skills/game-qa",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -132,7 +132,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.0.1"
+      "version": "1.0.2"
     },
     {
       "catalogMigration": true,
@@ -180,7 +180,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "d2bc7cf969188462cddcfda57f934a63c58f98b101ce63b6078ec680ccd24e18",
+      "packageDigest": "064fa92a43bd55ea73b70344e78f9d880a8a72d208664ff8a2c29eb76174976e",
       "path": "skills/novel-game-analyze",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -196,7 +196,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     {
       "catalogMigration": true,
@@ -212,7 +212,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "3a8d5452b4b77c9d736c303b913be8aa15ddf9477bde089132295528232e8d79",
+      "packageDigest": "7b76ff2d5beb54249fe8d9c57ce658a6d5312680ac9e7b6f87d045eecd4e4a76",
       "path": "skills/novel-to-game",
       "publisher": "worldwonderer",
       "rebuildOn": [],

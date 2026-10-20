@@ -14,6 +14,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 ### Changed
 
 - `novel-to-game` now says exactly where `director` stops: the concept, what to cut after the whitebox playtest (where a target player can be brought in), and the visual targets only when a target pack is made. ClawHub: `novel-to-game` 1.1.1.
+- Each rule now appears once inside its skill. game-build keeps its design boundary in `SKILL.md` and its required-asset failure rule in the build brief contract, and the Blender, sprite, media, voice and playable-model references no longer repeat them. game-qa keeps "exactly six checks" and the evidence-layer rule only in the QA contract. novel-game-analyze states the full-coverage rule four times instead of six; its cast roster and per-fact table are now described as lookups for later stages, not as "handoff gate" baselines that no skill defines. The orchestrator states the low-risk/high-risk intake rule three times instead of five, and its pipeline contract drops three paragraphs that game-build already owns or that no longer apply. Six negations of rules that never existed are gone. Skills shrink from 1126 to 1106 lines with no intended behaviour change ([decision note](.agents/notes/implemented/simplification/2026-10-20-skill-intra-duplication-cleanup.md)). ClawHub: `game-art-direction` 1.2.1, `game-build` 1.2.1, `game-concept` 1.2.1, `game-qa` 1.0.2, `novel-game-analyze` 1.0.1.
 
 ### Removed
 
