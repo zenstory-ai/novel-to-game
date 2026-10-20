@@ -58,4 +58,4 @@ Status: implemented
 
 ## Verification
 
-`python3 scripts/validate_repo.py` 与 `python3 -m unittest discover -s tests -v` 通过。按维护者决定未做盲评 A/B。
+`python3 scripts/validate_repo.py` 与 `python3 -m unittest discover -s tests -v` 通过。未做盲评 A/B（维护者 2026-10-20 决定）。
