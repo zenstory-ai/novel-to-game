@@ -15,9 +15,9 @@ ZenStory source-release controls.
   CI. Assets are append-only; a same-name byte mismatch fails rather than
   overwriting.
 - After GitHub source assets pass anonymous byte verification, a separate job
-  dispatches the existing ClawHub workflow with the exact tag and 40-character
-  source SHA. `CLAWHUB_QUEUED` means dispatch accepted, not published or
-  scan-clean.
+  dispatches the **Publish skills to ClawHub** workflow with the exact tag and
+  40-character source SHA. Its `CLAWHUB_QUEUED` result only means the dispatch
+  was accepted.
 
 ## Release procedure
 
@@ -25,18 +25,41 @@ ZenStory source-release controls.
 2. Merge through the existing product and ClawHub inventory checks.
 3. Run **Source release** manually on `main` as a nonpublishing dry-run.
 4. Create the reviewed stable tag from that exact green main commit and push it.
-5. Inspect the source-release manifest, anonymous asset verification, and the
-   ClawHub audit separately. Never infer ClawHub success from the dispatch job.
+5. Check the source-release manifest and anonymous asset verification, then
+   verify ClawHub as below.
 
-## Safe reruns and failures
+## Verifying ClawHub
 
-Rerun the same workflow attempt only after diagnosing the failing channel. An
-already uploaded asset is accepted only when its public bytes match the same
-candidate; no workflow deletes, replaces, or `--clobber`s release assets. A
-GitHub API/auth/network error is a failure, not proof that an asset is absent. A
-ClawHub handoff can be re-dispatched for the same exact tag/source, while its
-existing ownership, rights, version/hash, scan and anonymous-audit gates remain
-authoritative.
+Read the result from the **Publish skills to ClawHub** run, not from the
+dispatch job:
+
+```bash
+gh run download <publish-run-id> -D clawhub-report
+npx -y clawhub@0.23.3 inspect worldwonderer/<slug>
+```
+
+In the downloaded `clawhub-report.json`, each package's
+`finalVerification[].status` should be `DISTRIBUTION_VERIFIED`. A package still
+in the registry's publication scan shows `PENDING_PUBLICATION` and can fail the
+writer job even though it publishes minutes later, so run `clawhub inspect` for
+every slug in `.clawhub/publish.json` and compare its `latest=` with the
+`version` there.
+
+## Reruns
+
+Diagnose the failing channel before rerunning a workflow attempt. An asset
+already uploaded is accepted only when its public bytes match the same
+candidate; no workflow deletes or overwrites release assets, and an API, auth or
+network error fails the run. ClawHub can be re-dispatched for the same tag and
+commit:
+
+```bash
+gh workflow run publish-clawhub.yml -f mode=release -f release_tag=vX.Y.Z \
+  -f source_sha=<40-character tag commit> -f dry_run=false
+```
+
+The writer's ownership, rights, version/hash, scan and anonymous-audit checks
+still apply on a re-dispatch.
 
 The caller currently pins shared source controls to `d098c09a27f8fe58ccf3a13a894ecc3804747b7c`.
 When upgrading controls, change every reference together (four in

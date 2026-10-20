@@ -43,7 +43,7 @@ replace the non-lethal scout fantasy with combat, crafting, a cinematic or a das
 3. Readable iguanodon routine/young-play/branch-pull/alarm windows and pterodactyl
    distant/watch/search/attack states. Family behaviours and the optional committed-dive plate
    require distinct timing and framing; every repeated two-cue composition, including basalt and
-   creek scale, degrades rather than letting repeated shutters replace observation.
+   brook scale, degrades rather than letting repeated shutters replace observation.
 4. Canopy cover, one recoverable contact, two rifle cartridges and the downstream cost
    of firing.
 5. A 300-second light budget, four alive result bands, deadline/contact failure and one
@@ -128,7 +128,6 @@ complete path and atomically writes:
 - `../evidence/current-run/report.json`: environment, input trace and four representative
   checkpoints from that same run.
 
-Project-specific unit tests remain diagnostic regression for adopted systems; they do not
-create a second acceptance matrix. PASS proves the six effects only in the recorded local
-desktop browser. It does not prove subjective visual quality, comfort, fun, balance,
-rights clearance, public hosting or other browsers, GPUs and devices.
+Project-specific unit tests are diagnostic regression for adopted systems, not a second
+acceptance matrix. What the run did not cover is listed under `limitations` in
+`qa/verification.json`.

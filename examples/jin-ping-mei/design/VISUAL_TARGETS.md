@@ -1,4 +1,4 @@
-# VISUAL_TARGETS · galgame 外壳
+# VISUAL_TARGETS · 恋爱 ADV 外壳
 
 `targetFinish: playable-prototype`
 

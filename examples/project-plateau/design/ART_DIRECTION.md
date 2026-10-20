@@ -36,7 +36,7 @@ actionable world frame beneath a restrained field card.
 - Brook: pale shallow flow over a grey bar, dark wet stones and a fern roof that reveals direction.
 - Basalt: warm red shelves and broken planes that establish geological scale.
 - Glade: broad warm opening framed by dense near foliage and cool humid depth.
-- Covered return: interlocking thorn and canopy arches; exposed creek remains visibly
+- Covered return: interlocking thorn and canopy arches; the exposed brook route remains visibly
   faster and more dangerous.
 
 Vegetation uses near/mid/far layers and a few recognisable families rather than repeated
@@ -117,9 +117,8 @@ captions and shape/motion redundancy carry every critical rule.
 5. **What reached camp:** surviving plates are physically placed before the result text.
 6. **The second pass:** the last cause frame remains visible beneath failure and restart.
 
-Each moment is reached through ordinary play. The small-screen/WebGL fallback may use a
-short capture of the same build, palette and route, but it is not a separate cinematic
-truth source or QA path.
+Each moment is reached through ordinary play; there is no cinematic substitute. Touch-only,
+small-screen and WebGL2-unavailable browsers get a short compatibility message instead of the game.
 
 ## Asset priorities and degradations
 
@@ -136,41 +135,40 @@ content.
 ## Risks and evidence boundary
 
 Close frames can reveal weak anatomy; dense foliage can hide the route; warm light can
-collapse into sepia; field UI can become a report dashboard. These are reviewed against
-representative gameplay frames, not converted into an automated beauty score. Machine QA proves rendering and state, not composition,
-anatomy, comfort or subjective finish.
+collapse into sepia; field UI can become a report dashboard. These are reviewed by eye
+against representative gameplay frames.
 
-## Rendering look (2026-10)
+## Rendering look
 
 Target: a cohesive stylised-realistic basin in late, low light — long shadows, humid
-aerial depth, lush ground — not a flat toy diorama. The route, collisions, wildlife timing
-and evidence outcomes are unchanged by the look.
+aerial depth, lush ground — not a flat toy diorama. The look changes nothing about the
+route, collisions, wildlife timing or evidence outcomes.
 
-- **Light:** one low warm sun over the western wall, ahead-left of the outbound walk, so
-  animals, trunks and banks carry a lit edge and a long shadow toward the scout. Sky fill
-  comes from a hemisphere light plus a PMREM of the same painted sky the player sees. The
-  sun's shadow frustum follows the view and is texel-snapped. No invented fill lights.
+- **Light:** one low warm sun over the western wall, ahead and to the left on the outbound
+  walk, so animals, trunks and banks carry a lit edge and a long shadow toward the scout.
+  Shade takes its colour from the same painted sky the player sees; there are no invented
+  fill lights.
 - **Scale:** first-person eye at 1.8 m (crouch 1.15 m). Iguanodons and the stegosaurus
   must tower; grass reaches the knee.
-- **Post:** linear-HDR GTAO, restrained bloom (sun, water glints only), a log-contrast and
-  split-tone grade (teal shade, amber light), AgX tone mapping, then SMAA/FXAA. Height fog
-  with sun-side scattering separates foreground, family and forest wall.
-- **Sky:** painted dome — zenith blue, warm horizon toward the sun, a cumulus band and
-  cirrus. Floating cloud-puff meshes are rejected.
-- **Ground:** five Blender-baked PBR layers (litter, moss, mud, gravel, rock) chosen by the
-  terrain's own ecology masks and blended by layer height; steep faces go triplanar and
-  read as bedded red sediment. The worn path stays bare mud with water-filled prints.
-- **Life in the frame:** wind-swayed instanced grass rings (near + far) avoid the path,
-  gravel bars, banks and rock; backlit foliage glows; pollen motes only show against the
-  sun; creatures get countershading and a warm rim when backlit.
+- **Grade:** soft contact shadows, bloom only on the sun and water glints, teal shade
+  against amber light, and low ground haze that brightens toward the sun so foreground,
+  family and forest wall separate.
+- **Sky:** a painted dome — blue overhead, warm toward the sun, a band of cumulus and high
+  cirrus. Floating cloud puffs are rejected.
+- **Ground:** five baked ground layers (leaf litter, moss, mud, gravel, rock) placed where
+  the terrain's wetness and slope call for them; steep faces read as bedded red sediment.
+  The worn path stays bare mud with water-filled prints.
+- **Life in the frame:** wind-swayed grass that keeps off the path, gravel bars, banks and
+  rock; backlit leaves glow; pollen shows only against the sun; creatures are darker above
+  than below and catch a warm rim when backlit.
 - **Rejected:** sepia wash, crushed black canopy, neon greens, puddles that read as snow,
   full-screen tint. Threat may darken and desaturate the frame edges only while a dive is
   committed, alongside call, shadow and flight path.
 
-### Authored scenes (unchanged)
+### Authored scenes
 
-The river room keeps its incised terraces, point bars, backwaters and meadow masses
-outside the protected walking seam (east of x=29 / south of z=-90 for high walls; ≤0.3 m
-inside the basin). Scenes: Fort threshold, track bend, family crossing, return fork, and the
-title as a live silver plate onto the same world. Chapter XII adds another moment: the
-stegosaurus drinking broadside at the west bank of the brook beyond the glade.
+The river room keeps its stepped terraces, gravel bars, backwaters and meadow masses
+outside the walking path, so high banks never close it. Scenes: Fort threshold, track
+bend, family crossing, return fork, and the title as a live silver plate onto the same
+world. Chapter XII adds the stegosaurus drinking broadside at the west bank of the brook
+beyond the glade.

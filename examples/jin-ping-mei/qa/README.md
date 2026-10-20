@@ -12,5 +12,5 @@ python3 test/verify_visual.py --write-evidence
 月娘线 → 良缘结局卡 → 原著命数页 → 回标题 → 重新开始回到序章第一句。成功后写 `verification.json`、
 `evidence/run.json`、`evidence/ending.jpg` 与 `../screenshots/title.jpg`、`../screenshots/adv.jpg`。
 
-CI 另跑 `npm run verify:model`（`test/lint_script.mjs`，无浏览器）：剧本跳转与资源登记完整，穷举全部选择后十六个结局都可达。
-它不证明渲染或输入，只防止剧本改动造成死路。
+CI 另跑 `npm run verify:model`（`test/lint_script.mjs`，无浏览器）：剧本跳转与资源登记完整，穷举全部选择后十六个结局都可达，
+防止剧本改动造成死路。

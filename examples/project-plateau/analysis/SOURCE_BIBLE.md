@@ -244,7 +244,7 @@ creature silhouette, palette, camera composition, score or sound effect.
 - The source does not define ammunition counts, camera capacity, precise threat
   detection radii, stealth meters, sprint stamina, fail checkpoints or scoring.
 - It does not state which single proof item a solo scout would prioritize, how
-  a five-to-eight-minute route is arranged, or how much map detail is visible
+  a short single-run route is arranged, or how much map detail is visible
   before observation.
 - It does not provide a modern scientific reconstruction, so anatomy, gait,
   color and vocalization require original art direction and documented
@@ -321,8 +321,7 @@ are not neutral interface terminology.
 6. **Scientific framing:** establish an original visual research method that is
    recognizably prehistoric without claiming the 1912 taxonomy is current.
 7. **Ending credibility:** define a small set of proof outcomes the player can
-   understand from play—lost, weak, credible—without claiming that subjective
-   audience belief is deterministically verified.
+   understand from play—lost, weak, credible.
 
 These are questions for concept selection. This source bible does not choose a
 level layout, final creature design, combat model or ending implementation.
