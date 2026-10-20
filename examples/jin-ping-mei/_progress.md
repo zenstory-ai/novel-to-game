@@ -16,4 +16,3 @@
 - 年龄门在首屏之前；成人 CG 只在确认成年后进入 DOM，设置里可用帘幕替代。
 - 机器事实源：`qa/verification.json`（`build/app/test/verify_visual.py --write-evidence`）；
   `build/app/test/lint_script.mjs` 穷举选择证明 16 个结局全部可达、引用的场景与图片都存在。
-
