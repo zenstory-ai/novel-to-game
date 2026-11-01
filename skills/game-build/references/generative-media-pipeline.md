@@ -5,9 +5,8 @@
 
 ## 最小台账
 
-在 BUILD_BRIEF 或资产台账记录：
-
-`asset_key | state_trigger | references | locked_facts | allowed_motion | start_boundary | end_boundary | output | fallback | provenance | status`
+复用构建或运行时实际消费的资产登记表，按资产标识补齐触发条件、参考、锁定事实、允许运动、
+起止边界、输出、来源与权利、降级方式和状态；没有现成记录时再建最小台账。
 
 - 参考声明允许控制的事实；锁定身份、服装、地理、道具状态与已批准风格。
 - 本镜只改变允许的动作与状态；开始/结束边界需能衔接相邻镜头。

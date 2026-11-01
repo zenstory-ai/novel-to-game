@@ -6,14 +6,23 @@ const sceneContracts = {
   tudiTalk: ['tudi', 'tudi', 'wukong', 'tudi', 'wukong', 'tudi'],
   tudiTalkAgain: ['tudi'],
   luoshaPre1: ['luosha', 'luosha', 'wukong', 'luosha', 'wukong', 'luosha', 'shibi'],
+  borrowingCalm: ['wukong', 'sha', 'bajie'],
+  borrowingRush: ['wukong', 'bajie', 'sha'],
   blowAway: ['luosha', null, 'wukong', 'wukong'],
   lingji: ['lingji', 'wukong', 'lingji', 'lingji', 'lingji', 'wukong'],
   luoshaPre2: ['luosha', 'wukong', null, 'luosha', 'wukong'],
   luoshaPre2b: ['luosha', 'wukong', null, 'luosha', 'wukong'],
+  luoshaPre2CalmRecall: ['luosha', 'wukong'],
+  luoshaPre2RushRecall: ['luosha', 'wukong'],
   luoshaMid: [null, 'luosha', 'wukong'],
   postBattle1: ['luosha', 'wukong', null, 'luosha', 'wukong'],
-  preBattle2: [null, 'tudi', 'tudi', 'wukong', 'tudi'],
+  fanTrialEmber: ['wukong', 'sha', 'tudi'],
+  fanTrialFull: ['wukong', 'bajie', 'tudi'],
   postBattle2: ['wukong', 'tudi', 'tudi', 'bajie'],
+  postBattle2EmberRecall: ['sha'],
+  postBattle2FullRecall: ['bajie'],
+  firetroopKeep: ['wukong'],
+  firetroopRelease: ['huobao', 'wukong'],
   treasureIntro: ['tudi', 'wukong', 'sha'],
   preYumian: [null, 'wukong', 'bajie', 'sha'],
   yumianPre: ['yumian', 'wukong', 'yumian', 'yumian', 'yaojiang', 'wukong'],
@@ -50,6 +59,9 @@ assert.deepEqual(
 );
 
 const choiceKeys = {
+  borrowingApproachChoice: ['calm', 'rush'],
+  fanTrialChoice: ['ember', 'full'],
+  firetroopDealChoice: ['keep', 'release'],
   bibotanChoice1: ['insect', 'crab', 'brute'],
   bibotanChoice2: ['shift', 'rush'],
   bibotanChoice3: ['steal'],
@@ -60,6 +72,12 @@ const choiceKeys = {
 for (const [name, keys] of Object.entries(choiceKeys)) {
   assert.deepEqual(TEXT.story[name].options.map(({ key }) => key), keys, `${name} branch keys changed`);
 }
+
+assert.match(TEXT.story.borrowingApproachChoice.options.find(({ key }) => key === 'calm').fore, /15%.*两回合/);
+assert.match(TEXT.story.borrowingApproachChoice.options.find(({ key }) => key === 'rush').fore, /15%.*两回合/);
+assert.match(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'ember').fore, /不助长大火/);
+assert.match(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'full').fore, /30%.*三回合/);
+assert.ok(!JSON.stringify([TEXT.story.borrowingCalm, TEXT.story.borrowingRush]).includes('道歉'), '准备选择不能靠道歉化解母子怨结');
 
 const placeholders = new Map();
 function collectPlaceholders(value, path = 'TEXT') {

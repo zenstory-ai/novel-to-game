@@ -15,6 +15,10 @@ const unitPaths = {
   form_xuangui: 'assets/units/form_xuangui.webp', form_chongzi: 'assets/units/form_chongzi.webp',
   crab: 'assets/units/crab.webp',
 };
+const worldPaths = Object.fromEntries(
+  ['wukong', 'tang', 'bajie', 'sha', 'tudi', 'luosha', 'gaoshao', 'laozhe', 'yumian', 'niumowang', 'yaojiang', 'mob_fire1', 'mob_fire2']
+    .map((key) => [key, `assets/world/${key}.webp`]),
+);
 // 道具/兵甲图标(128px 彩绘);缺图回退字形徽
 const ITEM_KEYS = ['jinchuang', 'dahuandan', 'falidan', 'wubaodan', 'xingshi', 'bihuofu', 'buyaosheng', 'fakefan', 'truefan', 'huihun',
   'jingtie', 'mianjia', 'bintie', 'xipijia', 'ruyibang_jing', 'suozijia', 'fengchiguan'];
@@ -26,8 +30,8 @@ const bgPaths = {
   moyundong: 'assets/bg/moyundong.jpg?v=20260905', bibotan: 'assets/bg/bibotan.jpg?v=20260905',
   ending: 'assets/bg/ending.jpg',
   // 2.5D 行走场景图(梦幻式大地图)
-  'map-village': 'assets/scene/map-village.jpg', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg',
-  'map-huokou': 'assets/scene/map-huokou.jpg', 'map-jilei': 'assets/scene/map-jilei.jpg',
+  'map-village': 'assets/scene/map-village.jpg?v=20261101-districts', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg?v=20261101-districts',
+  'map-huokou': 'assets/scene/map-huokou.jpg?v=20261101-districts', 'map-jilei': 'assets/scene/map-jilei.jpg?v=20261101-districts',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
@@ -73,6 +77,7 @@ function loadOne(path) {
 export async function loadAssets() {
   const jobs = [];
   for (const [k, p] of Object.entries(unitPaths)) jobs.push(loadOne(p).then((i) => (images[`u:${k}`] = i)));
+  for (const [k, p] of Object.entries(worldPaths)) jobs.push(loadOne(p).then((i) => (images[`w:${k}`] = i)));
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
   for (const [k, p] of Object.entries(treasurePaths)) jobs.push(loadOne(p).then((i) => (images[`t:${k}`] = i)));
@@ -130,6 +135,12 @@ export function itemIcon(key, { slot = null, cls = '' } = {}) {
 
 export function unitImage(key) {
   return images[`u:${key}`] ?? null;
+}
+
+// 行走场景优先使用俯视站姿；缺图时回退原单位立绘，战斗与对白不受影响。
+export function worldImage(key) {
+  const image = images[`w:${key}`];
+  return image ? { image, dedicated: true } : { image: images[`u:${key}`] ?? null, dedicated: false };
 }
 
 // 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里，没美术照样能选。

@@ -31,6 +31,7 @@ export function createBattleAnimator({
   let prevQueue = [];
   let jumpedIds = [];
   const floatSlots = new Map();
+  let firstElementHitShown = false;
 
   // ---------- 事件动画 ----------
   function cardOf(id) { return cardByUnit.get(id); }
@@ -141,6 +142,32 @@ export function createBattleAnimator({
     field.querySelectorAll('.float-text, .float-stamp').forEach((n) => n.remove());
   }
 
+  async function showFirstElementHit(ev) {
+    if (firstElementHitShown || state.def.id !== 'luosha1' || ev.amount <= 0 || ev.rel !== 'ke') return;
+    const actor = getUnit(state, ev.actor);
+    if (actor?.side !== 'party') return;
+    const attackElement = ev.attackElement ?? ev.snap?.[ev.actor]?.element;
+    const targetElement = ev.targetElement ?? ev.snap?.[ev.target]?.element;
+    if (!attackElement || !targetElement) return;
+    firstElementHitShown = true;
+    const panel = el('div', 'first-element-hit featured');
+    panel.id = 'first-element-hit';
+    panel.dataset.attackElement = attackElement;
+    panel.dataset.targetElement = targetElement;
+    panel.dataset.amount = String(ev.amount);
+    panel.dataset.actor = ev.actor;
+    panel.dataset.target = ev.target;
+    panel.append(
+      el('div', 'first-element-hit-title', `${attackElement}克${targetElement} · 伤害 ×1.5`),
+      el('div', 'first-element-hit-damage', `本次实际伤害 ${ev.amount}`),
+      el('div', 'first-element-hit-note', '先看目标五行，再决定让谁出手。'),
+    );
+    field.appendChild(panel);
+    await sleep(skipEffects() ? 80 : 720 * duration());
+    panel.classList.remove('featured');
+    panel.classList.add('compact');
+  }
+
   async function playEvents(events) {
     const done = [];
     let burnFxPlayed = false; // 地火灼伤同回合可能连跳多人，音效只播一记
@@ -206,9 +233,9 @@ export function createBattleAnimator({
               if (ev.crit) stampText(uc.anchor, TEXT.float.crit, 'crit-stamp');
               // 五行教学：克制命中时在目标身上盖「金克木」三字印(简报二.3)
               if (ev.rel === 'ke') {
-                const atkU = getUnit(state, ev.actor);
-                const defU = getUnit(state, ev.target);
-                if (atkU && defU) stampText(uc.anchor, `${atkU.element}克${defU.element}`, 'wuxing-stamp');
+                const attackElement = ev.attackElement ?? ev.snap?.[ev.actor]?.element;
+                const targetElement = ev.targetElement ?? ev.snap?.[ev.target]?.element;
+                if (attackElement && targetElement) stampText(uc.anchor, `${attackElement}克${targetElement}`, 'wuxing-stamp');
               }
               if (ev.rel === 'beike') floatText(uc.anchor, TEXT.float.beike, 'beike-label', slot + 1);
             }
@@ -222,6 +249,7 @@ export function createBattleAnimator({
             else audio.sfx('hit');
           }
           sync(ev);
+          await showFirstElementHit(ev);
           await sleep(300 * duration());
           break;
         }
@@ -407,7 +435,7 @@ export function createBattleAnimator({
           pushLog(`收服 ${ev.name}`, 'ke');
           audio.sfx('levelup');
           const seal = el('div', 'seal-toast');
-          seal.append(el('div', 'seal-toast-title', `收服 · ${ev.name}`), el('div', 'seal-toast-sub', '战后可在【召唤兽】里安排上阵'));
+          seal.append(el('div', 'seal-toast-title', `收服 · ${ev.name}`), el('div', 'seal-toast-sub', '取胜后可在【召唤兽】里安排上阵'));
           field.appendChild(seal);
           await sleep(1300 * duration() + 300);
           seal.remove();
@@ -502,7 +530,10 @@ export function createBattleAnimator({
           break;
         }
         case 'flee': {
-          toast(root, ev.success ? TEXT.ui.escaped : (state.def.boss ? TEXT.ui.bossNoEscape : TEXT.ui.escapeFail));
+          const message = ev.success && ev.caughtReleased > 0
+            ? `${TEXT.ui.escaped}；撤离时火妖挣脱，已收回捕妖绳`
+            : ev.success ? TEXT.ui.escaped : (state.def.boss ? TEXT.ui.bossNoEscape : TEXT.ui.escapeFail);
+          toast(root, message);
           await sleep(300 * duration());
           break;
         }

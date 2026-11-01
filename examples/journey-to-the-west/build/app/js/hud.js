@@ -36,6 +36,8 @@ export function createHud(root, { onTrack, onMinimap, collapseTracker = false })
   mapName.append(el('span', 'hud-map-title'), coords);
   const minimap = el('canvas', 'hud-minimap');
   minimap.width = 240; minimap.height = 136;
+  minimap.setAttribute('role', 'img');
+  minimap.setAttribute('aria-label', '场景小地图，点击地点移动');
   minimap.title = '点击小地图可直接走过去';
   minimap.addEventListener('click', (ev) => {
     const r = minimap.getBoundingClientRect();
@@ -65,8 +67,14 @@ export function createHud(root, { onTrack, onMinimap, collapseTracker = false })
 
   // 左下：聊天频道
   const chat = el('div', 'hud-chat');
+  chat.classList.add('collapsed');
+  const chatToggle = el('button', 'hud-chat-toggle', '消息');
+  chatToggle.type = 'button';
+  chatToggle.setAttribute('aria-expanded', 'false');
+  chatToggle.setAttribute('aria-label', '展开消息');
   const tabs = el('div', 'hud-chat-tabs');
   const logBox = el('div', 'hud-chat-log');
+  let chatCollapsed = true;
   let tab = 'all';
   for (const [key, label] of CHANNELS) {
     const b = el('button', `hud-chat-tab${key === tab ? ' on' : ''}`, label);
@@ -78,7 +86,14 @@ export function createHud(root, { onTrack, onMinimap, collapseTracker = false })
     });
     tabs.appendChild(b);
   }
-  chat.append(tabs, logBox);
+  chatToggle.addEventListener('click', () => {
+    chatCollapsed = !chatCollapsed;
+    chat.classList.toggle('collapsed', chatCollapsed);
+    chatToggle.setAttribute('aria-expanded', String(!chatCollapsed));
+    chatToggle.setAttribute('aria-label', chatCollapsed ? '展开消息' : '收起消息');
+    renderLog();
+  });
+  chat.append(chatToggle, tabs, logBox);
 
   // 底部：历练条
   const expBar = el('div', 'hud-exp');
@@ -95,8 +110,10 @@ export function createHud(root, { onTrack, onMinimap, collapseTracker = false })
   const CH_LABEL = { cur: '当前', team: '队伍', sys: '系统' };
   function renderLog() {
     logBox.textContent = '';
-    const src = tab === 'sys' ? sysHistory : history.filter((l) => tab === 'all' || l.ch === tab);
-    for (const line of src.slice(-30)) {
+    const src = chatCollapsed
+      ? history
+      : tab === 'sys' ? sysHistory : history.filter((l) => tab === 'all' || l.ch === tab);
+    for (const line of src.slice(chatCollapsed ? -1 : -30)) {
       const row = el('div', `hud-chat-line ch-${line.ch}`);
       row.append(el('span', 'hud-chat-ch', `[${CH_LABEL[line.ch]}]`), el('span', '', line.text));
       logBox.appendChild(row);
@@ -126,7 +143,11 @@ export function createHud(root, { onTrack, onMinimap, collapseTracker = false })
   activeHud = {
     minimap,
     renderLog,
-    setMap(name) { mapName.querySelector('.hud-map-title').textContent = name; },
+    setMap(name) {
+      mapName.querySelector('.hud-map-title').textContent = name;
+      mapName.title = name;
+      minimap.setAttribute('aria-label', `${name}小地图，点击地点移动`);
+    },
     setCoords(x, y) { coords.textContent = `(${x},${y})`; },
     setHero(h) {
       const money = el('div', 'hud-money', `银两 ${h.money}`);

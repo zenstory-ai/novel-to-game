@@ -279,8 +279,13 @@ def run_path() -> tuple[
 
         # 任务追踪自动寻路:村子 → 翠云山传送阵 → 罗刹女
         path.track("main")
-        path.advance_until("#btn-tutorial-ok")
-        page.click("#btn-tutorial-ok")
+        path.advance_until("#modal-borrowing-approach")
+        page.click("#btn-approach-calm")
+        page.wait_for_selector("#modal-borrowing-approach", state="detached", timeout=5000)
+        path.advance_until('#battle-tutorial[data-step]')
+        if page.locator("#modal-tutorial").count():
+            raise RuntimeError("首战仍弹出旧式模态教学")
+        page.click("#btn-tutorial-more")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=5000)
         path.drive_battle(stop_on_dialog=True, max_steps=150)
         path.advance_until("#choice-dingfengdan")
@@ -340,6 +345,9 @@ def run_path() -> tuple[
         page.click("#modal-bag-close")
 
         path.track("main")
+        path.advance_until("#modal-fan-trial")
+        page.click("#btn-trial-ember")
+        page.wait_for_selector("#modal-fan-trial", state="detached", timeout=5000)
         path.advance_until("#btn-once-close")
         page.click("#btn-once-close")
         page.wait_for_selector('.cmd-btn[data-cmd="auto"]', timeout=15000)
@@ -393,6 +401,10 @@ def run_path() -> tuple[
         path.drive_battle(decide=cross_fire_mountain)
         path.wait_victory()
         page.click("#btn-victory-ok")
+
+        path.advance_until("#modal-firetroop-deal")
+        page.click("#btn-firetroop-keep")
+        page.wait_for_selector("#modal-firetroop-deal", state="detached", timeout=5000)
 
         # 火脉残图：悟空探路，按五行明牌取两处水藏与一处金简，再深入避开火眼标出的妖穴。
         while page.locator("#hunt-guide-wukong").count() == 0:
@@ -483,8 +495,12 @@ def run_path() -> tuple[
             raise RuntimeError("骗扇后未得真扇")
         page.click("#btn-pet")
         page.wait_for_selector("#modal-pet")
-        page.click('[data-pet-active="pixie"]')
-        page.wait_for_selector("#modal-pet")
+        pixie_active = page.locator('.member-selector [data-pet-active="pixie"]')
+        if pixie_active.is_enabled():
+            pixie_active.click()
+        page.wait_for_selector('.member-selector [data-pet-active="pixie"]:disabled')
+        if not page.evaluate("__game.campaign().pets.some(p => p.key === 'pixie' && p.active)"):
+            raise RuntimeError("金睛兽未设为出战")
         page.click("#modal-pet-close")
 
         # 下山路上迎面来的「八戒」——队伍里真八戒还跟在身后
@@ -584,6 +600,8 @@ def run_path() -> tuple[
                 "bountyRewards": {"before": before, "after": after},
                 "treasureSnapshot": hunt_state,
                 "treasureInput": "keyboard-only",
+                "borrowingApproach": page.evaluate("__game.campaign().flags.borrowingApproach"),
+                "fanTrial": page.evaluate("__game.campaign().flags.fanTrial"),
             },
             "visual": world_shot.relative_to(PROJECT).as_posix(),
         }

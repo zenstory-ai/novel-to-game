@@ -11,7 +11,7 @@ import {
   unitSkills,
 } from './engine.js';
 import { TEXT } from './text.js';
-import { el, iconBadge, onceCard, toast } from './ui.js';
+import { artIcon, el, iconBadge, onceCard, toast } from './ui.js';
 import { unitURL, hasUnitImage, itemIcon } from './assets.js';
 
 export function createBattleCommands({
@@ -22,9 +22,10 @@ export function createBattleCommands({
   cmdMenu,
   previewBox,
   cardByUnit,
+  tutorial,
 }) {
   // ---------- 指令菜单 ----------
-  const CMD_ICONS = { attack: '攻', skill: '法', defend: '防', item: '道', special: '技', auto: '自', flee: '逃', repeat: '续', protect: '护', autoAll: '挂', back: '返' };
+  const CMD_ART = new Set(['attack', 'skill', 'defend', 'item', 'special']);
   const lastCommands = new Map();
   // 挂机：非 BOSS、非剧情退出的寻常战斗里，一键让全队(含召唤兽)此后每回合自行应战
   const canAutoAll = !state.def.boss && !state.def.storyExit;
@@ -91,7 +92,12 @@ export function createBattleCommands({
     const b = el('button', 'btn cmd-btn');
     b.dataset.cmd = cmd;
     if (sub) b.dataset.sub = sub;
-    b.append(iconBadge(CMD_ICONS[cmd] ?? label[0]), el('span', '', label));
+    b.setAttribute('aria-label', label);
+    if (CMD_ART.has(cmd)) {
+      const asset = cmd === 'skill' ? 'spell' : cmd === 'item' ? 'bag' : cmd;
+      b.appendChild(artIcon(asset, 'command-icon'));
+    }
+    b.appendChild(el('span', 'cmd-label', label));
     return b;
   }
 
@@ -374,6 +380,7 @@ export function createBattleCommands({
       const onClick = (ev) => {
         const card = ev.target.closest('.unit-card');
         if (!card || !cards.includes(card)) return;
+        tutorial?.onTargetPicked(getUnit(state, card.dataset.unitId));
         cleanup();
         resolve(card.dataset.unitId);
       };
@@ -385,11 +392,13 @@ export function createBattleCommands({
         else if (k === 'ArrowRight' || k === 'ArrowDown') { applyFocus(focusIdx + 1); ev.preventDefault(); }
         else if (k === 'Enter' || k === ' ') {
           const id = cards[focusIdx].dataset.unitId;
+          tutorial?.onTargetPicked(getUnit(state, id));
           cleanup(); resolve(id); ev.preventDefault();
         } else if (/^[1-9]$/.test(k)) {
           const n = Number(k) - 1;
           if (n < cards.length) {
             const id = cards[n].dataset.unitId;
+            tutorial?.onTargetPicked(getUnit(state, id));
             cleanup(); resolve(id); ev.preventDefault();
           } else return;
         } else return;
@@ -440,6 +449,7 @@ export function createBattleCommands({
       }
       if (cmd) {
         if (['attack', 'skill', 'defend', 'auto', 'protect'].includes(cmd.type)) lastCommands.set(u.id, { ...cmd });
+        tutorial?.completeCommand(cmd, u);
         return cmd;
       }
     }
@@ -455,22 +465,24 @@ export function createBattleCommands({
     return new Promise((resolve) => {
       cmdMenu.innerHTML = '';
       const wrap = el('div', 'cmd-grid');
+      tutorial?.onMenu(u);
 
       // 常驻说明文字已从战场撤掉(简报 T10)：预览条只报「这一击/这个菜单现在是什么」,
       // 静态词条释义收进顶栏「助」帮助面板;防御一条报数值后果，属反馈，保留。
       const bAtk = cmdButton(TEXT.commands.attack, 'attack');
       attachPreview(bAtk, () => dmgPreviewRows(u, BASIC_ATTACK, TEXT.commands.attack));
       bAtk.onclick = async () => {
+        tutorial?.onCommandSelected('attack');
         const t = await pickTarget(u, 'enemy', BASIC_ATTACK, TEXT.commands.attack);
         resolve(t ? { type: 'attack', targetId: t } : null);
       };
       const bSkill = cmdButton(TEXT.commands.skill, 'skill');
       attachPreview(bSkill, () => [`${TEXT.commands.skill} · ${unitSkills(u).length} 招 · ${TEXT.ui.mp} ${u.mp}/${u.maxMp}`]);
-      bSkill.onclick = () => skillMenu(u, resolve);
+      bSkill.onclick = () => { tutorial?.onCommandSelected('skill'); skillMenu(u, resolve); };
       const bDef = cmdButton(TEXT.commands.defend, 'defend');
       bDef.title = TEXT.battle.defendTip;
       attachPreview(bDef, () => [TEXT.battle.defendTip]);
-      bDef.onclick = () => { cancelPick(); resolve({ type: 'defend' }); };
+      bDef.onclick = () => { tutorial?.onCommandSelected('defend'); cancelPick(); resolve({ type: 'defend' }); };
       const bItem = cmdButton(TEXT.commands.item, 'item');
       bItem.title = TEXT.battle.itemTip;
       attachPreview(bItem, () => [TEXT.battle.itemTip]);
@@ -522,14 +534,27 @@ export function createBattleCommands({
           resolve(t ? { type: 'protect', targetId: t } : null);
         };
       }
-      wrap.append(bAtk, bSkill, bDef, bItem, bSp, bAuto, bFlee, bRepeat, bProtect);
+      const primary = [bAtk, bSkill, bDef];
+      const extra = [bItem, bSp, bAuto, bFlee, bRepeat, bProtect];
       // 挂机(寻常战斗)：此后每回合全队自动，点场上的「接手」收回;强敌与剧情战干脆不摆这颗钮
       if (canAutoAll) {
         const bAutoAll = cmdButton('挂机', 'autoAll');
         bAutoAll.title = TEXT.battle.autoAllTip;
         attachPreview(bAutoAll, () => [TEXT.battle.autoAllTip]);
         bAutoAll.onclick = () => { cancelPick(); resolve({ type: 'autoAll' }); };
-        wrap.append(bAutoAll);
+        extra.push(bAutoAll);
+      }
+      if (tutorial?.isFirstCommand()) {
+        const more = el('button', 'btn cmd-btn tutorial-more', '更多指令');
+        more.id = 'btn-tutorial-more';
+        more.dataset.cmd = 'more';
+        more.onclick = () => {
+          more.replaceWith(...extra);
+          bindKbd(wrap);
+        };
+        wrap.append(...primary, more);
+      } else {
+        wrap.append(...primary, ...extra);
       }
       cmdMenu.appendChild(wrap);
       bindKbd(wrap);
@@ -554,7 +579,7 @@ export function createBattleCommands({
       const item = el('button', 'btn cmd-item');
       item.dataset.skill = k;
       const nm = el('span', 'cmd-item-name');
-      nm.append(iconBadge(s.kind === 'mag' ? '法' : '物', { sm: true }), document.createTextNode(' ' + s.name));
+      nm.textContent = s.name;
       const meta = el('span', 'cmd-item-meta', `${targetLabel[s.target] ?? ''}${s.kind === 'mag' ? '法术' : '物理'}·${u.element} · 法力${eff.mp}`);
       item.append(nm, meta);
       if (s.desc) item.title = s.desc;

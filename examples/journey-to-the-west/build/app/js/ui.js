@@ -18,6 +18,16 @@ export function iconBadge(char, { round = false, sm = false } = {}) {
   return b;
 }
 
+// 操作图标使用实际美术资产；名称仍由相邻文字与 aria-label 承担，图片不重复朗读。
+export function artIcon(name, cls = '') {
+  const img = el('img', `ui-art-icon${cls ? ` ${cls}` : ''}`);
+  img.src = `assets/ui/${name}.webp`;
+  img.alt = '';
+  img.draggable = false;
+  img.setAttribute('aria-hidden', 'true');
+  return img;
+}
+
 // 四角木刻角饰
 export function addCorners(panel) {
   for (const c of ['tl', 'tr', 'bl', 'br']) panel.appendChild(el('span', `corner ${c}`));
@@ -27,6 +37,7 @@ export function addCorners(panel) {
 let modalDepth = 0;
 let dlgDepth = 0;
 let shadeGeneration = 0;
+let modalLabelSeq = 0;
 function shadeOn(kind) {
   if (kind === 'modal') modalDepth += 1; else dlgDepth += 1;
   document.body.classList.add(kind === 'modal' ? 'modal-open' : 'dlg-open');
@@ -81,7 +92,8 @@ export function showDialog(root, lines) {
       box.classList.toggle('narration', !line.who);
       if (line.who) {
         // 假八戒沿用八戒面貌；不知道真身前不能由头像提前揭露。
-        portrait.src = unitURL(line.who === 'fakeBajie' ? 'bajie' : line.who, TEXT.speakers[line.who] ?? line.who);
+        const portraitKey = { fakeBajie: 'bajie', huobao: 'mob_fire1' }[line.who] ?? line.who;
+        portrait.src = unitURL(portraitKey, TEXT.speakers[line.who] ?? line.who);
         portrait.style.visibility = 'visible';
         name.hidden = false;
         name.textContent = TEXT.speakers[line.who] ?? line.who;
@@ -128,14 +140,37 @@ export function showDialog(root, lines) {
 }
 
 // ---------- 模态框 ----------
+function trapPanelFocus(panel, ev) {
+  if (ev.key !== 'Tab') return false;
+  const focusable = [...panel.querySelectorAll('button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])')];
+  if (!focusable.length) {
+    panel.focus();
+    ev.preventDefault();
+    return true;
+  }
+  const current = focusable.indexOf(document.activeElement);
+  const next = ev.shiftKey
+    ? (current <= 0 ? focusable.length - 1 : current - 1)
+    : (current === focusable.length - 1 ? 0 : current + 1);
+  focusable[next].focus();
+  ev.preventDefault();
+  return true;
+}
+
 // 键盘：回车/空格=当前聚焦钮(默认首钮)，方向键循环，数字键直选(全流程键盘)。
 export function showModal(root, { id, title, bodyNodes, buttons, focusables = null }) {
   root.querySelectorAll('.big-toast').forEach((n) => n.remove()); // 大字提示不压在弹窗上
-  const mask = el('div', 'modal-mask');
+  const previousFocus = document.activeElement;
+  const mask = el('div', 'modal-mask panel-overlay');
   if (id) mask.id = id;
-  const panel = el('div', 'modal-panel');
+  const panel = el('div', `modal-panel panel-shell${id ? ` panel-${id.replace(/^modal-/, '')}` : ''}`);
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.setAttribute('tabindex', '-1');
   addCorners(panel);
   const head = el('div', 'modal-title', title);
+  head.id = `${id || `modal-${++modalLabelSeq}`}-title`;
+  panel.setAttribute('aria-labelledby', head.id);
   const body = el('div', 'modal-body');
   for (const n of bodyNodes) body.appendChild(n);
   const foot = el('div', 'modal-foot');
@@ -146,10 +181,12 @@ export function showModal(root, { id, title, bodyNodes, buttons, focusables = nu
     shadeOff('modal', ownerGeneration);
     mask.remove();
     window.removeEventListener('keydown', onKey);
+    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
   };
   for (const b of buttons) {
     const btn = el('button', 'btn modal-btn', b.label);
     if (b.id) btn.id = b.id;
+    btn.disabled = Boolean(b.disabled);
     btn.addEventListener('click', () => audio.sfx('click'));
     btn.addEventListener('click', () => {
       if (b.onClick) b.onClick();
@@ -157,7 +194,17 @@ export function showModal(root, { id, title, bodyNodes, buttons, focusables = nu
     });
     foot.appendChild(btn);
   }
-  const btns = focusables?.length ? [...focusables] : [...foot.querySelectorAll('button')];
+  const escapeButton = [...foot.querySelectorAll('button:not(:disabled)')]
+    .find((btn) => /(?:close|cancel)/i.test(btn.id));
+  const topClose = escapeButton ? el('button', 'panel-close', '×') : null;
+  if (topClose) {
+    topClose.type = 'button';
+    topClose.id = `${id || 'modal'}-x`;
+    topClose.setAttribute('aria-label', `关闭${title}`);
+    topClose.addEventListener('click', () => escapeButton.click());
+  }
+  const btns = (focusables?.length ? [...focusables] : [...foot.querySelectorAll('button')])
+    .filter((btn) => !btn.disabled);
   if (!buttons.length) foot.hidden = true;
   let fIdx = 0;
   const applyF = (i) => {
@@ -165,41 +212,73 @@ export function showModal(root, { id, title, bodyNodes, buttons, focusables = nu
     fIdx = ((i % btns.length) + btns.length) % btns.length;
     btns.forEach((b) => b.classList.remove('kbd-focus'));
     btns[fIdx].classList.add('kbd-focus');
+    if (btns[fIdx].isConnected) btns[fIdx].focus();
   };
   function onKey(ev) {
     if (!mask.isConnected) {
       window.removeEventListener('keydown', onKey);
       return;
     }
+    const topMask = [...root.querySelectorAll('.modal-mask')].at(-1);
+    if (topMask !== mask) return;
     const k = ev.key;
+    if (trapPanelFocus(panel, ev)) return;
     if (ev.repeat && (k === 'Enter' || k === ' ')) { ev.preventDefault(); return; }
-    if (k === 'Enter' || k === ' ') { btns[fIdx]?.click(); ev.preventDefault(); }
-    else if (k === 'ArrowLeft' || k === 'ArrowUp') { applyF(fIdx - 1); ev.preventDefault(); }
-    else if (k === 'ArrowRight' || k === 'ArrowDown') { applyF(fIdx + 1); ev.preventDefault(); }
+    if (k === 'Enter' || k === ' ') {
+      const focusedButton = document.activeElement instanceof HTMLElement
+        ? document.activeElement.closest('button:not(:disabled)')
+        : null;
+      (focusedButton && panel.contains(focusedButton) ? focusedButton : btns[fIdx])?.click();
+      ev.preventDefault();
+    }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp') {
+      const activeIdx = btns.indexOf(document.activeElement);
+      applyF((activeIdx >= 0 ? activeIdx : fIdx) - 1);
+      ev.preventDefault();
+    }
+    else if (k === 'ArrowRight' || k === 'ArrowDown') {
+      const activeIdx = btns.indexOf(document.activeElement);
+      applyF((activeIdx >= 0 ? activeIdx : fIdx) + 1);
+      ev.preventDefault();
+    }
     else if (/^[1-9]$/.test(k)) {
       const b = btns[Number(k) - 1];
       if (b) { b.click(); ev.preventDefault(); }
-    }
+    } else if (k === 'Escape' && escapeButton) { escapeButton.click(); ev.preventDefault(); }
   }
   window.addEventListener('keydown', onKey);
   applyF(0);
-  panel.append(head, body, foot);
+  panel.append(head);
+  if (topClose) panel.appendChild(topClose);
+  panel.append(body, foot);
   mask.appendChild(panel);
   root.appendChild(mask);
   const ownerGeneration = shadeOn('modal');
+  queueMicrotask(() => {
+    if (!mask.isConnected) return;
+    (btns[0] || panel).focus();
+  });
   return close;
 }
 
 // ---------- 统一面板(右上木刻×关闭;供 背包/召唤兽/角色/阵型/帮助 复用) ----------
 export function showPanel(root, { id, title, bodyNodes, onClose }) {
   root.querySelectorAll('.big-toast').forEach((n) => n.remove());
-  const mask = el('div', 'modal-mask');
+  const previousFocus = document.activeElement;
+  const mask = el('div', 'modal-mask panel-overlay');
   if (id) mask.id = id;
-  const panel = el('div', 'modal-panel');
+  const panel = el('div', `modal-panel panel-shell${id ? ` panel-${id.replace(/^modal-/, '')}` : ''}`);
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.setAttribute('tabindex', '-1');
   addCorners(panel);
   const head = el('div', 'modal-title', title);
+  head.id = `${id || `panel-${++modalLabelSeq}`}-title`;
+  panel.setAttribute('aria-labelledby', head.id);
   const closeBtn = el('button', 'panel-close', '×');
   closeBtn.id = `${id}-close`;
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', `关闭${title}`);
   const body = el('div', 'modal-body');
   for (const n of bodyNodes) body.appendChild(n);
   let closed = false;
@@ -210,12 +289,16 @@ export function showPanel(root, { id, title, bodyNodes, onClose }) {
     mask.remove();
     window.removeEventListener('keydown', onKey);
     if (onClose) onClose();
+    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
   };
   function onKey(ev) {
     if (!mask.isConnected) {
       window.removeEventListener('keydown', onKey);
       return;
     }
+    const topMask = [...root.querySelectorAll('.modal-mask')].at(-1);
+    if (topMask !== mask) return;
+    if (trapPanelFocus(panel, ev)) return;
     if (ev.key === 'Escape') { close(); ev.preventDefault(); }
   }
   window.addEventListener('keydown', onKey);
@@ -228,6 +311,9 @@ export function showPanel(root, { id, title, bodyNodes, onClose }) {
   mask.appendChild(panel);
   root.appendChild(mask);
   const ownerGeneration = shadeOn('modal');
+  queueMicrotask(() => {
+    if (mask.isConnected) closeBtn.focus();
+  });
   return close;
 }
 
@@ -310,113 +396,156 @@ export function stampText(parent, text, cls = 'ke-stamp') {
 
 // ---------- 顶栏 ----------
 // 两组分工(简报一.3)：左侧队伍相关(角色/背包/召唤兽/阵型),
-// 右侧系统相关(存档/读档/音效/帮助)默认收进一个「设」齿轮。
+// 右侧系统相关(存档/读档/音效/帮助)默认收进设置。
 export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute, onHero, onBag, onPet, onQuest }) {
   const bar = el('div', 'topbar');
   bar.id = 'topbar';
   const title = el('div', 'topbar-title', TEXT.gameTitle);
-  const mk = (iconChar, label, id, fn) => {
+  const mk = (iconName, label, id, fn) => {
     const b = el('button', 'btn topbar-btn');
     b.id = id;
-    b.append(iconBadge(iconChar), el('span', '', label));
+    b.setAttribute('aria-label', label);
+    if (iconName) b.appendChild(artIcon(iconName, 'topbar-icon'));
+    b.appendChild(el('span', 'topbar-label', label));
     b.addEventListener('click', () => audio.sfx('click'));
     b.addEventListener('click', fn);
     return b;
   };
   const left = el('div', 'topbar-group');
-  const heroB = mk('角', TEXT.topbar.hero, 'btn-hero', onHero);
+  const heroB = mk('hero', TEXT.topbar.hero, 'btn-hero', onHero);
   const heroNotice = el('span', 'topbar-notice');
   heroNotice.hidden = true;
   heroB.appendChild(heroNotice);
-  const bagB = mk('囊', TEXT.topbar.bag, 'btn-bag', onBag);
-  const petB = mk('兽', TEXT.topbar.pet, 'btn-pet', onPet);
-  const formB = mk('阵', TEXT.topbar.formation, 'btn-formation', onFormation);
-  const questB = mk('任', TEXT.topbar.quest, 'btn-quest', onQuest);
+  const bagB = mk('bag', TEXT.topbar.bag, 'btn-bag', onBag);
+  const petB = mk('pet', TEXT.topbar.pet, 'btn-pet', onPet);
+  const formB = mk('formation', TEXT.topbar.formation, 'btn-formation', onFormation);
+  const questB = mk('quest', TEXT.topbar.quest, 'btn-quest', onQuest);
   left.append(bagB, heroB, petB, questB, formB);
   const right = el('div', 'topbar-group');
   const sys = el('div', 'topbar-sys');
   const gearB = el('button', 'btn topbar-btn');
   gearB.id = 'btn-system';
   gearB.title = TEXT.topbar.systemTip;
-  gearB.append(iconBadge('设'), el('span', '', TEXT.topbar.system));
-  const drop = el('div', 'topbar-dropdown');
-  drop.style.display = 'none';
-  const saveB = mk('存', TEXT.topbar.save, 'btn-save', onSave);
-  const loadB = mk('读', TEXT.topbar.load, 'btn-load', onLoad);
-  const muteB = mk('声', onMute.label(), 'btn-mute', () => {
-    onMute.toggle();
-    refreshMute();
-  });
-  const helpB = mk('助', TEXT.topbar.help, 'btn-help', onHelp);
-  // 音乐/音效五档 + 战斗节奏开关：一次建好，战斗内外都在这里调
-  const prefs = el('div', 'topbar-prefs');
-  const STEPS = [0, 0.25, 0.5, 0.75, 1];
-  const volRow = (kind, label) => {
-    const row = el('div', 'pref-row');
-    row.dataset.keep = '1';
-    const minus = el('button', 'btn pref-step', '－');
-    const val = el('span', 'pref-val');
-    const plus = el('button', 'btn pref-step', '＋');
-    minus.id = `btn-vol-${kind}-down`;
-    plus.id = `btn-vol-${kind}-up`;
-    const show = () => { val.textContent = `${Math.round(audio.vol[kind] * 100)}%`; };
-    const step = (d) => {
-      const i = STEPS.reduce((best, v, j) => (Math.abs(v - audio.vol[kind]) < Math.abs(STEPS[best] - audio.vol[kind]) ? j : best), 0);
-      audio.setVolume(kind, STEPS[Math.max(0, Math.min(STEPS.length - 1, i + d))]);
-      show();
-      audio.sfx('click');
-    };
-    minus.addEventListener('click', () => step(-1));
-    plus.addEventListener('click', () => step(1));
-    row.append(el('span', 'pref-label', label), minus, val, plus);
-    show();
-    return row;
-  };
-  const toggle = (id, labelFn, flip) => {
-    const b = el('button', 'btn pref-toggle');
-    b.id = id;
-    b.dataset.keep = '1';
-    const show = () => { const [txt, on] = labelFn(); b.textContent = txt; b.classList.toggle('on', on); };
-    b.addEventListener('click', () => { flip(); show(); audio.sfx('click'); });
-    show();
-    return b;
-  };
-  const toggles = el('div', 'pref-toggles');
-  toggles.append(
-    toggle('btn-speed', () => [getSpeed() === 2 ? '战斗 加速×2' : '战斗 常速', getSpeed() === 2], () => setSpeed(getSpeed() === 2 ? 1 : 2)),
-    toggle('btn-skipfx', () => [getSkipFx() ? '跳过演出' : '播放演出', getSkipFx()], () => setSkipFx(!getSkipFx())),
-    toggle('btn-shake', () => [getShake() ? '震屏 开' : '震屏 关', getShake()], () => setShake(!getShake())),
-  );
-  prefs.append(volRow('bgm', '音乐'), volRow('sfx', '音效'), toggles);
-  drop.append(saveB, loadB, muteB, helpB, prefs);
-  sys.append(gearB, drop);
+  gearB.setAttribute('aria-label', TEXT.topbar.system);
+  gearB.append(artIcon('settings', 'topbar-icon'), el('span', 'topbar-label', TEXT.topbar.system));
+  sys.append(gearB);
   right.append(sys);
   const spacer = el('div', 'topbar-spacer');
   const sep = el('div', 'topbar-sep');
   bar.append(title, left, spacer, sep, right);
   root.appendChild(bar);
-  const hideDrop = () => {
-    drop.style.display = 'none';
-    gearB.classList.remove('open');
+  let closeSystem = null;
+  const openSystem = () => {
+    if (closeSystem) { closeSystem(); return; }
+    if (root.querySelector('.modal-mask')) return;
+
+    const section = (title, description = '') => {
+      const wrap = el('section', 'system-section');
+      wrap.appendChild(el('h3', 'system-section-title', title));
+      if (description) wrap.appendChild(el('p', 'system-section-note', description));
+      return wrap;
+    };
+    const audioSection = section('声音', '音量调整会立即保存。');
+    const STEPS = [0, 0.25, 0.5, 0.75, 1];
+    const volRow = (kind, label) => {
+      const row = el('div', 'pref-row');
+      const minus = el('button', 'btn pref-step', '−');
+      const val = el('output', 'pref-val');
+      const plus = el('button', 'btn pref-step', '+');
+      minus.id = `btn-vol-${kind}-down`;
+      plus.id = `btn-vol-${kind}-up`;
+      minus.type = plus.type = 'button';
+      minus.setAttribute('aria-label', `降低${label}音量`);
+      plus.setAttribute('aria-label', `提高${label}音量`);
+      const show = () => {
+        const level = Math.round(audio.vol[kind] * 100);
+        val.textContent = `${level}%`;
+        val.setAttribute('aria-label', `${label}音量 ${level}%`);
+        minus.disabled = level === 0;
+        plus.disabled = level === 100;
+      };
+      const step = (d) => {
+        const i = STEPS.reduce((best, v, j) => (Math.abs(v - audio.vol[kind]) < Math.abs(STEPS[best] - audio.vol[kind]) ? j : best), 0);
+        audio.setVolume(kind, STEPS[Math.max(0, Math.min(STEPS.length - 1, i + d))]);
+        show();
+        audio.sfx('click');
+      };
+      minus.addEventListener('click', () => step(-1));
+      plus.addEventListener('click', () => step(1));
+      row.append(el('span', 'pref-label', label), minus, val, plus);
+      show();
+      return row;
+    };
+    const muteB = el('button', 'btn system-action');
+    muteB.id = 'btn-mute';
+    const refreshMute = () => {
+      muteB.textContent = onMute.label();
+      muteB.setAttribute('aria-pressed', String(audio.muted));
+    };
+    muteB.addEventListener('click', () => { onMute.toggle(); refreshMute(); audio.sfx('click'); });
+    refreshMute();
+    const volumeGrid = el('div', 'system-volume-grid');
+    volumeGrid.append(volRow('bgm', '音乐'), volRow('sfx', '音效'));
+    audioSection.append(volumeGrid, muteB);
+
+    const battleSection = section('战斗偏好', '只影响演出速度和视觉反馈，不改变结算。');
+    const toggle = (id, label, value, flip) => {
+      const b = el('button', 'btn pref-toggle');
+      b.id = id;
+      const show = () => {
+        const [stateLabel, on] = value();
+        b.replaceChildren(el('span', 'pref-toggle-label', label), el('span', 'pref-toggle-value', stateLabel));
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', String(on));
+      };
+      b.addEventListener('click', () => { flip(); show(); audio.sfx('click'); });
+      show();
+      return b;
+    };
+    const toggles = el('div', 'pref-toggles');
+    toggles.append(
+      toggle('btn-speed', '节奏', () => [getSpeed() === 2 ? '加速 ×2' : '常速 ×1', getSpeed() === 2], () => setSpeed(getSpeed() === 2 ? 1 : 2)),
+      toggle('btn-skip-fx', '技能演出', () => [getSkipFx() ? '跳过' : '播放', getSkipFx()], () => setSkipFx(!getSkipFx())),
+      toggle('btn-shake', '震屏反馈', () => [getShake() ? '开启' : '关闭', getShake()], () => setShake(!getShake())),
+    );
+    battleSection.appendChild(toggles);
+
+    const gameSection = section('游戏', '存档、读档与操作说明。');
+    const actions = el('div', 'system-actions');
+    const action = (id, label, fn) => {
+      const b = el('button', 'btn system-action', label);
+      b.id = id;
+      b.addEventListener('click', () => {
+        audio.sfx('click');
+        closeSystem?.();
+        fn();
+      });
+      return b;
+    };
+    actions.append(
+      action('btn-save', TEXT.topbar.save, onSave),
+      action('btn-load', TEXT.topbar.load, onLoad),
+      action('btn-help', TEXT.topbar.help, onHelp),
+    );
+    gameSection.appendChild(actions);
+
+    gearB.classList.add('open');
+    closeSystem = showPanel(root, {
+      id: 'modal-system',
+      title: TEXT.topbar.system,
+      bodyNodes: [audioSection, battleSection, gameSection],
+      onClose: () => {
+        closeSystem = null;
+        gearB.classList.remove('open');
+      },
+    });
   };
   gearB.addEventListener('click', () => audio.sfx('click'));
   gearB.addEventListener('click', (ev) => {
     ev.stopPropagation();
-    const open = drop.style.display === 'none';
-    drop.style.display = open ? 'flex' : 'none';
-    gearB.classList.toggle('open', open);
-  });
-  drop.addEventListener('click', (ev) => {
-    if (ev.target.closest('button') && !ev.target.closest('[data-keep]')) hideDrop();
-  });
-  document.addEventListener('click', (ev) => {
-    if (drop.isConnected && !sys.contains(ev.target)) hideDrop();
+    openSystem();
   });
   const panelBtns = { hero: heroB, bag: bagB, pet: petB, formation: formB, quest: questB };
-  function refreshMute() {
-    muteB.textContent = '';
-    muteB.append(iconBadge('声'), el('span', '', onMute.label()));
-  }
   return {
     setOpen(key) {
       for (const [k, b] of Object.entries(panelBtns)) b.classList.toggle('open', k === key);
@@ -448,21 +577,46 @@ export function onceCard(root, key, title, lines) {
 
 // ---------- 阵型弹窗 ----------
 export function showFormationModal(root, { current, formations, onPick }) {
-  const body = [];
+  const intro = el('div', 'formation-intro');
+  intro.appendChild(artIcon('formation', 'formation-art'));
+  const introCopy = el('div', 'formation-intro-copy');
+  introCopy.append(
+    el('p', 'formation-kicker', '行军布阵'),
+    el('p', 'formation-guidance', '阵型同时改变队伍的输出、承伤与出手节奏。选择非当前阵型即可切换。'),
+  );
+  intro.appendChild(introCopy);
+  const list = el('div', 'formation-list');
+  const rows = [];
+  const modLabels = { atk: '攻击', def: '防御', spd: '速度', dmgTaken: '受伤' };
   for (const f of Object.values(formations)) {
-    const row = el('div', 'formation-row' + (f.key === current ? ' current' : ''));
+    const isCurrent = f.key === current;
+    const row = el('button', `formation-row${isCurrent ? ' current' : ''}`);
+    row.type = 'button';
     row.dataset.formation = f.key;
-    const name = el('div', 'formation-name', `${f.name}${f.key === current ? ' (使用中)' : ''}`);
-    const desc = el('div', 'formation-desc', f.desc);
-    row.append(name, desc);
+    row.disabled = isCurrent;
+    row.setAttribute('aria-pressed', String(isCurrent));
+    const cardHead = el('div', 'formation-card-head');
+    const name = el('div', 'formation-name', f.name);
+    const state = el('span', 'formation-state', isCurrent ? '使用中' : '切换此阵');
+    cardHead.append(name, state);
+    const stats = el('div', 'formation-stats');
+    for (const [key, factor] of Object.entries(f.mods ?? {})) {
+      if (!modLabels[key]) continue;
+      const delta = Math.round((factor - 1) * 100);
+      const good = key === 'dmgTaken' ? delta < 0 : delta > 0;
+      stats.appendChild(el('span', `formation-stat ${good ? 'gain' : 'cost'}`, `${modLabels[key]} ${delta > 0 ? '+' : ''}${delta}%`));
+    }
+    row.append(cardHead, stats);
     row.addEventListener('click', () => onPick(f.key));
-    body.push(row);
+    list.appendChild(row);
+    rows.push(row);
   }
   const close = showModal(root, {
     id: 'modal-formation',
-    title: `${TEXT.topbar.formation} · ${TEXT.ui.formationNow}`,
-    bodyNodes: body,
+    title: TEXT.topbar.formation,
+    bodyNodes: [intro, list],
     buttons: [{ label: '关闭', id: 'btn-formation-close' }],
+    focusables: rows,
   });
   return close;
 }

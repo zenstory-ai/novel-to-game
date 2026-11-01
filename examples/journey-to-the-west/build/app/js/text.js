@@ -24,7 +24,7 @@ export const TEXT = {
     hero: '角色 · 队伍',
     bag: '背包',
     pet: '召唤兽',
-    petEmpty: '还没有召唤兽。火兵气血低于四成时用捕妖绳收服，便能带上阵。',
+    petEmpty: '还没有召唤兽。火兵气血不高于四成时用捕妖绳收服，取胜后带回。',
     points: '可用点数',
     recommend: '推荐加点',
     recommendSkill: '推荐修炼',
@@ -96,7 +96,7 @@ export const TEXT = {
   },
 
   buffNames: {
-    atk_up: '攻击↑', enrage: '狂暴', atk_down: '攻击↓', def_down: '破防', def_up: '铁背', dmg_reduce: '罗汉金身',
+    atk_up: '攻击↑', enrage: '狂暴', atk_down: '攻击↓', def_down: '破防', def_up: '铁背', dmg_reduce: '减伤',
     hit_up: '金睛', spd_up: '生风', spd_down: '减速', regen: '落雨', stun: '眩晕',
     vulnerable: '破绽', ke_shield: '龟甲', huo_ward: '避火',
   },
@@ -148,8 +148,8 @@ export const TEXT = {
     fakefan: {
       title: '假扇与捕妖绳',
       lines: [
-        '这柄「芭蕉扇·伪」来路可疑。若要试它，须防火势反扑。',
-        '火兵血气降到 40% 以下（≤40%）时，可用捕妖绳收服，日后召来助战。',
+        '方才一试，假扇越扇火越旺。接下来留意火兵的气血与五行。',
+        '火兵血气降到 40% 以下（≤40%）时，可用捕妖绳收服，取胜后可召来助战。',
         '火口每回合都会灼伤非水系伙伴；悟空可变作玄甲龟将，避火锦也能减轻烧伤。',
       ],
     },
@@ -193,6 +193,23 @@ export const TEXT = {
       { who: 'luosha', text: '三日？我连一个字也不信。想拿扇子，先过了我这双剑！' },
       { who: 'shibi', text: '护住夫人！别让这猴子再往洞前一步！' },
     ],
+    borrowingApproachChoice: {
+      title: '罗刹女双剑出鞘，如何迎战？',
+      options: [
+        { key: 'calm', label: '听完怨话，稳住阵脚', fore: '让沙僧整队：全队所受伤害减少 15%，持续前两回合。' },
+        { key: 'rush', label: '先试刀法，强攻破势', fore: '悟空先逼住剑锋：攻击提高 15%，持续前两回合。' },
+      ],
+    },
+    borrowingCalm: [
+      { who: 'wukong', text: '嫂嫂这三年如何熬过，俺听明白了。可山下百姓也在火里熬着。沙师弟，护住师父，先把阵脚站稳！' },
+      { who: 'sha', text: '大师兄只管应敌。我守中路，二师兄照看两翼，莫叫阴风冲散。' },
+      { who: 'bajie', text: '老沙凡事求稳。也好，俺也去把钉耙横住，省得猴哥一急又吃亏。' },
+    ],
+    borrowingRush: [
+      { who: 'wukong', text: '话已说尽，嫂嫂仍要动剑，俺便先试试这洞门前的刀法！' },
+      { who: 'bajie', text: '猴哥又抢在头里！你只管快，后头的师父行李还得俺也去顾。' },
+      { who: 'sha', text: '大师兄抢先压住剑势，我与二师兄随后接应。只是那柄扇子，仍须提防。' },
+    ],
     blowAway: [
       { who: 'luosha', text: '齐天大圣，也站稳了再说大话！' },
       { who: null, text: '罗刹女捻诀一扇。阴风拔地而起，悟空双脚离山，转眼被吹出五万余里。' },
@@ -221,6 +238,14 @@ export const TEXT = {
       { who: 'luosha', text: '甩也甩不掉……侍婢听令，结阵！' },
       { who: 'wukong', text: '（扇子硬抢不来。等她斗得气喘、露了疲态，俺老孙变个蟭蟟虫，钻进她肚里去！）' },
     ],
+    luoshaPre2CalmRecall: [
+      { who: 'luosha', text: '上回来，你肯站着听完我的话；可听过便算了么？孩儿仍不在我身边。' },
+      { who: 'wukong', text: '俺不敢说一句话便能了结此怨。今日仍为山下生民来借扇，先领教嫂嫂的手段。' },
+    ],
+    luoshaPre2RushRecall: [
+      { who: 'luosha', text: '上回来只顾抢先挥棒，今日又来逞强。你纵快过双剑，可快不过我的扇风。' },
+      { who: 'wukong', text: '上回是俺性急；可火焰山一日不熄，百姓便多受一日苦。今日再试个分明！' },
+    ],
     luoshaMid: [ // 化虫入腹演出
       { who: null, text: '罗刹女气息一乱，悟空立刻化作蟭蟟虫，从她张口换气的当儿钻入腹中。' },
       { who: 'luosha', text: '疼死我了！叔叔快住手……我把扇子给你！' },
@@ -234,18 +259,48 @@ export const TEXT = {
       { who: 'luosha', text: '去吧。看看它合不合你的心意。' },
       { who: 'wukong', text: '师父，扇子借到了！且看俺开出一条西路！' },
     ],
-    preBattle2: [
-      { who: null, text: '悟空迎着山火挥扇。第一下，火头猛蹿；第二下，烈焰扑到脚边；第三下，三道火墙把西路烧得不见踪影。' },
-      { who: 'tudi', text: '快停手！这是假的！真扇一扇息火，这把却是越扇火越旺！' },
-      { who: 'tudi', text: '大圣五百年前踢倒八卦炉，落下的火砖化成了这座山。如今地火一旺，藏在里面的火兵也全醒了！' },
-      { who: 'wukong', text: '拿假扇哄俺，好个罗刹女！师父先退，俺也去把这群火妖清了，再找牛魔王讨真扇！' },
-      { who: 'tudi', text: '火兵一旦伤重，捕妖绳便捆得住。若能收服一只，往后的仗也添个帮手！' },
+    fanTrialChoice: {
+      title: '借来的扇子，先往哪里试？',
+      options: [
+        { key: 'ember', label: '先试路边小火', fore: '先辨扇势，发现不对及时收手，不助长大火。' },
+        { key: 'full', label: '直扇火焰山口', fore: '若是假扇，会助长火势：火行敌人攻击提高 30%，持续前三回合。' },
+      ],
+    },
+    fanTrialEmber: [
+      { who: 'wukong', text: '且慢。先拿路旁这簇小火试一试，莫把整座山都惊动了。' },
+      { who: 'sha', text: '火苗迎风反涨，这扇子有假。大师兄快收手，山口的地火已经翻动。' },
+      { who: 'tudi', text: '虽未催旺大火，砖缝里的火兵也闻风醒了！大圣，先护住西路！' },
+    ],
+    fanTrialFull: [
+      { who: 'wukong', text: '师父且看，俺也去一扇开出西路！' },
+      { who: 'bajie', text: '猴哥，火不曾低，怎么反往咱们脚边蹿？快收了扇子！' },
+      { who: 'tudi', text: '这是假的！这一扇催旺地火，火兵借了火势，攻势更凶了！' },
     ],
     postBattle2: [
       { who: 'wukong', text: '火兵退了。土地，那柄真扇究竟藏在哪里？' },
       { who: 'tudi', text: '还在罗刹女手中。她不信旁人，只听夫君牛魔王的话。牛魔王如今住在积雷山摩云洞，真要取扇，还得从他身上寻门路。' },
       { who: 'tudi', text: '那老牛贪杯，常去碧波潭赴老龙王的宴。大圣若跟住他的行踪，兴许能找到空当。' },
       { who: 'bajie', text: '猴哥，那老牛可不好斗。俺也去，真动起手来还能替你挡一阵。' },
+    ],
+    postBattle2EmberRecall: [
+      { who: 'sha', text: '幸而先试的是边火，认出假扇便收住了；这回吃亏，也算看清了它的底细。' },
+    ],
+    postBattle2FullRecall: [
+      { who: 'bajie', text: '方才那一扇把火兵都扇得凶了三分。下回拿到扇子，咱们可得先辨真假。' },
+    ],
+    firetroopDealChoice: {
+      title: '被缚的火兵低声求一条退路',
+      options: [
+        { key: 'keep', label: '留在队中', fore: '保留赤焰火骝，可继续上阵和配装。' },
+        { key: 'release', label: '解绳放归', fore: '火骝离队，装备退回背囊；外层首次妖气不增长。' },
+      ],
+    },
+    firetroopKeep: [
+      { who: 'wukong', text: '既肯收住野性，便随俺们走。往后出力，不许再借火伤人。' },
+    ],
+    firetroopRelease: [
+      { who: 'huobao', text: '火脉外层有条旧退路。若撞上巡穴妖气，贴着冷砖走，能避过一次。' },
+      { who: 'wukong', text: '这条路俺记下了。去吧，莫再替妖王守火。' },
     ],
     treasureIntro: [
       { who: 'tudi', text: '大圣再看这个。火炎校尉掉下一角残图，上面五脉交错，像是八卦炉砖落地时压住的一处旧藏。' },

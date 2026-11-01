@@ -32,7 +32,8 @@ description: "Turn a novel into a fully playable game on the selected target pla
 3. 调用 `novel-game-analyze` 生成有原文依据的 `SOURCE_BIBLE.md`。
 4. 调用 `game-concept` 比较仍开放的方向并选定 `CONCEPT.md`；自然语言专属命令按玩法需要选择，
    不适用时明确 `N/A`；`director` 的待决方向在此停靠。
-5. 调用 `game-world-design` 生成 `GAME_DESIGN.md`，其中锁定最大设计风险与最小可执行切片。
+5. 选定方向所需原作事实缺少证据或存在冲突时，先调用 `novel-game-analyze` 定向补证；再调用
+   `game-world-design` 生成 `GAME_DESIGN.md`，锁定最大设计风险与最小可执行切片。
 6. 在完整美术生产前调用 `game-build` 做与最大风险匹配的白盒候选；试玩后把偏差交回 design owner
    局部修订并重放受影响路径，不能用文本模拟结果冒充空间或操作验证；随后按流程契约做第一次预算与
    范围复盘，据此请 design owner 调整剧情与关卡内容量。

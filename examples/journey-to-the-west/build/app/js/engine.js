@@ -2,7 +2,7 @@
 // 指令回合制：我方先下完全部指令 → 按速度降序生成行动队列 → 逐个结算 → 回合结束。
 // 一切随机走 state.rng(seedRNG)，同 seed 同指令 = 同结果。
 
-import { ELEMENTS, ELEMENT_COEF, SKILLS, BASIC_ATTACK, FORMS, PARTY, ENEMIES, FORMATIONS, ITEMS, BATTLES, POINT_GAINS, EQUIPS, TREASURES, SP, STUNTS } from './data.js';
+import { ELEMENTS, ELEMENT_COEF, SKILLS, BASIC_ATTACK, FORMS, PARTY, ENEMIES, FORMATIONS, ITEMS, BATTLES, POINT_GAINS, EQUIPS, TREASURES, SP, STUNTS, STORY_SETUP_EFFECTS } from './data.js';
 import { createRNG, chance, pick, rfloat } from './rng.js';
 
 // ---------- 五行 ----------
@@ -100,7 +100,7 @@ export function makeUnit(defKey, side, level, opts = {}) {
 }
 
 // ---------- 战斗创建 ----------
-export function createBattle({ battleId, party, formation = 'tiangang', items = {}, seed = 1, treasure = null, startDebuff = null, enemyLevel = null } = {}) {
+export function createBattle({ battleId, party, formation = 'tiangang', items = {}, seed = 1, treasure = null, startDebuff = null, enemyLevel = null, storySetup = {} } = {}) {
   const opts = { treasure, startDebuff };
   const battleDef = BATTLES[battleId];
   if (!battleDef) throw new Error(`未知战斗: ${battleId}`);
@@ -126,6 +126,14 @@ export function createBattle({ battleId, party, formation = 'tiangang', items = 
   if (opts.startDebuff) {
     const t = units.find((u) => u.id === opts.startDebuff.unit) ?? units.find((u) => u.side === 'party');
     if (t) t.buffs.push({ ...opts.startDebuff.buff });
+  }
+  for (const [kind, choice] of Object.entries(storySetup)) {
+    const effect = STORY_SETUP_EFFECTS[kind]?.[choice];
+    if (!effect || effect.battleId !== battleId || !effect.buff) continue;
+    const targets = units.filter((u) => u.side === effect.side
+      && (!effect.target || effect.target === 'all' || u.defKey === effect.target)
+      && (!effect.element || u.element === effect.element));
+    for (const target of targets) target.buffs.push({ ...effect.buff });
   }
   return {
     battleId, def: battleDef, enemyLevel: foeLevel,
@@ -317,20 +325,20 @@ function damageTarget(state, events, attacker, target, skill) {
     const amount = Math.max(1, Math.round(rawAmount * 0.7));
     guard.hp = Math.max(0, guard.hp - amount);
     gainSp(guard, amount);
-    events.push({ t: 'damage', actor: attacker.id, target: guard.id, amount, crit, rel, kind: skill.kind, protectFor: target.id });
+    events.push({ t: 'damage', actor: attacker.id, target: guard.id, amount, crit, rel, kind: skill.kind, protectFor: target.id, attackElement: attacker.element, targetElement: target.element });
     checkDeath(state, events, guard);
     return;
   }
   const amount = rawAmount;
   target.hp = Math.max(0, target.hp - amount);
   gainSp(target, amount);
-  events.push({ t: 'damage', actor: attacker.id, target: target.id, amount, crit, rel, kind: skill.kind });
+  events.push({ t: 'damage', actor: attacker.id, target: target.id, amount, crit, rel, kind: skill.kind, attackElement: attacker.element, targetElement: target.element });
   // 连击：暴击时 25% 概率追加一次减伤基础攻击
   if (crit && target.hp > 0 && chance(state.rng, 0.25)) {
     const extra = calcDamage(state, attacker, target, BASIC_ATTACK);
     const amt = Math.max(1, Math.round(extra.amount * 0.6));
     target.hp = Math.max(0, target.hp - amt);
-    events.push({ t: 'damage', actor: attacker.id, target: target.id, amount: amt, combo: true, rel: extra.rel, kind: 'phy' });
+    events.push({ t: 'damage', actor: attacker.id, target: target.id, amount: amt, combo: true, rel: extra.rel, kind: 'phy', attackElement: attacker.element, targetElement: target.element });
   }
   if (skill.selfHeal && attacker.alive) {
     const heal = Math.round(amount * skill.selfHeal);
@@ -746,8 +754,13 @@ function execCommand(state, events, unit, cmd) {
     if (state.def.boss) {
       events.push({ t: 'flee', success: false });
     } else if (chance(state.rng, 0.7)) {
+      const caughtReleased = state.caught.length;
+      if (caughtReleased > 0) {
+        state.items.buyaosheng = (state.items.buyaosheng ?? 0) + caughtReleased;
+        state.caught.length = 0;
+      }
       state.fled = true; state.over = true; state.winner = 'flee';
-      events.push({ t: 'flee', success: true });
+      events.push({ t: 'flee', success: true, caughtReleased });
     } else {
       events.push({ t: 'flee', success: false });
     }

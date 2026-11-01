@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "scope": "panel-and-mobile-minimap-regression",
+  "authoritativeVerification": false,
+  "runs": [
+    {
+      "id": "panels-integrated-15",
+      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_panels.py",
+      "workingDirectory": "examples/journey-to-the-west/build/app/test",
+      "exitCode": 0,
+      "result": "Ran 15 tests in 183.615s — OK",
+      "viewports": [
+        "1440x900",
+        "390x844",
+        "320x700"
+      ],
+      "coverage": [
+        "shared panel shell, close behavior, viewport fit and horizontal overflow",
+        "loaded art assets and removal of text icon badges inside the six panels",
+        "character selection, stats, training, study and equipment persistence",
+        "pet empty state, pet selection and active pet switching",
+        "bag details, treasure switching, formation and system settings",
+        "nested modal keyboard routing",
+        "mobile character scroll flow without status-strip overlap",
+        "mobile minimap pixels, HUD non-overlap and click-to-move",
+        "focus remains within the same stat controls through rebuild and point exhaustion"
+      ]
+    }
+  ],
+  "screenshots": [
+    "qa/evidence/panels/01_desktop_character.jpg",
+    "qa/evidence/panels/02_desktop_bag.jpg",
+    "qa/evidence/panels/03_desktop_pet.jpg",
+    "qa/evidence/panels/04_desktop_quest.jpg",
+    "qa/evidence/panels/05_desktop_formation.jpg",
+    "qa/evidence/panels/06_desktop_settings.jpg",
+    "qa/evidence/panels/07_mobile_character.jpg",
+    "qa/evidence/panels/08_mobile_minimap.jpg"
+  ],
+  "limitations": [
+    "This report is targeted regression evidence and does not replace qa/verification.json."
+  ]
+}

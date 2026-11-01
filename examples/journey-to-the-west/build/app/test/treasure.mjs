@@ -8,6 +8,7 @@ import {
   settleTreasureHunt,
   visibleTreasureState,
 } from '../js/treasure.js';
+import { releasePet } from '../js/progress.js';
 
 let passed = 0;
 function test(name, fn) {
@@ -66,6 +67,65 @@ test('沙僧挡住首次妖气反扑', () => {
   digTreasureTile(state, trap);
   assert.equal(state.threat, 0);
   assert.ok(state.events.some((entry) => entry.type === 'guard'));
+});
+
+test('默认寻宝不带火兵退路线索', () => {
+  const state = createTreasureHunt(302, 'wukong');
+  const trap = state.layers.outer.findIndex((tile) => tile.kind === 'trap');
+  digTreasureTile(state, trap);
+  assert.equal(state.threat, 2);
+  assert.equal(state.guideUsed.firetroopClue, false);
+  assert.ok(!state.events.some((entry) => entry.type === 'firetroop_clue'));
+});
+
+test('火兵退路只挡外层首次陷阱，深层不再生效', () => {
+  const state = createTreasureHunt(302, 'wukong', { firetroopClue: true });
+  digKinds(state, 'outer', ['trap'], 1);
+  assert.equal(state.threat, 0);
+  assert.equal(state.events.filter((entry) => entry.type === 'firetroop_clue').length, 1);
+  digKinds(state, 'outer', ['supply', 'relic', 'empty'], 2);
+  enterTreasureDepth(state);
+  digKinds(state, 'deep', ['trap'], 1);
+  assert.equal(state.threat, 3);
+  assert.equal(state.events.filter((entry) => entry.type === 'firetroop_clue').length, 1);
+  digKinds(state, 'deep', ['supply'], 1);
+  assert.equal(finishTreasureDepth(state).firetroopClueUsed, true);
+});
+
+test('未在外层触发的火兵退路不会抵消深层陷阱', () => {
+  const state = createTreasureHunt(302, 'wukong', { firetroopClue: true });
+  digKinds(state, 'outer', ['supply', 'relic', 'empty'], 3);
+  enterTreasureDepth(state);
+  assert.equal(visibleTreasureState(state).firetroopClueAvailable, false);
+  digKinds(state, 'deep', ['trap'], 1);
+  assert.equal(state.threat, 3);
+  assert.equal(state.guideUsed.firetroopClue, false);
+});
+
+test('火兵退路先于沙僧格挡消费，沙僧仍可挡下一次', () => {
+  const state = createTreasureHunt(302, 'sha', { firetroopClue: true });
+  digKinds(state, 'outer', ['trap'], 1);
+  assert.equal(state.threat, 0);
+  assert.equal(state.guideUsed.shaGuard, false);
+  digKinds(state, 'outer', ['supply', 'relic', 'empty'], 2);
+  enterTreasureDepth(state);
+  digKinds(state, 'deep', ['trap'], 1);
+  assert.equal(state.threat, 1);
+  assert.equal(state.guideUsed.shaGuard, true);
+});
+
+test('放归火骝退还配装且重复放归不重复结算', () => {
+  const campaign = {
+    pets: [{ key: 'huobao', active: true }, { key: 'pixie', active: false }],
+    gear: { huobao: { weapon: 'bintie', armor: 'xipijia' } },
+    equipBag: { bintie: 1 },
+  };
+  assert.equal(releasePet(campaign, 'huobao'), true);
+  assert.deepEqual(campaign.pets, [{ key: 'pixie', active: false }]);
+  assert.deepEqual(campaign.equipBag, { bintie: 2, xipijia: 1 });
+  assert.equal(campaign.gear.huobao, undefined);
+  assert.equal(releasePet(campaign, 'huobao'), false);
+  assert.deepEqual(campaign.equipBag, { bintie: 2, xipijia: 1 });
 });
 
 test('外层三掘后可见好就收，所得进入结算', () => {
