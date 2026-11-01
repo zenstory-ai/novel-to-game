@@ -273,26 +273,26 @@ function makeFernPlacements() {
     [-19, -20, 6, 9], [-18, -42, 7, 8], [17, -20, 5, 8],
     [20, -44, 6, 8], [-13, 4, 5, 8], [13, 2, 5, 7],
   ];
-  return Object.freeze(Array.from({ length: RIVER_ROOM_PROFILE.libraryFerns }, (_, index) => {
+  return Array.from({ length: RIVER_ROOM_PROFILE.libraryFerns }, (_, index) => {
     const [cx, cz, rx, rz] = clusters[index % clusters.length];
     const angle = random() * Math.PI * 2;
     const x = cx + Math.cos(angle) * rx * (0.35 + random() * 0.65);
     const z = cz + Math.sin(angle) * rz * (0.35 + random() * 0.65);
     const scale = 0.72 + random() * 0.5;
-    return Object.freeze({
+    return {
       index,
       x,
       z,
       scale,
       variantIndex: index % 3,
       rotation: random() * Math.PI * 2,
-      instanceScale: Object.freeze([scale * (0.82 + random() * 0.24), scale, scale]),
-      color: Object.freeze([0.29 + random() * 0.045, 0.42 + random() * 0.09, 0.13 + random() * 0.045]),
+      instanceScale: [scale * (0.82 + random() * 0.24), scale, scale],
+      color: [0.29 + random() * 0.045, 0.42 + random() * 0.09, 0.13 + random() * 0.045],
       sourceRole: 'river-room-authored-bank-mass',
       maxDiameterMeters: 3.4,
       maxHeightMeters: 2.4,
-    });
-  }));
+    };
+  });
 }
 
 function makeTerraceTreePlacements() {
@@ -303,7 +303,7 @@ function makeTerraceTreePlacements() {
     { from: [-38, -94], to: [-8, -94], side: 0, scale: [0.72, 1.18] },
     { from: [8, -94], to: [42, -94], side: 0, scale: [0.7, 1.22] },
   ];
-  return Object.freeze(Array.from({ length: RIVER_ROOM_PROFILE.terraceTrees }, (_, index) => {
+  return Array.from({ length: RIVER_ROOM_PROFILE.terraceTrees }, (_, index) => {
     const band = bands[index % bands.length];
     const progress = (Math.floor(index / bands.length) + 0.25 + random() * 0.5)
       / Math.ceil(RIVER_ROOM_PROFILE.terraceTrees / bands.length);
@@ -312,7 +312,7 @@ function makeTerraceTreePlacements() {
       + band.side * (2.5 + random() * 5);
     const z = THREE.MathUtils.lerp(band.from[1], band.to[1], progress)
       + (random() - 0.5) * (band.side === 0 ? 3 : 4.5);
-    return Object.freeze({
+    return {
       index,
       x,
       z,
@@ -323,8 +323,8 @@ function makeTerraceTreePlacements() {
       successionWindDamage: 0.03 + random() * 0.22,
       openCanopyExposure: index % 7 === 0,
       isAraucaria: index % 9 === 0,
-    });
-  }));
+    };
+  });
 }
 
 function makeBoundaryStillLife() {
@@ -433,7 +433,7 @@ export function makeRiverRoomLandforms(scene, groundLayers = createGroundLayers(
   group.userData.fernLibraryPlacements = makeFernPlacements();
   group.userData.canopyTreePlacements = makeTerraceTreePlacements();
   group.userData.canopyAssetAnchor = canopyAssetAnchor;
-  group.userData.proceduralFallbackMeshes = Object.freeze([bankSedges]);
+  group.userData.proceduralFallbackMeshes = [bankSedges];
   scene.add(group);
   return group;
 }

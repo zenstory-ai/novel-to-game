@@ -89,7 +89,6 @@ test('canopy retention exposes stable sky holes without stripping the crown', ()
     classifyCanopyTreeHabitat(tree, { terrainGradient, terrainWetness }),
   ).retention);
 
-  assert.equal(CANOPY_TREE_LEAF_RETENTION_PROFILE.version, 'age-wind-and-habitat-leaf-retention-v2');
   assert.ok(Math.min(...values) >= CANOPY_TREE_LEAF_RETENTION_PROFILE.minimumRetention);
   assert.ok(Math.max(...values) <= CANOPY_TREE_LEAF_RETENTION_PROFILE.maximumRetention);
   assert.ok(Math.max(...values) < 0.94, 'field crowns should retain visible negative space');

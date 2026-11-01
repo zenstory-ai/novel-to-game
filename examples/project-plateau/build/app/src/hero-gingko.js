@@ -1,22 +1,19 @@
 import * as THREE from 'three';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const HERO_GINGKO_ASSET = Object.freeze({
   url: '/assets/hero-gingko-original-v2.glb',
-  version: 'original-hero-gingko-v2',
   bytes: 3_878_144,
   triangles: 123_624,
   drawCalls: 2,
   leafCount: 1_971,
-  provenance: 'project-original-deterministic-offline-authored-mesh',
-  generator: 'app/scripts/generate-hero-gingko.mjs',
-  rights: 'project-original-code-authored-output',
 });
 
 export const HERO_GINGKO_SURFACE_PROFILE = Object.freeze({
   version: 'correlated-bark-albedo-roughness-relief-v1',
   resolution: 128,
-  repeatScaleMeters: Object.freeze({ around: 0.65, along: 0.46 }),
-  roughnessRange: Object.freeze([0.86, 0.98]),
+  repeatScaleMeters: { around: 0.65, along: 0.46 },
+  roughnessRange: [0.86, 0.98],
   bumpScaleMeters: 0.008,
   textureObjectCount: 2,
   boundary: 'project-generated-bark-scale-optics-not-photogrammetry-or-species-age-proof',
@@ -24,29 +21,27 @@ export const HERO_GINGKO_SURFACE_PROFILE = Object.freeze({
 
 export const HERO_GINGKO_WIND_PROFILE = Object.freeze({
   version: 'hierarchical-gentle-breeze-wind-v1',
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.12,
   verticalTipDisplacementMeters: 0.024,
   macroFrequencyHz: 0.37,
   flutterFrequencyHz: 1.62,
-  flexAttribute: 'uv1-y',
-  hierarchy: Object.freeze({
-    rootAndTrunk: Object.freeze([0, 0]),
-    scaffold: Object.freeze([0.05, 0.32]),
-    secondary: Object.freeze([0.28, 0.56]),
-    twig: Object.freeze([0.52, 0.82]),
-    leaf: Object.freeze([0.4, 1]),
-  }),
+  hierarchy: {
+    rootAndTrunk: [0, 0],
+    scaffold: [0.05, 0.32],
+    secondary: [0.28, 0.56],
+    twig: [0.52, 0.82],
+    leaf: [0.4, 1],
+  },
   supportModel: 'fixed-root-and-trunk-with-stiffness-ordered-scaffold-secondary-twig-and-leaf',
   shadowModel: 'identical-colour-and-depth-pass-displacement-function-and-uniforms',
-  reducedMotionModel: 'zero-time-zero-strength-fixed-rest-pose',
 });
 
-const HERO_GINGKO_WIND_UNIFORMS = Object.freeze({
+const HERO_GINGKO_WIND_UNIFORMS = {
   time: { value: 0 },
   strength: { value: HERO_GINGKO_WIND_PROFILE.horizontalTipDisplacementMeters },
   verticalStrength: { value: HERO_GINGKO_WIND_PROFILE.verticalTipDisplacementMeters },
-});
+};
 
 function smoothstep01(value) {
   const clamped = THREE.MathUtils.clamp(value, 0, 1);
@@ -63,7 +58,7 @@ export function heroGingkoWindDisplacement({
 } = {}) {
   const anchor = smoothstep01(flex) ** 2;
   if (anchor === 0 || (strength === 0 && verticalStrength === 0)) {
-    return Object.freeze([0, 0, 0]);
+    return [0, 0, 0];
   }
   const phase = phaseRank * Math.PI * 2;
   const macro = Math.sin(
@@ -75,11 +70,11 @@ export function heroGingkoWindDisplacement({
       - worldPosition[0] * 0.067 + worldPosition[2] * 0.059 + phase * 1.73,
   );
   const response = anchor * (macro * 0.82 + flutter * 0.18);
-  return Object.freeze([
+  return [
     HERO_GINGKO_WIND_PROFILE.direction[0] * response * strength,
     anchor * flutter * verticalStrength,
     HERO_GINGKO_WIND_PROFILE.direction[2] * response * strength,
-  ]);
+  ];
 }
 
 function injectHeroGingkoWindVertex(shader, uniforms) {
@@ -207,7 +202,7 @@ function createBarkSurfaceTextures() {
       surface[offset + 3] = 255;
     }
   }
-  return Object.freeze({
+  return {
     albedo: dataTexture(
       'world.landmark.fort-gingko.bark-albedo',
       albedo,
@@ -218,7 +213,7 @@ function createBarkSurfaceTextures() {
       surface,
       THREE.NoColorSpace,
     ),
-  });
+  };
 }
 
 const BARK_SURFACE_TEXTURES = createBarkSurfaceTextures();
@@ -292,28 +287,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedHeroGingkoLoader({
-  assetUrl = HERO_GINGKO_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedHeroGingkoLoader({ assetUrl = HERO_GINGKO_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadHeroGingkoTemplate = createCachedHeroGingkoLoader();

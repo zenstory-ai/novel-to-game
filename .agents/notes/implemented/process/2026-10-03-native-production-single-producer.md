@@ -4,7 +4,7 @@ Status: implemented
 
 ## Problem
 
-既有只读回执补齐了部署后观察，但此前平台授权未定，Vercel Git 与 Actions CLI 两条生产路径仍并存。前序决定见 `2026-10-03-production-readiness-receipt.md`。
+既有只读回执补齐了部署后观察，但此前平台授权未定，Vercel Git 与 Actions CLI 两条生产路径仍并存。前序决定见 `2026-10-03-production-readiness-receipt.md`；被替换的 Actions CLI 部署路径见 [vercel-deploy-from-repo-root](2026-07-22-vercel-deploy-from-repo-root.md)。
 
 ## Decision
 

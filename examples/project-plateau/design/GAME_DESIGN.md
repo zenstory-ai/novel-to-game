@@ -50,7 +50,7 @@ move and inspect → choose a view → expose a plate → read the response
 |---|---|---|---|
 | Explore | Read track direction, brook relation and cover | Fort → brook → observation blind | First plate is exposed and its defect is visible |
 | Develop | Trade safety for scale or behaviour evidence | Canopy/basalt fork → iguanodon glade | Family behaviour is recorded or missed; threat becomes visible |
-| Mature | Combine threat state, cover, defense and route | Covered thorn return or exposed creek | Fort gate closes and surviving plates are resolved |
+| Mature | Combine threat state, cover, defense and route | Covered thorn return or exposed brook | Fort gate closes and surviving plates are resolved |
 
 ## World response and systems
 
@@ -66,7 +66,7 @@ near-enough view can record context or behaviour. Behaviour is judged at the cli
 animal or an alarm mid-exposure still lowers the plate. Panning across a static subject smears
 decisive detail down to at most one cue; crouching or cover braces the camera. A continuously
 framed pterodactyl can instead be tracked through its motion. Repeating any two-cue composition,
-including basalt or creek scale, cannot replace a new angle. The preview shows the final-boundary
+including basalt or brook scale, cannot replace a new angle. The preview shows the final-boundary
 composition and named evidence captured, not an earlier shutter snapshot or abstract quality bar.
 
 ### Wildlife awareness
@@ -98,7 +98,7 @@ Open basalt offers scale and clean framing but high exposure. Cover is one visib
 thorn arches and tree ferns west of the trail, ending in a blind at the glade edge with a clear
 view of the family; under it no strike lands, and staying (faster crouched) lets a dive widen.
 A timely rifle shot consumes a cartridge and shears away one dive; its noise makes the direct
-creek route less safe. Routes cost only their walking time; a scout who drops the case moves
+brook route (the "open creek" in the field journal) less safe. Routes cost only their walking time; a scout who drops the case moves
 faster. Leaving navigable space
 returns the player to stable ground rather than causing an invisible death.
 
@@ -145,7 +145,7 @@ held beneath the cause card. Restart is the only reset.
    can provoke a committed dive; photograph it and swap tools, or defend immediately.
 4. **Glade:** holding a clear, still view of the family starts two short, audible behaviour windows. Framing one,
    retreating under cover and returning for the other combines every learned rule.
-5. **Altered return:** the player chooses covered thorns or exposed creek under the
+5. **Altered return:** the player chooses covered thorns or the exposed brook under the
    consequences of prior exposure and gunfire, then reaches Fort.
 
 The first controllable frame centres the track toward the dark canopy; the brook comes
@@ -199,6 +199,3 @@ stegosaurus beat, one threat, cover,
 two defensive shots, four alive result bands, two failures and restart. It excludes a
 full plateau, crafting, progression, loot, killing, multiple weapons, dialogue choices,
 multiplayer, mobile/touch, backend and modern adaptation imagery.
-
-Fun, comfort, long-term balance and publication quality remain open subjective risks;
-the build only needs to prove the designed causal loop in the selected runtime.

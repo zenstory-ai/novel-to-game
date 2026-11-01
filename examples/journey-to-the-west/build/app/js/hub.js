@@ -13,6 +13,7 @@ import { unitLevelStats } from './engine.js';
 import { expToNext, levelCap, grantExp, bountyReward, applyLoot, buy, goodName } from './progress.js';
 import { createRNG } from './rng.js';
 import { commitExploration, explorationDefinition, explorationEntry } from './exploration.js';
+import { resolveDemonPosition } from './world-encounters.js';
 
 const STAGE_ORDER = ['prologue', 'pre_fire', 'treasure_fire', 'pre_yumian', 'pre_niu1', 'pre_boss', 'done'];
 const stageAtLeast = (c, s) => STAGE_ORDER.indexOf(c.stage) >= STAGE_ORDER.indexOf(s);
@@ -20,7 +21,7 @@ const stageAtLeast = (c, s) => STAGE_ORDER.indexOf(c.stage) >= STAGE_ORDER.index
 // 主线当前一步：标题、说明、目标场景与 NPC(头上挂「!」)
 export function mainStep(c) {
   const s = c.stage;
-  if (s === 'prologue' && !c.flags?.tudi) return { title: '问路土地', text: '火焰山挡住西路。到土地庙前，向头顶有「!」的土地打听过山之法。', scene: 'village', actor: 'tudi' };
+  if (s === 'prologue' && !c.flags.tudi) return { title: '问路土地', text: '火焰山挡住西路。到土地庙前，向头顶有「!」的土地打听过山之法。', scene: 'village', actor: 'tudi' };
   // here:人已在目标场景时换一句就地的说法，不再叫人「经村南山路」
   if (s === 'prologue' && !c.luosha1Done) return { title: '一借芭蕉扇', text: '芭蕉扇在翠云山芭蕉洞的罗刹女手里。从村南山路上翠云山。', here: '罗刹女就守在芭蕉洞前，上前好言相借。', scene: 'cuiyun', actor: 'luosha' };
   if (s === 'prologue') return { title: '二借芭蕉扇', text: '得了灵吉菩萨的法宝，再上芭蕉洞找罗刹女。', here: '芭蕉洞前，再向罗刹女借一回扇。', scene: 'cuiyun', actor: 'luosha' };
@@ -88,16 +89,9 @@ export function createHub(deps) {
     const b = bounty();
     const sceneId = demonScene();
     const rng = createRNG((C().seedBase + 7000 + b.round * 97 + b.ring * 13) >>> 0);
-    const spawnPoints = SCENES[sceneId].demonSpawns ?? [];
-    let x;
-    let y;
-    if (spawnPoints.length) {
-      [x, y] = spawnPoints[Math.floor(rng() * spawnPoints.length)];
-    } else {
-      const area = SCENES[sceneId].demonArea ?? [[700, 420], [1250, 760]];
-      x = Math.round(area[0][0] + rng() * (area[1][0] - area[0][0]));
-      y = Math.round(area[0][1] + rng() * (area[1][1] - area[0][1]));
-    }
+    const spawnPoints = SCENES[sceneId].demonSpawns;
+    if (!spawnPoints?.length) throw new Error(`场景 ${sceneId} 缺少 demonSpawns`);
+    const [x, y] = spawnPoints[Math.floor(rng() * spawnPoints.length)];
     const strong = b.ring % 3 === 2;
     b.demon = {
       id: `demon${b.round}_${b.ring}`, scene: sceneId, x, y,
@@ -124,6 +118,11 @@ export function createHub(deps) {
       else if (a.id === 'tudi' && bountyOpen() && (sceneId === 'village' || b.report)) a.mark = b.report ? '?' : !b.accepted ? '令' : null; // 日常用「令」，不与主线「!」混
     }
     if (b.demon && b.demon.scene === sceneId) {
+      const resolved = resolveDemonPosition(SCENES[sceneId], b.demon);
+      if (resolved !== b.demon) {
+        b.demon = resolved;
+        deps.save(true);
+      }
       list.push({ id: b.demon.id, unit: b.demon.unit, name: b.demon.name, title: '封妖令', x: b.demon.x, y: b.demon.y, h: 112, kind: 'demon', wander: true, seed: b.demon.seed });
     }
     return list;
@@ -168,7 +167,7 @@ export function createHub(deps) {
     const c = C();
     ctl.setActors(actorsFor(ctl.sceneId));
     ctl.setPortals(Object.entries(SCENES[ctl.sceneId].portals).map(([id, p]) => ({ id, to: p.to, x: p.at[0], y: p.at[1], label: p.label, locked: portalLocked(c, p.to) })));
-    ctl.setLandmarks?.(Object.entries(SCENES[ctl.sceneId].landmarks ?? {}).flatMap(([id, landmark]) => {
+    ctl.setLandmarks(Object.entries(SCENES[ctl.sceneId].landmarks ?? {}).flatMap(([id, landmark]) => {
       const definition = explorationDefinition(id);
       if (!definition || definition.scene !== ctl.sceneId) return [];
       return [{
@@ -180,9 +179,9 @@ export function createHub(deps) {
         visited: Boolean(explorationEntry(c, id)),
       }];
     }));
-    const lv = c.levels.wukong ?? 1;
+    const lv = c.levels.wukong;
     const st = unitLevelStats(PARTY.wukong, lv, c.alloc.wukong ?? null);
-    hud.setHero({ unit: 'wukong', name: '孙悟空', level: lv, hp: st.hp, mp: st.mp, exp: c.exp ?? 0, expNeed: expToNext(lv), capped: lv >= levelCap(c), money: c.money ?? 0 });
+    hud.setHero({ unit: 'wukong', name: '孙悟空', level: lv, hp: st.hp, mp: st.mp, exp: c.exp, expNeed: expToNext(lv), capped: lv >= levelCap(c), money: c.money });
     const pet = c.pets.find((p) => p.active);
     if (pet) {
       const plv = c.levels[pet.key] ?? 1;
@@ -473,13 +472,13 @@ export function createHub(deps) {
     let close = null;
     const render = () => {
       const c = C();
-      const nodes = [el('p', 'panel-note', `现有银两 ${c.money ?? 0}。买下的兵甲在【角色】面板换上。`)];
+      const nodes = [el('p', 'panel-note', `现有银两 ${c.money}。买下的兵甲在【角色】面板换上。`)];
       for (const good of shop.goods) {
         const row = el('div', 'list-row shop-row');
         const desc = good.item ? ITEMS[good.item].desc : `${EQUIPS[good.equip].desc}`;
-        const owned = good.item ? (c.items[good.item] ?? 0) : (c.equipBag?.[good.equip] ?? 0);
+        const owned = good.item ? (c.items[good.item] ?? 0) : (c.equipBag[good.equip] ?? 0);
         row.append(itemIcon(good.item ?? good.equip, { slot: good.equip ? EQUIPS[good.equip].slot : null }), el('span', 'shop-name', goodName(good)), el('span', 'shop-desc', `${desc} · 已有 ${owned}`), el('span', 'shop-price', `${good.price} 两`));
-        const btn = el('button', `btn stat-btn wide${(c.money ?? 0) >= good.price ? '' : ' disabled'}`, '购买');
+        const btn = el('button', `btn stat-btn wide${c.money >= good.price ? '' : ' disabled'}`, '购买');
         btn.dataset.buy = good.item ?? good.equip;
         btn.addEventListener('click', () => {
           if (!buy(C(), good)) { toast(app, '银两不够。'); return; }

@@ -22,15 +22,12 @@ export const BASALT_ESCARPMENT_PROFILE = Object.freeze({
     * SMOOTHSTEP_MAXIMUM_DERIVATIVE
     / (BASALT_ESCARPMENT_FULL_RISE_X - BASALT_ESCARPMENT_RISE_START_X)
   ).toFixed(6)),
-  sourceZs: Object.freeze([-50, -26, -3]),
-  topology: 'continuous-heightfield-no-overhang',
-  stabilityModel: 'smoothstep-rise-bounded-by-intact-bedrock-slope-limit',
+  sourceZs: [-50, -26, -3],
 });
 
 const LOOSE_REGOLITH_ANGLE_DEGREES = 34;
 const FULL_BEDROCK_ANGLE_DEGREES = 55;
 export const EAST_ESCARPMENT_SURFACE_PROFILE = Object.freeze({
-  model: 'angle-of-repose-bedrock-exposure-and-source-coupled-colluvium',
   looseRegolithAngleDegrees: LOOSE_REGOLITH_ANGLE_DEGREES,
   looseRegolithGradient: Number(
     Math.tan(LOOSE_REGOLITH_ANGLE_DEGREES * Math.PI / 180).toFixed(6),
@@ -41,28 +38,20 @@ export const EAST_ESCARPMENT_SURFACE_PROFILE = Object.freeze({
   ),
   colluviumToeReachMeters: 6.5,
   bedrockReliefScale: 0.58,
-  jointModel: 'source-basalt-joints-with-bounded-optical-relief',
-  stratificationModel: 'world-height-bed-contacts-gated-by-source-bedrock-exposure',
-  stratificationPeriodsMeters: Object.freeze([0.58, 1.74]),
+  stratificationPeriodsMeters: [0.58, 1.74],
   maximumStratificationAlbedoReduction: 0.11,
   overlayGeometryCount: 0,
-  slopeSource: 'rendered-heightfield-normal-not-sub-grid-analytic-probe',
-  massTransfer: 'unstable-regolith-exposes-source-bedrock-and-stable-toe-retains-colluvium',
 });
 
 export const TERRAIN_GEOMORPHOLOGY_PROFILE = Object.freeze({
-  model: 'named-process-relief-brook-incision-meander-bars-cutbanks-and-glade-terrace',
   brookIncisionDepthMeters: 0.22,
   pointBarAccretionMeters: 0.34,
   cutBankErosionMeters: 0.14,
   alluvialBenchHeightMeters: 0.22,
   gladeTerraceRiserMeters: 0.62,
-  topology: 'single-cpu-heightfield-shared-by-rendering-collision-placement-and-hydrology',
 });
 
-const freezeControlLine = (points) => Object.freeze(
-  points.map(([x, z]) => Object.freeze([x, z])),
-);
+const freezeControlLine = (points) => points.map(([x, z]) => [x, z]);
 
 // These source lines are shared by navigation, the brook and the ground-process
 // model. A travelled route is rendered by compaction inside the terrain
@@ -82,21 +71,18 @@ export const EXPOSED_FORK_CONTROL_POINTS = freezeControlLine([
 ]);
 
 export const TERRAIN_BRYOPHYTE_PROFILE = Object.freeze({
-  model: 'canopy-shade-moisture-hollow-and-stable-substrate-bryophyte-establishment',
-  sourceCanopyKinds: Object.freeze([
+  sourceCanopyKinds: [
     '128-main-canopy-trees',
     '12-habitat-tree-ferns',
     '5-cover-arches',
     '1-hero-gingko',
-  ]),
-  exclusions: Object.freeze([
+  ],
+  exclusions: [
     'route-compaction',
     'unstable-mineral-exposure',
     'active-point-bar-reworking',
     'cut-bank-erosion',
-  ]),
-  topology: 'thin-living-cover-inside-shared-terrain-material-no-overlay-geometry',
-  collisionChange: 'none',
+  ],
 });
 
 function clamp(value, minimum = 0, maximum = 1) {
@@ -227,12 +213,12 @@ export function eastEscarpmentSurfaceAt(
     sourceContinuity * downslopeToe * stableDeposition * depositionalBreakup,
   );
 
-  return Object.freeze({
+  return {
     renderedGradient: gradient,
     sourceContinuity,
     bedrockExposure,
     colluvium,
-  });
+  };
 }
 
 export function terrainProcessRelief(x, z) {
@@ -403,7 +389,7 @@ export function brookFluvialProcessAt(x, z) {
   const confluenceFan = Math.exp(
     -(((x + 10.5) / 13.5) ** 2 + ((z - 6.9) / 17) ** 2),
   ) * smoothstep(4.8, 9.5, frame.distance);
-  return Object.freeze({
+  return {
     distance: frame.distance,
     signedDistance: frame.signedDistance,
     progress: frame.progress,
@@ -414,7 +400,7 @@ export function brookFluvialProcessAt(x, z) {
       floodplainBand * (0.38 + curvatureStrength * 0.32) * longitudinalSorting
         + confluenceFan * 0.46,
     ),
-  });
+  };
 }
 
 function distanceToControlLine(x, z, points) {
@@ -570,7 +556,7 @@ export function terrainEcologyAt(x, z) {
       * (1 - cutBankExposure * 0.82),
   );
 
-  return Object.freeze({
+  return {
     humus,
     wetBank,
     mineralExposure,
@@ -582,5 +568,5 @@ export function terrainEcologyAt(x, z) {
     canopySource,
     hollowRetention,
     bryophyte,
-  });
+  };
 }

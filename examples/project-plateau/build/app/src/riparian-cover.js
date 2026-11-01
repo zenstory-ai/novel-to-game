@@ -237,9 +237,9 @@ function makeRiparianCover(scene) {
   group.name = 'world.connected_route.cover_arches';
   group.userData.profile = 'asymmetric-riparian-overlap-canopy';
   group.userData.collisionRole = 'solid-visible-trunks-with-non-solid-branches-and-pliable-leaves';
-  assetAnchor.userData.fallbackMeshes = Object.freeze([...group.children]);
+  assetAnchor.userData.fallbackMeshes = [...group.children];
   scene.add(group, assetAnchor);
-  return Object.freeze({ group, assetAnchor });
+  return { group, assetAnchor };
 }
 
 export { makeRiparianCover };

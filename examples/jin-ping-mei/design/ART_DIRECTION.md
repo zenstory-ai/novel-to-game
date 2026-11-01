@@ -1,4 +1,4 @@
-# ART_DIRECTION · 金瓶梅·风月总账（galgame 版）
+# ART_DIRECTION · 金瓶梅·风月总账
 
 `targetFinish: playable-prototype`
 

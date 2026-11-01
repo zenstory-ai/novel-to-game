@@ -7,12 +7,12 @@ export const FOREST_FLOOR_DETRITUS_PROFILE = Object.freeze({
   version: 'source-coupled-forest-floor-detritus-v2',
   count: 390,
   heroGingkoCount: 30,
-  variantIds: Object.freeze([
+  variantIds: [
     'curled-broadleaf-litter',
     'twig-and-bark-fall',
     'cone-husk-and-leaf-scatter',
     'hero-gingko-fan-leaf-fall',
-  ]),
+  ],
   drawCalls: 4,
   maximumClusterDiameterMeters: 1.08,
   maximumClusterHeightMeters: 0.2,
@@ -23,8 +23,8 @@ export const FOREST_FLOOR_DETRITUS_PROFILE = Object.freeze({
   maximumMineralExposure: 0.58,
   burialDepth: 0.008,
   maximumSupportClearance: 0.035,
-  heroGingkoRadiusMeters: Object.freeze([1.45, 4.85]),
-  heroRootAnglesRadians: Object.freeze([0.06, 0.86, 1.69, 2.61, 3.48, 4.4, 5.31]),
+  heroGingkoRadiusMeters: [1.45, 4.85],
+  heroRootAnglesRadians: [0.06, 0.86, 1.69, 2.61, 3.48, 4.4, 5.31],
   minimumRootAngularSeparationRadians: 0.18,
   distributionModel:
     'canopy-source-and-hollow-retained-organic-fall-plus-hero-gingko-inter-root-litter-with-disturbance-exclusion',
@@ -33,23 +33,23 @@ export const FOREST_FLOOR_DETRITUS_PROFILE = Object.freeze({
   energyModel: 'opaque-non-emissive-dielectric-dry-and-decaying-organic-matter',
 });
 
-const LEAF_COLOURS = Object.freeze([
-  Object.freeze([0.075, 0.038, 0.014]),
-  Object.freeze([0.12, 0.062, 0.019]),
-  Object.freeze([0.052, 0.028, 0.011]),
-  Object.freeze([0.165, 0.085, 0.024]),
-]);
-const WOOD_COLOURS = Object.freeze([
-  Object.freeze([0.058, 0.031, 0.012]),
-  Object.freeze([0.09, 0.048, 0.017]),
-  Object.freeze([0.038, 0.022, 0.009]),
-]);
-const GINGKO_LEAF_COLOURS = Object.freeze([
-  Object.freeze([0.22, 0.115, 0.018]),
-  Object.freeze([0.175, 0.076, 0.012]),
-  Object.freeze([0.27, 0.15, 0.026]),
-  Object.freeze([0.13, 0.058, 0.01]),
-]);
+const LEAF_COLOURS = [
+  [0.075, 0.038, 0.014],
+  [0.12, 0.062, 0.019],
+  [0.052, 0.028, 0.011],
+  [0.165, 0.085, 0.024],
+];
+const WOOD_COLOURS = [
+  [0.058, 0.031, 0.012],
+  [0.09, 0.048, 0.017],
+  [0.038, 0.022, 0.009],
+];
+const GINGKO_LEAF_COLOURS = [
+  [0.22, 0.115, 0.018],
+  [0.175, 0.076, 0.012],
+  [0.27, 0.15, 0.026],
+  [0.13, 0.058, 0.01],
+];
 
 function addColour(geometry, rgb) {
   const position = geometry.getAttribute('position');
@@ -312,11 +312,11 @@ export function createForestFloorDetritusGeometry(variantIndex = 0) {
   const supportPoints = [];
   for (let index = 0; index < positions.count; index += 1) {
     if (positions.getY(index) > geometry.boundingBox.min.y + 0.001) continue;
-    supportPoints.push(Object.freeze([
+    supportPoints.push([
       positions.getX(index),
       positions.getY(index),
       positions.getZ(index),
-    ]));
+    ]);
   }
   geometry.userData = {
     profile: 'closed-curled-leaf-twig-bark-and-husk-cluster',
@@ -326,7 +326,7 @@ export function createForestFloorDetritusGeometry(variantIndex = 0) {
     barkCount,
     coneCount,
     speciesSource: variant === 3 ? 'hero-gingko-bilobed-fan-leaf' : 'mixed-canopy-organic-fall',
-    supportPoints: Object.freeze(supportPoints),
+    supportPoints: supportPoints,
     supportModel: FOREST_FLOOR_DETRITUS_PROFILE.supportModel,
     collisionRole: FOREST_FLOOR_DETRITUS_PROFILE.collisionRole,
   };
@@ -536,7 +536,7 @@ export function createForestFloorDetritusLayer({
     }
     meshes[variant].setColorAt(instanceIndex, colour);
     meshIndices[variant] += 1;
-    placements.push(Object.freeze({
+    placements.push({
       index,
       variantIndex: variant,
       variantId: FOREST_FLOOR_DETRITUS_PROFILE.variantIds[variant],
@@ -554,47 +554,47 @@ export function createForestFloorDetritusLayer({
       slope: candidate.ecology.slope,
       minimumSupportClearance: instanceMinimumClearance,
       maximumSupportClearance: instanceMaximumClearance,
-    }));
+    });
   }
 
   meshes.forEach((mesh) => {
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   });
-  const supportEvidence = Object.freeze({
+  const supportEvidence = {
     supportVertexCount,
     supportedVertexCount,
     supportRatio: supportVertexCount ? supportedVertexCount / supportVertexCount : 0,
     minimumClearance,
     maximumClearance,
     burialDepth: FOREST_FLOOR_DETRITUS_PROFILE.burialDepth,
-  });
+  };
   group.add(...meshes);
   group.name = 'world.environment-density.forest-floor-detritus';
   group.userData = {
     profile: FOREST_FLOOR_DETRITUS_PROFILE.version,
     instanceCount: count,
-    counts: Object.freeze(counts),
+    counts: counts,
     drawCalls: FOREST_FLOOR_DETRITUS_PROFILE.drawCalls,
-    geometries: Object.freeze(geometries),
+    geometries: geometries,
     material,
-    placements: Object.freeze(placements),
-    sourceRoleCounts: Object.freeze({
+    placements: placements,
+    sourceRoleCounts: {
       canopyHabitat: placements.filter(
         ({ sourceRole }) => sourceRole === 'canopy-habitat',
       ).length,
       heroGingkoInterRoot: placements.filter(
         ({ sourceRole }) => sourceRole === 'hero-gingko-inter-root',
       ).length,
-    }),
-    heroGingkoModel: Object.freeze({
-      source: heroSource ? Object.freeze([...heroSource]) : null,
+    },
+    heroGingkoModel: {
+      source: heroSource ? [...heroSource] : null,
       radiusMeters: FOREST_FLOOR_DETRITUS_PROFILE.heroGingkoRadiusMeters,
       rootAnglesRadians: FOREST_FLOOR_DETRITUS_PROFILE.heroRootAnglesRadians,
       minimumRootAngularSeparationRadians:
         FOREST_FLOOR_DETRITUS_PROFILE.minimumRootAngularSeparationRadians,
       placement: 'inter-root-sectors-on-shared-rendered-terrain-tangent',
-    }),
+    },
     supportEvidence,
     distributionModel: FOREST_FLOOR_DETRITUS_PROFILE.distributionModel,
     supportModel: FOREST_FLOOR_DETRITUS_PROFILE.supportModel,

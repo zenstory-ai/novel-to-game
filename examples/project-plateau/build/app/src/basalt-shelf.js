@@ -1,24 +1,21 @@
 import * as THREE from 'three';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const BASALT_SHELF_ASSET = Object.freeze({
   url: '/assets/basalt-shelf-original-v2.glb',
-  version: 'original-basalt-shelf-v2-library',
   bytes: 256_828,
   triangles: 1_860,
-  trianglesByVariant: Object.freeze([660, 560, 640]),
-  variantIds: Object.freeze(['needle-buttress', 'split-saddle', 'terraced-fan']),
+  trianglesByVariant: [660, 560, 640],
+  variantIds: ['needle-buttress', 'split-saddle', 'terraced-fan'],
   variantCount: 3,
   drawCalls: 2,
   shelfCount: 3,
   fragmentCount: 6,
-  provenance: 'project-original-deterministic-offline-authored-mesh-library',
-  generator: 'app/scripts/generate-basalt-shelf-library.mjs',
-  rights: 'project-original-code-authored-output',
   supportModel: 'three-distinct-buried-bedrock-to-wall-to-bench-to-spall-load-paths',
-  localBounds: Object.freeze({
-    min: Object.freeze([-3.9492926597595215, -0.6600000262260437, -2.5858030319213867]),
-    max: Object.freeze([4.089529514312744, 10.319999694824219, 2.4985127449035645]),
-  }),
+  localBounds: {
+    min: [-3.9492926597595215, -0.6600000262260437, -2.5858030319213867],
+    max: [4.089529514312744, 10.319999694824219, 2.4985127449035645],
+  },
 });
 
 function prepareMaterial(material) {
@@ -55,28 +52,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedBasaltShelfLoader({
-  assetUrl = BASALT_SHELF_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedBasaltShelfLoader({ assetUrl = BASALT_SHELF_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadBasaltShelfTemplate = createCachedBasaltShelfLoader();

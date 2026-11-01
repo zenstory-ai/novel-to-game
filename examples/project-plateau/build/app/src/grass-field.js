@@ -7,10 +7,10 @@ import { SUN_DIRECTION } from './atmosphere-sky.js';
 // mesh itself (its heights and ecology masks), so no extra sampling is paid.
 const BLADES_PER_CLUMP = 7;
 const SEGMENTS = 4;
-const RINGS = Object.freeze([
-  Object.freeze({ name: 'near', cell: 0.4, radius: 22, scale: 0.78 }),
-  Object.freeze({ name: 'far', cell: 1.0, radius: 58, scale: 1.2 }),
-]);
+const RINGS = [
+  { name: 'near', cell: 0.4, radius: 22, scale: 0.78 },
+  { name: 'far', cell: 1.0, radius: 58, scale: 1.2 },
+];
 
 function bladeClumpGeometry(seed = 7) {
   let state = seed;

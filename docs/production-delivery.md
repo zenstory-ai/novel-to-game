@@ -1,47 +1,40 @@
-# Production delivery: responsibility and evidence
+# Production delivery
 
-The three example sites use native Vercel Git integration as their single
-production producer. The duplicate Actions CLI producer (`deploy.yml`) is
-retired after the owner's production-policy approval and authenticated readback
-of all three projects' production checks on 2026-10-03. No Vercel token or
-deployment command is required by repository workflows.
+The three example sites (`jinpingmei`, `xiyouji`, `project-plateau`) deploy only
+through Vercel's native Git integration from `main`. Repository workflows hold no
+Vercel token and run no deploy command; the GitHub Actions deploy workflow
+(`deploy.yml`) was retired on 2026-10-03, and `tests/test_production_delivery.py`
+keeps it out.
 
-## Configured production promotion policy
+## Promotion gate
 
-Each canonical project (`jinpingmei`, `xiyouji`, `project-plateau`) retains its
-existing repository, main branch, root directory, Git deployment integration
-and automatic production-domain assignment. Vercel Deployment Checks require
-both `repository` and `ClawHub inventory validation / distribute` from GitHub
-before production custom-domain promotion. Both check bindings were verified
-after reloading each project's settings page.
+Each Vercel project requires two GitHub checks, `repository` and
+`ClawHub inventory validation / distribute`, before it promotes a deployment to
+its production custom domain. Vercel may build and deploy before the checks
+finish; the checks gate promotion, not the build. Vercel operators can still
+force-promote past them.
 
-Vercel may build/deploy before checks complete: this is a promotion gate, not a
-pre-deployment barrier. Configuration readback is not proof of a new deployment's
-promotion behavior. Do not force a deployment solely to manufacture that proof;
-record the next applicable native Git deployment and its check/promotion state.
-Ordinary push-triggered GitHub checks do not need a `repository_dispatch` status
-action. No CI-owned alternative deploy path is activated here.
+## Observing a deployment
 
-## Read-only observation
+After a merge to `main`, run the read-only observation for that commit:
 
-`Public deployment observation` is a main-only manual workflow. It proves the
-exact commit's protected-main product and inventory CI, requires the latest
-Vercel-reported production deployment and status for each project to match that
-SHA, and probes only the three fixed public origins without credentials or
-redirects. It records GitHub deployment/status IDs and exact CI run/attempt IDs.
+```bash
+gh workflow run deployment-readiness.yml --ref main -f source_sha=<40-character main commit>
+gh run download <run-id> -n deployment-observation-<run-id>-<attempt>
+```
 
-The result remains `POST_DEPLOYMENT_OBSERVATION`, with `providerGate` and
-`customDomainSourceBinding` both `NOT_VERIFIED`. A public HTTP 200 is not proof
-that a custom domain serves the requested commit. An older successful deployment
-cannot conceal a newer failed/pending/wrong-source deployment. Missing metadata,
-API/auth/rate errors or non-200 readiness are failures, never absence-as-success.
+The **Public deployment observation** workflow confirms that the commit's `main`
+product and inventory CI passed, that each project's latest production deployment
+was created by Vercel for that commit with a success status, and that the three
+public origins answer HTTP 200 without credentials or redirects. The artifact
+holds `ci-proof.json` and `deployment-receipt.json`, with GitHub deployment,
+status and CI run IDs. Any missing deployment, wrong source commit, non-success status, API
+error or non-200 response fails the run.
 
-## Remaining platform evidence
-
-Before claiming live production promotion has been exercised, read back each
-canonical Vercel project's deployment ID/source SHA, Deployment Check binding
-and successful check/promotion state. If unchanged example files make native
-Git skip a build, report that explicitly; do not pretend the previously deployed
-SHA is the new main commit. The approval permits these hosted main merges, not
-a tag or public package release. Platform operators can force-promote and bypass
-checks, so repository observation does not claim an unbypassable guarantee.
+The receipt's `kind` is `POST_DEPLOYMENT_OBSERVATION`, and `providerGate` and
+`customDomainSourceBinding` stay `NOT_VERIFIED`: an HTTP 200 shows the domain is
+up, not which commit it serves. To confirm promotion itself, read the Vercel
+project's deployment ID, source commit and check state. When a merge leaves the
+example files unchanged, Vercel may skip the build; the latest production
+deployment then still reports the earlier commit and the observation fails for
+that project, which is the expected result to report.

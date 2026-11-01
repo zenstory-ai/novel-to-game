@@ -6,7 +6,7 @@ import { terrainHeight } from './terrain.js';
 // Blender-built, rigged stegosaurus (scripts/blender/build_stegosaurus.py).
 export const STEGOSAURUS_ASSET = Object.freeze({
   url: '/assets/stegosaurus-v1.glb',
-  clips: Object.freeze(['Walk', 'Drink']),
+  clips: ['Walk', 'Drink'],
 });
 
 export function createStegosaurus(scene) {

@@ -11,14 +11,12 @@ import { createWorldAnimationController } from './world-animation.js';
 import { createGroundLayers } from './ground-layers.js';
 import { createWorldAssetVisualLoader } from './world-asset-visuals.js';
 import { createWorldAssetSnapshot } from './world-snapshot.js';
-import { makeRiverRoomLandforms, makeRouteAndBrook, makeTerrain } from './world-terrain.js';
-import {
-  makeDegradableGroundAccents,
-  makeEnvironmentDensity,
-  makeHabitatAccents,
-  makeRiparianCover,
-  placeVegetation,
-} from './world-vegetation.js';
+import { makeRouteAndBrook } from './route-and-brook.js';
+import { makeTerrain } from './terrain-surface.js';
+import { makeRiverRoomLandforms } from './river-room-landforms.js';
+import { makeHabitatAccents, placeVegetation } from './authored-vegetation.js';
+import { makeDegradableGroundAccents, makeEnvironmentDensity } from './environment-density.js';
+import { makeRiparianCover } from './riparian-cover.js';
 import { makeBasalt, makeBrookBoulder } from './world-geology.js';
 import {
   makeBrookResponse,
@@ -77,26 +75,26 @@ export function createWorld(scene) {
   );
   applyBrookObstacleFlowField(routeAndBrook.brook.material, brookObstacleFlowField);
   const habitatAccents = makeHabitatAccents(scene);
-  vegetation.fernAssetAnchor.userData.fallbackMeshes = Object.freeze([
+  vegetation.fernAssetAnchor.userData.fallbackMeshes = [
     ...vegetation.fernMeshes,
     habitatAccents.foregroundFronds,
-  ]);
+  ];
   const degradableGroundAccents = makeDegradableGroundAccents(scene);
   const accentFernAssetAnchor = new THREE.Group();
   accentFernAssetAnchor.name = 'world.connected_route.ferns.accent-asset-anchor';
-  accentFernAssetAnchor.userData.fallbackMeshes = Object.freeze([
+  accentFernAssetAnchor.userData.fallbackMeshes = [
     habitatAccents.skirts,
     ...degradableGroundAccents.userData.proceduralFallbackMeshes,
     ...riverRoom.userData.proceduralFallbackMeshes,
-  ]);
-  accentFernAssetAnchor.userData.placements = Object.freeze([
+  ];
+  accentFernAssetAnchor.userData.placements = [
     ...habitatAccents.fernLibraryPlacements,
     ...degradableGroundAccents.userData.fernLibraryPlacements,
     ...riverRoom.userData.fernLibraryPlacements,
-  ].map((placement, index) => Object.freeze({
+  ].map((placement, index) => ({
     ...placement,
     index: FERN_LIBRARY_LAYOUT.length + index,
-  })));
+  }));
   degradableGroundAccents.add(accentFernAssetAnchor);
   const environmentDensity = makeEnvironmentDensity(scene);
   const basalt = makeBasalt(scene);

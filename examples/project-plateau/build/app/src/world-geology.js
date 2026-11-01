@@ -148,11 +148,11 @@ function makeBrookBoulder(scene) {
       `);
   };
   material.customProgramCacheKey = () => 'hero-rock-triplanar-weathering-v1';
-  material.userData.triplanarTextures = Object.freeze({
+  material.userData.triplanarTextures = {
     albedo: rockTextures.albedo,
     roughness: rockTextures.roughness,
     height: rockTextures.height,
-  });
+  };
   const boulder = new THREE.Mesh(geometry, material);
   boulder.position.set(BROOK_BOULDER.x, 0, BROOK_BOULDER.z);
   // The residual bank erratic settles with its broad weathered base down. It is
@@ -567,7 +567,7 @@ function makeBasalt(scene) {
   rubble.castShadow = true;
   rubble.receiveShadow = true;
   rubble.userData.supportModel = 'closed-flat-footprint-gravity-rest-on-sourced-heightfield';
-  rubble.userData.supportEvidence = Object.freeze(rubbleSupportEvidence);
+  rubble.userData.supportEvidence = rubbleSupportEvidence;
   rubble.userData.collisionRole = 'non-solid-outside-navigation-boundary';
   const proceduralFallback = new THREE.Group();
   proceduralFallback.name = 'world.connected_route.red-basalt.procedural-upper-fallback';

@@ -3,7 +3,8 @@ import test from 'node:test';
 
 import * as THREE from 'three';
 
-import { makeRouteAndBrook, makeTerrain } from '../src/world-terrain.js';
+import { makeRouteAndBrook } from '../src/route-and-brook.js';
+import { makeTerrain } from '../src/terrain-surface.js';
 
 test('terrain and connected route keep their scene construction contract', () => {
   const scene = new THREE.Scene();

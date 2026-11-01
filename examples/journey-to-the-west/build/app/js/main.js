@@ -7,7 +7,7 @@ import { loadAssets, bgURL, unitURL, bgStyle, treasureURL, itemIcon } from './as
 import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, artIcon, chapterCard, resetOverlayShading, inkSwirl, bigToast, confirmModal } from './ui.js';
 import { unitLevelStats, skillsAtLevel, effectiveSkill } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend, allocateSkillPoint, applyRecommendSkills } from './growth.js';
-import { gearOf, equipItem, releasePet, studyCost, studySkill, petAptitude, expToNext, levelCap } from './progress.js';
+import { SAVE_VERSION, newCampaign as createCampaign, gearOf, equipItem, releasePet, studyCost, studySkill, petAptitude, expToNext, levelCap } from './progress.js';
 import { runBattleScreen } from './battle_ui.js';
 import { createHub, mainStep } from './hub.js';
 import { logLine, clearChatHistory } from './hud.js';
@@ -15,7 +15,6 @@ import { runBibotan } from './bibotan.js';
 import { startTreasureHunt } from './treasure_ui.js';
 
 const SAVE_KEY = 'xiyou_save_v1';
-const SAVE_VERSION = 5;
 const TUT_KEY = 'xiyou_tut_seen_v2';
 
 const params = new URLSearchParams(location.search);
@@ -41,31 +40,11 @@ function setPhase(p) {
 }
 
 // ---------- 战役状态 ----------
-function newCampaign() {
-  return {
-    version: SAVE_VERSION,
-    stage: 'prologue', // prologue → pre_fire → treasure_fire → pre_yumian → pre_niu1 → pre_boss → done
-    levels: { wukong: 1, bajie: 1, sha: 1, pixie: 1 },
-    storyLevel: 1, // 剧情设计等级;日常封妖最多领先一级
-    exp: 0, money: 100,
-    alloc: {}, skillLevels: {}, pendingPoints: {}, skillPoints: {},
-    gear: {}, equipBag: {}, treasure: null,
-    flags: {}, bounty: null, world: null,
-    pets: [], // [{key, active}]
-    petJoined: false,
-    formation: 'tiangang',
-    items: { jinchuang: 2, falidan: 1, buyaosheng: 2 },
-    seedBase: freshSeed(),
-    battlesWon: 0,
-    hunts: {},
-    chaptersSeen: {}, // 三借章节卡各只亮一次(简报三.1)
-  };
-}
+const newCampaign = () => createCampaign(freshSeed());
 let campaign = newCampaign();
 
 // 三借章节卡：一借·被骗 / 二借·假扇 / 三借·真扇(递进差异的开场仪式)
 async function showChapter(key) {
-  campaign.chaptersSeen = campaign.chaptersSeen ?? {};
   if (campaign.chaptersSeen[key]) return;
   campaign.chaptersSeen[key] = true;
   saveGame(true);
@@ -145,8 +124,8 @@ let openPanelKey = null;
 let closeOpenPanel = null;
 
 function pendingGrowthTotal() {
-  const potential = Object.values(campaign.pendingPoints ?? {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
-  const practice = Object.values(campaign.skillPoints ?? {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
+  const potential = Object.values(campaign.pendingPoints).reduce((sum, n) => sum + n, 0);
+  const practice = Object.values(campaign.skillPoints).reduce((sum, n) => sum + n, 0);
   return potential + practice;
 }
 
@@ -426,7 +405,7 @@ function skillCells(key, onChange) {
 // 装备槽：兵器/护身各一，点「更换」从背包里挑同槽位的装备
 function gearCells(key, onChange) {
   const wrap = el('div', 'hero-gear');
-  const slots = campaign.gear?.[key] ?? {};
+  const slots = campaign.gear[key] ?? {};
   for (const [slot, label] of Object.entries(EQUIP_SLOTS)) {
     const cur = slots[slot];
     const cell = el('div', 'gear-cell');
@@ -435,7 +414,7 @@ function gearCells(key, onChange) {
     const copy = el('div', 'gear-copy');
     copy.append(el('span', 'gear-slot', label), el('span', `gear-name${cur ? ` tier${EQUIPS[cur].tier}` : ''}`, cur ? EQUIPS[cur].name : '暂未装备'), el('span', 'gear-desc', cur ? EQUIPS[cur].desc : '从背囊选择合适装备'));
     cell.append(visual, copy);
-    const choices = Object.entries(campaign.equipBag ?? {}).filter(([k, n]) => n > 0 && EQUIPS[k]?.slot === slot);
+    const choices = Object.entries(campaign.equipBag).filter(([k, n]) => n > 0 && EQUIPS[k]?.slot === slot);
     for (const [k] of choices) {
       const b = el('button', 'btn stat-btn wide with-icon');
       b.append(itemIcon(k, { slot, cls: 'xs' }), el('span', '', `换上${EQUIPS[k].name}`));
@@ -570,7 +549,7 @@ function showBagPanel(onClose) {
     return cell;
   };
   const owned = Object.entries(campaign.items).filter(([k, n]) => n > 0 && ITEMS[k]);
-  const gearOwned = Object.entries(campaign.equipBag ?? {}).filter(([k, n]) => n > 0 && EQUIPS[k]);
+  const gearOwned = Object.entries(campaign.equipBag).filter(([k, n]) => n > 0 && EQUIPS[k]);
   if (owned.length === 0 && gearOwned.length === 0) grid.appendChild(el('div', 'cmd-empty', TEXT.panels.bagEmpty));
   for (const [k, n] of owned) grid.appendChild(cellFor(k, n, ITEMS[k].name, ITEMS[k].desc));
   for (const [k, n] of gearOwned) {
@@ -923,13 +902,13 @@ async function runBattle(battleId, seedOffset, opts = {}) {
 
 // 剧情战升级：全员 +1 级、剧情设计等级随之推进(日常上限跟着解封)，另得银两
 function applyLevelUps(ups = {}, scripted = false) {
-  const before = campaign.levels.wukong ?? 1;
+  const before = campaign.levels.wukong;
   for (const [k, v] of Object.entries(ups)) campaign.levels[k] = v.level;
   settleLevelUp(campaign, ups); // 发潜力点+修炼点(定值，不占战斗 rng)
   if (Object.keys(ups).length) {
     storyUnsettled = true;
-    campaign.storyLevel = (campaign.storyLevel ?? 1) + 1;
-    campaign.money = (campaign.money ?? 0) + ECONOMY.storyMoney;
+    campaign.storyLevel = campaign.storyLevel + 1;
+    campaign.money = campaign.money + ECONOMY.storyMoney;
     const lv = campaign.levels.wukong;
     logLine('sys', scripted
       ? `虽未取胜，一战也有所得：全队升到 Lv.${lv}，银两 +${ECONOMY.storyMoney}`
@@ -1191,7 +1170,7 @@ async function storyNiu1() {
   else campaign.pets.push({ key: 'pixie', active: true });
   campaign.petJoined = true;
   // 金睛兽须以完整战力参加决战;原上阵宠保留在待命栏，可手动换回。
-  campaign.levels.pixie = Math.max(campaign.levels.pixie ?? 1, campaign.levels.wukong ?? 1);
+  campaign.levels.pixie = Math.max(campaign.levels.pixie, campaign.levels.wukong);
   // 偷兽成功即落定阶段与真扇：此后任何一次存档读回来都停在翠云山「八戒」之前，不会重打老牛
   campaign.items.truefan = 3;
   campaign.stage = 'pre_boss';
@@ -1238,7 +1217,7 @@ function endingEchoes() {
   const echoes = [];
   const treasure = TREASURES[campaign.treasure];
   if (treasure) echoes.push(`灵吉所授的${treasure.name}，一路护到了积雷山。`);
-  const hunt = campaign.hunts?.fire;
+  const hunt = campaign.hunts.fire;
   if (hunt) {
     const guide = TEXT.speakers[hunt.guide] ?? '师兄弟';
     const choice = hunt.forcedRetreat ? '在妖气合围前护住外层所得' : hunt.deepened ? '带队探入火脉深处' : '见好便收，保住了退路';
@@ -1254,7 +1233,7 @@ function endingEchoes() {
   echoes.push(campaign.fanFooled
     ? '悟空也曾被老牛的变化骗回一局，最终从失扇处追回了真扇。'
     : '悟空多问了一句话，当场识破老牛所变的假八戒。');
-  const activePet = campaign.pets?.find((p) => p.active);
+  const activePet = campaign.pets.find((p) => p.active);
   if (activePet && PARTY[activePet.key] && !(campaign.flags.firetroopDeal === 'keep' && activePet.key === 'huobao')) {
     echoes.push(`${PARTY[activePet.key].name}随队见证了火根断绝。`);
   }

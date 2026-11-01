@@ -22,3 +22,5 @@ Status: implemented
 ## Verification
 
 发布策略由共享控制器对已提交版本、dated changelog、必需文件和可复现归档做离线检查；仓库原有守卫、测试与 workflow `actionlint` 保持为合入证据。正式发布仍须在替换完整控制 SHA 后通过受保护分支 CI，当前实现没有创建 tag、Release 或外部写入。
+
+2026-10-19 的 v0.6.0 是按本契约发布的第一个版本：控制 SHA 固定为 `d098c09`，tag 推送生成源码归档并派发 ClawHub。

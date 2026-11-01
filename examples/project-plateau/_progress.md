@@ -15,6 +15,3 @@
   crouching braces the plate, and the family exposes distinct young-play and branch-pull windows. A committed
   pterodactyl dive is now an optional two-cue risk shot: finishing it leaves a short camera-to-rifle swap before
   contact, creating an alternate Strong route rather than prescribing the same four photographs every run.
-
-The record proves one tested desktop-browser route. It does not prove other browsers, GPUs or devices, subjective
-anatomy, composition, comfort, fun, balance, replay retention, rights clearance or publication quality.

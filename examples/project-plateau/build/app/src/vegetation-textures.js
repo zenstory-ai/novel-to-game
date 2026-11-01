@@ -187,11 +187,11 @@ function createBarkDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture('world.material.bark-albedo', albedoData, THREE.SRGBColorSpace),
     roughness: makeTexture('world.material.bark-roughness', roughnessData),
     height: makeTexture('world.material.bark-height', heightData),
-  });
+  };
 }
 
 function createPlateBarkDetailTextures() {
@@ -244,7 +244,7 @@ function createPlateBarkDetailTextures() {
     texture.needsUpdate = true;
     return texture;
   };
-  return Object.freeze({
+  return {
     albedo: makeTexture(
       'world.material.plate-bark-albedo',
       albedoData,
@@ -252,7 +252,7 @@ function createPlateBarkDetailTextures() {
     ),
     roughness: makeTexture('world.material.plate-bark-roughness', roughnessData),
     height: makeTexture('world.material.plate-bark-height', heightData),
-  });
+  };
 }
 
 const barkTextures = createBarkDetailTextures();

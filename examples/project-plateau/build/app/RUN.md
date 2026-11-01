@@ -50,7 +50,6 @@ npm run verify
 
 The command builds `dist/`, serves it with `vite preview` and runs one complete browser path
 against that build. It writes `../../qa/verification.json` and the semantic
-current-run evidence under `../evidence/current-run/`. The evidence records the tested
-local Chromium environment; it does not claim coverage of other browsers, GPUs or devices.
-Repository CI checks structure, unit tests and the production build; it does not refresh
-this local browser evidence.
+current-run evidence under `../evidence/current-run/`, including the tested local Chromium
+environment. Repository CI checks structure, unit tests and the production build; only a
+local `npm run verify` refreshes the browser evidence.

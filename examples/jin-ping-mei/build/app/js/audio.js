@@ -124,52 +124,46 @@ class AudioEngine {
   }
 
   di(f, t, dur, vol, dest = this.bgmGain) {
-    try {
-      const o = this.ctx.createOscillator();
-      const g = this.ctx.createGain();
-      const lfo = this.ctx.createOscillator();
-      const lg = this.ctx.createGain();
-      o.type = 'sine';
-      o.frequency.value = f;
-      lfo.frequency.value = 5;
-      lg.gain.value = f * 0.005;
-      lfo.connect(lg).connect(o.frequency);
-      const atk = Math.min(0.15, dur * 0.3);
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol, t + atk);
-      g.gain.setValueAtTime(vol * 0.8, t + Math.max(atk, dur - 0.2));
-      g.gain.linearRampToValueAtTime(0.0001, t + dur);
-      o.connect(g).connect(dest);
-      o.start(t); o.stop(t + dur + 0.05);
-      lfo.start(t); lfo.stop(t + dur + 0.05);
-    } catch { /* ignore */ }
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    const lfo = this.ctx.createOscillator();
+    const lg = this.ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = f;
+    lfo.frequency.value = 5;
+    lg.gain.value = f * 0.005;
+    lfo.connect(lg).connect(o.frequency);
+    const atk = Math.min(0.15, dur * 0.3);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + atk);
+    g.gain.setValueAtTime(vol * 0.8, t + Math.max(atk, dur - 0.2));
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(dest);
+    o.start(t); o.stop(t + dur + 0.05);
+    lfo.start(t); lfo.stop(t + dur + 0.05);
   }
 
   pluck(f, t, dur, vol, dest) {
-    try {
-      for (const [mult, v] of [[1, 1], [2, 0.35], [3, 0.12]]) {
-        const o = this.ctx.createOscillator();
-        const g = this.ctx.createGain();
-        o.type = 'triangle';
-        o.frequency.value = f * mult;
-        g.gain.setValueAtTime(vol * v, t);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(g).connect(dest);
-        o.start(t); o.stop(t + dur + 0.05);
-      }
-    } catch { /* ignore */ }
+    for (const [mult, v] of [[1, 1], [2, 0.35], [3, 0.12]]) {
+      const o = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.value = f * mult;
+      g.gain.setValueAtTime(vol * v, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(dest);
+      o.start(t); o.stop(t + dur + 0.05);
+    }
   }
 
   block(t, f, dur, vol, dest) {
-    try {
-      const o = this.ctx.createOscillator();
-      const g = this.ctx.createGain();
-      o.frequency.value = f;
-      g.gain.setValueAtTime(vol, t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      o.connect(g).connect(dest);
-      o.start(t); o.stop(t + dur + 0.02);
-    } catch { /* ignore */ }
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(dest);
+    o.start(t); o.stop(t + dur + 0.02);
   }
 
   se(name) {

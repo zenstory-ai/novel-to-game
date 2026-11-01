@@ -8,12 +8,12 @@ Prompt 文件只增不减：加规则读起来像尽职，删规则读起来像�
 
 ## Decision
 
-`scripts/validate_repo.py` 的 `validate_skill_budget` 对 `skills/**/*.md` 计行：`SKILL.md` 单文件 ≤ `SKILL_MD_LINE_BUDGET`（100），reference ≤ `REFERENCE_LINE_BUDGET`（150），全部合计 ≤ `SKILL_TOTAL_LINE_BUDGET`（1900）。超限即校验失败；总量超限的错误信息直接指示"删等量内容，或在本文件提高常量并在 commit 里说明理由"，单文件超限只提示移入 `references/`、拆文件或删一条规则。
+`scripts/validate_repo.py` 的 `validate_skill_budget` 对 `skills/**/*.md` 计行：`SKILL.md` 单文件 ≤ `SKILL_MD_LINE_BUDGET`（100），reference ≤ `REFERENCE_LINE_BUDGET`（150），全部合计 ≤ `SKILL_TOTAL_LINE_BUDGET`（1300）。超限即校验失败；总量超限的错误信息直接指示"删等量内容，或在本文件提高常量并在 commit 里说明理由"，单文件超限只提示移入 `references/`、拆文件或删一条规则。
 
 - 数字不是机制，机制是数字住在一个必须被 diff 的文件里：加规则 must 删规则或显式提高常量；允许提高，never 静默漂过。
 - 一条规则在一个 skill 里只住一处：要么 `SKILL.md`，要么该 skill 已读取的 reference。
 - 改 skill 等于改模型行为，"读起来还行"不算验证；#27 用同一虚构小说前提做盲评 A/B（6 样本、4 评委、5 维度）确认裁剪无回归后才合并。
-- 预算随裁剪收紧：#27 定 3100/170/250，#44 再删重复后收到 1900/100/150。
+- 预算随裁剪收紧：#27 定 3100/170/250，#44 再删重复后收到 1900/100/150，#62 把总量收到当时的实际包长附近，定为 1300。
 
 来源：ce42b4a、45f3083 (#27)、58e0ae4 (#44)、35a1bee (#48)
 

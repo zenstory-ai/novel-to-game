@@ -1,4 +1,4 @@
-# BUILD_BRIEF · 金瓶梅·风月总账（galgame 版）
+# BUILD_BRIEF · 金瓶梅·风月总账
 
 `targetFinish: playable-prototype`
 
@@ -37,8 +37,4 @@ python3 test/verify_visual.py --write-evidence   # 唯一权威完整路径
 npm run verify:model                   # CI 无浏览器检查：剧本连通、资源登记、16 个结局穷举可达
 ```
 
-## 限制
-
-- 浏览器完整路径只走月娘良缘一条；其余结局只由剧本穷举证明可达。
-- 只在 1440×900 Chromium 验证；窄屏有响应式样式但未纳入权威运行。
-- 无配音；音乐为程序化合成。
+已知限制见 `qa/verification.json` 的 `limitations`。

@@ -192,14 +192,14 @@ function createDriftwoodGeometry(variant = 0) {
   const minimumY = geometry.boundingBox.min.y;
   for (let index = 0; index < positions.count; index += 1) {
     if (positions.getY(index) > minimumY + 0.024) continue;
-    supportPoints.push(Object.freeze([
+    supportPoints.push([
       positions.getX(index),
       positions.getY(index),
       positions.getZ(index),
-    ]));
+    ]);
   }
   geometry.userData.profile = 'closed-curved-branched-deadwood-with-jagged-fibre-breaks';
-  geometry.userData.supportPoints = Object.freeze(supportPoints);
+  geometry.userData.supportPoints = supportPoints;
   geometry.userData.supportModel = 'gravity-settled-tangent-aligned-multipoint-deadfall';
   return geometry;
 }
@@ -226,11 +226,11 @@ function createDeadwoodMaterial({ wet = false } = {}) {
       : 'dry-weathered-furrowed-bark-and-broken-end-grain',
     energyModel: 'opaque-non-emissive-dielectric-weathered-wood',
     moistureClass: wet ? 'brook-bank-wet' : 'forest-floor-dry-to-damp',
-    textureChannels: Object.freeze({
+    textureChannels: {
       albedo: barkTextures.albedo.name,
       roughness: barkTextures.roughness.name,
       height: barkTextures.height.name,
-    }),
+    },
   };
   return material;
 }

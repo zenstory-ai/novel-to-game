@@ -1,13 +1,12 @@
 import * as THREE from 'three';
 
 export const CANOPY_WIND_PROFILE = Object.freeze({
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.085,
   verticalTipDisplacementMeters: 0.018,
   macroFrequencyHz: 0.82,
   flutterFrequencyHz: 2.3,
-  anchorUvY: Object.freeze([0.04, 0.92]),
-  supportModel: 'branch-attached-uv-base-with-flexible-leaf-tip',
+  anchorUvY: [0.04, 0.92],
   shadowModel: 'shared-displacement-uniforms-for-colour-and-depth-pass',
 });
 
@@ -61,11 +60,11 @@ function injectLeafWindVertex(shader, uniforms) {
 }
 
 function applyThinLeafTransmission(material, family, wind = false) {
-  const windUniforms = wind ? Object.freeze({
+  const windUniforms = wind ? {
     time: { value: 0 },
     strength: { value: CANOPY_WIND_PROFILE.horizontalTipDisplacementMeters },
     verticalStrength: { value: CANOPY_WIND_PROFILE.verticalTipDisplacementMeters },
-  }) : null;
+  } : null;
   material.onBeforeCompile = (shader) => {
     if (windUniforms) injectLeafWindVertex(shader, windUniforms);
     shader.fragmentShader = shader.fragmentShader.replace(

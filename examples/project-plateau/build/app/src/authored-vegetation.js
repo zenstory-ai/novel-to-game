@@ -208,14 +208,14 @@ function placeVegetation(scene) {
     mesh.customDepthMaterial = createLeafWindDepthMaterial(mesh.material);
     mesh.userData.collisionRole = 'non-solid-leaf-spray';
   });
-  canopyTreeAssetAnchor.userData.fallbackMeshes = Object.freeze([
+  canopyTreeAssetAnchor.userData.fallbackMeshes = [
     ...Object.values(trunkMeshes),
     ...Object.values(canopyBranchMeshes),
     crownMesh,
     crownAccentMesh,
     araucariaMesh,
     ...Object.values(leafDetailMeshes),
-  ]);
+  ];
   scene.add(
     canopyTreeAssetAnchor,
     ...Object.values(trunkMeshes),
@@ -298,18 +298,18 @@ function placeVegetation(scene) {
   stoneMesh.receiveShadow = true;
   stoneMesh.userData.collisionRole = 'non-solid-sub-step-ground-decor';
   scene.add(stoneMesh);
-  return Object.freeze({
-    trunkMeshes: Object.freeze(Object.values(trunkMeshes)),
-    canopyBranchMeshes: Object.freeze(Object.values(canopyBranchMeshes)),
-    leafDetailMeshes: Object.freeze(Object.values(leafDetailMeshes)),
+  return {
+    trunkMeshes: Object.values(trunkMeshes),
+    canopyBranchMeshes: Object.values(canopyBranchMeshes),
+    leafDetailMeshes: Object.values(leafDetailMeshes),
     crownMesh,
     crownAccentMesh,
     araucariaMesh,
-    fernMeshes: Object.freeze(fernMeshes),
+    fernMeshes: fernMeshes,
     fernAssetAnchor,
     canopyTreeAssetAnchor,
     profile: 'two-broadleaf-bark-and-leaf-families-plus-araucaria',
-  });
+  };
 }
 
 function makeHabitatAccents(scene) {
@@ -401,19 +401,19 @@ function makeHabitatAccents(scene) {
       color.setHSL(...skirtColor);
       skirts.setColorAt(skirtIndex, color);
       const matureScale = skirtScale * 0.36;
-      fernLibraryPlacements.push(Object.freeze({
+      fernLibraryPlacements.push({
         index: skirtIndex,
         x: skirtX,
         z: skirtZ,
         scale: matureScale,
         variantIndex: 2,
         rotation: skirtRotation,
-        instanceScale: Object.freeze([matureScale, matureScale * 0.92, matureScale]),
-        color: Object.freeze(skirtColor),
+        instanceScale: [matureScale, matureScale * 0.92, matureScale],
+        color: skirtColor,
         sourceRole: 'tree-fern-understory-skirt-replacement',
         maxDiameterMeters: 1.45,
         maxHeightMeters: 0.4,
-      }));
+      });
     }
   });
 
@@ -444,7 +444,7 @@ function makeHabitatAccents(scene) {
   skirts.receiveShadow = true;
   foregroundFronds.castShadow = true;
   foregroundFronds.receiveShadow = true;
-  treeFernAssetAnchor.userData.fallbackMeshes = Object.freeze([trunks, ...crownMeshes]);
+  treeFernAssetAnchor.userData.fallbackMeshes = [trunks, ...crownMeshes];
   scene.add(treeFernAssetAnchor, trunks, ...crownMeshes, skirts, foregroundFronds);
   return {
     treeFernAssetAnchor,
@@ -452,7 +452,7 @@ function makeHabitatAccents(scene) {
     crowns: crownMeshes,
     skirts,
     foregroundFronds,
-    fernLibraryPlacements: Object.freeze(fernLibraryPlacements),
+    fernLibraryPlacements: fernLibraryPlacements,
   };
 }
 

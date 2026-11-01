@@ -14,7 +14,7 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 ## 唯一必需合同
 
 每个候选都必须用真实运行证据覆盖：`launch`、`render`、`input`、`coreLoop`、`outcome`、`restart`。
-`targetFinish` 描述成色，不改变这组六项，也不得生成第七道门。
+`targetFinish` 描述成色，不改变这组六项。
 
 ## 执行
 
@@ -26,11 +26,10 @@ description: "Verify a game with evidence on its selected target runtime. Launch
    代码路径。
 4. 若候选有可执行模型、事件日志、patch 或 `signature_command`，按 test-design-method 的对应合同把
    项目回归嵌入权威 verify；允许定向诊断、修复和复跑，最终六项证据必须来自同一次完整运行。
-   失败映射到已有 checks 或 limitation，不新增通用门禁。
+   失败映射到已有 checks 或 limitation。
 5. 记录 limitation 和问题的 product/design/art/build 归属。
 
-优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。不要为了 QA 重构游戏或强制某种
-框架、测试库或调试接口。
+优先使用已有可观察状态；只有无法判断结果时才增加最小测试钩子。
 
 ## 输出
 

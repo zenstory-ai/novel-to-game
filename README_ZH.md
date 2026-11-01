@@ -1,7 +1,7 @@
-<!-- Last synced with README.md: 2026-10-02 -->
+<!-- Last synced with README.md: 2026-10-20 -->
 
 <p align="center">
-  <img src="https://zenstory.ai/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
+  <img src="https://raw.githubusercontent.com/zenstory-ai/zenstory/main/apps/web/public/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
 </p>
 
 <h1 align="center">NovelToGame</h1>
@@ -33,11 +33,11 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Code）的七个开源 skills。把一本小说交给它——如果已有想法，再加上目标平台或引擎。它会读完整本书，选一个站得住的游戏方向，设计世界和画面，在简报锁定的运行环境里构建，并用一次有记录的运行证明这个版本能玩。你拿到的是一款达到你所要求成色的可玩构建，加上它背后的设计文档。下面三个公开示例现在就能在浏览器里打开，无需安装。
+NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Code）的七个开源 skills。把一本小说交给它——如果已有想法，再加上目标平台或引擎。它会读完整本书，选一个依据充分的游戏方向，设计世界和画面，在简报锁定的运行环境里构建，并用一次有记录的运行证明这个版本能玩。你拿到的是一款达到你所要求成色的可玩构建，加上它背后的设计文档。下面三个示例都是浏览器游戏，并提供可玩版本的链接。
 
 ## 在线试玩
 
-每款游戏都链到它背后的改编工作区：原文来源、概念与被否决的方向、游戏与美术方向、可运行源码，以及来自可玩路径的 QA 记录。
+每款游戏都链接到它背后的改编工作区：原文来源、概念与被否决的方向、游戏与美术方向、可运行源码，以及来自可玩路径的 QA 记录。
 
 ### 西游记 · 三借芭蕉扇
 
@@ -77,23 +77,20 @@ https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 ## 这是什么
 
-不需要 GPU，没有托管服务，也不内置游戏引擎：这套 skills 用的就是你把它装进哪个 Agent、那个 Agent 的模型。只给模型一句“把这本书做成游戏”，得到的通常是换皮或可点击的剧情摘要，所以工作被拆成几个阶段：一个阶段负责一份文档，每个决定都要有证据：
+这套 skills 由你已在用的编码 Agent 的模型执行，按阶段组织改编工作。每个阶段负责一份文档，明确区分原著证据与设计选择：
 
-- **每个设计决定都引用原著。** 拆解阶段读完全书，写出 `SOURCE_BIBLE`：硬规则、关键角色目标、转折结局和标志性锚点都标注章回或文件位置，改编边界表每行带证据位置。原作事实分为 `immutable`、`adaptable`、`open`、`conflicted` 四种边界；原著没有定义的部分标为设计发明，不会被悄悄写成事实。
+- **关键原作事实都有引证。** 拆解阶段读完全书，写出 `SOURCE_BIBLE`：硬规则、关键角色目标、转折结局和标志性锚点都标注章回或文件位置，改编边界表每行带证据位置。原作事实分为 `immutable`、`adaptable`、`open`、`conflicted` 四种边界；原著没有定义的部分标为设计发明，不会被悄悄写成事实。
 - **游戏形态是一个有记录的决定，不是默认值。** 概念阶段比较真实的替代方向，用具名的硬否决淘汰不合格方向（核心循环与原作中心张力无关；删掉专有名词后只剩通用模板；玩家只是花资源放行既定剧情）。概念、世界设计与美术方向分别由不同阶段写进各自的文档，构建阶段不得静默重做。
 - **借成熟品类，就连同它的外壳一起借。** 玩家认出一类游戏，靠的不只是核心玩法；系统玩法项目要用一张短表写清该品类的外壳（进入世界、目标指引、成长与回访理由）哪些实现、哪些降级、哪些不做以及为什么，并写清第一分钟玩家看到什么。《梦幻西游》式的 RPG 不会只交出一串战斗关卡。
-- **面向简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单；`quick` 模式下只在平台、权利、尺度等阻断项上停下等你裁决）锁定平台、引擎、目标运行时和实际可用的测试运行时。工具链缺失时不得悄悄改做网页。设计文档是不绑定引擎的 Markdown，归你所有。
-- **QA 是一次真实运行、六项检查和如实写下的限制。** 构建在测试运行时里真正启动，一次完整运行证明 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项。趣味、平衡、其他浏览器和权利只写成限制项（limitation），不写成 PASS。
+- **面向简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单）锁定平台、引擎、目标运行时和实际可用的测试运行时。工具链缺失时不得悄悄改做网页。设计文档是不绑定引擎的 Markdown，归你所有。
+- **QA 是一次真实运行、六项检查和写明的限制。** 构建在测试运行时里真正启动，一次完整运行证明 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项。未测试的环境写入限制项（limitation）。
 - **语音默认关闭，默认在构建期生成。** 除非美术方向选用语音，没有任何台词会发给语音合成服务；运行时合成须经产品简报明确批准；小说和设计文档从不上传。
 
-互动叙事是一等赛道：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。人物路线的关键选择针对该人物自己的心结或议程，关系进展由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕上的数值。
+这套 skills 完整支持互动叙事：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。人物路线的关键选择针对该人物自己的心结或议程，关系进展由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕上的数值。
 
 ## 安装
 
-### ClawHub
-
-ClawHub 分发由仓库中的 [显式发布清单](.clawhub/publish.json) 管理，并通过 [ClawHub](https://clawhub.ai/) 提供发现入口。具体 skill 链接只有在发布者、版本和匿名访问均验证后才会写入本文档，避免把尚不存在的条目当成已上架。
-
+### 每个 Agent 一条命令
 
 前提：你已经在用 Claude Code、Codex 或 Kimi Code，终端能运行 `npx`（Node.js）。
 
@@ -104,6 +101,8 @@ ClawHub 分发由仓库中的 [显式发布清单](.clawhub/publish.json) 管理
 | Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
 `-g` 表示全局安装，对所有目录生效；去掉它则只装进当前目录。**升级时再跑一遍同一条命令，或运行 `npx skills update`。**
+
+这些 skills 也上架了 [ClawHub](https://clawhub.ai/)，按仓库的[发布清单](.clawhub/publish.json)发布。
 
 <details>
 <summary><strong>三个 CLI 一次装齐，或使用原生插件安装</strong></summary>
@@ -142,7 +141,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 </details>
 
-> 变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/zenstory-ai/novel-to-game/releases)。仓库已从 `worldwonderer/novel-to-game` 迁至 `zenstory-ai/novel-to-game`，旧文档里的安装与 marketplace 命令已失效，以上面的命令为准。
+> 变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/zenstory-ai/novel-to-game/releases)。
 
 ## 看看它的输出
 
@@ -233,7 +232,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ### 一个选择怎样被后文记住
 
-[《金瓶梅》](examples/jin-ping-mei/)是恋爱 ADV 的示例。它从二十日宅门账务模拟重做成了 galgame，[`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) 现在给每位女主写下她要什么、一道只有玩家看得到的伤口，各自钉到回目（原表 5 行，节选 3 行）：
+[《金瓶梅》](examples/jin-ping-mei/)是恋爱 ADV 的示例。它的 [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) 给每位女主写下她要什么、一道只有玩家看得到的伤口，各自钉到回目（原表 5 行，节选 3 行）：
 
 ```markdown
 核心句：**你说过的话，她们都记得。**
@@ -260,23 +259,18 @@ codex plugin add novel-to-game@novel-to-game-skills
 结局判定：关键抉择做错 → 错过；做对且该人心意 ≥7 并在最后一问说真话 → 良缘；其余 → 寻常。
 ```
 
-每个个人结局之后都翻开一页原著里她的命数，同一份文档写得很直白：结局只决定这一春你们说成了什么，页脚明写改不了她在书里的去处。
+每个个人结局之后都翻开一页原著里她的命数：结局只决定这一春你们说成了什么，页脚明写改不了她在书里的去处。
 
-这款游戏的 QA 记录对“玩到了多少”写得很坦白。[`qa/verification.json`](examples/jin-ping-mei/qa/verification.json) 里完整浏览器运行停在 `yue_good`，六项全部 PASS，第一条和最后一条限制项是：
+[`qa/verification.json`](examples/jin-ping-mei/qa/verification.json) 里完整浏览器运行停在 `yue_good`，六项全部 PASS；第一条限制项记下这次运行覆盖了多少剧情：
 
 ```json
 {
   "scope": "路径覆盖",
   "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
-},
-…
-{
-  "scope": "体验判断",
-  "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
 }
 ```
 
-### QA 记录承认自己没测什么
+### 一次记录在案的运行漏掉了什么
 
 [Project Plateau](examples/project-plateau/) 是 3D 示例，文档为英文。它的概念比较了三个各自锚定章节的方向——A · Proof Before Dark（野外观察与带着受损证据返回）、B · Fire Across the Lake（沿溪到湖、逃离追踪的猎食者）、C · The Eighteenth Cave（背着证据的洞穴下降）——并写下胜出方向应被放弃的条件，见 [`concepts/CONCEPT.md`](examples/project-plateau/concepts/CONCEPT.md)（译）：
 
@@ -307,29 +301,20 @@ codex plugin add novel-to-game@novel-to-game-skills
 ]
 ```
 
-[`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) 写明这个 PASS 到底意味着什么（译）：
-
-```markdown
-…
-PASS 只在记录下来的本地桌面浏览器里证明这六项效果。
-它不证明主观画面质量、舒适度、趣味、平衡、
-已清权、公网托管，也不证明其他浏览器、GPU 和设备。
-```
-
-[`qa/verification.json`](examples/project-plateau/qa/verification.json) 则点名这次运行漏掉了什么，包括新加的剑龙段落：
+[`qa/verification.json`](examples/project-plateau/qa/verification.json) 点名这次运行漏掉了什么，包括新加的剑龙段落：
 
 ```json
 {
-  "scope": "optional stegosaurus beat",
-  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
+  "scope": "tested runtime",
+  "reason": "The run used local desktop Chromium on one Apple M1 Pro; other browsers, GPUs and devices were not exercised."
 },
 {
-  "scope": "look, sound and hitches",
-  "reason": "Visual quality is a reviewed judgment; the sound beds were not heard on laptop speakers and frame hitches were not measured on an unloaded or low-end machine."
+  "scope": "optional stegosaurus beat",
+  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
 }
 ```
 
-也就是：完整运行没有拍剑龙，它的取景规则只有一个单元测试覆盖；画面质量是人工评审的判断，环境声没在笔记本扬声器上听过，卡顿也没在空载或低端机器上测过。
+也就是：只在一台 Apple M1 Pro 的本地桌面 Chromium 上跑过，其他浏览器、GPU 和设备没有测；完整运行没有拍剑龙，它的取景规则只有一个单元测试覆盖。
 
 单局时长改过两次，一次因为实测证据，一次出于负责人的决定，[`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) 把两步都留着。第一次实测跑完整条路线只用了 55.2 秒，推翻了原计划的 5–8 分钟单局，于是边界被压到 1–3 分钟一局、180 秒天光，而不是往路线里塞等待。后来负责人要求一次 5–10 分钟的到访，天光预算提到 300 秒，填进去的是新的决策（可选的第十二章剑龙段落和逐张底片评定），而不是更长的路；熟练的 Strong 路线仍约 90 秒跑完。
 
@@ -361,7 +346,7 @@ PASS 只在记录下来的本地桌面浏览器里证明这六项效果。
 标明允许新增的设定与待决问题。只交付设计说明，不构建、不运行 QA，也不声称运行成品已经完成。
 ```
 
-`quick` 是默认模式：Agent 先用合理默认值起草产品简报，只追问会改变方向或涉及安全的选择，比较有效替代后继续设计、构建和 QA。想自己选概念时用 `director`：Agent 会在概念阶段停下，给出候选和推荐；你已明确选定方向时不再停靠。
+`quick` 是默认模式：Agent 先用合理默认值起草产品简报，只在平台、核心玩法或核心幻想、成人内容、真实人物、版权或资产授权、付费服务、不可逆制作投入出现会改变方向的实质分支时停下等你裁决；其余未定项写进简报的未确认假设，比较有效替代后继续设计、构建和 QA。想自己做关键决定时用 `director`：Agent 会在概念方向、白盒试玩后的内容取舍（可以在这里请目标玩家试玩）和视觉目标图（仅在制作视觉目标包时）停下，给出候选和推荐；你已经做出决定的地方不再停靠。
 
 ## 工作流
 
@@ -369,7 +354,7 @@ PASS 只在记录下来的本地桌面浏览器里证明这六项效果。
 小说 → 游戏化拆解 → 游戏概念 → 世界设计 → 风险白盒 ↺ → 美术方向 → 正式构建 → QA → 可玩游戏
 ```
 
-世界设计完成后，先用白盒（不要求最终美术的粗略构建）只验证最大的一个设计风险，再进入完整美术生产：叙事因果可以用文本验证，实时操作、空间、物理或镜头不能；观察结果交回设计阶段。正式构建面向批准的运行环境，并准备一条权威验证命令。QA 可以诊断、修复和复跑，但最终记录把六项检查绑定到同一次完整运行；发现的问题按产品、设计、美术、构建各自的文档归属回流。
+世界设计完成后，先用白盒（不要求最终美术的粗略构建）只验证最大的一个设计风险，再进入完整美术生产：叙事因果可以用文本验证，实时操作、空间、物理或镜头不能；观察结果交回设计阶段。白盒试玩还要看出玩家反复回来做的是哪一部分，剧情、对白和关卡的内容预算据此修订；简报里的制作预算也在这一步、以及正式生产进行到一半时，与剩余范围各对照一次。正式构建面向批准的运行环境，并准备一条权威验证命令。QA 可以诊断、修复和复跑，但最终记录把六项检查绑定到同一次完整运行；发现的问题按产品、设计、美术、构建各自的文档归属回流。
 
 ## Skills
 
@@ -381,7 +366,7 @@ PASS 只在记录下来的本地桌面浏览器里证明这六项效果。
 | [`game-world-design`](skills/game-world-design/) | 定义玩家承诺、核心循环、世界响应、系统、关卡、失败与结果 |
 | [`game-art-direction`](skills/game-art-direction/) | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
 | [`game-build`](skills/game-build/) | 先做与风险匹配的白盒，再在不重做策划的前提下实现正式候选 |
-| [`game-qa`](skills/game-qa/) | 用命令、状态、截图和实际游玩路径验证构建，不夸大主观结论 |
+| [`game-qa`](skills/game-qa/) | 用命令、状态、截图和实际游玩路径验证构建，并写明哪些没测 |
 
 ## 产物
 
@@ -410,7 +395,7 @@ game-adaptations/<project>/
 
 ### 完整跑一次要多久、花多少钱？
 
-不止一句提示词的事。Agent 要读完整本小说、写五份设计文档、构建并跑 QA，每个阶段都是一次独立的 skill 调用，所以一次完整运行很长，可能跨多次会话。token 费用按你所用编码 Agent 的计费；除非美术方向选用图片或语音生成（见下面 GPU 一条），不产生其他费用。公开示例的进度文件没有记录耗时和 token 数，所以这里不给具体数字。
+Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构建并跑 QA，完整运行可能跨多次会话。token 用量按你所用编码 Agent 计费。产品简报会记下你给出的预算（模型额度、工时或费用），流程在白盒之后和正式生产进行到一半时各用它对照一次剩余范围，在预算耗尽前先删减内容。生成服务、引擎许可或托管可能另有费用，需求确认阶段会在使用付费服务前说明。公开示例的进度文件没有记录耗时和 token 数，所以这里不给具体数字。
 
 ### 会话中途断了，能接着做吗？
 
@@ -418,11 +403,11 @@ game-adaptations/<project>/
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
-由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。QA 把替代运行视为从不证明目标平台已通过。三个公开示例都是浏览器游戏（两个零依赖静态应用和一个 Three.js + Vite 构建），是因为它们的简报锁定了这样，不是因为这是默认值。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与 [QA 契约](skills/game-qa/references/qa-contract.md)。
+由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。替代运行的 QA 结果只覆盖实际测试环境。三个公开示例都是浏览器游戏（两个零依赖静态应用和一个 Three.js + Vite 构建），它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与 [QA 契约](skills/game-qa/references/qa-contract.md)。
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
-不需要 GPU，也不需要单独的模型：拆解、设计和代码都由你已在用的编码 Agent 的模型完成。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例的图由 Codex 内置的图像工具生成，大部分在 `build/art/generated-art.json` 里按批次记录）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。付费服务是 Agent 开始前会停下来问你的问题之一。见[语音资产生产合同](skills/game-build/references/tts-production-contract.md)。
+拆解、设计和代码都由你已在用的编码 Agent 的模型完成。使用托管模型时，这些步骤不需要额外的本地模型或 GPU；运行生成的游戏仍需满足目标运行环境的硬件要求。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例的图由 Codex 内置的图像工具生成，大部分在 `build/art/generated-art.json` 里按批次记录）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。见[语音资产生产合同](skills/game-build/references/tts-production-contract.md)。
 
 ### 怎么知道它做出来的游戏真的能跑？QA 里的 PASS 是什么意思？
 
@@ -434,7 +419,7 @@ game-adaptations/<project>/
 
 ### 我没有版权的小说能改编吗？
 
-这套 skills 不替你清权，QA 也不认证权利。版权、资产授权和真实人物属于 Agent 开始前必须停下来问的问题；简报记录合规边界，`SOURCE_BIBLE` 记录版本、覆盖范围和授权边界；依赖复制其他游戏受保护的角色、地图、界面或文本的概念会被硬否决。公开示例使用 Project Gutenberg 文本，并在各自的 `source/SOURCE.md` 里记录权利状态，包括金瓶梅示例为什么只收录删节本。
+这套 skills 不替你清权，QA 也不认证权利。版权、资产授权和真实人物属于 `quick` 会停下来问的决定；简报记录合规边界，`SOURCE_BIBLE` 记录版本、覆盖范围和授权边界；依赖复制其他游戏受保护的角色、地图、界面或文本的概念会被硬否决。公开示例使用 Project Gutenberg 文本，并在各自的 `source/SOURCE.md` 里记录权利状态，包括金瓶梅示例为什么只收录删节本。
 
 ### 能只要设计文档、不构建吗？
 

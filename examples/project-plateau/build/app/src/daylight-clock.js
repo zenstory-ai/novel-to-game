@@ -8,14 +8,14 @@ const START_ELEVATION = Math.asin(SUN_DIRECTION.y);
 // Ends above the western wall so the last-light sun disc stays in view.
 const END_ELEVATION = THREE.MathUtils.degToRad(13);
 const AZIMUTH = Math.atan2(SUN_DIRECTION.z, SUN_DIRECTION.x);
-const SUN_COLOR = Object.freeze({ start: new THREE.Color(0xffc98a), end: new THREE.Color(0xff9a5a) });
+const SUN_COLOR = { start: new THREE.Color(0xffc98a), end: new THREE.Color(0xff9a5a) };
 const WARM_FOG = new THREE.Color(0xc29a7c);
-const SKY_DUSK = Object.freeze({
+const SKY_DUSK = {
   zenith: new THREE.Color(0x2e4470),
   upper: new THREE.Color(0xc89a86),
   horizon: new THREE.Color(0xf07f45),
   sun: new THREE.Color(0xffa860),
-});
+};
 
 // Most of the sky change is held for the final minute, so last light reads
 // as an evening, not as the same afternoon a little dimmer.

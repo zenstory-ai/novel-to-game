@@ -143,11 +143,11 @@ function installHeightFogOnMaterial(material, uniforms, profile) {
   material.customProgramCacheKey = () => (
     `${previousProgramCacheKey()}|${FOG_SHADER_VERSION}`
   );
-  material.userData.heightFog = Object.freeze({
+  material.userData.heightFog = {
     version: profile.version,
     integrationModel: profile.integrationModel,
     scatteringModel: profile.scatteringModel,
-  });
+  };
   material.needsUpdate = true;
   return true;
 }
@@ -172,7 +172,7 @@ export function createHeightFogController(
   let installedCount = 0;
   let skippedShaderMaterialCount = 0;
 
-  return Object.freeze({
+  return {
     applyTo(scene) {
       const materials = new Set();
       scene.traverse((object) => {
@@ -203,5 +203,5 @@ export function createHeightFogController(
         fallbackFogModel: 'three-fog-exp2-for-unpatched-custom-shaders',
       };
     },
-  });
+  };
 }

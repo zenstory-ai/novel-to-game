@@ -6,6 +6,7 @@ import {
   vegetationLeafTint,
   vegetationStructureTint,
 } from './vegetation-albedo.js';
+import { createCachedGltfLoader } from './cached-gltf.js';
 
 export const TREE_FERN_LIBRARY_ASSET = Object.freeze({
   url: '/assets/tree-fern-library-original-v1.glb',
@@ -13,28 +14,27 @@ export const TREE_FERN_LIBRARY_ASSET = Object.freeze({
   triangles: 19_788,
   drawCalls: 9,
   variantCount: 3,
-  variantIds: Object.freeze([
+  variantIds: [
     'humid-arch-tree-fern',
     'storm-swept-tree-fern',
     'sheltered-tier-tree-fern',
-  ]),
+  ],
   supportPlaneY: -0.18,
 });
 
 export const TREE_FERN_WIND_PROFILE = Object.freeze({
-  direction: Object.freeze([0.82, 0, 0.57]),
+  direction: [0.82, 0, 0.57],
   horizontalTipDisplacementMeters: 0.165,
   verticalTipDisplacementMeters: 0.034,
   macroFrequencyHz: 0.58,
   flutterFrequencyHz: 1.72,
-  flexAttribute: 'uv1-y',
   supportModel: 'fixed-root-and-trunk-with-progressively-flexible-rachises-and-leaflets',
   shadowModel: 'identical-colour-and-depth-pass-displacement-function-and-uniforms',
 });
 
 const ROOT_BURIAL_DEPTH = 0.018;
 const SUPPORT_CONTACT_CEILING = TREE_FERN_LIBRARY_ASSET.supportPlaneY + 0.031;
-const SUPPORT_CLEARANCE_RANGE = Object.freeze([-0.24, 0]);
+const SUPPORT_CLEARANCE_RANGE = [-0.24, 0];
 
 function prepareMaterial(material) {
   if (!material) return material;
@@ -66,28 +66,8 @@ function prepareTemplate(source) {
   return template;
 }
 
-export function createCachedTreeFernLibraryLoader({
-  assetUrl = TREE_FERN_LIBRARY_ASSET.url,
-  loaderFactory,
-} = {}) {
-  let templatePromise;
-  return function loadTemplate() {
-    if (!templatePromise) {
-      templatePromise = Promise.resolve()
-        .then(async () => {
-          if (loaderFactory) return loaderFactory();
-          const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
-          return new GLTFLoader();
-        })
-        .then((loader) => loader.loadAsync(assetUrl))
-        .then((gltf) => prepareTemplate(gltf.scene))
-        .catch((error) => {
-          templatePromise = undefined;
-          throw error;
-        });
-    }
-    return templatePromise;
-  };
+export function createCachedTreeFernLibraryLoader({ assetUrl = TREE_FERN_LIBRARY_ASSET.url, loaderFactory } = {}) {
+  return createCachedGltfLoader({ assetUrl, prepare: prepareTemplate, loaderFactory });
 }
 
 export const loadTreeFernLibraryTemplate = createCachedTreeFernLibraryLoader();
@@ -134,7 +114,7 @@ function createCorrelatedTextures({
       height.set([heightByte, heightByte, heightByte, 255], offset);
     }
   }
-  return Object.freeze({
+  return {
     albedo: makeTexture(
       `world.material.${prefix}-albedo`, albedo, size, THREE.SRGBColorSpace, repeat,
     ),
@@ -144,7 +124,7 @@ function createCorrelatedTextures({
     height: makeTexture(
       `world.material.${prefix}-height`, height, size, THREE.NoColorSpace, repeat,
     ),
-  });
+  };
 }
 
 export function createTreeFernSurfaceTextures(size = 64) {
@@ -184,7 +164,7 @@ export function createTreeFernSurfaceTextures(size = 64) {
       ];
     },
   });
-  return Object.freeze({ bark, leaf });
+  return { bark, leaf };
 }
 
 function injectTreeFernWindVertex(shader, uniforms) {
@@ -270,11 +250,11 @@ function addThinLeafTransmission(shader) {
 
 function createTreeFernMaterials() {
   const textures = createTreeFernSurfaceTextures();
-  const windUniforms = Object.freeze({
+  const windUniforms = {
     time: { value: 0 },
     strength: { value: TREE_FERN_WIND_PROFILE.horizontalTipDisplacementMeters },
     verticalStrength: { value: TREE_FERN_WIND_PROFILE.verticalTipDisplacementMeters },
-  });
+  };
   const rootTrunk = new THREE.MeshStandardMaterial({
     color: 0xaea79b,
     vertexColors: true,
@@ -333,7 +313,7 @@ function createTreeFernMaterials() {
         : role === 'leaflet' ? textures.leaf : null,
     };
   }
-  return Object.freeze({ rootTrunk, rachis, leaflet, textures, windUniforms });
+  return { rootTrunk, rachis, leaflet, textures, windUniforms };
 }
 
 function createTreeFernDepthMaterial(sourceMaterial) {
@@ -371,12 +351,12 @@ function extractVariants(template) {
       if (!rootTrunk || !rachises || !leaflets) {
         throw new Error(`Tree fern variant ${group.userData.variantId} is missing its load path`);
       }
-      return Object.freeze({
+      return {
         id: group.userData.variantId,
         rootTrunk: rootTrunk.geometry,
         rachises: rachises.geometry,
         leaflets: leaflets.geometry,
-      });
+      };
     });
 }
 
@@ -387,14 +367,14 @@ export function classifyTreeFernHabitat(placement, { terrainGradient, terrainWet
   const variantIndex = wetness >= 0.18
     ? 0
     : wetness <= 0.08 || (placement.x > 20 && slope >= 0.08) ? 1 : 2;
-  return Object.freeze({
+  return {
     variantIndex,
     slope,
     wetness,
     niche: variantIndex === 0
       ? 'humid-retentive-margin'
       : variantIndex === 1 ? 'wind-exposed-drained-margin' : 'sheltered-humus-margin',
-  });
+  };
 }
 
 function supportPoints(geometry) {
@@ -441,14 +421,14 @@ function treeFernInstanceMatrix(placement, geometry, terrainHeight) {
     clearance >= SUPPORT_CLEARANCE_RANGE[0]
       && clearance <= SUPPORT_CLEARANCE_RANGE[1]
   )).length;
-  return Object.freeze({
+  return {
     matrix,
     position: position.clone(),
     supportRatio: supportedVertexCount / localSupport.length,
     minimumClearance: Math.min(...clearances),
     maximumClearance: Math.max(...clearances),
     matureTerrainFitScale: placement.scale,
-  });
+  };
 }
 
 function terrainFittedTreeFernEvidence(placement, geometry, terrainHeight) {
@@ -462,10 +442,10 @@ function terrainFittedTreeFernEvidence(placement, geometry, terrainHeight) {
       0.72,
       0.995,
     );
-    fittedPlacement = Object.freeze({
+    fittedPlacement = {
       ...placement,
       scale: fittedPlacement.scale * fit,
-    });
+    };
     evidence = treeFernInstanceMatrix(fittedPlacement, geometry, terrainHeight);
   }
   return evidence;
@@ -473,15 +453,15 @@ function terrainFittedTreeFernEvidence(placement, geometry, terrainHeight) {
 
 function normalisePlacement(raw, index) {
   if (Array.isArray(raw)) {
-    return Object.freeze({
+    return {
       index,
       x: raw[0],
       z: raw[1],
       scale: raw[2],
       rotation: raw[3],
-    });
+    };
   }
-  return Object.freeze({ index, ...raw });
+  return { index, ...raw };
 }
 
 export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
@@ -510,11 +490,11 @@ export function attachTreeFernLibraryVisual(anchor, template, rawPlacements, {
   const materials = createTreeFernMaterials();
   const group = new THREE.Group();
   group.name = 'world.connected_route.tree-ferns.original-library';
-  const roles = Object.freeze([
-    Object.freeze({ key: 'rootTrunk', label: 'root-trunk', material: materials.rootTrunk }),
-    Object.freeze({ key: 'rachises', label: 'load-bearing-rachises', material: materials.rachis }),
-    Object.freeze({ key: 'leaflets', label: 'attached-leaflets', material: materials.leaflet }),
-  ]);
+  const roles = [
+    { key: 'rootTrunk', label: 'root-trunk', material: materials.rootTrunk },
+    { key: 'rachises', label: 'load-bearing-rachises', material: materials.rachis },
+    { key: 'leaflets', label: 'attached-leaflets', material: materials.leaflet },
+  ];
   const instancedByVariant = variants.map((variant, variantIndex) => roles.map((role) => {
     const geometry = variant[role.key].clone();
     const flex = geometry.getAttribute('uv1');

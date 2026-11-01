@@ -1,14 +1,14 @@
 export function createViewmodelController({ fieldCamera, rifle }) {
-  const FIELD_CAMERA_VIEWMODEL = Object.freeze({
-    position: Object.freeze([0.59, -0.91, -1.52]),
-    rotation: Object.freeze([-0.14, 0.16, -0.065]),
+  const FIELD_CAMERA_VIEWMODEL = {
+    position: [0.59, -0.91, -1.52],
+    rotation: [-0.14, 0.16, -0.065],
     scale: 0.39,
-  });
-  const RIFLE_VIEWMODEL = Object.freeze({
-    position: Object.freeze([0.72, -0.91, -1.14]),
-    rotation: Object.freeze([-0.025, 0.15, -0.09]),
+  };
+  const RIFLE_VIEWMODEL = {
+    position: [0.72, -0.91, -1.14],
+    rotation: [-0.025, 0.15, -0.09],
     scale: 0.205,
-  });
+  };
   fieldCamera.position.fromArray(FIELD_CAMERA_VIEWMODEL.position);
   fieldCamera.rotation.set(...FIELD_CAMERA_VIEWMODEL.rotation);
   fieldCamera.scale.setScalar(FIELD_CAMERA_VIEWMODEL.scale);

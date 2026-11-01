@@ -85,10 +85,9 @@ export function createWorldAssetVisualLoader({
   riverRoom,
   vegetation,
 }) {
-  let assetVisualPromise = null;
+  // main.js memoizes the whole asset pass (and resets it on failure), and each
+  // template loader caches itself, so this function keeps no promise of its own.
   function enableHy3dVisuals() {
-    if (assetVisualPromise) return assetVisualPromise;
-
     const requiredTasks = [
       upgradeIguanodonFamilyWithHy3d(family, { includeYoung: true }),
       upgradePterodactylFlockWithHy3d(pterodactyls),
@@ -281,13 +280,7 @@ export function createWorldAssetVisualLoader({
       }),
     ];
 
-    assetVisualPromise = Promise.all([...requiredTasks, ...optionalTasks])
-      .then(() => undefined)
-      .catch((error) => {
-        assetVisualPromise = null;
-        throw error;
-      });
-    return assetVisualPromise;
+    return Promise.all([...requiredTasks, ...optionalTasks]).then(() => undefined);
   }
   return enableHy3dVisuals;
 }

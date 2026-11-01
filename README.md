@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://zenstory.ai/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
+  <img src="https://raw.githubusercontent.com/zenstory-ai/zenstory/main/apps/web/public/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
 </p>
 
 <h1 align="center">NovelToGame</h1>
@@ -31,7 +31,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The three public examples below play in a browser right now, no install.
+NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The three examples below are browser games and include links to their playable builds.
 
 ## Play Online
 
@@ -75,23 +75,20 @@ https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
 
 ## What it is
 
-There is no GPU, no hosted service, and no bundled engine: the skills run on the model of whichever agent you installed them into. A one-line "turn this book into a game" prompt usually yields a reskin or a clickable plot summary, so the work is split into stages. Each stage owns one document, and every decision in it has to cite evidence:
+The skills run on your coding agent's model and organize adaptation into stages. Each stage owns a document, with source evidence separated from design choices:
 
-- **Every design decision cites the novel.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
+- **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
 - **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
 - **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
-- **Built for the runtime the brief locks.** The product brief, the one-page requirements sheet the agent drafts first (in `quick` it stops for your decision only on blocking items such as platform, rights, or adult content), locks platform, engine, target runtime, and the runtime actually available for testing. A missing toolchain may not silently become a web build. The design documents are engine-independent Markdown you own.
-- **QA is one real run, six checks, and honest limitations.** The build is launched on the tested runtime and one complete execution proves `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart`. Fun, balance, other browsers, and rights are written as limitations, never as PASS.
+- **Built for the runtime the brief locks.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. A missing toolchain may not silently become a web build. The design documents are engine-independent Markdown you own.
+- **QA is one real run, six checks, and written limitations.** The build is launched on the tested runtime and one complete execution proves `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart`. Untested environments are listed as limitations.
 - **Voice is opt-in and generated at build time by default.** No line goes to a text-to-speech provider unless art direction chooses voice; runtime synthesis needs the product brief's explicit approval, and the novel and design documents are never uploaded.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
 
 ## Install
 
-### ClawHub
-
-ClawHub distribution is governed by the repository's [explicit publish inventory](.clawhub/publish.json), with discovery through [ClawHub](https://clawhub.ai/). A skill-specific link is added here only after its publisher, version, and anonymous accessibility are verified, so this README never presents a nonexistent listing as live.
-
+### One command per agent
 
 Prerequisite: you already use Claude Code, Codex, or Kimi Code, and `npx` (Node.js) runs in your terminal.
 
@@ -102,6 +99,8 @@ Prerequisite: you already use Claude Code, Codex, or Kimi Code, and `npx` (Node.
 | Kimi Code | `npx skills add zenstory-ai/novel-to-game -g -y -a kimi-code-cli -s '*'` | `/skill:novel-to-game` |
 
 `-g` installs globally for every directory; drop it to install into the current directory only. **To update, run the same command again, or `npx skills update`.**
+
+The skills are also listed on [ClawHub](https://clawhub.ai/), published from the repository's [publish inventory](.clawhub/publish.json).
 
 <details>
 <summary><strong>All three CLIs at once, or native plugin installation</strong></summary>
@@ -140,7 +139,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 </details>
 
-> Changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/zenstory-ai/novel-to-game/releases). The repository moved from `worldwonderer/novel-to-game` to `zenstory-ai/novel-to-game`; install and marketplace commands from older docs no longer resolve, and the commands above are current.
+> Changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/zenstory-ai/novel-to-game/releases).
 
 ## See what it produces
 
@@ -229,7 +228,7 @@ And [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) 
 
 ### How a choice is written so the game remembers it
 
-[Jin Ping Mei](examples/jin-ping-mei/) is the romance-ADV example. It was rebuilt from a 20-day household-ledger simulation into a galgame, and [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) now gives each heroine something she wants and a wound only the player gets to see, each pinned to chapters (translated; 3 of the table's 5 rows):
+[Jin Ping Mei](examples/jin-ping-mei/) is the romance-ADV example. Its [`concepts/CONCEPT.md`](examples/jin-ping-mei/concepts/CONCEPT.md) gives each heroine something she wants and a wound only the player gets to see, each pinned to chapters (translated; 3 of the table's 5 rows):
 
 ```markdown
 Core sentence: **Whatever you said, they remember.**
@@ -256,25 +255,20 @@ Choices show no numbers. Affection has only three outlets: her expression and li
 Ending rule: get the key choice wrong → Missed; get it right, with her affection ≥7 and the truth told at the last question → Good; otherwise → Ordinary.
 ```
 
-Every heroine ending then turns to a page of what the novel does to her, and the same document is plain about it: the ending decides only what the two of you made of this one spring, and the page footer says it cannot change where she goes in the book.
+Every heroine ending then turns to a page of what the novel does to her: the ending decides only what the two of you made of this one spring, and the page footer says it cannot change where she goes in the book.
 
-The QA record is candid about how much of that was played. In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the complete browser run ends at `yue_good` and all six checks pass; the first and last limitations read:
+In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the complete browser run ends at `yue_good` and all six checks pass; the first limitation records how much of the story that run covered:
 
 ```json
 {
   "scope": "路径覆盖",
   "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
-},
-…
-{
-  "scope": "体验判断",
-  "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
 }
 ```
 
-That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one. Automation proves the game launches, renders, takes input, reaches an ending and restarts; it does not judge whether the story moves anyone or whether the pacing is right.
+That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one.
 
-### What the QA record admits it did not test
+### What one recorded run leaves out
 
 [Project Plateau](examples/project-plateau/) is the 3D example, and its documents are in English. Its concept compared three directions, each anchored to a chapter slice: A · Proof Before Dark (field observation and returning with damaged proof), B · Fire Across the Lake (following the brook to the lake and escaping a tracking predator), and C · The Eighteenth Cave (a proof-carrying descent). It also wrote down the condition under which the winner should be abandoned, in [`concepts/CONCEPT.md`](examples/project-plateau/concepts/CONCEPT.md):
 
@@ -307,25 +301,16 @@ must define that causal chain and preserve the non-lethal scout fantasy.
 ]
 ```
 
-[`build/BUILD_BRIEF.md`](examples/project-plateau/build/BUILD_BRIEF.md) says exactly what that PASS means:
-
-```markdown
-…
-PASS proves the six effects only in the recorded local
-desktop browser. It does not prove subjective visual quality, comfort, fun, balance,
-rights clearance, public hosting or other browsers, GPUs and devices.
-```
-
-And [`qa/verification.json`](examples/project-plateau/qa/verification.json) names what this run left out, including the new stegosaurus beat:
+[`qa/verification.json`](examples/project-plateau/qa/verification.json) names what that run left out, including the new stegosaurus beat:
 
 ```json
 {
-  "scope": "optional stegosaurus beat",
-  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
+  "scope": "tested runtime",
+  "reason": "The run used local desktop Chromium on one Apple M1 Pro; other browsers, GPUs and devices were not exercised."
 },
 {
-  "scope": "look, sound and hitches",
-  "reason": "Visual quality is a reviewed judgment; the sound beds were not heard on laptop speakers and frame hitches were not measured on an unloaded or low-end machine."
+  "scope": "optional stegosaurus beat",
+  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
 }
 ```
 
@@ -360,7 +345,7 @@ Keep the choices and outcomes bounded; show each option's evidence, cost, visibl
 Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
 ```
 
-`quick` is the default: the agent drafts a product brief with sensible defaults, asks only about choices that materially change direction or touch safety, compares meaningful alternatives, and continues through design, build, and QA. Choose `director` when you want to pick the concept yourself; the agent stops at the concept stage with candidates and a recommendation, unless you have already named a direction.
+`quick` is the default: the agent drafts a product brief with sensible defaults and stops for your decision only where a real fork in platform, core gameplay or fantasy, adult content, real persons, copyright or asset licences, paid services, or irreversible production spend would change the direction. Everything else is recorded in the brief as an unconfirmed assumption, and the agent compares meaningful alternatives and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the whitebox playtest (where you can bring in a target player), and at the visual target images when a target pack is made, unless you have already decided.
 
 ## Workflow
 
@@ -368,7 +353,7 @@ Label allowed additions and unresolved questions. Deliver design notes only—do
 Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
 ```
 
-After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The production build targets the approved runtime and prepares one authoritative verification command. QA may diagnose, fix, and rerun, but the final record binds all six checks to the same complete run; findings flow back to the product, design, art, or build document that owns them.
+After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The whitebox playtest also shows which part players keep coming back to, so the story, dialogue and level budget is revised against it, and the brief's production budget is checked against the remaining scope there and again halfway through production. The production build targets the approved runtime and prepares one authoritative verification command. QA may diagnose, fix, and rerun, but the final record binds all six checks to the same complete run; findings flow back to the product, design, art, or build document that owns them.
 
 ## Skills
 
@@ -380,7 +365,7 @@ After world design, a whitebox (a rough build without final art) tests only the 
 | [`game-world-design`](skills/game-world-design/) | Define the player promise, core loop, world response, systems, levels, failure, and outcomes |
 | [`game-art-direction`](skills/game-art-direction/) | Define camera, composition, visual grammar, colour, light, materials, HUD, motion, and sound |
 | [`game-build`](skills/game-build/) | Build a risk-matched whitebox, then implement the approved production candidate without redesigning it |
-| [`game-qa`](skills/game-qa/) | Verify commands, states, screenshots, and real play paths without overstating subjective results |
+| [`game-qa`](skills/game-qa/) | Verify commands, states, screenshots, and real play paths, and record what was not tested |
 
 ## Artifacts
 
@@ -409,7 +394,7 @@ Say so in the request, as the second example above does. That locks `experienceP
 
 ### How long does a full run take, and what does it cost?
 
-Longer than one prompt. The agent reads the whole novel, writes five design documents, builds, and runs QA, and each stage is a separate skill call, so a full run is long and may span more than one session. Token spend is whatever your coding agent bills; nothing else is paid unless art direction opts into image or voice generation (see the GPU question below). The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and the run checks the remaining scope against it after the whitebox and halfway through production, cutting content before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 
@@ -417,11 +402,11 @@ Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `direc
 
 ### Which engine or platform does it build for? Will it fall back to a web page if my toolchain is missing?
 
-You choose, and the product brief locks it: platform, production engine, target runtime, and the runtime actually available for testing. The build may not switch to a web page when the target toolchain is unavailable; only a substitute runtime already approved in the brief may be used, and then `targetRuntime`, `testedRuntime`, and the uncovered items are recorded separately. QA treats a substitute run as never proving the target platform. The three public examples are all browser games (two dependency-free static apps and one Three.js + Vite build) because that is what their briefs locked, not because it is the default. No public example yet targets a native engine or console; a Godot, Unity, or mobile build depends on the toolchain present in your environment and is recorded the same way, with anything untested written as a limitation. See [`game-build`](skills/game-build/SKILL.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
+You choose, and the product brief locks it: platform, production engine, target runtime, and the runtime actually available for testing. The build may not switch to a web page when the target toolchain is unavailable; only a substitute runtime already approved in the brief may be used, and then `targetRuntime`, `testedRuntime`, and the uncovered items are recorded separately. QA on a substitute run covers only the environment actually tested. The three public examples are all browser games (two dependency-free static apps and one Three.js + Vite build) because their briefs chose the browser as the target runtime. No public example yet targets a native engine or console; a Godot, Unity, or mobile build depends on the toolchain present in your environment and is recorded the same way, with anything untested written as a limitation. See [`game-build`](skills/game-build/SKILL.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
-No GPU and no separate model: analysis, design, and code are written by the model of the coding agent you already use. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. Paid services are one of the things the agent stops to ask about before it starts. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
+For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 
@@ -433,7 +418,7 @@ Yes. Novels in any language are accepted; artifacts use the language you ask for
 
 ### Can I adapt a novel I do not own the rights to?
 
-The skills do not clear rights for you, and QA does not certify them. Copyright, asset licensing, and real persons are among the questions the agent must stop and ask about before it starts; the brief records the compliance boundary and `SOURCE_BIBLE` records the edition, coverage, and authorisation boundary; a concept that depends on another game's protected characters, maps, interface, or text is a hard veto. The public examples use Project Gutenberg texts and record the rights status in each `source/SOURCE.md`, including why the Jin Ping Mei example ships an expurgated text.
+The skills do not clear rights for you, and QA does not certify them. Copyright, asset licensing, and real persons are among the decisions `quick` stops for; the brief records the compliance boundary and `SOURCE_BIBLE` records the edition, coverage, and authorisation boundary; a concept that depends on another game's protected characters, maps, interface, or text is a hard veto. The public examples use Project Gutenberg texts and record the rights status in each `source/SOURCE.md`, including why the Jin Ping Mei example ships an expurgated text.
 
 ### Can I get design documents without a build?
 

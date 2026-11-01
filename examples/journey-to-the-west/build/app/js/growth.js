@@ -13,9 +13,8 @@ export function settleLevelUp(campaign, ups) {
     campaign.pendingPoints[key] = (campaign.pendingPoints[key] ?? 0) + GROWTH.pointsPerLevel;
     const def = PARTY[key];
     if (!def) continue;
-    campaign.skillPoints = campaign.skillPoints ?? {};
-    campaign.skillPoints[key] = (campaign.skillPoints[key] ?? 0) + (GROWTH.skillPointsPerLevel ?? 1);
-    granted[key] = { points: GROWTH.pointsPerLevel, skillPoints: GROWTH.skillPointsPerLevel ?? 1 };
+    campaign.skillPoints[key] = (campaign.skillPoints[key] ?? 0) + (GROWTH.skillPointsPerLevel);
+    granted[key] = { points: GROWTH.pointsPerLevel, skillPoints: GROWTH.skillPointsPerLevel };
   }
   return granted;
 }
@@ -23,10 +22,9 @@ export function settleLevelUp(campaign, ups) {
 // 修炼点投法：投给某已习得法术，熟练 +1(上限 GROWTH.skillRankCap);不洗点
 export function allocateSkillPoint(campaign, key, skillId) {
   const def = PARTY[key];
-  campaign.skillPoints = campaign.skillPoints ?? {};
   const pending = campaign.skillPoints[key] ?? 0;
   if (!def || pending <= 0) return false;
-  const learned = skillsAtLevel(def, campaign.levels?.[key] ?? 1);
+  const learned = skillsAtLevel(def, campaign.levels[key] ?? 1);
   if (!learned.includes(skillId)) return false;
   campaign.skillLevels[key] = campaign.skillLevels[key] ?? {};
   const cur = campaign.skillLevels[key][skillId] ?? 1;
@@ -41,8 +39,8 @@ export function allocateSkillPoint(campaign, key, skillId) {
 export function recommendSkillPick(campaign, key) {
   const def = PARTY[key];
   if (!def) return null;
-  const levels = campaign.skillLevels?.[key] ?? {};
-  const learned = skillsAtLevel(def, campaign.levels?.[key] ?? 1)
+  const levels = campaign.skillLevels[key] ?? {};
+  const learned = skillsAtLevel(def, campaign.levels[key] ?? 1)
     .filter((k) => (levels[k] ?? 1) < GROWTH.skillRankCap);
   if (learned.length === 0) return null;
   const w = def.recommendedAlloc ?? {};
