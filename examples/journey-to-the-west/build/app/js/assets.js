@@ -30,8 +30,8 @@ const bgPaths = {
   moyundong: 'assets/bg/moyundong.jpg?v=20260905', bibotan: 'assets/bg/bibotan.jpg?v=20260905',
   ending: 'assets/bg/ending.jpg',
   // 2.5D 行走场景图(梦幻式大地图)
-  'map-village': 'assets/scene/map-village.jpg', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg',
-  'map-huokou': 'assets/scene/map-huokou.jpg', 'map-jilei': 'assets/scene/map-jilei.jpg',
+  'map-village': 'assets/scene/map-village.jpg?v=20261101-districts', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg?v=20261101-districts',
+  'map-huokou': 'assets/scene/map-huokou.jpg?v=20261101-districts', 'map-jilei': 'assets/scene/map-jilei.jpg?v=20261101-districts',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',

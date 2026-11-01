@@ -13,13 +13,14 @@ import {
 } from './world.js';
 import { audio } from './audio.js';
 import { worldImage, bgImage } from './assets.js';
+import { createNavigation } from './world-navigation.js';
 
 const FOLLOWERS = ['tang', 'bajie', 'sha'];
 // 立绘原本朝左的单位(其余朝右);行走时据此决定是否镜像
 const ART_FACES_LEFT = new Set(['wukong', 'pixie']);
 
 export function runScene(ctx) {
-  // ctx: {root, sceneId, spawn:[x,y](原图像素), fast, onActor(id), onPortal(id), onFrame(info), minimap:canvas}
+  // ctx: {root, sceneId, spawn:[x,y](原图像素), fast, onActor(id), onPortal(id), onLandmark(id), onFrame(info), minimap:canvas}
   const scene = SCENES[ctx.sceneId];
   const S = MAP_SCALE;
   const WW = scene.size[0] * S, WH = scene.size[1] * S;
@@ -34,94 +35,19 @@ export function runScene(ctx) {
   const bg = bgImage(scene.bg);
 
   // ---------- 可走网格 ----------
-  const walkPoly = scene.walk.map(([x, y]) => [x * S, y * S]);
-  const cols = Math.ceil(WW / GRID), rows = Math.ceil(WH / GRID);
-  const walkable = new Uint8Array(cols * rows);
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      walkable[r * cols + c] = inPoly((c + 0.5) * GRID, (r + 0.5) * GRID, walkPoly) ? 1 : 0;
-    }
-  }
-  const cellOf = (x, y) => [Math.max(0, Math.min(cols - 1, Math.floor(x / GRID))), Math.max(0, Math.min(rows - 1, Math.floor(y / GRID)))];
-  const isWalk = (c, r) => c >= 0 && r >= 0 && c < cols && r < rows && walkable[r * cols + c] === 1;
-
-  function nearestWalkable(c0, r0) {
-    if (isWalk(c0, r0)) return [c0, r0];
-    for (let rad = 1; rad < Math.max(cols, rows); rad++) {
-      let best = null, bestD = Infinity;
-      for (let dc = -rad; dc <= rad; dc++) {
-        for (const dr of [-rad, rad]) {
-          for (const [c, r] of [[c0 + dc, r0 + dr], [c0 + dr, r0 + dc]]) {
-            if (!isWalk(c, r)) continue;
-            const d = (c - c0) ** 2 + (r - r0) ** 2;
-            if (d < bestD) { bestD = d; best = [c, r]; }
-          }
-        }
-      }
-      if (best) return best;
-    }
-    return [c0, r0];
-  }
-
-  function lineClear(ax, ay, bx, by) {
-    const steps = Math.ceil(Math.hypot(bx - ax, by - ay) / (GRID / 2));
-    for (let i = 1; i <= steps; i++) {
-      const [c, r] = cellOf(ax + ((bx - ax) * i) / steps, ay + ((by - ay) * i) / steps);
-      if (!isWalk(c, r)) return false;
-    }
-    return true;
-  }
-
-  // 广度寻路(8 向，不切墙角)+ 拉直
-  function findPath(fx, fy, tx, ty) {
-    const [sc, sr] = nearestWalkable(...cellOf(fx, fy));
-    const [gc, gr] = nearestWalkable(...cellOf(tx, ty));
-    const goal = isWalk(...cellOf(tx, ty)) ? [tx, ty] : [(gc + 0.5) * GRID, (gr + 0.5) * GRID];
-    if (lineClear(fx, fy, goal[0], goal[1])) return [goal];
-    const prev = new Int32Array(cols * rows).fill(-1);
-    const start = sr * cols + sc, end = gr * cols + gc;
-    prev[start] = start;
-    const queue = [start];
-    for (let qi = 0; qi < queue.length; qi++) {
-      const cur = queue[qi];
-      if (cur === end) break;
-      const c = cur % cols, r = (cur / cols) | 0;
-      for (let dc = -1; dc <= 1; dc++) {
-        for (let dr = -1; dr <= 1; dr++) {
-          if (!dc && !dr) continue;
-          const nc = c + dc, nr = r + dr;
-          if (!isWalk(nc, nr) || (dc && dr && (!isWalk(c + dc, r) || !isWalk(c, r + dr)))) continue;
-          const ni = nr * cols + nc;
-          if (prev[ni] !== -1) continue;
-          prev[ni] = cur;
-          queue.push(ni);
-        }
-      }
-    }
-    if (start === end || prev[end] === -1) return [goal];
-    const cells = [];
-    for (let cur = end; cur !== start; cur = prev[cur]) cells.push([((cur % cols) + 0.5) * GRID, (((cur / cols) | 0) + 0.5) * GRID]);
-    cells.reverse();
-    cells[cells.length - 1] = goal;
-    const out = [];
-    let ax = fx, ay = fy, i = 0;
-    while (i < cells.length) {
-      let j = cells.length - 1;
-      while (j > i && !lineClear(ax, ay, cells[j][0], cells[j][1])) j--;
-      out.push(cells[j]);
-      [ax, ay] = cells[j];
-      i = j + 1;
-    }
-    return out;
-  }
+  const navigation = createNavigation({ size: scene.size, walk: scene.walk, blockers: scene.blockers, scale: S, grid: GRID });
+  const { cellOf, isWalkableCell: isWalk, findPath } = navigation;
 
   // ---------- 实体 ----------
-  const spawn = (ctx.spawn ?? scene.spawn).map((v) => v * S);
+  const requestedSpawn = (ctx.spawn ?? scene.spawn).map((v) => v * S);
+  const spawn = navigation.normalizePoint(...requestedSpawn) ?? requestedSpawn;
   const player = { id: 'player', unit: 'wukong', name: '孙悟空', title: '齐天大圣', x: spawn[0], y: spawn[1], h: 142, path: [], facing: 1, moving: false, kind: 'player' };
   const trail = [];
   const followers = FOLLOWERS.map((unit, i) => ({ unit, name: { tang: '唐僧', bajie: '猪八戒', sha: '沙悟净' }[unit], x: spawn[0] - 58 * (i + 1), y: spawn[1] + 26 * (i + 1), h: unit === 'tang' ? 130 : 136, facing: 1, moving: false, kind: 'party' }));
   let actors = [];      // hub 提供:{id, unit, name, title, x, y(原图像素), h, mark, kind:'npc'|'demon', wander}
   let portals = [];     // {id, to, x, y, label, locked}
+  let landmarks = Object.entries(scene.landmarks ?? {}).map(([id, landmark]) => ({ id, ...landmark, x: landmark.at[0], y: landmark.at[1], visited: false }));
+  let hoveredLandmarkId = null;
   const bubbles = new Map(); // actorId -> {text, until}
   const ripples = [];
   let fxLevelUntil = 0;
@@ -234,7 +160,19 @@ export function runScene(ctx) {
   }
 
   function walkTo(wx, wy) {
-    player.path = findPath(player.x, player.y, wx, wy);
+    const path = findPath(player.x, player.y, wx, wy);
+    player.path = path;
+    return path.length > 0;
+  }
+
+  function walkToInteraction(wx, wy, targetX, targetY, reach) {
+    if (!walkTo(wx, wy)) return false;
+    const endpoint = player.path[player.path.length - 1];
+    if (!endpoint || Math.hypot(endpoint[0] - targetX, endpoint[1] - targetY) > reach) {
+      player.path = [];
+      return false;
+    }
+    return true;
   }
 
   // ---------- 交互 ----------
@@ -250,11 +188,11 @@ export function runScene(ctx) {
     const a = actors.find((x) => x.id === id);
     if (!a) return false;
     dropPending();
-    pendingAct = { type: 'actor', id };
     a.frozen = true; // 被点名的明雷妖怪停步等你
     // 站到对方身侧一步开外(约 110px),不贴脸、不踩到对方名牌
     const side = player.x < a.wx ? -1 : 1;
-    walkTo(a.wx + side * 110, a.wy + 14);
+    if (!walkToInteraction(a.wx + side * 110, a.wy + 14, a.wx, a.wy, 210)) { a.frozen = false; return false; }
+    pendingAct = { type: 'actor', id };
     return true;
   }
 
@@ -262,8 +200,22 @@ export function runScene(ctx) {
     const p = portals.find((x) => x.id === id);
     if (!p) return false;
     dropPending();
+    if (!walkToInteraction(p.x * S, p.y * S, p.x * S, p.y * S, 150)) return false;
     pendingAct = { type: 'portal', id };
-    walkTo(p.x * S, p.y * S);
+    return true;
+  }
+
+  function approachLandmark(id) {
+    const landmark = landmarks.find((candidate) => candidate.id === id);
+    if (!landmark) return false;
+    dropPending();
+    const width = landmark.footprint?.[0] ?? 70;
+    const side = player.x < landmark.wx ? -1 : 1;
+    const targetX = landmark.wx + side * (width * S / 2 + 62);
+    const targetY = landmark.wy + 18;
+    const reach = Math.max(190, width / 2 + 100) * S;
+    if (!walkToInteraction(targetX, targetY, landmark.wx, landmark.wy, reach)) return false;
+    pendingAct = { type: 'landmark', id };
     return true;
   }
 
@@ -285,6 +237,13 @@ export function runScene(ctx) {
     return portals.find((p) => p.labelBox && sx >= p.labelBox.l - 4 && sx <= p.labelBox.r + 4 && sy >= p.labelBox.t - 4 && sy <= p.labelBox.b + 4) ?? null;
   }
 
+  function hitLandmark(wx, wy) {
+    return landmarks.find((landmark) => {
+      const [width, height] = landmark.footprint ?? [82, 58];
+      return Math.abs(wx - landmark.wx) <= width * S / 2 && Math.abs(wy - landmark.wy) <= height * S / 2;
+    }) ?? null;
+  }
+
   function onClick(ev) {
     if (busy || disposed || document.querySelector('.dlg-box, .modal-mask, .npc-menu')) return;
     const r = canvas.getBoundingClientRect();
@@ -296,6 +255,8 @@ export function runScene(ctx) {
     if (pl) { approachPortal(pl.id); return; }
     const p = hitPortal(wx, wy);
     if (p) { approachPortal(p.id); return; }
+    const landmark = hitLandmark(wx, wy);
+    if (landmark) { audio.sfx('click'); approachLandmark(landmark.id); return; }
     dropPending();
     ctx.onManualMove?.();
     walkTo(wx, wy);
@@ -305,8 +266,11 @@ export function runScene(ctx) {
   canvas.addEventListener('mousemove', (ev) => {
     const r = canvas.getBoundingClientRect();
     const wx = ev.clientX - r.left + cam.x, wy = ev.clientY - r.top + cam.y;
-    canvas.style.cursor = hitActor(wx, wy) || hitPortalLabel(ev.clientX - r.left, ev.clientY - r.top) || hitPortal(wx, wy) ? 'pointer' : '';
+    const landmark = hitLandmark(wx, wy);
+    hoveredLandmarkId = landmark?.id ?? null;
+    canvas.style.cursor = hitActor(wx, wy) || hitPortalLabel(ev.clientX - r.left, ev.clientY - r.top) || hitPortal(wx, wy) || landmark ? 'pointer' : '';
   });
+  canvas.addEventListener('mouseleave', () => { hoveredLandmarkId = null; });
 
   function onKey(ev) {
     if (busy || disposed || document.querySelector('.modal-mask, .dlg-box, .npc-menu')) return;
@@ -320,7 +284,10 @@ export function runScene(ctx) {
       ev.preventDefault();
     } else if (ev.key === 'Enter' || ev.key === ' ') {
       const a = actors.filter((x) => near(x, 190)).sort((x, y) => Math.hypot(x.wx - player.x, x.wy - player.y) - Math.hypot(y.wx - player.x, y.wy - player.y))[0];
-      if (a) { approachActor(a.id); ev.preventDefault(); }
+      const landmark = landmarks.filter((x) => near(x, 210)).sort((x, y) => Math.hypot(x.wx - player.x, x.wy - player.y) - Math.hypot(y.wx - player.x, y.wy - player.y))[0];
+      if (a) approachActor(a.id);
+      else if (landmark) approachLandmark(landmark.id);
+      if (a || landmark) ev.preventDefault();
     }
   }
   window.addEventListener('keydown', onKey);
@@ -331,13 +298,17 @@ export function runScene(ctx) {
     if (!act) return;
     if (act.type === 'actor') {
       const a = actors.find((x) => x.id === act.id);
-      if (a) {
+      if (a && near(a, 210)) {
         player.facing = a.wx >= player.x ? 1 : -1;
         ctx.onActor?.(act.id);
       }
-    } else {
+    } else if (act.type === 'portal') {
       const p = portals.find((x) => x.id === act.id);
-      if (p) ctx.onPortal?.(act.id);
+      if (p && Math.hypot(p.x * S - player.x, p.y * S - player.y) < 150) ctx.onPortal?.(act.id);
+    } else {
+      const landmark = landmarks.find((x) => x.id === act.id);
+      const reach = landmark ? Math.max(190, (landmark.footprint?.[0] ?? 82) / 2 + 100) * S : 0;
+      if (landmark && near(landmark, reach)) ctx.onLandmark?.(act.id);
     }
   }
 
@@ -401,7 +372,9 @@ export function runScene(ctx) {
         a.seed = (a.seed * 1103515245 + 12345) >>> 0;
         const ang = (a.seed % 628) / 100, rad = 40 + (a.seed % 90);
         const [c, r] = cellOf(a.hx + Math.cos(ang) * rad, a.hy + Math.sin(ang) * rad * 0.6);
-        if (isWalk(c, r)) { a.tx = (c + 0.5) * GRID; a.ty = (r + 0.5) * GRID; }
+        const targetX = (c + 0.5) * GRID;
+        const targetY = (r + 0.5) * GRID;
+        if (isWalk(c, r) && navigation.lineClear(a.wx, a.wy, targetX, targetY)) { a.tx = targetX; a.ty = targetY; }
         a.wt = 1.6 + (a.seed % 20) / 10;
       }
       const dx = a.tx - a.wx, dy = a.ty - a.wy, d = Math.hypot(dx, dy);
@@ -529,11 +502,73 @@ export function runScene(ctx) {
     g.restore();
   }
 
+  function drawLandmark(landmark, now) {
+    const x = landmark.wx - cam.x;
+    const y = landmark.wy - cam.y;
+    const pulse = 1 + Math.sin(now / 420) * 0.08;
+    const color = landmark.visited ? 'rgba(76,151,137,' : 'rgba(229,184,67,';
+    g.save();
+    g.strokeStyle = `${color}${landmark.visited ? 0.52 : 0.82})`;
+    g.lineWidth = landmark.visited ? 1.5 : 2;
+    g.beginPath();
+    g.ellipse(x, y, 28 * pulse, 10 * pulse, 0, 0, Math.PI * 2);
+    g.stroke();
+    if (!landmark.visited) {
+      const glint = (now / 900 + landmark.id.length * 0.17) % 1;
+      g.fillStyle = `rgba(255,239,155,${Math.sin(glint * Math.PI) * 0.75})`;
+      g.beginPath();
+      g.arc(x + (glint - 0.5) * 38, y - 9 - Math.sin(glint * Math.PI) * 7, 2.2, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.restore();
+  }
+
+  function drawLandmarkLabel(landmark) {
+    const nearby = Math.hypot(landmark.wx - player.x, landmark.wy - player.y) < 240;
+    if (hoveredLandmarkId !== landmark.id && !nearby && !(pendingAct?.type === 'landmark' && pendingAct.id === landmark.id)) return;
+    const x = landmark.wx - cam.x;
+    const y = landmark.wy - cam.y;
+    const [footprintWidth] = landmark.footprint ?? [82, 58];
+    g.font = 'bold 13px "Songti SC", "STSong", serif';
+    const width = g.measureText(landmark.name).width + 8;
+    const sideOffset = footprintWidth * S / 2 + width / 2 + 10;
+    const candidates = [
+      { x, y: y - 38 },
+      { x: x - sideOffset, y: y - 9 },
+      { x: x + sideOffset, y: y - 9 },
+    ];
+    for (const candidate of candidates) {
+      const box = { l: candidate.x - width / 2, r: candidate.x + width / 2, t: candidate.y - 2, b: candidate.y + 18 };
+      if (box.l < 8 || box.r > cam.vw - 8 || box.t < 8 || box.b > cam.vh - 8
+        || hits(box) || overLandmarkEntity(box)) continue;
+      label(landmark.name, candidate.x, candidate.y, landmark.visited ? '#9ad8ca' : '#ffe07a', 13);
+      return;
+    }
+  }
+
   // 传送阵字:对白/菜单打开时不画;压到 HUD 或 NPC/妖怪(身子+头顶标记+名牌,与 hitActor 同一块点击区)
   // 就挪到阵下方,再不行就不画(小地图上仍有阵眼)——字永远不盖人,点人永远点得到人
   const overActor = (box) => actors.some((a) => {
     const bounds = worldActorBounds(presentation({ ...a, x: a.wx, y: a.wy }).geometry);
     const screen = { l: bounds.left - cam.x, r: bounds.right - cam.x, t: bounds.top - cam.y, b: bounds.bottom - cam.y };
+    return box.l < screen.r && box.r > screen.l && box.t < screen.b && box.b > screen.t;
+  });
+  const landmarkEntityScreenBox = (entity) => {
+    const geometry = presentation(entity).geometry;
+    const bounds = worldActorBounds(geometry);
+    return {
+      l: bounds.left - cam.x,
+      r: bounds.right - cam.x,
+      t: bounds.top - cam.y,
+      b: Math.max(bounds.bottom, geometry.anchorY + 42) - cam.y,
+    };
+  };
+  const overLandmarkEntity = (box) => [
+    ...actors.map((actor) => ({ ...actor, x: actor.wx, y: actor.wy })),
+    player,
+    ...followers,
+  ].some((entity) => {
+    const screen = landmarkEntityScreenBox(entity);
     return box.l < screen.r && box.r > screen.l && box.t < screen.b && box.b > screen.t;
   });
   function drawPortalLabel(p) {
@@ -566,6 +601,7 @@ export function runScene(ctx) {
     mg.strokeRect(ox + cam.x * k, oy + cam.y * k, cam.vw * k, cam.vh * k);
     const dot = (x, y, c, r = 3) => { mg.fillStyle = c; mg.beginPath(); mg.arc(ox + x * k, oy + y * k, r, 0, Math.PI * 2); mg.fill(); };
     for (const p of portals) dot(p.x * S, p.y * S, p.locked ? '#aaa' : '#5ef0ff', 3.5);
+    for (const landmark of landmarks) dot(landmark.wx, landmark.wy, landmark.visited ? '#63c8b2' : '#f0c64d', landmark.visited ? 2.2 : 3);
     for (const a of actors) dot(a.wx, a.wy, a.kind === 'demon' ? '#ff5a3c' : a.mark ? '#ffd23a' : '#fff1a0', a.mark ? 4 : 2.6);
     dot(player.x, player.y, '#5cff5c', 3.5 + Math.abs(Math.sin(now / 300)));
     mm.dataset.k = String(k); mm.dataset.ox = String(ox); mm.dataset.oy = String(oy);
@@ -589,6 +625,7 @@ export function runScene(ctx) {
       g.ellipse(rp.x - cam.x, rp.y - cam.y, 8 + rp.t * 40, (8 + rp.t * 40) * 0.4, 0, 0, Math.PI * 2);
       g.stroke();
     }
+    for (const landmark of landmarks) drawLandmark(landmark, now);
     for (const p of portals) drawPortal(p, now);
     const drawables = [
       ...actors.map((a) => ({ e: { ...a, x: a.wx, y: a.wy }, kind: a.kind, src: a })),
@@ -619,6 +656,7 @@ export function runScene(ctx) {
       if (d.src?.mark) drawMark(d.e, d.src.mark, now);
     }
     for (const p of portals) drawPortalLabel(p);
+    for (const landmark of landmarks) drawLandmarkLabel(landmark);
     for (const d of drawables) {
       const b = d.src ? bubbles.get(d.src.id) : d.kind === 'party' ? bubbles.get(d.e.unit) : d.kind === 'player' ? bubbles.get('player') : null;
       if (b) drawBubble(d.e, b.text);
@@ -646,14 +684,27 @@ export function runScene(ctx) {
     });
   }
 
+  function syncLandmarks(list) {
+    hoveredLandmarkId = null;
+    landmarks = (list ?? []).map((landmark) => ({
+      ...landmark,
+      wx: landmark.x * S,
+      wy: landmark.y * S,
+      footprint: landmark.footprint ?? [82, 58],
+    }));
+  }
+  syncLandmarks(landmarks);
+
   return {
     sceneId: scene.id,
     setActors: syncActors,
     setPortals(list) { portals = list; },
-    setBusy(b) { busy = b; if (b) { player.path = []; pendingAct = null; } },
+    setLandmarks: syncLandmarks,
+    setBusy(b) { busy = b; if (b) { player.path = []; dropPending(); } },
     stopWalking() { player.path = []; dropPending(); },
     approachActor,
     approachPortal,
+    approachLandmark,
     walkToMinimap(px, py) {
       const mm = ctx.minimap;
       const k = Number(mm.dataset.k), ox = Number(mm.dataset.ox), oy = Number(mm.dataset.oy);
@@ -678,6 +729,8 @@ export function runScene(ctx) {
       }
       const p = portals.find((x) => x.id === id);
       if (p) return { x: r.left + p.x * S - cam.x, y: r.top + p.y * S - cam.y };
+      const landmark = landmarks.find((x) => x.id === id);
+      if (landmark) return { x: r.left + landmark.wx - cam.x, y: r.top + landmark.wy - cam.y };
       return null;
     },
     // 隐藏即停帧：战斗与寻宝期间不在底下逐帧绘制
@@ -694,13 +747,4 @@ export function runScene(ctx) {
       wrap.remove();
     },
   };
-}
-
-function inPoly(x, y, poly) {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [xi, yi] = poly[i], [xj, yj] = poly[j];
-    if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
 }

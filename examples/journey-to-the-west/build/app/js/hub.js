@@ -4,7 +4,7 @@
 import { SCENES, BARKS, PARTY_BANTER, nextPortalToward } from './world.js';
 import { runScene } from './overworld.js';
 import { createHud, logLine } from './hud.js';
-import { el, npcMenu, bigToast, toast, showPanel } from './ui.js';
+import { artIcon, el, npcMenu, bigToast, toast, showModal, showPanel } from './ui.js';
 import { audio } from './audio.js';
 import { itemIcon } from './assets.js';
 import { TEXT } from './text.js';
@@ -12,6 +12,7 @@ import { PARTY, ITEMS, EQUIPS, ECONOMY, SHOPS } from './data.js';
 import { unitLevelStats } from './engine.js';
 import { expToNext, levelCap, grantExp, bountyReward, applyLoot, buy, goodName } from './progress.js';
 import { createRNG } from './rng.js';
+import { commitExploration, explorationDefinition, explorationEntry } from './exploration.js';
 
 const STAGE_ORDER = ['prologue', 'pre_fire', 'treasure_fire', 'pre_yumian', 'pre_niu1', 'pre_boss', 'done'];
 const stageAtLeast = (c, s) => STAGE_ORDER.indexOf(c.stage) >= STAGE_ORDER.indexOf(s);
@@ -87,9 +88,16 @@ export function createHub(deps) {
     const b = bounty();
     const sceneId = demonScene();
     const rng = createRNG((C().seedBase + 7000 + b.round * 97 + b.ring * 13) >>> 0);
-    const area = SCENES[sceneId].demonArea ?? [[700, 420], [1250, 760]];
-    const x = Math.round(area[0][0] + rng() * (area[1][0] - area[0][0]));
-    const y = Math.round(area[0][1] + rng() * (area[1][1] - area[0][1]));
+    const spawnPoints = SCENES[sceneId].demonSpawns ?? [];
+    let x;
+    let y;
+    if (spawnPoints.length) {
+      [x, y] = spawnPoints[Math.floor(rng() * spawnPoints.length)];
+    } else {
+      const area = SCENES[sceneId].demonArea ?? [[700, 420], [1250, 760]];
+      x = Math.round(area[0][0] + rng() * (area[1][0] - area[0][0]));
+      y = Math.round(area[0][1] + rng() * (area[1][1] - area[0][1]));
+    }
     const strong = b.ring % 3 === 2;
     b.demon = {
       id: `demon${b.round}_${b.ring}`, scene: sceneId, x, y,
@@ -160,6 +168,18 @@ export function createHub(deps) {
     const c = C();
     ctl.setActors(actorsFor(ctl.sceneId));
     ctl.setPortals(Object.entries(SCENES[ctl.sceneId].portals).map(([id, p]) => ({ id, to: p.to, x: p.at[0], y: p.at[1], label: p.label, locked: portalLocked(c, p.to) })));
+    ctl.setLandmarks?.(Object.entries(SCENES[ctl.sceneId].landmarks ?? {}).flatMap(([id, landmark]) => {
+      const definition = explorationDefinition(id);
+      if (!definition || definition.scene !== ctl.sceneId) return [];
+      return [{
+        id,
+        name: landmark.name ?? definition.title,
+        x: landmark.at[0],
+        y: landmark.at[1],
+        footprint: landmark.footprint,
+        visited: Boolean(explorationEntry(c, id)),
+      }];
+    }));
     const lv = c.levels.wukong ?? 1;
     const st = unitLevelStats(PARTY.wukong, lv, c.alloc.wukong ?? null);
     hud.setHero({ unit: 'wukong', name: '孙悟空', level: lv, hp: st.hp, mp: st.mp, exp: c.exp ?? 0, expNeed: expToNext(lv), capped: lv >= levelCap(c), money: c.money ?? 0 });
@@ -188,6 +208,7 @@ export function createHub(deps) {
       root: app, sceneId, spawn, fast,
       minimap: hud.minimap,
       onActor: (id) => interact(id),
+      onLandmark: (id) => interactLandmark(id),
       onPortal: (id) => usePortal(id),
       onManualMove: () => { travel = null; },
       onFrame: (info) => { hud?.setCoords(info.x, info.y); tick(); },
@@ -246,6 +267,70 @@ export function createHub(deps) {
     if (id === 'gaoshao' || id === 'laozhe') return shopMenu(id);
     if (isMain) return runStory(step);
     say(id, npc.name, nextLine(id));
+  }
+
+  function explorationRewardNode(option) {
+    const node = el('div', 'treasure-card exploration-choice-card');
+    const visual = el('div', 'treasure-visual');
+    const itemKey = Object.keys(option.reward.items ?? {})[0];
+    if (itemKey) visual.appendChild(itemIcon(itemKey, { cls: 'treasure-placeholder' }));
+    else visual.appendChild(artIcon('coin', 'treasure-placeholder'));
+    const copy = el('div', 'treasure-copy');
+    copy.append(el('span', 'eyebrow', '可取其一'), el('h3', '', option.label));
+    if (itemKey) copy.append(el('p', '', ITEMS[itemKey]?.desc ?? '收入背囊'));
+    else copy.append(el('p', '', `银两 +${option.reward.money ?? 0}`));
+    node.append(visual, copy);
+    return node;
+  }
+
+  function chooseExploration(definition, previous) {
+    return new Promise((resolve) => {
+      const bodyNodes = [el('p', 'tutorial-line', previous ? definition.revisit : definition.intro)];
+      if (!previous && definition.options.length > 1) {
+        for (const option of definition.options) bodyNodes.push(explorationRewardNode(option));
+      }
+      const buttons = previous
+        ? [{ label: '离开', id: 'explore-cancel', onClick: () => resolve(null) }]
+        : [
+            ...definition.options.map((option) => ({
+              label: option.label,
+              id: `explore-choice-${option.key}`,
+              onClick: () => resolve(option.key),
+            })),
+            { label: '稍后再看', id: 'explore-cancel', onClick: () => resolve(null) },
+          ];
+      showModal(app, {
+        id: 'modal-exploration',
+        title: previous ? `${definition.title} · 已探` : definition.title,
+        bodyNodes,
+        buttons,
+      });
+    });
+  }
+
+  async function interactLandmark(id) {
+    if (busy || document.querySelector('.dlg-box, .modal-mask, .npc-menu, .chapter-card')) return;
+    const definition = explorationDefinition(id);
+    const landmark = SCENES[ctl.sceneId].landmarks?.[id];
+    if (!definition || definition.scene !== ctl.sceneId || !landmark) return;
+    dismissHint();
+    travel = null;
+    busy = true;
+    ctl.setBusy(true);
+    const previous = explorationEntry(C(), id);
+    const choice = await chooseExploration(definition, previous);
+    let committed = null;
+    if (!previous && choice) committed = commitExploration(C(), ctl.sceneId, id, choice);
+    busy = false;
+    ctl?.setBusy(false);
+    if (committed?.ok) {
+      const hasReward = Boolean(Object.keys(committed.reward.items ?? {}).length || committed.reward.money);
+      audio.sfx(hasReward ? 'coin' : 'quest');
+      logLine('sys', `${definition.title}：${committed.result}`);
+      deps.save(true);
+      bigToast(app, hasReward ? '探索所得' : '有所发现', committed.result, 'quest');
+    }
+    refresh();
   }
 
   async function runStory(step) {
