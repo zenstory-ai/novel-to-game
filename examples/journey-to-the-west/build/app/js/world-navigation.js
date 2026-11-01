@@ -82,7 +82,8 @@ export function createNavigation({ size, walk, blockers = [], scale = 1, grid = 
 
   // 八向广度寻路，不切障碍角；目标在可走区外时落到最近可走格。
   function findPath(fromX, fromY, toX, toY) {
-    const startPoint = normalizePoint(fromX, fromY);
+    const exactStartCell = isPointInBounds(fromX, fromY) && isWalkableCell(...cellOf(fromX, fromY));
+    const startPoint = exactStartCell ? [fromX, fromY] : normalizePoint(fromX, fromY);
     const goalCell = nearestWalkableCell(...cellOf(toX, toY));
     if (!startPoint || !goalCell) return [];
     const [startCol, startRow] = cellOf(...startPoint);
@@ -152,4 +153,15 @@ export function createNavigation({ size, walk, blockers = [], scale = 1, grid = 
     lineClear,
     findPath,
   };
+}
+
+export function findInteractionPath(navigation, { from, target, candidates, reach }) {
+  for (const candidate of candidates) {
+    const path = navigation.findPath(...from, ...candidate);
+    const endpoint = path.at(-1);
+    if (!endpoint || Math.hypot(endpoint[0] - target[0], endpoint[1] - target[1]) > reach) continue;
+    if (!navigation.lineClear(endpoint[0], endpoint[1], target[0], target[1])) continue;
+    return path;
+  }
+  return [];
 }

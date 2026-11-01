@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { createNavigation } from '../js/world-navigation.js';
+import { createNavigation, findInteractionPath } from '../js/world-navigation.js';
 import { GRID, MAP_SCALE, SCENES } from '../js/world.js';
 
 let passed = 0;
@@ -27,6 +27,21 @@ test('矩形障碍会让路径绕行且每段不穿墙', () => {
     from = point;
   }
   assert.ok(path.some(([, y]) => y < 120 || y > 480));
+});
+
+test('合法真实起点作为首段锚点，不会用格中心拉直穿墙', () => {
+  const nav = createNavigation({
+    size: [800, 600], walk: outer, grid: 20,
+    blockers: [[[300, 120], [500, 120], [500, 480], [300, 480]]],
+  });
+  const start = [20, 20];
+  const path = nav.findPath(...start, 319, 514);
+  assert.ok(path.length >= 2);
+  let from = start;
+  for (const point of path) {
+    assert.equal(nav.lineClear(...from, ...point), true);
+    from = point;
+  }
 });
 
 test('障碍切断整张图时返回空路径', () => {
@@ -74,6 +89,34 @@ test('越界目标只落到边缘合法格，直线判定不会沿夹取格走�
     assert.equal(nav.isWalkableCell(...nav.cellOf(...endpoint)), true);
     assert.notDeepEqual(endpoint, target);
   }
+});
+
+test('交互不会隔墙触发，并会绕到目标同侧的可视候选点', () => {
+  const sealed = createNavigation({
+    size: [800, 600], walk: outer, grid: 20,
+    blockers: [[[380, 0], [420, 0], [420, 600], [380, 600]]],
+  });
+  assert.deepEqual(findInteractionPath(sealed, {
+    from: [100, 300], target: [440, 300], candidates: [[330, 300], [550, 300]], reach: 150,
+  }), []);
+
+  const routed = createNavigation({
+    size: [800, 600], walk: outer, grid: 20,
+    blockers: [[[300, 120], [500, 120], [500, 480], [300, 480]]],
+  });
+  const start = [100, 300];
+  const target = [530, 300];
+  const path = findInteractionPath(routed, {
+    from: start, target, candidates: [[420, 300], [640, 300]], reach: 150,
+  });
+  assert.ok(path.length >= 2);
+  let from = start;
+  for (const point of path) {
+    assert.equal(routed.lineClear(...from, ...point), true);
+    from = point;
+  }
+  assert.ok(path.at(-1)[0] > 500);
+  assert.equal(routed.lineClear(...path.at(-1), ...target), true);
 });
 
 test('四图尺寸下的支路夹障碍仍保持连通', () => {

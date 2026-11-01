@@ -4,12 +4,16 @@
   "authoritativeVerification": false,
   "runs": [
     {
-      "id": "panels-complete-14",
+      "id": "panels-integrated-15",
       "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_panels.py",
       "workingDirectory": "examples/journey-to-the-west/build/app/test",
       "exitCode": 0,
-      "result": "Ran 14 tests in 190.478s — OK",
-      "viewports": ["1440x900", "390x844", "320x700"],
+      "result": "Ran 15 tests in 183.615s — OK",
+      "viewports": [
+        "1440x900",
+        "390x844",
+        "320x700"
+      ],
       "coverage": [
         "shared panel shell, close behavior, viewport fit and horizontal overflow",
         "loaded art assets and removal of text icon badges inside the six panels",
@@ -18,19 +22,8 @@
         "bag details, treasure switching, formation and system settings",
         "nested modal keyboard routing",
         "mobile character scroll flow without status-strip overlap",
-        "mobile minimap pixels, HUD non-overlap and click-to-move"
-      ]
-    },
-    {
-      "id": "character-focus-targeted",
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_panels.PanelBrowserTests.test_character_stat_rebuild_preserves_focus_within_same_stat",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "Ran 1 test in 11.485s — OK",
-      "viewports": ["1440x900"],
-      "coverage": [
-        "focus remains on the same stat add button while points remain",
-        "focus falls back to the same stat remove button when points are exhausted"
+        "mobile minimap pixels, HUD non-overlap and click-to-move",
+        "focus remains within the same stat controls through rebuild and point exhaustion"
       ]
     }
   ],

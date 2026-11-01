@@ -13,7 +13,7 @@ import {
 } from './world.js';
 import { audio } from './audio.js';
 import { worldImage, bgImage } from './assets.js';
-import { createNavigation } from './world-navigation.js';
+import { createNavigation, findInteractionPath } from './world-navigation.js';
 
 const FOLLOWERS = ['tang', 'bajie', 'sha'];
 // 立绘原本朝左的单位(其余朝右);行走时据此决定是否镜像
@@ -43,7 +43,23 @@ export function runScene(ctx) {
   const spawn = navigation.normalizePoint(...requestedSpawn) ?? requestedSpawn;
   const player = { id: 'player', unit: 'wukong', name: '孙悟空', title: '齐天大圣', x: spawn[0], y: spawn[1], h: 142, path: [], facing: 1, moving: false, kind: 'player' };
   const trail = [];
-  const followers = FOLLOWERS.map((unit, i) => ({ unit, name: { tang: '唐僧', bajie: '猪八戒', sha: '沙悟净' }[unit], x: spawn[0] - 58 * (i + 1), y: spawn[1] + 26 * (i + 1), h: unit === 'tang' ? 130 : 136, facing: 1, moving: false, kind: 'party' }));
+  const followers = FOLLOWERS.map((unit, i) => {
+    const desired = [spawn[0] - 58 * (i + 1), spawn[1] + 26 * (i + 1)];
+    const foot = navigation.normalizePoint(...desired) ?? spawn;
+    return {
+      unit,
+      name: { tang: '唐僧', bajie: '猪八戒', sha: '沙悟净' }[unit],
+      x: foot[0],
+      y: foot[1],
+      h: unit === 'tang' ? 130 : 136,
+      facing: 1,
+      moving: false,
+      kind: 'party',
+      route: [],
+      routeGoal: foot,
+      routeRetry: 0,
+    };
+  });
   let actors = [];      // hub 提供:{id, unit, name, title, x, y(原图像素), h, mark, kind:'npc'|'demon', wander}
   let portals = [];     // {id, to, x, y, label, locked}
   let landmarks = Object.entries(scene.landmarks ?? {}).map(([id, landmark]) => ({ id, ...landmark, x: landmark.at[0], y: landmark.at[1], visited: false }));
@@ -159,20 +175,32 @@ export function runScene(ctx) {
     };
   }
 
+  function legalizePlayerPosition() {
+    if (!navigation.isPointInBounds(player.x, player.y) || !isWalk(...cellOf(player.x, player.y))) {
+      const legalStart = navigation.normalizePoint(player.x, player.y);
+      if (!legalStart) return false;
+      [player.x, player.y] = legalStart;
+      trail.length = 0;
+    }
+    return true;
+  }
+
   function walkTo(wx, wy) {
+    if (!legalizePlayerPosition()) { player.path = []; return false; }
     const path = findPath(player.x, player.y, wx, wy);
     player.path = path;
     return path.length > 0;
   }
 
-  function walkToInteraction(wx, wy, targetX, targetY, reach) {
-    if (!walkTo(wx, wy)) return false;
-    const endpoint = player.path[player.path.length - 1];
-    if (!endpoint || Math.hypot(endpoint[0] - targetX, endpoint[1] - targetY) > reach) {
-      player.path = [];
-      return false;
-    }
-    return true;
+  function walkToInteraction(targetX, targetY, candidates, reach) {
+    if (!legalizePlayerPosition()) { player.path = []; return false; }
+    player.path = findInteractionPath(navigation, {
+      from: [player.x, player.y],
+      target: [targetX, targetY],
+      candidates,
+      reach,
+    });
+    return player.path.length > 0;
   }
 
   // ---------- 交互 ----------
@@ -191,7 +219,13 @@ export function runScene(ctx) {
     a.frozen = true; // 被点名的明雷妖怪停步等你
     // 站到对方身侧一步开外(约 110px),不贴脸、不踩到对方名牌
     const side = player.x < a.wx ? -1 : 1;
-    if (!walkToInteraction(a.wx + side * 110, a.wy + 14, a.wx, a.wy, 210)) { a.frozen = false; return false; }
+    const candidates = [
+      [a.wx + side * 110, a.wy + 14],
+      [a.wx - side * 110, a.wy + 14],
+      [a.wx, a.wy - 110],
+      [a.wx, a.wy + 110],
+    ];
+    if (!walkToInteraction(a.wx, a.wy, candidates, 210)) { a.frozen = false; return false; }
     pendingAct = { type: 'actor', id };
     return true;
   }
@@ -200,7 +234,9 @@ export function runScene(ctx) {
     const p = portals.find((x) => x.id === id);
     if (!p) return false;
     dropPending();
-    if (!walkToInteraction(p.x * S, p.y * S, p.x * S, p.y * S, 150)) return false;
+    const target = [p.x * S, p.y * S];
+    const candidates = [target, [target[0] - 100, target[1]], [target[0] + 100, target[1]], [target[0], target[1] - 100], [target[0], target[1] + 100]];
+    if (!walkToInteraction(target[0], target[1], candidates, 150)) return false;
     pendingAct = { type: 'portal', id };
     return true;
   }
@@ -210,11 +246,18 @@ export function runScene(ctx) {
     if (!landmark) return false;
     dropPending();
     const width = landmark.footprint?.[0] ?? 70;
+    const height = landmark.footprint?.[1] ?? 58;
     const side = player.x < landmark.wx ? -1 : 1;
-    const targetX = landmark.wx + side * (width * S / 2 + 62);
-    const targetY = landmark.wy + 18;
+    const horizontal = width * S / 2 + 62;
+    const vertical = height * S / 2 + 62;
+    const candidates = [
+      [landmark.wx + side * horizontal, landmark.wy + 18],
+      [landmark.wx - side * horizontal, landmark.wy + 18],
+      [landmark.wx, landmark.wy - vertical],
+      [landmark.wx, landmark.wy + vertical],
+    ];
     const reach = Math.max(190, width / 2 + 100) * S;
-    if (!walkToInteraction(targetX, targetY, landmark.wx, landmark.wy, reach)) return false;
+    if (!walkToInteraction(landmark.wx, landmark.wy, candidates, reach)) return false;
     pendingAct = { type: 'landmark', id };
     return true;
   }
@@ -298,17 +341,19 @@ export function runScene(ctx) {
     if (!act) return;
     if (act.type === 'actor') {
       const a = actors.find((x) => x.id === act.id);
-      if (a && near(a, 210)) {
+      if (a && near(a, 210) && navigation.lineClear(player.x, player.y, a.wx, a.wy)) {
         player.facing = a.wx >= player.x ? 1 : -1;
         ctx.onActor?.(act.id);
-      }
+      } else if (a) a.frozen = false;
     } else if (act.type === 'portal') {
       const p = portals.find((x) => x.id === act.id);
-      if (p && Math.hypot(p.x * S - player.x, p.y * S - player.y) < 150) ctx.onPortal?.(act.id);
+      if (p && Math.hypot(p.x * S - player.x, p.y * S - player.y) < 150
+        && navigation.lineClear(player.x, player.y, p.x * S, p.y * S)) ctx.onPortal?.(act.id);
     } else {
       const landmark = landmarks.find((x) => x.id === act.id);
       const reach = landmark ? Math.max(190, (landmark.footprint?.[0] ?? 82) / 2 + 100) * S : 0;
-      if (landmark && near(landmark, reach)) ctx.onLandmark?.(act.id);
+      if (landmark && near(landmark, reach)
+        && navigation.lineClear(player.x, player.y, landmark.wx, landmark.wy)) ctx.onLandmark?.(act.id);
     }
   }
 
@@ -332,6 +377,28 @@ export function runScene(ctx) {
     return false;
   }
 
+  function followerWaypoint(follower, goalX, goalY, dt) {
+    follower.routeRetry = Math.max(0, follower.routeRetry - dt);
+    if (navigation.lineClear(follower.x, follower.y, goalX, goalY)) {
+      follower.route = [];
+      follower.routeGoal = [goalX, goalY];
+      return [goalX, goalY];
+    }
+
+    while (follower.route.length && Math.hypot(follower.route[0][0] - follower.x, follower.route[0][1] - follower.y) < 5) follower.route.shift();
+    const goalMoved = Math.hypot(goalX - follower.routeGoal[0], goalY - follower.routeGoal[1]) > 70;
+    const routeBlocked = follower.route.length
+      && !navigation.lineClear(follower.x, follower.y, follower.route[0][0], follower.route[0][1]);
+    if (routeBlocked) follower.route = [];
+    if (goalMoved || routeBlocked || (!follower.route.length && follower.routeRetry <= 0)) {
+      follower.route = navigation.findPath(follower.x, follower.y, goalX, goalY);
+      follower.routeGoal = [goalX, goalY];
+      follower.routeRetry = 0.28;
+    }
+    const waypoint = follower.route[0];
+    return waypoint && navigation.lineClear(follower.x, follower.y, waypoint[0], waypoint[1]) ? waypoint : null;
+  }
+
   function step(dt, now) {
     if (moveAlong(player, dt)) arrive();
     if (player.moving) {
@@ -353,12 +420,22 @@ export function runScene(ctx) {
         const clear = !actors.some((a) => Math.abs(a.wx - ax) < 70 && Math.abs(a.wy - ay) < 60);
         if (isWalk(c, r) && clear) { gx = ax; gy = ay; }
       }
-      const dx = gx - f.x, dy = gy - f.y;
+      const waypoint = followerWaypoint(f, gx, gy, dt);
+      if (!waypoint) { f.moving = false; return; }
+      const dx = waypoint[0] - f.x, dy = waypoint[1] - f.y;
       const d = Math.hypot(dx, dy);
       f.moving = d > 3;
       if (Math.abs(dx) > 2) f.facing = dx > 0 ? 1 : -1;
       const k = Math.min(1, dt * 6);
-      f.x += dx * k; f.y += dy * k;
+      const nextX = f.x + dx * k, nextY = f.y + dy * k;
+      if (navigation.lineClear(f.x, f.y, nextX, nextY)) {
+        f.x = nextX;
+        f.y = nextY;
+      } else {
+        f.route = [];
+        f.routeRetry = 0;
+        f.moving = false;
+      }
     });
     for (const a of actors) {
       if (a.kind !== 'demon' || !a.wander || a.frozen) {
