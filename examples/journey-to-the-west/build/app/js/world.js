@@ -5,6 +5,68 @@
 export const MAP_SCALE = 1.15;
 export const GRID = 28; // 寻路网格边长(世界像素)
 
+// 行走立绘的归一化人体锚点：脚底中点与头顶不受画布留白、兵器或飘带影响。
+// 单张图可按实际 alpha 边界覆写；缺省值适合本轮约 40° 俯视站姿。
+export const WORLD_SPRITE_META = {
+  wukong: { anchorX: 0.516, anchorY: 0.875, bodyTop: 0.077, facesLeft: false },
+  tang: { anchorX: 0.465, anchorY: 0.882, bodyTop: 0.081, facesLeft: true },
+  bajie: { anchorX: 0.613, anchorY: 0.891, bodyTop: 0.206, facesLeft: false },
+  sha: { anchorX: 0.56, anchorY: 0.895, bodyTop: 0.098, facesLeft: false },
+  tudi: { anchorX: 0.545, anchorY: 0.892, bodyTop: 0.124, facesLeft: false },
+  luosha: { anchorX: 0.486, anchorY: 0.873, bodyTop: 0.038, facesLeft: false },
+  gaoshao: { anchorX: 0.556, anchorY: 0.877, bodyTop: 0.08, facesLeft: false },
+  laozhe: { anchorX: 0.557, anchorY: 0.899, bodyTop: 0.04, facesLeft: false },
+  yumian: { anchorX: 0.603, anchorY: 0.915, bodyTop: 0.06, facesLeft: false },
+  niumowang: { anchorX: 0.562, anchorY: 0.908, bodyTop: 0.061, facesLeft: false },
+  yaojiang: { anchorX: 0.576, anchorY: 0.883, bodyTop: 0.091, facesLeft: false },
+  mob_fire1: { anchorX: 0.6, anchorY: 0.899, bodyTop: 0.182, facesLeft: false },
+  mob_fire2: { anchorX: 0.638, anchorY: 0.913, bodyTop: 0.142, facesLeft: true },
+};
+
+export function worldDepthScale(worldY, worldHeight) {
+  const t = Math.max(0, Math.min(1, worldY / Math.max(1, worldHeight)));
+  return 0.9 + t * 0.16;
+}
+
+export function worldSpriteGeometry({
+  groundX,
+  groundY,
+  bodyHeight,
+  imageWidth,
+  imageHeight,
+  metadata,
+  depthScale = 1,
+}) {
+  const anchorX = metadata?.anchorX ?? 0.5;
+  const anchorY = metadata?.anchorY ?? 0.96;
+  const bodyTopRatio = Math.min(anchorY - 0.01, metadata?.bodyTop ?? 0.02);
+  const bodyPixels = Math.max(1, (anchorY - bodyTopRatio) * imageHeight);
+  const imageScale = (bodyHeight * depthScale) / bodyPixels;
+  const width = imageWidth * imageScale;
+  const height = imageHeight * imageScale;
+  return {
+    left: groundX - anchorX * width,
+    top: groundY - anchorY * height,
+    width,
+    height,
+    anchorX: groundX,
+    anchorY: groundY,
+    bodyTop: groundY - bodyHeight * depthScale,
+    bodyBottom: groundY,
+    bodyHeight: bodyHeight * depthScale,
+  };
+}
+
+export function worldActorBounds(geometry) {
+  const halfWidth = Math.max(30, geometry.bodyHeight * 0.32);
+  return {
+    left: geometry.anchorX - halfWidth,
+    right: geometry.anchorX + halfWidth,
+    top: geometry.bodyTop - Math.max(70, geometry.bodyHeight * 0.3),
+    bottom: geometry.bodyBottom + 18,
+  };
+}
+
 // NPC 名字颜色沿用梦幻习惯:NPC 黄、主角绿、妖怪红、传送阵青
 export const NAME_COLORS = { npc: '#ffe45c', player: '#7dff6a', demon: '#ff6b55', portal: '#7ef3ff', party: '#d8f5c8' };
 

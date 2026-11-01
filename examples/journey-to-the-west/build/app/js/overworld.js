@@ -1,9 +1,18 @@
 // 梦幻式场景：可走大地图 + 跟随镜头 + 点地寻路 + NPC/明雷妖怪/传送阵 + 小地图。
 // 只管画与走;任务、对话、开战由 hub.js 通过回调决定。
 
-import { SCENES, MAP_SCALE, GRID, NAME_COLORS } from './world.js';
+import {
+  SCENES,
+  MAP_SCALE,
+  GRID,
+  NAME_COLORS,
+  WORLD_SPRITE_META,
+  worldActorBounds,
+  worldDepthScale,
+  worldSpriteGeometry,
+} from './world.js';
 import { audio } from './audio.js';
-import { unitImage, bgImage } from './assets.js';
+import { worldImage, bgImage } from './assets.js';
 
 const FOLLOWERS = ['tang', 'bajie', 'sha'];
 // 立绘原本朝左的单位(其余朝右);行走时据此决定是否镜像
@@ -167,8 +176,8 @@ export function runScene(ctx) {
       const px = player.x - c.x, py = player.y - c.y;
       if (px < cam.vw * 0.18 || px > cam.vw * 0.82 || py < 140 || py > cam.vh - 40) return false;
       return marked.every((a) => {
-        const x = a.wx - c.x, y = a.wy - c.y;
-        const box = { l: x - 60, r: x + 60, t: y - a.h - 66, b: y + 40 };
+        const bounds = worldActorBounds(presentation({ ...a, x: a.wx, y: a.wy }).geometry);
+        const box = { l: bounds.left - c.x, r: bounds.right - c.x, t: bounds.top - c.y, b: bounds.bottom - c.y + 22 };
         return box.l > 0 && box.r < cam.vw && box.t > 0 && box.b < cam.vh && !hits(box);
       });
     };
@@ -198,6 +207,30 @@ export function runScene(ctx) {
 
   function actorWorld(a) {
     return { x: a.x * S, y: a.y * S };
+  }
+
+  function presentation(e) {
+    const source = worldImage(e.unit);
+    const image = source.image;
+    const metadata = source.dedicated
+      ? (WORLD_SPRITE_META[e.unit] ?? { anchorX: 0.5, anchorY: 0.93, bodyTop: 0.08, facesLeft: false })
+      : { anchorX: 0.5, anchorY: 0.97, bodyTop: 0.02, facesLeft: ART_FACES_LEFT.has(e.unit) };
+    const depthScale = worldDepthScale(e.y, WH);
+    const imageWidth = image?.width ?? 200;
+    const imageHeight = image?.height ?? 280;
+    return {
+      source,
+      metadata,
+      geometry: worldSpriteGeometry({
+        groundX: e.x,
+        groundY: e.y,
+        bodyHeight: e.h,
+        imageWidth,
+        imageHeight,
+        metadata,
+        depthScale,
+      }),
+    };
   }
 
   function walkTo(wx, wy) {
@@ -236,7 +269,10 @@ export function runScene(ctx) {
 
   // 点击区从脚下一直到头顶的「!」(约 70px 高)
   function hitActor(wx, wy) {
-    const found = actors.filter((a) => Math.abs(wx - a.wx) < Math.max(34, a.h * 0.32) && wy < a.wy + 16 && wy > a.wy - a.h - 70);
+    const found = actors.filter((a) => {
+      const bounds = worldActorBounds(presentation({ ...a, x: a.wx, y: a.wy }).geometry);
+      return wx >= bounds.left && wx <= bounds.right && wy >= bounds.top && wy <= bounds.bottom;
+    });
     return found.sort((a, b) => b.wy - a.wy)[0] ?? null;
   }
 
@@ -341,7 +377,7 @@ export function runScene(ctx) {
       const idx = trail.length - 1 - (i + 1) * 9;
       let [gx, gy] = idx >= 0 ? trail[idx] : [f.x, f.y];
       if (settled) {
-        const ax = player.x + backDir * (64 + i * 52), ay = player.y + [-34, 26, -4][i];
+        const ax = player.x + backDir * (70 + i * 60), ay = player.y + [-34, 26, -4][i];
         const [c, r] = cellOf(ax, ay);
         const clear = !actors.some((a) => Math.abs(a.wx - ax) < 70 && Math.abs(a.wy - ay) < 60);
         if (isWalk(c, r) && clear) { gx = ax; gy = ay; }
@@ -382,23 +418,38 @@ export function runScene(ctx) {
   }
 
   function drawSprite(e, now, opts = {}) {
-    const img = unitImage(e.unit);
-    const h = e.h;
-    const bob = e.moving ? -Math.abs(Math.sin(now / 95)) * 5 : 0;
-    const breathe = e.moving ? 1 : 1 + Math.sin(now / 520 + (e.x % 7)) * 0.014;
+    const { source, metadata, geometry } = presentation(e);
+    const img = source.image;
+    const h = geometry.bodyHeight;
+    const gait = e.moving ? Math.sin(now / 105) : 0;
+    const lift = e.moving ? -Math.abs(gait) * 1.4 : 0;
+    const sway = e.moving ? gait * 1.2 : 0;
     const x = e.x - cam.x, y = e.y - cam.y;
     g.save();
-    g.fillStyle = 'rgba(20,12,6,0.28)';
+    // 脚底接触影 + 顺地面方向的柔和投影，两者都锁在地面坐标，不跟人物步态浮动。
+    g.filter = 'blur(4px)';
+    g.fillStyle = 'rgba(20,12,6,0.1)';
     g.beginPath();
-    g.ellipse(x, y, h * 0.2, h * 0.06, 0, 0, Math.PI * 2);
+    g.ellipse(x + h * 0.07, y + 3, h * 0.22, h * 0.045, 0.12, 0, Math.PI * 2);
     g.fill();
-    g.translate(x, y + bob);
-    if (e.moving) g.rotate(Math.sin(now / 95) * 0.03);
-    g.scale((e.facing < 0) !== ART_FACES_LEFT.has(e.unit) ? -1 : 1, breathe);
+    g.filter = 'blur(2.5px)';
+    g.fillStyle = 'rgba(20,12,6,0.22)';
+    g.beginPath();
+    g.ellipse(x, y + 2, h * 0.095, h * 0.025, 0, 0, Math.PI * 2);
+    g.fill();
+    g.filter = 'none';
+    g.translate(x + sway, y + lift);
+    const flip = (e.facing < 0) !== !!metadata.facesLeft;
+    g.scale(flip ? -1 : 1, 1);
     if (opts.glow) { g.shadowColor = opts.glow; g.shadowBlur = 18; }
     if (img) {
-      const w = (img.width / img.height) * h;
-      g.drawImage(img, -w / 2, -h, w, h);
+      g.drawImage(
+        img,
+        -metadata.anchorX * geometry.width,
+        -metadata.anchorY * geometry.height,
+        geometry.width,
+        geometry.height,
+      );
     } else {
       g.fillStyle = '#8a6a4a';
       g.fillRect(-h * 0.18, -h, h * 0.36, h);
@@ -424,7 +475,8 @@ export function runScene(ctx) {
   }
 
   function drawMark(e, mark, now) {
-    const x = e.x - cam.x, y = e.y - cam.y - e.h - 26 - Math.abs(Math.sin(now / 260)) * 8;
+    const geometry = presentation(e).geometry;
+    const x = e.x - cam.x, y = geometry.bodyTop - cam.y - 26 - Math.abs(Math.sin(now / 260)) * 8;
     g.save();
     const daily = mark === '令';
     g.font = daily ? 'bold 28px "Songti SC", serif' : 'bold 40px "Songti SC", serif';
@@ -442,9 +494,10 @@ export function runScene(ctx) {
   }
 
   function drawBubble(e, text) {
+    const geometry = presentation(e).geometry;
     g.font = '15px "Songti SC", "STSong", serif';
     const w = Math.min(260, g.measureText(text).width + 22);
-    const x = e.x - cam.x - w / 2, y = e.y - cam.y - e.h - 64;
+    const x = e.x - cam.x - w / 2, y = geometry.bodyTop - cam.y - 64;
     g.fillStyle = 'rgba(255,252,240,0.95)';
     g.strokeStyle = 'rgba(90,60,30,0.6)';
     g.lineWidth = 1;
@@ -479,8 +532,9 @@ export function runScene(ctx) {
   // 传送阵字:对白/菜单打开时不画;压到 HUD 或 NPC/妖怪(身子+头顶标记+名牌,与 hitActor 同一块点击区)
   // 就挪到阵下方,再不行就不画(小地图上仍有阵眼)——字永远不盖人,点人永远点得到人
   const overActor = (box) => actors.some((a) => {
-    const x = a.wx - cam.x, y = a.wy - cam.y, hw = Math.max(34, a.h * 0.32);
-    return box.l < x + hw && box.r > x - hw && box.t < y + 40 && box.b > y - a.h - 70;
+    const bounds = worldActorBounds(presentation({ ...a, x: a.wx, y: a.wy }).geometry);
+    const screen = { l: bounds.left - cam.x, r: bounds.right - cam.x, t: bounds.top - cam.y, b: bounds.bottom - cam.y };
+    return box.l < screen.r && box.r > screen.l && box.t < screen.b && box.b > screen.t;
   });
   function drawPortalLabel(p) {
     const x = p.x * S - cam.x, y = p.y * S - cam.y;
@@ -588,7 +642,7 @@ export function runScene(ctx) {
       const old = prev.get(a.id);
       if (old && old.x === a.x && old.y === a.y) return { ...old, ...a, h: old.h, mark: a.mark, wx: old.wx, wy: old.wy };
       const wx = a.x * S, wy = a.y * S;
-      return { facing: -1, ...a, h: Math.round(a.h * 1.1), wx, wy, hx: wx, hy: wy, tx: wx, ty: wy, wt: 0, seed: (a.seed ?? 7) >>> 0, frozen: false };
+      return { facing: -1, ...a, h: a.h, wx, wy, hx: wx, hy: wy, tx: wx, ty: wy, wt: 0, seed: (a.seed ?? 7) >>> 0, frozen: false };
     });
   }
 
@@ -613,9 +667,15 @@ export function runScene(ctx) {
     // QA 钩子：实体在页面上的坐标(身形中部，便于真实点击)
     screenPos(id) {
       const r = canvas.getBoundingClientRect();
-      if (id === 'player') return { x: r.left + player.x - cam.x, y: r.top + player.y - cam.y - player.h / 2 };
+      if (id === 'player') {
+        const geometry = presentation(player).geometry;
+        return { x: r.left + geometry.anchorX - cam.x, y: r.top + (geometry.bodyTop + geometry.bodyBottom) / 2 - cam.y };
+      }
       const a = actors.find((x) => x.id === id);
-      if (a) return { x: r.left + a.wx - cam.x, y: r.top + a.wy - cam.y - a.h / 2 };
+      if (a) {
+        const geometry = presentation({ ...a, x: a.wx, y: a.wy }).geometry;
+        return { x: r.left + geometry.anchorX - cam.x, y: r.top + (geometry.bodyTop + geometry.bodyBottom) / 2 - cam.y };
+      }
       const p = portals.find((x) => x.id === id);
       if (p) return { x: r.left + p.x * S - cam.x, y: r.top + p.y * S - cam.y };
       return null;

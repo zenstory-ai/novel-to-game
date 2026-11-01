@@ -121,6 +121,7 @@ function finishResult(state, { deepSuccess }) {
     guide: state.guide,
     deepened: state.deepened,
     forcedRetreat: state.forcedRetreat,
+    firetroopClueUsed: state.guideUsed.firetroopClue,
     items: { ...state.bankedItems },
     relics,
     growth: {
@@ -156,7 +157,10 @@ function reveal(state, index, source = 'dig') {
     state.carriedRelics += tile.relics;
     emitted.push(event(state, 'relic', { index, amount: tile.relics, name: tile.name }));
   } else if (tile.kind === 'trap') {
-    if (state.guide === 'sha' && !state.guideUsed.shaGuard) {
+    if (state.layer === 'outer' && state.firetroopClue && !state.guideUsed.firetroopClue) {
+      state.guideUsed.firetroopClue = true;
+      emitted.push(event(state, 'firetroop_clue', { index, name: tile.name }));
+    } else if (state.guide === 'sha' && !state.guideUsed.shaGuard) {
       state.guideUsed.shaGuard = true;
       emitted.push(event(state, 'guard', { index, name: tile.name }));
     } else {
@@ -177,7 +181,7 @@ function reveal(state, index, source = 'dig') {
   return emitted;
 }
 
-export function createTreasureHunt(seed, guide) {
+export function createTreasureHunt(seed, guide, { firetroopClue = false } = {}) {
   if (!HUNT_GUIDES[guide]) throw new Error(`未知探路者：${guide}`);
   const rng = createRNG(seed);
   return {
@@ -187,6 +191,7 @@ export function createTreasureHunt(seed, guide) {
     status: 'playing',
     deepened: false,
     forcedRetreat: false,
+    firetroopClue,
     threat: 0,
     paidDigs: { outer: 0, deep: 0 },
     revealed: { outer: [], deep: [] },
@@ -198,7 +203,7 @@ export function createTreasureHunt(seed, guide) {
     carriedItems: {},
     bankedRelics: 0,
     carriedRelics: 0,
-    guideUsed: { bajieOuter: false, bajieDeep: false, shaGuard: false },
+    guideUsed: { bajieOuter: false, bajieDeep: false, shaGuard: false, firetroopClue: false },
     events: [],
     result: null,
   };
@@ -273,6 +278,8 @@ export function visibleTreasureState(state) {
     status: state.status,
     deepened: state.deepened,
     forcedRetreat: state.forcedRetreat,
+    firetroopClueAvailable: state.layer === 'outer' && state.firetroopClue && !state.guideUsed.firetroopClue,
+    firetroopClueUsed: state.guideUsed.firetroopClue,
     threat: state.threat,
     maxThreat: HUNT_RULES.maxThreat,
     digsUsed: state.paidDigs[state.layer],

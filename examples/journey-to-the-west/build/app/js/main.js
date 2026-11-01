@@ -4,10 +4,10 @@ import { TEXT } from './text.js';
 import { FORMATIONS, BATTLES, PARTY, ITEMS, SKILLS, EQUIPS, EQUIP_SLOTS, TREASURES, GROWTH, ECONOMY } from './data.js';
 import { audio } from './audio.js';
 import { loadAssets, bgURL, unitURL, bgStyle, treasureURL, itemIcon } from './assets.js';
-import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, iconBadge, chapterCard, resetOverlayShading, inkSwirl, bigToast, confirmModal } from './ui.js';
+import { el, showDialog, showModal, showPanel, toast, buildTopbar, showFormationModal, artIcon, chapterCard, resetOverlayShading, inkSwirl, bigToast, confirmModal } from './ui.js';
 import { unitLevelStats, skillsAtLevel, effectiveSkill } from './engine.js';
 import { settleLevelUp, allocatePoint, applyRecommend, allocateSkillPoint, applyRecommendSkills } from './growth.js';
-import { gearOf, equipItem, studyCost, studySkill, petAptitude, expToNext, levelCap } from './progress.js';
+import { gearOf, equipItem, releasePet, studyCost, studySkill, petAptitude, expToNext, levelCap } from './progress.js';
 import { runBattleScreen } from './battle_ui.js';
 import { createHub, mainStep } from './hub.js';
 import { logLine, clearChatHistory } from './hud.js';
@@ -16,7 +16,7 @@ import { startTreasureHunt } from './treasure_ui.js';
 
 const SAVE_KEY = 'xiyou_save_v1';
 const SAVE_VERSION = 5;
-const TUT_KEY = 'xiyou_tut_seen';
+const TUT_KEY = 'xiyou_tut_seen_v2';
 
 const params = new URLSearchParams(location.search);
 const FAST = params.get('fast') === '1';
@@ -210,7 +210,128 @@ function togglePanel(key) {
   }
 }
 
-const STAT_LABELS = [['体', 'hp'], ['攻', 'atk'], ['防', 'def'], ['速', 'spd'], ['灵', 'mag']];
+const STAT_LABELS = [
+  ['体', 'hp', '气血', 'vitality'],
+  ['攻', 'atk', '攻击', 'attack'],
+  ['防', 'def', '防御', 'defend'],
+  ['速', 'spd', '速度', 'speed'],
+  ['灵', 'mag', '灵力', 'spell'],
+];
+const ELEMENT_ART = { 金: 'element-metal', 木: 'element-wood', 水: 'element-water', 火: 'element-fire', 土: 'element-earth' };
+const HERO_KEYS = ['wukong', 'bajie', 'sha'];
+const panelView = { hero: 'wukong', heroTab: 'overview', pet: null, petTab: 'overview', bag: null };
+const PANEL_FOCUS_ATTRS = ['data-alloc-plus', 'data-skill-plus', 'data-skill-study', 'data-equip', 'data-pet-active', 'data-alloc-recommend', 'data-skill-recommend'];
+
+function captureMemberPanelFocus(panelId) {
+  const panel = app.querySelector(`#${panelId}`);
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement) || !panel?.contains(active) || active.id === `${panelId}-close`) return null;
+  const attr = PANEL_FOCUS_ATTRS.find((name) => active.hasAttribute(name));
+  const statCells = [...panel.querySelectorAll('.stat-cell')];
+  return {
+    attr,
+    value: attr ? active.getAttribute(attr) : null,
+    aria: active.getAttribute('aria-label'),
+    statIndex: active.closest('.stat-cell') ? statCells.indexOf(active.closest('.stat-cell')) : -1,
+    skillRow: active.closest('[data-skill-row]')?.getAttribute('data-skill-row') ?? null,
+  };
+}
+
+function restoreMemberPanelFocus(panelId, token) {
+  if (!token) return;
+  queueMicrotask(() => {
+    const panel = app.querySelector(`#${panelId}`);
+    if (!panel) return;
+    const usableButtons = [...panel.querySelectorAll('button:not(:disabled)')];
+    let target = token.attr
+      ? usableButtons.find((button) => button.getAttribute(token.attr) === token.value)
+      : null;
+    if (!target && token.statIndex >= 0) target = panel.querySelectorAll('.stat-cell')[token.statIndex]?.querySelector('button:not(:disabled)');
+    if (!target && token.skillRow) {
+      const row = [...panel.querySelectorAll('[data-skill-row]')].find((node) => node.getAttribute('data-skill-row') === token.skillRow);
+      target = row?.querySelector('button:not(:disabled)') ?? null;
+    }
+    if (!target && token.aria) target = usableButtons.find((button) => button.getAttribute('aria-label') === token.aria);
+    if (!target && token.attr === 'data-pet-active' && PARTY[token.value]) {
+      target = usableButtons.find((button) => button.getAttribute('aria-label') === `查看${PARTY[token.value].name}`);
+    }
+    target ??= panel.querySelector('.member-tab-content button:not(:disabled), .member-tab[aria-selected="true"]');
+    target?.focus();
+  });
+}
+
+function setDisabled(button, disabled, reason = '') {
+  button.disabled = disabled;
+  button.classList.toggle('disabled', disabled);
+  if (reason) button.title = reason;
+  return button;
+}
+
+function elementMark(element) {
+  const mark = el('span', 'element-mark');
+  mark.append(artIcon(ELEMENT_ART[element] ?? 'special', 'element-art'), el('span', '', `${element}属性`));
+  return mark;
+}
+
+function memberSelector(keys, selected, onPick, kind = 'hero', onActivate = null) {
+  const rail = el('nav', 'member-selector');
+  rail.setAttribute('aria-label', kind === 'pet' ? '选择召唤兽' : '选择角色');
+  for (const key of keys) {
+    const def = PARTY[key];
+    const button = el('button', `member-select${key === selected ? ' active' : ''}`);
+    button.type = 'button';
+    button.setAttribute('aria-pressed', String(key === selected));
+    button.setAttribute('aria-label', `查看${def.name}`);
+    const portrait = el('img', 'member-select-face');
+    portrait.src = unitURL(def.portrait, def.name);
+    portrait.alt = '';
+    button.append(portrait, el('span', 'member-select-name', def.name.replace('孙', '').replace('猪', '').replace('沙', '')));
+    button.addEventListener('click', () => onPick(key));
+    if (!onActivate) rail.appendChild(button);
+    else {
+      const item = el('div', 'member-select-item');
+      const pet = campaign.pets.find((candidate) => candidate.key === key);
+      const active = el('button', `member-select-active${pet?.active ? ' active' : ''}`, pet?.active ? '已出战' : '出战');
+      active.type = 'button';
+      active.dataset.petActive = key;
+      active.setAttribute('aria-label', pet?.active ? `${def.name}当前出战` : `让${def.name}出战`);
+      setDisabled(active, !!pet?.active, pet?.active ? '当前出战召唤兽' : `让${def.name}在下次战斗出战`);
+      active.addEventListener('click', () => onActivate(key));
+      item.append(button, active);
+      rail.appendChild(item);
+    }
+  }
+  return rail;
+}
+
+function panelTabs(active, onPick, tabs = [['overview', '概览'], ['training', '修炼'], ['equipment', '装备']]) {
+  const tablist = el('div', 'member-tabs');
+  tablist.setAttribute('role', 'tablist');
+  for (const [key, label] of tabs) {
+    const button = el('button', `member-tab${active === key ? ' active' : ''}`, label);
+    button.type = 'button';
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-selected', String(active === key));
+    button.addEventListener('click', () => onPick(key));
+    tablist.appendChild(button);
+  }
+  return tablist;
+}
+
+function memberSummary(key) {
+  const lv = campaign.levels[key] ?? 1;
+  const summary = el('div', 'member-summary');
+  for (const [label, value, icon] of [
+    ['等级', `Lv.${lv}`, 'hero'],
+    ['可用点', campaign.pendingPoints[key] ?? 0, 'vitality'],
+    ['修炼点', campaign.skillPoints[key] ?? 0, 'spell'],
+  ]) {
+    const card = el('div', 'summary-card');
+    card.append(artIcon(icon, 'summary-icon'), el('span', 'summary-label', label), el('strong', 'summary-value', String(value)));
+    summary.appendChild(card);
+  }
+  return summary;
+}
 
 // 五维加点行：当前值(含加点)+ ＋/－ 木钮
 function statCells(key, onChange) {
@@ -218,19 +339,26 @@ function statCells(key, onChange) {
   const lv = campaign.levels[key] ?? 1;
   const stats = unitLevelStats(def, lv, campaign.alloc[key] ?? null);
   const wrap = el('div', 'hero-stats');
-  for (const [label, prop] of STAT_LABELS) {
-    const cell = el('span', 'stat-cell');
-    cell.append(iconBadge(label, { sm: true }), el('span', '', String(stats[prop])));
+  for (const [label, prop, fullName, iconName] of STAT_LABELS) {
+    const cell = el('div', 'stat-cell');
+    const heading = el('div', 'stat-heading');
+    heading.append(artIcon(iconName, 'stat-art'), el('span', 'stat-name', fullName), el('strong', 'stat-value', String(stats[prop])));
     const pending = campaign.pendingPoints[key] ?? 0;
     const invested = campaign.alloc[key]?.[label] ?? 0;
-    const plus = el('button', `btn stat-btn${pending > 0 ? '' : ' disabled'}`, '＋');
-    plus.dataset.allocPlus = `${key}:${label}`;
-    plus.title = pending > 0 ? `投 1 点${label}(剩余 ${pending})` : '没有可用点数';
-    plus.addEventListener('click', () => { if (allocatePoint(campaign, key, label, 1)) onChange(); });
-    const minus = el('button', `btn stat-btn${invested > 0 ? '' : ' disabled'}`, '－');
-    minus.title = invested > 0 ? `洗回 1 点${label}` : '未投点';
+    const controls = el('div', 'stat-controls');
+    const minus = el('button', 'btn stat-btn', '−');
+    minus.type = 'button';
+    minus.setAttribute('aria-label', `${fullName}减一点`);
+    setDisabled(minus, invested <= 0, invested > 0 ? `洗回 1 点${fullName}` : `${fullName}尚未投点`);
     minus.addEventListener('click', () => { if (allocatePoint(campaign, key, label, -1)) onChange(); });
-    cell.append(plus, minus);
+    const plus = el('button', 'btn stat-btn', '＋');
+    plus.type = 'button';
+    plus.dataset.allocPlus = `${key}:${label}`;
+    plus.setAttribute('aria-label', `${fullName}加一点`);
+    setDisabled(plus, pending <= 0, pending > 0 ? `投 1 点${fullName}(剩余 ${pending})` : '没有可用点数');
+    plus.addEventListener('click', () => { if (allocatePoint(campaign, key, label, 1)) onChange(); });
+    controls.append(minus, plus);
+    cell.append(heading, controls);
     wrap.appendChild(cell);
   }
   return wrap;
@@ -261,29 +389,35 @@ function skillCells(key, onChange) {
     }
     const row = el('div', 'skill-cell');
     row.dataset.skillRow = `${key}:${sk}`;
-    row.append(
-      el('span', 'skill-cell-name', `法术 · ${raw.name} · ${SKILL_RANK_LABELS[cur - 1] ?? `${cur}重`}`),
-      el('span', 'skill-cell-delta', delta),
-    );
-    const plus = el('button', `btn stat-btn${pending > 0 && !capped ? '' : ' disabled'}`, '＋');
+    const skillHead = el('div', 'skill-cell-head');
+    skillHead.append(artIcon('spell', 'skill-art'), el('span', 'skill-cell-name', raw.name), el('span', 'skill-rank', SKILL_RANK_LABELS[cur - 1] ?? `${cur}重`));
+    row.append(skillHead, el('span', 'skill-cell-delta', delta));
+    const actions = el('div', 'skill-actions');
+    const plus = el('button', 'btn stat-btn wide', '投入修炼点');
+    plus.type = 'button';
     plus.dataset.skillPlus = `${key}:${sk}`;
-    plus.title = pending <= 0 ? '没有可用修炼点' : capped ? '已至三重' : `投 1 修炼点于${raw.name}(剩余 ${pending})`;
+    plus.setAttribute('aria-label', `${raw.name}投入一点修炼点`);
+    setDisabled(plus, pending <= 0 || capped, pending <= 0 ? '没有可用修炼点' : capped ? '已至三重' : `剩余 ${pending} 修炼点`);
     plus.addEventListener('click', () => { if (allocateSkillPoint(campaign, key, sk)) onChange(); });
-    row.appendChild(plus);
+    actions.appendChild(plus);
     // 银两研习(梦幻师门技能式)：没有修炼点也能花钱提一重
     const cost = capped ? null : studyCost(cur);
     if (cost != null) {
-      const study = el('button', `btn stat-btn wide${(campaign.money ?? 0) >= cost ? '' : ' disabled'}`, `研习 ${cost}两`);
+      const study = el('button', 'btn stat-btn wide with-icon');
+      study.type = 'button';
+      study.append(artIcon('coin', 'button-art'), el('span', '', `研习 ${cost} 两`));
       study.dataset.skillStudy = `${key}:${sk}`;
-      study.title = `花 ${cost} 两银子把${raw.name}提升一重`;
+      study.setAttribute('aria-label', `花费${cost}两研习${raw.name}`);
+      setDisabled(study, (campaign.money ?? 0) < cost, `花 ${cost} 两银子把${raw.name}提升一重`);
       study.addEventListener('click', () => {
         if (!studySkill(campaign, key, sk)) { toast(app, '银两不够。'); return; }
         audio.sfx('levelup');
         logLine('sys', `花费 ${cost} 两，${def.name}的${raw.name}研习到${SKILL_RANK_LABELS[cur]}`);
         onChange();
       });
-      row.appendChild(study);
+      actions.appendChild(study);
     }
+    row.appendChild(actions);
     wrap.appendChild(row);
   }
   return wrap;
@@ -296,8 +430,11 @@ function gearCells(key, onChange) {
   for (const [slot, label] of Object.entries(EQUIP_SLOTS)) {
     const cur = slots[slot];
     const cell = el('div', 'gear-cell');
-    const icon = cur ? itemIcon(cur, { slot, cls: 'gear-icon' }) : el('span', 'gear-icon empty', label.slice(0, 1));
-    cell.append(icon, el('span', 'gear-slot', label), el('span', `gear-name${cur ? ` tier${EQUIPS[cur].tier}` : ''}`, cur ? `${EQUIPS[cur].name}（${EQUIPS[cur].desc}）` : '——'));
+    const visual = el('div', `gear-visual${cur ? '' : ' empty'}`);
+    visual.appendChild(cur ? itemIcon(cur, { slot, cls: 'gear-icon' }) : artIcon(slot === 'weapon' ? 'attack' : 'armor', 'gear-placeholder-art'));
+    const copy = el('div', 'gear-copy');
+    copy.append(el('span', 'gear-slot', label), el('span', `gear-name${cur ? ` tier${EQUIPS[cur].tier}` : ''}`, cur ? EQUIPS[cur].name : '暂未装备'), el('span', 'gear-desc', cur ? EQUIPS[cur].desc : '从背囊选择合适装备'));
+    cell.append(visual, copy);
     const choices = Object.entries(campaign.equipBag ?? {}).filter(([k, n]) => n > 0 && EQUIPS[k]?.slot === slot);
     for (const [k] of choices) {
       const b = el('button', 'btn stat-btn wide with-icon');
@@ -318,41 +455,57 @@ function gearCells(key, onChange) {
 
 function showHeroPanel(onClose) {
   const rebuild = () => {
+    const focus = captureMemberPanelFocus('modal-hero');
     if (!storyUnsettled) saveGame(true); // 剧情未了结时不落盘，否则会存下「已升级但关卡未推进」
     refreshGrowthNotice();
     closeOpenPanel?.();
     togglePanel('hero');
+    restoreMemberPanelFocus('modal-hero', focus);
   };
-  const rows = [];
-  for (const key of ['wukong', 'bajie', 'sha']) {
-    const def = PARTY[key];
-    const lv = campaign.levels[key] ?? 1;
-    const row = el('div', 'hero-row');
-    row.dataset.hero = key;
-    const face = el('img', 'hero-face');
-    face.src = unitURL(def.portrait, def.name);
-    const info = el('div', 'hero-info');
-    const nm = el('div', 'hero-name');
-    nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
-    nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[key] ?? 0} · 修炼点 ${campaign.skillPoints[key] ?? 0}`));
-    const rec = el('button', `btn stat-btn wide${(campaign.pendingPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommend);
+  if (!HERO_KEYS.includes(panelView.hero)) panelView.hero = 'wukong';
+  const key = panelView.hero;
+  const def = PARTY[key];
+  const layout = el('div', 'member-panel-layout');
+  layout.appendChild(memberSelector(HERO_KEYS, key, (next) => { panelView.hero = next; rebuild(); }));
+  const detail = el('section', 'member-detail');
+  detail.dataset.hero = key;
+  const heading = el('header', 'member-heading');
+  const title = el('div', 'member-title');
+  title.append(el('h2', '', def.name), elementMark(def.element));
+  heading.append(title, memberSummary(key));
+  detail.append(heading, panelTabs(panelView.heroTab, (tab) => { panelView.heroTab = tab; rebuild(); }));
+  const content = el('div', 'member-tab-content');
+  if (panelView.heroTab === 'overview') {
+    content.appendChild(statCells(key, rebuild));
+    const actions = el('div', 'recommend-actions');
+    const rec = el('button', 'btn stat-btn wide with-icon');
+    rec.type = 'button';
+    rec.append(artIcon('vitality', 'button-art'), el('span', '', TEXT.panels.recommend));
     rec.dataset.allocRecommend = key;
-    rec.title = '按推荐权重投入全部可用点';
+    rec.setAttribute('aria-label', `${def.name}推荐加点`);
+    setDisabled(rec, (campaign.pendingPoints[key] ?? 0) <= 0, '按推荐权重投入全部可用点');
     rec.addEventListener('click', () => { if (applyRecommend(campaign, key) > 0) rebuild(); });
-    nm.appendChild(rec);
-    const recSkill = el('button', `btn stat-btn wide${(campaign.skillPoints[key] ?? 0) > 0 ? '' : ' disabled'}`, TEXT.panels.recommendSkill);
+    actions.append(rec);
+    content.appendChild(actions);
+  } else if (panelView.heroTab === 'training') {
+    const actions = el('div', 'recommend-actions');
+    const recSkill = el('button', 'btn stat-btn wide with-icon');
+    recSkill.type = 'button';
+    recSkill.append(artIcon('spell', 'button-art'), el('span', '', TEXT.panels.recommendSkill));
     recSkill.dataset.skillRecommend = key;
-    recSkill.title = '按推荐权重投入全部修炼点';
+    recSkill.setAttribute('aria-label', `${def.name}推荐修炼`);
+    setDisabled(recSkill, (campaign.skillPoints[key] ?? 0) <= 0, '按推荐权重投入全部修炼点');
     recSkill.addEventListener('click', () => { if (applyRecommendSkills(campaign, key) > 0) rebuild(); });
-    nm.appendChild(recSkill);
-    info.append(nm, statCells(key, rebuild), skillCells(key, rebuild));
-    info.appendChild(gearCells(key, rebuild));
-    row.append(face, info);
-    rows.push(row);
+    actions.appendChild(recSkill);
+    content.append(actions, skillCells(key, rebuild));
+  } else {
+    content.appendChild(gearCells(key, rebuild));
   }
-  rows.unshift(el('p', 'panel-note', `银两 ${campaign.money ?? 0} · 历练 ${campaign.exp ?? 0}/${expToNext(campaign.levels.wukong ?? 1)} · 本章等级上限 Lv.${levelCap(campaign)}`));
-  rows.push(el('p', 'panel-note', TEXT.panels.growthNote));
-  return showPanel(app, { id: 'modal-hero', title: TEXT.panels.hero, bodyNodes: rows, onClose });
+  detail.appendChild(content);
+  layout.appendChild(detail);
+  const status = el('div', 'panel-status-strip');
+  status.append(artIcon('coin', 'status-icon'), el('span', '', `银两 ${campaign.money ?? 0}`), el('span', '', `历练 ${campaign.exp ?? 0}/${expToNext(campaign.levels.wukong ?? 1)}`), el('span', '', `本章上限 Lv.${levelCap(campaign)}`));
+  return showPanel(app, { id: 'modal-hero', title: TEXT.panels.hero, bodyNodes: [layout, status], onClose });
 }
 
 function showBagPanel(onClose) {
@@ -362,11 +515,18 @@ function showBagPanel(onClose) {
     togglePanel('bag');
   };
   const nodes = [];
-  // 法宝位(规则型,1件/全队;战斗外可改选，不耗资源)
-  const trRow = el('div', 'list-row');
-  trRow.append(iconBadge('宝', { sm: true }), el('span', '', campaign.treasure
-    ? `法宝：${TREASURES[campaign.treasure]?.name ?? campaign.treasure} — ${TREASURES[campaign.treasure]?.desc ?? ''}`
-    : '法宝：尚未获得'));
+  const trRow = el('section', 'treasure-card');
+  const trVisual = el('div', `treasure-visual${campaign.treasure ? '' : ' empty'}`);
+  const trUrl = campaign.treasure ? treasureURL(campaign.treasure) : null;
+  if (trUrl) {
+    const image = el('img', 'treasure-image');
+    image.src = trUrl;
+    image.alt = '';
+    trVisual.appendChild(image);
+  } else trVisual.appendChild(artIcon('special', 'treasure-placeholder'));
+  const trCopy = el('div', 'treasure-copy');
+  trCopy.append(el('span', 'eyebrow', '当前法宝'), el('h3', '', campaign.treasure ? (TREASURES[campaign.treasure]?.name ?? campaign.treasure) : '尚未获得'), el('p', '', campaign.treasure ? (TREASURES[campaign.treasure]?.desc ?? '') : '沿主线探索可获得改变战斗规则的法宝。'));
+  trRow.append(trVisual, trCopy);
   if (campaign.treasure) {
     const swap = el('button', 'btn stat-btn wide', TEXT.panels.treasureSwap);
     swap.id = 'btn-treasure-swap';
@@ -379,12 +539,16 @@ function showBagPanel(onClose) {
       toast(app, `换持法宝 · ${TREASURES[pick].name}`);
       rebuild();
     });
-    trRow.appendChild(swap);
+    const trActions = el('div', 'treasure-actions');
+    trActions.appendChild(swap);
+    trRow.appendChild(trActions);
   }
   nodes.push(trRow);
   // 一格一图：点或悬停某格，下方说明行写它是什么;不再把同一批东西用文字再列一遍
   const grid = el('div', 'bag-grid');
-  const descLine = el('p', 'bag-desc', '点一格看看它是做什么的。');
+  const detail = el('section', 'bag-detail');
+  const descLine = el('p', 'bag-desc', '选择一件物品查看用途。');
+  detail.append(el('span', 'eyebrow', '物品详情'), descLine);
   const cellFor = (key, n, name, desc, slot = null, cls = '') => {
     const cell = el('button', `bag-item ${cls}`.trim());
     cell.dataset.bagItem = key;
@@ -393,12 +557,16 @@ function showBagPanel(onClose) {
     icon.appendChild(el('span', 'slot-count', String(n)));
     cell.append(icon, el('span', 'bag-item-name', name));
     const show = () => {
-      grid.querySelectorAll('.bag-item.on').forEach((x) => x.classList.remove('on'));
+      panelView.bag = key;
+      grid.querySelectorAll('.bag-item.on').forEach((x) => { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
       cell.classList.add('on');
+      cell.setAttribute('aria-pressed', 'true');
       descLine.textContent = `${name} ×${n} — ${desc}`;
     };
     cell.addEventListener('mouseenter', show);
     cell.addEventListener('click', show);
+    cell.setAttribute('aria-pressed', String(panelView.bag === key));
+    if (panelView.bag === key) { cell.classList.add('on'); descLine.textContent = `${name} ×${n} — ${desc}`; }
     return cell;
   };
   const owned = Object.entries(campaign.items).filter(([k, n]) => n > 0 && ITEMS[k]);
@@ -409,63 +577,121 @@ function showBagPanel(onClose) {
     const eq = EQUIPS[k];
     grid.appendChild(cellFor(k, n, eq.name, `${eq.desc}（${['', '一', '二', '三'][eq.tier]}阶${eq.slot === 'weapon' ? '兵器' : '护身'}，在【角色】换上）`, eq.slot, `gear tier${eq.tier}`));
   }
-  nodes.push(grid, descLine);
-  nodes.push(el('p', 'panel-note', `银两 ${campaign.money ?? 0}${gearOwned.length ? '' : ' · 兵甲可在铁匠铺买，封妖也会掉落'}`));
+  const bagLayout = el('div', 'bag-layout');
+  bagLayout.append(grid, detail);
+  nodes.push(bagLayout);
+  const bagStatus = el('div', 'panel-status-strip');
+  bagStatus.append(artIcon('coin', 'status-icon'), el('span', '', `银两 ${campaign.money ?? 0}`), el('span', '', gearOwned.length ? '装备可在角色面板换上' : '兵甲可在铁匠铺购买，也会从封妖中掉落'));
+  nodes.push(bagStatus);
   return showPanel(app, { id: 'modal-bag', title: TEXT.panels.bag, bodyNodes: nodes, onClose });
 }
 
 function showPetPanel(onClose) {
   const rebuild = () => {
+    const focus = captureMemberPanelFocus('modal-pet');
     if (!storyUnsettled) saveGame(true); // 剧情未了结时不落盘，否则会存下「已升级但关卡未推进」
     closeOpenPanel?.();
     togglePanel('pet');
+    restoreMemberPanelFocus('modal-pet', focus);
   };
   const nodes = [];
   if (campaign.pets.length === 0) {
-    nodes.push(el('p', 'panel-note', TEXT.panels.petEmpty));
+    const empty = el('div', 'panel-empty-state');
+    empty.append(artIcon('pet', 'empty-art'), el('h3', '', '还没有召唤兽'), el('p', '', TEXT.panels.petEmpty), el('p', 'empty-hint', '备好捕妖绳，在火焰山把火妖气血压到四成以下即可收服。'));
+    nodes.push(empty);
   } else {
-    for (const pet of campaign.pets) {
-      const def = PARTY[pet.key];
-      const lv = campaign.levels[pet.key] ?? 1;
-      const row = el('div', 'hero-row');
-      row.dataset.pet = pet.key;
-      const face = el('img', 'hero-face');
-      face.src = unitURL(def.portrait, def.name);
-      const info = el('div', 'hero-info');
-      const nm = el('div', 'hero-name');
-      nm.append(iconBadge(def.element, { round: true, sm: true }), el('span', '', def.name));
-      nm.append(el('span', 'hero-lv', `Lv.${lv} · ${def.element}属性 · 可用点 ${campaign.pendingPoints[pet.key] ?? 0} · 修炼点 ${campaign.skillPoints[pet.key] ?? 0}`));
-      const up = el('button', `btn stat-btn wide${pet.active ? ' disabled' : ''}`, pet.active ? '已上阵' : '上阵');
-      up.dataset.petActive = pet.key;
-      up.title = pet.active ? '当前上阵召唤兽' : '下次战斗由此召唤兽出战';
-      up.addEventListener('click', () => {
-        for (const p2 of campaign.pets) p2.active = p2.key === pet.key;
+    const keys = campaign.pets.map((pet) => pet.key);
+    if (!keys.includes(panelView.pet)) panelView.pet = campaign.pets.find((pet) => pet.active)?.key ?? keys[0];
+    const key = panelView.pet;
+    const pet = campaign.pets.find((candidate) => candidate.key === key);
+    const def = PARTY[key];
+    const lv = campaign.levels[key] ?? 1;
+    const layout = el('div', 'member-panel-layout');
+    layout.appendChild(memberSelector(
+      keys,
+      key,
+      (next) => { panelView.pet = next; rebuild(); },
+      'pet',
+      (next) => {
+        panelView.pet = next;
+        for (const candidate of campaign.pets) candidate.active = candidate.key === next;
         rebuild();
-      });
-      nm.appendChild(up);
-      const apt = petAptitude(def);
-      const aptRow = el('div', 'pet-apt');
-      for (const [label, v] of Object.entries(apt)) aptRow.appendChild(el('span', 'pet-apt-cell', `${label} ${v}`));
+      },
+    ));
+    const detail = el('section', 'member-detail');
+    detail.dataset.pet = key;
+    const heading = el('header', 'member-heading');
+    const title = el('div', 'member-title');
+    title.append(el('h2', '', def.name), elementMark(def.element));
+    const up = el('button', 'btn pet-active-button with-icon');
+    up.type = 'button';
+    up.append(artIcon('pet', 'button-art'), el('span', '', pet.active ? '当前出战' : '设为出战'));
+    up.dataset.petActive = key;
+    up.setAttribute('aria-label', pet.active ? `${def.name}当前出战` : `让${def.name}出战`);
+    setDisabled(up, pet.active, pet.active ? '当前出战召唤兽' : '下次战斗由此召唤兽出战');
+    up.addEventListener('click', () => {
+      for (const p2 of campaign.pets) p2.active = p2.key === key;
+      rebuild();
+    });
+    heading.append(title, up, memberSummary(key));
+    detail.append(heading, panelTabs(panelView.petTab, (tab) => { panelView.petTab = tab; rebuild(); }));
+    const content = el('div', 'member-tab-content');
+    if (panelView.petTab === 'overview') {
       const skills = el('div', 'pet-skills');
-      for (const sk of skillsAtLevel(def, lv)) skills.appendChild(el('span', 'pet-skill', `${SKILLS[sk].name}:${SKILLS[sk].desc}`));
-      info.append(nm, aptRow, skills, statCells(pet.key, rebuild), skillCells(pet.key, rebuild));
-      row.append(face, info);
-      nodes.push(row);
-    }
-    nodes.push(el('p', 'panel-note', '上阵召唤兽占正式行动位;可在火焰山用捕妖绳收服血气≤40%的火妖。'));
+      for (const sk of skillsAtLevel(def, lv)) {
+        const skill = el('div', 'pet-skill-card');
+        skill.append(artIcon('spell', 'skill-art'), el('strong', '', SKILLS[sk].name), el('span', '', SKILLS[sk].desc));
+        skills.appendChild(skill);
+      }
+      const aptitude = el('details', 'pet-apt-details');
+      aptitude.appendChild(el('summary', '', '查看资质详情'));
+      const aptRow = el('div', 'pet-apt');
+      for (const [label, value] of Object.entries(petAptitude(def))) aptRow.appendChild(el('span', 'pet-apt-cell', `${label} ${value}`));
+      aptitude.appendChild(aptRow);
+      content.append(skills, aptitude);
+    } else if (panelView.petTab === 'training') content.append(statCells(key, rebuild), skillCells(key, rebuild));
+    else content.appendChild(gearCells(key, rebuild));
+    detail.appendChild(content);
+    layout.appendChild(detail);
+    nodes.push(layout);
   }
   return showPanel(app, { id: 'modal-pet', title: TEXT.panels.pet, bodyNodes: nodes, onClose });
 }
 
 function showQuestPanel(onClose) {
   const nodes = [];
-  for (const q of hub.quests()) {
-    const row = el('div', 'quest-row');
-    row.append(el('div', 'quest-row-title', `【${q.kind}】${q.title}`), el('p', 'panel-note', q.text));
-    nodes.push(row);
+  const quests = hub.quests();
+  for (const kind of ['主线', '日常']) {
+    const group = quests.filter((quest) => quest.kind === kind);
+    if (group.length === 0) continue;
+    const section = el('section', `quest-section ${kind === '主线' ? 'main' : 'daily'}`);
+    const sectionHead = el('div', 'quest-section-head');
+    sectionHead.append(artIcon(kind === '主线' ? 'quest' : 'special', 'quest-kind-art'), el('div', '', kind), el('span', '', kind === '主线' ? '当前旅程' : '可选历练'));
+    section.appendChild(sectionHead);
+    for (const q of group) {
+      const row = el('article', 'quest-row');
+      const copy = el('div', 'quest-copy');
+      copy.append(el('h3', 'quest-row-title', q.title), el('p', 'quest-objective', q.text));
+      row.appendChild(copy);
+      if (q.target) {
+        const track = el('button', 'btn quest-track with-icon');
+        track.type = 'button';
+        track.dataset.quest = q.id;
+        track.append(artIcon('quest', 'button-art'), el('span', '', '追踪前往'));
+        track.setAttribute('aria-label', `追踪任务：${q.title}`);
+        track.addEventListener('click', () => {
+          closeOpenPanel?.();
+          setTimeout(() => hub.goTo(q.target), 0);
+        });
+        row.appendChild(track);
+      }
+      section.appendChild(row);
+    }
+    nodes.push(section);
   }
-  nodes.push(el('p', 'panel-note', `队伍 Lv.${campaign.levels.wukong ?? 1}(本章上限 Lv.${levelCap(campaign)})· 历练 ${campaign.exp ?? 0}/${expToNext(campaign.levels.wukong ?? 1)} · 银两 ${campaign.money ?? 0}`));
-  nodes.push(el('p', 'panel-note', '日常封妖每环约得半级历练;等级到上限后只得银两与掉落，推进主线才会解封。'));
+  const status = el('div', 'panel-status-strip');
+  status.append(artIcon('hero', 'status-icon'), el('span', '', `队伍 Lv.${campaign.levels.wukong ?? 1}`), el('span', '', `历练 ${campaign.exp ?? 0}/${expToNext(campaign.levels.wukong ?? 1)}`), artIcon('coin', 'status-icon'), el('span', '', `银两 ${campaign.money ?? 0}`));
+  nodes.push(status);
   return showPanel(app, { id: 'modal-quest', title: '任务', bodyNodes: nodes, onClose });
 }
 
@@ -667,6 +893,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
       items: campaign.items,
       treasure: campaign.treasure,
       startDebuff: opts.startDebuff ?? null,
+      storySetup: opts.storySetup ?? {},
       seed: campaign.seedBase + seedOffset + attempt,
       enemyLevel: opts.enemyLevel ?? null,
       victoryLines: opts.victoryLines ?? null,
@@ -772,7 +999,22 @@ async function storyLuosha() {
   if (!campaign.luosha1Done) {
     await showChapter('c1'); // 第一借 · 好言相借
     await showDialog(app, TEXT.story.luoshaPre1);
-    const r1 = await runBattle('luosha1', 100, { tutorial: true });
+    let approachChosenNow = false;
+    if (!campaign.flags.borrowingApproach) {
+      campaign.flags.borrowingApproach = await pickModal({
+        id: 'modal-borrowing-approach',
+        title: TEXT.story.borrowingApproachChoice.title,
+        rows: TEXT.story.borrowingApproachChoice.options.map((o) => ({
+          key: o.key, name: o.label, desc: o.fore, btnId: `btn-approach-${o.key}`,
+        })),
+      });
+      approachChosenNow = true;
+      saveGame(true);
+    }
+    if (approachChosenNow) {
+      await showDialog(app, campaign.flags.borrowingApproach === 'calm' ? TEXT.story.borrowingCalm : TEXT.story.borrowingRush);
+    }
+    const r1 = await runBattle('luosha1', 100, { tutorial: true, storySetup: { approach: campaign.flags.borrowingApproach } });
     if (r1.winner === 'flee') return { scene: 'cuiyun' };
     // winner === 'story':被芭蕉扇吹飞(演出);战斗画面留作过场底景
     applyLevelUps(r1.levelUps ?? {}, true);
@@ -791,6 +1033,9 @@ async function storyLuosha() {
   }
   await showChapter('c2'); // 第二借 · 化虫入腹
   await showDialog(app, campaign.treasure === 'dingfengdan' ? TEXT.story.luoshaPre2 : TEXT.story.luoshaPre2b);
+  if (campaign.flags.borrowingApproach) {
+    await showDialog(app, campaign.flags.borrowingApproach === 'calm' ? TEXT.story.luoshaPre2CalmRecall : TEXT.story.luoshaPre2RushRecall);
+  }
   const r = await runBattle('luosha', 150);
   if (r.winner === 'flee') return { scene: 'cuiyun' };
   applyLevelUps(r.levelUps);
@@ -807,17 +1052,37 @@ async function storyLuosha() {
 
 // 火焰山试扇 → 火兵战 → 火脉残图(第60回)
 async function storyFire() {
-  await showDialog(app, TEXT.story.preBattle2);
-  if (!campaign.items.fakefan) campaign.items.fakefan = 1;
-  const r = await runBattle('firemobs', 200, { onceCards: ['fakefan'] });
+  let trialChosenNow = false;
+  if (!campaign.flags.fanTrial) {
+    campaign.flags.fanTrial = await pickModal({
+      id: 'modal-fan-trial',
+      title: TEXT.story.fanTrialChoice.title,
+      rows: TEXT.story.fanTrialChoice.options.map((o) => ({
+        key: o.key, name: o.label, desc: o.fore, btnId: `btn-trial-${o.key}`,
+      })),
+    });
+    trialChosenNow = true;
+    delete campaign.items.fakefan;
+    saveGame(true);
+  }
+  delete campaign.items.fakefan;
+  if (trialChosenNow) {
+    await showDialog(app, campaign.flags.fanTrial === 'ember' ? TEXT.story.fanTrialEmber : TEXT.story.fanTrialFull);
+  }
+  const r = await runBattle('firemobs', 200, {
+    onceCards: ['fakefan'],
+    storySetup: { fanTrial: campaign.flags.fanTrial },
+  });
   if (r.winner === 'flee') return { scene: 'huokou' };
   applyLevelUps(r.levelUps);
   applyCaught(r.caught);
+  if (r.caught?.includes('huobao')) campaign.flags.firetroopDealPending = true;
   campaign.battlesWon += 1;
   campaign.stage = 'treasure_fire';
   delete campaign.items.fakefan;
   saveGame(true);
   await showDialog(app, TEXT.story.postBattle2);
+  await showDialog(app, campaign.flags.fanTrial === 'ember' ? TEXT.story.postBattle2EmberRecall : TEXT.story.postBattle2FullRecall);
   return storyTreasure();
 }
 
@@ -833,6 +1098,7 @@ function applyTreasureResult(result) {
     guide: result.guide,
     deepened: result.deepened,
     forcedRetreat: result.forcedRetreat,
+    firetroopClueUsed: result.firetroopClueUsed,
     relics: result.relics,
     items: { ...result.items },
     potentialPoints: growth.potentialPoints,
@@ -841,13 +1107,32 @@ function applyTreasureResult(result) {
 }
 
 async function storyTreasure() {
+  if (campaign.flags.firetroopDealPending && !campaign.flags.firetroopDeal) {
+    campaign.flags.firetroopDeal = await pickModal({
+      id: 'modal-firetroop-deal',
+      title: TEXT.story.firetroopDealChoice.title,
+      rows: TEXT.story.firetroopDealChoice.options.map((option) => ({
+        key: option.key, name: option.label, desc: option.fore, btnId: `btn-firetroop-${option.key}`,
+      })),
+    });
+    if (campaign.flags.firetroopDeal === 'release') releasePet(campaign, 'huobao');
+    delete campaign.flags.firetroopDealPending;
+    saveGame(true);
+    await showDialog(app, campaign.flags.firetroopDeal === 'release' ? TEXT.story.firetroopRelease : TEXT.story.firetroopKeep);
+  } else if (campaign.flags.firetroopDealPending) {
+    delete campaign.flags.firetroopDealPending;
+    saveGame(true);
+  }
   hub.scene?.hide(); // 寻宝期间场景停帧，回来由 hub 重新进场
   setPhase('treasure');
   clearScreens();
   setStoryBg('huoyan');
   await showDialog(app, TEXT.story.treasureIntro);
   clearScreens();
-  treasureCtl = startTreasureHunt(app, { seed: campaign.seedBase + 260 });
+  treasureCtl = startTreasureHunt(app, {
+    seed: campaign.seedBase + 260,
+    firetroopClue: campaign.flags.firetroopDeal === 'release',
+  });
   const result = await treasureCtl.done;
   applyTreasureResult(result);
   campaign.stage = 'pre_yumian';
@@ -959,11 +1244,20 @@ function endingEchoes() {
     const choice = hunt.forcedRetreat ? '在妖气合围前护住外层所得' : hunt.deepened ? '带队探入火脉深处' : '见好便收，保住了退路';
     echoes.push(`${guide}${choice}。`);
   }
+  if (campaign.flags.firetroopDeal === 'keep') {
+    echoes.push('悟空留下了愿意收住野性的赤焰火骝，它随队走到了火根断绝。');
+  } else if (campaign.flags.firetroopDeal === 'release') {
+    echoes.push(hunt?.firetroopClueUsed
+      ? '被放归的火骝指出冷砖退路，那条线索替师徒避过了一次外层妖气。'
+      : '悟空解绳放归火骝；它指出的冷砖退路没有派上用场。');
+  }
   echoes.push(campaign.fanFooled
     ? '悟空也曾被老牛的变化骗回一局，最终从失扇处追回了真扇。'
     : '悟空多问了一句话，当场识破老牛所变的假八戒。');
   const activePet = campaign.pets?.find((p) => p.active);
-  if (activePet && PARTY[activePet.key]) echoes.push(`${PARTY[activePet.key].name}随队见证了火根断绝。`);
+  if (activePet && PARTY[activePet.key] && !(campaign.flags.firetroopDeal === 'keep' && activePet.key === 'huobao')) {
+    echoes.push(`${PARTY[activePet.key].name}随队见证了火根断绝。`);
+  }
   return echoes.slice(0, 4);
 }
 

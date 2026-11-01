@@ -7,8 +7,8 @@
       1440,
       900
     ],
-    "url": "http://127.0.0.1:56392/?seed=42&fast=1",
-    "buildBytes": 12470643
+    "url": "http://127.0.0.1:58476/?seed=42&fast=1",
+    "buildBytes": 13605436
   },
   "inputTrace": [
     "start a new campaign and land in the walkable Flaming Mountain village",
@@ -64,6 +64,7 @@
           "guide": "wukong",
           "deepened": true,
           "forcedRetreat": false,
+          "firetroopClueUsed": false,
           "relics": 4,
           "items": {
             "jinchuang": 1,
@@ -97,6 +98,8 @@
           "status": "finished",
           "deepened": true,
           "forcedRetreat": false,
+          "firetroopClueAvailable": false,
+          "firetroopClueUsed": false,
           "threat": 1,
           "maxThreat": 4,
           "digsUsed": 2,
@@ -167,6 +170,7 @@
             "guide": "wukong",
             "deepened": true,
             "forcedRetreat": false,
+            "firetroopClueUsed": false,
             "items": {
               "jinchuang": 1,
               "falidan": 1,
@@ -321,7 +325,9 @@
             ]
           }
         },
-        "treasureInput": "keyboard-only"
+        "treasureInput": "keyboard-only",
+        "borrowingApproach": "calm",
+        "fanTrial": "ember"
       },
       "visual": "qa/evidence/browser/01_overworld.jpg"
     },

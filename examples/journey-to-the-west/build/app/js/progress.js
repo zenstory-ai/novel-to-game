@@ -110,6 +110,19 @@ export function gearOf(campaign, unitKey) {
   return [slots.weapon, slots.armor].filter(Boolean);
 }
 
+// 放归召唤兽：只在名册中确有该兽时结算，重复调用不会重复退还装备。
+export function releasePet(campaign, unitKey) {
+  const petIndex = campaign.pets?.findIndex((pet) => pet.key === unitKey) ?? -1;
+  if (petIndex < 0) return false;
+  campaign.equipBag = campaign.equipBag ?? {};
+  for (const equipKey of gearOf(campaign, unitKey)) {
+    campaign.equipBag[equipKey] = (campaign.equipBag[equipKey] ?? 0) + 1;
+  }
+  campaign.pets.splice(petIndex, 1);
+  if (campaign.gear) delete campaign.gear[unitKey];
+  return true;
+}
+
 // 银两研习：把一门已习得法术提升一重(与修炼点同上限)
 export function studyCost(rank) {
   return ECONOMY.studyCost[rank + 1] ?? null;

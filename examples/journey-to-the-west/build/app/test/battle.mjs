@@ -5,7 +5,7 @@ import {
   calcDamage, makeUnit, levelUpParty, getUnit, aliveUnits, unitSkills, switchFormation,
   unitLevelStats, effectiveSkill, skillsAtLevel, previewDamage,
 } from '../js/engine.js';
-import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH } from '../js/data.js';
+import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH, STORY_SETUP_EFFECTS } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
 import { settleLevelUp, recommendAlloc, applyRecommend, allocatePoint, allocateSkillPoint, applyRecommendSkills } from '../js/growth.js';
 import { grantExp, expToNext, bountyReward, buy, equipItem, applyLoot, gearOf } from '../js/progress.js';
@@ -29,6 +29,7 @@ function runBattle(seed, battleId, party, opts = {}) {
     battleId, party, seed,
     formation: opts.formation ?? 'tiangang',
     items: opts.items ?? {},
+    storySetup: opts.storySetup ?? {},
   });
   const allEvents = [];
   let guard = 0;
@@ -84,6 +85,80 @@ section('行动顺序按速度降序');
   const spds = q.map((id) => effStat(s, getUnit(s, id), 'spd'));
   ok(spds.every((v, i) => i === 0 || spds[i - 1] >= v), `队列速度降序 [${spds.join(',')}]`);
   ok(q[0] === 'p0', '悟空速度最快先手');
+}
+
+// ---------- 3b. 借扇准备与假扇试探 ----------
+section('故事准备只作用于指定战斗');
+{
+  ok(STORY_SETUP_EFFECTS.approach.calm.buff.id === 'dmg_reduce' && STORY_SETUP_EFFECTS.approach.calm.buff.val === 0.15, '稳阵复用减伤并明确 15%');
+  ok(STORY_SETUP_EFFECTS.approach.rush.buff.id === 'atk_up' && STORY_SETUP_EFFECTS.approach.rush.buff.val === 0.15, '抢先复用攻击提升并明确 15%');
+  ok(STORY_SETUP_EFFECTS.fanTrial.full.buff.id === 'atk_up' && STORY_SETUP_EFFECTS.fanTrial.full.buff.val === 0.3, '直扇复用攻击提升并明确 30%');
+
+  const calm = createBattle({ battleId: 'luosha1', party: partyAt(1), seed: 19, storySetup: { approach: 'calm' } });
+  ok(calm.units.filter((u) => u.side === 'party').every((u) => u.buffs.some((b) => b.id === 'dmg_reduce' && b.val === 0.15 && b.turns === 2)), '稳阵令全队前两回合减伤');
+  const rush = createBattle({ battleId: 'luosha1', party: partyAt(1), seed: 19, storySetup: { approach: 'rush' } });
+  ok(getUnit(rush, 'p0').buffs.some((b) => b.id === 'atk_up' && b.val === 0.15 && b.turns === 2), '抢先只令悟空前两回合强攻');
+  ok(rush.units.filter((u) => u.side === 'party' && u.id !== 'p0').every((u) => !u.buffs.some((b) => b.id === 'atk_up')), '抢先不误加给其他伙伴');
+  const base = createBattle({ battleId: 'luosha1', party: partyAt(1), seed: 19 });
+  const commands = { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'defend' }, p2: { type: 'defend' } };
+  const rushHit = executeRound(rush, structuredClone(commands)).find((e) => e.t === 'damage' && e.actor === 'p0');
+  const baseHit = executeRound(base, structuredClone(commands)).find((e) => e.t === 'damage' && e.actor === 'p0');
+  ok(!!rushHit === !!baseHit && rushHit?.amount > baseHit?.amount, '同 seed 命中事实不变且强攻实际提高伤害');
+  executeRound(rush, structuredClone(commands));
+  ok(!getUnit(rush, 'p0').buffs.some((b) => b.id === 'atk_up' && b.val === 0.15), '强攻在前两回合后失效');
+  const calmBase = createBattle({ battleId: 'luosha1', party: partyAt(1), seed: 29 });
+  const calmTest = createBattle({ battleId: 'luosha1', party: partyAt(1), seed: 29, storySetup: { approach: 'calm' } });
+  const defendAll = { p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' } };
+  const baseTaken = executeRound(calmBase, structuredClone(defendAll)).find((e) => e.t === 'damage' && e.target?.startsWith('p'));
+  const calmTaken = executeRound(calmTest, structuredClone(defendAll)).find((e) => e.t === 'damage' && e.target?.startsWith('p'));
+  ok(!!baseTaken === !!calmTaken && calmTaken?.amount < baseTaken?.amount, '同 seed 命中事实不变且稳阵实际降低所受伤害');
+  executeRound(calmTest, structuredClone(defendAll));
+  ok(calmTest.units.filter((u) => u.side === 'party').every((u) => !u.buffs.some((b) => b.id === 'dmg_reduce' && b.val === 0.15)), '稳阵在前两回合后失效');
+  const calmExit = executeRound(calmTest, structuredClone(defendAll));
+  ok(calmExit.some((e) => e.t === 'story_blow') && calmTest.winner === 'story', '稳阵不改写第三回合吹飞');
+
+  const wrongBattle = createBattle({ battleId: 'luosha', party: partyAt(1), seed: 19, storySetup: { approach: 'calm', fanTrial: 'full' } });
+  ok(wrongBattle.units.every((u) => u.buffs.length === 0), '故事准备不污染其他战斗');
+  const ember = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 23, storySetup: { fanTrial: 'ember' } });
+  ok(ember.units.filter((u) => u.side === 'enemy').every((u) => !u.buffs.some((b) => b.id === 'atk_up')), '边火小试不催旺火兵');
+  const full = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 23, storySetup: { fanTrial: 'full' } });
+  ok(full.units.filter((u) => u.side === 'enemy' && u.element === '火').every((u) => u.buffs.some((b) => b.id === 'atk_up' && b.val === 0.3 && b.turns === 3)), '直扇使火行敌人前三回合攻击提升');
+  const emberCompare = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 23, storySetup: { fanTrial: 'ember' } });
+  const fullDamage = calcDamage(full, getUnit(full, 'e0'), getUnit(full, 'p0'), BASIC_ATTACK);
+  const emberDamage = calcDamage(emberCompare, getUnit(emberCompare, 'e0'), getUnit(emberCompare, 'p0'), BASIC_ATTACK);
+  ok(fullDamage.amount > emberDamage.amount && fullDamage.crit === emberDamage.crit, '同 seed 暴击事实不变且直扇实际提高火兵物理伤害');
+  const fireDefend = { p0: { type: 'defend' }, p1: { type: 'defend' }, p2: { type: 'defend' } };
+  executeRound(full, structuredClone(fireDefend));
+  executeRound(full, structuredClone(fireDefend));
+  executeRound(full, structuredClone(fireDefend));
+  ok(full.units.filter((u) => u.side === 'enemy').every((u) => !u.buffs.some((b) => b.id === 'atk_up' && b.val === 0.3)), '直扇助火在前三回合后失效且不叠加');
+
+  const legacy = runBattle(37, 'firemobs', partyAt(2));
+  const explicitEmpty = runBattle(37, 'firemobs', partyAt(2), { storySetup: {} });
+  ok(JSON.stringify(legacy.events) === JSON.stringify(explicitEmpty.events), '缺省 storySetup 保留同 seed 旧事件流');
+}
+
+// ---------- 3c. 实际伤害事件的五行事实 ----------
+section('伤害事件携带实际攻防五行');
+{
+  const s = createBattle({ battleId: 'firemobs', party: partyAt(2), seed: 2 });
+  getUnit(s, 'p0').element = '水';
+  const evs = executeRound(s, {
+    p0: { type: 'skill', skillId: 'ruyibang', targetId: 'e0' },
+    p1: { type: 'defend' },
+    p2: { type: 'defend' },
+  });
+  const hit = evs.find((e) => e.t === 'damage' && e.actor === 'p0');
+  ok(hit?.attackElement === '水' && hit?.targetElement === '火' && hit?.rel === 'ke', '实际结算采用的攻防五行写入伤害事件');
+
+  let combo = null;
+  for (let seed = 1; seed < 200 && !combo; seed++) {
+    const x = createBattle({ battleId: 'luosha', party: partyAt(1), seed });
+    getUnit(x, 'p0').crit = 1;
+    combo = executeRound(x, { p0: { type: 'attack', targetId: 'e0' }, p1: { type: 'defend' }, p2: { type: 'defend' } })
+      .find((e) => e.t === 'damage' && e.combo);
+  }
+  ok(combo?.attackElement === '金' && combo?.targetElement === '木' && combo?.rel === 'ke', '连击伤害事件保留实际攻防五行事实');
 }
 
 // ---------- 4. 阵型效果 ----------
@@ -536,6 +611,56 @@ section('召唤兽捕捉(捕妖绳)');
     isolated = JSON.stringify(run(false).filter(notP0)) === JSON.stringify(ropeEvs.filter(notP0));
   }
   ok(isolated, '捕捉判定不插入战斗 rng 序列(失败时全场逐字节一致)');
+
+  const catchThenFlee = mk(4);
+  getUnit(catchThenFlee, 'e0').hp = Math.floor(getUnit(catchThenFlee, 'e0').maxHp * 0.3);
+  const catchThenFleeEvents = executeRound(catchThenFlee, {
+    p0: { type: 'item', itemId: 'buyaosheng', targetId: 'e0' },
+    p1: { type: 'flee' },
+    p2: { type: 'defend' },
+    p3: { type: 'defend' },
+  });
+  ok(catchThenFleeEvents.some((e) => e.t === 'caught')
+    && catchThenFleeEvents.some((e) => e.t === 'flee' && e.success && e.caughtReleased === 1)
+    && catchThenFlee.winner === 'flee'
+    && catchThenFlee.caught.length === 0
+    && catchThenFlee.items.buyaosheng === 2,
+  '成功捕获后逃跑：火妖挣脱且捕妖绳退回');
+
+  const failedCatchThenFlee = mk(1);
+  getUnit(failedCatchThenFlee, 'e0').hp = Math.floor(getUnit(failedCatchThenFlee, 'e0').maxHp * 0.3);
+  const failedCatchEvents = executeRound(failedCatchThenFlee, {
+    p0: { type: 'item', itemId: 'buyaosheng', targetId: 'e0' },
+    p1: { type: 'flee' },
+    p2: { type: 'defend' },
+    p3: { type: 'defend' },
+  });
+  ok(failedCatchEvents.some((e) => e.t === 'catch_fail')
+    && failedCatchEvents.some((e) => e.t === 'flee' && e.success && e.caughtReleased === 0)
+    && failedCatchThenFlee.items.buyaosheng === 1,
+  '捕捉失败后逃跑：已耗捕妖绳不额外退回');
+
+  const plainFlee = mk(4);
+  const plainFleeEvents = executeRound(plainFlee, {
+    p0: { type: 'defend' }, p1: { type: 'flee' }, p2: { type: 'defend' }, p3: { type: 'defend' },
+  });
+  ok(plainFleeEvents.some((e) => e.t === 'flee' && e.success && e.caughtReleased === 0)
+    && plainFlee.items.buyaosheng === 2,
+  '未捕获直接逃跑：不凭空增加捕妖绳');
+
+  const caughtButFleeFailed = mk(2);
+  getUnit(caughtButFleeFailed, 'e0').hp = Math.floor(getUnit(caughtButFleeFailed, 'e0').maxHp * 0.3);
+  const failedFleeEvents = executeRound(caughtButFleeFailed, {
+    p0: { type: 'item', itemId: 'buyaosheng', targetId: 'e0' },
+    p1: { type: 'flee' },
+    p2: { type: 'defend' },
+    p3: { type: 'defend' },
+  });
+  ok(failedFleeEvents.some((e) => e.t === 'caught')
+    && failedFleeEvents.some((e) => e.t === 'flee' && !e.success)
+    && caughtButFleeFailed.caught.includes('huobao')
+    && caughtButFleeFailed.items.buyaosheng === 1,
+  '逃跑失败：本战捕获保持待胜利结算');
 }
 
 // ---------- 24. buffitem 与避火符 ----------

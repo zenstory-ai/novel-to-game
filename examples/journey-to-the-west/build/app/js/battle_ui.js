@@ -13,6 +13,7 @@ import { audio } from './audio.js';
 import { FxLayer } from './fx.js';
 import { createBattleAnimator } from './battle_animator.js';
 import { createBattleCommands } from './battle_commands.js';
+import { createBattleTutorial } from './battle_tutorial.js';
 import { getSpeed, getSkipFx, getShake } from './settings.js';
 
 export async function runBattleScreen(ctx) {
@@ -28,6 +29,7 @@ export async function runBattleScreen(ctx) {
     startDebuff: ctx.startDebuff ?? null,
     seed: ctx.seed,
     enemyLevel: ctx.enemyLevel ?? null,
+    storySetup: ctx.storySetup ?? {},
   });
   // 结算是整回合一次算完的;界面按事件逐个播放时，血条/回合签读「显示快照」而非终值
   state.trackDisplay = true;
@@ -69,7 +71,8 @@ export async function runBattleScreen(ctx) {
   formBtn.id = 'btn-battle-formation';
   formBtn.textContent = TEXT.battle.formationBtn.replace('{name}', FORMATIONS[state.formation]?.name ?? '');
   const sceneHeading = el('div', 'battle-scene-heading');
-  sceneHeading.append(el('span', 'scene-heading-kicker', '三借芭蕉扇 · 西行战记'), el('h2', '', state.def.name));
+  sceneHeading.id = 'battle-scene-heading';
+  sceneHeading.append(el('h2', '', state.def.name));
   field.append(sceneHeading, orderBar, roundTag, banner, formBtn);
   // 战场态势常驻条(地火炙烤/妖将结阵等，数据驱动)：名字+一句话效果，开场起挂在回合签下
   const fieldRule = state.def.fieldRule ?? null;
@@ -107,6 +110,13 @@ export async function runBattleScreen(ctx) {
   bRoot.append(field, bottom, previewBox);
   root.appendChild(bRoot);
 
+  const tutorial = createBattleTutorial({
+    field,
+    state,
+    enabled: !!ctx.showTutorial && battleId === 'luosha1',
+    storySetup: ctx.storySetup ?? {},
+  });
+
   // 演出层(粒子+背景色调突变)与节奏开关
   const fx = new FxLayer(field);
   fx.resize();
@@ -120,6 +130,7 @@ export async function runBattleScreen(ctx) {
     cmdMenu,
     previewBox,
     cardByUnit,
+    tutorial,
   });
   const animator = createBattleAnimator({
     root,
@@ -444,16 +455,6 @@ export async function runBattleScreen(ctx) {
   if (fieldRule) toast(root, fieldRule.desc, 4600).classList.add('rule-toast');
 
   try {
-    if (ctx.showTutorial) {
-      await new Promise((resolve) => {
-        showModal(root, {
-          id: 'modal-tutorial',
-          title: TEXT.tutorial.title,
-          bodyNodes: TEXT.tutorial.lines.map((l) => el('p', 'tutorial-line', l)),
-          buttons: [{ label: TEXT.tutorial.ok, id: 'btn-tutorial-ok', onClick: resolve }],
-        });
-      });
-    }
     // 本场战斗的即时小卡片(假扇/真扇等)
     for (const key of ctx.onceCards ?? []) {
       const c = TEXT.onceCards[key];
@@ -466,6 +467,7 @@ export async function runBattleScreen(ctx) {
       renderOrderBar();
       commandPhase = true;
       commandUi.beginRound();
+      tutorial.beginRound();
       refreshFormationBtn();
       const roundCommands = {};
       // 按本回合真实行动序收集我方指令。这样多人同回合使用真扇时，界面显示的
@@ -473,9 +475,14 @@ export async function runBattleScreen(ctx) {
       const partyCommandOrder = buildActionQueue(state)
         .map((id) => getUnit(state, id))
         .filter((u) => u?.side === 'party');
+      let firstCommandSubmitted = sceneHeading.classList.contains('settled');
       for (const u of partyCommandOrder) {
         if (state.over) break;
         roundCommands[u.id] = await commandUi.collectCommandFor(u);
+        if (!firstCommandSubmitted) {
+          firstCommandSubmitted = true;
+          sceneHeading.classList.add('settled');
+        }
         renderOrderBar();
       }
       commandPhase = false;
@@ -535,6 +542,7 @@ export async function runBattleScreen(ctx) {
     if (choice === 'grow') await ctx.openGrowth?.();
     return { winner: 'enemy', retry: true };
   } finally {
+    tutorial.destroy();
     commandUi.dispose();
     fx.dispose();
   }

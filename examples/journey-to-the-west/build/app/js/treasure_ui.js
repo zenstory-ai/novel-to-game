@@ -1,9 +1,9 @@
 // 火脉残图界面：五行明牌、连锁揭格、收手/深入与软失败。
 
 import { ITEMS } from './data.js';
-import { bgStyle } from './assets.js';
+import { bgStyle, unitURL } from './assets.js';
 import { audio } from './audio.js';
-import { addCorners, el, iconBadge, showModal } from './ui.js';
+import { addCorners, artIcon, el, showModal } from './ui.js';
 import {
   HUNT_GUIDES,
   createTreasureHunt,
@@ -13,6 +13,8 @@ import {
   settleTreasureHunt,
   visibleTreasureState,
 } from './treasure.js';
+
+const ELEMENT_ART = { 金: 'metal', 木: 'wood', 水: 'water', 火: 'fire', 土: 'earth' };
 
 const ELEMENT_COPY = {
   金: '遗珍偏多',
@@ -41,8 +43,11 @@ function pickGuide(root) {
   return new Promise((resolve) => {
     const rows = Object.values(HUNT_GUIDES).map((guide) => {
       const row = el('div', 'hunt-guide-row');
+      const portrait = el('img', 'hunt-guide-portrait');
+      portrait.src = unitURL(guide.key);
+      portrait.alt = '';
       row.append(
-        iconBadge(guide.key === 'wukong' ? '识' : guide.key === 'bajie' ? '掘' : '守'),
+        portrait,
         el('div', 'hunt-guide-line', GUIDE_PLAIN[guide.key]?.line ?? guide.desc),
       );
       return row;
@@ -83,7 +88,7 @@ function resultBody(result) {
   return nodes;
 }
 
-export function startTreasureHunt(root, { seed, onState } = {}) {
+export function startTreasureHunt(root, { seed, onState, firetroopClue = false } = {}) {
   let state = null;
   let wrap = null;
   let closed = false;
@@ -164,8 +169,9 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
     button.dataset.treasureIndex = String(tile.index);
     button.dataset.element = tile.element;
     button.disabled = revealed || state.status !== 'playing';
-    button.append(iconBadge(tile.element, { round: true }));
-    // 未掘的格子只露五行印(含义看上方图例);掘开后才写是什么
+    button.append(artIcon(`element-${ELEMENT_ART[tile.element]}`));
+    button.setAttribute('aria-label', `${tile.element}脉 · ${revealed ? tile.name : danger ? '妖穴，悟空看穿了' : ELEMENT_COPY[tile.element]}`);
+    // 未掘的格子只露五行图(含义看上方图例);掘开后才写是什么
     if (revealed) button.append(el('span', 'treasure-tile-title', tile.name), el('span', 'treasure-tile-sub', KIND_COPY[tile.kind]));
     else if (danger) button.append(el('span', 'treasure-tile-title', '妖穴'), el('span', 'treasure-tile-sub', '悟空看穿了'));
     button.title = revealed ? tile.name : `${tile.element}脉 · ${ELEMENT_COPY[tile.element]}`;
@@ -196,6 +202,9 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
     const title = el('div', 'treasure-title', visible.layer === 'outer' ? '火脉残图 · 炉砖外藏' : '火脉残图 · 妖穴深层');
     const guide = el('div', 'treasure-guide', state.status === 'preview' ? '尚未选人' : `${GUIDE_PLAIN[visible.guide]?.short ?? ''}探路`);
     head.append(title, guide);
+    if (visible.firetroopClueAvailable || visible.firetroopClueUsed) {
+      head.append(el('div', 'treasure-guide treasure-clue', visible.firetroopClueUsed ? '火兵退路 · 已避险' : '火兵退路 · 可避险'));
+    }
 
     const status = el('div', 'treasure-status');
     const threat = el('div', 'treasure-meter');
@@ -212,7 +221,7 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
     const legend = el('div', 'treasure-legend');
     for (const [element, copy] of Object.entries(ELEMENT_COPY)) {
       const item = el('span', 'treasure-legend-item');
-      item.append(iconBadge(element, { round: true, sm: true }), document.createTextNode(copy));
+      item.append(artIcon(`element-${ELEMENT_ART[element]}`), document.createTextNode(`${element} · ${copy}`));
       legend.append(item);
     }
 
@@ -261,12 +270,12 @@ export function startTreasureHunt(root, { seed, onState } = {}) {
 
   void (async () => {
     // 先把整张残图(扣着的九格)摆出来,再在它上面选探路者:选之前就看得见要挖的是什么
-    state = createTreasureHunt(seed, 'wukong');
+    state = createTreasureHunt(seed, 'wukong', { firetroopClue });
     state.status = 'preview';
     render();
     const guide = await pickGuide(root);
     if (closed) return;
-    state = createTreasureHunt(seed, guide);
+    state = createTreasureHunt(seed, guide, { firetroopClue });
     audio.sfx('levelup');
     render();
   })();

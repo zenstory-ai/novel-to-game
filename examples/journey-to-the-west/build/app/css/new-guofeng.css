@@ -93,6 +93,8 @@ button:focus-visible {
 
 .topbar-btn {
   min-height: 34px;
+  padding: 3px 10px 3px 6px;
+  gap: 6px;
   color: #414244;
   text-shadow: none;
   border: 1px solid rgba(83, 77, 70, .18);
@@ -100,6 +102,16 @@ button:focus-visible {
   background: transparent;
   box-shadow: none;
 }
+
+.ui-art-icon {
+  display: block;
+  flex: none;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.topbar-icon { width: 30px; height: 30px; }
+.topbar-label { line-height: 1; }
 
 .topbar-btn:hover,
 .topbar-btn.open {
@@ -283,9 +295,12 @@ button:focus-visible {
 .cmd-who-name { color: #21473f; font-size: 23px; }
 .cmd-who-tip { color: #8b442f; font-size: 12px; margin-top: 9px; }
 .cmd-btn { font-size: 17px; border: 1px solid #47625944; border-radius: 0; box-shadow: none; background: #fffdf6; }
-.cmd-btn .icon-badge { background: transparent; color: #b33e28; border: none; box-shadow: none; font-size: 24px; }
+.command-icon { width: 40px; height: 40px; filter: drop-shadow(0 2px 2px rgba(64, 34, 20, .18)); transition: transform .12s ease, filter .12s ease; }
+.cmd-btn:hover .command-icon,
+.cmd-btn.kbd-focus .command-icon { transform: translateY(-2px) scale(1.06); filter: drop-shadow(0 4px 4px rgba(64, 34, 20, .28)); }
 .cmd-btn.selected, .cmd-btn.kbd-focus { background: #ae402b; color: #fff9ed; border-color: #ae402b; }
-.cmd-btn.selected .icon-badge, .cmd-btn.kbd-focus .icon-badge { color: #fff9ed; }
+.cmd-btn.selected .command-icon,
+.cmd-btn.kbd-focus .command-icon { filter: drop-shadow(0 3px 3px rgba(42, 14, 8, .35)) brightness(1.08); }
 .cmd-grid { gap: 8px; }
 .wuxing-ring {
   /* 落在名字/提示那一栏下方，不压立绘的下半身和兵器 */
@@ -320,6 +335,28 @@ button:focus-visible {
 }
 .scene-heading-kicker { color: #856b4c; font-size: 10px; letter-spacing: 3px; }
 .battle-scene-heading h2 { font-size: 28px; letter-spacing: 4px; margin-top: 5px; font-weight: 500; }
+.battle-scene-heading.settled {
+  top: 74px;
+  padding: 5px 10px;
+  border-left-width: 2px;
+  background: rgba(255, 250, 235, .76);
+  box-shadow: none;
+}
+.battle-scene-heading.settled h2 { margin: 0; font-size: 12px; letter-spacing: 1px; }
+
+/* 场景消息默认只露出最近一条；完整频道由“消息”按钮按需展开。 */
+body.phase-world .hud-chat { min-height: 20px; }
+body.phase-world .hud-chat-toggle {
+  position: absolute; top: 4px; right: 4px; z-index: 2;
+  padding: 2px 8px;
+  color: #ffe9a8; font: 12px "Songti SC", serif;
+  border: 1px solid rgba(224, 184, 109, .35); border-radius: 10px;
+  background: rgba(28, 20, 14, .88); cursor: pointer;
+}
+body.phase-world .hud-chat-tabs { padding-right: 56px; }
+body.phase-world .hud-chat.collapsed .hud-chat-tabs { display: none; }
+body.phase-world .hud-chat.collapsed .hud-chat-toggle { top: 0; right: auto; left: 0; height: 20px; padding-block: 0; border-width: 0 1px 0 0; border-radius: 0; }
+body.phase-world .hud-chat.collapsed .hud-chat-log { height: 20px; margin: 0; padding: 0 8px 0 52px; overflow: hidden; }
 
 
 /* 寻宝、结局同样使用轻绢容器，让背景保持是世界而不是遮罩底图。 */
@@ -447,6 +484,43 @@ button:focus-visible {
 .auto-all-chip[hidden] { display: none; }
 @keyframes autoPulse { 50% { filter: brightness(1.15); } }
 
+/* 首战渐进教学：固定在战场右上角，不盖目标卡与底部指令。 */
+.battle-tutorial {
+  position: absolute; right: 18px; top: 112px; z-index: 18;
+  width: min(360px, 36vw); padding: 10px 13px;
+  color: #3b342d; pointer-events: none;
+  border: 1px solid rgba(166, 61, 38, .42); border-left: 4px solid #ae402b;
+  background: rgba(255, 249, 235, .96); box-shadow: 0 8px 22px rgba(47, 34, 26, .16);
+}
+.battle-tutorial-kicker { color: #9d3928; font-size: 11px; font-weight: bold; letter-spacing: 3px; }
+.battle-tutorial-body { margin-top: 4px; font-size: 14px; line-height: 1.55; }
+.battle-tutorial-setup { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.battle-tutorial-chip { padding: 2px 7px; color: #426057; font-size: 11px; border: 1px solid rgba(66, 96, 87, .3); background: #f4f1e6; }
+.tutorial-more { border-style: dashed; color: #7b4b3b; }
+
+/* 首次真实相克：短暂居中强调，随后缩成可复读的战场记录。 */
+.first-element-hit {
+  position: absolute; z-index: 24; pointer-events: none;
+  color: #fff8e7; border: 2px solid #e2ba58; background: rgba(73, 35, 20, .94);
+  box-shadow: 0 12px 34px rgba(42, 20, 12, .36);
+}
+.first-element-hit.featured {
+  left: 50%; top: 35%; transform: translate(-50%, -50%);
+  min-width: 330px; padding: 16px 22px; text-align: center;
+  animation: firstElementIn .28s cubic-bezier(.2, 1.25, .4, 1);
+}
+.first-element-hit.compact { right: 18px; top: 238px; width: min(360px, 36vw); padding: 8px 12px; }
+.first-element-hit-title { color: #f4d271; font-size: 20px; font-weight: bold; letter-spacing: 2px; }
+.first-element-hit-damage { margin-top: 3px; font-size: 15px; font-weight: bold; }
+.first-element-hit-note { margin-top: 4px; font-size: 11px; line-height: 1.45; opacity: .9; }
+.first-element-hit.compact .first-element-hit-title { font-size: 14px; }
+.first-element-hit.compact .first-element-hit-damage { display: inline; margin-left: 8px; font-size: 12px; }
+@keyframes firstElementIn { from { opacity: 0; transform: translate(-50%, -50%) scale(1.22); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .first-element-hit.featured { animation: none; }
+}
+
 /* 战况:逐行长出来,克/暴击/被克着色 */
 .battle-report-lines { gap: 4px; }
 .battle-report-line { font-size: 14px; letter-spacing: 1px; padding-bottom: 2px; }
@@ -489,6 +563,10 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
 
 /* 窄屏不是桌面缩略图：导航下沉，战场敌我拆层，所有关键按钮保持可触。 */
 @media (max-width: 700px) {
+  .battle-tutorial { top: 88px; right: 8px; width: min(330px, calc(100vw - 16px)); padding: 7px 10px; }
+  .battle-tutorial-body { font-size: 12px; }
+  .first-element-hit.featured { min-width: min(310px, calc(100vw - 24px)); }
+  .first-element-hit.compact { top: 190px; right: 8px; width: min(330px, calc(100vw - 16px)); }
   .topbar {
     position: fixed;
     left: 0;
@@ -517,7 +595,7 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
     font-size: 10px;
     letter-spacing: 0;
   }
-  .topbar-btn .icon-badge { width: 23px; height: 23px; font-size: 12px; }
+  .topbar-icon { width: 28px; height: 28px; }
   .topbar-sys { flex: 0 0 54px; }
   .topbar-dropdown { top: auto; right: 0; bottom: 54px; width: 150px; }
 
@@ -542,6 +620,8 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
   .battle-scene-heading { top: 86px; left: 10px; padding: 6px 10px; }
   .scene-heading-kicker { display: none; }
   .battle-scene-heading h2 { font-size: 13px; letter-spacing: 1px; margin: 0; }
+  .battle-scene-heading.settled { top: 86px; padding: 4px 8px; }
+  .battle-scene-heading.settled h2 { font-size: 10px; }
   .battle-field:has(.field-rule) .battle-scene-heading { top: 113px; }
 
   .dlg-portrait { left: -7%; bottom: 6%; width: 90%; height: 80%; }
@@ -566,7 +646,7 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
   .cmd-menu { grid-column: 1 / -1; grid-row: 2; min-height: 0; }
   .cmd-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
   .cmd-btn { min-height: 48px; font-size: 13px; letter-spacing: 1px; gap: 4px; padding: 5px 2px; }
-  .cmd-btn .icon-badge { width: 20px; height: 22px; font-size: 12px; }
+  .command-icon { width: 28px; height: 28px; }
   .cmd-list { gap: 5px; }
   .cmd-item { flex: 1 1 46%; padding: 7px 9px; }
   .wuxing-ring {

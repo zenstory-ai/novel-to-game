@@ -13,6 +13,18 @@ export const ELEMENTS = {
 // 克制系数
 export const ELEMENT_COEF = { ke: 1.5, beike: 0.66, none: 1.0 };
 
+// 剧情选择带入战斗的既有增益。引擎只在各自指定战斗读取，缺省不改变旧战斗。
+export const STORY_SETUP_EFFECTS = {
+  approach: {
+    calm: { battleId: 'luosha1', side: 'party', target: 'all', buff: { id: 'dmg_reduce', val: 0.15, turns: 2 } },
+    rush: { battleId: 'luosha1', side: 'party', target: 'wukong', buff: { id: 'atk_up', val: 0.15, turns: 2 } },
+  },
+  fanTrial: {
+    ember: { battleId: 'firemobs', side: 'enemy', element: '火', buff: null },
+    full: { battleId: 'firemobs', side: 'enemy', element: '火', buff: { id: 'atk_up', val: 0.3, turns: 3 } },
+  },
+};
+
 // kind: 'phy' 用攻击, 'mag' 用灵力; target: enemy/enemies/ally/party/self
 export const SKILLS = {
   // —— 悟空 ——

@@ -94,11 +94,10 @@ body.phase-world .topbar-title,
 body.phase-world .topbar-sep,
 body.phase-world .topbar-spacer { display: none; }
 body.phase-world .topbar-btn { flex-direction: column; min-height: 0; padding: 2px 6px; gap: 2px; border: 0; color: #f2e6cc; font-size: 12px; background: transparent; }
-body.phase-world .topbar-btn .icon-badge { width: 38px; height: 38px; font-size: 18px; border-radius: 50%; border: 2px solid #e0b86d; }
+body.phase-world .topbar-btn .topbar-icon { width: 44px; height: 44px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .4)); }
 body.phase-world .topbar-btn:hover, body.phase-world .topbar-btn.open { color: #ffd86a; background: transparent; }
 body.phase-world .topbar-dropdown { top: auto; bottom: 64px; }
 body.phase-world .topbar-dropdown .topbar-btn { flex-direction: row; color: #414244; }
-body.phase-world .topbar-dropdown .topbar-btn .icon-badge { width: 24px; height: 24px; font-size: 12px; }
 body.phase-world .toast { top: 18%; }
 
 /* NPC 对话菜单 */
@@ -207,16 +206,23 @@ body.dlg-open .hud-hint, body.modal-open .hud-hint { display: none; }
 .bibotan-root.freed .bibotan-crab { left: 60%; opacity: 0; }
 .dlg-name[hidden] { display: none; }
 
-/* 窄屏:只留头像、追踪与图标栏,小地图与聊天让位给画面(未做实机验收) */
+/* 窄屏保留可交互的小地图，与右侧队伍状态分栏。 */
 @media (max-width: 700px) {
-  .hud-map .hud-minimap, .hud-chat, .hud-card.pet { display: none; }
-  .hud-map { padding: 4px 8px; }
-  .hud-card-info { width: 120px; }
-  .hud-face { width: 44px; height: 44px; }
+  .hud-chat, .hud-card.pet { display: none; }
+  .hud-map { left: 8px; top: 8px; width: clamp(104px, 36vw, 144px); box-sizing: border-box; padding: 5px; }
+  .hud-map-name { display: block; padding: 0 0 4px; font-size: 11px; line-height: 1.3; letter-spacing: 0; }
+  .hud-map-title { display: block; }
+  .hud-coords { display: block; margin-top: 2px; font-size: 10px; line-height: 1.2; }
+  .hud-map .hud-minimap { display: block; width: 100%; height: auto; }
+  .hud-cards { top: 8px; right: 8px; }
+  .hud-card { padding: 5px; gap: 6px; }
+  .hud-card-info { width: 108px; }
+  .hud-card-name { font-size: 12px; }
+  .hud-face { width: 36px; height: 36px; }
   .hud-tracker { top: auto; bottom: 96px; left: 12px; right: 12px; width: auto; }
   body.phase-world #topbar { left: 8px; right: 8px; bottom: 22px; justify-content: space-around; }
-  body.phase-world .topbar-btn .icon-badge { width: 32px; height: 32px; font-size: 15px; }
+  body.phase-world .topbar-btn .topbar-icon { width: 32px; height: 32px; }
   .npc-menu-face { width: 120px; height: 180px; }
-  .hud-hint { top: 76px; width: calc(100% - 24px); font-size: 13px; border-radius: 12px; }
+  .hud-hint { top: 132px; width: calc(100% - 24px); font-size: 13px; border-radius: 12px; }
   body.phase-world .topbar-btn { white-space: nowrap; font-size: 11px; padding: 2px 3px; }
 }
