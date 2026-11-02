@@ -19,6 +19,11 @@ const worldPaths = Object.fromEntries(
   ['wukong', 'tang', 'bajie', 'sha', 'tudi', 'luosha', 'gaoshao', 'laozhe', 'yumian', 'niumowang', 'yaojiang', 'mob_fire1', 'mob_fire2']
     .map((key) => [key, `assets/world/${key}.webp`]),
 );
+const terrainPaths = Object.fromEntries(
+  ['village', 'cuiyun', 'huokou', 'jilei']
+    .flatMap((scene) => ['nw', 'ne', 'sw', 'se'].map((quadrant) => `${scene}-overlap-${quadrant}`))
+    .map((key) => [key, `assets/terrain/${key}.webp`]),
+);
 // 道具/兵甲图标(128px 彩绘);缺图回退字形徽
 const ITEM_KEYS = ['jinchuang', 'dahuandan', 'falidan', 'wubaodan', 'xingshi', 'bihuofu', 'buyaosheng', 'fakefan', 'truefan', 'huihun',
   'jingtie', 'mianjia', 'bintie', 'xipijia', 'ruyibang_jing', 'suozijia', 'fengchiguan'];
@@ -29,9 +34,6 @@ const bgPaths = {
   leiji: 'assets/bg/leiji.jpg?v=20260905', overworld: 'assets/bg/overworld.jpg?v=20260905',
   moyundong: 'assets/bg/moyundong.jpg?v=20260905', bibotan: 'assets/bg/bibotan.jpg?v=20260905',
   ending: 'assets/bg/ending.jpg',
-  // 2.5D 行走场景图(梦幻式大地图)
-  'map-village': 'assets/scene/map-village.jpg?v=20261101-districts', 'map-cuiyun': 'assets/scene/map-cuiyun.jpg?v=20261101-districts',
-  'map-huokou': 'assets/scene/map-huokou.jpg?v=20261101-districts', 'map-jilei': 'assets/scene/map-jilei.jpg?v=20261101-districts',
 };
 const scenePaths = {
   tudimiao: 'assets/scene/tudimiao.png',
@@ -78,6 +80,7 @@ export async function loadAssets() {
   const jobs = [];
   for (const [k, p] of Object.entries(unitPaths)) jobs.push(loadOne(p).then((i) => (images[`u:${k}`] = i)));
   for (const [k, p] of Object.entries(worldPaths)) jobs.push(loadOne(p).then((i) => (images[`w:${k}`] = i)));
+  for (const [k, p] of Object.entries(terrainPaths)) jobs.push(loadOne(p).then((i) => (images[`m:${k}`] = i)));
   for (const [k, p] of Object.entries(bgPaths)) jobs.push(loadOne(p).then((i) => (images[`b:${k}`] = i)));
   for (const [k, p] of Object.entries(scenePaths)) jobs.push(loadOne(p).then((i) => (images[`s:${k}`] = i)));
   for (const [k, p] of Object.entries(treasurePaths)) jobs.push(loadOne(p).then((i) => (images[`t:${k}`] = i)));
@@ -143,6 +146,11 @@ export function worldImage(key) {
   return image ? { image, dedicated: true } : { image: images[`u:${key}`] ?? null, dedicated: false };
 }
 
+// 行走地图消费带重叠区的原生绘景分块。
+export function mapTexture(key) {
+  return images[`m:${key}`] ?? null;
+}
+
 // 缺图时返回 null,选择屏退回纯文字两行——法宝的差别本来就写在文案里，没美术照样能选。
 export function treasureURL(key) {
   return images[`t:${key}`]?.src ?? null;
@@ -155,13 +163,6 @@ export function bgStyle(key) {
   return { backgroundImage: `linear-gradient(180deg, ${a} 0%, ${b} 55%, ${c} 100%)` };
 }
 
-// 行走场景底图;缺图时退回同地点的战斗背景，仍可行走
-const mapFallback = { 'map-village': 'overworld', 'map-cuiyun': 'cuiyun', 'map-huokou': 'huoyan', 'map-jilei': 'moyundong' };
-export function bgImage(key) {
-  return images[`b:${key}`] ?? images[`b:${mapFallback[key]}`] ?? null;
-}
-
 export function bgURL(key) {
-  const img = images[`b:${key}`];
-  return img ? img.src : null;
+  return images[`b:${key}`]?.src ?? null;
 }

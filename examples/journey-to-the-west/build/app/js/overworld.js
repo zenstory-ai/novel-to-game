@@ -12,10 +12,12 @@ import {
   worldSpriteGeometry,
 } from './world.js';
 import { audio } from './audio.js';
-import { worldImage, bgImage } from './assets.js';
+import { worldImage, mapTexture } from './assets.js';
 import { createNavigation, findInteractionPath } from './world-navigation.js';
+import { createMapRenderer } from './map-renderer.js';
 
 const FOLLOWERS = ['tang', 'bajie', 'sha'];
+const FOLLOWER_OFFSETS = [[115, -22], [230, 20], [345, -18]];
 // 立绘原本朝左的单位(其余朝右);行走时据此决定是否镜像
 const ART_FACES_LEFT = new Set(['wukong', 'pixie']);
 
@@ -32,10 +34,20 @@ export function runScene(ctx) {
   wrap.appendChild(canvas);
   ctx.root.appendChild(wrap);
   const g = canvas.getContext('2d');
-  const bg = bgImage(scene.bg);
+  const initialDensity = Math.min(2, window.devicePixelRatio || 1);
+  const mapRenderer = createMapRenderer(scene, { scale: S, density: initialDensity, textureImage: mapTexture });
+  const showNavigation = new URLSearchParams(window.location.search).get('nav') === '1';
 
   // ---------- 可走网格 ----------
-  const navigation = createNavigation({ size: scene.size, walk: scene.walk, blockers: scene.blockers, scale: S, grid: GRID });
+  const navigation = createNavigation({
+    size: scene.size,
+    walk: scene.walk,
+    paths: scene.paths,
+    blockers: scene.blockers,
+    clearance: scene.clearance,
+    scale: S,
+    grid: GRID,
+  });
   const { cellOf, isWalkableCell: isWalk, findPath } = navigation;
 
   // ---------- 实体 ----------
@@ -44,7 +56,8 @@ export function runScene(ctx) {
   const player = { id: 'player', unit: 'wukong', name: '孙悟空', title: '齐天大圣', x: spawn[0], y: spawn[1], h: 142, path: [], facing: 1, moving: false, kind: 'player' };
   const trail = [];
   const followers = FOLLOWERS.map((unit, i) => {
-    const desired = [spawn[0] - 58 * (i + 1), spawn[1] + 26 * (i + 1)];
+    const [behind, offsetY] = FOLLOWER_OFFSETS[i];
+    const desired = [spawn[0] - behind, spawn[1] + offsetY];
     const foot = navigation.normalizePoint(...desired) ?? spawn;
     return {
       unit,
@@ -80,6 +93,7 @@ export function runScene(ctx) {
     canvas.width = Math.max(1, Math.round(r.width * dpr));
     canvas.height = Math.max(1, Math.round(r.height * dpr));
     cam.vw = r.width; cam.vh = r.height; cam.dpr = dpr;
+    mapRenderer.setDensity(dpr);
   }
   resize();
   window.addEventListener('resize', resize);
@@ -176,7 +190,7 @@ export function runScene(ctx) {
   }
 
   function legalizePlayerPosition() {
-    if (!navigation.isPointInBounds(player.x, player.y) || !isWalk(...cellOf(player.x, player.y))) {
+    if (!navigation.isPointWalkable(player.x, player.y)) {
       const legalStart = navigation.normalizePoint(player.x, player.y);
       if (!legalStart) return false;
       [player.x, player.y] = legalStart;
@@ -302,8 +316,9 @@ export function runScene(ctx) {
     if (landmark) { audio.sfx('click'); approachLandmark(landmark.id); return; }
     dropPending();
     ctx.onManualMove?.();
-    walkTo(wx, wy);
-    ripples.push({ x: wx, y: wy, t: 0 });
+    const accepted = walkTo(wx, wy);
+    const endpoint = player.path.at(-1);
+    ripples.push({ x: accepted && endpoint ? endpoint[0] : wx, y: accepted && endpoint ? endpoint[1] : wy, t: 0, rejected: !accepted });
   }
   canvas.addEventListener('click', onClick);
   canvas.addEventListener('mousemove', (ev) => {
@@ -361,6 +376,12 @@ export function runScene(ctx) {
   function moveAlong(ent, dt) {
     if (!ent.path.length) { ent.moving = false; return false; }
     const [tx, ty] = ent.path[0];
+    if (!navigation.lineClear(ent.x, ent.y, tx, ty)) {
+      ent.path = [];
+      ent.moving = false;
+      dropPending();
+      return false;
+    }
     const dx = tx - ent.x, dy = ty - ent.y;
     const d = Math.hypot(dx, dy);
     const v = speed * dt;
@@ -408,14 +429,15 @@ export function runScene(ctx) {
       if (!lastT || Math.hypot(lastT[0] - player.x, lastT[1] - player.y) > 6) trail.push([player.x, player.y]);
       if (trail.length > 200) trail.shift();
     }
-    // 站定时:随从在主角身后排成一道弧(背对正在说话的人),不挤到 NPC 身上
+    // 站定时：随从在主角身后错落排开，不挤到 NPC 身上。
     const settled = !player.moving;
     const backDir = -player.facing;
     followers.forEach((f, i) => {
       const idx = trail.length - 1 - (i + 1) * 9;
       let [gx, gy] = idx >= 0 ? trail[idx] : [f.x, f.y];
       if (settled) {
-        const ax = player.x + backDir * (70 + i * 60), ay = player.y + [-34, 26, -4][i];
+        const [behind, offsetY] = FOLLOWER_OFFSETS[i];
+        const ax = player.x + backDir * behind, ay = player.y + offsetY;
         const [c, r] = cellOf(ax, ay);
         const clear = !actors.some((a) => Math.abs(a.wx - ax) < 70 && Math.abs(a.wy - ay) < 60);
         if (isWalk(c, r) && clear) { gx = ax; gy = ay; }
@@ -426,7 +448,9 @@ export function runScene(ctx) {
       const d = Math.hypot(dx, dy);
       f.moving = d > 3;
       if (Math.abs(dx) > 2) f.facing = dx > 0 ? 1 : -1;
-      const k = Math.min(1, dt * 6);
+      const k = ctx.fast
+        ? Math.min(1, dt * 6)
+        : Math.min(1, (speed * 1.2 * dt) / Math.max(1, d));
       const nextX = f.x + dx * k, nextY = f.y + dy * k;
       if (navigation.lineClear(f.x, f.y, nextX, nextY)) {
         f.x = nextX;
@@ -476,18 +500,19 @@ export function runScene(ctx) {
     const sway = e.moving ? gait * 1.2 : 0;
     const x = e.x - cam.x, y = e.y - cam.y;
     g.save();
-    // 脚底接触影 + 顺地面方向的柔和投影，两者都锁在地面坐标，不跟人物步态浮动。
-    g.filter = 'blur(4px)';
-    g.fillStyle = 'rgba(20,12,6,0.1)';
+    // 径向渐变保留柔和接地影，避免每个人物的 blur 反复滤完整画布。
+    g.save();
+    g.translate(x + h * 0.035, y + 2);
+    g.scale(h * 0.24, h * 0.05);
+    const shadow = g.createRadialGradient(-0.14, 0, 0, 0, 0, 1);
+    shadow.addColorStop(0, 'rgba(20,12,6,0.27)');
+    shadow.addColorStop(0.45, 'rgba(20,12,6,0.12)');
+    shadow.addColorStop(1, 'rgba(20,12,6,0)');
+    g.fillStyle = shadow;
     g.beginPath();
-    g.ellipse(x + h * 0.07, y + 3, h * 0.22, h * 0.045, 0.12, 0, Math.PI * 2);
+    g.arc(0, 0, 1, 0, Math.PI * 2);
     g.fill();
-    g.filter = 'blur(2.5px)';
-    g.fillStyle = 'rgba(20,12,6,0.22)';
-    g.beginPath();
-    g.ellipse(x, y + 2, h * 0.095, h * 0.025, 0, 0, Math.PI * 2);
-    g.fill();
-    g.filter = 'none';
+    g.restore();
     g.translate(x + sway, y + lift);
     const flip = (e.facing < 0) !== !!metadata.facesLeft;
     g.scale(flip ? -1 : 1, 1);
@@ -669,10 +694,8 @@ export function runScene(ctx) {
     const mm = ctx.minimap;
     if (!mm || !mm.isConnected) return;
     const mg = mm.getContext('2d');
-    const k = Math.min(mm.width / WW, mm.height / WH);
-    const ox = (mm.width - WW * k) / 2, oy = (mm.height - WH * k) / 2;
     mg.clearRect(0, 0, mm.width, mm.height);
-    if (bg) mg.drawImage(bg, ox, oy, WW * k, WH * k);
+    const { k, ox, oy } = mapRenderer.drawPreview(mg, mm.width, mm.height);
     mg.strokeStyle = 'rgba(255,255,255,0.8)';
     mg.lineWidth = 1;
     mg.strokeRect(ox + cam.x * k, oy + cam.y * k, cam.vw * k, cam.vh * k);
@@ -682,6 +705,26 @@ export function runScene(ctx) {
     for (const a of actors) dot(a.wx, a.wy, a.kind === 'demon' ? '#ff5a3c' : a.mark ? '#ffd23a' : '#fff1a0', a.mark ? 4 : 2.6);
     dot(player.x, player.y, '#5cff5c', 3.5 + Math.abs(Math.sin(now / 300)));
     mm.dataset.k = String(k); mm.dataset.ox = String(ox); mm.dataset.oy = String(oy);
+  }
+
+  function drawRoute() {
+    if (!player.path.length) return;
+    g.save();
+    g.strokeStyle = 'rgba(255,232,152,0.72)';
+    g.lineWidth = 1.5;
+    g.setLineDash([6, 7]);
+    g.beginPath();
+    g.moveTo(player.x - cam.x, player.y - cam.y);
+    for (const [x, y] of player.path) g.lineTo(x - cam.x, y - cam.y);
+    g.stroke();
+    g.setLineDash([]);
+    const [endX, endY] = player.path.at(-1);
+    g.strokeStyle = 'rgba(255,235,164,0.92)';
+    g.lineWidth = 2;
+    g.beginPath();
+    g.ellipse(endX - cam.x, endY - cam.y, 9, 4, 0, 0, Math.PI * 2);
+    g.stroke();
+    g.restore();
   }
 
   function frame(now) {
@@ -694,14 +737,19 @@ export function runScene(ctx) {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = '#1c140c';
     g.fillRect(0, 0, cam.vw, cam.vh);
-    if (bg) g.drawImage(bg, -cam.x, -cam.y, WW, WH);
+    mapRenderer.drawTerrain(g, cam);
+    drawRoute();
     for (const rp of ripples) {
-      g.strokeStyle = `rgba(255,240,170,${1 - rp.t / 0.7})`;
+      g.strokeStyle = rp.rejected
+        ? `rgba(255,82,62,${1 - rp.t / 0.7})`
+        : `rgba(255,240,170,${1 - rp.t / 0.7})`;
       g.lineWidth = 2;
       g.beginPath();
-      g.ellipse(rp.x - cam.x, rp.y - cam.y, 8 + rp.t * 40, (8 + rp.t * 40) * 0.4, 0, 0, Math.PI * 2);
+      if (rp.rejected) g.arc(rp.x - cam.x, rp.y - cam.y, 8 + rp.t * 32, 0, Math.PI * 2);
+      else g.ellipse(rp.x - cam.x, rp.y - cam.y, 8 + rp.t * 40, (8 + rp.t * 40) * 0.4, 0, 0, Math.PI * 2);
       g.stroke();
     }
+    if (showNavigation) mapRenderer.drawDebug(g, cam);
     for (const landmark of landmarks) drawLandmark(landmark, now);
     for (const p of portals) drawPortal(p, now);
     const drawables = [
@@ -726,7 +774,8 @@ export function runScene(ctx) {
       }
     }
     // 名牌:先画自家队伍,再画 NPC/妖怪——两者叠在一起时 NPC 的名字和「!」在上面
-    const namesOrder = [...drawables.filter((d) => d.kind === 'party' || d.kind === 'player'), ...drawables.filter((d) => d.kind !== 'party' && d.kind !== 'player')];
+    const namedDrawables = drawables.filter((d) => d.kind !== 'scenery');
+    const namesOrder = [...namedDrawables.filter((d) => d.kind === 'party' || d.kind === 'player'), ...namedDrawables.filter((d) => d.kind !== 'party' && d.kind !== 'player')];
     for (const d of namesOrder) {
       const color = d.kind === 'player' ? NAME_COLORS.player : d.kind === 'party' ? NAME_COLORS.party : d.kind === 'demon' ? NAME_COLORS.demon : NAME_COLORS.npc;
       drawNames(d.e, color);
@@ -734,7 +783,7 @@ export function runScene(ctx) {
     }
     for (const p of portals) drawPortalLabel(p);
     for (const landmark of landmarks) drawLandmarkLabel(landmark);
-    for (const d of drawables) {
+    for (const d of namedDrawables) {
       const b = d.src ? bubbles.get(d.src.id) : d.kind === 'party' ? bubbles.get(d.e.unit) : d.kind === 'player' ? bubbles.get('player') : null;
       if (b) drawBubble(d.e, b.text);
     }
@@ -787,11 +836,29 @@ export function runScene(ctx) {
       const k = Number(mm.dataset.k), ox = Number(mm.dataset.ox), oy = Number(mm.dataset.oy);
       if (!k) return;
       dropPending();
-      walkTo((px - ox) / k, (py - oy) / k);
+      const wx = (px - ox) / k;
+      const wy = (py - oy) / k;
+      const accepted = walkTo(wx, wy);
+      if (!accepted) ripples.push({ x: wx, y: wy, t: 0, rejected: true });
     },
     bark(id, text, ms = 3600) { bubbles.set(id, { text, until: performance.now() + ms }); },
     levelUpFx() { fxLevelUntil = performance.now() + 1600; },
     unfreeze(id) { const a = actors.find((x) => x.id === id); if (a) a.frozen = false; },
+    spatialSnapshot() {
+      return {
+        time: performance.now(),
+        sceneId: scene.id,
+        player: { x: player.x, y: player.y, moving: player.moving, path: player.path.map(([x, y]) => [x, y]) },
+        followers: followers.map((follower) => ({
+          id: follower.unit,
+          x: follower.x,
+          y: follower.y,
+          moving: follower.moving,
+        })),
+        camera: { x: cam.x, y: cam.y, vw: cam.vw, vh: cam.vh },
+        scale: S,
+      };
+    },
     // QA 钩子：实体在页面上的坐标(身形中部，便于真实点击)
     screenPos(id) {
       const r = canvas.getBoundingClientRect();
@@ -819,6 +886,7 @@ export function runScene(ctx) {
     dispose() {
       disposed = true;
       cancelAnimationFrame(raf);
+      mapRenderer.dispose();
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('resize', resize);
       wrap.remove();
