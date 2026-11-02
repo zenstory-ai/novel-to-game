@@ -1325,6 +1325,7 @@ window.__game = {
   campaign: () => campaign,
   npcScreenPos: (name) => hub.screenPos(name),
   scene: () => hub.sceneId(),
+  world: () => hub.scene?.spatialSnapshot() ?? null,
   quests: () => hub.quests(),
   mainStep: () => mainStep(campaign),
   treasure: () => treasureCtl?.snapshot() ?? null,

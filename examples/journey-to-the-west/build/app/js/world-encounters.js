@@ -11,7 +11,9 @@ function navigationFor(scene) {
     navigation = createNavigation({
       size: scene.size,
       walk: scene.walk,
+      paths: scene.paths,
       blockers: scene.blockers,
+      clearance: scene.clearance,
       scale: MAP_SCALE,
       grid: GRID,
     });
@@ -23,7 +25,7 @@ function navigationFor(scene) {
 function canInteractAt(navigation, scene, point) {
   const from = scene.spawn.map((value) => value * MAP_SCALE);
   const target = point.map((value) => value * MAP_SCALE);
-  if (!navigation.isPointInBounds(...target) || !navigation.isWalkableCell(...navigation.cellOf(...target))) return false;
+  if (!navigation.isPointWalkable(...target)) return false;
   const side = from[0] < target[0] ? -1 : 1;
   const candidates = [
     [target[0] + side * 110, target[1] + 14],

@@ -1,91 +1,31 @@
 {
   "schemaVersion": 1,
   "status": "PASS",
-  "scope": "expanded-map-targeted-qa",
+  "scope": "painted-overlap-map-rendering-and-spatial-navigation-targeted-qa",
   "environment": {
-    "runtime": "Playwright Chromium",
+    "runtime": "Playwright Chromium (headless)",
     "baseUrl": "http://127.0.0.1:5180",
     "seed": 42,
     "desktopViewport": "1440x900",
-    "mobileViewport": "390x844"
+    "mobileViewport": "390x844",
+    "highDensityCheck": "deviceScaleFactor 2"
   },
   "commands": [
     {
       "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_maps.py",
       "workingDirectory": "examples/journey-to-the-west/build/app/test",
       "exitCode": 0,
-      "result": "6 passed in 66.053s"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_maps.ExpandedMapBrowserTests.test_each_scene_renders_two_landmarks_and_distinct_districts qa_maps.ExpandedMapBrowserTests.test_mobile_minimap_moves_across_expanded_map_without_hud_overlap",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "2 passed in 36.256s; refreshed all five visual frames after landmark-label avoidance and point calibration"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_maps.py",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "post-merge final composite: 6 passed in 65.102s"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_panels.py",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "post-merge final composite: 15 passed in 183.615s"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_onboarding.py",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "post-merge final composite: 6 passed in 93.696s"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_firetroop.py",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "post-merge final composite: 4 passed in 42.470s"
-    },
-    {
-      "command": "BASE_URL=http://127.0.0.1:5180 python3 -m unittest -v qa_maps.ExpandedMapBrowserTests.test_each_scene_renders_two_landmarks_and_distinct_districts",
-      "workingDirectory": "examples/journey-to-the-west/build/app/test",
-      "exitCode": 0,
-      "result": "post-follower-routing fix: 1 passed in 35.730s; refreshed four desktop frames"
-    },
-    {
-      "command": "node test/world-navigation.mjs",
-      "workingDirectory": "examples/journey-to-the-west/build/app",
-      "exitCode": 0,
-      "result": "8 passed, 0 failed"
-    },
-    {
-      "command": "node test/exploration.mjs",
-      "workingDirectory": "examples/journey-to-the-west/build/app",
-      "exitCode": 0,
-      "result": "8 passed, 0 failed"
-    },
-    {
-      "command": "node test/world-navigation.mjs",
-      "workingDirectory": "examples/journey-to-the-west/build/app",
-      "exitCode": 0,
-      "result": "later final suite: 10 passed, 0 failed; retained separately from the earlier 8-test run"
-    },
-    {
-      "command": "node test/world-encounters.mjs",
-      "workingDirectory": "examples/journey-to-the-west/build/app",
-      "exitCode": 0,
-      "result": "5 passed, 0 failed"
+      "result": "12 passed in 45.715s; regenerated all five evidence frames from the final painted assets and compositing code"
     }
   ],
   "observations": {
-    "assets": "四个场景均加载带版本的新 3:2 实图；逻辑世界尺寸均为 2400x1600，图片自然尺寸不低于 1536x1024。",
-    "navigation": "四图出生点、抵达点、NPC、出口、8 个地标与恶魔刷新点同属可达分区；精确点位、人物两侧交互落点、障碍绕行和越界目标均通过。",
-    "landmarks": "真实小地图像素同时验证 4 个已探青玉标记与 4 个未探金色标记；浏览器从小地图移动并点击地标打开探索弹层。",
-    "exploration": "取消不写状态也不领奖；首次选择只结算一次并即时保存；刷新后仍保持；重访只显示已探回读且不重复领奖。",
-    "mobile": "390x844 下小地图可见，真实点击后长距离抵达村庄远端地标，坐标变化超过 35，地图卡与人物卡无重叠。",
-    "visualReview": "标签避让与点位校准后定向复跑；随从绕障修复后又以正常速度重走四图并刷新四张桌面帧。逐张查看确认四个地标短标签未与孙悟空名牌叠字，终点队形处于道路、庭台或营地可走区。",
-    "followerTrace": "另录制 36.12 秒临时常速视频，不纳入仓库证据；按全程 1 秒间隔及火口弯路 0.5 秒间隔抽帧查看，随从沿道路和营地外缘绕行，未再直线切过篷顶、红枫岛或 blocker。",
-    "postMergeRegression": "最终合成态顺序运行 maps 6、panels 15、onboarding 6、firetroop 4，共 31 项浏览器测试全部通过；这些是四次独立运行，不冒充同一次权威完整流程。"
+    "runtimeAssets": "四个 2400x1600 逻辑场景各只加载 4 张 overlap WebP，共 16 张运行期地貌资产；没有旧整图、独立物件图、矢量道路或静态 fallback 混入当前地表渲染。每图四块位于 [0,0]、[1080,0]、[0,720]、[1080,720]，逻辑尺寸均为 1320x880，横向重叠 240、纵向重叠 160。",
+    "overlapContinuity": "生产 createMapRenderer 用四张不同纯色 1320x880 合成块进行浏览器回归，在 x=1079/1080/1199/1200/1319/1320/1321 与 y=719/720/799/800/879/880/881 的 49 个交叉点逐像素取样；实际 RGB 与独立计算的双线性权重结果误差均不超过 3，覆盖四块交汇和重叠边界。",
+    "rasterDensity": "16 张地貌分块源图均为 1536x1024；1320x880 逻辑尺寸经 MAP_SCALE 1.15 显示为约 1518x1012 CSS 像素，源图与 CSS 显示比约 1.012x。测试只证明不超过源像素尺寸，不宣称 DPR2 原生细节。",
+    "collision": "建筑占地点击、桥外水面点击和过河实走均使用只读世界快照。脚点由测试侧独立按 scene.paths、18 像素 clearance 与当前选中的 painted blocker 多边形逐帧计算，不只复述导航器结果；建筑安全圈、河岸和桥边代表路径均未被穿越。",
+    "pathTrace": "翠云桥真实连续轨迹在水域多帧采样中只沿桥路通过。村庄常速弯路记录主角及三名随从的完整脚点，主角抵达目标误差小于 12 逻辑像素，轨迹确实转弯，随从没有离路或超出约定追赶速度。",
+    "interaction": "四图 8 个既有地标继续可达；取消探索不改状态，首次选择只发放一次奖励并在重载后保留，重访不重复发奖。390x844 下小地图保持可见，可用于长距离移动，地图卡与人物状态卡没有重叠。",
+    "visualReview": "五张交付帧均为正常画面且不带 nav 调试层。村庄道路、农田、树木与房屋连成同一空间；翠云修正版已移除伪洞口，木桥承接两岸道路且人物脚底落在桥板；火口石质通道承接熔岩两岸，人物没有踩入熔岩；积雷修正版没有重复牛魔门，湖岸、岩台和道路连续。四图未见旧式硬切缝，目标人物、小地图与关键路径保持可辨认。"
   },
   "evidence": [
     "qa/evidence/maps/01_village_districts.jpg",
@@ -95,9 +35,9 @@
     "qa/evidence/maps/05_mobile_long_route.jpg"
   ],
   "limitations": [
-    "这是扩图与探索的定向证据，不替代 qa/verification.json 的权威完整流程。",
-    "浏览器实走集中验证村庄探索奖励路径与四图代表地标；其余地标的选择矩阵、一次结算和存读由规则测试覆盖，未重复执行八套昂贵浏览器路径。",
-    "只在桌面 Chromium 模拟视口验证，未覆盖实体移动设备、其他浏览器或性能基准。",
-    "自动化结果不证明主观趣味、长期平衡或发布质量。"
+    "这是地图渲染、碰撞、路径与探索的定向证据，不替代 qa/verification.json 的权威完整流程。",
+    "绘景分块只具备约 1.012x CSS 源像素密度；没有宣称在 DPR2 画布上达到逐物理像素原生细节。",
+    "代表路线校准了建筑、桥、水岸、熔岩与弯路，但不等于穷举四张地图的每个可点击像素或所有旧存档位置。",
+    "自动化与代表帧不证明主观趣味、长期平衡、所有设备性能或发布质量。"
   ]
 }
