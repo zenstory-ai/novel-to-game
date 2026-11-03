@@ -1,15 +1,8 @@
 /* 角色、背囊、召唤兽、任务：共用一套紧凑而可读的面板语言。 */
-#modal-hero .modal-panel,
-#modal-pet .modal-panel,
-#modal-bag .modal-panel,
-#modal-quest .modal-panel {
-  width: min(920px, calc(100vw - 32px));
-  max-height: min(760px, calc(100vh - 32px));
-  color: var(--panel-ink, #293d38);
-  background: var(--panel-bg, #fff9ed);
-  border-color: var(--panel-border, #d6c5a2);
-  border-radius: var(--panel-radius, 12px);
-}
+#modal-hero .panel-shell,
+#modal-pet .panel-shell { width: min(920px, 100%); }
+#modal-bag .panel-shell { width: min(800px, 100%); }
+#modal-quest .panel-shell { width: min(720px, 100%); }
 
 #modal-hero .modal-body,
 #modal-pet .modal-body,
@@ -445,6 +438,8 @@ button:disabled {
   padding: 0;
 }
 
+#modal-bag .bag-grid > .cmd-empty { grid-column: 1 / -1; }
+
 #modal-bag .bag-item {
   width: auto;
   min-height: 102px;
@@ -558,13 +553,6 @@ button:disabled {
 }
 
 @media (max-width: 430px) {
-  #modal-hero .modal-panel,
-  #modal-pet .modal-panel,
-  #modal-bag .modal-panel,
-  #modal-quest .modal-panel {
-    width: calc(100vw - 12px);
-    max-height: calc(100vh - 12px);
-  }
   .member-select { display: flex; flex-direction: column; gap: 3px; padding: 5px; text-align: center; }
   .member-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
   .summary-card {

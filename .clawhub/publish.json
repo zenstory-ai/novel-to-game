@@ -116,7 +116,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "550e795541602be064edfeaea95dc045cb2199bcc1e098981a480ecdc07924d9",
+      "packageDigest": "1376241cbc13ed76424f871a60965c06afb304b3f6e542d0a5866e80b73b5a7b",
       "path": "skills/game-qa",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -132,7 +132,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.0.4"
+      "version": "1.0.5"
     },
     {
       "catalogMigration": true,

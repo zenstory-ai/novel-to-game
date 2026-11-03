@@ -79,7 +79,7 @@ function loadGameData() {
 
 // ---------- 抉择弹窗(授宝/缴获等;与反骗选择同构) ----------
 // 正文逐条列名物与后果，底部署名按钮落定;键盘方向键/数字键可走(showModal 自带)。
-function pickModal({ id = 'modal-choice', title, rows }) {
+function pickModal({ id = 'modal-choice', title, rows, cancelable = false }) {
   // 整张卡就是按钮：点图、点名字、点说明都算选它(键盘 1/2/3 与方向键照常)
   return new Promise((resolve) => {
     let close = null;
@@ -100,14 +100,20 @@ function pickModal({ id = 'modal-choice', title, rows }) {
       row.addEventListener('click', () => { audio.sfx('click'); close?.(); resolve(r.key); });
       return row;
     });
-    close = showModal(app, { id, title, bodyNodes: body, buttons: [], focusables: body });
+    close = showModal(app, {
+      id, title, bodyNodes: body, focusables: body,
+      buttons: cancelable
+        ? [{ label: '取消', id: 'choice-cancel', cancel: true, onClick: () => resolve(null) }]
+        : [],
+    });
   });
 }
 
 // 法宝二选一/改选共用:rows 取 TEXT.story.treasureChoice,数值描述取 TREASURES
-function pickTreasure() {
+function pickTreasure({ cancelable = false } = {}) {
   return pickModal({
     title: TEXT.story.treasureChoice.title,
+    cancelable,
     rows: TEXT.story.treasureChoice.options.map((o) => ({
       key: o.key,
       name: `${TREASURES[o.key].name}${o.key === campaign.treasure ? '(当前)' : ''}`,
@@ -177,6 +183,7 @@ function togglePanel(key) {
   else if (key === 'formation') {
     closeOpenPanel = showFormationModal(app, {
       current: campaign.formation,
+      onClose,
       formations: FORMATIONS,
       onPick: (k) => {
         campaign.formation = k;
@@ -184,8 +191,6 @@ function togglePanel(key) {
         toast(app, `${TEXT.ui.formationNow}:${FORMATIONS[k].name}`);
       },
     });
-    const origClose = closeOpenPanel;
-    closeOpenPanel = () => { origClose(); onClose(); };
   }
 }
 
@@ -512,7 +517,7 @@ function showBagPanel(onClose) {
     swap.title = TEXT.panels.treasureSwapTip;
     swap.addEventListener('click', async () => {
       if (phase === 'battle') { toast(app, TEXT.panels.treasureSwapInBattle); return; }
-      const pick = await pickTreasure();
+      const pick = await pickTreasure({ cancelable: true });
       if (!pick || pick === campaign.treasure) return;
       campaign.treasure = pick;
       toast(app, `换持法宝 · ${TREASURES[pick].name}`);
@@ -707,7 +712,7 @@ function setupTopbar() {
         id: 'modal-help',
         title: TEXT.help.title,
         bodyNodes: TEXT.help.body.map((l) => el('p', 'tutorial-line', l)),
-        buttons: [{ label: '关闭', id: 'btn-help-close' }],
+        buttons: [{ label: '关闭', id: 'btn-help-close', cancel: true }],
       });
     },
     onMute: {
@@ -778,7 +783,7 @@ function showTitle() {
       id: 'modal-help',
       title: TEXT.help.title,
       bodyNodes: TEXT.help.body.map((l) => el('p', 'tutorial-line', l)),
-      buttons: [{ label: '关闭', id: 'btn-help-close' }],
+      buttons: [{ label: '关闭', id: 'btn-help-close', cancel: true }],
     });
   });
   menu.append(bStart, bHelp);

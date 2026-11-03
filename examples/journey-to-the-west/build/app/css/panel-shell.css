@@ -1,6 +1,7 @@
 /* Shared panel language: warm silk, restrained gold and vermilion actions. */
 :root {
   --panel-bg: #fff9ed;
+  --panel-backdrop: rgba(24, 30, 27, .32);
   --panel-ink: #293d38;
   --panel-muted: #776957;
   --panel-accent: #ae3e29;
@@ -11,10 +12,13 @@
 
 .panel-overlay {
   box-sizing: border-box;
-  padding: clamp(10px, 2.4vw, 24px);
-  background: rgba(24, 30, 27, .58);
+  align-items: center;
+  padding: clamp(12px, 2.4vw, 24px);
+  background: var(--panel-backdrop);
   overscroll-behavior: contain;
 }
+
+.panel-overlay-nested { background: transparent; }
 
 .panel-shell {
   box-sizing: border-box;
@@ -22,15 +26,15 @@
   flex-direction: column;
   width: min(720px, 100%);
   max-width: 1040px;
-  max-height: calc(100% - 2px);
+  max-height: 100%;
+  min-height: 0;
+  flex: 0 1 auto;
   overflow: hidden;
   padding: 0;
   color: var(--panel-ink);
   border: 1px solid var(--panel-border);
   border-radius: var(--panel-radius);
-  background:
-    linear-gradient(rgba(255, 249, 237, .96), rgba(255, 249, 237, .96)),
-    repeating-linear-gradient(0deg, transparent 0 4px, rgba(119, 105, 87, .04) 4px 5px);
+  background: var(--panel-bg);
   box-shadow: 0 18px 55px rgba(17, 27, 24, .3), inset 0 0 0 1px rgba(255, 255, 255, .76);
   backdrop-filter: none;
 }
@@ -40,10 +44,10 @@
 .panel-shell .modal-title {
   position: relative;
   flex: none;
-  min-height: 52px;
+  min-height: 60px;
   box-sizing: border-box;
   margin: 0;
-  padding: 15px 58px 13px 20px;
+  padding: 19px 68px 17px 20px;
   color: var(--panel-ink);
   border: 0;
   border-bottom: 1px solid var(--panel-border);
@@ -108,6 +112,12 @@
   font-weight: 700;
 }
 
+.panel-shell .modal-btn-secondary {
+  color: var(--panel-ink);
+  border-color: var(--panel-border);
+  background: #fffdf7;
+}
+
 .panel-shell button:not(:disabled) { cursor: pointer; }
 .panel-shell button:not(:disabled):hover { border-color: var(--panel-accent); }
 .panel-shell button:disabled { cursor: not-allowed; opacity: .5; }
@@ -121,12 +131,12 @@
 .panel-shell .panel-close {
   position: absolute;
   z-index: 2;
-  top: 9px;
-  right: 12px;
+  top: 7px;
+  right: 8px;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   color: var(--panel-accent);
   border: 1px solid var(--panel-border);
@@ -275,10 +285,10 @@
 .formation-stat.cost { color: #9b3c2d; background: #f8e3dc; }
 
 @media (max-width: 620px) {
-  .panel-overlay { align-items: stretch; padding: 8px; }
+  .panel-overlay { padding: 12px; }
   .panel-shell { width: 100%; max-height: 100%; }
-  .panel-shell .modal-title { min-height: 48px; padding: 14px 54px 12px 14px; font-size: 18px; }
-  .panel-shell .panel-close { top: 7px; right: 8px; }
+  .panel-shell .modal-title { min-height: 58px; padding: 18px 62px 16px 14px; font-size: 18px; }
+  .panel-shell .panel-close { top: 6px; right: 7px; }
   .panel-shell .modal-body { padding: 12px; }
   .panel-shell .modal-foot { padding: 10px 12px; }
   .panel-shell .modal-btn { flex: 1 1 120px; }

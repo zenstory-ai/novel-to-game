@@ -289,14 +289,14 @@ export function createHub(deps) {
         for (const option of definition.options) bodyNodes.push(explorationRewardNode(option));
       }
       const buttons = previous
-        ? [{ label: '离开', id: 'explore-cancel', onClick: () => resolve(null) }]
+        ? [{ label: '离开', id: 'explore-cancel', cancel: true, onClick: () => resolve(null) }]
         : [
             ...definition.options.map((option) => ({
               label: option.label,
               id: `explore-choice-${option.key}`,
               onClick: () => resolve(option.key),
             })),
-            { label: '稍后再看', id: 'explore-cancel', onClick: () => resolve(null) },
+            { label: '稍后再看', id: 'explore-cancel', cancel: true, onClick: () => resolve(null) },
           ];
       showModal(app, {
         id: 'modal-exploration',
