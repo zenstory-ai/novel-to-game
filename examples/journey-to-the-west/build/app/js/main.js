@@ -124,6 +124,19 @@ function pickTreasure({ cancelable = false } = {}) {
   });
 }
 
+function itemDisplay(key) {
+  if (key === 'fakefan' && campaign.stage === 'pre_fire'
+    && !campaign.flags.fanTrial && !campaign.flags.fakeFanKnown) {
+    return { name: '借来的芭蕉扇', desc: '罗刹女交出的扇子；尚未试过扇势。' };
+  }
+  return ITEMS[key];
+}
+
+function itemDisplayOverrides() {
+  const shown = itemDisplay('fakefan');
+  return shown === ITEMS.fakefan ? null : { fakefan: shown };
+}
+
 // ---------- 面板系统(背包/召唤兽/角色/阵型 复用) ----------
 let topbarCtl = null;
 let openPanelKey = null;
@@ -509,7 +522,7 @@ function showBagPanel(onClose) {
     trVisual.appendChild(image);
   } else trVisual.appendChild(artIcon('special', 'treasure-placeholder'));
   const trCopy = el('div', 'treasure-copy');
-  trCopy.append(el('span', 'eyebrow', '当前法宝'), el('h3', '', campaign.treasure ? (TREASURES[campaign.treasure]?.name ?? campaign.treasure) : '尚未获得'), el('p', '', campaign.treasure ? (TREASURES[campaign.treasure]?.desc ?? '') : '沿主线探索可获得改变战斗规则的法宝。'));
+  trCopy.append(el('span', 'eyebrow', campaign.treasure ? '已拥有法宝 · 当前装备一件' : '当前法宝'), el('h3', '', campaign.treasure ? (TREASURES[campaign.treasure]?.name ?? campaign.treasure) : '尚未获得'), el('p', '', campaign.treasure ? (TREASURES[campaign.treasure]?.desc ?? '') : '沿主线探索可获得改变战斗规则的法宝。'));
   trRow.append(trVisual, trCopy);
   if (campaign.treasure) {
     const swap = el('button', 'btn stat-btn wide', TEXT.panels.treasureSwap);
@@ -556,7 +569,10 @@ function showBagPanel(onClose) {
   const owned = Object.entries(campaign.items).filter(([k, n]) => n > 0 && ITEMS[k]);
   const gearOwned = Object.entries(campaign.equipBag).filter(([k, n]) => n > 0 && EQUIPS[k]);
   if (owned.length === 0 && gearOwned.length === 0) grid.appendChild(el('div', 'cmd-empty', TEXT.panels.bagEmpty));
-  for (const [k, n] of owned) grid.appendChild(cellFor(k, n, ITEMS[k].name, ITEMS[k].desc));
+  for (const [k, n] of owned) {
+    const shown = itemDisplay(k);
+    grid.appendChild(cellFor(k, n, shown.name, shown.desc));
+  }
   for (const [k, n] of gearOwned) {
     const eq = EQUIPS[k];
     grid.appendChild(cellFor(k, n, eq.name, `${eq.desc}（${['', '一', '二', '三'][eq.tier]}阶${eq.slot === 'weapon' ? '兵器' : '护身'}，在【角色】换上）`, eq.slot, `gear tier${eq.tier}`));
@@ -632,8 +648,17 @@ function showPetPanel(onClose) {
       const aptRow = el('div', 'pet-apt');
       for (const [label, value] of Object.entries(petAptitude(def))) aptRow.appendChild(el('span', 'pet-apt-cell', `${label} ${value}`));
       aptitude.appendChild(aptRow);
-      content.append(skills, aptitude);
-    } else if (panelView.petTab === 'training') content.append(statCells(key, rebuild), skillCells(key, rebuild));
+      const actions = el('div', 'recommend-actions');
+      const rec = el('button', 'btn stat-btn wide with-icon');
+      rec.type = 'button';
+      rec.append(artIcon('vitality', 'button-art'), el('span', '', TEXT.panels.recommend));
+      rec.dataset.allocRecommend = key;
+      rec.setAttribute('aria-label', `${def.name}推荐加点`);
+      setDisabled(rec, (campaign.pendingPoints[key] ?? 0) <= 0, '按推荐权重投入全部可用点');
+      rec.addEventListener('click', () => { if (applyRecommend(campaign, key) > 0) rebuild(); });
+      actions.append(rec);
+      content.append(statCells(key, rebuild), actions, skills, aptitude);
+    } else if (panelView.petTab === 'training') content.append(skillCells(key, rebuild));
     else content.appendChild(gearCells(key, rebuild));
     detail.appendChild(content);
     layout.appendChild(detail);
@@ -875,6 +900,7 @@ async function runBattle(battleId, seedOffset, opts = {}) {
       partyDefs: buildPartyDefs(),
       formation: campaign.formation,
       items: campaign.items,
+      itemDisplay: itemDisplayOverrides(),
       treasure: campaign.treasure,
       startDebuff: opts.startDebuff ?? null,
       storySetup: opts.storySetup ?? {},
@@ -890,6 +916,9 @@ async function runBattle(battleId, seedOffset, opts = {}) {
       canRegroup: opts.regroup ?? !BATTLES[battleId]?.boss,
     });
     if (showTutorial) localStorage.setItem(TUT_KEY, '1');
+    if ((result.items?.fakefan ?? campaign.items.fakefan ?? 0) < (campaign.items.fakefan ?? 0)) {
+      campaign.flags.fakeFanKnown = true;
+    }
     if (result.winner === 'party' || result.winner === 'flee') {
       // 胜利/脱身：战斗里用掉的丹药与绳子从行囊里真正扣掉;真假芭蕉扇归剧情自己管
       for (const [k, n] of Object.entries(result.items ?? {})) {
@@ -1207,7 +1236,7 @@ async function storyFanpian() {
     });
   });
   await showDialog(app, campaign.fanFooled ? TEXT.story.fanpianGive : TEXT.story.fanpianCheck);
-  await showDialog(app, TEXT.story.preBattle3);
+  await showDialog(app, campaign.fanFooled ? TEXT.story.preBattle3Fooled : TEXT.story.preBattle3Kept);
   const startDebuff = campaign.fanFooled ? { unit: 'p0', buff: { id: 'atk_down', val: 0.15, turns: 1 } } : null;
   const r = await runBattle('niumowang', 300, { onceCards: ['truefan'], startDebuff, rewardLevel: false });
   applyLevelUps(r.levelUps);
@@ -1304,23 +1333,25 @@ async function showEnding() {
 
   // 还扇西行
   const panel = el('div', 'ending-panel');
-  for (const line of [E[6], E[7]]) panel.appendChild(el('p', '', line.text));
+  panel.appendChild(el('h1', 'ending-title', TEXT.story.endingTitle));
+  const body = el('div', 'ending-body');
+  for (const line of [E[6], E[7]]) body.appendChild(el('p', '', line.text));
   const recap = el('div', 'ending-recap');
   recap.appendChild(el('div', 'ending-recap-title', '这一程留下的痕迹'));
   for (const line of endingEchoes()) recap.appendChild(el('p', '', `· ${line}`));
-  panel.appendChild(recap);
-  panel.appendChild(el('div', 'ending-title', TEXT.story.endingTitle));
+  body.appendChild(recap);
+  panel.appendChild(body);
+  const footer = el('div', 'ending-footer');
   const btn = el('button', 'btn modal-btn', TEXT.story.restart);
   btn.id = 'btn-restart';
-  btn.style.display = 'block';
-  btn.style.margin = '14px auto 0';
   btn.addEventListener('click', () => {
     localStorage.removeItem(SAVE_KEY);
     hub.cancelTravel();
     campaign = newCampaign();
     showTitle();
   });
-  panel.appendChild(btn);
+  footer.appendChild(btn);
+  panel.appendChild(footer);
   wrap.appendChild(panel);
 }
 

@@ -39,7 +39,8 @@ const sceneContracts = {
   fanpian1: [null, 'fakeBajie', 'wukong'],
   fanpianCheck: ['fakeBajie', 'wukong', null, 'niumowang'],
   fanpianGive: [null, 'niumowang', 'wukong'],
-  preBattle3: [null, 'bajie', 'tudi', 'sha', 'niumowang', 'niumowang'],
+  preBattle3Kept: [null, 'bajie', 'tudi', 'sha', 'niumowang', 'niumowang'],
+  preBattle3Fooled: [null, 'bajie', 'tudi', 'sha', 'niumowang', 'niumowang'],
   godAssistDialog: [null, 'nezha', 'luosha', 'luosha', 'niumowang'],
   phase2: [null],
   ending: [null, 'luosha', null, null, null, null, null, null],
@@ -76,7 +77,15 @@ for (const [name, keys] of Object.entries(choiceKeys)) {
 assert.match(TEXT.story.borrowingApproachChoice.options.find(({ key }) => key === 'calm').fore, /15%.*两回合/);
 assert.match(TEXT.story.borrowingApproachChoice.options.find(({ key }) => key === 'rush').fore, /15%.*两回合/);
 assert.match(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'ember').fore, /不助长大火/);
-assert.match(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'full').fore, /30%.*三回合/);
+assert.match(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'full').fore, /火势.*30%.*三回合/);
+assert.doesNotMatch(TEXT.story.fanTrialChoice.options.find(({ key }) => key === 'full').fore, /假扇/);
+assert.match(TEXT.story.lingji.at(-2).text, /同时.*一件.*战斗外.*换持/);
+assert.doesNotMatch(TEXT.story.chapters.c3.sub, /牛魔王.*八戒/);
+assert.doesNotMatch(TEXT.story.preBattle3Kept[0].text, /真八戒.*赶到/);
+assert.ok(TEXT.story.preBattle3Kept.some(({ who, text }) => who === 'sha' && /守住后路/.test(text)));
+assert.doesNotMatch(JSON.stringify([TEXT.story.preBattle3Kept, TEXT.story.preBattle3Fooled]), /我护师父/);
+assert.doesNotMatch(TEXT.speakers.fakeBajie, /[「」]/);
+assert.doesNotMatch(TEXT.overworld.tip, /右侧/);
 assert.ok(!JSON.stringify([TEXT.story.borrowingCalm, TEXT.story.borrowingRush]).includes('道歉'), '准备选择不能靠道歉化解母子怨结');
 
 const placeholders = new Map();

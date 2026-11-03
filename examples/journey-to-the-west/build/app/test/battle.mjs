@@ -3,7 +3,7 @@
 import {
   createBattle, executeRound, buildActionQueue, effStat, elementRelation, elementCoef,
   calcDamage, makeUnit, levelUpParty, getUnit, aliveUnits, unitSkills, switchFormation,
-  unitLevelStats, effectiveSkill, skillsAtLevel, previewDamage,
+  unitLevelStats, effectiveSkill, skillsAtLevel, previewDamage, displaySnapshot,
 } from '../js/engine.js';
 import { SKILLS, FORMS, BATTLES, PARTY, BASIC_ATTACK, POINT_GAINS, EQUIPS, TREASURES, GROWTH, STORY_SETUP_EFFECTS } from '../js/data.js';
 import { createRNG } from '../js/rng.js';
@@ -358,12 +358,17 @@ section('BOSS 蓄力预警 → 重击');
   const evs3 = executeRound(s, defendAll()); // 回合3:预警
   ok(evs3.some((e) => e.t === 'telegraph'), '第 3 回合发出蓄力预警');
   ok(!evs3.some((e) => e.t === 'heavy'), '预警当回合不重击');
+  const bossAfterTelegraph = getUnit(s, 'e0');
+  const telegraphSnapshot = displaySnapshot(s)[bossAfterTelegraph.id];
+  ok(telegraphSnapshot.charge === 1, '预警后下个指令阶段保留一层真实蓄力状态');
+  ok(telegraphSnapshot.heavyName === '混铁棍', '显示快照携带即将发动的重击名称');
   // 仅 BOSS 级(ai==='boss')蓄力:玉面/妖将这类小怪不再跟着蓄力(避免同回合多重重击)
   const telUnits = evs3.filter((e) => e.t === 'telegraph').map((e) => getUnit(s, e.unit));
   ok(telUnits.length === 1 && telUnits.every((u) => u.ai === 'boss'), `蓄力预警只来自 BOSS 级敌人 (实际 ${telUnits.length} 个)`);
   const evs4 = executeRound(s, defendAll()); // 回合4:重击
   const heavy = evs4.find((e) => e.t === 'heavy');
   ok(!!heavy, '第 4 回合重击落下');
+  ok(displaySnapshot(s)[bossAfterTelegraph.id].charge === 0, '重击落下后显示快照清除蓄力');
   ok(evs4.filter((e) => e.t === 'heavy').length === 1, '同回合只有一记 BOSS 重击');
   const target = getUnit(s, heavy.target);
   const ratio = heavy.amount / target.maxHp;

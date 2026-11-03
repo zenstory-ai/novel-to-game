@@ -7,8 +7,8 @@
       1440,
       900
     ],
-    "url": "http://127.0.0.1:62632/?seed=42&fast=1",
-    "buildBytes": 22544222
+    "url": "http://127.0.0.1:59547/?seed=42&fast=1",
+    "buildBytes": 22548345
   },
   "inputTrace": [
     "start a new campaign and land in the walkable Flaming Mountain village",

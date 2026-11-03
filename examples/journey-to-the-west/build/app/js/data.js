@@ -288,6 +288,7 @@ export const BATTLES = {
     enemies: ['luosha', 'shibi', 'shibi'],
     // 原著第59回：第3回合罗刹女祭扇吹飞悟空(演出，非失败)
     storyExit: { round: 3, kind: 'blow' },
+    objective: '撑过两回合，逼罗刹女祭出芭蕉扇。',
     hint: '侍婢会替罗刹女回血：先合力打倒一名侍婢，血少的伙伴用金疮药或防御。',
   },
   luosha: {
@@ -327,6 +328,7 @@ export const BATTLES = {
     enemies: ['niumowang', 'yaojiang'],
     // 原著第60回：第3回合牛魔王赴碧波潭之宴而走(演出，引出碧波潭)
     storyExit: { round: 3, kind: 'retreat' },
+    objective: '撑过两回合，稳住阵脚别被老牛拖垮。',
     hint: '老牛只想拖住你几回合：让沙僧开罗汉金身，其余人防御或用药，撑过去就好。',
   },
   niumowang: {
