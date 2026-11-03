@@ -125,6 +125,20 @@ class PanelBrowserTests(unittest.TestCase):
         page.click("#btn-continue")
         page.wait_for_selector("#overworld-canvas")
         page.wait_for_selector("#topbar")
+        self.wait_for_minimap_pixels()
+
+    def wait_for_minimap_pixels(self) -> None:
+        self.page.wait_for_function(
+            """() => {
+              const canvas = document.querySelector('.hud-minimap');
+              if (!canvas) return false;
+              const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+              let visible = 0;
+              for (let i = 3; i < data.length; i += 4) if (data[i] > 0) visible++;
+              return visible > data.length / 8;
+            }""",
+            timeout=5000,
+        )
 
     def stored_campaign(self) -> dict[str, object]:
         raw = self.page.evaluate(f"localStorage.getItem('{SAVE_KEY}')")
@@ -172,6 +186,77 @@ class PanelBrowserTests(unittest.TestCase):
     def open_panel(self, button_id: str, modal_id: str) -> None:
         self.page.click(f"#{button_id}")
         self.page.wait_for_selector(f"#{modal_id} .panel-shell")
+
+    def click_backdrop(self, modal_id: str) -> None:
+        self.page.locator(f"#{modal_id}").click(position={"x": 2, "y": 2})
+
+    def open_treasure_choice(self) -> None:
+        self.page.click("#btn-treasure-swap")
+        self.page.wait_for_selector("#modal-choice .panel-shell")
+
+    def test_six_top_level_panels_close_from_backdrop_and_restore_opener_focus(self) -> None:
+        self.install_rich_campaign()
+        panels = [
+            ("btn-hero", "modal-hero"),
+            ("btn-bag", "modal-bag"),
+            ("btn-pet", "modal-pet"),
+            ("btn-quest", "modal-quest"),
+            ("btn-formation", "modal-formation"),
+            ("btn-system", "modal-system"),
+        ]
+        for button_id, modal_id in panels:
+            with self.subTest(panel=modal_id):
+                self.open_panel(button_id, modal_id)
+                self.click_backdrop(modal_id)
+                self.page.wait_for_selector(f"#{modal_id}", state="detached")
+                self.assertEqual(self.page.evaluate("document.activeElement?.id"), button_id)
+                self.assertNotIn(
+                    "open", self.page.locator(f"#{button_id}").get_attribute("class") or ""
+                )
+
+    def test_inside_click_and_inside_to_backdrop_drag_do_not_close_panel(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-bag", "modal-bag")
+        panel = self.page.locator("#modal-bag .panel-shell")
+        panel.click(position={"x": 12, "y": 12})
+        self.assertEqual(self.page.locator("#modal-bag").count(), 1)
+        box = panel.bounding_box()
+        self.assertIsNotNone(box)
+        self.page.mouse.move(box["x"] + box["width"] / 2, box["y"] + 24)
+        self.page.mouse.down()
+        self.page.mouse.move(2, 2)
+        self.page.mouse.up()
+        self.assertEqual(self.page.locator("#modal-bag").count(), 1)
+
+    def test_top_level_panel_escape_and_close_button_restore_opener_focus(self) -> None:
+        self.install_rich_campaign()
+        for close_method in ("escape", "button"):
+            with self.subTest(close_method=close_method):
+                self.open_panel("btn-quest", "modal-quest")
+                if close_method == "escape":
+                    self.page.keyboard.press("Escape")
+                else:
+                    self.page.locator("#modal-quest .panel-close").click()
+                self.page.wait_for_selector("#modal-quest", state="detached")
+                self.assertEqual(self.page.evaluate("document.activeElement?.id"), "btn-quest")
+
+    def test_panel_surface_and_backdrop_use_one_shared_opacity_contract(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-bag", "modal-bag")
+        colors = self.page.locator("#modal-bag").evaluate(
+            """mask => ({
+              backdrop: getComputedStyle(mask).backgroundColor,
+              surface: getComputedStyle(mask.querySelector('.panel-shell')).backgroundColor,
+              closeSize: (() => {
+                const r = mask.querySelector('.panel-close').getBoundingClientRect();
+                return [r.width, r.height];
+              })(),
+            })"""
+        )
+        self.assertEqual(colors["backdrop"], "rgba(24, 30, 27, 0.32)")
+        self.assertEqual(colors["surface"], "rgb(255, 249, 237)")
+        self.assertGreaterEqual(colors["closeSize"][0], 44)
+        self.assertGreaterEqual(colors["closeSize"][1], 44)
 
     def test_desktop_panels_share_shell_fit_viewport_and_load_art(self) -> None:
         self.install_rich_campaign()
@@ -386,21 +471,137 @@ class PanelBrowserTests(unittest.TestCase):
         self.page.wait_for_selector("#modal-choice", state="detached")
         self.assertEqual(self.stored_campaign()["treasure"], "bihuojin")
 
-    def test_nested_treasure_choice_keeps_focus_and_escape_on_top_layer(self) -> None:
+    def test_optional_treasure_choice_escape_cancels_only_top_layer_and_restores_focus(self) -> None:
         self.install_rich_campaign()
         self.open_panel("btn-bag", "modal-bag")
-        self.page.click("#btn-treasure-swap")
-        self.page.wait_for_selector("#modal-choice")
-
-        self.page.keyboard.press("Tab")
-        self.assertTrue(
-            self.page.evaluate(
-                "document.querySelector('#modal-choice').contains(document.activeElement)"
-            )
-        )
+        original = self.stored_campaign()["treasure"]
+        self.open_treasure_choice()
         self.page.keyboard.press("Escape")
-        self.assertEqual(self.page.locator("#modal-choice").count(), 1)
+        self.page.wait_for_selector("#modal-choice", state="detached")
         self.assertEqual(self.page.locator("#modal-bag").count(), 1)
+        self.assertEqual(self.stored_campaign()["treasure"], original)
+        self.assertEqual(self.page.evaluate("document.activeElement?.id"), "btn-treasure-swap")
+
+    def test_optional_treasure_choice_backdrop_and_close_button_cancel_without_state_change(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-bag", "modal-bag")
+        original = self.stored_campaign()["treasure"]
+        for close_method in ("backdrop", "button"):
+            with self.subTest(close_method=close_method):
+                self.open_treasure_choice()
+                if close_method == "backdrop":
+                    self.click_backdrop("modal-choice")
+                else:
+                    self.page.locator("#modal-choice .panel-close").click()
+                self.page.wait_for_selector("#modal-choice", state="detached")
+                self.assertEqual(self.page.locator("#modal-bag").count(), 1)
+                self.assertEqual(self.stored_campaign()["treasure"], original)
+                self.assertEqual(
+                    self.page.evaluate("document.activeElement?.id"), "btn-treasure-swap"
+                )
+
+    def test_nested_overlay_does_not_dim_parent_twice(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-bag", "modal-bag")
+        self.open_treasure_choice()
+        colors = self.page.evaluate(
+            """() => ({
+              parent: getComputedStyle(document.querySelector('#modal-bag')).backgroundColor,
+              child: getComputedStyle(document.querySelector('#modal-choice')).backgroundColor,
+            })"""
+        )
+        self.assertEqual(colors["parent"], "rgba(24, 30, 27, 0.32)")
+        self.assertEqual(colors["child"], "rgba(0, 0, 0, 0)")
+
+    def test_required_choice_ignores_escape_and_backdrop(self) -> None:
+        self.install_rich_campaign()
+        self.page.evaluate(
+            """async () => {
+              const { showModal, el } = await import('./js/ui.js');
+              showModal(document.querySelector('#app'), {
+                id: 'modal-required-test', title: '必须选择',
+                bodyNodes: [el('p', 'tutorial-line', '这一步必须明确选择。')],
+                buttons: [{ label: '继续', id: 'required-continue' }],
+              });
+            }"""
+        )
+        self.page.wait_for_selector("#modal-required-test")
+        self.assertEqual(self.page.locator("#modal-required-test .panel-close").count(), 0)
+        self.page.keyboard.press("Escape")
+        self.click_backdrop("modal-required-test")
+        self.assertEqual(self.page.locator("#modal-required-test").count(), 1)
+        self.page.click("#required-continue")
+        self.page.wait_for_selector("#modal-required-test", state="detached")
+
+    def test_cancelable_confirm_backdrop_resolves_false_and_restores_parent_focus(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-bag", "modal-bag")
+        self.page.locator("#btn-treasure-swap").focus()
+        self.page.evaluate(
+            """async () => {
+              const { confirmModal } = await import('./js/ui.js');
+              document.body.dataset.confirmResult = 'pending';
+              confirmModal(document.querySelector('#app'), {
+                title: '确认测试', text: '确认要继续吗？'
+              }).then(value => { document.body.dataset.confirmResult = String(value); });
+            }"""
+        )
+        self.page.wait_for_selector("#modal-confirm")
+        self.click_backdrop("modal-confirm")
+        self.page.wait_for_selector("#modal-confirm", state="detached")
+        self.page.wait_for_function("document.body.dataset.confirmResult === 'false'")
+        self.assertEqual(self.page.locator("#modal-bag").count(), 1)
+        self.assertEqual(self.page.evaluate("document.activeElement?.id"), "btn-treasure-swap")
+
+    def test_short_mobile_panels_keep_content_height_and_reachable_header_controls(self) -> None:
+        for width, height in [(390, 844), (320, 700)]:
+            with self.subTest(viewport=f"{width}x{height}"):
+                self.reset_context(width, height)
+                campaign = self.rich_fixture(self.fresh_campaign())
+                campaign["items"] = {}
+                campaign["equipBag"] = {}
+                campaign["treasure"] = None
+                self.install_campaign(campaign)
+                for button_id, modal_id in (("btn-bag", "modal-bag"), ("btn-system", "modal-system")):
+                    with self.subTest(panel=modal_id):
+                        self.open_panel(button_id, modal_id)
+                        metrics = self.page.locator(f"#{modal_id} .panel-shell").evaluate(
+                            """panel => {
+                              const pr = panel.getBoundingClientRect();
+                              const body = panel.querySelector('.modal-body');
+                              const br = body.getBoundingClientRect();
+                              const title = panel.querySelector('.modal-title').getBoundingClientRect();
+                              const close = panel.querySelector('.panel-close').getBoundingClientRect();
+                              const empty = panel.querySelector('.bag-grid > .cmd-empty')?.getBoundingClientRect();
+                              const grid = panel.querySelector('.bag-grid')?.getBoundingClientRect();
+                              return {
+                                height: pr.height, viewportHeight: innerHeight,
+                                bodyClient: body.clientHeight, bodyScroll: body.scrollHeight,
+                                titleTop: title.top, closeTop: close.top,
+                                closeRight: close.right, panelRight: pr.right,
+                                bodyBottom: br.bottom, panelBottom: pr.bottom,
+                                emptyWidth: empty?.width ?? null, gridWidth: grid?.width ?? null,
+                              };
+                            }"""
+                        )
+                        if modal_id == "modal-bag":
+                            self.assertLess(metrics["height"], metrics["viewportHeight"] - 24)
+                            self.assertGreaterEqual(
+                                metrics["emptyWidth"], metrics["gridWidth"] * 0.8
+                            )
+                        if metrics["bodyScroll"] > metrics["bodyClient"] + 1:
+                            self.assertLess(metrics["bodyClient"], metrics["bodyScroll"])
+                        self.assertGreaterEqual(metrics["titleTop"], 0)
+                        self.assertGreaterEqual(metrics["closeTop"], 0)
+                        self.assertLessEqual(metrics["closeRight"], metrics["panelRight"] + 0.5)
+                        self.assertLessEqual(metrics["bodyBottom"], metrics["panelBottom"] + 0.5)
+                        if width == 390 and modal_id == "modal-bag":
+                            self.page.screenshot(
+                                path=SHOTS / "09_mobile_short_bag.jpg",
+                                type="jpeg",
+                                quality=82,
+                            )
+                        self.page.locator(f"#{modal_id} .panel-close").click()
 
     def test_formation_selection_updates_current_choice(self) -> None:
         self.install_rich_campaign()

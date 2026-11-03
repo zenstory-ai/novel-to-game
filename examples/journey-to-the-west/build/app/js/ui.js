@@ -38,6 +38,7 @@ let modalDepth = 0;
 let dlgDepth = 0;
 let shadeGeneration = 0;
 let modalLabelSeq = 0;
+const panelLayers = [];
 function shadeOn(kind) {
   if (kind === 'modal') modalDepth += 1; else dlgDepth += 1;
   document.body.classList.add(kind === 'modal' ? 'modal-open' : 'dlg-open');
@@ -53,6 +54,8 @@ function shadeOff(kind, ownerGeneration) {
 
 // 切场会直接回收旧 screen；同时归零计数，避免被回收的遮罩把后续指令台永久压暗。
 export function resetOverlayShading() {
+  for (const layer of panelLayers) layer.dispose();
+  panelLayers.length = 0;
   shadeGeneration += 1;
   modalDepth = 0;
   dlgDepth = 0;
@@ -157,164 +160,156 @@ function trapPanelFocus(panel, ev) {
   return true;
 }
 
-// 键盘：回车/空格=当前聚焦钮(默认首钮)，方向键循环，数字键直选(全流程键盘)。
-export function showModal(root, { id, title, bodyNodes, buttons, focusables = null }) {
-  root.querySelectorAll('.big-toast').forEach((n) => n.remove()); // 大字提示不压在弹窗上
+// 两类面板共用外壳、遮罩、顶层输入与焦点归还。
+function mountPanel(root, { id, title, bodyNodes, footer, dismiss, onClose, onKey, initialFocus }) {
+  root.querySelectorAll('.big-toast').forEach((node) => node.remove());
   const previousFocus = document.activeElement;
   const mask = el('div', 'modal-mask panel-overlay');
   if (id) mask.id = id;
   const panel = el('div', `modal-panel panel-shell${id ? ` panel-${id.replace(/^modal-/, '')}` : ''}`);
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('tabindex', '-1');
-  addCorners(panel);
+  panel.tabIndex = -1;
   const head = el('div', 'modal-title', title);
-  head.id = `${id || `modal-${++modalLabelSeq}`}-title`;
+  head.id = `${id || `panel-${++modalLabelSeq}`}-title`;
   panel.setAttribute('aria-labelledby', head.id);
   const body = el('div', 'modal-body');
-  for (const n of bodyNodes) body.appendChild(n);
-  const foot = el('div', 'modal-foot');
-  let closed = false;
-  const close = () => {
-    if (closed) return;
-    closed = true;
-    shadeOff('modal', ownerGeneration);
-    mask.remove();
-    window.removeEventListener('keydown', onKey);
-    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
-  };
-  for (const b of buttons) {
-    const btn = el('button', 'btn modal-btn', b.label);
-    if (b.id) btn.id = b.id;
-    btn.disabled = Boolean(b.disabled);
-    btn.addEventListener('click', () => audio.sfx('click'));
-    btn.addEventListener('click', () => {
-      if (b.onClick) b.onClick();
-      if (b.close !== false) close();
-    });
-    foot.appendChild(btn);
-  }
-  const escapeButton = [...foot.querySelectorAll('button:not(:disabled)')]
-    .find((btn) => /(?:close|cancel)/i.test(btn.id));
-  const topClose = escapeButton ? el('button', 'panel-close', '×') : null;
-  if (topClose) {
-    topClose.type = 'button';
-    topClose.id = `${id || 'modal'}-x`;
-    topClose.setAttribute('aria-label', `关闭${title}`);
-    topClose.addEventListener('click', () => escapeButton.click());
-  }
-  const btns = (focusables?.length ? [...focusables] : [...foot.querySelectorAll('button')])
-    .filter((btn) => !btn.disabled);
-  if (!buttons.length) foot.hidden = true;
-  let fIdx = 0;
-  const applyF = (i) => {
-    if (btns.length === 0) return;
-    fIdx = ((i % btns.length) + btns.length) % btns.length;
-    btns.forEach((b) => b.classList.remove('kbd-focus'));
-    btns[fIdx].classList.add('kbd-focus');
-    if (btns[fIdx].isConnected) btns[fIdx].focus();
-  };
-  function onKey(ev) {
-    if (!mask.isConnected) {
-      window.removeEventListener('keydown', onKey);
-      return;
-    }
-    const topMask = [...root.querySelectorAll('.modal-mask')].at(-1);
-    if (topMask !== mask) return;
-    const k = ev.key;
-    if (trapPanelFocus(panel, ev)) return;
-    if (ev.repeat && (k === 'Enter' || k === ' ')) { ev.preventDefault(); return; }
-    if (k === 'Enter' || k === ' ') {
-      const focusedButton = document.activeElement instanceof HTMLElement
-        ? document.activeElement.closest('button:not(:disabled)')
-        : null;
-      (focusedButton && panel.contains(focusedButton) ? focusedButton : btns[fIdx])?.click();
-      ev.preventDefault();
-    }
-    else if (k === 'ArrowLeft' || k === 'ArrowUp') {
-      const activeIdx = btns.indexOf(document.activeElement);
-      applyF((activeIdx >= 0 ? activeIdx : fIdx) - 1);
-      ev.preventDefault();
-    }
-    else if (k === 'ArrowRight' || k === 'ArrowDown') {
-      const activeIdx = btns.indexOf(document.activeElement);
-      applyF((activeIdx >= 0 ? activeIdx : fIdx) + 1);
-      ev.preventDefault();
-    }
-    else if (/^[1-9]$/.test(k)) {
-      const b = btns[Number(k) - 1];
-      if (b) { b.click(); ev.preventDefault(); }
-    } else if (k === 'Escape' && escapeButton) { escapeButton.click(); ev.preventDefault(); }
-  }
-  window.addEventListener('keydown', onKey);
-  applyF(0);
-  panel.append(head);
-  if (topClose) panel.appendChild(topClose);
-  panel.append(body, foot);
+  body.append(...bodyNodes);
+  panel.append(head, body);
+  if (footer) panel.appendChild(footer);
   mask.appendChild(panel);
   root.appendChild(mask);
   const ownerGeneration = shadeOn('modal');
+  const events = new AbortController();
+  const layer = { mask, panel, dispose: () => events.abort() };
+  panelLayers.push(layer);
+  refreshLayers();
+  let closed = false;
+  let backdropPress = false;
+  const close = () => {
+    if (closed) return;
+    closed = true;
+    events.abort();
+    shadeOff('modal', ownerGeneration);
+    mask.remove();
+    const index = panelLayers.indexOf(layer);
+    if (index >= 0) panelLayers.splice(index, 1);
+    refreshLayers();
+    onClose?.();
+    const top = panelLayers.at(-1);
+    if (previousFocus instanceof HTMLElement && previousFocus.isConnected
+      && (!top || top.panel.contains(previousFocus))) previousFocus.focus();
+  };
+  const dismissTop = () => {
+    if (panelLayers.at(-1) !== layer || !dismiss) return;
+    if (dismiss === true) { audio.sfx('click'); close(); }
+    else dismiss();
+  };
+  const closeBtn = dismiss ? el('button', 'panel-close', '×') : null;
+  if (closeBtn) {
+    closeBtn.type = 'button';
+    closeBtn.id = `${id || 'panel'}-close`;
+    closeBtn.setAttribute('aria-label', `关闭${title}`);
+    closeBtn.addEventListener('click', dismissTop);
+    panel.appendChild(closeBtn);
+  }
+  mask.addEventListener('pointerdown', (ev) => {
+    backdropPress = ev.target === mask && ev.button === 0;
+  }, { signal: events.signal });
+  mask.addEventListener('pointercancel', () => { backdropPress = false; }, { signal: events.signal });
+  mask.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const outside = backdropPress && ev.target === mask;
+    backdropPress = false;
+    if (outside) dismissTop();
+  }, { signal: events.signal });
+  window.addEventListener('keydown', (ev) => {
+    if (!mask.isConnected) { events.abort(); return; }
+    if (panelLayers.at(-1) !== layer) return;
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      if (!ev.repeat) dismissTop();
+    } else if (!trapPanelFocus(panel, ev)) onKey?.(ev, panel);
+    if (ev.defaultPrevented) ev.stopImmediatePropagation();
+  }, { capture: true, signal: events.signal });
   queueMicrotask(() => {
-    if (!mask.isConnected) return;
-    (btns[0] || panel).focus();
+    if (mask.isConnected && panelLayers.at(-1) === layer) (initialFocus?.() || closeBtn || panel).focus();
   });
   return close;
 }
 
-// ---------- 统一面板(右上木刻×关闭;供 背包/召唤兽/角色/阵型/帮助 复用) ----------
-export function showPanel(root, { id, title, bodyNodes, onClose }) {
-  root.querySelectorAll('.big-toast').forEach((n) => n.remove());
-  const previousFocus = document.activeElement;
-  const mask = el('div', 'modal-mask panel-overlay');
-  if (id) mask.id = id;
-  const panel = el('div', `modal-panel panel-shell${id ? ` panel-${id.replace(/^modal-/, '')}` : ''}`);
-  panel.setAttribute('role', 'dialog');
-  panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('tabindex', '-1');
-  addCorners(panel);
-  const head = el('div', 'modal-title', title);
-  head.id = `${id || `panel-${++modalLabelSeq}`}-title`;
-  panel.setAttribute('aria-labelledby', head.id);
-  const closeBtn = el('button', 'panel-close', '×');
-  closeBtn.id = `${id}-close`;
-  closeBtn.type = 'button';
-  closeBtn.setAttribute('aria-label', `关闭${title}`);
-  const body = el('div', 'modal-body');
-  for (const n of bodyNodes) body.appendChild(n);
-  let closed = false;
-  const close = () => {
-    if (closed) return;
-    closed = true;
-    shadeOff('modal', ownerGeneration);
-    mask.remove();
-    window.removeEventListener('keydown', onKey);
-    if (onClose) onClose();
-    if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
-  };
-  function onKey(ev) {
-    if (!mask.isConnected) {
-      window.removeEventListener('keydown', onKey);
-      return;
+function refreshLayers() {
+  // 场景回收可能直接移除旧 DOM；不让旧层参与后续焦点和遮罩。
+  for (let index = panelLayers.length - 1; index >= 0; index -= 1) {
+    if (!panelLayers[index].mask.isConnected) {
+      panelLayers[index].dispose();
+      panelLayers.splice(index, 1);
     }
-    const topMask = [...root.querySelectorAll('.modal-mask')].at(-1);
-    if (topMask !== mask) return;
-    if (trapPanelFocus(panel, ev)) return;
-    if (ev.key === 'Escape') { close(); ev.preventDefault(); }
   }
-  window.addEventListener('keydown', onKey);
-  closeBtn.addEventListener('click', () => audio.sfx('click'));
-  closeBtn.addEventListener('click', close);
-  mask.addEventListener('click', (ev) => {
-    if (ev.target === mask) close();
+  panelLayers.forEach((layer, index) => {
+    layer.mask.classList.toggle('panel-overlay-nested', index > 0);
+    layer.mask.style.zIndex = String(60 + index);
+    layer.panel.setAttribute('aria-modal', String(index === panelLayers.length - 1));
+    layer.panel.inert = index < panelLayers.length - 1;
   });
-  panel.append(head, closeBtn, body);
-  mask.appendChild(panel);
-  root.appendChild(mask);
-  const ownerGeneration = shadeOn('modal');
-  queueMicrotask(() => {
-    if (mask.isConnected) closeBtn.focus();
+}
+
+// cancel 明确标识无提交的返回动作；必选步骤不因按钮命名而变成可取消。
+export function showModal(root, { id, title, bodyNodes, buttons, focusables = null, onClose }) {
+  const foot = el('div', 'modal-foot');
+  let close;
+  let cancelButton = null;
+  for (const action of buttons) {
+    const button = el('button', 'btn modal-btn', action.label);
+    button.type = 'button';
+    if (action.id) button.id = action.id;
+    button.disabled = Boolean(action.disabled);
+    if (action.cancel && !button.disabled) {
+      cancelButton = button;
+      button.classList.add('modal-btn-secondary');
+    }
+    button.addEventListener('click', () => {
+      audio.sfx('click');
+      // 先归还旧层焦点，再执行动作；动作可以直接打开下一层。
+      if (action.close !== false) close();
+      action.onClick?.();
+    });
+    foot.appendChild(button);
+  }
+  foot.hidden = !buttons.length;
+  const btns = (focusables?.length ? [...focusables] : [...foot.querySelectorAll('button')])
+    .filter((button) => !button.disabled);
+  let fIdx = 0;
+  const applyF = (index) => {
+    if (!btns.length) return;
+    fIdx = ((index % btns.length) + btns.length) % btns.length;
+    btns.forEach((button) => button.classList.remove('kbd-focus'));
+    btns[fIdx].classList.add('kbd-focus');
+    btns[fIdx].focus();
+  };
+  close = mountPanel(root, {
+    id, title, bodyNodes, footer: foot, onClose,
+    dismiss: cancelButton ? () => cancelButton.click() : null,
+    initialFocus: () => btns[0],
+    onKey(ev, panel) {
+      const key = ev.key;
+      if (ev.repeat && (key === 'Enter' || key === ' ')) { ev.preventDefault(); return; }
+      if (key === 'Enter' || key === ' ') {
+        const active = document.activeElement?.closest('button:not(:disabled)');
+        (active && panel.contains(active) ? active : btns[fIdx])?.click();
+      } else if (['ArrowLeft', 'ArrowUp', 'ArrowRight', 'ArrowDown'].includes(key)) {
+        const active = btns.indexOf(document.activeElement);
+        applyF((active >= 0 ? active : fIdx) + (key === 'ArrowLeft' || key === 'ArrowUp' ? -1 : 1));
+      } else if (/^[1-9]$/.test(key)) btns[Number(key) - 1]?.click();
+      else return;
+      ev.preventDefault();
+    },
   });
   return close;
+}
+
+export function showPanel(root, { id, title, bodyNodes, onClose }) {
+  return mountPanel(root, { id, title, bodyNodes, onClose, dismiss: true });
 }
 
 // ---------- 画风内的确认框(替代浏览器原生 confirm) ----------
@@ -326,7 +321,7 @@ export function confirmModal(root, { title, text, ok = '确定', cancel = '取�
       bodyNodes: [el('p', 'tutorial-line', text)],
       buttons: [
         { label: ok, id: 'btn-confirm-ok', onClick: () => resolve(true) },
-        { label: cancel, id: 'btn-confirm-cancel', onClick: () => resolve(false) },
+        { label: cancel, id: 'btn-confirm-cancel', cancel: true, onClick: () => resolve(false) },
       ],
     });
   });
@@ -570,13 +565,13 @@ export function onceCard(root, key, title, lines) {
       id: 'modal-once',
       title,
       bodyNodes: lines.map((l) => el('p', 'tutorial-line', l)),
-      buttons: [{ label: '知道了', id: 'btn-once-close', onClick: () => resolve(true) }],
+      buttons: [{ label: '知道了', id: 'btn-once-close', cancel: true, onClick: () => resolve(true) }],
     });
   });
 }
 
 // ---------- 阵型弹窗 ----------
-export function showFormationModal(root, { current, formations, onPick }) {
+export function showFormationModal(root, { current, formations, onPick, onClose }) {
   const intro = el('div', 'formation-intro');
   intro.appendChild(artIcon('formation', 'formation-art'));
   const introCopy = el('div', 'formation-intro-copy');
@@ -615,7 +610,8 @@ export function showFormationModal(root, { current, formations, onPick }) {
     id: 'modal-formation',
     title: TEXT.topbar.formation,
     bodyNodes: [intro, list],
-    buttons: [{ label: '关闭', id: 'btn-formation-close' }],
+    buttons: [{ label: '关闭', id: 'btn-formation-close', cancel: true }],
+    onClose,
     focusables: rows,
   });
   return close;
