@@ -3,8 +3,8 @@
 import { el } from './ui.js';
 
 const TRIAL_LABELS = {
-  ember: '假扇试探：先试小火',
-  full: '假扇试探：直扇火口',
+  ember: '试扇：小火',
+  full: '试扇：火口',
 };
 
 export function createBattleTutorial({ field, state, enabled, storySetup = {} }) {
@@ -15,12 +15,12 @@ export function createBattleTutorial({ field, state, enabled, storySetup = {} })
   function preparationLabel() {
     if (storySetup.approach === 'calm') {
       const buff = state.units.find((u) => u.side === 'party')?.buffs.find((b) => b.id === 'dmg_reduce');
-      if (buff) return `稳阵生效：所受伤害 -${Math.round(buff.val * 100)}% · 前${buff.turns}回合`;
+      if (buff) return `减伤 ${Math.round(buff.val * 100)}% · ${buff.turns}回合`;
     }
     if (storySetup.approach === 'rush') {
       const wukong = state.units.find((u) => u.side === 'party' && u.id === 'p0');
       const buff = wukong?.buffs.find((b) => b.id === 'atk_up');
-      if (buff) return `试刀生效：悟空攻击 +${Math.round(buff.val * 100)}% · 前${buff.turns}回合`;
+      if (buff) return `攻击 +${Math.round(buff.val * 100)}% · ${buff.turns}回合`;
     }
     return null;
   }
@@ -39,7 +39,9 @@ export function createBattleTutorial({ field, state, enabled, storySetup = {} })
     for (const label of labels) setup.append(el('span', 'battle-tutorial-chip', label));
     card.append(kicker, body);
     if (labels.length) card.append(setup);
-    field.appendChild(card);
+    const host = field.parentElement ?? field;
+    host.appendChild(card);
+    host.classList.add('tutorial-active');
     return card;
   }
 
@@ -52,9 +54,9 @@ export function createBattleTutorial({ field, state, enabled, storySetup = {} })
   function beginRound() {
     if (!enabled) return;
     if (state.round === 1) {
-      setStep('command', '悟空属金，罗刹女属木。先点【攻击】，再亲手选择木行的罗刹女。');
+      setStep('command', '金克木：点【攻击】，再选罗刹女。');
     } else if (state.round === 2) {
-      setStep('defend', '第二回合已恢复完整指令。【防御】使本回合所受伤害减半，并回复 10% 法力。');
+      setStep('defend', '完整指令已开放。【防御】伤害减半，回复 10% 法力。');
     } else {
       destroy();
     }
@@ -62,31 +64,37 @@ export function createBattleTutorial({ field, state, enabled, storySetup = {} })
 
   function onMenu(unit) {
     if (!enabled || state.round !== 1 || firstCommandDone) return;
-    setStep('command', `${unit.name}正在等号令：悟空金行克罗刹女木行，先点【攻击】；其余指令可随时展开。`);
+    setStep('command', '金克木：点【攻击】，再选罗刹女。');
   }
 
   function onCommandSelected(type) {
     if (!enabled || state.round !== 1 || firstCommandDone) return;
-    if (type === 'attack') setStep('target', '攻击已选。点罗刹女选作目标，也可比较侍婢的五行再决定。');
-    else if (type === 'skill') setStep('skill', '法术会消耗法力。可查看招式后返回，或照提示先用普通攻击。');
-    else if (type === 'defend') setStep('defend-preview', '防御使本回合所受伤害减半，并回复 10% 法力；本回合也可以这样应战。');
+    if (type === 'attack') setStep('target', '选罗刹女；目标旁会提示五行关系。');
+    else if (type === 'skill') setStep('skill', '法术消耗法力；可返回改用攻击。');
+    else if (type === 'defend') setStep('defend-preview', '防御：伤害减半，回复 10% 法力。');
   }
 
   function onTargetPicked(target) {
     if (!enabled || state.round !== 1 || firstCommandDone || !target) return;
-    setStep('locked', `已选 ${target.name}。再为伙伴下令，随后按上方顺序逐个出手。`);
+    setStep('locked', `目标：${target.name}。继续安排伙伴。`);
   }
 
   function completeCommand() {
     if (!enabled || state.round !== 1 || firstCommandDone) return;
     firstCommandDone = true;
-    setStep('waiting-hit', '悟空已领命。接着安排伙伴，留意上方出手顺序。');
+    setStep('waiting-hit', '悟空已领命 · 继续安排伙伴。');
   }
 
   function destroy() {
+    card?.parentElement?.classList.remove('tutorial-active');
     card?.remove();
     card = null;
     body = null;
+  }
+
+  function setPreviewing(active) {
+    if (!card?.isConnected) return;
+    card.hidden = active;
   }
 
   return {
@@ -97,5 +105,6 @@ export function createBattleTutorial({ field, state, enabled, storySetup = {} })
     onCommandSelected,
     onMenu,
     onTargetPicked,
+    setPreviewing,
   };
 }

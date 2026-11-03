@@ -3,11 +3,14 @@
 import { SKILLS, FORMATIONS, ITEMS } from './data.js';
 import { getUnit } from './engine.js';
 import { TEXT } from './text.js';
-import { el, floatText, stampText, toast } from './ui.js';
+import { artIcon, el, floatText, stampText, toast } from './ui.js';
 import { unitURL } from './assets.js';
 import { audio } from './audio.js';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const ELEMENT_ART = {
+  金: 'element-metal', 木: 'element-wood', 水: 'element-water', 火: 'element-fire', 土: 'element-earth',
+};
 
 export function createBattleAnimator({
   root,
@@ -32,6 +35,14 @@ export function createBattleAnimator({
   let jumpedIds = [];
   const floatSlots = new Map();
   let firstElementHitShown = false;
+  const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const minimalFx = () => skipEffects() || reducedMotion();
+
+  const actionCue = el('div', 'battle-action-cue');
+  actionCue.id = 'battle-action-cue';
+  actionCue.hidden = true;
+  actionCue.setAttribute('aria-live', 'polite');
+  field.appendChild(actionCue);
 
   // ---------- 事件动画 ----------
   function cardOf(id) { return cardByUnit.get(id); }
@@ -58,6 +69,7 @@ export function createBattleAnimator({
 
   // 梦幻式扑击：冲到目标身侧(约八成五的路程)→ 停顿出手 → 退回原位;移动中压在众人之上
   function lunge(actorId, targetId) {
+    if (reducedMotion()) return Promise.resolve();
     const a = cardOf(actorId), t = cardOf(targetId);
     if (!a || !t || actorId === targetId) return Promise.resolve();
     const ar = a.card.getBoundingClientRect(), tr = t.card.getBoundingClientRect();
@@ -84,7 +96,7 @@ export function createBattleAnimator({
     const uc = cardOf(id);
     if (!uc) return Promise.resolve();
     audio.sfx('transform');
-    return fx.play('puff', uc.card, { D: duration() });
+    return fx.play('puff', uc.card, { D: duration(), skipFx: minimalFx() });
   }
 
   // 战况一行：谁打谁、掉多少、相克/暴击/受克
@@ -102,6 +114,7 @@ export function createBattleAnimator({
   }
 
   function shake(id, hard = false) {
+    if (reducedMotion()) return;
     const uc = cardOf(id);
     if (!uc) return;
     uc.card.classList.remove('shake', 'shake-hard');
@@ -120,7 +133,7 @@ export function createBattleAnimator({
 
   // 屏幕震动：克制幅度(2px)，暴击/克制命中更重(4px);可关(简报二.1)
   function quake(heavy = false) {
-    if (!shakeEnabled()) return;
+    if (!shakeEnabled() || reducedMotion()) return;
     field.classList.remove('quake', 'quake-hi');
     void field.offsetWidth;
     field.classList.add(heavy ? 'quake-hi' : 'quake');
@@ -139,7 +152,43 @@ export function createBattleAnimator({
   // 飘字动画是真实时长的 CSS,结算睡眠随 duration() 缩放——加速模式下回合结束了,
   // 上一回合的飘字还挂在画面上淡出(残影)。新回合开始前一律不留。
   function clearFloats() {
-    field.querySelectorAll('.float-text, .float-stamp').forEach((n) => n.remove());
+    field.querySelectorAll('.float-text, .float-stamp, .element-impact').forEach((n) => n.remove());
+    actionCue.hidden = true;
+  }
+
+  function showActionCue(u, ev) {
+    if (!u) return;
+    actionCue.innerHTML = '';
+    const portrait = el('img', 'action-cue-portrait');
+    portrait.src = unitURL(u.portrait, u.name);
+    portrait.alt = u.name;
+    const copy = el('div', 'action-cue-copy');
+    copy.append(el('span', 'action-cue-actor', u.name), el('strong', 'action-cue-skill', ev.name));
+    actionCue.append(portrait, copy, artIcon(ev.skill ? 'spell' : 'attack', 'action-cue-skill-icon'));
+    actionCue.hidden = false;
+  }
+
+  // 命中真值直接来自 engine 事件；这里只把关系、实际伤害和双方元素转成目标局部反馈。
+  function showElementImpact(ev, uc) {
+    if (!uc || ev.amount <= 0) return;
+    const attackElement = ev.attackElement ?? ev.snap?.[ev.actor]?.element;
+    const targetElement = ev.targetElement ?? ev.snap?.[ev.target]?.element;
+    if (!attackElement || !targetElement) return;
+    uc.card.querySelector('.element-impact')?.remove();
+    const relation = ev.rel === 'ke' ? 'ke' : ev.rel === 'beike' ? 'beike' : 'normal';
+    const impact = el('div', `element-impact ${relation}`);
+    impact.dataset.relation = relation;
+    impact.dataset.amount = String(ev.amount);
+    impact.dataset.attackElement = attackElement;
+    impact.dataset.targetElement = targetElement;
+    impact.setAttribute('aria-label', `${attackElement}对${targetElement}，${relation === 'ke' ? '克制' : relation === 'beike' ? '受克' : '无克制'}，伤害${ev.amount}`);
+    impact.append(
+      artIcon(ELEMENT_ART[attackElement], 'element-impact-icon'),
+      el('span', 'element-impact-relation', relation === 'ke' ? '克制' : relation === 'beike' ? '受克' : '普通'),
+      artIcon(ELEMENT_ART[targetElement], 'element-impact-icon'),
+    );
+    uc.card.appendChild(impact);
+    setTimeout(() => impact.remove(), 1100);
   }
 
   async function showFirstElementHit(ev) {
@@ -157,13 +206,22 @@ export function createBattleAnimator({
     panel.dataset.amount = String(ev.amount);
     panel.dataset.actor = ev.actor;
     panel.dataset.target = ev.target;
+    const matchup = el('div', 'first-element-hit-matchup');
+    matchup.setAttribute('aria-label', `${attackElement}克${targetElement}`);
+    matchup.append(
+      artIcon(ELEMENT_ART[attackElement], 'element-feedback-icon'),
+      el('span', 'first-element-hit-relation', '克'),
+      artIcon(ELEMENT_ART[targetElement], 'element-feedback-icon'),
+    );
     panel.append(
+      matchup,
       el('div', 'first-element-hit-title', `${attackElement}克${targetElement} · 伤害 ×1.5`),
       el('div', 'first-element-hit-damage', `本次实际伤害 ${ev.amount}`),
       el('div', 'first-element-hit-note', '先看目标五行，再决定让谁出手。'),
     );
     field.appendChild(panel);
-    await sleep(skipEffects() ? 80 : 720 * duration());
+    actionCue.hidden = true;
+    await sleep(minimalFx() ? 80 : 720 * duration());
     panel.classList.remove('featured');
     panel.classList.add('compact');
   }
@@ -174,6 +232,7 @@ export function createBattleAnimator({
     for (const ev of events) {
       switch (ev.t) {
         case 'round':
+          actionCue.hidden = true;
           // 与上回合顺序比较，标出插到更前的单位(抢位)
           jumpedIds = prevQueue.length
             ? ev.queue.filter((id, i) => {
@@ -187,21 +246,22 @@ export function createBattleAnimator({
           renderOrderBar();
           break;
         case 'turn':
+          actionCue.hidden = true;
           renderOrderBar(ev.unit, done);
           showActing?.(ev.unit);
           break;
         case 'action': {
           const u = getUnit(state, ev.actor);
           const uc = u ? cardOf(ev.actor) : null;
-          if (uc) floatText(uc.anchor, ev.name, 'info');
-          if (u && ev.skill) pushLog(`${u.name} · ${ev.name}`, 'skill');
+          showActionCue(u, ev);
+          if (u) pushLog(`${u.name} · ${ev.name}`, ev.skill ? 'skill' : '');
           sync(ev); // 法力在报招时扣下
           if (ev.skill) {
             const fxKind = SPELL_FX[skillKeyByName[ev.name]];
             if (fxKind && uc) {
               // 标志性法术演出：粒子 + 背景色调突变 + 音效(跳过演出时缩为一道色闪)
               audio.sfx(fxKind === 'fire' ? 'firefx' : fxKind === 'water' ? 'waterfx' : fxKind === 'wind' ? 'fan2' : 'skill');
-              await fx.play(fxKind, uc.card, { D: duration(), skipFx: skipEffects() });
+              await fx.play(fxKind, uc.card, { D: duration(), skipFx: minimalFx() });
             } else {
               audio.sfx('skill');
               await sleep(160 * duration());
@@ -216,6 +276,7 @@ export function createBattleAnimator({
           else await sleep(160 * duration());
           damageLine(ev);
           const uc = cardOf(ev.target);
+          showElementImpact(ev, uc);
           if (ev.protectFor && uc) stampText(uc.anchor, '保护', 'ke-stamp');
           if (uc) {
             const slot = nextSlot(ev.target);
@@ -231,13 +292,6 @@ export function createBattleAnimator({
               if (ev.amount > 200) cls += ' huge';
               floatText(uc.anchor, `${ev.amount}`, cls, slot);
               if (ev.crit) stampText(uc.anchor, TEXT.float.crit, 'crit-stamp');
-              // 五行教学：克制命中时在目标身上盖「金克木」三字印(简报二.3)
-              if (ev.rel === 'ke') {
-                const attackElement = ev.attackElement ?? ev.snap?.[ev.actor]?.element;
-                const targetElement = ev.targetElement ?? ev.snap?.[ev.target]?.element;
-                if (attackElement && targetElement) stampText(uc.anchor, `${attackElement}克${targetElement}`, 'wuxing-stamp');
-              }
-              if (ev.rel === 'beike') floatText(uc.anchor, TEXT.float.beike, 'beike-label', slot + 1);
             }
             shake(ev.target, hard);
             flashHit(ev.target);
@@ -291,7 +345,7 @@ export function createBattleAnimator({
             floatText(uc.anchor, TEXT.battle.dingfeng, 'ke');
           }
           audio.sfx('ke');
-          if (uc) await fx.play('ward', uc.card, { D: duration(), skipFx: skipEffects() });
+          if (uc) await fx.play('ward', uc.card, { D: duration(), skipFx: minimalFx() });
           break;
         }
         case 'protect': {
@@ -462,7 +516,7 @@ export function createBattleAnimator({
             setTimeout(() => bossUc.card.classList.remove('flash'), 500 * duration());
           }
           await showBanner('芭蕉扇——!', 'fan-banner');
-          const fxP = fx.play('wind', null, { D: duration(), skipFx: skipEffects() });
+          const fxP = fx.play('wind', null, { D: duration(), skipFx: minimalFx() });
           const wk = cardOf('p0');
           if (wk) {
             wk.card.classList.add('blown');
@@ -550,11 +604,11 @@ export function createBattleAnimator({
             // 真扇三段专属演出：一息火(灰烬)/二生风(风痕)/三落雨(甘霖)，各不相同
             audio.sfx(`fan${ev.stage}`);
             await showBanner(it.name, 'fan-banner');
-            await fx.play(`fan${ev.stage}`, null, { D: duration(), skipFx: skipEffects() });
+            await fx.play(`fan${ev.stage}`, null, { D: duration(), skipFx: minimalFx() });
           } else if (ev.item === 'fakefan') {
             audio.sfx('thud');
             await showBanner(it.name, 'fan-banner');
-            await fx.play('backfire', null, { D: duration(), skipFx: skipEffects() });
+            await fx.play('backfire', null, { D: duration(), skipFx: minimalFx() });
           } else {
             await showBanner(it.name, ev.item?.includes('fan') ? 'fan-banner' : '');
           }
@@ -599,7 +653,11 @@ export function createBattleAnimator({
           await sleep(240 * duration());
           break;
         }
-        case 'battle_end': break;
+        case 'battle_end':
+          field.querySelector('#first-element-hit')?.remove();
+          field.querySelectorAll('.element-impact').forEach((n) => n.remove());
+          actionCue.hidden = true;
+          break;
       }
       if (ev.t !== 'round' && ev.t !== 'battle_end') {
         const idx = buildActionQueueDoneIndex(ev);
