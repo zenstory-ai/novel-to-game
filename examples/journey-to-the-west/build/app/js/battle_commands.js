@@ -27,6 +27,7 @@ export function createBattleCommands({
   previewBox,
   cardByUnit,
   tutorial,
+  itemDisplay = null,
 }) {
   // ---------- 指令菜单 ----------
   const CMD_ART = new Set(['attack', 'skill', 'defend', 'item', 'special']);
@@ -661,24 +662,25 @@ export function createBattleCommands({
     if (owned.length === 0) wrap.appendChild(el('div', 'cmd-empty', '——'));
     for (const [k, n] of owned) {
       const it = ITEMS[k];
+      const shown = itemDisplay?.[k] ?? it;
       const nextFan = k === 'truefan'
         ? fanStageNames[Math.min(2, state.fanStage + plannedFanUses)]
         : null;
-      const label = nextFan ? `${it.name} · 下一扇：${nextFan} ×${n}` : `${it.name} ×${n}`;
+      const label = nextFan ? `${shown.name} · 下一扇：${nextFan} ×${n}` : `${shown.name} ×${n}`;
       const item = el('button', 'btn cmd-item with-icon');
       item.append(itemIcon(k, { cls: 'sm' }), el('span', 'cmd-item-name', label));
       item.dataset.item = k;
-      if (it.desc) item.title = it.desc;
-      attachPreview(item, () => [`${it.name}：${it.desc}`]);
+      if (shown.desc) item.title = shown.desc;
+      attachPreview(item, () => [`${shown.name}：${shown.desc}`]);
       item.onclick = async () => {
         if (it.target === 'deadAlly') {
-          const t = await pickTarget(u, 'party', { mul: 0 }, it.name, { dead: true });
+          const t = await pickTarget(u, 'party', { mul: 0 }, shown.name, { dead: true });
           resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
         } else if (it.target === 'ally') {
-          const t = await pickTarget(u, 'party', { mul: 0 }, it.name);
+          const t = await pickTarget(u, 'party', { mul: 0 }, shown.name);
           resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
         } else if (it.target === 'enemy') {
-          const t = await pickTarget(u, 'enemy', { mul: 0 }, it.name);
+          const t = await pickTarget(u, 'enemy', { mul: 0 }, shown.name);
           resolve(t ? { type: 'item', itemId: k, targetId: t } : null);
         } else {
           if (k === 'truefan') plannedFanUses += 1;

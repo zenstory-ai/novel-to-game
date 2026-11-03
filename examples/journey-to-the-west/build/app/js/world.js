@@ -215,7 +215,7 @@ export const SCENES = {
       prop('creek-stones-south','rocks',[1300,1390],[230,150],[-86,-45,86,0]),
     ],
     spawn:[1280,1030],
-    npcs:{luosha:{unit:'luosha',name:'罗刹女',title:'铁扇仙',at:[1765,469],h:140},fakeBajie:{unit:'bajie',name:'「八戒」',title:'迎面跑来',at:[1280,1008],h:126}},
+    npcs:{luosha:{unit:'luosha',name:'罗刹女',title:'铁扇仙',at:[1765,469],h:140},fakeBajie:{unit:'bajie',name:'猪八戒',title:'从山下赶来',at:[1535,850],h:126}},
     portals:{toVillage:{to:'village',at:[94,1344],label:'火焰山脚',arrive:'fromCuiyun'}},
     arrivals:{fromVillage:[258,1375],fromCave:[1718,570]},
     landmarks:{cuiyun_grove:{name:'芭蕉林',at:[609,523],footprint:[100,65]},cuiyun_basket:{name:'临溪药篓',at:[1687,1210],footprint:[100,65]}},

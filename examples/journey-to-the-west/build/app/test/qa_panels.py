@@ -443,6 +443,17 @@ class PanelBrowserTests(unittest.TestCase):
         )
         self.assertTrue(self.page.locator('[data-pet-active="huobao"]').first.is_disabled())
 
+    def test_pet_potential_points_are_in_overview_and_skills_stay_in_training(self) -> None:
+        self.install_rich_campaign()
+        self.open_panel("btn-pet", "modal-pet")
+        overview = self.page.locator("#modal-pet .member-tab-content")
+        self.assertGreater(overview.locator(".stat-cell").count(), 0)
+        self.assertEqual(overview.locator(".skill-cell").count(), 0)
+        self.page.get_by_role("tab", name="修炼").click()
+        training = self.page.locator("#modal-pet .member-tab-content")
+        self.assertEqual(training.locator(".stat-cell").count(), 0)
+        self.assertGreater(training.locator(".skill-cell").count(), 0)
+
     def test_bag_item_selection_shows_real_detail_and_treasure_swap_persists(self) -> None:
         self.install_rich_campaign()
         self.open_panel("btn-bag", "modal-bag")

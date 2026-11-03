@@ -16,7 +16,7 @@ import { worldImage, mapTexture } from './assets.js';
 import { createNavigation, findInteractionPath } from './world-navigation.js';
 import { createMapRenderer } from './map-renderer.js';
 
-const FOLLOWERS = ['tang', 'bajie', 'sha'];
+const DEFAULT_FOLLOWERS = ['tang', 'bajie', 'sha'];
 const FOLLOWER_OFFSETS = [[115, -22], [230, 20], [345, -18]];
 // 立绘原本朝左的单位(其余朝右);行走时据此决定是否镜像
 const ART_FACES_LEFT = new Set(['wukong', 'pixie']);
@@ -55,7 +55,7 @@ export function runScene(ctx) {
   const spawn = navigation.normalizePoint(...requestedSpawn) ?? requestedSpawn;
   const player = { id: 'player', unit: 'wukong', name: '孙悟空', title: '齐天大圣', x: spawn[0], y: spawn[1], h: 142, path: [], facing: 1, moving: false, kind: 'player' };
   const trail = [];
-  const followers = FOLLOWERS.map((unit, i) => {
+  const followers = (ctx.followers ?? DEFAULT_FOLLOWERS).map((unit, i) => {
     const [behind, offsetY] = FOLLOWER_OFFSETS[i];
     const desired = [spawn[0] - behind, spawn[1] + offsetY];
     const foot = navigation.normalizePoint(...desired) ?? spawn;

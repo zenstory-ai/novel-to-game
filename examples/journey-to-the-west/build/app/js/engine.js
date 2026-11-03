@@ -784,6 +784,7 @@ export function displaySnapshot(state) {
     snap[u.id] = {
       hp: u.hp, maxHp: u.maxHp, mp: u.mp, maxMp: u.maxMp, sp: u.sp, alive: u.alive,
       element: u.element, form: u.form ? u.form.id : null, defending: u.defending,
+      charge: u.charge, heavyName: u.heavyName,
       buffs: u.buffs.map((b) => ({ id: b.id, turns: b.turns })),
     };
   }

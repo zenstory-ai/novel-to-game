@@ -205,6 +205,7 @@ export function createHub(deps) {
     c.world = { scene: sceneId };
     ctl = runScene({
       root: app, sceneId, spawn, fast,
+      followers: c.stage === 'pre_boss' ? [] : undefined,
       minimap: hud.minimap,
       onActor: (id) => interact(id),
       onLandmark: (id) => interactLandmark(id),

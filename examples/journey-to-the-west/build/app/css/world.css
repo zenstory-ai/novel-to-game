@@ -196,8 +196,23 @@ body.dlg-open .hud-hint, body.modal-open .hud-hint { display: none; }
 .ending-art { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.6s ease; }
 .ending-art.in { opacity: 1; }
 .ending-root:has(.ending-art) { justify-content: flex-start; }
-.ending-root:has(.ending-art) .ending-panel { margin-left: 4%; width: 36%; max-height: 88%; overflow: auto; padding: 22px 26px; }
-.ending-root:has(.ending-art) .ending-title { font-size: 20px; letter-spacing: 3px; white-space: nowrap; }
+.ending-panel,
+.ending-root:has(.ending-art) .ending-panel {
+  display: flex; flex-direction: column; box-sizing: border-box;
+  min-width: 0; max-height: 88%; overflow: hidden;
+}
+.ending-root:has(.ending-art) .ending-panel { margin-left: 4%; width: 36%; padding: 22px 26px; }
+.ending-panel .ending-title { flex: 0 0 auto; margin: 0 0 12px; font-size: 20px; letter-spacing: 3px; white-space: normal; overflow-wrap: anywhere; }
+.ending-body { min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+.ending-footer { flex: 0 0 auto; padding-top: 14px; text-align: center; }
+.ending-footer .btn { min-height: 44px; white-space: nowrap; }
+@media (max-width: 700px), (max-height: 500px) {
+  .ending-root:has(.ending-art) { justify-content: center; }
+  .ending-panel,
+  .ending-root:has(.ending-art) .ending-panel {
+    margin: 0; width: min(680px, calc(100% - 24px)); max-height: calc(100% - 24px); padding: 18px 16px;
+  }
+}
 /* 碧波潭布景:殿柱旁拴着金睛兽,螃蟹从暗处横过来 */
 .bibotan-pixie { position: absolute; right: 9%; bottom: 8%; height: 58%; filter: brightness(.8) saturate(.85) drop-shadow(0 10px 12px rgba(0, 20, 40, .5)); }
 .bibotan-crab { position: absolute; left: -24%; bottom: 4%; height: 30%; opacity: 0; transition: left 1.8s ease, opacity .6s ease; filter: drop-shadow(0 8px 10px rgba(0, 20, 40, .5)); }

@@ -79,6 +79,7 @@ export async function runBattleScreen(ctx) {
   const sceneHeading = el('div', 'battle-scene-heading');
   sceneHeading.id = 'battle-scene-heading';
   sceneHeading.append(el('h2', '', state.def.name));
+  if (state.def.objective) sceneHeading.append(el('p', 'battle-objective', state.def.objective));
   field.append(sceneHeading, orderBar, roundTag, banner, formBtn);
   // 战场态势常驻条(地火炙烤/妖将结阵等，数据驱动)：名字+一句话效果，开场起挂在回合签下
   const fieldRule = state.def.fieldRule ?? null;
@@ -137,6 +138,7 @@ export async function runBattleScreen(ctx) {
     previewBox,
     cardByUnit,
     tutorial,
+    itemDisplay: ctx.itemDisplay,
   });
   const animator = createBattleAnimator({
     root,
@@ -367,6 +369,17 @@ export async function runBattleScreen(ctx) {
       chip.dataset.buff = id;
       uc.chips.appendChild(chip);
     }
+    const charge = v.charge ?? 0;
+    uc.card.classList.toggle('charging', charge > 0);
+    if (charge > 0) {
+      const timing = charge === 1 ? '本回合' : '蓄力中';
+      const label = `${v.heavyName ?? '重击'}·${timing}`;
+      const chip = el('span', 'buff-chip charge-chip', label);
+      chip.dataset.buff = 'charge';
+      chip.title = `蓄力：${label}`;
+      chip.setAttribute('aria-label', `蓄力：${label}`);
+      uc.chips.appendChild(chip);
+    }
     if (v.defending) uc.chips.appendChild(el('span', 'buff-chip', TEXT.float.defend));
     // 化虫入腹的窗口：罗刹女气血跌破阈值即挂「疲态」签，玩家看得见何时可以智取
     const fin = state.def.transformFinisher;
@@ -484,9 +497,10 @@ export async function runBattleScreen(ctx) {
       tutorial.beginRound();
       refreshFormationBtn();
       const roundCommands = {};
+      const storyExitRound = state.def.storyExit?.round === state.round;
       // 按本回合真实行动序收集我方指令。这样多人同回合使用真扇时，界面显示的
       // 「下一扇」就与实际结算顺序一致，不会被固定队伍编号误导。
-      const partyCommandOrder = buildActionQueue(state)
+      const partyCommandOrder = storyExitRound ? [] : buildActionQueue(state)
         .map((id) => getUnit(state, id))
         .filter((u) => u?.side === 'party');
       let firstCommandSubmitted = sceneHeading.classList.contains('settled');
