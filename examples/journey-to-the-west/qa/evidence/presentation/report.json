@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "scope": "battle-and-dialogue-presentation-targeted-qa",
+  "environment": {
+    "runtime": "Playwright Chromium (headless)",
+    "baseUrl": "http://127.0.0.1:5180",
+    "seed": 42,
+    "desktopViewport": "1440x900",
+    "mobileViewports": ["390x844", "320x568"],
+    "accessibilityProfile": "prefers-reduced-motion: reduce; real battle also used speed x1, muted audio, disabled shake and skipped decorative effects"
+  },
+  "commands": [
+    {
+      "command": "BASE_URL=http://127.0.0.1:5180 python3 examples/journey-to-the-west/build/app/test/qa_presentation.py -v",
+      "exitCode": 0,
+      "result": "10 passed in 22.803s"
+    },
+    {
+      "command": "BASE_URL=http://127.0.0.1:5180 python3 examples/journey-to-the-west/build/app/test/qa_onboarding.py -v",
+      "exitCode": 0,
+      "result": "6 passed in 38.868s"
+    }
+  ],
+  "observations": {
+    "dialogueComponent": "隔离 showDialog 组件验证了独立 speaker/body/progress/footer、真实 44px 继续按钮、鼠标与键盘推进、模态阻断、选择文本与滚动后的误触抑制、旁白不泄露上一位说话者，以及 390/320 长文只在正文区滚动而页脚持续可见。01-03 是组件证据，不伪装成剧情路径。",
+    "dialogueRealPath": "07 来自普通速度真实任务追踪路径，使用真实翠云山场景、罗刹女对白与 1/7 进度；正文、说话者、继续按钮和场景 HUD 均可辨认。",
+    "eventContract": "隔离 createBattleAnimator 用 normal/ke/beike 三个合成 damage 事件验证呈现层直接保留事件 relation、amount、attackElement 与 targetElement，不在测试或 UI 中重算伤害。每次反馈有两枚真实元素图标，实际 amount 同时出现在目标局部飘字。",
+    "overlayLifecycle": "合成行动序列验证甲报招后进入乙的 turn 会立刻隐藏旧行动提示；乙随后只有防御或道具事件时不会残留甲，乙真正 action 后才显示乙。首次五行教学卡在 battle_end 时被移除，避免泄露到战后剧情对白。",
+    "realFirstHit": "真实首战以普通速度、真实攻击目标选择和两次防御触发首次金克木。#first-element-hit 的 actor/target/双方元素/amount 与实时 HP 差一致，×1.5 及两枚元素图标保留；关闭装饰演出、静音、禁震和 reduced-motion 下，行动提示、目标局部关系反馈、伤害数字及首次教学卡仍可读。",
+    "battleDensity": "默认战报只显示最新 1 条，展开后显示 2-12 条；技能名不再额外生成重复 float info。1440 指令区的教学、预览和控制不重叠。320 下预览临时收起教学与状态行，目标卡中心不被预览覆盖，每张卡仍至少存在一个实际可点击采样点，离开预览后教学恢复。",
+    "visualReview": "人工目检 8 张交付帧：桌面与 390/320 对白页脚没有裁切；真实剧情帧的角色、场景与对白层次明确；桌面行动提示、首次克制卡、战报和五行环可辨；320 预览不压指令按钮或目标中心。"
+  },
+  "redGreenEvidence": [
+    "首轮 RED：桌面继续按钮实际高度 38px，低于 44px 契约；修复后通过。",
+    "第二轮 RED：320 长正文滚动后冒泡 click 将 data-idx 从 0 推进到 1；加入滚动抑制后通过。",
+    "第三轮 RED：320 攻击预览与教学卡相交；预览改为临时收起教学/状态行后通过，并新增目标可点击采样。"
+  ],
+  "evidence": [
+    "qa/evidence/presentation/01_dialog-desktop.jpg",
+    "qa/evidence/presentation/02_dialog-mobile-390.jpg",
+    "qa/evidence/presentation/03_dialog-mobile-320.jpg",
+    "qa/evidence/presentation/04_battle-first-ke.jpg",
+    "qa/evidence/presentation/05_battle-command.jpg",
+    "qa/evidence/presentation/06_battle-mobile-320.jpg",
+    "qa/evidence/presentation/07_story-dialogue-real.jpg",
+    "qa/evidence/presentation/08_battle-action-cue.jpg"
+  ],
+  "limitations": [
+    "01-03 和 normal/ke/beike 三关系属于隔离组件证据；07 与真实首战断言才是实际剧情路径证据。",
+    "移动战斗验证覆盖最窄 320px 首回合指令与预览状态，不穷举每个战斗、弹窗、浏览器缩放和软键盘组合。",
+    "自动化与代表帧不能证明主观趣味、长期平衡、所有设备性能或发布质量。"
+  ]
+}

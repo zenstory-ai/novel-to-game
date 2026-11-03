@@ -70,9 +70,10 @@ export function showDialog(root, lines) {
     let idx = 0;
     const box = el('div', 'dlg-box');
     box.id = 'dialog';
-    box.setAttribute('role', 'button');
+    box.setAttribute('role', 'dialog');
     box.setAttribute('tabindex', '0');
-    box.setAttribute('aria-label', '继续对话');
+    box.setAttribute('aria-live', 'polite');
+    box.setAttribute('aria-describedby', 'dialog-body');
     const stage = el('div', 'dlg-stage');
     stage.setAttribute('aria-hidden', 'true');
     const portrait = el('img', 'dlg-portrait');
@@ -80,34 +81,63 @@ export function showDialog(root, lines) {
     stage.appendChild(portrait);
     const right = el('div', 'dlg-right');
     const name = el('div', 'dlg-name');
+    name.id = 'dialog-speaker';
     const text = el('div', 'dlg-text');
-    const next = el('div', 'dlg-next', TEXT.ui.clickNext);
-    right.append(name, text, next);
+    text.id = 'dialog-body';
+    text.dataset.dialogBody = '';
+    const footer = el('div', 'dlg-footer');
+    const progress = el('span', 'dlg-progress');
+    progress.dataset.dialogProgress = '';
+    progress.setAttribute('aria-hidden', 'true');
+    const next = el('button', 'dlg-next', TEXT.ui.continueBtn);
+    next.id = 'dialog-continue';
+    next.type = 'button';
+    next.setAttribute('aria-controls', 'dialog-body');
+    footer.append(progress, next);
+    right.append(name, text, footer);
     box.append(right);
     root.append(stage, box);
     const ownerGeneration = shadeOn('dlg');
     // 每句刚出现的一小段时间里不收输入：连点/按住回车不会把下一句(或下一段对话的第一句)吞掉
     let readyAt = 0;
+    let pointerGesture = null;
+    let lastBodyScrollAt = -Infinity;
+
+    function hasSelectedDialogText(selection = window.getSelection?.()) {
+      return Boolean(selection && !selection.isCollapsed && (
+        text.contains(selection.anchorNode) || text.contains(selection.focusNode)
+      ));
+    }
 
     function render() {
       const line = lines[idx];
       stage.hidden = !line.who;
       box.classList.toggle('narration', !line.who);
+      box.dataset.mode = line.who ? 'speaker' : 'narrator';
       if (line.who) {
         // 假八戒沿用八戒面貌；不知道真身前不能由头像提前揭露。
         const portraitKey = { fakeBajie: 'bajie', huobao: 'mob_fire1' }[line.who] ?? line.who;
         portrait.src = unitURL(portraitKey, TEXT.speakers[line.who] ?? line.who);
+        stage.dataset.portrait = portraitKey;
         portrait.style.visibility = 'visible';
         name.hidden = false;
         name.textContent = TEXT.speakers[line.who] ?? line.who;
+        box.setAttribute('aria-label', `${name.textContent}的对话`);
       } else {
+        delete stage.dataset.portrait;
         portrait.style.visibility = 'hidden';
         name.hidden = true; // 旁白不留空名牌行
         name.textContent = '';
+        box.setAttribute('aria-label', '剧情旁白');
       }
       text.textContent = line.text;
-      next.textContent = `${TEXT.ui.clickNext}  ·  ${idx + 1} / ${lines.length}`;
+      text.scrollTop = 0;
+      progress.textContent = `${idx + 1} / ${lines.length}`;
+      next.textContent = TEXT.ui.continueBtn;
+      next.setAttribute('aria-label', `继续对话，第 ${idx + 1} / ${lines.length} 句`);
       box.dataset.idx = String(idx);
+      box.dataset.total = String(lines.length);
+      pointerGesture = null;
       readyAt = performance.now() + 180;
     }
     function cleanup() {
@@ -115,6 +145,7 @@ export function showDialog(root, lines) {
       shadeOff('dlg', ownerGeneration);
     }
     function advance() {
+      if (root.querySelector('.modal-mask')) return;
       if (performance.now() < readyAt) return;
       audio.sfx('click');
       idx += 1;
@@ -136,7 +167,42 @@ export function showDialog(root, lines) {
         advance();
       }
     }
-    box.addEventListener('click', advance);
+    box.addEventListener('pointerdown', (ev) => {
+      if (ev.button !== 0 || ev.isPrimary === false) return;
+      pointerGesture = {
+        x: ev.clientX,
+        y: ev.clientY,
+        scrollTop: text.scrollTop,
+        hadSelection: hasSelectedDialogText(),
+        moved: false,
+      };
+    });
+    box.addEventListener('pointermove', (ev) => {
+      if (!pointerGesture) return;
+      if (Math.hypot(ev.clientX - pointerGesture.x, ev.clientY - pointerGesture.y) > 8) {
+        pointerGesture.moved = true;
+      }
+    });
+    box.addEventListener('pointercancel', () => { pointerGesture = null; });
+    text.addEventListener('scroll', () => { lastBodyScrollAt = performance.now(); });
+    box.addEventListener('click', (ev) => {
+      if (ev.target.closest('.dlg-next')) return;
+      const gesture = pointerGesture;
+      pointerGesture = null;
+      if (performance.now() - lastBodyScrollAt < 250) return;
+      if (gesture && (
+        gesture.moved
+        || gesture.hadSelection
+        || Math.abs(text.scrollTop - gesture.scrollTop) > 1
+      )) return;
+      if (hasSelectedDialogText()) return;
+      advance();
+    });
+    next.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      pointerGesture = null;
+      advance();
+    });
     window.addEventListener('keydown', onKey);
     render();
   });

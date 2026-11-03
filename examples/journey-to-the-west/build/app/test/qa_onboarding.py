@@ -203,6 +203,7 @@ class OnboardingBrowserTests(unittest.TestCase):
         self.assertEqual(hp_before - hp_after, amount)
         self.assertIn("×1.5", hit.inner_text().replace(" ", ""))
         self.assertIn(str(amount), hit.inner_text())
+        self.assertEqual(hit.locator("img.element-feedback-icon").count(), 2)
         page.screenshot(path=SHOTS / "02_first-element-hit.jpg", type="jpeg", quality=82)
 
         page.wait_for_function(

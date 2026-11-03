@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "scope": "first-battle-onboarding-and-fan-trial-regression",
+  "environment": {
+    "runtime": "Playwright Chromium (headless)",
+    "baseUrl": "http://127.0.0.1:5180",
+    "seed": 42,
+    "viewport": "1440x900",
+    "firstHitSpeed": "x1 normal speed"
+  },
+  "command": "BASE_URL=http://127.0.0.1:5180 python3 examples/journey-to-the-west/build/app/test/qa_onboarding.py -v",
+  "result": "6 passed in 38.868s",
+  "observations": {
+    "firstHitTruth": "真实 DOM 选择冷静借扇、攻击罗刹女并安排两名伙伴防御；首次金克木的 actor、target、双方元素、实际 amount 与目标 HP 差一致，面板保留 ×1.5、amount 和两枚真实元素图标，后续回合没有创建第二张首次命中卡。",
+    "teachingOrder": "首回合只露出攻击/法术/防御与更多教学入口，第二回合开放完整指令；防御预览仍明确伤害减半与法力回复。",
+    "storyChoices": "冷静/强攻准备效果、旧存档补选、小火试扇、火口试扇、败北再战不重复增益与已保存选择复用均通过。"
+  },
+  "evidence": [
+    "qa/evidence/onboarding/01_first-command.jpg",
+    "qa/evidence/onboarding/02_first-element-hit.jpg",
+    "qa/evidence/onboarding/03_round-two.jpg"
+  ],
+  "limitations": [
+    "这是首战教学与试扇分支的定向回归，不替代 qa/verification.json 的权威完整流程。",
+    "测试验证事件真值、教学顺序与输入可达性，不把主观乐趣或最终平衡描述为自动化结论。"
+  ]
+}

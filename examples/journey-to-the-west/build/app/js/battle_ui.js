@@ -7,7 +7,7 @@ import {
   effStat, levelUpParty, switchFormation, displaySnapshot,
 } from './engine.js';
 import { TEXT } from './text.js';
-import { el, toast, showModal, showDialog, onceCard } from './ui.js';
+import { artIcon, el, toast, showModal, showDialog, onceCard } from './ui.js';
 import { unitURL, bgStyle, hasUnitImage } from './assets.js';
 import { audio } from './audio.js';
 import { FxLayer } from './fx.js';
@@ -15,6 +15,10 @@ import { createBattleAnimator } from './battle_animator.js';
 import { createBattleCommands } from './battle_commands.js';
 import { createBattleTutorial } from './battle_tutorial.js';
 import { getSpeed, getSkipFx, getShake } from './settings.js';
+
+const ELEMENT_ART = {
+  金: 'element-metal', 木: 'element-wood', 水: 'element-water', 火: 'element-fire', 土: 'element-earth',
+};
 
 export async function runBattleScreen(ctx) {
   // ctx: {root, battleId, partyDefs, formation, items, seed, fast, showTutorial, hasPendingPoints, openGrowth, canRegroup}
@@ -61,10 +65,12 @@ export async function runBattleScreen(ctx) {
   ring.title = '五行相克：金克木、木克土、土克水、水克火、火克金';
   const ringSeq = ['金', '木', '土', '水', '火'];
   ringSeq.forEach((e2, i) => {
-    const node = el('span', 'ring-el', e2);
+    const node = el('span', 'ring-el');
     node.dataset.el = e2;
+    node.setAttribute('aria-label', `${e2}克${ringSeq[(i + 1) % ringSeq.length]}`);
+    node.append(artIcon(ELEMENT_ART[e2], 'ring-icon'), el('span', 'ring-label', e2));
     ring.appendChild(node);
-    ring.appendChild(el('span', 'ring-arrow', i === ringSeq.length - 1 ? '↺' : '→'));
+    ring.appendChild(el('span', 'ring-arrow', i === ringSeq.length - 1 ? '↺' : '›'));
   });
   // 战斗中免费换阵(每回合一次)
   const formBtn = el('button', 'btn formation-btn');
@@ -162,10 +168,12 @@ export async function runBattleScreen(ctx) {
   function laneLayout(list, side) {
     if (window.matchMedia('(max-width: 700px)').matches) {
       const slot = 92 / Math.max(1, list.length);
+      const sideShift = side === 'enemy' ? 7.5 : -7.5;
+      const compactHeight = window.innerHeight <= 650;
       return list.map((u, i) => ({
-        left: 3 + i * slot + Math.max(0, (slot - (u.big ? 27 : 21)) / 2),
+        left: 3 + sideShift + i * slot + Math.max(0, (slot - (u.big ? 27 : 21)) / 2),
         bottom: side === 'enemy' ? 34 - (i % 2) * 2 : (i % 2) * 2,
-        zoom: u.big ? 0.92 : 1,
+        zoom: compactHeight ? (u.big ? 0.64 : 0.58) : (u.big ? 0.92 : 1),
       }));
     }
     const frontT = HORIZON[state.def.bg] ?? 98;
@@ -197,8 +205,10 @@ export async function runBattleScreen(ctx) {
     img.alt = u.name;
     img.draggable = false;
     const name = el('div', 'unit-name', u.name);
-    const badge = el('div', 'elem-badge', u.element);
+    const badge = el('div', 'elem-badge');
     badge.dataset.el = u.element;
+    badge.setAttribute('aria-label', `${u.element}属性`);
+    badge.appendChild(artIcon(ELEMENT_ART[u.element], 'elem-badge-art'));
     const bars = el('div', 'unit-bars');
     const hpBar = barEl('hp');
     bars.appendChild(hpBar.wrap);
@@ -319,8 +329,12 @@ export async function runBattleScreen(ctx) {
       uc.spBar.wrap.classList.toggle('ready', v.sp >= 60);
     }
     uc.name.textContent = u.name;
-    uc.badge.textContent = v.element;
+    if (uc.badge.dataset.el !== v.element || !uc.badge.querySelector('.elem-badge-art')) {
+      uc.badge.innerHTML = '';
+      uc.badge.appendChild(artIcon(ELEMENT_ART[v.element], 'elem-badge-art'));
+    }
     uc.badge.dataset.el = v.element;
+    uc.badge.setAttribute('aria-label', `${v.element}属性`);
     uc.card.classList.toggle('dead', !v.alive);
     // 形态：换立绘 + 形态名印 + 五行签;变回原形时换回本相
     const formId = (shown ? v.form : u.form?.id) ?? null; // 快照里存的是形态 id,实时单位上是 {id, turns}

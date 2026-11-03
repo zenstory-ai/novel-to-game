@@ -11,8 +11,12 @@ import {
   unitSkills,
 } from './engine.js';
 import { TEXT } from './text.js';
-import { artIcon, el, iconBadge, onceCard, toast } from './ui.js';
+import { artIcon, el, onceCard, toast } from './ui.js';
 import { unitURL, hasUnitImage, itemIcon } from './assets.js';
+
+const ELEMENT_ART = {
+  金: 'element-metal', 木: 'element-wood', 水: 'element-water', 火: 'element-fire', 土: 'element-earth',
+};
 
 export function createBattleCommands({
   root,
@@ -103,13 +107,15 @@ export function createBattleCommands({
 
   // ---------- 预期效果预览(简报一.2：悬停实时显示打谁/伤害区间/五行利弊) ----------
   function relInfo(rel) {
-    if (rel === 'ke') return { label: `${TEXT.battle.previewKe} · 有利`, cls: 'good' };
-    if (rel === 'beike') return { label: `${TEXT.battle.previewBeike} · 不利`, cls: 'bad' };
+    if (rel === 'ke') return { label: TEXT.battle.previewKe, cls: 'good' };
+    if (rel === 'beike') return { label: TEXT.battle.previewBeike, cls: 'bad' };
     return { label: TEXT.battle.previewNone, cls: 'none' };
   }
 
   function showPreview(rows) {
     if (!rows || rows.length === 0) { hidePreview(); return; } // 无实据时报空，不挂静态说明(简报 T10)
+    tutorial?.setPreviewing(true);
+    previewBox.closest('.battle-root')?.classList.add('previewing');
     previewBox.innerHTML = '';
     for (const r of rows) {
       const line = el('div', 'pv-line');
@@ -117,6 +123,16 @@ export function createBattleCommands({
         line.textContent = r;
       } else {
         line.append(el('span', 'pv-main', r.main));
+        if (r.attackElement && r.targetElement) {
+          const relation = el('span', `pv-elements ${r.relation ?? 'normal'}`);
+          relation.setAttribute('aria-label', `${r.attackElement}对${r.targetElement}：${r.relationLabel ?? '平衡'}`);
+          relation.append(
+            artIcon(ELEMENT_ART[r.attackElement], 'pv-element-icon'),
+            el('span', 'pv-element-arrow', '›'),
+            artIcon(ELEMENT_ART[r.targetElement], 'pv-element-icon'),
+          );
+          line.append(relation);
+        }
         // 每段各自不折行(「约 247~303」不会被拆成两行)
         if (r.side) {
           const side = el('span', `pv-side ${r.cls ?? ''}`);
@@ -131,6 +147,8 @@ export function createBattleCommands({
 
   function hidePreview() {
     previewBox.style.display = 'none';
+    previewBox.closest('.battle-root')?.classList.remove('previewing');
+    tutorial?.setPreviewing(false);
   }
 
   // 对单目标的预览行：伤害区间 + 双方五行 + 利弊 + 命中
@@ -139,8 +157,12 @@ export function createBattleCommands({
     const rel = relInfo(pv.rel);
     return [{
       main: `${label} → ${target.name} · 约 ${pv.min}~${pv.max}`,
-      side: `${u.element}→${target.element} ${rel.label} · 命中 ${Math.round(pv.hit * 100)}%`,
+      side: `${rel.label} · 命中 ${Math.round(pv.hit * 100)}%`,
       cls: rel.cls,
+      attackElement: u.element,
+      targetElement: target.element,
+      relation: pv.rel === 'ke' ? 'ke' : pv.rel === 'beike' ? 'beike' : 'normal',
+      relationLabel: rel.label,
     }];
   }
 
@@ -167,7 +189,7 @@ export function createBattleCommands({
     // 独立 QA 的干净上下文裁决在此处卡住——预览已给出具体敌人与完整数值,
     // 玩家无法区分它是悬停提示还是这一击已经落定。
     const rows = dmgPreviewOn(u, skill, foes[0], label);
-    if (foes.length > 1) rows[0].side = `${rows[0].side} · 以${foes[0].name}为例，出手时再选`;
+    if (foes.length > 1) rows[0].side = `参考目标 · ${rows[0].side}`;
     return rows;
   }
 
@@ -208,7 +230,7 @@ export function createBattleCommands({
     const enabled = all.filter((b) => !b.classList.contains('disabled'));
     if (all.length === 0) return;
     kbd = { all, enabled, idx: 0, cols: guessCols(enabled), escBtn };
-    if (enabled.length) focusKbd(0);
+    if (enabled.length) focusKbd(0, false);
   }
 
   function unbindKbd() {
@@ -216,13 +238,13 @@ export function createBattleCommands({
     kbd = null;
   }
 
-  function focusKbd(i) {
+  function focusKbd(i, preview = true) {
     if (!kbd || kbd.enabled.length === 0) return;
     kbd.enabled[kbd.idx]?.classList.remove('kbd-focus');
     kbd.idx = ((i % kbd.enabled.length) + kbd.enabled.length) % kbd.enabled.length;
     const b = kbd.enabled[kbd.idx];
     b.classList.add('kbd-focus');
-    b.dispatchEvent(new Event('kbdhover'));
+    if (preview) b.dispatchEvent(new Event('kbdhover'));
   }
 
   function onGlobalKey(ev) {
@@ -269,7 +291,11 @@ export function createBattleCommands({
     avatar.classList.toggle('enemy', u.side === 'enemy');
     const who = el('div', 'cmd-who');
     const nameRow = el('div', 'cmd-who-name');
-    nameRow.append(iconBadge(view?.element ?? u.element, { round: true, sm: true }), el('span', '', u.name));
+    const element = view?.element ?? u.element;
+    const elementMark = el('span', 'cmd-element-mark');
+    elementMark.setAttribute('aria-label', `${element}属性`);
+    elementMark.appendChild(artIcon(ELEMENT_ART[element], 'cmd-element-icon'));
+    nameRow.append(elementMark, el('span', '', u.name));
     const tip = el('div', 'cmd-who-tip', tipText);
     who.append(nameRow, tip);
     cmdStatus.append(avatar, who);
@@ -293,13 +319,20 @@ export function createBattleCommands({
   // 右格以宣纸木刻排字列出最近 3 条战报。
   const battleLog = []; // 新条目在前 {text, cls}
   let logLines = null;   // 结算期间挂在底栏的战况行;新战报到来即重绘
+  let logToggle = null;
+  let logExpanded = false;
   function renderLog() {
     if (!logLines?.isConnected) return;
     logLines.innerHTML = '';
+    logLines.classList.toggle('expanded', logExpanded);
     if (battleLog.length === 0) logLines.append(el('div', 'battle-report-line', '两军对峙，各听号令。'));
-    battleLog.slice(0, 4).forEach((l, i) => {
+    battleLog.slice(0, logExpanded ? 12 : 1).forEach((l, i) => {
       logLines.append(el('div', `battle-report-line ${l.cls}${i === 0 ? ' fresh' : ''}`.trim(), l.text));
     });
+    if (logToggle) {
+      logToggle.setAttribute('aria-expanded', String(logExpanded));
+      logToggle.textContent = logExpanded ? '收起战报' : `战报 ${Math.max(1, battleLog.length)}`;
+    }
   }
   function pushLog(text, cls = '') {
     battleLog.unshift({ text, cls });
@@ -310,9 +343,19 @@ export function createBattleCommands({
     cmdMenu.innerHTML = '';
     clearStatus();
     const sc = el('div', 'battle-report');
-    sc.append(el('div', 'battle-report-title', '战况'));
+    logExpanded = false;
+    logToggle = el('button', 'battle-report-toggle', '战报 1');
+    logToggle.id = 'battle-report-toggle';
+    logToggle.type = 'button';
+    logToggle.setAttribute('aria-expanded', 'false');
+    logToggle.setAttribute('aria-controls', 'battle-report-lines');
+    logToggle.addEventListener('click', () => {
+      logExpanded = !logExpanded;
+      renderLog();
+    });
     logLines = el('div', 'battle-report-lines');
-    sc.append(logLines);
+    logLines.id = 'battle-report-lines';
+    sc.append(logToggle, logLines);
     cmdMenu.appendChild(sc);
     renderLog();
   }
