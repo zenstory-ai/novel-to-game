@@ -1,6 +1,6 @@
 # Turning a novel into a playable game: NovelToGame compared with story-to-game builders
 
-NovelToGame (`zenstory-ai/novel-to-game`, MIT, 7 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds for the runtime you choose, and ends with evidence-based QA that launches the actual build. Three public adaptations are playable in a browser today, including a first-person WebGL2 3D game.
+NovelToGame (`zenstory-ai/novel-to-game`, MIT, 7 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds for the runtime you choose, and ends with evidence-based QA that launches the actual build. Two public adaptations are playable in a browser today: a turn-based RPG and a romance ADV.
 
 ## Three shapes of tool
 
@@ -55,7 +55,6 @@ QA does not ask whether the game is fun. It launches the build on the selected r
 
 - Journey to the West, Three Borrowings of the Banana Fan: a Fantasy Westward Journey-style turn-based RPG with walkable scene maps, NPC quests and command-turn battles, design estimate 45 to 90 minutes, [play](https://xiyouji.vibecoco.ai), [case study](../examples/journey-to-the-west/)
 - Jin Ping Mei, Ledger of Desire: galgame-style romance ADV with five heroine routes and 16 endings, 18+, [play](https://jinpingmei.vibecoco.ai), [case study](../examples/jin-ping-mei/)
-- Project Plateau, The Lost World: first-person 3D field photography, 300 seconds of light per run, desktop WebGL2, [play](https://plateau.vibecoco.ai), [case study](../examples/project-plateau/)
 
 Each case study links source provenance, concept trade-offs, design and art direction, runnable source, and the QA evidence.
 

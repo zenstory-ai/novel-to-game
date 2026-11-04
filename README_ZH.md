@@ -33,7 +33,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Code）的七个开源 skills。把一本小说交给它——如果已有想法，再加上目标平台或引擎。它会读完整本书，选一个依据充分的游戏方向，设计世界和画面，在简报锁定的运行环境里构建，并用一次有记录的运行证明这个版本能玩。你拿到的是一款达到你所要求成色的可玩构建，加上它背后的设计文档。下面三个示例都是浏览器游戏，并提供可玩版本的链接。
+NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Code）的七个开源 skills。把一本小说交给它——如果已有想法，再加上目标平台或引擎。它会读完整本书，选一个依据充分的游戏方向，设计世界和画面，在简报锁定的运行环境里构建，并用一次有记录的运行证明这个版本能玩。你拿到的是一款达到你所要求成色的可玩构建，加上它背后的设计文档。下面两个示例都是浏览器游戏，并提供可玩版本的链接。
 
 ## 在线试玩
 
@@ -64,16 +64,6 @@ NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Co
 一款 galgame 式古风恋爱 ADV，时间是李瓶儿刚过门的那个春天。共通线把五个女人放到同一张饭桌、同一场夜雨、同一席清明宴上；你的选择在每个人那里攒下的心意，决定分岔那夜哪扇院门还亮着灯。五条个人线各有良缘、寻常、错过三种结局（连同无人留灯共十六个），每个个人结局之后都翻开一页原著里她的命数（无人留灯则翻到西门庆之死与宅门散去）。自动、只跳已读的快进、回看、隐藏、快存、缩略图存档和回到上一选项一应俱全，另有 CG 鉴赏、回想、音乐室和结局流程图。
 
 **[浏览器试玩](https://jinpingmei.vibecoco.ai)** · [改编工作区](examples/jin-ping-mei/) · 设计估时单周目 20–30 分钟，五线全收 1–1.5 小时 · 18+ · 可玩原型
-
-### Project Plateau · 失落的世界 · 3D
-
-这是一款由柯南·道尔《失落的世界》改编而来的实时**第一人称 3D 野外摄影游戏**。西斜的低太阳下，从挑战者堡出发，穿过齐膝的草，沿一条荆棘拱廊找掩护，用长焦镜头曝光四张玻璃底片。每张底片当场按实时取景里真正框住的东西评定，盖上评语印章，再配一句多疑的萨默利教授的话。翼手龙先盘旋再俯冲，一头剑龙可能走下溪边饮水，你只有 300 秒天光把底片带回去。
-
-桌面浏览器可完整试玩，其他设备可直接观看 15 秒实机预览，它录自当前构建。
-
-https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
-
-**[浏览器直接试玩，无需安装](https://plateau.vibecoco.ai)** · [改编工作区](examples/project-plateau/) · [反馈体验](https://github.com/zenstory-ai/novel-to-game/discussions/7) · 设计估时 5–10 分钟（每局 300 秒天光） · 桌面 WebGL2 · 可玩原型
 
 ## 这是什么
 
@@ -145,7 +135,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## 看看它的输出
 
-下面每段节选都摘自本仓库的文件；两个中文示例的文档是简体中文，原样引用；Project Plateau 的文档是英文，其中 Markdown 节选译成中文并标注（译），JSON 记录保留英文原样，在前后正文里说明。原文均有链接。省略处以“…”标出。
+下面每段节选都摘自本仓库的文件。两个示例的文档都是简体中文，原样引用；JSON 记录保留原文，在前后正文里说明。原文均有链接，省略处以“…”标出。
 
 ### 设计文档长什么样
 
@@ -270,54 +260,6 @@ codex plugin add novel-to-game@novel-to-game-skills
 }
 ```
 
-### 一次记录在案的运行漏掉了什么
-
-[Project Plateau](examples/project-plateau/) 是 3D 示例，文档为英文。它的概念比较了三个各自锚定章节的方向——A · Proof Before Dark（野外观察与带着受损证据返回）、B · Fire Across the Lake（沿溪到湖、逃离追踪的猎食者）、C · The Eighteenth Cave（背着证据的洞穴下降）——并写下胜出方向应被放弃的条件，见 [`concepts/CONCEPT.md`](examples/project-plateau/concepts/CONCEPT.md)（译）：
-
-```markdown
-三个方向都支持可重复的玩家决策和有边界的原型。方向 A 胜出，
-因为它把整个改编承诺——侦察、记录、生存、带回——
-装进一个可读的白昼画面里，而 B 把游戏收窄成追逐，C 收窄成路线判读。
-…
-若位置或时机无法产生肉眼可见更好的底片，或者拍摄从不改变之后的路线或防御决定，
-则选定方向被证伪。`GAME_DESIGN.md` 必须定义这条因果链，并保住不致命的侦察幻想。
-```
-
-`npm run verify` 用键鼠事件驱动真实构建，在同一次运行里写出输入轨迹和 `qa/verification.json`。[`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) 里的输入轨迹就是整次远征——沿荆棘带走到观察掩体，再原路退回：
-
-```json
-"inputTrace": [
-  "KeyW: reach the brook",
-  "Right Mouse + Left Mouse: record the brook",
-  "KeyW: reach the basalt shelf",
-  "Right Mouse + Left Mouse: record basalt scale",
-  "KeyA: step under the thorn arches",
-  …
-  "KeyW: settle in the glade-edge blind",
-  "Right Mouse + Left Mouse: record young at play from the blind",
-  "hold KeyC under cover: crouch until the wings lose interest",
-  …
-  "KeyS: back up the thorn band to Fort"
-]
-```
-
-[`qa/verification.json`](examples/project-plateau/qa/verification.json) 点名这次运行漏掉了什么，包括新加的剑龙段落：
-
-```json
-{
-  "scope": "tested runtime",
-  "reason": "The run used local desktop Chromium on one Apple M1 Pro; other browsers, GPUs and devices were not exercised."
-},
-{
-  "scope": "optional stegosaurus beat",
-  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
-}
-```
-
-也就是：只在一台 Apple M1 Pro 的本地桌面 Chromium 上跑过，其他浏览器、GPU 和设备没有测；完整运行没有拍剑龙，它的取景规则只有一个单元测试覆盖。
-
-单局时长改过两次，一次因为实测证据，一次出于负责人的决定，[`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) 把两步都留着。第一次实测跑完整条路线只用了 55.2 秒，推翻了原计划的 5–8 分钟单局，于是边界被压到 1–3 分钟一局、180 秒天光，而不是往路线里塞等待。后来负责人要求一次 5–10 分钟的到访，天光预算提到 300 秒，填进去的是新的决策（可选的第十二章剑龙段落和逐张底片评定），而不是更长的路；熟练的 Strong 路线仍约 90 秒跑完。
-
 ## 第一条请求
 
 把小说文件、目录或链接交给 Agent，然后复制下面任意一条请求，改一改就能用。
@@ -403,7 +345,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
-由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。替代运行的 QA 结果只覆盖实际测试环境。三个公开示例都是浏览器游戏（两个零依赖静态应用和一个 Three.js + Vite 构建），它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与 [QA 契约](skills/game-qa/references/qa-contract.md)。
+由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。替代运行的 QA 结果只覆盖实际测试环境。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与 [QA 契约](skills/game-qa/references/qa-contract.md)。
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
@@ -431,7 +373,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 - [有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)——写清每个玩家选项的证据、代价与可见结果，并指出后续哪个场景读取这项状态。
 - [小说改游戏选什么类型](docs/novel-to-game-choose-gameplay.md)——先找玩家能反复做决定的事，再用同一个情境比较几种玩法。
 - [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
-- [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项，以及一次单资产实验证明了什么、没证明什么。
+- [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项。
 
 ## 参与贡献
 

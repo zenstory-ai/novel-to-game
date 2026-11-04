@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       source_sha:
-        description: Exact protected-main commit deployed by all three Vercel projects
+        description: Exact protected-main commit deployed by both Vercel projects
         required: true
         type: string
 permissions:

@@ -18,9 +18,5 @@ examples/*/build/app/node_modules/
 .vscode/
 *.iml
 
-# Reproducible single-asset experiment diagnostics (production QA is unchanged)
-examples/project-plateau/build/evidence/blender-spike-baseline/
-examples/project-plateau/build/evidence/blender-spike-candidate/
-
 # Local experiments are never committed
 experiments/

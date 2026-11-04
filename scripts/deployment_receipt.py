@@ -11,7 +11,6 @@ REPOSITORY = "zenstory-ai/novel-to-game"
 SITES = {
     "jinpingmei": "https://jinpingmei.vibecoco.ai",
     "xiyouji": "https://xiyouji.vibecoco.ai",
-    "project-plateau": "https://plateau.vibecoco.ai",
 }
 
 
