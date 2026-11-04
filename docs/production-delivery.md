@@ -1,6 +1,6 @@
 # Production delivery
 
-The three example sites (`jinpingmei`, `xiyouji`, `project-plateau`) deploy only
+The two example sites (`jinpingmei`, `xiyouji`) deploy only
 through Vercel's native Git integration from `main`. Repository workflows hold no
 Vercel token and run no deploy command; the GitHub Actions deploy workflow
 (`deploy.yml`) was retired on 2026-10-03, and `tests/test_production_delivery.py`
@@ -25,7 +25,7 @@ gh run download <run-id> -n deployment-observation-<run-id>-<attempt>
 
 The **Public deployment observation** workflow confirms that the commit's `main`
 product and inventory CI passed, that each project's latest production deployment
-was created by Vercel for that commit with a success status, and that the three
+was created by Vercel for that commit with a success status, and that the two
 public origins answer HTTP 200 without credentials or redirects. The artifact
 holds `ci-proof.json` and `deployment-receipt.json`, with GitHub deployment,
 status and CI run IDs. Any missing deployment, wrong source commit, non-success status, API
