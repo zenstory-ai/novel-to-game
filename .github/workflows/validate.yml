@@ -30,9 +30,3 @@ jobs:
       - name: Test Journey to the West systems
         working-directory: examples/journey-to-the-west/build/app
         run: npm test
-      - name: Install Project Plateau dependencies
-        working-directory: examples/project-plateau/build/app
-        run: npm ci
-      - name: Test and build Project Plateau
-        working-directory: examples/project-plateau/build/app
-        run: npm test && npm run build

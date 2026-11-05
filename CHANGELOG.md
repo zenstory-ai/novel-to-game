@@ -19,7 +19,11 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ### Changed
 
-- All three example games play generated folk-instrument and orchestral scores and recorded-style sound effects instead of synthesized tones, and fall back to the old synthesis when a file cannot play. Each example lists its audio in `build/art/audio-assets.json`.
+- Both example games play generated folk-instrument scores and recorded-style sound effects instead of synthesized tones, and fall back to the old synthesis when a file cannot play. Each example lists its audio in `build/art/audio-assets.json`.
+
+### Removed
+
+- Removed the Project Plateau / The Lost World example, including its source text, planning documents, game code, assets and QA evidence. The two remaining examples are Journey to the West and Jin Ping Mei; README showcases, CI and deployment observation no longer include the removed example ([decision note](.agents/notes/implemented/simplification/2026-11-04-remove-3d-example.md)).
 
 ## [0.6.1] - 2026-10-20
 

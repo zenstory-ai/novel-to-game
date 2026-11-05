@@ -31,7 +31,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The three examples below are browser games and include links to their playable builds.
+NovelToGame is seven open-source skills for the coding agent you already use (Claude Code, Codex, or Kimi Code). Give it a novel and, if you have one in mind, a target platform or engine. It reads the whole book, chooses a game direction it can defend, designs the world and the look, builds for the runtime the brief locks, and proves the build plays in one recorded run. You get a playable build at the finish level you asked for, plus the design documents behind it. The two examples below are browser games and include links to their playable builds.
 
 ## Play Online
 
@@ -62,16 +62,6 @@ A Fantasy Westward Journey-style turn-based RPG built on chapters 59–61. Click
 An interactive-film romance set in the Ximen household the spring after Li Ping'er marries in: after each choice that matters, a short voiced cutscene acts out what you just changed (who walks out, who brings you a bowl, whose face falls), and the next lines are read as captions over its last frame. A common route puts all five women at one table, in one night of rain and at one Qingming feast; what your choices build with each of them decides which courtyard doors are still lit on the night the routes split. Each of the five heroine routes has a good, an ordinary and a missed ending (16 endings, counting the one where no lamp is left), and every heroine ending turns to a fixed page of what the novel does to her (the no-lamp ending turns to Ximen Qing's death and the household scattering). Public quarrels are timed, and staying silent is an answer with its own branch; in two scenes you can study the picture first, and spotting the right detail gives you something to say; on the rainy night you hold a key to keep your lamp alight; a seal marks the lines a heroine will remember; and a story tree lets you replay any chapter you have reached. Auto, read-only skip, backlog, hide, quick save, thumbnail saves and rollback are there, with a CG gallery, a cutscene gallery, scene replay, music room and ending flowchart.
 
 **[Play in browser](https://jinpingmei.vibecoco.ai)** · [Adaptation workspace](examples/jin-ping-mei/) · design estimate: 20–30 min per route, 1–1.5 h for all five · 18+ · playable prototype
-
-### Project Plateau · The Lost World · 3D
-
-A real-time **first-person 3D field-photography game** adapted from Arthur Conan Doyle's *The Lost World*. Under a low western sun, walk out from Fort Challenger through knee-high grass, keep to a band of thorn arches for cover, and expose four glass plates through a long lens. Each plate is graded on the spot from what the live camera actually framed, with stamps and a line from the sceptical Summerlee. A pterodactyl circles before it dives, a stegosaurus may come down to drink at the brook, and you have 300 seconds of light to bring the plates back.
-
-Play the full expedition on desktop, or watch the 15-second gameplay preview on other devices. It is a real capture of the current build.
-
-https://github.com/user-attachments/assets/5ad62a58-1abe-4d73-b86e-1c8c6563fdb2
-
-**[Play in your browser — no install](https://plateau.vibecoco.ai)** · [Adaptation workspace](examples/project-plateau/) · [Share feedback](https://github.com/zenstory-ai/novel-to-game/discussions/7) · design estimate: 5–10 min (300 s of light per run) · desktop WebGL2 · playable prototype
 
 ## What it is
 
@@ -143,7 +133,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ## See what it produces
 
-Every excerpt below is copied from a file in this repository; the two Chinese examples keep their documents in Simplified Chinese, so their Markdown excerpts are translated here and marked as such, while JSON records are quoted as they are and glossed in the surrounding text. The originals are linked. Cuts are marked with "…".
+Every excerpt below is copied from a file in this repository. Both examples keep their documents in Simplified Chinese, so their Markdown excerpts are translated here and marked as such, while JSON records are quoted as they are and glossed in the surrounding text. The originals are linked. Cuts are marked with "…".
 
 ### What the design documents look like
 
@@ -268,54 +258,6 @@ In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the com
 
 That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one.
 
-### What one recorded run leaves out
-
-[Project Plateau](examples/project-plateau/) is the 3D example, and its documents are in English. Its concept compared three directions, each anchored to a chapter slice: A · Proof Before Dark (field observation and returning with damaged proof), B · Fire Across the Lake (following the brook to the lake and escaping a tracking predator), and C · The Eighteenth Cave (a proof-carrying descent). It also wrote down the condition under which the winner should be abandoned, in [`concepts/CONCEPT.md`](examples/project-plateau/concepts/CONCEPT.md):
-
-```markdown
-All three support repeatable player decisions and bounded prototypes. Direction A wins
-because it carries the whole adaptation promise—scout, document, survive and extract—
-in one readable daylight frame, while B narrows the game to pursuit and C narrows it to
-route interpretation.
-…
-The selected direction is falsified if position or timing cannot create a visibly better
-plate, or if recording never changes a later route or defense decision. `GAME_DESIGN.md`
-must define that causal chain and preserve the non-lethal scout fantasy.
-```
-
-`npm run verify` drives the real build with keyboard and mouse events and writes the input trace and `qa/verification.json` in the same run. The trace in [`build/evidence/current-run/report.json`](examples/project-plateau/build/evidence/current-run/report.json) is the whole expedition, out along the thorn band to the blind and back:
-
-```json
-"inputTrace": [
-  "KeyW: reach the brook",
-  "Right Mouse + Left Mouse: record the brook",
-  "KeyW: reach the basalt shelf",
-  "Right Mouse + Left Mouse: record basalt scale",
-  "KeyA: step under the thorn arches",
-  …
-  "KeyW: settle in the glade-edge blind",
-  "Right Mouse + Left Mouse: record young at play from the blind",
-  "hold KeyC under cover: crouch until the wings lose interest",
-  …
-  "KeyS: back up the thorn band to Fort"
-]
-```
-
-[`qa/verification.json`](examples/project-plateau/qa/verification.json) names what that run left out, including the new stegosaurus beat:
-
-```json
-{
-  "scope": "tested runtime",
-  "reason": "The run used local desktop Chromium on one Apple M1 Pro; other browsers, GPUs and devices were not exercised."
-},
-{
-  "scope": "optional stegosaurus beat",
-  "reason": "The complete run does not photograph the stegosaurus; its framing rule is covered by one unit test only."
-}
-```
-
-The session length moved twice, once on evidence and once on an owner decision, and [`PRODUCT_BRIEF.md`](examples/project-plateau/PRODUCT_BRIEF.md) keeps both steps. The first measured run crossed the whole route in 55.2 seconds, which falsified the planned 5–8 minute session, so the boundary was cut to a 1–3 minute run with 180 seconds of light instead of padding the route with waits. When the owner later asked for a longer 5–10 minute visit, the light budget went to 300 seconds and was filled with new decisions (the optional Chapter XII stegosaurus beat and plate-by-plate grading) rather than more walking; a learned Strong path still finishes in about 90 seconds.
-
 ## Your first request
 
 Give the agent a novel file, directory, or link, then copy one of these requests and adjust it.
@@ -402,7 +344,7 @@ Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `direc
 
 ### Which engine or platform does it build for? Will it fall back to a web page if my toolchain is missing?
 
-You choose, and the product brief locks it: platform, production engine, target runtime, and the runtime actually available for testing. The build may not switch to a web page when the target toolchain is unavailable; only a substitute runtime already approved in the brief may be used, and then `targetRuntime`, `testedRuntime`, and the uncovered items are recorded separately. QA on a substitute run covers only the environment actually tested. The three public examples are all browser games (two dependency-free static apps and one Three.js + Vite build) because their briefs chose the browser as the target runtime. No public example yet targets a native engine or console; a Godot, Unity, or mobile build depends on the toolchain present in your environment and is recorded the same way, with anything untested written as a limitation. See [`game-build`](skills/game-build/SKILL.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
+You choose, and the product brief locks it: platform, production engine, target runtime, and the runtime actually available for testing. The build may not switch to a web page when the target toolchain is unavailable; only a substitute runtime already approved in the brief may be used, and then `targetRuntime`, `testedRuntime`, and the uncovered items are recorded separately. QA on a substitute run covers only the environment actually tested. The two public examples are dependency-free static browser games because their briefs chose the browser as the target runtime. No public example yet targets a native engine or console; a Godot, Unity, or mobile build depends on the toolchain present in your environment and is recorded the same way, with anything untested written as a limitation. See [`game-build`](skills/game-build/SKILL.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
@@ -430,7 +372,7 @@ Yes. Use the third request above. Each planning skill stops at its document: the
 - [Meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) — give each player option evidence, cost, and a visible outcome, and name the later scene that reads its state.
 - [Choosing a gameplay type for a novel](docs/novel-to-game-choose-gameplay.md) (Chinese) — find the decision a player can repeat, then compare several gameplay shapes on one scene.
 - [NovelToGame compared with story-to-game builders](docs/novel-to-game-vs-story-to-game-tools.md) — the three shapes of tool and where the design documents live.
-- [Blender asset feedback](docs/research/blender-asset-feedback.md) (Chinese) — why Blender is a conditional entry in `game-build`, not a default, and what one single-asset experiment did and did not prove.
+- [Blender asset feedback](docs/research/blender-asset-feedback.md) (Chinese) — why Blender is a conditional entry in `game-build`, not a default.
 
 ## Contributing
 
