@@ -78,6 +78,8 @@ NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Co
 
 这套 skills 完整支持互动叙事：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。人物路线的关键选择针对该人物自己的心结或议程，关系进展由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕上的数值。
 
+互动影游建立在这条路线上，是文游与短剧的结合：每个会被后文读取的选择做完，播一段演出后果的剧情过场，演完在末帧上接着读。这样的选择点，每个选项都有自己的过场；让静帧动起来不算过场。skills 按选择点与选项估算过场预算，先写分镜，等游戏打磨好之后再通过与供应商无关的台账生成；影像关闭或缺失时，用定格画面照样能完整游玩（见[互动影游方法](skills/game-world-design/references/interactive-film-method.md)与[剧情过场生产](skills/game-build/references/cutscene-production.md)）。上面的金瓶梅示例就是这样做的。
+
 ## 安装
 
 ### 每个 Agent 一条命令
@@ -334,6 +336,10 @@ game-adaptations/<project>/
 ### 我要的是互动叙事，结果拿到卡牌、回合和数值面板。怎样才能得到场景、对白和关键选择？
 
 在请求里说出来，就像上面第二条示例那样。这会在产品简报里锁定 `experienceProfile: narrative-led`，并贯穿概念、设计、美术、构建和 QA。设计方法把每个关键选择记成实际言行、即时反应和一条持久事实及其后文读取点，而不是隐藏总分。这条赛道是在一位读者于 [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17) 里给我们看到正是这种失败之后补上的；见 [`game-concept`](skills/game-concept/SKILL.md) 与[叙事设计方法](skills/game-world-design/references/narrative-design-method.md)。
+
+### 我想做互动影游，怎样得到选择之后的剧情过场，而不是会动的立绘？
+
+在请求里说要做互动影游；在意预算的话，再说明大约多少个选择要配过场。设计阶段会列出哪些选择点配过场、每个选项的过场演什么；构建阶段先做一段代表片，确认后再生成其余片段。生成视频需要你的 Agent 环境里有可用的服务；仓库里只保存台账、提示词和成片。
 
 ### 完整跑一次要多久、花多少钱？
 

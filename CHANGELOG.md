@@ -11,15 +11,46 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-05
+
 ### Added
 
-- `game-world-design` has a new interactive-film reference. It defines an interactive film as a text adventure crossed with a short drama: after a choice, a plot cutscene acts out what that choice changed, and the next lines are read over its last frame. Moving stills do not count. It covers how to budget cutscenes per choice point and option, how to write one (one turn, two to four shots, a held last frame, lines as timed subtitles), where timed choices, picture clues, hold actions, "she will remember" marks and a story tree belong (and where they do not, such as consent choices), how to write the silent branch, and the fairness rules. `game-concept`, `game-art-direction`, `game-build` and `game-qa` each gain the part they own: the cutscene budget at concept time, reference-locked multi-shot cutscenes with a held-frame fallback (ambient loops only as an optional mood layer), a cost gate and provider-neutral ledgers for generated cutscenes, music and sound, and the checks for silent branches, timer pauses, hotspot alignment and per-option cutscenes ([decision note](.agents/notes/implemented/architecture/2026-11-04-interactive-film-skill-guidance.md)).
-- The Jin Ping Mei example becomes an interactive film: 58 voiced, multi-shot cutscenes act out what each choice changes (every option at the choice points that echo later, the route turning points, and all 16 endings), with the lines as timed subtitles and a gallery tab to rewatch them; four public quarrels are timed with written silent branches, two scenes let you study the picture for a clue that unlocks a line, the rainy night has a hold-to-shield-the-lamp action, key choices stamp who will remember them, and a story tree replays any reached chapter. All of its script was rewritten for a less machine-made voice, then edited again to cut melodramatic aphorisms and awkward lines from the story and the interface ([decision note](.agents/notes/implemented/feature/2026-11-04-jin-ping-mei-interactive-film.md)).
-- The Jin Ping Mei score was regenerated in a Jiangnan sizhu and Kunqu style led by sustained winds, bowed strings and sheng, after the first, pluck-heavy version sounded sharp, choppy and closer to Japanese koto music; each track's softest take was picked by measured pluck density and brightness, and the click and choice sounds are no longer plucked notes.
+- Interactive film is a supported format. In an interactive film, each choice that matters later is followed by a short plot cutscene that acts out what the choice changed, and the story continues over the cutscene's last frame; animating a still image does not count. `game-world-design` has a new reference on designing one: which choices get cutscenes (every option gets its own), how to write a cutscene, and where timed choices, picture clues, hold actions, "she will remember" marks and a story tree belong. `game-concept` budgets cutscenes per choice and option. `game-art-direction` sets how cutscenes look and sound. `game-qa` checks that each option plays its own cutscene and that the game still plays without video ([decision note](.agents/notes/implemented/architecture/2026-11-04-interactive-film-skill-guidance.md)).
+- `game-build` has a new reference on producing cutscenes:
+  - prompts that say who each reference image is and keep one voice description per character;
+  - fixing common faults at their cause;
+  - reviewing every clip as a frame sheet;
+  - timing subtitles to the spoken lines;
+  - the playback behaviour players rely on;
+  - keeping file size within hosting limits.
+
+  Cutscenes are generated through a ledger that names no provider, and only after the rest of the game is finished. The README now introduces interactive film and explains how to ask for one.
+- The Jin Ping Mei example is now an interactive film ([decision note](.agents/notes/implemented/feature/2026-11-04-jin-ping-mei-interactive-film.md)):
+  - 58 voiced cutscenes cover every option at the choices that matter later, the turning point of each route, and all 16 endings. A gallery tab lets players rewatch them.
+  - Four public quarrels are timed, and staying silent leads to its own written branch.
+  - Two scenes let you study the picture for a clue that unlocks a line, and the rainy night has a hold action to shield the lamp.
+  - Key choices are stamped with who will remember them, and a story tree replays any chapter you have reached.
+  - The script was edited to remove a machine-made tone, melodramatic one-liners and awkward phrasing.
+- The Jin Ping Mei music was regenerated in the Jiangnan sizhu style, led by flutes, bowed strings and sheng. The first version relied on plucked strings and sounded sharp, choppy and close to Japanese koto music. The click and choice sounds are no longer plucked notes either.
 
 ### Changed
 
+- Music that plays while the player reads should be built on sustained instruments, because dense plucking interrupts reading (`game-art-direction`, `game-build`). If a style is easy to confuse with a neighbouring one, the prompt says what to leave out. Several takes are generated and the softest is kept.
+- Build and QA guidance from the Journey to the West polish rounds:
+  - Characters and ground share one camera angle, scale and light.
+  - A larger map is regrouped into zones rather than stretched.
+  - Map sharpness is judged by source pixels against display size.
+  - Walkable paths and collision share one geometry.
+  - Panels share one shell before their contents differ.
+  - Warnings stay up until the player has acted on them.
+  - QA walks whole routes from the player's real position and opens every panel.
+  - QA checks that every way of cancelling behaves the same and that battle feedback matches what actually happened.
+  - When branches merge, QA checks who holds each key item.
+- The build uses the environment's image generation for new bitmaps. When there is no way to implement the game, it reports the block and hands over build notes instead of claiming a candidate exists.
+- The Journey to the West example has larger painted maps, shared map navigation, unified panels, and clearer battle feedback and dialogue.
+- A new guide explains how to choose a gameplay type for a novel and is linked from the README. The README logo now loads from GitHub.
 - Both example games play generated folk-instrument scores and recorded-style sound effects instead of synthesized tones, and fall back to the old synthesis when a file cannot play. Each example lists its audio in `build/art/audio-assets.json`.
+- ClawHub packages in this release: `game-art-direction` 1.2.7, `game-build` 1.3.0, `game-concept` 1.2.2, `game-qa` 1.0.7, `game-world-design` 1.2.1, `novel-game-analyze` 1.0.2, `novel-to-game` 1.1.3.
 
 ### Removed
 
@@ -183,7 +214,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.4.0...v0.5.0
