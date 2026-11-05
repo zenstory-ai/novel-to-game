@@ -124,7 +124,7 @@ export default String.raw`
 最后那价钱比开价少了三成。陈掌柜擦着汗走了，临走还冲她作了个揖。
 玉楼(笑)：官人看什么？我脸上有字？
 @choice
-- “有。写着‘了不起’。” -> md_praise {meng+1}
+- “有。写着‘好大本事’。” -> md_praise {meng+1}
 - “你这本事，比我铺子里的掌柜还强。” -> md_shop
 
 # md_praise

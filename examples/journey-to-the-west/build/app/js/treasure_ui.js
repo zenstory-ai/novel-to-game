@@ -34,9 +34,9 @@ const KIND_COPY = {
 
 // 探路者一人一句大白话(详细规则在 treasure.js 的 HUNT_GUIDES)
 const GUIDE_PLAIN = {
-  wukong: { short: '悟空', line: '悟空：深层能看穿哪一格是妖穴' },
-  bajie: { short: '八戒', line: '八戒：每层第一掘顺手多翻开一格' },
-  sha: { short: '沙僧', line: '沙僧：替你挡一次妖气' },
+  wukong: { short: '悟空', line: '悟空：进入深层后，火眼金睛能看破伪装妖穴' },
+  bajie: { short: '八戒', line: '八戒：每层第一铲顺势多翻开相邻一格' },
+  sha: { short: '沙僧', line: '沙僧：横杖护住后路，替全队挡下首次妖气反扑' },
 };
 
 function pickGuide(root) {

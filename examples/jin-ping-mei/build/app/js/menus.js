@@ -107,7 +107,7 @@ function slotsHtml() {
       ${s && id !== 'auto' ? `<span class="slot-del" role="button" data-del="${id}" aria-label="删除这份存档">删</span>` : ''}
       <span class="meta"><b>${slotName(id)}</b><em>${s ? s.chapter : '——'}</em><small>${s ? s.date : ''}</small><q>${s?.text ?? ''}</q></span>
     </button>`;
-  }).join('')}</div><p class="count slot-hint">点存档右上角的「删」可以删掉它，桌面上也可以右键。</p>`;
+  }).join('')}</div><p class="count slot-hint">点击存档右上角的「删」或鼠标右键即可删除记录。</p>`;
 }
 
 // ---------- 设置 ----------
@@ -161,7 +161,7 @@ function systemHtml() {
 }
 // 心意一瞥只给她的神色和院门灯，不给档位
 function peekHtml() {
-  return `<p class="peek-note">清明席散之后，好感够的院门才会为你亮灯。</p><div class="peek">${HEROINES.map((h) => {
+  return `<p class="peek-note">清明席散之后，唯有心意相通的院门才会为你留灯。</p><div class="peek">${HEROINES.map((h) => {
     const v = story.vars.aff[h] ?? 0;
     const face = v >= 6 ? 'blush' : v >= 1 ? 'smile' : 'neutral';
     const lit = v >= ROUTE_MIN;
@@ -184,7 +184,7 @@ function treeHtml() {
     const head = who ? `${CAST[who].full}篇` : '共通线';
     return `<div class="tree-col" style="--accent:${who ? CAST[who].color : '#7a6a80'}"><div class="flow-head">${head}</div>${list.map(node).join('')}</div>`;
   };
-  return `<p class="peek-note">到过的章节可以回去重来，她们的心意按那一刻算。</p>
+  return `<p class="peek-note">已历章节皆可重溯，各房心意按当刻落定。</p>
     <div class="tree">${col(null)}<div class="tree-routes">${HEROINES.map(col).join('')}</div></div>`;
 }
 

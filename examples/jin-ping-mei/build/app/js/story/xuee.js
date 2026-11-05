@@ -193,7 +193,7 @@ export default String.raw`
 @bg chamber fade
 @show xuee 中 笑
 你替她揉肩。她两边肩膀硬邦邦的，是常年挑水、揉面压出来的。
-雪娥(笑)：官人手劲儿还行。比烧火强。
+雪娥(笑)：官人手劲儿倒不小，比烧火强多了。
 她靠在椅背上，没多久就睡着了。你没叫醒她。那是她进这个宅子以来，头一回睡过了时辰。
 @endscene
 @jump xuee_end
