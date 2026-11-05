@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story or text adventure from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
 ---
 # NovelToGame 总入口
 

@@ -1,7 +1,7 @@
 {
   "name": "novel-to-game",
   "version": "0.7.0",
-  "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. 有原著依据的 7-skill 小说改编游戏工作流，覆盖可游戏化拆解、概念选择、世界与美术设计、面向指定运行环境的候选版本构建，以及基于运行证据的 QA。",
+  "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. It supports systems games, interactive fiction and interactive film. 有原著依据的 7-skill 小说改编游戏工作流，覆盖可游戏化拆解、概念选择、世界与美术设计、面向指定运行环境的候选版本构建，以及基于运行证据的 QA；支持系统玩法、互动叙事与互动影游。",
   "author": {
     "name": "worldwonderer",
     "url": "https://github.com/worldwonderer"
@@ -20,13 +20,14 @@
     "3d-game-development",
     "cross-platform-game",
     "ai-game-development",
-    "agent-skills"
+    "agent-skills",
+    "interactive-film"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "NovelToGame",
     "shortDescription": "Turn novels into playable game prototypes",
-    "longDescription": "Design and build culturally grounded playable game adaptations from novels.",
+    "longDescription": "Design and build culturally grounded playable game adaptations from novels, including interactive fiction and interactive films with cutscenes after choices.",
     "developerName": "worldwonderer",
     "category": "Productivity",
     "capabilities": [
