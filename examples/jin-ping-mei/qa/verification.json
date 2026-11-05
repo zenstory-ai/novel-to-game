@@ -6,7 +6,7 @@
     "exitCode": 0
   },
   "completeRun": {
-    "id": "jin-ping-mei-galgame-2026-10",
+    "id": "jin-ping-mei-film-2026-11",
     "cleanContext": true,
     "terminal": "yue_good",
     "restart": "prologue-first-line",
@@ -32,6 +32,22 @@
     {
       "scope": "视口与浏览器",
       "reason": "只在 1440×900 Chromium 运行；窄屏布局与其他浏览器未纳入本次运行。"
+    },
+    {
+      "scope": "影游交互",
+      "reason": "浏览器只走一次限时沉默、两处细节与一次护灯成功；其余沉默分支、细节组合与护灯失败由 test/lint_script.mjs 穷举证明可达。"
+    },
+    {
+      "scope": "声音",
+      "reason": "自动化只确认曲目与音效文件能加载，不判断配乐与音效的听感。"
+    },
+    {
+      "scope": "剧情过场",
+      "reason": "浏览器沿月娘良缘一条路线经过其上每一段过场，只把第一段完整看完；其余过场在这条路线上被回车提前推过，另外几十段只由 test/lint_script.mjs 核对登记、文件与字幕句数。过场的演技、口型与人物声音是否前后一致靠人工抽看，不写成 PASS。"
+    },
+    {
+      "scope": "待机影像",
+      "reason": "浏览器只确认两场察言观色的待机影像实际开播；其余段落只离线核对了首尾帧与原图对位。"
     },
     {
       "scope": "体验判断",

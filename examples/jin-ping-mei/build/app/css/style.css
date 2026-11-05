@@ -93,6 +93,14 @@ button:disabled { cursor: not-allowed; }
 #game.choosing #sprites .sprite { filter: brightness(0.78); }
 #cg { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; background: #0c0910; }
 #cg.on { opacity: 1; }
+/* 剧情过场：盖在 CG 之上；影像播完停在末帧，末帧图（poster）垫在下面，读档、关闭影像时直接显示它 */
+#cut { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; background: #0c0910; overflow: hidden; }
+#cut.on { opacity: 1; }
+#cut img, #cut video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#cut img { opacity: 0; transition: opacity 0.3s; }
+#cut.ended img { opacity: 1; }
+#cut.kb img { animation: kb 20s ease-in-out infinite alternate; }
+#game.cut-on #sprites { opacity: 0; transition: opacity 0.3s; }
 #cg img { width: 100%; height: 100%; object-fit: cover; }
 /* 人物在右、左侧留白的 CG：裁到右侧（与 stage.js FOCUS_ZOOM 一致） */
 img.focus-right { object-fit: cover; object-position: 100% 50%; transform: scale(1.3); transform-origin: right center; }
@@ -329,3 +337,91 @@ img.focus-right { object-fit: cover; object-position: 100% 50%; transform: scale
 .sprite.speaking img:last-child { animation: breathe 5s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes breathe { 50% { transform: scaleY(1.006); } }
 #hint { position: absolute; left: clamp(22px, 4vw, 54px); bottom: 12px; font-size: 12px; letter-spacing: 0.14em; color: #9a8a92; }
+
+/* ---------- 动态影像 ---------- */
+/* 影像压在原图上，开播后淡入；不能播时原图慢推镜（kb） */
+video.film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+.live > video.film { opacity: 1; }
+.title-bg video.film { object-position: 65% 30%; }
+#cg.kb img:not(.focus-right) { animation: kb 20s ease-in-out infinite alternate; }
+#cg.kb img.focus-right { animation: kb-right 20s ease-in-out infinite alternate; }
+.bg.kb { animation: kb 20s ease-in-out infinite alternate; }
+@keyframes kb { from { transform: scale(1); } to { transform: scale(1.06); } }
+@keyframes kb-right { from { transform: scale(1.3); } to { transform: scale(1.38); } }
+
+/* 画面在场（CG／影像）时，文本框换成压在画面下沿的字幕条 */
+#game.cg-on #textbox, #game.cut-on #textbox { background: linear-gradient(180deg, rgba(12, 8, 14, 0), rgba(12, 8, 14, calc(var(--box-alpha, 0.9) * 0.82)) 34%); border-color: transparent; background-origin: border-box; box-shadow: none; backdrop-filter: none; }
+#game.cg-on #textbox::after, #game.cut-on #textbox::after { display: none; }
+#game.cg-on #text, #game.cg-on #textbox.narration #text, #game.cut-on #text, #game.cut-on #textbox.narration #text { color: #fbf3e8; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); }
+#game.cg-on #textbox.read #text, #game.cut-on #textbox.read #text { color: #d8cdd0; }
+#game.cg-on #nameplate, #game.cut-on #nameplate { top: 2px; padding: 4px 18px; font-size: 18px; min-width: 0; }
+#game.cg-on #hint, #game.cut-on #hint { color: #cbbfc6; }
+
+/* ---------- 限时抉择 ---------- */
+.choice.silent b { font-style: italic; color: var(--ink-soft); }
+.wick-timer { position: relative; width: min(560px, 82vw); height: 26px; margin-top: 4px; }
+.wick-timer .burn { position: absolute; left: 0; right: 0; top: 10px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, #f3d08a, var(--rose)); transform: scaleX(var(--left, 1)); transform-origin: left center; box-shadow: 0 0 10px rgba(243, 208, 138, 0.6); }
+.wick-timer::before { content: ""; position: absolute; left: 0; right: 0; top: 10px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.18); }
+.wick-timer .flame { position: absolute; top: 3px; left: calc(var(--left, 1) * 100% - 7px); width: 14px; height: 18px; border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; background: radial-gradient(circle at 50% 70%, #fff6d8, #f6b64e 55%, rgba(194, 90, 108, 0) 72%); animation: flicker 0.18s ease-in-out infinite alternate; }
+.wick-timer .burn ~ .flame, .wick-timer .flame { z-index: 1; }
+.wick-timer small { position: absolute; left: 0; right: 0; top: 18px; text-align: center; font-size: 12px; letter-spacing: 0.3em; color: #f6ece0; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
+#choices.hurry .burn { animation: hurry 0.5s ease-in-out infinite alternate; }
+@keyframes flicker { to { transform: scale(0.88, 1.08) translateY(-1px); } }
+@keyframes hurry { to { filter: brightness(1.5); } }
+
+/* ---------- 察言观色 ---------- */
+#look { position: absolute; inset: 0; z-index: 4; } /* 压在字幕条下面：细节框不盖住正在读的字 */
+#look .spot { position: fixed; border: 1.5px dashed rgba(246, 214, 150, 0.85); border-radius: 12px; background: rgba(255, 240, 200, 0.06); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 18px rgba(246, 214, 150, 0.25); animation: spot 2.2s ease-in-out infinite; transition: background 0.2s, border-color 0.2s; }
+#look .spot span { position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 3px 10px; border-radius: 999px; background: rgba(20, 12, 22, 0.78); color: #fff; font-size: 13px; letter-spacing: 0.12em; white-space: nowrap; opacity: 0; transition: opacity 0.2s; }
+#look .spot:hover, #look .spot:focus-visible { background: rgba(255, 240, 200, 0.18); border-style: solid; outline: none; }
+#look .spot:hover span, #look .spot:focus-visible span, #look .spot.seen span { opacity: 1; }
+#look .spot.seen { border: 1.5px solid rgba(194, 90, 108, 0.9); background: rgba(194, 90, 108, 0.12); animation: none; }
+#look .spot.seen::after { content: "阅"; position: absolute; right: -10px; top: -10px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--rose); color: #fff; font: 13px var(--serif); transform: rotate(-10deg); }
+@keyframes spot { 50% { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 28px rgba(246, 214, 150, 0.55); } }
+.look-foot { position: absolute; right: clamp(14px, 3vw, 40px); top: 16px; display: flex; align-items: center; gap: 12px; }
+.look-foot .look-left { padding: 5px 14px; border-radius: 999px; background: rgba(20, 12, 22, 0.7); color: #fff; font-size: 13px; letter-spacing: 0.2em; }
+#game.looking #quickmenu, #game.holding #quickmenu { opacity: 0.35; }
+
+/* ---------- 按住动作：护灯 ---------- */
+#hold { position: absolute; inset: 0 0 26vh; z-index: 7; display: grid; place-content: center; justify-items: center; gap: 14px; background: radial-gradient(circle at 50% 50%, rgba(20, 12, 22, 0.45), transparent 60%); touch-action: none; }
+#hold .lamp { --p: 0; --sway: 0deg; --flame: 1; position: relative; width: 200px; height: 200px; border-radius: 50%; cursor: pointer; outline: none; }
+#hold .ring { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(#f6c46a calc(var(--p) * 360deg), rgba(255, 255, 255, 0.16) 0); -webkit-mask: radial-gradient(circle, transparent 62%, #000 63%); mask: radial-gradient(circle, transparent 62%, #000 63%); }
+#hold .glass { position: absolute; inset: 18%; border-radius: 50%; background: radial-gradient(circle at 50% 60%, rgba(255, 200, 120, calc(0.25 + var(--p) * 0.35)), rgba(30, 18, 28, 0.85) 70%); border: 1px solid rgba(246, 214, 150, 0.4); display: grid; place-items: center; }
+#hold .flame { width: 40px; height: 68px; border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%; background: radial-gradient(circle at 50% 72%, #fffbe8 0 18%, #ffd27a 40%, #f08a3c 62%, rgba(194, 90, 108, 0) 74%); transform-origin: 50% 90%; transform: rotate(var(--sway)) scale(var(--flame)); filter: drop-shadow(0 0 12px rgba(255, 190, 90, 0.8)); transition: transform 0.08s linear; }
+#hold .lamp.held .glass { box-shadow: 0 0 0 6px rgba(246, 214, 150, 0.18); }
+#hold .lamp.kept .flame { transform: scale(1.25); filter: drop-shadow(0 0 26px rgba(255, 200, 100, 1)); }
+#hold .lamp.out .flame { opacity: 0; transition: opacity 0.5s; }
+#hold p { margin: 0; color: #fff; letter-spacing: 0.3em; font-size: 14px; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7); }
+
+/* ---------- 她记下了 ---------- */
+#stamp { position: absolute; right: clamp(18px, 5vw, 70px); top: 14vh; z-index: 9; display: flex; align-items: center; gap: 12px; padding: 10px 20px 10px 12px; border-radius: 999px; background: rgba(20, 12, 22, 0.72); color: #fff; pointer-events: none; }
+#stamp .seal { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 8px; border: 2px solid #fff; background: var(--accent); font: 700 20px var(--serif); transform: rotate(-8deg); }
+#stamp b { font: 600 16px var(--serif); letter-spacing: 0.18em; }
+#stamp.go { animation: stamp 2.1s ease both; }
+#stamp.go .seal { animation: seal 0.45s cubic-bezier(0.2, 1.6, 0.4, 1) both; }
+@keyframes stamp { 0% { opacity: 0; transform: translateX(20px); } 12%, 82% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes seal { from { transform: scale(1.9) rotate(-24deg); opacity: 0; } to { transform: scale(1) rotate(-8deg); opacity: 1; } }
+
+/* ---------- 剧情树 ---------- */
+.tree { display: grid; grid-template-columns: minmax(180px, 1fr) 5fr; gap: 14px; }
+.tree-routes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.tree-col { display: grid; align-content: start; gap: 8px; }
+.tree-node { display: flex; align-items: center; gap: 8px; min-height: 54px; padding: 6px; border: 1px solid var(--gold-soft); border-left: 3px solid var(--accent); border-radius: 8px; background: #fff; text-align: left; }
+.tree-thumb { flex: 0 0 68px; height: 38px; border-radius: 4px; background: var(--paper-2) center / cover; display: grid; place-items: center; font-size: 12px; color: #a89aa2; }
+.tree-txt { display: flex; flex-direction: column; min-width: 0; }
+.tree-txt b { font: 600 14px/1.3 var(--serif); }
+.tree-txt small { font-size: 11px; color: var(--ink-soft); }
+.tree-node.locked { opacity: 0.55; background: var(--paper-2); }
+.tree-node:hover:not(:disabled), .tree-node:focus-visible { box-shadow: 0 0 0 3px rgba(194, 90, 108, 0.25); outline: none; }
+@media (max-width: 760px) {
+  .tree { grid-template-columns: minmax(0, 1fr); }
+  .tree-routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #stamp { top: 9vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  video.film { display: none; }
+}
+
+/* 鉴赏 · 过场重看 */
+.cutview .cg-frame video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.cutview figcaption .btn { margin-left: 8px; }

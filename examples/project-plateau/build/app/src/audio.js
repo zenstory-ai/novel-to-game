@@ -21,6 +21,34 @@ export const AUDIO_CAPTIONS = Object.freeze({
 });
 
 const DEFAULT_VOLUMES = { ambience: 0.34, effects: 0.72, music: 0.2 };
+// Recorded field sounds (public/assets/audio, ledger in build/art/audio-assets.json). Every one has a
+// synthesized fallback below, so a missing or undecodable file only changes the timbre, never the cue.
+const SAMPLE_IDS = [
+  'brook', 'insects', 'wind', 'field-start', 'examine', 'family-play', 'family-branch', 'camera-raise', 'shutter',
+  'plate-slide', 'wing', 'attack', 'cover', 'rifle', 'contact', 'case-drop', 'brook-response', 'stegosaurus',
+  'stegosaurus-drinking', 'result', 'failure', 'step', 'step-crouch',
+];
+const sampleUrl = (id) => `/assets/audio/${id}.mp3`;
+const THREAT_MUSIC_URL = '/assets/audio/threat.mp3';
+// Which bus a recorded cue plays on, and at what level.
+const SAMPLE_CUES = {
+  'field-start': ['ambience', 0.5],
+  examine: ['effects', 0.5],
+  'family-play': ['ambience', 0.7],
+  'family-branch': ['ambience', 0.8],
+  'camera-raise': ['effects', 0.6],
+  shutter: ['effects', 0.8],
+  'plate-slide': ['effects', 0.6],
+  cover: ['effects', 0.6],
+  rifle: ['effects', 0.9],
+  contact: ['effects', 0.8],
+  'case-drop': ['effects', 0.7],
+  'brook-response': ['ambience', 0.8],
+  stegosaurus: ['ambience', 1],
+  'stegosaurus-drinking': ['ambience', 0.9],
+  result: ['music', 0.9],
+  failure: ['music', 0.9],
+};
 // Bed levels are chosen to be heard on laptop speakers at the default volumes:
 // nothing that carries meaning sits below about 90 Hz.
 const BED_LEVELS = { brook: 0.55, insects: 0.09, wind: 0.22 };
@@ -94,6 +122,7 @@ export class FieldAudio {
     }
     const bed = (type, frequency, q) => {
       const source = context.createBufferSource();
+      const node = { source };
       source.buffer = noise;
       source.loop = true;
       source.loopStart = Math.random();
@@ -105,7 +134,7 @@ export class FieldAudio {
       gain.gain.value = 0;
       source.connect(filter).connect(gain).connect(this.buses.ambience);
       source.start();
-      return { filter, gain };
+      return Object.assign(node, { filter, gain });
     };
     this.beds = {
       brook: bed('bandpass', 900, 0.6),
@@ -122,6 +151,8 @@ export class FieldAudio {
     music.connect(musicBed).connect(this.buses.music);
     music.start();
     this.musicBedGain = musicBed;
+    this.musicTone = music;
+    this.loadRecordings();
 
     const panner = context.createPanner();
     panner.panningModel = 'HRTF';
@@ -130,6 +161,54 @@ export class FieldAudio {
     panner.rolloffFactor = 0.8;
     panner.connect(this.buses.effects);
     this.wing = { panner };
+  }
+
+  // Fetch the recorded sounds in the background. Beds swap from filtered noise to their recording
+  // once it decodes; the threat score replaces the music bed's drone once it can play.
+  loadRecordings() {
+    const context = this.context;
+    this.samples = new Map();
+    for (const id of SAMPLE_IDS) {
+      fetch(sampleUrl(id))
+        .then((response) => (response.ok ? response.arrayBuffer() : Promise.reject(new Error(id))))
+        .then((bytes) => context.decodeAudioData(bytes))
+        .then((buffer) => {
+          this.samples.set(id, buffer);
+          const bed = this.beds?.[id];
+          if (!bed) return;
+          const source = context.createBufferSource();
+          source.buffer = buffer;
+          source.loop = true;
+          source.connect(bed.gain);
+          source.start(0, Math.random() * buffer.duration);
+          bed.source.stop();
+          bed.source = source;
+        })
+        .catch(() => {});
+    }
+    if (typeof Audio === 'undefined') return;
+    const score = new Audio(THREAT_MUSIC_URL);
+    score.loop = true;
+    score.preload = 'auto';
+    score.addEventListener('canplay', () => {
+      const node = context.createMediaElementSource(score);
+      node.connect(this.musicBedGain);
+      this.musicTone.disconnect();
+      this.score = score;
+      this.musicBedLevel = 12; // the recording sits far quieter than the drone it replaces
+    }, { once: true });
+  }
+
+  playSample(id, target, gainValue = 1) {
+    const buffer = this.samples?.get(id);
+    if (!buffer || !this.context) return false;
+    const source = this.context.createBufferSource();
+    source.buffer = buffer;
+    const gain = this.context.createGain();
+    gain.gain.value = gainValue;
+    source.connect(gain).connect(target);
+    source.start();
+    return true;
   }
 
   async start() {
@@ -192,6 +271,7 @@ export class FieldAudio {
   // A hoarse, falling call from wherever the wing is.
   wingCall(gainValue = 0.22) {
     if (!this.wing) return;
+    if (this.playSample('wing', this.wing.panner, gainValue * 3.5)) return;
     const call = this.tone(1350, 0.42, 'effects', gainValue, 'sawtooth', 0, this.wing.panner);
     call?.frequency.exponentialRampToValueAtTime(620, this.context.currentTime + 0.4);
   }
@@ -199,6 +279,13 @@ export class FieldAudio {
   cue(name) {
     this.record(name);
     if (!this.context || this.context.state !== 'running') return;
+    const recorded = SAMPLE_CUES[name];
+    if (recorded && this.playSample(name, this.buses[recorded[0]], recorded[1])) return;
+    if (name === 'attack' && this.samples?.has('attack')) {
+      this.wingCall(0.3);
+      this.playSample('attack', this.wing.panner, 1);
+      return;
+    }
     if (name === 'examine') {
       this.tone(610, 0.08, 'effects', 0.05, 'square');
       this.tone(420, 0.11, 'effects', 0.04, 'triangle', 0.09);
@@ -279,7 +366,9 @@ export class FieldAudio {
       0.8,
     );
     if (distanceTravelled - this.lastStepAt >= STEP_METERS || distanceTravelled < this.lastStepAt) {
-      if (distanceTravelled > this.lastStepAt) this.burst(0.07, stance === 'crouch' ? 500 : 900, stance === 'crouch' ? 0.05 : 0.12);
+      if (distanceTravelled > this.lastStepAt && !this.playSample(stance === 'crouch' ? 'step-crouch' : 'step', this.buses.effects, stance === 'crouch' ? 0.35 : 0.6)) {
+        this.burst(0.07, stance === 'crouch' ? 500 : 900, stance === 'crouch' ? 0.05 : 0.12);
+      }
       this.lastStepAt = distanceTravelled;
     }
     if (this.threatState === 'attack' && elapsed >= this.nextWingCallAt) {
@@ -293,8 +382,10 @@ export class FieldAudio {
     this.threatState = state;
     if (state !== 'distant') this.cue(state);
     if (this.musicBedGain && this.context) {
-      const target = state === 'search' ? 0.03 : state === 'attack' ? 0.06 : 0.0001;
+      const level = this.musicBedLevel ?? 1;
+      const target = state === 'search' ? 0.03 * level : state === 'attack' ? 0.06 * level : 0.0001;
       this.musicBedGain.gain.setTargetAtTime(target, this.context.currentTime, 0.18);
+      if (this.score && state !== 'distant') this.score.play().catch(() => {});
     }
   }
 

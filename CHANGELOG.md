@@ -11,6 +11,16 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Added
+
+- `game-world-design` has a new interactive-film reference. It defines an interactive film as a text adventure crossed with a short drama: after a choice, a plot cutscene acts out what that choice changed, and the next lines are read over its last frame. Moving stills do not count. It covers how to budget cutscenes per choice point and option, how to write one (one turn, two to four shots, a held last frame, lines as timed subtitles), where timed choices, picture clues, hold actions, "she will remember" marks and a story tree belong (and where they do not, such as consent choices), how to write the silent branch, and the fairness rules. `game-concept`, `game-art-direction`, `game-build` and `game-qa` each gain the part they own: the cutscene budget at concept time, reference-locked multi-shot cutscenes with a held-frame fallback (ambient loops only as an optional mood layer), a cost gate and provider-neutral ledgers for generated cutscenes, music and sound, and the checks for silent branches, timer pauses, hotspot alignment and per-option cutscenes ([decision note](.agents/notes/implemented/architecture/2026-11-04-interactive-film-skill-guidance.md)).
+- The Jin Ping Mei example becomes an interactive film: 58 voiced, multi-shot cutscenes act out what each choice changes (every option at the choice points that echo later, the route turning points, and all 16 endings), with the lines as timed subtitles and a gallery tab to rewatch them; four public quarrels are timed with written silent branches, two scenes let you study the picture for a clue that unlocks a line, the rainy night has a hold-to-shield-the-lamp action, key choices stamp who will remember them, and a story tree replays any reached chapter. All of its script was rewritten for a less machine-made voice, then edited again to cut melodramatic aphorisms and awkward lines from the story and the interface ([decision note](.agents/notes/implemented/feature/2026-11-04-jin-ping-mei-interactive-film.md)).
+- The Jin Ping Mei score was regenerated in a Jiangnan sizhu and Kunqu style led by sustained winds, bowed strings and sheng, after the first, pluck-heavy version sounded sharp, choppy and closer to Japanese koto music; each track's softest take was picked by measured pluck density and brightness, and the click and choice sounds are no longer plucked notes.
+
+### Changed
+
+- All three example games play generated folk-instrument and orchestral scores and recorded-style sound effects instead of synthesized tones, and fall back to the old synthesis when a file cannot play. Each example lists its audio in `build/art/audio-assets.json`.
+
 ## [0.6.1] - 2026-10-20
 
 ### Changed

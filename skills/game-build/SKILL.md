@@ -37,7 +37,7 @@ BUILD_BRIEF 只压缩产品边界、必须保真的体验事实、运行方式�
 - 采用生成式自由输入、知识权限、事件回放、存档迁移或 `signature_command` 时，读取
   [playable-model-contract.md](references/playable-model-contract.md) 的相关部分。
 - 语音策略不是 `none` 时读取 [tts-production-contract.md](references/tts-production-contract.md)。
-- 实际采用动态媒体时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。
+- 实际采用动态媒体（影像短片、生成的音乐或音效）时读取 [generative-media-pipeline.md](references/generative-media-pipeline.md)。
 - 2.5D 角色或物件需要多方向、多动作且身份一致的序列帧时，读取
   [baked-sprite-workflow.md](references/baked-sprite-workflow.md)。
 

@@ -1,5 +1,10 @@
-// 程序化丝竹：Web Audio 合成，零素材。五声音阶；笛箫（正弦＋揉音＋气声）与琵琶古筝（拨弦）。
-// AudioContext 不可用时整体静默，不影响游戏。
+// 声音：预录民乐曲目与音效（assets/audio，台账见 build/art/audio-assets.json）走 Web Audio 的同一组音量；
+// 文件读不出来时回落到程序化丝竹（五声音阶；笛箫与琵琶古筝的合成）。AudioContext 不可用时整体静默，不影响游戏。
+const BGM_FILES = ['title', 'daily', 'garden', 'tender', 'tension', 'night', 'sad', 'fate'];
+const SE_FILES = ['click', 'page', 'choice', 'chapter', 'ending', 'save', 'flare', 'gust'];
+const bgmSrc = (id) => `assets/audio/bgm/${id}.mp3`;
+const seSrc = (id) => `assets/audio/se/${id}.mp3`;
+const BGM_GAP = 1.6; // 曲子放完停一口气再从头来，不硬接循环
 const PENTA = [0, 2, 4, 7, 9];
 const BASE = 220;
 const freq = (degree, octave = 0) => {
@@ -38,6 +43,10 @@ class AudioEngine {
         this.seGain = this.ctx.createGain();
         this.bgmGain.connect(this.ctx.destination);
         this.seGain.connect(this.ctx.destination);
+        this.fileGain = this.ctx.createGain();
+        this.fileGain.connect(this.ctx.destination);
+        this.buffers = new Map();
+        for (const id of SE_FILES) this.loadSe(id);
         this.setVolumes(this.bgmVol * 100, this.seVol * 100);
         const pending = this.wanted;
         this.wanted = null;
@@ -50,15 +59,51 @@ class AudioEngine {
   setVolumes(bgm, se) {
     this.bgmVol = bgm / 100;
     this.seVol = se / 100;
+    this.ducked = false;
     if (!this.ctx) return;
     this.bgmGain.gain.setTargetAtTime(this.bgmVol * 0.32, this.ctx.currentTime, 0.1);
+    this.fileGain.gain.setTargetAtTime(this.bgmVol * 0.9, this.ctx.currentTime, 0.1);
     this.seGain.gain.setTargetAtTime(this.seVol * 0.5, this.ctx.currentTime, 0.05);
+  }
+
+  // 剧情过场有自己的声音：播放时把配乐压到三成，播完回到原来的音量
+  duck(on) {
+    if (!this.ctx || this.ducked === on) return;
+    this.ducked = on;
+    const k = on ? 0.3 : 1;
+    this.bgmGain.gain.setTargetAtTime(this.bgmVol * 0.32 * k, this.ctx.currentTime, 0.25);
+    this.fileGain.gain.setTargetAtTime(this.bgmVol * 0.9 * k, this.ctx.currentTime, 0.25);
   }
 
   play(id) {
     if (!this.ctx) { this.wanted = id; return; }
     if (this.track?.id === id) return;
     this.stop();
+    if (BGM_FILES.includes(id)) { this.playFile(id); return; }
+    this.playSynth(id);
+  }
+
+  // 预录曲目：<audio> 流式播放接进 Web Audio，淡入；读不出来就换成同名的合成曲
+  playFile(id) {
+    const el = new Audio(bgmSrc(id));
+    el.preload = 'auto';
+    const out = this.ctx.createGain();
+    out.gain.value = 0;
+    this.ctx.createMediaElementSource(el).connect(out).connect(this.fileGain);
+    const t = { id, out, el, file: true };
+    this.track = t;
+    el.addEventListener('ended', () => { t.again = setTimeout(() => { if (this.track === t) el.play().catch(() => {}); }, BGM_GAP * 1000); });
+    el.addEventListener('error', () => { if (this.track !== t) return; this.track = null; out.disconnect(); this.playSynth(id); }, { once: true });
+    el.play().then(() => out.gain.setTargetAtTime(1, this.ctx.currentTime, 0.4)).catch(() => {});
+  }
+
+  loadSe(id) {
+    const p = fetch(seSrc(id)).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject())).then((b) => this.ctx.decodeAudioData(b)).catch(() => null);
+    this.buffers.set(id, p);
+    p.then((buf) => this.buffers.set(id, buf));
+  }
+
+  playSynth(id) {
     const cfg = TRACKS[id];
     if (!cfg) return;
     const beat = 60 / cfg.bpm;
@@ -76,8 +121,9 @@ class AudioEngine {
     const t = this.track;
     this.track = null;
     if (!t || !this.ctx) return;
-    t.out.gain.setTargetAtTime(0, this.ctx.currentTime, 0.15);
-    setTimeout(() => t.out.disconnect(), 600);
+    t.out.gain.setTargetAtTime(0, this.ctx.currentTime, t.file ? 0.35 : 0.15);
+    clearTimeout(t.again);
+    setTimeout(() => { t.out.disconnect(); t.el?.pause(); }, t.file ? 1600 : 600);
   }
 
   // 一轮乐句展开成按时间排好的音符表；调度时一次只订一个音，前瞻 1.5 秒
@@ -103,7 +149,7 @@ class AudioEngine {
 
   schedule() {
     const t = this.track;
-    if (!t || !this.ctx || !t.events.length) return;
+    if (!t || !this.ctx || !t.events?.length) return;
     const now = this.ctx.currentTime;
     // 后台标签页回来时，不补订已经过去的音，免得一齐炸响
     if (t.loop + t.events[t.idx].at < now) t.loop = now + 0.05 - t.events[t.idx].at;
@@ -168,6 +214,14 @@ class AudioEngine {
 
   se(name) {
     if (!this.ctx) return;
+    const buf = this.buffers.get(name);
+    if (buf instanceof AudioBuffer) {
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.fileSe ??= this.makeFileSe());
+      src.start();
+      return;
+    }
     const t = this.ctx.currentTime + 0.01;
     const out = this.seGain;
     if (name === 'click') this.block(t, 900, 0.05, 0.12, out);
@@ -176,6 +230,16 @@ class AudioEngine {
     else if (name === 'chapter') { this.pluck(freq(0, 0), t, 1.6, 0.2, out); this.pluck(freq(4, 0), t + 0.12, 1.6, 0.16, out); this.pluck(freq(7, 0), t + 0.24, 2, 0.14, out); }
     else if (name === 'ending') { for (const [d, o, dt] of [[0, 1, 0], [4, 1, 0.02], [0, 0, 0.04]]) this.di(freq(d, o), t + dt, 3, 0.12, out); }
     else if (name === 'save') { this.pluck(freq(2, 1), t, 0.4, 0.15, out); this.pluck(freq(4, 1), t + 0.07, 0.5, 0.12, out); }
+    else if (name === 'flare') this.pluck(freq(4, 1), t, 0.8, 0.14, out);
+    else if (name === 'gust') this.block(t, 220, 0.4, 0.08, out);
+  }
+
+  // 预录音效比合成音响得多，单走一路，跟着「音效」音量走
+  makeFileSe() {
+    const g = this.ctx.createGain();
+    g.gain.value = 0.8;
+    g.connect(this.seGain);
+    return g;
   }
 }
 

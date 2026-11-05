@@ -103,8 +103,12 @@ captions and shape/motion redundancy carry every critical rule.
   from a timely shot; it never clips or hovers.
 - Plate insertion, shutter, glass handling, wing calls, cover contact, rifle report,
   distant answer and Fort gate each have distinct local sounds.
-- Music is sparse and subordinate to route and threat audio. Captions identify important
-  off-screen sounds without narrating emotion.
+- Music is sparse and subordinate to route and threat audio: one restrained 1912 expedition
+  score rises only with search and attack. Captions identify important off-screen sounds
+  without narrating emotion.
+- Beds (brook, insects, wind), cues and the score are generated recordings listed in
+  `build/art/audio-assets.json`; each falls back to its synthesized version if the file
+  cannot play, so captions and cue timing never depend on the recording.
 
 ## Signature moments
 
