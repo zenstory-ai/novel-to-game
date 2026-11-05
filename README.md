@@ -76,6 +76,8 @@ The skills run on your coding agent's model and organize adaptation into stages.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
 
+Interactive film builds on that track: a text adventure crossed with a short drama. After each choice that matters later, a short cutscene acts out what the choice changed, and the next lines are read over its last frame. Every option at such a choice gets its own cutscene, and moving stills do not count as one. The skills budget cutscenes per choice and option and write them as storyboards. Generation waits until the rest of the game is finished and goes through a ledger that names no provider. With video off or missing, the game is still fully playable on still frames ([interactive film method](skills/game-world-design/references/interactive-film-method.md), [cutscene production](skills/game-build/references/cutscene-production.md), both in Chinese). The Jin Ping Mei example above is built this way.
+
 ## Install
 
 ### One command per agent
@@ -333,6 +335,10 @@ The design documents are engine-agnostic Markdown you own. The target runtime yo
 ### I asked for an interactive story and got cards, rounds, and a stat panel. How do I get scenes, dialogue, and key choices instead?
 
 Say so in the request, as the second example above does. That locks `experienceProfile: narrative-led` in the product brief, and the profile carries through concept, design, art, build, and QA. The design method records each key choice as concrete words and deeds, an immediate reaction, and a persistent fact with the later scene that reads it, not a hidden score. This track was added after a reader showed us exactly this failure in [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17); see [`game-concept`](skills/game-concept/SKILL.md) and the [narrative design method](skills/game-world-design/references/narrative-design-method.md) (both in Chinese).
+
+### I want an interactive film. How do I get cutscenes after choices instead of moving pictures?
+
+Ask for an interactive film, and say how many choices should get cutscenes if budget matters. The design stage then lists which choice points get a cutscene and what each option's cutscene shows, and the build makes one representative clip before generating the rest. Video generation needs a provider in your agent's environment; the repository only keeps the ledger, prompts and finished files.
 
 ### How long does a full run take, and what does it cost?
 
