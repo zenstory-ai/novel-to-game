@@ -114,7 +114,7 @@ test('火兵退路先于沙僧格挡消费，沙僧仍可挡下一次', () => {
   assert.equal(state.guideUsed.shaGuard, true);
 });
 
-test('放归火骝退还配装且重复放归不重复结算', () => {
+test('放归火妖退还配装且重复放归不重复结算', () => {
   const campaign = {
     pets: [{ key: 'huobao', active: true }, { key: 'pixie', active: false }],
     gear: { huobao: { weapon: 'bintie', armor: 'xipijia' } },

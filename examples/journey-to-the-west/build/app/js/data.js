@@ -130,7 +130,7 @@ export const PARTY = {
     recommendedAlloc: { 灵: 3, 速: 1, 体: 1 },
   },
   huobao: {
-    key: 'huobao', name: '赤焰火骝', element: '火', portrait: 'mob_fire1', crit: 0.12, isPet: true,
+    key: 'huobao', name: '赤焰火妖', element: '火', portrait: 'mob_fire1', crit: 0.12, isPet: true,
     base: { hp: 470, mp: 70, atk: 82, def: 42, spd: 74, mag: 74 },
     growth: { hp: 56, mp: 4, atk: 9, def: 4, spd: 4, mag: 8 },
     skills: { 1: ['huolian'], 2: ['fenye'], 3: ['chiyan'] },

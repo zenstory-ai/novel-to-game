@@ -85,7 +85,7 @@ class FireTroopBrowserTests(unittest.TestCase):
     def captured_firetroop_fixture(
         base: dict[str, object], *, pending: bool = True
     ) -> dict[str, object]:
-        """火兵战已收服火骝并落盘，尚未找土地看残图。"""
+        """火兵战已收服火妖并落盘，尚未找土地看残图。"""
         campaign = copy.deepcopy(base)
         campaign["stage"] = "treasure_fire"
         campaign["world"] = {"scene": "huokou"}

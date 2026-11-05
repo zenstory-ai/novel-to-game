@@ -1,7 +1,7 @@
 // 战斗界面：经典对阵(敌左上斜列、我右下斜列)、行动顺序条、指令菜单、飘字动画。
 // 界面只渲染与收集指令，一切数值结算走 engine。
 
-import { SKILLS, FORMATIONS, GROWTH, SP, FORMS } from './data.js';
+import { SKILLS, FORMATIONS, GROWTH, SP, FORMS, PARTY } from './data.js';
 import {
   createBattle, executeRound, buildActionQueue, aliveUnits, getUnit,
   effStat, levelUpParty, switchFormation, displaySnapshot,
@@ -595,13 +595,15 @@ export async function runBattleScreen(ctx) {
         }
         rows.push(row);
       }
+      for (const key of state.caught) rows.push(el('p', 'lv-growth-note loot', `收服召唤兽：${PARTY[key]?.name ?? key}`));
       if (ctx.victoryLines) {
         // 日常封妖：战利品清单(历练折算升级回到场景后结算)
         for (const line of ctx.victoryLines) rows.push(el('p', 'lv-growth-note loot', `· ${line}`));
       } else if (finalBattle) {
         rows.push(el('p', 'lv-growth-note final', '平天大圣已伏。真扇在手，该去熄灭八百里火焰。'));
       } else {
-        rows.push(el('p', 'lv-growth-note', `每位参战伙伴另得 ${GROWTH.pointsPerLevel} 点潜力与 ${GROWTH.skillPointsPerLevel} 点修炼。顶栏【角色】已留下朱印。`));
+        const where = Object.keys(ups).some((key) => PARTY[key]?.isPet) ? '【角色】和【召唤兽】' : '【角色】';
+        rows.push(el('p', 'lv-growth-note', `每位参战伙伴另得 ${GROWTH.pointsPerLevel} 点潜力与 ${GROWTH.skillPointsPerLevel} 点修炼，可在${where}里分配。`));
       }
       showModal(root, {
         id: 'modal-victory',

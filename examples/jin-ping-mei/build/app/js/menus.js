@@ -1,4 +1,4 @@
-// 覆盖层菜单：回看记录、存读档、设置、系统菜单与心意、剧情树、鉴赏（CG／过场／回想／音乐／结局）、退出。
+// 覆盖层菜单：回看记录、存读档、设置、系统菜单与心意、剧情树、鉴赏（CG／过场／回想／音乐／结局）。
 import { CAST, CG, CUT, MUSIC, ENDINGS, ENDING_KIND } from './story/index.js';
 import { HEROINES, ROUTE_MIN } from './adv.js';
 import { config, saveConfig, global, loadSaves, deleteSave, loadNodes, SLOT_PAGES, SLOTS_PER_PAGE, DEFAULT_CONFIG } from './store.js';
@@ -82,7 +82,6 @@ function render() {
   else if (current === 'peek') o.innerHTML = frame('心意', peekHtml());
   else if (current === 'tree') o.innerHTML = frame('剧情树', treeHtml(), '', 'tall');
   else if (current === 'extras') o.innerHTML = frame('鉴赏', extrasHtml(), tabsHtml(), 'tall');
-  else if (current === 'exit') o.innerHTML = `<div class="panel small"><h2>已离开</h2><p>浏览器不允许网页自行关闭窗口，你可以直接关掉这个标签页。</p><div class="row"><button class="btn primary" data-act="close">回到标题</button></div></div>`;
   else if (current === 'confirm') o.innerHTML = `<div class="panel small"><p>${confirmState.text}</p><div class="row"><button class="btn primary" data-act="yes">确定</button><button class="btn" data-act="close">取消</button></div></div>`;
   else if (current === 'cutview') { o.innerHTML = `<figure class="cgview cutview"><div class="cg-frame"></div><figcaption>${CUT[viewing].name}　·　<button class="btn" data-act="close">返回</button></figcaption></figure>`; playCutInto(o.querySelector('.cg-frame'), viewing); }
   else if (current === 'cgview') o.innerHTML = `<figure class="cgview" data-act="view"><div class="cg-frame"><img class="${cgClass(viewing)}" src="${CG[viewing].src}" alt="${CG[viewing].name}"></div><figcaption>${CG[viewing].name}　·　← → 翻看　点中间关闭</figcaption></figure>`;
@@ -105,9 +104,10 @@ function slotsHtml() {
     const locked = current === 'save' && (id === 'auto' || !ingame() || story.replay);
     return `<button class="slot ${s ? '' : 'empty'}" data-slot="${id}" ${(current === 'load' && !s) || locked ? 'disabled' : ''}>
       <span class="thumb" ${s?.thumb ? `style="background-image:url(${s.thumb})"` : ''}>${s ? '' : '空'}</span>
+      ${s && id !== 'auto' ? `<span class="slot-del" role="button" data-del="${id}" aria-label="删除这份存档">删</span>` : ''}
       <span class="meta"><b>${slotName(id)}</b><em>${s ? s.chapter : '——'}</em><small>${s ? s.date : ''}</small><q>${s?.text ?? ''}</q></span>
     </button>`;
-  }).join('')}</div><p class="count slot-hint">右键点一份存档，可以删掉它。</p>`;
+  }).join('')}</div><p class="count slot-hint">点存档右上角的「删」可以删掉它，桌面上也可以右键。</p>`;
 }
 
 // ---------- 设置 ----------
@@ -265,6 +265,8 @@ function stepCg(dir) {
 }
 
 overlay().addEventListener('click', async (e) => {
+  const del = e.target.closest('[data-del]');
+  if (del) { e.stopPropagation(); audio.se('click'); confirmBox(`删除 ${slotName(del.dataset.del)} 的存档？`, () => { deleteSave(del.dataset.del); backMenu(); }); return; }
   const t = e.target.closest('button, figure');
   if (!t) return;
   audio.se('click');

@@ -29,7 +29,6 @@ export function createBattleAnimator({
   sync,
   showActing,
 }) {
-  let transformHinted = false;
   let sawFinisher = false;
   let prevQueue = [];
   let jumpedIds = [];
@@ -666,15 +665,6 @@ export function createBattleAnimator({
       sync(ev); // 每个事件播完，画面就停在它发生后的样子
       // 速度变化(生风/变化/换阵/增益到期)后立即重排顺序条
       if (['buff', 'transform', 'form_end', 'formation', 'buff_end'].includes(ev.t)) renderOrderBar();
-      // 教学提示：罗刹女体弱 → 提示变化
-      if (!transformHinted && state.def.transformFinisher && ev.t === 'damage') {
-        const fin = state.def.transformFinisher;
-        const boss = state.units.find((x) => x.side === 'enemy' && x.defKey === fin.bossKey);
-        if (boss && boss.alive && boss.hp / boss.maxHp <= fin.hpBelow) {
-          transformHinted = true;
-          toast(root, TEXT.tutorial.hintTransform, 4200);
-        }
-      }
     }
   }
 

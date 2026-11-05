@@ -43,8 +43,10 @@ body:not(.phase-world) .world-hud { display: none; }
 .hud-tracker { position: absolute; right: 12px; top: 104px; width: 252px; padding: 6px; }
 /* 收起时仍留主线一行(可点寻路);已接的封妖令留一行坐标，其余说明与日常收起 */
 .hud-tracker.collapsed .hud-quest:not(.main),
-.hud-tracker.collapsed .hud-quest-text,
-.hud-tracker.collapsed .hud-quest-go { display: none; }
+.hud-tracker.collapsed .hud-quest-text { display: none; }
+/* 收起时「点击自动寻路」缩到标题同一行右侧，仍看得出这一行能点 */
+.hud-tracker.collapsed .hud-quest.main:not(.static) { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+.hud-tracker.collapsed .hud-quest-go { margin: 0 0 0 auto; }
 .hud-quest-brief { display: none; font-size: 14px; color: #9fe3ff; }
 .hud-tracker.collapsed .hud-quest.live { display: block; }
 .hud-tracker.collapsed .hud-quest.live .hud-quest-title { display: none; }
@@ -95,6 +97,8 @@ body.phase-world .topbar-sep,
 body.phase-world .topbar-spacer { display: none; }
 body.phase-world .topbar-btn { flex-direction: column; min-height: 0; padding: 2px 6px; gap: 2px; border: 0; color: #f2e6cc; font-size: 12px; background: transparent; }
 body.phase-world .topbar-btn .topbar-icon { width: 44px; height: 44px; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .4)); }
+/* 右下图标栏打开的面板在场时，图标栏浮在遮罩之上，点别的图标直接换面板；面板里再弹的小窗不受影响 */
+body.phase-world.dock-panel-open:not(:has(.panel-overlay-nested)) #topbar { z-index: 70; }
 body.phase-world .topbar-btn:hover, body.phase-world .topbar-btn.open { color: #ffd86a; background: transparent; }
 body.phase-world .topbar-dropdown { top: auto; bottom: 64px; }
 body.phase-world .topbar-dropdown .topbar-btn { flex-direction: row; color: #414244; }
@@ -102,7 +106,8 @@ body.phase-world .toast { top: 18%; }
 
 /* NPC 对话菜单 */
 .npc-menu { position: absolute; left: 50%; bottom: 70px; transform: translateX(-50%); z-index: 52; width: min(780px, calc(100% - 32px)); display: flex; align-items: flex-end; gap: 0; }
-.npc-menu-face { width: 210px; height: 300px; object-fit: contain; object-position: bottom; margin-right: -26px; filter: drop-shadow(4px 6px 6px rgba(0, 0, 0, .4)); position: relative; z-index: 1; }
+/* 头像同对白一样取半身，下缘淡出 */
+.npc-menu-face { width: 210px; height: 250px; object-fit: cover; object-position: center top; margin-right: -26px; -webkit-mask-image: linear-gradient(180deg, #000 75%, transparent); mask-image: linear-gradient(180deg, #000 75%, transparent); filter: drop-shadow(4px 6px 6px rgba(0, 0, 0, .4)); position: relative; z-index: 1; }
 .npc-menu-body { flex: 1; padding: 18px 22px 14px 40px; background: rgba(255, 249, 238, .97); border-top: 3px solid #be4b30; box-shadow: 0 12px 40px rgba(0, 0, 0, .35); }
 .npc-menu-name { color: #a53925; font-size: 21px; letter-spacing: 3px; margin-bottom: 8px; }
 .npc-menu-text { color: #263f37; font-size: 17px; line-height: 1.8; margin-bottom: 10px; }
@@ -237,7 +242,7 @@ body.dlg-open .hud-hint, body.modal-open .hud-hint { display: none; }
   .hud-tracker { top: auto; bottom: 96px; left: 12px; right: 12px; width: auto; }
   body.phase-world #topbar { left: 8px; right: 8px; bottom: 22px; justify-content: space-around; }
   body.phase-world .topbar-btn .topbar-icon { width: 32px; height: 32px; }
-  .npc-menu-face { width: 120px; height: 180px; }
+  .npc-menu-face { width: 120px; height: 150px; }
   .hud-hint { top: 132px; width: calc(100% - 24px); font-size: 13px; border-radius: 12px; }
   body.phase-world .topbar-btn { white-space: nowrap; font-size: 11px; padding: 2px 3px; }
 }

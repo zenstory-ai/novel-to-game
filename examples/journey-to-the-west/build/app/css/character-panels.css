@@ -575,3 +575,5 @@ button:disabled {
   .quest-track { justify-self: start; }
   .panel-status-strip { justify-content: flex-start; }
 }
+
+.skill-cell-desc { color: var(--panel-ink, #293d38); font-size: 13px; line-height: 1.45; }

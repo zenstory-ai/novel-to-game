@@ -123,7 +123,7 @@ class BrowserPath:
             ("猪八戒", "p1"),
             ("沙悟净", "p2"),
             ("辟水金睛兽", "p3"),
-            ("赤焰火骝", "p3"),
+            ("赤焰火妖", "p3"),
         ):
             if name in status:
                 return unit_id

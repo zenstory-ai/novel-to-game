@@ -514,7 +514,7 @@ function execItem(state, events, actor, itemKey, targetId) {
     if (chance(state.catchRng, 0.65)) {
       t.alive = false;
       state.caught.push(t.catchKey);
-      events.push({ t: 'caught', actor: actor.id, target: t.id, key: t.catchKey, name: t.name });
+      events.push({ t: 'caught', actor: actor.id, target: t.id, key: t.catchKey, name: PARTY[t.catchKey]?.name ?? t.name });
     } else {
       events.push({ t: 'catch_fail', actor: actor.id, target: t.id });
     }

@@ -545,14 +545,16 @@ body.phase-world .hud-chat.collapsed .hud-chat-log { height: 20px; margin: 0; pa
 /* 战斗中只留「设置」:队伍按钮由战场自己的阵型钮与指令代替 */
 body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
 
-@media (max-height: 820px) {
-  /* 矮屏:法术/道具/特技菜单排成五列网格,「返回」固定在第一格,不会被挤出指令台 */
-  .cmd-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; align-content: start; }
-  .cmd-list .cmd-item { min-height: 52px; min-width: 0; padding: 5px 9px; }
-  .cmd-list > .cmd-btn[data-cmd="back"] { order: -1; min-height: 52px; }
-  .cmd-item-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-  .cmd-item-meta { font-size: 10.5px; line-height: 1.35; }
+/* 法术/道具/特技二级菜单：按宽度自动排列，放不下就在指令台里滚动;
+   「返回」在第一格，能用的排在灰掉的前面(battle_commands.js mountList)，不必往下翻也点得到 */
+.cmd-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 6px;
+  align-content: start; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
 }
+.cmd-list .cmd-item { min-height: 52px; min-width: 0; padding: 5px 9px; }
+.cmd-list > .cmd-btn[data-cmd="back"] { min-height: 52px; }
+.cmd-item-name { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cmd-item-meta { font-size: 10.5px; line-height: 1.35; }
 
 @media (max-width: 1360px) {
   .cmd-status { width: 30%; }
@@ -585,6 +587,7 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
   .topbar-sep,
   .topbar-spacer { display: none; }
   .topbar-group { flex: 1; justify-content: space-around; gap: 4px; }
+  .topbar-group:last-child { flex: none; } /* 设置只占自己一格，图标之间不留空列 */
   .topbar-btn {
     flex: 1;
     min-width: 0;
@@ -647,8 +650,8 @@ body.phase-battle #topbar .topbar-group:not(:last-child) { visibility: hidden; }
   .cmd-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
   .cmd-btn { min-height: 48px; font-size: 13px; letter-spacing: 1px; gap: 4px; padding: 5px 2px; }
   .command-icon { width: 28px; height: 28px; }
-  .cmd-list { gap: 5px; }
-  .cmd-item { flex: 1 1 46%; padding: 7px 9px; }
+  .cmd-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .cmd-list .cmd-item, .cmd-list > .cmd-btn[data-cmd="back"] { min-height: 46px; padding: 4px 8px; }
   .wuxing-ring {
     position: static;
     grid-column: 2;

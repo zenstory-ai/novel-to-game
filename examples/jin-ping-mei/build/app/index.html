@@ -8,12 +8,14 @@
   <title>金瓶梅·风月总账</title>
   <link rel="icon" href="data:," />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="preload" as="image" href="assets/cg/group/title_new_guofeng.webp" />
 </head>
 <body>
   <div id="app">
     <section id="gate" class="screen" hidden>
       <div class="gate-card">
         <div class="gate-seal">18+</div>
+        <p class="gate-game">《金瓶梅·风月总账》</p>
         <h1>本作仅限成年人</h1>
         <p>本作仅供成年人游玩，内容含成人恋爱关系、轻度裸露、亲密场景与成熟主题。可进入亲密场景的人物，均为虚构的成年角色。</p>
         <div class="gate-actions">
@@ -37,9 +39,8 @@
         <button data-act="load">读取</button>
         <button data-act="extras">鉴赏</button>
         <button data-act="config">设置</button>
-        <button data-act="exit">退出</button>
       </nav>
-      <p class="title-foot">18+ · 古风恋爱互动影游 · 点击画面继续</p>
+      <p class="title-foot">18+ · 古风恋爱互动影游</p>
     </section>
 
     <section id="game" class="screen" hidden>
@@ -60,6 +61,8 @@
           <span id="hint" hidden>点击画面或按空格继续 · 右键隐藏文字 · 滚轮上翻回看</span>
         </div>
         <nav id="quickmenu" aria-label="快捷菜单">
+          <button data-act="peek">心意</button>
+          <button data-act="tree">剧情树</button>
           <button data-act="backlog">回看</button>
           <button data-act="rollback">上一选项</button>
           <button data-act="qsave">快存</button>
