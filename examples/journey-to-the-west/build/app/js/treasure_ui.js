@@ -35,7 +35,7 @@ const KIND_COPY = {
 // 探路者一人一句大白话(详细规则在 treasure.js 的 HUNT_GUIDES)
 const GUIDE_PLAIN = {
   wukong: { short: '悟空', line: '悟空：深层能看穿哪一格是妖穴' },
-  bajie: { short: '八戒', line: '八戒：每层白挖一格' },
+  bajie: { short: '八戒', line: '八戒：每层第一掘顺手多翻开一格' },
   sha: { short: '沙僧', line: '沙僧：替你挡一次妖气' },
 };
 
@@ -84,7 +84,7 @@ function resultBody(result) {
     el('div', 'hunt-result-row', `道具：${itemsText(result.items)}`),
     el('div', 'hunt-result-row', `残简：${result.relics} · 化作 ${growth.potentialPoints} 点潜力`),
   ];
-  if (growth.skillPoints) nodes.push(el('div', 'hunt-result-row rare', `深探心得：${HUNT_GUIDES[growth.unit].name} 修炼点 +${growth.skillPoints}`));
+  if (growth.skillPoints) nodes.push(el('div', 'hunt-result-row rare', `深探心得：${GUIDE_PLAIN[growth.unit].short} 修炼点 +${growth.skillPoints}`));
   return nodes;
 }
 

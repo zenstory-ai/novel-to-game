@@ -1,9 +1,9 @@
 // 入口：年龄门 → 标题 → 影游主循环（打字机、自动、快进、隐藏、回看、快存快读、上一选项、限时抉择、察言观色、按住动作、
 // 「她记下了」、剧情树节点）。菜单界面在 menus.js。
 import { parseScript, Story, HEROINES } from './adv.js';
-import { SCRIPT_SOURCES, CAST, SPEAKERS, CG, CUT, ENDINGS, ENDING_KIND, FATES } from './story/index.js';
+import { SCRIPT_SOURCES, CAST, SPEAKERS, CG, CUT, ENDINGS, ENDING_KIND, FATES, EXPRESSIONS } from './story/index.js';
 import { config, global, saveGlobal, ageConfirmed, confirmAge, writeSave, loadSaves, latestSave, writeNode } from './store.js';
-import { syncStage, resetStage, thumbnail, shake, flash, refreshCg, setVeilHook, cgRect, attachFilm, cutVideo } from './stage.js';
+import { syncStage, resetStage, thumbnail, shake, flash, refreshCg, setVeilHook, cgRect, attachFilm, cutVideo, spriteSrc } from './stage.js';
 import { audio } from './audio.js';
 import { openMenu, closeMenu, backMenu, confirmBox, menuOpen, closedAt, pushBacklog, clearBacklog, backlogTail } from './menus.js';
 import { startPetals, stopPetals } from './petals.js';
@@ -46,7 +46,24 @@ const tellOnce = (key, text) => { if (!told.has(key)) { told.add(key); toast(tex
 const choiceStack = []; // 本次游玩经过的选择处，供「上一选项」回退；不落盘
 
 // 剧情树用的章节表：按剧本顺序，路线章节归到那位女主名下
-export const chapterList = () => Object.values(labels).flat().filter((c) => c.t === 'chapter').map((c) => ({
+// 按玩家实际走到的先后排：从开头沿跳转与选项深度优先走一遍，章节第一次出现的次序就是剧情次序
+// （剧本按文件分，一条路线的章节可能分在不同文件里，按文件顺序会排错）
+const playOrder = (() => {
+  const seen = new Set();
+  const chapters = [];
+  const visit = (label) => {
+    if (seen.has(label) || !labels[label]) return;
+    seen.add(label);
+    for (const c of labels[label]) {
+      if (c.t === 'chapter') chapters.push(c);
+      if (c.t === 'branch') for (const h of HEROINES) visit(`${h}_route`);
+      for (const t of [c.target, c.miss, ...(c.options ?? []).map((o) => o.target)].filter(Boolean)) visit(t);
+    }
+  };
+  visit('start');
+  return chapters;
+})();
+export const chapterList = () => playOrder.map((c) => ({
   key: c.sub ? `${c.title} · ${c.sub}` : c.title,
   title: c.title,
   sub: c.sub,
@@ -139,7 +156,17 @@ export function loadSnapshot(record, { keepStack = false } = {}) {
   if (ui.cur?.type === 'choice' && record.line) $('#text').textContent = paintLine(record.line);
 }
 
+// 进游戏时在空闲里把五人的全部表情差分拉进缓存：立绘第一次登场或换表情时不会空一下
+let spritesWarm = false;
+function warmSprites() {
+  if (spritesWarm) return;
+  spritesWarm = true;
+  const load = () => { for (const who of HEROINES) for (const expr of EXPRESSIONS) Object.assign(new Image(), { decoding: 'async', src: spriteSrc(who, expr) }); };
+  (window.requestIdleCallback ?? ((fn) => setTimeout(fn, 300)))(load);
+}
+
 function enterGame() {
+  warmSprites();
   stopModes();
   stopInteractions();
   setHidden(false);
@@ -248,17 +275,25 @@ function showSay(ev, instant) {
 function watchCue(ev) {
   clearInterval(ui.cueTimer);
   ui.cueTimer = null;
+  $('#game').classList.remove('cue-wait');
   if (!ev.cut || !cutVideo()) return;
   const next = CUT[ev.cut.id]?.cues?.[ev.cut.index + 1];
+  // 每句至少留够读完的时间（约每秒 8 字），影像到了时间点也等字幕读完再换；长句因此会比画面晚一点
+  const shownAt = now();
+  const readMs = Math.min(4500, Math.max(1500, ($('#text').textContent.length * 1000) / 8 + 500));
   ui.cueTimer = setInterval(() => {
     const v = cutVideo();
-    if (!v || ui.cur !== ev) { clearInterval(ui.cueTimer); ui.cueTimer = null; return; }
+    if (!v || ui.cur !== ev) { clearInterval(ui.cueTimer); ui.cueTimer = null; $('#game').classList.remove('cue-wait'); return; }
     const hold = menuOpen() || document.hidden;
     if (hold && !v.paused) { v.pause(); v.dataset.held = '1'; }
     else if (!hold && v.dataset.held) { delete v.dataset.held; v.play?.().catch(() => {}); }
-    if (hold || ui.skip || ui.ctrl || next === undefined || v.currentTime < next) return;
+    // 字幕还会自己换句时不亮「点击推进」；影像播完、或下一句排在片尾之后，就交回给玩家点击
+    const autoNext = next !== undefined && !v.ended && !(v.duration && next >= v.duration);
+    $('#game').classList.toggle('cue-wait', autoNext && !ui.skip && !ui.ctrl);
+    if (hold || ui.skip || ui.ctrl || !autoNext || v.currentTime < next || now() - shownAt < readMs) return;
     clearInterval(ui.cueTimer);
     ui.cueTimer = null;
+    $('#game').classList.remove('cue-wait');
     if (ui.typing) finishTyping();
     clearTimeout(ui.waitTimer);
     step();
@@ -306,7 +341,8 @@ export function advance(fromTimer = false) {
   if (ui.hidden) { if (!fromTimer) setHidden(false); return; }
   if (!fromTimer && locked()) { if (ui.cur.type === 'fate') revealFate(); return; }
   if (ui.typing) { finishTyping(); return; }
-  if (['choice', 'look', 'hold'].includes(ui.cur.type)) return;
+  if (ui.cur.type === 'look') { lookAdvance(); return; }
+  if (['choice', 'hold'].includes(ui.cur.type)) return;
   if (!fromTimer) audio.se('click');
   if (ui.cur.type === 'chapter' && fromTimer) lock(350); // 章节卡自己退场时，同一刻的点击不吞掉第一句
   if (ui.cur.type === 'chapter' || ui.cur.type === 'ending' || ui.cur.type === 'fate') hideCard();
@@ -451,6 +487,12 @@ function inspect(i) {
   typeText(paintLine(ui.line), config.textSpeed >= 100);
   $('#next-ind').classList.remove('on');
 }
+// 察言观色时，推进文字的点击、空格与回车也用在这里：没打完的字先打完；看满了就继续；还能看就提示怎么看
+function lookAdvance() {
+  if (ui.typing) { finishTyping(); $('#next-ind').classList.remove('on'); return; }
+  if (ui.look.left <= 0) endLook();
+  else tellOnce('look', '点画面上的框看细节；看够了点「不看了」');
+}
 function endLook() {
   if (ui.cur?.type !== 'look' || locked()) return;
   if (ui.typing) { finishTyping(); $('#next-ind').classList.remove('on'); return; }
@@ -480,13 +522,14 @@ function showHold(ev) {
   $('#next-ind').classList.remove('on');
   const layer = $('#hold');
   layer.innerHTML = `<div class="lamp" role="button" tabindex="0" aria-label="${ev.prompt}"><span class="ring"></span><span class="glass"><i class="flame"></i></span></div>
-    <p>${config.assist ? '动作辅助已打开，自动护住' : '按住鼠标、触屏或空格'}</p>`;
+    <p>${config.assist ? '动作辅助已打开，自动护住' : '按住鼠标、触屏或空格'}</p><small class="wind"></small>`;
   layer.hidden = false;
   $('#game').classList.add('holding');
   const h = { ms: ev.ms, progress: 0, elapsed: 0, idle: 0, started: false, holding: false, last: now(), raf: 0, done: false };
   ui.hold = h;
   const ring = layer.querySelector('.ring');
   const lamp = layer.querySelector('.lamp');
+  const wind = layer.querySelector('.wind');
   const tick = () => {
     const at = now();
     const dt = menuOpen() || document.hidden ? 0 : at - h.last;
@@ -502,6 +545,8 @@ function showHold(ev) {
       lamp.style.setProperty('--flame', String(holding ? 1 : Math.max(0.25, 1 - gust * 0.6)));
     }
     ring.style.setProperty('--p', h.progress.toFixed(4));
+    // 风一旦刮起来，就告诉玩家还剩多久：别让灯在读提示的时候不明不白地灭掉
+    if (h.elapsed > 0 && !config.assist) wind.textContent = `风还要刮 ${Math.max(0, Math.ceil((HOLD_WINDOW - h.elapsed) / 1000))} 秒`;
     lamp.classList.toggle('held', h.holding || config.assist);
     if (h.progress >= 1) return finishHold(true);
     if (h.elapsed >= HOLD_WINDOW) return finishHold(false);
@@ -626,7 +671,7 @@ function showFate(ev) {
 // 命数页还在逐行浮现时点了一下：整页一次显出，留在这一页
 function revealFate() {
   $('#card').classList.add('reveal');
-  ui.lockUntil = Math.min(ui.lockUntil, now() + 700);
+  ui.lockUntil = Math.min(ui.lockUntil, now() + 1500);
 }
 
 // ---------- 模式：自动、快进、隐藏 ----------
@@ -673,6 +718,8 @@ export function setHidden(on) {
 
 // ---------- 输入 ----------
 const quickActions = {
+  peek: () => { if (!story.replay) openMenu('peek'); },
+  tree: () => { if (!story.replay) openMenu('tree'); },
   backlog: () => openMenu('backlog'),
   rollback: () => askRollback(),
   qsave: () => saveTo('quick'),
@@ -702,7 +749,6 @@ function bindInput() {
     audio.se('click');
     if (act === 'new') newGame();
     else if (act === 'continue') { const latest = latestSave(); if (latest) loadSnapshot(latest[1]); }
-    else if (act === 'exit') openMenu('exit');
     else openMenu(act);
   });
   $('#quickmenu').addEventListener('click', (e) => {
@@ -715,7 +761,7 @@ function bindInput() {
     if (b) { e.stopPropagation(); choose(Number(b.dataset.index)); }
   });
   $('#game').addEventListener('click', (e) => {
-    if (e.target.closest('#quickmenu, #choices, #look, #hold')) return;
+    if (e.target.closest('#quickmenu, #choices, .spot, .look-foot, #hold')) return;
     advance();
   });
   $('#game').addEventListener('contextmenu', (e) => { e.preventDefault(); if (!menuOpen()) setHidden(!ui.hidden); });
@@ -735,7 +781,6 @@ function bindInput() {
     const spot = e.target.closest('.spot');
     if (spot) inspect(Number(spot.dataset.i));
     else if (e.target.closest('[data-act="look-done"]')) endLook();
-    else if (ui.typing) finishTyping();
   });
   $('#hold').addEventListener('click', (e) => e.stopPropagation());
   $('#hold').addEventListener('pointerdown', (e) => { e.preventDefault(); setHolding(true); });
@@ -764,7 +809,6 @@ function onKey(e) {
     if (!e.repeat) setHolding(true);
     return;
   }
-  if (ui.cur?.type === 'look' && e.key === 'Enter' && !e.target.closest?.('#look')) { e.preventDefault(); endLook(); return; }
   if (ui.cur?.type === 'choice' && /^[1-9]$/.test(e.key)) {
     const option = ui.shown[Number(e.key) - 1];
     if (option && !e.repeat) choose(option.i);

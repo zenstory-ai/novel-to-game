@@ -33,6 +33,12 @@ export function mainStep(c) {
   return { title: '携扇下山', text: '真扇到手。下翠云山回火焰山——路上像是有人来接。', here: '下山路上，有人迎面跑来。', scene: 'cuiyun', actor: 'fakeBajie' };
 }
 
+// 未开的路：悟空说一句为什么还不能去
+const LOCKED_PORTAL_LINES = {
+  huokou: '火口去不得，先把芭蕉扇借到手。',
+  jilei: '摩云洞还早，火口那边的事还没了。',
+};
+
 function portalLocked(c, to) {
   if (to === 'huokou') return !stageAtLeast(c, 'pre_fire');
   if (to === 'jilei') return !stageAtLeast(c, 'pre_yumian');
@@ -60,6 +66,16 @@ export function createHub(deps) {
   function say(id, name, line) {
     ctl.bark(id, line);
     if (line.replace(/[…\.。]/g, '').trim()) logLine('cur', `[${name}] ${line}`);
+  }
+  // NPC 菜单：选「闲聊」时这句话就写在同一个对话框里，菜单留着，可接着办事或告辞
+  async function npcMenuWithChat(id, menu) {
+    let text = menu.text;
+    for (;;) {
+      const pick = await npcMenu(app, { ...menu, text });
+      if (pick !== 'chat') return pick;
+      text = nextLine(id);
+      if (text.replace(/[…\.。]/g, '').trim()) logLine('cur', `[${menu.name}] ${text}`);
+    }
   }
   function dismissHint() {
     hud?.setHint(null);
@@ -243,7 +259,7 @@ export function createHub(deps) {
   function usePortal(id) {
     const p = SCENES[ctl.sceneId].portals[id];
     if (portalLocked(C(), p.to)) {
-      ctl.bark('player', '这条路还没打听清楚，先办眼前的事。');
+      ctl.bark('player', LOCKED_PORTAL_LINES[p.to] ?? '这条路还没打听清楚，先办眼前的事。');
       travel = null;
       return;
     }
@@ -370,11 +386,10 @@ export function createHub(deps) {
     options.push({ key: 'chat', label: '打听火焰山的来历' }, { key: 'leave', label: '告辞' });
     busy = true;
     ctl.setBusy(true);
-    const pick = await npcMenu(app, { who: 'tudi', name: '土地', text: b.accepted && !b.report ? '那火妖还在作乱，大圣辛苦。' : '炉砖里又钻出火妖来了。大圣若肯出手，小神这里有封妖令，收一只记一环，十环另有重谢。', options });
+    const pick = await npcMenuWithChat('tudi', { who: 'tudi', name: '土地', text: b.accepted && !b.report ? '那火妖还在作乱，大圣辛苦。' : '炉砖里又钻出火妖来了。大圣若肯出手，小神这里有封妖令，收一只记一环，十环另有重谢。', options });
     busy = false;
     ctl.setBusy(false);
     if (pick === 'main') return runStory(mainStep(C()));
-    if (pick === 'chat') say('tudi', '土地', nextLine('tudi'));
     if (pick === 'report') reportBounty();
     if (pick === 'accept') {
       spawnDemon();
@@ -457,14 +472,13 @@ export function createHub(deps) {
     const npc = SCENES[ctl.sceneId].npcs[id];
     busy = true;
     ctl.setBusy(true);
-    const pick = await npcMenu(app, {
+    const pick = await npcMenuWithChat(id, {
       who: npc.unit, name: npc.name,
       text: id === 'gaoshao' ? '客官，热糕、金疮药、法力丹，打妖怪的都备着！' : '火大铁好打。兵刃护甲，看看哪件趁手。',
       options: [{ key: 'shop', label: id === 'gaoshao' ? '买药' : '看看兵甲' }, { key: 'chat', label: '闲聊' }, { key: 'leave', label: '告辞' }],
     });
     busy = false;
     ctl.setBusy(false);
-    if (pick === 'chat') say(id, npc.name, nextLine(id));
     if (pick === 'shop') openShop(id);
   }
 
@@ -516,7 +530,8 @@ export function createHub(deps) {
     if (banterTimer > 29) {
       banterTimer = 0;
       // 拌嘴只挑跟当前场景对得上的(翠云山不说烫脚，火口不说卖糕)
-      const pool = PARTY_BANTER.filter((l) => !l.scene || l.scene.includes(ctl.sceneId));
+      // 只让此刻跟在身边的人开口(悟空独自下山时，留在后方的八戒不会在队伍频道里说话)
+      const pool = PARTY_BANTER.filter((l) => (!l.scene || l.scene.includes(ctl.sceneId)) && ctl.hasMember(l.who));
       if (pool.length) {
         const line = pool[banterIdx++ % pool.length];
         ctl.bark(line.who, line.text);

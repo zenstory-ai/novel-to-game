@@ -11,6 +11,26 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Fixed
+
+- Both example games were played end to end by an agent acting as a new player, and the issues it found are fixed ([decision note](.agents/notes/implemented/bug-fix/2026-11-05-example-new-player-audit-fixes.md)).
+  - Jin Ping Mei:
+    - every clue in the picture can be clicked, even where it sits under the caption bar, and clues show their names without hovering;
+    - once all looks are used, the usual click or space continues;
+    - the story tree lists each route's chapters in the order they are played;
+    - cutscene subtitles stay up long enough to read, and the "click to continue" mark only shows when a click is needed;
+    - long choices on phones no longer run under their badges;
+    - saves can be deleted on touch screens;
+    - the title screen no longer promises a click it does not handle.
+  - Journey to the West:
+    - seven lines where a bad batch replacement had turned the speaker's "I" into "I'll go too" now read in each character's own voice;
+    - the moment to turn into an insect is pointed out on the command bar, and every battle submenu fits on phones and desktops;
+    - the battle log can be opened while giving orders;
+    - several panel texts now match what the game does;
+    - dialogue portraits are half-length so they no longer duplicate the walking sprite;
+    - only party members who are actually present chat;
+    - panels can be switched directly from the icon bar.
+
 ## [0.7.0] - 2026-11-05
 
 ### Added

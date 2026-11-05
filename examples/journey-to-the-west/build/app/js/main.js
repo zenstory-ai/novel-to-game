@@ -142,15 +142,18 @@ let topbarCtl = null;
 let openPanelKey = null;
 let closeOpenPanel = null;
 
-function pendingGrowthTotal() {
-  const potential = Object.values(campaign.pendingPoints).reduce((sum, n) => sum + n, 0);
-  const practice = Object.values(campaign.skillPoints).reduce((sum, n) => sum + n, 0);
-  return potential + practice;
+// 未分配的潜力点与修炼点；不给 keys 时算全队(含召唤兽)
+function pendingGrowthTotal(keys = null) {
+  const sum = (points) => Object.entries(points)
+    .filter(([key]) => !keys || keys.includes(key))
+    .reduce((total, [, n]) => total + n, 0);
+  return sum(campaign.pendingPoints) + sum(campaign.skillPoints);
 }
 
 function refreshGrowthNotice() {
   const total = pendingGrowthTotal();
-  topbarCtl?.setHeroNotice(total);
+  topbarCtl?.setGrowthNotice('hero', pendingGrowthTotal(HERO_KEYS));
+  topbarCtl?.setGrowthNotice('pet', pendingGrowthTotal(campaign.pets.map((pet) => pet.key)));
   // 第一次出现朱印数字时，用一句话说明它是什么、怎么消掉
   if (total > 0 && phase === 'overworld' && !campaign.flags.growthHinted) {
     campaign.flags.growthHinted = true;
@@ -181,12 +184,16 @@ function togglePanel(key) {
     return;
   }
   closeOpenPanel?.();
+  topbarCtl?.closeSystem();
   openPanelKey = key;
   topbarCtl?.setOpen(key);
+  // 面板开着时右下图标栏仍可点：点别的图标直接换面板，不必先关
+  document.body.classList.add('dock-panel-open');
   const onClose = () => {
     if (openPanelKey === key) {
       openPanelKey = null;
       topbarCtl?.setOpen(null);
+      document.body.classList.remove('dock-panel-open');
     }
   };
   if (key === 'hero') closeOpenPanel = showHeroPanel(onClose);
@@ -388,7 +395,9 @@ function skillCells(key, onChange) {
     row.dataset.skillRow = `${key}:${sk}`;
     const skillHead = el('div', 'skill-cell-head');
     skillHead.append(artIcon('spell', 'skill-art'), el('span', 'skill-cell-name', raw.name), el('span', 'skill-rank', SKILL_RANK_LABELS[cur - 1] ?? `${cur}重`));
-    row.append(skillHead, el('span', 'skill-cell-delta', delta));
+    row.appendChild(skillHead);
+    if (raw.desc) row.appendChild(el('span', 'skill-cell-desc', raw.desc)); // 这门法术做什么
+    row.appendChild(el('span', 'skill-cell-delta', delta)); // 再修一重会变多少
     const actions = el('div', 'skill-actions');
     const plus = el('button', 'btn stat-btn wide', '投入修炼点');
     plus.type = 'button';
@@ -740,10 +749,8 @@ function setupTopbar() {
         buttons: [{ label: '关闭', id: 'btn-help-close', cancel: true }],
       });
     },
-    onMute: {
-      label: () => (audio.muted ? TEXT.topbar.soundOff : TEXT.topbar.soundOn),
-      toggle: () => { audio.unlock(); audio.toggleMuted(); },
-    },
+    onMute: () => { audio.unlock(); audio.toggleMuted(); },
+    onBeforeSystem: () => closeOpenPanel?.(),
   });
   refreshGrowthNotice();
 }
@@ -1033,9 +1040,10 @@ async function storyLuosha() {
     applyLevelUps(r1.levelUps ?? {}, true);
     await new Promise((res) => setTimeout(res, FAST ? 300 : 1600));
     await showDialog(app, TEXT.story.blowAway);
-    // 小须弥山：撤下芭蕉洞战场，换一片云雾笼着的山景再见灵吉
+    // 小须弥山：撤下芭蕉洞战场，只取翠云山画里左半边的云峰与瀑布(不露芭蕉洞门)，再罩一层云雾见灵吉
     app.querySelectorAll('.battle-root').forEach((n) => n.remove());
     setStoryBg('cuiyun', 'cloud-wash');
+    Object.assign(app.querySelector('.story-bg').style, { backgroundSize: 'auto 220%', backgroundPosition: '0% 28%' });
     await showDialog(app, TEXT.story.lingji);
     // 灵吉授宝二选一(定风丹/避火锦，规则型，全队法宝位 1 个;战斗外可在背包改选)
     campaign.treasure = await pickTreasure();
@@ -1258,11 +1266,11 @@ function endingEchoes() {
     echoes.push(`${guide}${choice}。`);
   }
   if (campaign.flags.firetroopDeal === 'keep') {
-    echoes.push('悟空留下了愿意收住野性的赤焰火骝，它随队走到了火根断绝。');
+    echoes.push('悟空留下了愿意收住野性的赤焰火妖，它随队走到了火根断绝。');
   } else if (campaign.flags.firetroopDeal === 'release') {
     echoes.push(hunt?.firetroopClueUsed
-      ? '被放归的火骝指出冷砖退路，那条线索替师徒避过了一次外层妖气。'
-      : '悟空解绳放归火骝；它指出的冷砖退路没有派上用场。');
+      ? '被放归的火妖指出冷砖退路，那条线索替师徒避过了一次外层妖气。'
+      : '悟空解绳放归火妖；它指出的冷砖退路没有派上用场。');
   }
   echoes.push(campaign.fanFooled
     ? '悟空也曾被老牛的变化骗回一局，最终从失扇处追回了真扇。'

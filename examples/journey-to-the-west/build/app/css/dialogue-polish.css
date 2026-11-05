@@ -6,13 +6,17 @@
     linear-gradient(0deg, rgba(25, 49, 43, .34), transparent 58%);
 }
 
+/* 对白立绘取半身(ART_DIRECTION「半身立绘入前景」)：只露到腰际、下缘淡出，
+   不会与场上同一人的全身小人并排成一大一小两个 */
 .dlg-portrait {
   left: 2%;
   bottom: 0;
   width: 40%;
-  height: 92%;
-  object-fit: contain;
-  object-position: center bottom;
+  height: 74%;
+  object-fit: cover;
+  object-position: center top;
+  -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent);
+  mask-image: linear-gradient(180deg, #000 76%, transparent);
   filter: drop-shadow(8px 10px 7px rgba(20, 46, 49, .24));
 }
 
@@ -167,8 +171,8 @@
     left: -4%;
     bottom: clamp(205px, 36vh, 310px);
     width: 72%;
-    height: min(57vh, 480px);
-    object-position: left bottom;
+    height: min(40vh, 340px);
+    object-position: center top;
   }
 
   .dlg-box,

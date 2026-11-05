@@ -46,6 +46,13 @@ export function createBattleCommands({
   }
   let plannedFanUses = 0;
   const fanStageNames = ['息火', '生风', '落雨'];
+  let finisherHinted = false;
+
+  // 化虫入腹的窗口：本场设了智取，且那位首领的气血已跌到门槛以下
+  function finisherOpen() {
+    const fin = state.def.transformFinisher;
+    return !!fin && aliveUnits(state, 'enemy').some((e) => e.defKey === fin.bossKey && e.hp / e.maxHp <= fin.hpBelow);
+  }
 
   function beginRound() {
     plannedFanUses = 0;
@@ -231,7 +238,8 @@ export function createBattleCommands({
     const enabled = all.filter((b) => !b.classList.contains('disabled'));
     if (all.length === 0) return;
     kbd = { all, enabled, idx: 0, cols: guessCols(enabled), escBtn };
-    if (enabled.length) focusKbd(0, false);
+    // 默认落在第一个真正的选项上，不落在「返回」
+    if (enabled.length) focusKbd(Math.max(0, enabled.findIndex((btn) => btn !== escBtn)), false);
   }
 
   function unbindKbd() {
@@ -340,7 +348,32 @@ export function createBattleCommands({
     if (battleLog.length > 12) battleLog.pop();
     renderLog();
   }
+  // 下指令时也能翻看上一回合的战报：左格角上一颗「战报」，点开在战场左下浮出最近十二条
+  const logPop = el('div', 'battle-log-pop');
+  logPop.id = 'battle-log-pop';
+  logPop.hidden = true;
+  field.appendChild(logPop);
+  function closeLogPop() {
+    logPop.hidden = true;
+    cmdStatus.querySelector('.battle-log-chip')?.setAttribute('aria-expanded', 'false');
+  }
+  function addLogChip() {
+    closeLogPop();
+    if (battleLog.length === 0) return;
+    const chip = el('button', 'btn battle-log-chip', `战报 ${battleLog.length}`);
+    chip.type = 'button';
+    chip.setAttribute('aria-expanded', 'false');
+    chip.setAttribute('aria-controls', 'battle-log-pop');
+    chip.addEventListener('click', () => {
+      if (!logPop.hidden) { closeLogPop(); return; }
+      logPop.replaceChildren(...battleLog.map((l) => el('div', `battle-report-line ${l.cls}`.trim(), l.text)));
+      logPop.hidden = false;
+      chip.setAttribute('aria-expanded', 'true');
+    });
+    cmdStatus.appendChild(chip);
+  }
   function showIdleBottom() {
+    closeLogPop();
     cmdMenu.innerHTML = '';
     clearStatus();
     const sc = el('div', 'battle-report');
@@ -484,6 +517,7 @@ export function createBattleCommands({
         if (autoAll) return { type: 'auto' };
       }
       setStatusFor(u);
+      addLogChip();
       highlightCommanding(u.id);
       const cmd = await menuFor(u);
       highlightCommanding(null);
@@ -537,6 +571,14 @@ export function createBattleCommands({
       // 人人可用愤怒特技;悟空另有七十二变
       attachPreview(bSp, () => [`${TEXT.battle.specialTip} · 愤怒 ${u.sp}/${SP.max}`]);
       bSp.onclick = () => specialMenu(u, resolve);
+      // 智取窗口开着时，外层【特技】与里面的蟭蟟虫同样描金，第一次轮到悟空时再提示一句
+      if (u.hasTransform && finisherOpen()) {
+        bSp.classList.add('counter');
+        if (!finisherHinted) {
+          finisherHinted = true;
+          toast(root, TEXT.tutorial.hintTransform, 5200);
+        }
+      }
       const bAuto = cmdButton(TEXT.commands.auto, 'auto');
       bAuto.title = TEXT.battle.autoTip;
       attachPreview(bAuto, () => [TEXT.battle.autoTip]);
@@ -605,6 +647,14 @@ export function createBattleCommands({
     });
   }
 
+  // 二级菜单统一排法：「返回」在第一格，能用的在前、灰掉的在后;放不下时指令台内滚动(见 CSS .cmd-list)
+  function mountList(wrap, back) {
+    wrap.prepend(back);
+    for (const item of [...wrap.querySelectorAll(':scope > .disabled')]) wrap.appendChild(item);
+    cmdMenu.appendChild(wrap);
+    bindKbd(wrap, { escBtn: back });
+  }
+
   function backButton(resolve) {
     const b = cmdButton(TEXT.commands.back, 'back');
     b.onclick = () => { cancelPick(); resolve(null); };
@@ -646,10 +696,7 @@ export function createBattleCommands({
       }
       wrap.appendChild(item);
     }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
+    mountList(wrap, backButton(resolve));
   }
 
   function itemMenu(u, resolve) {
@@ -689,10 +736,7 @@ export function createBattleCommands({
       };
       wrap.appendChild(item);
     }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
+    mountList(wrap, backButton(resolve));
   }
 
   async function specialMenu(u, resolve) {
@@ -702,8 +746,7 @@ export function createBattleCommands({
     cmdMenu.innerHTML = '';
     const wrap = el('div', 'cmd-list');
     const foes = aliveUnits(state, 'enemy');
-    const fin = state.def.transformFinisher;
-    const finisherOpen = !!fin && foes.some((e) => e.defKey === fin.bossKey && e.hp / e.maxHp <= fin.hpBelow);
+    const canFinish = finisherOpen();
     for (const [sk, st] of Object.entries(STUNTS)) {
       const item = el('button', 'btn cmd-item stunt');
       item.dataset.stunt = sk;
@@ -726,7 +769,7 @@ export function createBattleCommands({
       // 五行杠杆提示：该形态能克到场上哪个活敌
       const countered = foes.filter((e) => elementRelation(f.element, e.element) === 'ke');
       let hint = countered.length > 0 ? ` · 克${countered[0].element}·${countered[0].name}` : '';
-      if (fk === 'chongzi' && finisherOpen) hint = ' · 此刻可化虫入腹，一举取胜';
+      if (fk === 'chongzi' && canFinish) hint = ' · 此刻可化虫入腹，一举取胜';
       const item = el('button', 'btn cmd-item');
       item.dataset.form = fk;
       const nm = el('span', 'cmd-item-name', `${TEXT.commands.transform} · ${f.name}`);
@@ -734,19 +777,17 @@ export function createBattleCommands({
       item.append(nm, meta);
       item.title = f.desc;
       attachPreview(item, () => [`${f.name}:${f.desc}${hint}`]);
-      if (countered.length > 0 || (fk === 'chongzi' && finisherOpen)) item.classList.add('counter');
+      if (countered.length > 0 || (fk === 'chongzi' && canFinish)) item.classList.add('counter');
       item.onclick = () => resolve({ type: 'transform', formId: fk });
       wrap.appendChild(item);
     }
-    const back = backButton(resolve);
-    wrap.appendChild(back);
-    cmdMenu.appendChild(wrap);
-    bindKbd(wrap, { escBtn: back });
+    mountList(wrap, backButton(resolve));
   }
 
   function dispose() {
     cancelPick();
     autoChip.remove();
+    logPop.remove();
     window.removeEventListener('keydown', onGlobalKey);
     unbindKbd();
     hidePreview();

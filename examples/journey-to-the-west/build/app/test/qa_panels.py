@@ -430,7 +430,7 @@ class PanelBrowserTests(unittest.TestCase):
     def test_pet_selection_and_activation_persist_after_rebuild(self) -> None:
         self.install_rich_campaign()
         self.open_panel("btn-pet", "modal-pet")
-        self.page.get_by_label("查看赤焰火骝").click()
+        self.page.get_by_label("查看赤焰火妖").click()
         self.assertEqual(
             self.page.locator('#modal-pet .member-detail[data-pet="huobao"]').count(), 1
         )

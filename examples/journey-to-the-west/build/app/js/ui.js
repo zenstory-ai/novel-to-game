@@ -59,7 +59,7 @@ export function resetOverlayShading() {
   shadeGeneration += 1;
   modalDepth = 0;
   dlgDepth = 0;
-  document.body.classList.remove('modal-open', 'dlg-open');
+  document.body.classList.remove('modal-open', 'dlg-open', 'dock-panel-open');
 }
 
 // ---------- 剧情对话框 ----------
@@ -458,7 +458,7 @@ export function stampText(parent, text, cls = 'ke-stamp') {
 // ---------- 顶栏 ----------
 // 两组分工(简报一.3)：左侧队伍相关(角色/背包/召唤兽/阵型),
 // 右侧系统相关(存档/读档/音效/帮助)默认收进设置。
-export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute, onHero, onBag, onPet, onQuest }) {
+export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute, onHero, onBag, onPet, onQuest, onBeforeSystem }) {
   const bar = el('div', 'topbar');
   bar.id = 'topbar';
   const title = el('div', 'topbar-title', TEXT.gameTitle);
@@ -479,6 +479,9 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
   heroB.appendChild(heroNotice);
   const bagB = mk('bag', TEXT.topbar.bag, 'btn-bag', onBag);
   const petB = mk('pet', TEXT.topbar.pet, 'btn-pet', onPet);
+  const petNotice = el('span', 'topbar-notice');
+  petNotice.hidden = true;
+  petB.appendChild(petNotice);
   const formB = mk('formation', TEXT.topbar.formation, 'btn-formation', onFormation);
   const questB = mk('quest', TEXT.topbar.quest, 'btn-quest', onQuest);
   left.append(bagB, heroB, petB, questB, formB);
@@ -498,6 +501,7 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
   let closeSystem = null;
   const openSystem = () => {
     if (closeSystem) { closeSystem(); return; }
+    onBeforeSystem?.(); // 右下图标栏开着的面板先收起，设置直接顶上
     if (root.querySelector('.modal-mask')) return;
 
     const section = (title, description = '') => {
@@ -537,17 +541,19 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
       show();
       return row;
     };
-    const muteB = el('button', 'btn system-action');
+    // 静音与下方战斗偏好同一种开关：左边写管什么，右边写现在的状态
+    const muteB = el('button', 'btn pref-toggle');
     muteB.id = 'btn-mute';
     const refreshMute = () => {
-      muteB.textContent = onMute.label();
+      muteB.replaceChildren(el('span', 'pref-toggle-label', TEXT.topbar.mute), el('span', 'pref-toggle-value', audio.muted ? TEXT.topbar.on : TEXT.topbar.off));
+      muteB.classList.toggle('on', audio.muted);
       muteB.setAttribute('aria-pressed', String(audio.muted));
     };
-    muteB.addEventListener('click', () => { onMute.toggle(); refreshMute(); audio.sfx('click'); });
+    muteB.addEventListener('click', () => { onMute(); refreshMute(); audio.sfx('click'); });
     refreshMute();
     const volumeGrid = el('div', 'system-volume-grid');
-    volumeGrid.append(volRow('bgm', '音乐'), volRow('sfx', '音效'));
-    audioSection.append(volumeGrid, muteB);
+    volumeGrid.append(volRow('bgm', '音乐'), volRow('sfx', '音效'), muteB);
+    audioSection.append(volumeGrid);
 
     const battleSection = section('战斗偏好', '只影响演出速度和视觉反馈，不改变结算。');
     const toggle = (id, label, value, flip) => {
@@ -591,6 +597,7 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
     gameSection.appendChild(actions);
 
     gearB.classList.add('open');
+    document.body.classList.add('dock-panel-open');
     closeSystem = showPanel(root, {
       id: 'modal-system',
       title: TEXT.topbar.system,
@@ -598,6 +605,7 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
       onClose: () => {
         closeSystem = null;
         gearB.classList.remove('open');
+        document.body.classList.remove('dock-panel-open');
       },
     });
   };
@@ -611,12 +619,15 @@ export function buildTopbar(root, { onSave, onLoad, onFormation, onHelp, onMute,
     setOpen(key) {
       for (const [k, b] of Object.entries(panelBtns)) b.classList.toggle('open', k === key);
     },
-    setHeroNotice(total) {
+    closeSystem() { closeSystem?.(); },
+    // 角色与召唤兽各自的朱印：数字只算这一栏里能分配的点
+    setGrowthNotice(key, total) {
+      const [button, notice] = key === 'pet' ? [petB, petNotice] : [heroB, heroNotice];
       const n = Math.max(0, Number(total) || 0);
-      heroNotice.hidden = n === 0;
-      heroNotice.textContent = n > 9 ? '9+' : String(n);
-      heroB.classList.toggle('has-notice', n > 0);
-      heroB.title = n > 0 ? `尚有 ${n} 点潜力或修炼未分配` : '';
+      notice.hidden = n === 0;
+      notice.textContent = n > 9 ? '9+' : String(n);
+      button.classList.toggle('has-notice', n > 0);
+      button.title = n > 0 ? `尚有 ${n} 点潜力或修炼未分配` : '';
     },
   };
 }

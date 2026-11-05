@@ -105,12 +105,14 @@ export function runScene(ctx) {
   let hudClock = 1;
   function refreshHudRects() {
     const cr = canvas.getBoundingClientRect();
-    hudRects = [...document.querySelectorAll('.world-hud .hud-map, .world-hud .hud-cards, .world-hud .hud-tracker, .world-hud .hud-chat')]
+    // 右下图标栏与底边历练条也算 HUD：传送阵字、气泡与镜头避让都不压到它们下面
+    hudRects = [...document.querySelectorAll('.world-hud .hud-map, .world-hud .hud-cards, .world-hud .hud-tracker, .world-hud .hud-chat, .world-hud .hud-exp, #topbar')]
       .map((n) => n.getBoundingClientRect())
       .filter((r) => r.width > 0 && r.height > 0)
       .map((r) => ({ l: r.left - cr.left - 8, t: r.top - cr.top - 8, r: r.right - cr.left + 8, b: r.bottom - cr.top + 8 }));
   }
-  const hits = (box) => hudRects.some((h) => box.l < h.r && box.r > h.l && box.t < h.b && box.b > h.t);
+  const hudAt = (box) => hudRects.find((h) => box.l < h.r && box.r > h.l && box.t < h.b && box.b > h.t);
+  const hits = (box) => !!hudAt(box);
   const bias = { x: 0, y: 0 };
   let snapBias = true; // 进场第一帧直接到位,不从别处慢慢摇过来
   function baseCam() {
@@ -543,8 +545,22 @@ export function runScene(ctx) {
     g.fillText(text, x, y);
   }
 
+  // 名牌互不相压：两人站得近时，后画的那块往下让一格(随从停步时「猪八戒」「沙悟净」不再叠成一团)
+  let nameBoxes = [];
   function drawNames(e, color) {
-    const x = e.x - cam.x, y = e.y - cam.y;
+    const x = e.x - cam.x;
+    let y = e.y - cam.y;
+    g.font = 'bold 15px "Songti SC", "STSong", serif';
+    const w = Math.max(g.measureText(e.name).width, e.title ? g.measureText(e.title).width * 0.8 : 0) + 6;
+    const h = e.title ? 36 : 20;
+    const boxAt = (top) => ({ l: x - w / 2, r: x + w / 2, t: top, b: top + h });
+    for (let tries = 0; tries < 4; tries += 1) {
+      const box = boxAt(y + 6);
+      const clash = nameBoxes.find((o) => box.l < o.r && box.r > o.l && box.t < o.b && box.b > o.t);
+      if (!clash) break;
+      y = clash.b - 6 + 2;
+    }
+    nameBoxes.push(boxAt(y + 6));
     if (e.title) label(e.title, x, y + 6, '#9fd8ff', 12);
     label(e.name, x, y + (e.title ? 22 : 8), color, 15);
   }
@@ -572,7 +588,9 @@ export function runScene(ctx) {
     const geometry = presentation(e).geometry;
     g.font = '15px "Songti SC", "STSong", serif';
     const w = Math.min(260, g.measureText(text).width + 22);
-    const x = e.x - cam.x - w / 2, y = geometry.bodyTop - cam.y - 64;
+    // 人站在屏幕边上时气泡往里收，整句话都看得见
+    const x = Math.max(8, Math.min(cam.vw - w - 8, e.x - cam.x - w / 2));
+    const y = Math.max(8, geometry.bodyTop - cam.y - 64);
     g.fillStyle = 'rgba(255,252,240,0.95)';
     g.strokeStyle = 'rgba(90,60,30,0.6)';
     g.lineWidth = 1;
@@ -680,10 +698,14 @@ export function runScene(ctx) {
     const text = p.locked ? `${p.label}（未开）` : `→ ${p.label}`;
     g.font = 'bold 15px "Songti SC", "STSong", serif';
     const w = g.measureText(text).width + 8;
-    const lx = Math.max(w / 2 + 12, Math.min(cam.vw - w / 2 - 12, x));
+    const boxAt = (lx, ly) => ({ l: lx - w / 2, r: lx + w / 2, t: ly - 2, b: ly + 20 });
     for (const ly of [y - 52, y + 22]) {
-      const box = { l: lx - w / 2, r: lx + w / 2, t: ly - 2, b: ly + 20 };
-      if (ly < 8 || ly > cam.vh - 26 || hits(box) || overActor(box)) continue;
+      let lx = Math.max(w / 2 + 12, Math.min(cam.vw - w / 2 - 12, x));
+      // 压到角落的 HUD(右下图标栏等)就让到它左边
+      const blocker = hudAt(boxAt(lx, ly));
+      if (blocker) lx = blocker.l - w / 2 - 4;
+      const box = boxAt(lx, ly);
+      if (lx < w / 2 + 12 || ly < 8 || ly > cam.vh - 26 || hits(box) || overActor(box)) continue;
       label(text, lx, ly, p.locked ? '#c9c9c9' : NAME_COLORS.portal, 15);
       p.labelBox = box;
       return;
@@ -776,6 +798,7 @@ export function runScene(ctx) {
     // 名牌:先画自家队伍,再画 NPC/妖怪——两者叠在一起时 NPC 的名字和「!」在上面
     const namedDrawables = drawables.filter((d) => d.kind !== 'scenery');
     const namesOrder = [...namedDrawables.filter((d) => d.kind === 'party' || d.kind === 'player'), ...namedDrawables.filter((d) => d.kind !== 'party' && d.kind !== 'player')];
+    nameBoxes = [];
     for (const d of namesOrder) {
       const color = d.kind === 'player' ? NAME_COLORS.player : d.kind === 'party' ? NAME_COLORS.party : d.kind === 'demon' ? NAME_COLORS.demon : NAME_COLORS.npc;
       drawNames(d.e, color);
@@ -842,6 +865,7 @@ export function runScene(ctx) {
       if (!accepted) ripples.push({ x: wx, y: wy, t: 0, rejected: true });
     },
     bark(id, text, ms = 3600) { bubbles.set(id, { text, until: performance.now() + ms }); },
+    hasMember: (unit) => player.unit === unit || followers.some((f) => f.unit === unit),
     levelUpFx() { fxLevelUntil = performance.now() + 1600; },
     unfreeze(id) { const a = actors.find((x) => x.id === id); if (a) a.frozen = false; },
     spatialSnapshot() {

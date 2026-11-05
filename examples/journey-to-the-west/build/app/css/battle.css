@@ -496,7 +496,7 @@
 .cmd-item { padding: 8px 16px; font-size: 15px; letter-spacing: 1px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .cmd-item-name { font-size: 15px; font-weight: bold; }
 .cmd-item-meta { font-size: 11px; color: #6a5a48; letter-spacing: 0; }
-.cmd-item.counter { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold), 0 0 8px rgba(201, 162, 39, 0.5); }
+.cmd-item.counter, .cmd-btn.counter { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold), 0 0 8px rgba(201, 162, 39, 0.5); }
 .cmd-empty { color: var(--disabled); padding: 8px; }
 
 /* ---------- 战况卷轴(简报 T8:结算/对话时段的底栏空态填充) ---------- */

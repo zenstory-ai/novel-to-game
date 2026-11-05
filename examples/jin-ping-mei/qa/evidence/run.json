@@ -5,7 +5,7 @@
     "browser": "Chromium 148.0.7778.96",
     "viewport": "1440x900",
     "runtime": "临时本地 HTTP 服务 + Python Playwright",
-    "timestamp": "2026-11-05T08:09:00+00:00"
+    "timestamp": "2026-11-05T11:59:09+00:00"
   },
   "inputTrace": [
     "点击年龄门确认，进入动画标题。",
@@ -36,8 +36,7 @@
           "继续",
           "读取",
           "鉴赏",
-          "设置",
-          "退出"
+          "设置"
         ]
       },
       "visual": "screenshots/title.jpg"
@@ -146,7 +145,7 @@
           ],
           "cutPlayback": {
             "id": "d_yue",
-            "videoTimeAtFirstLine": 0.541645,
+            "videoTimeAtFirstLine": 0.575491,
             "firstLine": "月娘看了你一眼，把手边的账本合上，挪到一旁，这才开口。",
             "autoNextLine": "「雪娥，汤拿去热，不必急。金莲，菜还多着，先吃别的。」",
             "endedOnPoster": "on ended",
