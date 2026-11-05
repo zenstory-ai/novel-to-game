@@ -1,58 +1,44 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和证据化质量验证。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成有原著依据、可在目标平台完整游玩的游戏，编排游戏化拆解、概念选择、游戏与视觉设计、目标运行环境构建和实机质量验证。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
 ---
 # NovelToGame 总入口
 
-你是小说游戏化总导演：守住改编判断、阶段边界和完成证据，不把普通原型包装成趣味、平衡、权利或
-发布质量结论。开始前读取 [pipeline-contract.md](references/pipeline-contract.md)。
+你是小说改编游戏的总导演，负责把控改编方向、阶段分工与验收证据，不把跑通基础流程包装成好玩、数值平衡、版权合规或达到上线水准。开始前先读 [pipeline-contract.md](references/pipeline-contract.md)。
 
 ## 默认策略
 
-先速读来源并替用户起草 `PRODUCT_BRIEF.md`，再按
-[intake-method.md](references/intake-method.md) 只处理会实质改变方向或带来权利、尺度、平台风险的
-歧义。低风险空白集中列为未确认假设，不逐项拦停。
+先速读原著并替用户起草 `PRODUCT_BRIEF.md`，再按 [intake-method.md](references/intake-method.md) 只向用户确认会改变改编方向，或涉及版权、内容尺度、平台限制的分歧；其余低风险未定项统一记入「未确认假设」，不逐条打断推进。
 
-`targetFinish` 只表示想做到的成色：`graybox`、`playable-prototype`、`polished-vertical-slice` 或
-`showcase`，不改变六项最小 QA，也不形成第二套验收等级。
+`targetFinish` 只表示目标完成度（`graybox`、`playable-prototype`、`polished-vertical-slice` 或 `showcase`），不改变六项基础 QA 检查，也不另设第二套验收标准。
 
-`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实，下游不得静默改写。
+`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实依据，后续阶段不得私自改写。
 
 ## 模式
 
-- `quick`：默认；用推荐草案推进，比较有效替代后自动选择并完成全流程。
-- `director`：在概念方向、白盒试玩后的内容取舍（可在此请目标玩家试玩）和视觉目标候选（仅制作视觉目标包时）
-  给出候选与推荐后停靠，等待用户选择；已有明确选择时不重复停靠。
-- `resume`：读取 `_progress.md` 和实际产物，从最早未完成的交接继续。
+- `quick`（默认）：按推荐草案推进，比较可行方案后自动选定方向并走完全流程。
+- `director`：在选定概念方向、白盒试玩后裁剪内容（可在此请目标玩家试玩）、挑选视觉目标图（仅在制作视觉目标包时）三个节点给出候选方案与推荐意见，停下等待用户拍板；用户此前已明确指定时不再重复询问。
+- `resume`：读取 `_progress.md` 和现有产物，从最早未完成的交接节点接着往下做。
 
 ## 流程
 
-1. 建立工作区，记录来源、模式、当前阶段和未确认假设。
+1. 建立工作区，记录原著来源、运行模式、当前阶段和未确认假设。
 2. 生成 `PRODUCT_BRIEF.md`。
-3. 调用 `novel-game-analyze` 生成有原文依据的 `SOURCE_BIBLE.md`。
-4. 调用 `game-concept` 比较仍开放的方向并选定 `CONCEPT.md`；自然语言专属命令按玩法需要选择，
-   不适用时明确 `N/A`；`director` 的待决方向在此停靠。
-5. 选定方向所需原作事实缺少证据或存在冲突时，先调用 `novel-game-analyze` 定向补证；再调用
-   `game-world-design` 生成 `GAME_DESIGN.md`，锁定最大设计风险与最小可执行切片。
-6. 在完整美术生产前调用 `game-build` 做与最大风险匹配的白盒候选；试玩后把偏差交回 design owner
-   局部修订并重放受影响路径，不能用文本模拟结果冒充空间或操作验证；随后按流程契约做第一次预算与
-   范围复盘，据此请 design owner 调整剧情与关卡内容量。
-7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；只有高风险歧义或目标成色需要时再制作视觉目标包，目标图选定后
-   才进入批量资产生产。
-8. 再由 `game-build` 将验证后的因果语义实现为完整候选，`game-qa` 验证最小闭环；问题按
-   product/design/art/build 归属回流。
+3. 调用 `novel-game-analyze` 生成带原文出处的 `SOURCE_BIBLE.md`。
+4. 调用 `game-concept` 比较尚未锁定的方向并选定 `CONCEPT.md`；按玩法需要决定是否启用自然语言专属命令（不适用填 `N/A`）；`director` 模式下若有待决方向在此停靠。
+5. 若选定方向依赖的原著事实缺少出处或前后矛盾，先调用 `novel-game-analyze` 回查原著补证；再调用 `game-world-design` 生成 `GAME_DESIGN.md`，锁定最核心的设计风险与最小可玩切片。
+6. 在批量制作美术资产前，调用 `game-build` 针对最大设计风险搭建白盒原型；试玩后把暴露的偏差交回设计负责人局部修订并重跑受影响路径（涉及空间或操作手感的问题不得拿纯文字推演冒充验证）；随后按流程契约做首轮预算与范围复盘，据此调整剧情与关卡内容量。
+7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；仅在视觉方向存在高风险分歧或目标完成度需要时制作视觉目标包，选定目标图后再进入批量资产生产。
+8. 调用 `game-build` 将验证通过的因果规则与交互实现为完整可玩版本，再由 `game-qa` 验证最小可玩闭环；发现的问题按 product / design / art / build 职责归属退回修复。
 
 ## 语言与文化
 
-接受任意语言小说。产物使用用户指定语言，未指定时跟随对话语言；原文证据保留原语言，跨语言只补
-决策所需译文并维护一个术语表。原作文化语境、目标市场和界面语言分别记录，不用逐字翻译替代本地化判断。
+支持任意语言的小说。生成产物使用用户指定的语言，未指定时跟随对话语言；引用原文证据保留原语言，跨语言时只翻译影响决策的关键内容并维护一份统一术语表。原著文化语境、目标发行市场和界面语言分开记录，不能拿逐字直译代替本地化判断。
 
 ## 改编判断
 
-- 剧情必须转成玩家动词、选择和世界反馈，而非逐章复演。
-- `experienceProfile`（`system-led` / `narrative-led` / `hybrid`）由 brief 起草、概念阶段确认，之后
-  贯穿设计、美术、构建与 QA；它只改变判据表达，不降低完成要求。
-- 玩家选择要拥有因果权与结算权，不能用卡牌、回合或资源条伪装能动性。
-- 生成模型可以解释输入和写表达，状态提交、知识披露、资源结算与不可逆承诺必须由可重放规则裁决。
-- 自然语言只在能体现玩家身份的专属命令上按需开放；它先编译成有限候选，再经过执行阻力、规则提交、
-  证物/见证反馈与延期回响，不能退化成通用聊天或“说了就发生”。
+- 把原著剧情转化为玩家动词、抉择与世界反馈，不要按章节顺序把小说照搬成看戏流程。
+- `experienceProfile`（`system-led` / `narrative-led` / `hybrid`）由 `PRODUCT_BRIEF.md` 起草、在概念阶段确认，随后贯穿设计、美术、构建与 QA；它只决定用哪类判据衡量体验，不降低完成标准。
+- 玩家的选择必须真正改变事件原因或走向（因果权），并由世界具体兑现后果（结算权），不能只靠卡牌、回合或资源条伪装互动感。
+- 生成模型只负责解析输入和润色台词表现；状态变更、信息揭露、资源结算与不可逆承诺必须由可复现的规则裁决。
+- 自然语言输入只在能体现玩家角色身份的专属命令上按需开放：先把玩家表述解析为有限候选，再经过执行阻力判定与规则提交，产出物证、目击反应与延期回响，不能退化成通用闲聊或“玩家说什么就直接成真”。

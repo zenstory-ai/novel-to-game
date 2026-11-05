@@ -361,7 +361,7 @@ function showChoice(ev) {
   if (ev.branch) {
     const head = document.createElement('p');
     head.className = 'choice-head';
-    head.textContent = '今晚去谁那里？';
+    head.textContent = '今夜往哪扇门去？';
     box.append(head);
   }
   const timed = ev.timed && config.timed && !story.replay;
@@ -376,7 +376,7 @@ function showChoice(ev) {
       b.classList.toggle('locked', !option.enabled);
       b.setAttribute('aria-disabled', String(!option.enabled));
       b.style.setProperty('--accent', c.color);
-      b.innerHTML = `<img class="bust" src="assets/sprite/${option.who}/smile.webp" alt=""><b>${c.house} · ${c.full}</b><small>${option.enabled ? c.line : '她对你的好感还不够，今晚这扇门关着。'}</small>${option.enabled ? '' : '<span class="wick">熄</span>'}`;
+      b.innerHTML = `<img class="bust" src="assets/sprite/${option.who}/smile.webp" alt=""><b>${c.house} · ${c.full}</b><small>${option.enabled ? c.line : '这扇门今夜没留灯，门闩已经落下了。'}</small>${option.enabled ? '' : '<span class="wick">熄</span>'}`;
     } else {
       b.innerHTML = `<b>${option.text.replace(/“([^”]*)”/g, '「$1」')}</b>`;
       b.classList.toggle('silent', option.silent);
@@ -389,7 +389,7 @@ function showChoice(ev) {
   if (timed) {
     const wick = document.createElement('div');
     wick.className = 'wick-timer';
-    wick.innerHTML = '<span class="flame"></span><span class="burn"></span><small>限时：时间到就算你不作声</small>';
+    wick.innerHTML = '<span class="flame"></span><span class="burn"></span><small>灯芯将尽 · 迟疑不决便算不作声</small>';
     box.append(wick);
   }
   box.hidden = false;
@@ -491,7 +491,7 @@ function inspect(i) {
 function lookAdvance() {
   if (ui.typing) { finishTyping(); $('#next-ind').classList.remove('on'); return; }
   if (ui.look.left <= 0) endLook();
-  else tellOnce('look', '点画面上的框看细节；看够了点「不看了」');
+  else tellOnce('look', '点击画面中的描金处端详细节；看毕可点「不看了」');
 }
 function endLook() {
   if (ui.cur?.type !== 'look' || locked()) return;
@@ -546,7 +546,7 @@ function showHold(ev) {
     }
     ring.style.setProperty('--p', h.progress.toFixed(4));
     // 风一旦刮起来，就告诉玩家还剩多久：别让灯在读提示的时候不明不白地灭掉
-    if (h.elapsed > 0 && !config.assist) wind.textContent = `风还要刮 ${Math.max(0, Math.ceil((HOLD_WINDOW - h.elapsed) / 1000))} 秒`;
+    if (h.elapsed > 0 && !config.assist) wind.textContent = `夜风未歇（尚余 ${Math.max(0, Math.ceil((HOLD_WINDOW - h.elapsed) / 1000))} 秒）`;
     lamp.classList.toggle('held', h.holding || config.assist);
     if (h.progress >= 1) return finishHold(true);
     if (h.elapsed >= HOLD_WINDOW) return finishHold(false);
@@ -591,7 +591,7 @@ export function choose(index, { timeout = false } = {}) {
   if (ui.hidden && !timeout) { setHidden(false); return; } // 隐藏画面时先把字幕请回来，不替玩家做选择
   const option = ui.cur.options.find((o) => o.i === index);
   if (!option) return;
-  if (!option.enabled) { if (option.who) toast('好感不够，这扇门今晚没有亮灯。'); return; }
+  if (!option.enabled) { if (option.who) toast('心意未到，这扇门今夜没有为你留灯。'); return; }
   audio.se('choice');
   if (!option.who) { global.chosen.add(choiceKey(option)); saveGlobal(); }
   pushBacklog({ name: '', text: `▶ ${option.who ? `${CAST[option.who].house} · ${CAST[option.who].full}` : option.text}${timeout ? '（时间到）' : ''}`, color: null, choice: true });
@@ -626,7 +626,7 @@ function hideCard() {
 function chapterKicker(title) {
   const who = HEROINES.find((h) => title.startsWith(CAST[h].full));
   if (!who) return '那年春天';
-  return story.label === `${who}_route` ? `今晚去${CAST[who].house}` : CAST[who].house;
+  return story.label === `${who}_route` ? `今夜去${CAST[who].house}` : CAST[who].house;
 }
 
 function armChapter() {
@@ -664,7 +664,7 @@ function showFate(ev) {
   lock(5000);
   const lines = FATES[ev.who] ?? [];
   const who = CAST[ev.who];
-  showCard(`<div class="fate-bg" style="background-image:url('${CG.fate.src}')"></div><div class="fate-inner"><small>原著命数</small><h2>${who ? who.full : '西门庆'}</h2>${lines.map((l, i) => `<p style="animation-delay:${0.6 + i * 1.4}s">${l}</p>`).join('')}<em>这一春你们走到了哪一步，都改变不了她在原著里的命运。</em></div>`, 'fate');
+  showCard(`<div class="fate-bg" style="background-image:url('${CG.fate.src}')"></div><div class="fate-inner"><small>原著命数</small><h2>${who ? who.full : '西门庆'}</h2>${lines.map((l, i) => `<p style="animation-delay:${0.6 + i * 1.4}s">${l}</p>`).join('')}<em>这一春你们走到了哪一步，都改不了她在书里的命数。</em></div>`, 'fate');
   unlock('cg', 'fate');
 }
 

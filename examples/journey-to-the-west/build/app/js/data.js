@@ -28,27 +28,27 @@ export const STORY_SETUP_EFFECTS = {
 // kind: 'phy' 用攻击, 'mag' 用灵力; target: enemy/enemies/ally/party/self
 export const SKILLS = {
   // —— 悟空 ——
-  ruyibang: { name: '棒打', kind: 'phy', mul: 1.8, mp: 16, target: 'enemy', hit: 0.95, desc: '物理单体高伤' },
-  huoyan: { name: '火眼金睛', kind: 'mag', mul: 0, mp: 22, target: 'enemy', buff: { id: 'def_down', val: 0.35, turns: 3 }, desc: '识破破绽，敌防御-35%(3回合)' },
-  hengsao: { name: '横扫千军', kind: 'phy', mul: 1.15, mp: 20, target: 'enemies', hit: 0.92, desc: '物理群体' },
+  ruyibang: { name: '棒打', kind: 'phy', mul: 1.8, mp: 16, target: 'enemy', hit: 0.95, desc: '如意棒当头猛砸，重创敌方单体' },
+  huoyan: { name: '火眼金睛', kind: 'mag', mul: 0, mp: 22, target: 'enemy', buff: { id: 'def_down', val: 0.35, turns: 3 }, desc: '金睛看破破绽，令目标防御降低 35%（三回合）' },
+  hengsao: { name: '横扫千军', kind: 'phy', mul: 1.15, mp: 20, target: 'enemies', hit: 0.92, desc: '金箍棒横扫千军，痛击敌方全体' },
   // —— 八戒 ——
-  jiuchipaba: { name: '钉耙乱筑', kind: 'phy', mul: 1.05, mp: 16, target: 'enemies', hit: 0.92, desc: '物理群体' },
-  gongdi: { name: '拱地', kind: 'phy', mul: 0.8, mp: 18, target: 'enemy', hit: 0.9, buff: { id: 'stun', val: 0, turns: 1, chance: 0.65 }, desc: '65%概率击晕敌一回合' },
+  jiuchipaba: { name: '钉耙乱筑', kind: 'phy', mul: 1.05, mp: 16, target: 'enemies', hit: 0.92, desc: '九齿钉耙迎风横筑，猛击敌方全体' },
+  gongdi: { name: '拱地', kind: 'phy', mul: 0.8, mp: 18, target: 'enemy', hit: 0.9, buff: { id: 'stun', val: 0, turns: 1, chance: 0.65 }, desc: '翻土震击单敌，有 65% 概率将其震晕一回合' },
   // —— 沙僧 ——
-  xiangyaozhang: { name: '宝杖降妖', kind: 'phy', mul: 1.35, mp: 14, target: 'enemy', hit: 0.97, selfHeal: 0.35, desc: '稳定单体，自愈35%伤害量' },
-  luohanjinshen: { name: '罗汉金身', kind: 'mag', mul: 0, mp: 30, target: 'party', buff: { id: 'dmg_reduce', val: 0.3, turns: 3 }, desc: '全队受伤-30%(3回合)' },
+  xiangyaozhang: { name: '宝杖降妖', kind: 'phy', mul: 1.35, mp: 14, target: 'enemy', hit: 0.97, selfHeal: 0.35, desc: '降妖宝杖沉稳出击，并将三成半伤害化为自身气血' },
+  luohanjinshen: { name: '罗汉金身', kind: 'mag', mul: 0, mp: 30, target: 'party', buff: { id: 'dmg_reduce', val: 0.3, turns: 3 }, desc: '佛门金身护佑同袍，全队所受伤害降低 30%（三回合）' },
   // —— 辟水金睛兽(宠) ——
-  pishuijue: { name: '辟水诀', kind: 'mag', mul: 1.25, mp: 24, target: 'enemies', desc: '水系群体，克火' },
-  jinjing: { name: '金睛', kind: 'mag', mul: 0, mp: 18, target: 'party', buff: { id: 'hit_up', val: 0.15, turns: 3 }, desc: '全队命中+15%(3回合)' },
+  pishuijue: { name: '辟水诀', kind: 'mag', mul: 1.25, mp: 24, target: 'enemies', desc: '卷起寒波席卷敌阵，水势专克群火' },
+  jinjing: { name: '金睛', kind: 'mag', mul: 0, mp: 18, target: 'party', buff: { id: 'hit_up', val: 0.15, turns: 3 }, desc: '瑞兽金睛破雾，全队命中提升 15%（三回合）' },
   // —— 变化形态附带技 ——
-  shenjiang_sao: { name: '神将横扫', kind: 'phy', mul: 1.3, mp: 0, target: 'enemies', hit: 0.92, desc: '变化技·物理群体' },
-  lieyan_quan: { name: '烈焰拳', kind: 'mag', mul: 1.7, mp: 0, target: 'enemy', desc: '变化技·火系单体' },
-  xuanbing_ji: { name: '玄冰击', kind: 'mag', mul: 2.0, mp: 0, target: 'enemy', desc: '变化技·水系单体' },
+  shenjiang_sao: { name: '神将横扫', kind: 'phy', mul: 1.3, mp: 0, target: 'enemies', hit: 0.92, desc: '变化神通 · 巨棒横扫敌方全体' },
+  lieyan_quan: { name: '烈焰拳', kind: 'mag', mul: 1.7, mp: 0, target: 'enemy', desc: '变化神通 · 烈焰裹拳轰击单敌' },
+  xuanbing_ji: { name: '玄冰击', kind: 'mag', mul: 2.0, mp: 0, target: 'enemy', desc: '变化神通 · 玄冰重击单敌，专克火妖' },
   // —— 敌方 ——
   shuangjian: { name: '双剑击', kind: 'phy', mul: 1.35, mp: 0, target: 'enemy', hit: 0.93, desc: '' },
-  zhiwang: { name: '织网缠丝', kind: 'mag', mul: 0.7, mp: 0, target: 'enemy', buff: { id: 'spd_down', val: 0.15, turns: 2 }, desc: '妖丝缠身，速度下降' },
-  hujia: { name: '护主心切', kind: 'mag', mul: 0, mp: 0, target: 'ally', heal: 0.8, desc: '抢救主人' },
-  huanhuo: { name: '唤火助威', kind: 'mag', mul: 0, mp: 0, target: 'self', summon: { key: 'firemob1', count: 1, maxSummons: 1 }, cooldown: 3, desc: '召唤一波火兵' },
+  zhiwang: { name: '织网缠丝', kind: 'mag', mul: 0.7, mp: 0, target: 'enemy', buff: { id: 'spd_down', val: 0.15, turns: 2 }, desc: '妖丝缠身，迟滞目标身法' },
+  hujia: { name: '护主心切', kind: 'mag', mul: 0, mp: 0, target: 'ally', heal: 0.8, desc: '挺身护主，为同伴恢复气血' },
+  huanhuo: { name: '唤火助威', kind: 'mag', mul: 0, mp: 0, target: 'self', summon: { key: 'firemob1', count: 1, maxSummons: 1 }, cooldown: 3, desc: '呼哨引火，唤来火兵助阵' },
   yaofa: { name: '妖法迷人', kind: 'mag', mul: 0.95, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
   jiaoman: { name: '娇蛮', kind: 'mag', mul: 0, mp: 0, target: 'enemy', buff: { id: 'atk_down', val: 0.25, turns: 2 }, desc: '' },
   tiebi: { name: '铁臂横扫', kind: 'phy', mul: 0.9, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
@@ -58,20 +58,20 @@ export const SKILLS = {
   huoqiu: { name: '火弹', kind: 'mag', mul: 1.25, mp: 0, target: 'enemy', hit: 0.92, desc: '' },
   lieyan: { name: '烈焰喷吐', kind: 'mag', mul: 1.0, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
   // —— Lv4-6 解锁(批0 技能表补齐) ——
-  qitian: { name: '齐天棍影', kind: 'phy', mul: 2.1, mp: 24, target: 'enemy', hit: 0.9, critBonus: 0.1, desc: '物理单体大伤，易暴击' },
-  zhenhai: { name: '镇海一棒', kind: 'phy', mul: 1.45, mp: 26, target: 'enemies', hit: 0.9, desc: '物理群体重击' },
-  douzhan: { name: '斗战神通', kind: 'mag', mul: 0, mp: 20, target: 'self', buff: { id: 'atk_up', val: 0.25, turns: 3 }, desc: '自身攻击+25%(3回合)' },
-  hengpa: { name: '横耙拦截', kind: 'phy', mul: 1.2, mp: 18, target: 'enemies', hit: 0.9, desc: '物理群体' },
-  tunshan: { name: '吞山食力', kind: 'phy', mul: 1.4, mp: 20, target: 'enemy', hit: 0.92, selfHeal: 0.6, desc: '单体，大量自愈' },
-  gangtie: { name: '钢鬃铁背', kind: 'mag', mul: 0, mp: 16, target: 'self', buff: { id: 'def_up', val: 0.4, turns: 3 }, desc: '自身防御+40%(3回合)' },
-  liusha: { name: '流沙河怒', kind: 'phy', mul: 1.6, mp: 18, target: 'enemy', hit: 0.97, desc: '稳定单体' },
-  hufa: { name: '护法金身', kind: 'mag', mul: 0, mp: 34, target: 'party', buff: { id: 'dmg_reduce', val: 0.4, turns: 2 }, desc: '全队受伤-40%(2回合)' },
-  guiyuan: { name: '归元静心', kind: 'mag', mul: 0, mp: 26, target: 'party', heal: 0.9, desc: '群体治疗(灵力加成)' },
-  jinglang: { name: '金睛破浪', kind: 'mag', mul: 1.5, mp: 28, target: 'enemies', desc: '水系群体巨浪' },
-  bingfeng: { name: '冰封', kind: 'mag', mul: 1.8, mp: 24, target: 'enemy', buff: { id: 'stun', val: 0, turns: 1, chance: 0.5 }, desc: '水系单体,50%冻结' },
-  huolian: { name: '火焰连珠', kind: 'mag', mul: 1.3, mp: 14, target: 'enemy', desc: '火系单体' },
-  fenye: { name: '焚野', kind: 'mag', mul: 1.1, mp: 20, target: 'enemies', desc: '火系群体' },
-  chiyan: { name: '赤焰冲锋', kind: 'phy', mul: 1.5, mp: 16, target: 'enemy', hit: 0.92, desc: '物理单体' },
+  qitian: { name: '齐天棍影', kind: 'phy', mul: 2.1, mp: 24, target: 'enemy', hit: 0.9, critBonus: 0.1, desc: '齐天棍影轰然砸落，重创单敌且极易暴击' },
+  zhenhai: { name: '镇海一棒', kind: 'phy', mul: 1.45, mp: 26, target: 'enemies', hit: 0.9, desc: '一棒镇海，重创敌方全体' },
+  douzhan: { name: '斗战神通', kind: 'mag', mul: 0, mp: 20, target: 'self', buff: { id: 'atk_up', val: 0.25, turns: 3 }, desc: '斗战神威凛然，自身攻击提升 25%（三回合）' },
+  hengpa: { name: '横耙拦截', kind: 'phy', mul: 1.2, mp: 18, target: 'enemies', hit: 0.9, desc: '横耙拦腰扫去，重创敌方全体' },
+  tunshan: { name: '吞山食力', kind: 'phy', mul: 1.4, mp: 20, target: 'enemy', hit: 0.92, selfHeal: 0.6, desc: '奋力猛击单敌，并将六成伤害化为自身气血' },
+  gangtie: { name: '钢鬃铁背', kind: 'mag', mul: 0, mp: 16, target: 'self', buff: { id: 'def_up', val: 0.4, turns: 3 }, desc: '钢鬃乍起护体，自身防御提升 40%（三回合）' },
+  liusha: { name: '流沙河怒', kind: 'phy', mul: 1.6, mp: 18, target: 'enemy', hit: 0.97, desc: '卷起流沙怒涛，沉稳重击单敌' },
+  hufa: { name: '护法金身', kind: 'mag', mul: 0, mp: 34, target: 'party', buff: { id: 'dmg_reduce', val: 0.4, turns: 2 }, desc: '护法金身笼罩全队，所受伤害降低 40%（两回合）' },
+  guiyuan: { name: '归元静心', kind: 'mag', mul: 0, mp: 26, target: 'party', heal: 0.9, desc: '禅心归元，随灵力高下为全队恢复气血' },
+  jinglang: { name: '金睛破浪', kind: 'mag', mul: 1.5, mp: 28, target: 'enemies', desc: '瑞兽踏起滔天巨浪，席卷敌方全体' },
+  bingfeng: { name: '冰封', kind: 'mag', mul: 1.8, mp: 24, target: 'enemy', buff: { id: 'stun', val: 0, turns: 1, chance: 0.5 }, desc: '寒波侵骨重创单敌，有 50% 概率将其冰封一回合' },
+  huolian: { name: '火焰连珠', kind: 'mag', mul: 1.3, mp: 14, target: 'enemy', desc: '连珠火球急射，灼伤敌方单体' },
+  fenye: { name: '焚野', kind: 'mag', mul: 1.1, mp: 20, target: 'enemies', desc: '催动烈火焚野，灼烧敌方全体' },
+  chiyan: { name: '赤焰冲锋', kind: 'phy', mul: 1.5, mp: 16, target: 'enemy', hit: 0.92, desc: '裹挟赤焰猛冲，撞击敌方单体' },
   tiegun: { name: '混铁棍', kind: 'phy', mul: 1.55, mp: 0, target: 'enemy', hit: 0.93, desc: '' },
   chongzhuang: { name: '蛮牛冲锋', kind: 'phy', mul: 1.15, mp: 0, target: 'enemies', hit: 0.88, desc: '' },
   fatian: { name: '法天象地', kind: 'phy', mul: 1.9, mp: 0, target: 'enemy', hit: 0.9, desc: '' },
@@ -82,9 +82,9 @@ export const SKILLS = {
 // 挨打越重攒得越快；决战的蓄力重击因此也成了翻盘的本钱。
 export const SP = { max: 150, gainPerHpPct: 0.9, minGain: 3 };
 export const STUNTS = {
-  poxue: { name: '破血狂攻', sp: 60, kind: 'phy', mul: 1.7, mp: 0, target: 'enemy', hit: 0.95, desc: '愤怒 60 · 物理单体重击' },
-  luohan: { name: '罗汉金钟', sp: 80, kind: 'mag', mul: 0, mp: 0, target: 'party', buff: { id: 'dmg_reduce', val: 0.3, turns: 2 }, desc: '愤怒 80 · 全队受伤 -30%(2回合)' },
-  sihai: { name: '四海升平', sp: 110, kind: 'mag', mul: 0, mp: 0, target: 'party', healPct: 0.2, desc: '愤怒 110 · 全队回复 20% 气血' },
+  poxue: { name: '破血狂攻', sp: 60, kind: 'phy', mul: 1.7, mp: 0, target: 'enemy', hit: 0.95, desc: '耗 60 愤怒 · 舍身猛击，重创敌方单体' },
+  luohan: { name: '罗汉金钟', sp: 80, kind: 'mag', mul: 0, mp: 0, target: 'party', buff: { id: 'dmg_reduce', val: 0.3, turns: 2 }, desc: '耗 80 愤怒 · 金钟罩顶，两回合内全队受伤降低 30%' },
+  sihai: { name: '四海升平', sp: 110, kind: 'mag', mul: 0, mp: 0, target: 'party', healPct: 0.2, desc: '耗 110 愤怒 · 甘霖四海，为全队回复 20% 气血' },
 };
 
 // 基础攻击(指令「攻击」)
@@ -92,10 +92,10 @@ export const BASIC_ATTACK = { name: '攻击', kind: 'phy', mul: 1.0, mp: 0, targ
 
 // 悟空变化形态(特技「七十二变」)：临时改五行/属性/技能
 export const FORMS = {
-  shenjiang: { name: '金甲神将', element: '金', turns: 3, mods: { atk: 1.4 }, skills: ['shenjiang_sao'], desc: '攻+40%，得群体物理' },
-  lieyuan: { name: '赤焰灵猿', element: '火', turns: 3, mods: { mag: 1.45 }, skills: ['lieyan_quan'], desc: '灵力+45%，得火系法术' },
-  xuangui: { name: '玄甲龟将', element: '水', turns: 3, mods: { def: 1.6, spd: 0.8, mag: 1.35 }, skills: ['xuanbing_ji'], keShield: true, desc: '防+60%灵力+35%速-20%，被克伤害减半，得水系法术' },
-  chongzi: { name: '蟭蟟虫', element: '金', turns: 3, mods: { spd: 1.5, atk: 0.8 }, skills: [], desc: '速+50%攻-20%，抢速自保' },
+  shenjiang: { name: '金甲神将', element: '金', turns: 3, mods: { atk: 1.4 }, skills: ['shenjiang_sao'], desc: '金系 · 攻击+40%，习得神将横扫' },
+  lieyuan: { name: '赤焰灵猿', element: '火', turns: 3, mods: { mag: 1.45 }, skills: ['lieyan_quan'], desc: '火系 · 灵力+45%，习得烈焰拳' },
+  xuangui: { name: '玄甲龟将', element: '水', turns: 3, mods: { def: 1.6, spd: 0.8, mag: 1.35 }, skills: ['xuanbing_ji'], keShield: true, desc: '水系 · 防御+60%、灵力+35%、速度-20%，受克伤害减半，习得玄冰击' },
+  chongzi: { name: '蟭蟟虫', element: '金', turns: 3, mods: { spd: 1.5, atk: 0.8 }, skills: [], desc: '金系 · 速度+50%、攻击-20%；罗刹女气血过半后可钻腹智取' },
 };
 
 // 我方单位(成长 = 每级增量；唐僧不参战，随队剧情)
@@ -182,8 +182,8 @@ export const SHOPS = {
 
 // 法宝(1件/全队，只做规则型，禁 +atk/+mag/+mp)
 export const TREASURES = {
-  dingfengdan: { key: 'dingfengdan', name: '定风丹', mods: { spd: 6 }, immuneSpdDown: true, desc: '速度+6，免疫减速(灵吉菩萨赠)' },
-  bihuojin: { key: 'bihuojin', name: '避火锦', mods: {}, resist: { 火: 0.25 }, desc: '全队火伤减免25%' },
+  dingfengdan: { key: 'dingfengdan', name: '定风丹', mods: { spd: 6 }, immuneSpdDown: true, desc: '全队速度+6，且不受扇风妖丝减速（灵吉菩萨所赐）' },
+  bihuojin: { key: 'bihuojin', name: '避火锦', mods: {}, resist: { 火: 0.25 }, desc: '全队所受火系伤害减轻25%（灵吉菩萨所赐）' },
 };
 
 // 敌方单位
@@ -306,8 +306,8 @@ export const BATTLES = {
     fieldRule: {
       kind: 'roundEndBurn', id: 'dihuo', name: '地火炙烤',
       pct: 0.06, element: '火', immuneElement: '水',
-      short: '回合末烧伤非水属性伙伴',
-      desc: '火口地火：每回合末烧伤我方所有非水属性的伙伴，火妖自己不怕。悟空变玄甲龟将可免，避火锦也能减轻。',
+      short: '回合末灼伤非水系伙伴',
+      desc: '火口地火：每回合末灼伤我方非水系伙伴，火妖不受其害。悟空变玄甲龟将可免，披避火锦也能减轻灼伤。',
     },
     hint: '火口每回合灼人：先让悟空变玄甲龟将，集中打火炎校尉，血少就用金疮药。',
   },
@@ -318,10 +318,10 @@ export const BATTLES = {
     fieldRule: {
       kind: 'pairGuard', id: 'yaozhen', name: '妖将结阵',
       unitKey: 'yaojiang', count: 2, reduce: 0.12,
-      short: '两妖将都在，敌方少受伤',
-      desc: '妖将结阵：两名妖将都站着时，敌方人人少受伤；先打倒其中一个，阵就破了。',
+      short: '双妖将同在则敌方减伤',
+      desc: '妖将结阵：两名摩云洞妖将同在阵中时，敌方全体所受伤害减轻；先击倒其一，护阵立破。',
     },
-    hint: '两名妖将都在，敌方人人少受伤：先合力打倒一名妖将，再收拾玉面公主。',
+    hint: '双妖将同在时敌方全体减伤：先合力拔掉一名妖将破其结阵，再对付玉面公主。',
   },
   niu1: {
     id: 'niu1', name: '摩云洞·激战牛魔王', bg: 'moyundong', boss: false, enemyLevel: 5,
