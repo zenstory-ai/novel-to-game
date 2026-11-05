@@ -1,5 +1,5 @@
 // 本地持久化：设置、跨周目解锁（CG／回想／曲目／结局／已读／已选）、存档槽。全部容错，存储不可用时照常可玩。
-const KEYS = { config: 'jpm2_config', global: 'jpm2_global', saves: 'jpm2_saves' };
+const KEYS = { config: 'jpm2_config', global: 'jpm2_global', saves: 'jpm2_saves', nodes: 'jpm2_nodes' };
 export const AGE_KEY = 'jpm_age_confirmed';
 export const SLOT_PAGES = 4;
 export const SLOTS_PER_PAGE = 9;
@@ -19,6 +19,9 @@ export const DEFAULT_CONFIG = Object.freeze({
   skipUnread: false,
   adult: true,
   boxAlpha: 90, // 文字框浓淡 40…100
+  film: true, // 动态影像：剧情过场与 CG／背景的待机影像；关闭时过场换成定格画面，字幕照常
+  timed: true, // 限时抉择；关闭时不计时，「不作声」列为普通选项
+  assist: false, // 动作辅助：按住动作自动完成
 });
 
 export const config = { ...DEFAULT_CONFIG, ...read(KEYS.config, {}) };
@@ -31,6 +34,7 @@ export const global = {
   music: new Set(g.music ?? []),
   ending: new Set(g.ending ?? []),
   read: new Set(g.read ?? []),
+  cut: new Set(g.cut ?? []), // 看过的剧情过场，鉴赏里可以重看
   chosen: new Set(g.chosen ?? []), // 「标签:选项文字」，后续周目给走过的选项标「已选」
 };
 let globalTimer = null;
@@ -67,4 +71,14 @@ export function deleteSave(slot) {
 export function latestSave() {
   const saves = loadSaves();
   return Object.entries(saves).sort((a, b) => (b[1].time ?? 0) - (a[1].time ?? 0))[0] ?? null;
+}
+
+// 剧情树节点：{ 章节名: 存档记录 }，每章开场记下最近一次到达时的状态，跨周目保留
+export const loadNodes = () => read(KEYS.nodes, {});
+export function writeNode(key, record) {
+  const nodes = loadNodes();
+  nodes[key] = record;
+  if (write(KEYS.nodes, nodes)) return;
+  nodes[key] = { ...record, thumb: null };
+  write(KEYS.nodes, nodes);
 }

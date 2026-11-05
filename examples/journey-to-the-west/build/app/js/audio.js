@@ -1,6 +1,11 @@
-// 音频引擎:Web Audio 程序化合成，零素材零依赖。
-// 古风五声音阶(宫商角徵羽)+ 木鱼/板鼓打击感;分场景 BGM + 全套战斗 SFX。
+// 音频引擎:分场景 BGM 与全套战斗 SFX 优先播放 assets/audio 下的预录民乐与音效(台账见 build/art/audio-assets.json),
+// 文件读不出来时回落到 Web Audio 程序化合成(五声音阶宫商角徵羽 + 木鱼/板鼓打击感)。
 // 一切方法在 AudioContext 不可用时静默降级，绝不影响游戏运行。
+const BGM_FILES = ['title', 'overworld', 'battle', 'boss', 'ending'];
+const SFX_FILES = ['click', 'hit', 'crit', 'skill', 'heal', 'ke', 'thud', 'combo', 'transform', 'telegraph', 'heavy', 'fan1', 'fan2', 'fan3', 'firefx', 'waterfx', 'levelup', 'victory', 'defeat', 'step', 'coin', 'quest', 'portal', 'encounter'];
+const bgmSrc = (id) => `assets/audio/bgm/${id}.mp3`;
+const sfxSrc = (id) => `assets/audio/sfx/${id}.mp3`;
+const BGM_GAP = 1.2; // 曲子放完停一口气再从头来
 
 // 五声音阶(半音)：宫 商 角 徵 羽
 const PENTA = [0, 2, 4, 7, 9];
@@ -80,6 +85,8 @@ class AudioEngine {
         this.sfxGain = this.ctx.createGain();
         this.sfxGain.gain.value = VOL_BASE.sfx * this.vol.sfx;
         this.sfxGain.connect(this.master);
+        this.buffers = new Map();
+        for (const id of SFX_FILES) this._loadSfx(id);
       }
       if (this.ctx.state === 'suspended') this.ctx.resume();
     } catch { /* 音频不可用则静默 */ }
@@ -115,6 +122,31 @@ class AudioEngine {
     if (!this.ctx) return;
     if (this.bgm?.scene === scene) return;
     this.stopBGM();
+    if (BGM_FILES.includes(scene)) { this._playFile(scene); return; }
+    this._playSynth(scene);
+  }
+
+  // 预录曲目：<audio> 流式接进 BGM 音量，淡入；读不出来就换成同名的合成曲
+  _playFile(scene) {
+    const el = new Audio(bgmSrc(scene));
+    el.preload = 'auto';
+    const out = this.ctx.createGain();
+    out.gain.value = 0;
+    this.ctx.createMediaElementSource(el).connect(out).connect(this.bgmGain);
+    const state = { scene, out, el, file: true };
+    this.bgm = state;
+    el.addEventListener('ended', () => { state.again = setTimeout(() => { if (this.bgm === state) el.play().catch(() => {}); }, BGM_GAP * 1000); });
+    el.addEventListener('error', () => { if (this.bgm !== state) return; this.bgm = null; out.disconnect(); this._playSynth(scene); }, { once: true });
+    el.play().then(() => out.gain.setTargetAtTime(1.6, this.ctx.currentTime, 0.4)).catch(() => {});
+  }
+
+  _loadSfx(id) {
+    const p = fetch(sfxSrc(id)).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject())).then((b) => this.ctx.decodeAudioData(b)).catch(() => null);
+    this.buffers.set(id, p);
+    p.then((buf) => this.buffers.set(id, buf));
+  }
+
+  _playSynth(scene) {
     const cfg = sceneCfg(scene);
     if (!cfg) return;
     const beatLen = 60 / cfg.bpm;
@@ -132,12 +164,13 @@ class AudioEngine {
 
   stopBGM(fade = 0.08) {
     if (!this.bgm) return;
-    const { timer, out } = this.bgm;
+    const { timer, out, el, again } = this.bgm;
     clearInterval(timer);
+    clearTimeout(again);
     this.bgm = null;
     out.gain.cancelScheduledValues(this.ctx.currentTime);
     out.gain.setTargetAtTime(0, this.ctx.currentTime, fade);
-    setTimeout(() => out.disconnect(), Math.max(400, fade * 5000));
+    setTimeout(() => { out.disconnect(); el?.pause(); }, Math.max(400, fade * 5000));
   }
 
   _scheduleLoop(st) {
@@ -238,9 +271,25 @@ class AudioEngine {
     this._noise(t, 0.05, vol * 0.4, dest, 800, 2);
   }
 
+  // 预录音效比合成音响，单走一路再并进 SFX 音量
+  _makeFileSfx() {
+    const g = this.ctx.createGain();
+    g.gain.value = 0.55;
+    g.connect(this.sfxGain);
+    return g;
+  }
+
   // ---------- SFX ----------
   sfx(name) {
     if (!this.ctx || this.muted) return;
+    const buf = this.buffers.get(name);
+    if (buf instanceof AudioBuffer) {
+      const src = this.ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.fileSfx ??= this._makeFileSfx());
+      src.start();
+      return;
+    }
     const t = this.ctx.currentTime + 0.01;
     const out = this.sfxGain;
     switch (name) {

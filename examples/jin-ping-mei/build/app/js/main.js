@@ -1,8 +1,9 @@
-// 入口：年龄门 → 标题 → ADV 主循环（打字机、自动、快进、隐藏、回看、快存快读、上一选项）。菜单界面在 menus.js。
+// 入口：年龄门 → 标题 → 影游主循环（打字机、自动、快进、隐藏、回看、快存快读、上一选项、限时抉择、察言观色、按住动作、
+// 「她记下了」、剧情树节点）。菜单界面在 menus.js。
 import { parseScript, Story, HEROINES } from './adv.js';
-import { SCRIPT_SOURCES, CAST, SPEAKERS, CG, ENDINGS, ENDING_KIND, FATES } from './story/index.js';
-import { config, global, saveGlobal, ageConfirmed, confirmAge, writeSave, loadSaves, latestSave } from './store.js';
-import { syncStage, resetStage, thumbnail, shake, flash, refreshCg, setVeilHook } from './stage.js';
+import { SCRIPT_SOURCES, CAST, SPEAKERS, CG, CUT, ENDINGS, ENDING_KIND, FATES } from './story/index.js';
+import { config, global, saveGlobal, ageConfirmed, confirmAge, writeSave, loadSaves, latestSave, writeNode } from './store.js';
+import { syncStage, resetStage, thumbnail, shake, flash, refreshCg, setVeilHook, cgRect, attachFilm, cutVideo } from './stage.js';
 import { audio } from './audio.js';
 import { openMenu, closeMenu, backMenu, confirmBox, menuOpen, closedAt, pushBacklog, clearBacklog, backlogTail } from './menus.js';
 import { startPetals, stopPetals } from './petals.js';
@@ -16,6 +17,7 @@ export const story = new Story(labels, {
   onUnlock: unlock,
   onFx: (id) => (id === 'shake' ? shake() : id === 'flash' ? flash() : null),
   onSe: (id) => audio.se(id),
+  onRemember: (who, delta) => stamp(who, delta),
 });
 
 const ui = {
@@ -30,6 +32,11 @@ const ui = {
   lineRead: false,
   lockUntil: 0, // 选项、结局、命数刚出现时挡住惯性点击
   wheelAt: 0,
+  shown: [], // 当前选择处实际列出的选项（限时开启时「不作声」不列出），数字键按它对应
+  timer: null, // 限时抉择 { total, left, last, raf }
+  look: null, // 察言观色 { left }
+  hold: null, // 按住动作 { progress, elapsed, holding, last, raf, done }
+  cueTimer: null, // 剧情过场：等到下一句字幕的时间点自动接上
 };
 const now = () => performance.now();
 const lock = (ms) => { ui.lockUntil = Math.max(ui.lockUntil, now() + ms); };
@@ -38,15 +45,45 @@ const told = new Set();
 const tellOnce = (key, text) => { if (!told.has(key)) { told.add(key); toast(text); } };
 const choiceStack = []; // 本次游玩经过的选择处，供「上一选项」回退；不落盘
 
+// 剧情树用的章节表：按剧本顺序，路线章节归到那位女主名下
+export const chapterList = () => Object.values(labels).flat().filter((c) => c.t === 'chapter').map((c) => ({
+  key: c.sub ? `${c.title} · ${c.sub}` : c.title,
+  title: c.title,
+  sub: c.sub,
+  who: HEROINES.find((h) => c.title.startsWith(CAST[h].full)) ?? null,
+}));
+
 // ---------- 屏幕切换 ----------
 function show(screen) {
   for (const id of ['gate', 'title', 'game']) $(`#${id}`).hidden = id !== screen;
   document.body.dataset.screen = screen;
-  if (screen === 'title') { startPetals($('#petals')); audio.play('title'); unlock('music', 'title'); } else stopPetals();
+  if (screen === 'title') { startPetals($('#petals')); audio.play('title'); unlock('music', 'title'); attachFilm($('#title .title-bg'), 'title'); } else { stopPetals(); attachFilm($('#title .title-bg'), null); }
+}
+
+// 「她记下了」：在她的人物色里盖一枚印；连着几枚就排队盖
+const stamps = [];
+function stamp(who, delta) {
+  if (story.replay || !CAST[who]) return;
+  stamps.push({ who, text: delta < 0 ? `${CAST[who].name}心里冷了几分` : `${CAST[who].name}会记得这句话` });
+  if (stamps.length === 1) nextStamp();
+}
+function nextStamp() {
+  const s = stamps[0];
+  const el = $('#stamp');
+  if (!s) { el.hidden = true; return; }
+  el.style.setProperty('--accent', CAST[s.who].color);
+  el.innerHTML = `<span class="seal">${CAST[s.who].full[0]}</span><b>${s.text}</b>`;
+  el.hidden = false;
+  el.classList.remove('go');
+  void el.offsetWidth;
+  el.classList.add('go');
+  audio.se('save');
+  setTimeout(() => { stamps.shift(); nextStamp(); }, 2100);
 }
 
 export function toTitle() {
   stopModes();
+  stopInteractions();
   closeMenu();
   story.reset();
   resetStage();
@@ -87,7 +124,7 @@ export function startReplay(label) {
 
 export function loadSnapshot(record, { keepStack = false } = {}) {
   // 先验再拆：读不出的存档不动当前画面
-  if (!labels[record?.snap?.label]) { toast('这份存档对应的剧本已改动，读不出来了'); return; }
+  if (!labels[record?.snap?.label]) { toast('剧本已更新，这份存档无法读取'); return; }
   closeMenu();
   const tail = record.backlog ?? [];
   clearBacklog(tail.slice(0, -1));
@@ -104,6 +141,7 @@ export function loadSnapshot(record, { keepStack = false } = {}) {
 
 function enterGame() {
   stopModes();
+  stopInteractions();
   setHidden(false);
   closeChoices();
   hideCard();
@@ -166,6 +204,8 @@ function step(fromLoad = false) {
   if (ev.type === 'say') return showSay(ev, fromLoad);
   syncStage(story.stage, { instant: fromLoad || ui.skip });
   if (ev.type === 'choice') return showChoice(ev);
+  if (ev.type === 'look') return showLook(ev);
+  if (ev.type === 'hold') return showHold(ev);
   if (ev.type === 'chapter') return showChapter(ev);
   if (ev.type === 'ending') return showEnding(ev);
   if (ev.type === 'fate') return showFate(ev);
@@ -200,6 +240,29 @@ function showSay(ev, instant) {
   ui.lineRead = wasRead;
   if (ui.skip && !canSkip()) { setSkip(false); toast('已到未读处'); }
   typeText(full, ((ui.skip || ui.ctrl) && canSkip()) || config.textSpeed >= 100);
+  watchCue(ev);
+}
+
+// 剧情过场里的台词是字幕：影像播到下一句的时间点就自动换句，玩家点击可以先走一步。
+// 菜单打开、切走标签页时影像暂停；快进、读档定格或影像缺失时不自动换句，照常点击推进。
+function watchCue(ev) {
+  clearInterval(ui.cueTimer);
+  ui.cueTimer = null;
+  if (!ev.cut || !cutVideo()) return;
+  const next = CUT[ev.cut.id]?.cues?.[ev.cut.index + 1];
+  ui.cueTimer = setInterval(() => {
+    const v = cutVideo();
+    if (!v || ui.cur !== ev) { clearInterval(ui.cueTimer); ui.cueTimer = null; return; }
+    const hold = menuOpen() || document.hidden;
+    if (hold && !v.paused) { v.pause(); v.dataset.held = '1'; }
+    else if (!hold && v.dataset.held) { delete v.dataset.held; v.play?.().catch(() => {}); }
+    if (hold || ui.skip || ui.ctrl || next === undefined || v.currentTime < next) return;
+    clearInterval(ui.cueTimer);
+    ui.cueTimer = null;
+    if (ui.typing) finishTyping();
+    clearTimeout(ui.waitTimer);
+    step();
+  }, 100);
 }
 
 // 文字速度＝每秒字数：按经过的时间算该显示到第几个字
@@ -243,7 +306,7 @@ export function advance(fromTimer = false) {
   if (ui.hidden) { if (!fromTimer) setHidden(false); return; }
   if (!fromTimer && locked()) { if (ui.cur.type === 'fate') revealFate(); return; }
   if (ui.typing) { finishTyping(); return; }
-  if (ui.cur.type === 'choice') return;
+  if (['choice', 'look', 'hold'].includes(ui.cur.type)) return;
   if (!fromTimer) audio.se('click');
   if (ui.cur.type === 'chapter' && fromTimer) lock(350); // 章节卡自己退场时，同一刻的点击不吞掉第一句
   if (ui.cur.type === 'chapter' || ui.cur.type === 'ending' || ui.cur.type === 'fate') hideCard();
@@ -262,10 +325,12 @@ function showChoice(ev) {
   if (ev.branch) {
     const head = document.createElement('p');
     head.className = 'choice-head';
-    head.textContent = '今夜，你往哪扇门去？';
+    head.textContent = '今晚去谁那里？';
     box.append(head);
   }
-  ev.options.forEach((option, n) => {
+  const timed = ev.timed && config.timed && !story.replay;
+  ui.shown = ev.options.filter((o) => !(o.silent && timed));
+  ui.shown.forEach((option, n) => {
     const b = document.createElement('button');
     b.className = 'choice';
     b.dataset.index = option.i;
@@ -275,17 +340,26 @@ function showChoice(ev) {
       b.classList.toggle('locked', !option.enabled);
       b.setAttribute('aria-disabled', String(!option.enabled));
       b.style.setProperty('--accent', c.color);
-      b.innerHTML = `<img class="bust" src="assets/sprite/${option.who}/smile.webp" alt=""><b>${c.house} · ${c.full}</b><small>${option.enabled ? c.line : '你没在她心上留够分量。门闩上了，灯也熄了。'}</small>${option.enabled ? '' : '<span class="wick">熄</span>'}`;
+      b.innerHTML = `<img class="bust" src="assets/sprite/${option.who}/smile.webp" alt=""><b>${c.house} · ${c.full}</b><small>${option.enabled ? c.line : '她对你的好感还不够，今晚这扇门关着。'}</small>${option.enabled ? '' : '<span class="wick">熄</span>'}`;
     } else {
       b.innerHTML = `<b>${option.text.replace(/“([^”]*)”/g, '「$1」')}</b>`;
+      b.classList.toggle('silent', option.silent);
       b.disabled = !option.enabled;
       if (global.chosen.has(choiceKey(option))) { b.classList.add('seen'); b.insertAdjacentHTML('beforeend', '<span class="seen-tag">已选</span>'); }
     }
     b.prepend(Object.assign(document.createElement('i'), { textContent: n + 1 }));
     box.append(b);
   });
+  if (timed) {
+    const wick = document.createElement('div');
+    wick.className = 'wick-timer';
+    wick.innerHTML = '<span class="flame"></span><span class="burn"></span><small>限时：时间到就算你不作声</small>';
+    box.append(wick);
+  }
   box.hidden = false;
   $('#game').classList.add('choosing');
+  $('#game').classList.toggle('timed', Boolean(timed));
+  if (timed) startTimer(ev.timed * 1000, ev.options.find((o) => o.silent).i);
   // 焦点只停在选项框上：连按回车读台词的手不会顺势落进第一项；要用键盘选，先按数字、↑↓ 或 Tab
   box.focus({ preventScroll: true });
   if (!story.replay) {
@@ -298,19 +372,184 @@ function showChoice(ev) {
 }
 
 function closeChoices() {
+  stopTimer();
   $('#choices').hidden = true;
-  $('#game').classList.remove('choosing');
+  $('#game').classList.remove('choosing', 'timed');
 }
 
-export function choose(index) {
-  if (ui.cur?.type !== 'choice' || locked()) return;
-  if (ui.hidden) { setHidden(false); return; } // 隐藏画面时先把字幕请回来，不替玩家做选择
+// ---------- 限时抉择 ----------
+// 菜单、隐藏界面、切走标签页时灯芯停烧；时间到了就是「不作声」
+const timerPaused = () => menuOpen() || ui.hidden || document.hidden;
+function startTimer(total, silentIndex) {
+  stopTimer();
+  const t = { total, left: total, last: now(), raf: 0 };
+  ui.timer = t;
+  const wick = $('#choices .wick-timer');
+  const tick = () => {
+    const at = now();
+    if (!timerPaused()) t.left -= at - t.last;
+    t.last = at;
+    const frac = Math.max(0, t.left / t.total);
+    wick.style.setProperty('--left', frac.toFixed(4));
+    $('#choices').classList.toggle('hurry', frac < 0.3);
+    if (t.left <= 0) { stopTimer(); choose(silentIndex, { timeout: true }); return; }
+    t.raf = requestAnimationFrame(tick);
+  };
+  t.raf = requestAnimationFrame(tick);
+}
+function stopTimer() {
+  if (ui.timer) cancelAnimationFrame(ui.timer.raf);
+  ui.timer = null;
+  $('#choices').classList.remove('hurry');
+}
+
+// ---------- 察言观色 ----------
+function placeSpots() {
+  const layer = $('#look');
+  if (layer.hidden || !ui.look) return;
+  const r = cgRect();
+  for (const b of layer.querySelectorAll('.spot')) {
+    const [x, y, w, h] = JSON.parse(b.dataset.rect);
+    Object.assign(b.style, { left: `${r.left + (r.width * x) / 100}px`, top: `${r.top + (r.height * y) / 100}px`, width: `${(r.width * w) / 100}px`, height: `${(r.height * h) / 100}px` });
+  }
+}
+function lookFoot() {
+  const left = ui.look.left;
+  $('#look .look-left').textContent = left > 0 ? `还能看 ${left} 处` : '看完了';
+  $('#look [data-act="look-done"]').textContent = left > 0 ? '不看了' : '继续';
+}
+function showLook(ev) {
+  setSkip(false);
+  setAuto(false);
+  lock(350);
+  ui.look = { left: ev.left };
+  ui.line = { name: '', who: null, text: ev.prompt };
+  $('#text').textContent = paintLine(ui.line);
+  $('#next-ind').classList.remove('on');
+  const layer = $('#look');
+  layer.innerHTML = `${ev.spots.map((sp) => `<button class="spot ${sp.seen ? 'seen' : ''}" data-i="${sp.i}" data-rect="${JSON.stringify(sp.rect)}" aria-label="${sp.name}"><span>${sp.name}</span></button>`).join('')}
+    <div class="look-foot"><span class="look-left"></span><button class="btn" data-act="look-done">不看了</button></div>`;
+  layer.hidden = false;
+  $('#game').classList.add('looking');
+  lookFoot();
+  requestAnimationFrame(placeSpots);
+  if (!story.replay) saveTo('auto', true);
+}
+function inspect(i) {
+  if (ui.cur?.type !== 'look' || locked()) return;
+  const b = $(`#look .spot[data-i="${i}"]`);
+  if (!b || b.classList.contains('seen')) { if (b) toast('这里已经看过了'); return; }
+  if (ui.look.left <= 0) { toast('能看的都看过了'); return; }
+  const spot = ui.cur.spots.find((sp) => sp.i === i);
+  audio.se('choice');
+  story.inspect(i);
+  b.classList.add('seen');
+  ui.look.left -= 1;
+  lookFoot();
+  ui.line = { name: '', who: null, text: `【${spot.name}】${spot.text}` };
+  pushBacklog({ name: '', text: `◉ ${spot.name}：${spot.text}`, color: null, choice: true });
+  typeText(paintLine(ui.line), config.textSpeed >= 100);
+  $('#next-ind').classList.remove('on');
+}
+function endLook() {
+  if (ui.cur?.type !== 'look' || locked()) return;
+  if (ui.typing) { finishTyping(); $('#next-ind').classList.remove('on'); return; }
+  audio.se('click');
+  closeLook();
+  story.endLook();
+  step();
+}
+function closeLook() {
+  ui.look = null;
+  $('#look').hidden = true;
+  $('#look').innerHTML = '';
+  $('#game').classList.remove('looking');
+}
+
+// ---------- 按住动作 ----------
+// 按住时进度上涨；松手或没按时风把它吹回去。窗口时间内没护满就算灭了。动作辅助打开时自动护住。
+// 窗口从第一次按下算起；一直不按，等满 HOLD_GRACE 也开始算，免得读提示的时候灯就自己灭了。
+const HOLD_WINDOW = 6500;
+const HOLD_GRACE = 4000;
+function showHold(ev) {
+  setSkip(false);
+  setAuto(false);
+  lock(500);
+  ui.line = { name: '', who: null, text: ev.prompt };
+  $('#text').textContent = paintLine(ui.line);
+  $('#next-ind').classList.remove('on');
+  const layer = $('#hold');
+  layer.innerHTML = `<div class="lamp" role="button" tabindex="0" aria-label="${ev.prompt}"><span class="ring"></span><span class="glass"><i class="flame"></i></span></div>
+    <p>${config.assist ? '动作辅助已打开，自动护住' : '按住鼠标、触屏或空格'}</p>`;
+  layer.hidden = false;
+  $('#game').classList.add('holding');
+  const h = { ms: ev.ms, progress: 0, elapsed: 0, idle: 0, started: false, holding: false, last: now(), raf: 0, done: false };
+  ui.hold = h;
+  const ring = layer.querySelector('.ring');
+  const lamp = layer.querySelector('.lamp');
+  const tick = () => {
+    const at = now();
+    const dt = menuOpen() || document.hidden ? 0 : at - h.last;
+    h.last = at;
+    if (!locked()) {
+      if (h.holding || config.assist) h.started = true;
+      h.idle += dt;
+      if (h.started || h.idle >= HOLD_GRACE) h.elapsed += dt;
+      const gust = 0.55 + 0.45 * Math.sin(h.elapsed / 380) ** 2; // 风一阵紧一阵松
+      const holding = h.holding || config.assist;
+      h.progress = Math.min(1, Math.max(0, h.progress + (holding ? dt / h.ms : (-dt / h.ms) * gust * 0.9)));
+      lamp.style.setProperty('--sway', `${(holding ? 2 : 14) * gust * Math.sin(h.elapsed / 140)}deg`);
+      lamp.style.setProperty('--flame', String(holding ? 1 : Math.max(0.25, 1 - gust * 0.6)));
+    }
+    ring.style.setProperty('--p', h.progress.toFixed(4));
+    lamp.classList.toggle('held', h.holding || config.assist);
+    if (h.progress >= 1) return finishHold(true);
+    if (h.elapsed >= HOLD_WINDOW) return finishHold(false);
+    h.raf = requestAnimationFrame(tick);
+  };
+  h.raf = requestAnimationFrame(tick);
+}
+function setHolding(on) {
+  if (ui.hold && !ui.hold.done) ui.hold.holding = on;
+}
+function finishHold(ok) {
+  const h = ui.hold;
+  if (!h || h.done) return;
+  h.done = true;
+  cancelAnimationFrame(h.raf);
+  audio.se(ok ? 'flare' : 'gust');
+  $('#hold .lamp').classList.add(ok ? 'kept' : 'out');
+  $('#hold p').textContent = ok ? '灯护住了' : '灯灭了';
+  setTimeout(() => {
+    if (ui.hold !== h) return;
+    closeHold();
+    story.resolveHold(ok);
+    step();
+  }, 900);
+}
+function closeHold() {
+  if (ui.hold) cancelAnimationFrame(ui.hold.raf);
+  ui.hold = null;
+  $('#hold').hidden = true;
+  $('#hold').innerHTML = '';
+  $('#game').classList.remove('holding');
+}
+
+function stopInteractions() {
+  stopTimer();
+  closeLook();
+  closeHold();
+}
+
+export function choose(index, { timeout = false } = {}) {
+  if (ui.cur?.type !== 'choice' || (locked() && !timeout)) return;
+  if (ui.hidden && !timeout) { setHidden(false); return; } // 隐藏画面时先把字幕请回来，不替玩家做选择
   const option = ui.cur.options.find((o) => o.i === index);
   if (!option) return;
-  if (!option.enabled) { if (option.who) toast('这扇门今夜不为你开。'); return; }
+  if (!option.enabled) { if (option.who) toast('好感不够，这扇门今晚没有亮灯。'); return; }
   audio.se('choice');
   if (!option.who) { global.chosen.add(choiceKey(option)); saveGlobal(); }
-  pushBacklog({ name: '', text: `▶ ${option.who ? `${CAST[option.who].house} · ${CAST[option.who].full}` : option.text}`, color: null, choice: true });
+  pushBacklog({ name: '', text: `▶ ${option.who ? `${CAST[option.who].house} · ${CAST[option.who].full}` : option.text}${timeout ? '（时间到）' : ''}`, color: null, choice: true });
   closeChoices();
   story.choose(index);
   step();
@@ -342,7 +581,7 @@ function hideCard() {
 function chapterKicker(title) {
   const who = HEROINES.find((h) => title.startsWith(CAST[h].full));
   if (!who) return '那年春天';
-  return story.label === `${who}_route` ? `今夜，往${CAST[who].house}` : CAST[who].house;
+  return story.label === `${who}_route` ? `今晚去${CAST[who].house}` : CAST[who].house;
 }
 
 function armChapter() {
@@ -350,8 +589,15 @@ function armChapter() {
   ui.waitTimer = setTimeout(() => advance(true), ui.skip || ui.ctrl ? 400 : 2600);
 }
 
+// 剧情树：每章开场记下这一刻，之后可从菜单「剧情树」直接回到这里重来
+async function recordNode() {
+  if (story.replay) return;
+  writeNode(story.stage.chapter, await makeSaveRecord());
+}
+
 function showChapter(ev) {
   audio.se('chapter');
+  recordNode();
   showCard(`<div class="chapter-inner"><small>${chapterKicker(ev.title)}</small><h2>${ev.title}</h2><p>${ev.sub}</p></div>`, 'chapter');
   saveTo('auto', true);
   armChapter();
@@ -373,7 +619,7 @@ function showFate(ev) {
   lock(5000);
   const lines = FATES[ev.who] ?? [];
   const who = CAST[ev.who];
-  showCard(`<div class="fate-bg" style="background-image:url('${CG.fate.src}')"></div><div class="fate-inner"><small>原著命数</small><h2>${who ? who.full : '西门庆'}</h2>${lines.map((l, i) => `<p style="animation-delay:${0.6 + i * 1.4}s">${l}</p>`).join('')}<em>这一春你们说成了什么，改不了她在书里的去处。</em></div>`, 'fate');
+  showCard(`<div class="fate-bg" style="background-image:url('${CG.fate.src}')"></div><div class="fate-inner"><small>原著命数</small><h2>${who ? who.full : '西门庆'}</h2>${lines.map((l, i) => `<p style="animation-delay:${0.6 + i * 1.4}s">${l}</p>`).join('')}<em>这一春你们走到了哪一步，都改变不了她在原著里的命运。</em></div>`, 'fate');
   unlock('cg', 'fate');
 }
 
@@ -390,7 +636,7 @@ function rearmWait() {
   clearTimeout(ui.waitTimer);
   if (!ui.typing && ui.cur?.type === 'say' && (ui.auto || ui.skip || ui.ctrl)) lineDone();
 }
-const SKIP_HINT = '没读过的句子不快进——可在「设置」里打开『快进未读文字』';
+const SKIP_HINT = '快进只跳过读过的句子，可以在「设置」里打开「快进未读文字」';
 export function setAuto(on) {
   ui.auto = on;
   $('#quickmenu [data-act="auto"]').classList.toggle('on', on);
@@ -442,7 +688,7 @@ const quickActions = {
 
 function bindInput() {
   $('#btn-age-yes').addEventListener('click', () => { confirmAge(); audio.unlock(); toTitle(); });
-  $('#btn-age-no').addEventListener('click', () => { $('#gate .gate-card').innerHTML = '<h1>这扇门不往里开</h1><p>本作只供成年人。你可以直接关闭页面。</p>'; });
+  $('#btn-age-no').addEventListener('click', () => { $('#gate .gate-card').innerHTML = '<h1>本作仅限成年人</h1><p>可以直接关闭这个页面。</p>'; });
   // 鼠标点按钮不夺焦点：之后的空格、回车照常推进文字，不会再按一次这个按钮
   for (const sel of ['#quickmenu', '#title .title-menu']) {
     $(sel).addEventListener('mousedown', (e) => { if (e.target.closest('button')) e.preventDefault(); });
@@ -469,7 +715,7 @@ function bindInput() {
     if (b) { e.stopPropagation(); choose(Number(b.dataset.index)); }
   });
   $('#game').addEventListener('click', (e) => {
-    if (e.target.closest('#quickmenu, #choices')) return;
+    if (e.target.closest('#quickmenu, #choices, #look, #hold')) return;
     advance();
   });
   $('#game').addEventListener('contextmenu', (e) => { e.preventDefault(); if (!menuOpen()) setHidden(!ui.hidden); });
@@ -480,8 +726,22 @@ function bindInput() {
   }, { passive: true });
   document.addEventListener('pointerdown', () => audio.unlock(), { once: true });
   document.addEventListener('keydown', onKey);
-  document.addEventListener('keyup', (e) => { if (e.key === 'Control' && ui.ctrl) { ui.ctrl = false; badge(); rearmWait(); } });
-  window.addEventListener('blur', () => { ui.ctrl = false; badge(); });
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'Control' && ui.ctrl) { ui.ctrl = false; badge(); rearmWait(); }
+    if (e.key === ' ' || e.key === 'Enter') setHolding(false);
+  });
+  $('#look').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const spot = e.target.closest('.spot');
+    if (spot) inspect(Number(spot.dataset.i));
+    else if (e.target.closest('[data-act="look-done"]')) endLook();
+    else if (ui.typing) finishTyping();
+  });
+  $('#hold').addEventListener('click', (e) => e.stopPropagation());
+  $('#hold').addEventListener('pointerdown', (e) => { e.preventDefault(); setHolding(true); });
+  for (const type of ['pointerup', 'pointercancel', 'pointerleave']) $('#hold').addEventListener(type, () => setHolding(false));
+  window.addEventListener('resize', placeSpots);
+  window.addEventListener('blur', () => { ui.ctrl = false; badge(); setHolding(false); });
 }
 
 function onKey(e) {
@@ -499,8 +759,14 @@ function onKey(e) {
     if (ui.typing) finishTyping(); else rearmWait();
     return;
   }
+  if (ui.cur?.type === 'hold' && (e.key === ' ' || e.key === 'Enter')) {
+    e.preventDefault();
+    if (!e.repeat) setHolding(true);
+    return;
+  }
+  if (ui.cur?.type === 'look' && e.key === 'Enter' && !e.target.closest?.('#look')) { e.preventDefault(); endLook(); return; }
   if (ui.cur?.type === 'choice' && /^[1-9]$/.test(e.key)) {
-    const option = ui.cur.options[Number(e.key) - 1];
+    const option = ui.shown[Number(e.key) - 1];
     if (option && !e.repeat) choose(option.i);
     return;
   }

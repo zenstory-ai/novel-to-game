@@ -1,10 +1,10 @@
-// 覆盖层菜单：回看记录、存读档、设置、系统菜单与心意、鉴赏（CG／回想／音乐／结局）、退出。
-import { CAST, CG, MUSIC, ENDINGS, ENDING_KIND } from './story/index.js';
+// 覆盖层菜单：回看记录、存读档、设置、系统菜单与心意、剧情树、鉴赏（CG／过场／回想／音乐／结局）、退出。
+import { CAST, CG, CUT, MUSIC, ENDINGS, ENDING_KIND } from './story/index.js';
 import { HEROINES, ROUTE_MIN } from './adv.js';
-import { config, saveConfig, global, loadSaves, deleteSave, SLOT_PAGES, SLOTS_PER_PAGE, DEFAULT_CONFIG } from './store.js';
+import { config, saveConfig, global, loadSaves, deleteSave, loadNodes, SLOT_PAGES, SLOTS_PER_PAGE, DEFAULT_CONFIG } from './store.js';
 import { audio } from './audio.js';
-import { cgVisible, cgClass } from './stage.js';
-import { story, toTitle, loadSnapshot, saveTo, startReplay, setAuto, setSkip, afterMenuClose, applyBoxAlpha } from './main.js';
+import { cgVisible, cgClass, playCutInto } from './stage.js';
+import { story, toTitle, loadSnapshot, saveTo, startReplay, setAuto, setSkip, afterMenuClose, applyBoxAlpha, chapterList } from './main.js';
 
 const $ = (sel) => document.querySelector(sel);
 const overlay = () => $('#overlay');
@@ -16,6 +16,7 @@ const backlog = [];
 export let closedAt = 0;
 
 export const menuOpen = () => current !== null;
+const stopCutView = () => { const v = overlay().querySelector('video'); if (v) { v.pause(); audio.duck(false); } };
 export function pushBacklog(entry) { backlog.push(entry); if (backlog.length > 300) backlog.shift(); }
 export function clearBacklog(entries = []) { backlog.splice(0, backlog.length, ...entries); }
 export const backlogTail = () => backlog.slice(-80);
@@ -25,6 +26,7 @@ export function closeMenu() {
   current = null;
   trail.length = 0;
   clearInterval(preview.timer);
+  stopCutView();
   overlay().hidden = true;
   overlay().innerHTML = '';
   closedAt = performance.now();
@@ -72,14 +74,17 @@ const frame = (title, body, extra = '', cls = '') => `
 function render() {
   const o = overlay();
   clearInterval(preview.timer);
+  stopCutView();
   if (current === 'backlog') o.innerHTML = frame('回看', `<ol class="backlog">${backlog.map((b) => `<li class="${b.choice ? 'chosen' : ''}">${b.name ? `<b style="color:${b.color ?? '#6b4b2e'}">${b.name}</b>` : ''}<p>${b.text}</p></li>`).join('') || '<li><p>还没有读过的句子。</p></li>'}</ol>`);
   else if (current === 'save' || current === 'load') o.innerHTML = frame(current === 'save' ? '存档' : '读档', slotsHtml(), pagesHtml(), 'slots-panel');
   else if (current === 'config') o.innerHTML = frame('设置', configHtml());
   else if (current === 'system') o.innerHTML = frame('菜单', systemHtml());
   else if (current === 'peek') o.innerHTML = frame('心意', peekHtml());
+  else if (current === 'tree') o.innerHTML = frame('剧情树', treeHtml(), '', 'tall');
   else if (current === 'extras') o.innerHTML = frame('鉴赏', extrasHtml(), tabsHtml(), 'tall');
   else if (current === 'exit') o.innerHTML = `<div class="panel small"><h2>已离开</h2><p>浏览器不允许网页自行关闭窗口，你可以直接关掉这个标签页。</p><div class="row"><button class="btn primary" data-act="close">回到标题</button></div></div>`;
   else if (current === 'confirm') o.innerHTML = `<div class="panel small"><p>${confirmState.text}</p><div class="row"><button class="btn primary" data-act="yes">确定</button><button class="btn" data-act="close">取消</button></div></div>`;
+  else if (current === 'cutview') { o.innerHTML = `<figure class="cgview cutview"><div class="cg-frame"></div><figcaption>${CUT[viewing].name}　·　<button class="btn" data-act="close">返回</button></figcaption></figure>`; playCutInto(o.querySelector('.cg-frame'), viewing); }
   else if (current === 'cgview') o.innerHTML = `<figure class="cgview" data-act="view"><div class="cg-frame"><img class="${cgClass(viewing)}" src="${CG[viewing].src}" alt="${CG[viewing].name}"></div><figcaption>${CG[viewing].name}　·　← → 翻看　点中间关闭</figcaption></figure>`;
   if (current === 'backlog') { const body = o.querySelector('.panel-body'); body.scrollTop = body.scrollHeight; }
   if (current === 'config') startPreview();
@@ -107,7 +112,7 @@ function slotsHtml() {
 
 // ---------- 设置 ----------
 const preview = { timer: null };
-const PREVIEW_LINE = '金莲：「官人，这字走得快些，还是慢些？」';
+const PREVIEW_LINE = '金莲：「官人想看快些，还是慢些？」';
 function startPreview() {
   clearInterval(preview.timer);
   const el = $('#cfg-type');
@@ -132,6 +137,9 @@ function configHtml() {
     ${range('boxAlpha', '文字框浓淡', 40)}
     ${toggle('skipUnread', '快进未读文字', '关闭时，快进只跳过读过的句子')}
     ${toggle('adult', '成人画面', '关闭后，亲密 CG 以帘幕代替')}
+    ${toggle('film', '动态影像', '关闭后，过场换成定格画面，CG 不再微动')}
+    ${toggle('timed', '限时抉择', '关闭后不计时，「不作声」列为一个选项')}
+    ${toggle('assist', '动作辅助', '按住类的动作自动完成')}
   </div>
   <p class="cfg-preview"><span id="cfg-type"></span></p>
   <p class="cfg-keys">点击推进　右键隐藏　滚轮上翻回看　按住 Ctrl 快进　A 自动　← 上一选项　Esc 菜单</p>
@@ -145,6 +153,7 @@ function systemHtml() {
     <button class="btn" data-go="load">读档</button>
     <button class="btn" data-go="config">设置</button>
     <button class="btn" data-go="peek" ${story.replay ? 'disabled' : ''}>心意</button>
+    <button class="btn" data-go="tree" ${story.replay ? 'disabled' : ''}>剧情树</button>
     <button class="btn" data-go="backlog">回看记录</button>
     <button class="btn" data-act="title">回到标题</button>
     <button class="btn primary" data-act="close" data-focus>继续游戏</button>
@@ -152,7 +161,7 @@ function systemHtml() {
 }
 // 心意一瞥只给她的神色和院门灯，不给档位
 function peekHtml() {
-  return `<p class="peek-note">只是一眼。清明席散之后，只有还为你亮着灯的门，才会开。</p><div class="peek">${HEROINES.map((h) => {
+  return `<p class="peek-note">清明席散之后，好感够的院门才会为你亮灯。</p><div class="peek">${HEROINES.map((h) => {
     const v = story.vars.aff[h] ?? 0;
     const face = v >= 6 ? 'blush' : v >= 1 ? 'smile' : 'neutral';
     const lit = v >= ROUTE_MIN;
@@ -160,8 +169,27 @@ function peekHtml() {
   }).join('')}</div>`;
 }
 
+// ---------- 剧情树 ----------
+// 共通线一列、五条路线各一列；到过的章节能直接回去重来，没到过的显示锁
+function treeHtml() {
+  const nodes = loadNodes();
+  const chapters = chapterList();
+  const node = (c) => {
+    const rec = nodes[c.key];
+    return `<button class="tree-node ${rec ? '' : 'locked'}" data-node="${c.key}" ${rec ? '' : 'disabled'}>
+      <span class="tree-thumb" ${rec?.thumb ? `style="background-image:url(${rec.thumb})"` : ''}>${rec ? '' : '锁'}</span><span class="tree-txt"><b>${rec ? c.sub || c.title : '？？？'}</b><small>${rec ? c.title : '尚未到达'}</small></span></button>`;
+  };
+  const col = (who) => {
+    const list = chapters.filter((c) => c.who === who);
+    const head = who ? `${CAST[who].full}篇` : '共通线';
+    return `<div class="tree-col" style="--accent:${who ? CAST[who].color : '#7a6a80'}"><div class="flow-head">${head}</div>${list.map(node).join('')}</div>`;
+  };
+  return `<p class="peek-note">到过的章节可以回去重来，她们的心意按那一刻算。</p>
+    <div class="tree">${col(null)}<div class="tree-routes">${HEROINES.map(col).join('')}</div></div>`;
+}
+
 // ---------- 鉴赏 ----------
-const TABS = { cg: 'CG', scene: '回想', music: '音乐', ending: '结局' };
+const TABS = { cg: 'CG', cut: '过场', scene: '回想', music: '音乐', ending: '结局' };
 function tabsHtml() {
   return `<nav class="tabs">${Object.entries(TABS).map(([k, v]) => `<button class="tab ${extrasTab === k ? 'on' : ''}" data-tab="${k}">${v}</button>`).join('')}</nav>`;
 }
@@ -188,6 +216,19 @@ function extrasHtml() {
       }).join('')}</div>`;
     }).join('');
     return `<p class="count">已收集 ${open} / ${ids.length}</p>${groups}`;
+  }
+  if (extrasTab === 'cut') {
+    const ids = Object.keys(CUT);
+    const groups = GROUPS.map((g) => {
+      const members = ids.filter((id) => (CUT[id].group ?? 'common') === g);
+      if (!members.length) return '';
+      const got = members.filter((id) => global.cut.has(id)).length;
+      return `<h3 class="cg-group">${g === 'common' ? '共通' : CAST[g].name}<small>${got} / ${members.length}</small></h3><div class="cg-grid">${members.map((id) => {
+        const ok = global.cut.has(id);
+        return `<button class="cg-cell ${ok ? '' : 'locked'}" data-cut="${id}" ${ok ? '' : 'disabled'}>${ok ? `<span class="cg-thumb"><img loading="lazy" src="assets/cut/${id}.jpg" alt=""></span>` : '<span>？</span>'}<small>${ok ? CUT[id].name : '未看过'}</small></button>`;
+      }).join('')}</div>`;
+    }).join('');
+    return `<p class="count">已看过 ${ids.filter((id) => global.cut.has(id)).length} / ${ids.length} 段过场</p>${groups}`;
   }
   if (extrasTab === 'scene') {
     return `<div class="scene-list">${SCENES.map(([id, label, who, title]) => {
@@ -243,6 +284,8 @@ overlay().addEventListener('click', async (e) => {
     else if (record) confirmBox(`覆盖 ${slotName(d.slot)} 的存档？`, async () => { await saveTo(d.slot); backMenu(); });
     else { await saveTo(d.slot); render(); }
   } else if (d.cg) { viewing = d.cg; go('cgview'); }
+  else if (d.cut) { viewing = d.cut; go('cutview'); }
+  else if (d.node) { const rec = loadNodes()[d.node]; if (rec) confirmBox(`回到「${d.node}」重来？未存档的进度会丢失。`, () => loadSnapshot(rec)); }
   else if (d.replay) startReplay(d.replay);
   else if (d.music) { audio.play(d.music); render(); }
 });
@@ -266,6 +309,7 @@ overlay().addEventListener('input', (e) => {
   saveConfig();
   audio.setVolumes(config.bgm, config.se);
   if (key === 'boxAlpha') applyBoxAlpha();
+  if (key === 'film' && ingame()) afterMenuClose();
   if (key === 'textSpeed') startPreview();
   const out = e.target.parentElement.querySelector('output');
   if (out) out.textContent = key === 'textSpeed' && config[key] >= 100 ? '瞬间' : config[key];

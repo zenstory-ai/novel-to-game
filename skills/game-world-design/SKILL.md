@@ -11,7 +11,8 @@ description: "Design game experience, systems, and levels. Converge the chosen c
 [numeric-design-method.md](references/numeric-design-method.md)。
 
 叙事实际承载体验时读取 [narrative-design-method.md](references/narrative-design-method.md)，
-不为所有项目强制写长篇对白。
+不为所有项目强制写长篇对白。选择之后要用一段剧情动画演出后果（互动影游，文游与短剧的结合）时，再读
+[interactive-film-method.md](references/interactive-film-method.md)。
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 

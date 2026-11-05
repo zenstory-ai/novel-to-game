@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "usage": "《西游记·三借芭蕉扇》配乐与音效台账：5 首场景曲目、24 个战斗与探索音效。",
+  "method": "文生音乐（器乐）与文生音效；生成后统一后期处理。运行时读不出文件时回落到原有的程序化合成音。",
+  "generatedAt": "2026-11-04",
+  "items": [
+    {
+      "file": "app/assets/audio/bgm/title.mp3",
+      "kind": "bgm",
+      "prompt": "西游记题材游戏标题曲：唢呐与竹笛领奏，琵琶、古筝、大鼓，气势恢宏又带东方仙气，取经路远的豪情，中速。中国民乐纯器乐，无人声，首尾可循环，约两分钟。",
+      "post": "去首尾静音；超过两分半截断；RMS 归一到约 -18 dBFS、峰值不超过 -1 dB；首 0.4 秒淡入、尾 3 秒淡出；96 kbps 立体声 mp3。"
+    },
+    {
+      "file": "app/assets/audio/bgm/overworld.mp3",
+      "kind": "bgm",
+      "prompt": "西游记行路地图音乐：竹笛、琵琶、木鱼与板鼓，轻快明朗，山水间赶路，中速偏快。中国民乐纯器乐，无人声，首尾可循环，约两分钟。",
+      "post": "去首尾静音；超过两分半截断；RMS 归一到约 -18 dBFS、峰值不超过 -1 dB；首 0.4 秒淡入、尾 3 秒淡出；96 kbps 立体声 mp3。"
+    },
+    {
+      "file": "app/assets/audio/bgm/battle.mp3",
+      "kind": "bgm",
+      "prompt": "西游记战斗音乐：堂鼓、钹、唢呐与琵琶轮指，激昂紧凑，降妖除魔，快速。中国民乐纯器乐，无人声，首尾可循环，约两分钟。",
+      "post": "去首尾静音；超过两分半截断；RMS 归一到约 -18 dBFS、峰值不超过 -1 dB；首 0.4 秒淡入、尾 3 秒淡出；96 kbps 立体声 mp3。"
+    },
+    {
+      "file": "app/assets/audio/bgm/boss.mp3",
+      "kind": "bgm",
+      "prompt": "西游记首领战音乐：低音大鼓、铜锣、低沉唢呐与弦乐，压迫感强，妖王现身，中速厚重。中国民乐纯器乐，无人声，首尾可循环，约两分钟。",
+      "post": "去首尾静音；超过两分半截断；RMS 归一到约 -18 dBFS、峰值不超过 -1 dB；首 0.4 秒淡入、尾 3 秒淡出；96 kbps 立体声 mp3。"
+    },
+    {
+      "file": "app/assets/audio/bgm/ending.mp3",
+      "kind": "bgm",
+      "prompt": "西游记结局音乐：竹笛与古筝，悠扬开阔，功德圆满的释然与温暖，慢速。中国民乐纯器乐，无人声，约两分钟。",
+      "post": "去首尾静音；超过两分半截断；RMS 归一到约 -18 dBFS、峰值不超过 -1 dB；首 0.4 秒淡入、尾 3 秒淡出；96 kbps 立体声 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/click.mp3",
+      "kind": "sfx",
+      "prompt": "音效：木鱼轻轻敲一下，短促清脆，约0.2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/hit.mp3",
+      "kind": "sfx",
+      "prompt": "音效：金箍棒打中妖怪的一声闷击，带一点风声，约0.4秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/crit.mp3",
+      "kind": "sfx",
+      "prompt": "音效：重击命中，钝响后紧跟一声金属铮鸣，约0.6秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/skill.mp3",
+      "kind": "sfx",
+      "prompt": "音效：施展法术，一股气流嗖地卷起，伴随清亮铃声，约0.8秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/heal.mp3",
+      "kind": "sfx",
+      "prompt": "音效：治疗法术，清澈的铃声与细细的流水声，柔和，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/ke.mp3",
+      "kind": "sfx",
+      "prompt": "音效：五行相克生效，一声尖锐清亮的小铜磬敲击，约0.4秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/thud.mp3",
+      "kind": "sfx",
+      "prompt": "音效：身体倒地的一声闷响，约0.4秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/combo.mp3",
+      "kind": "sfx",
+      "prompt": "音效：连击，三下由慢到快的板鼓，最后一下重，约0.7秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/transform.mp3",
+      "kind": "sfx",
+      "prompt": "音效：七十二变变身，嗖地一阵气流上扬，接一声小锣，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/telegraph.mp3",
+      "kind": "sfx",
+      "prompt": "音效：妖怪蓄力预警，低沉的鼓声由弱渐强，带一点嗡鸣，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/heavy.mp3",
+      "kind": "sfx",
+      "prompt": "音效：巨大的锤子砸在地上，轰的一声，碎石散落，约0.8秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/fan1.mp3",
+      "kind": "sfx",
+      "prompt": "音效：芭蕉扇第一扇，熊熊火焰被扇灭，呼——嘶的熄灭声，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/fan2.mp3",
+      "kind": "sfx",
+      "prompt": "音效：芭蕉扇第二扇，狂风大作的呼啸声，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/fan3.mp3",
+      "kind": "sfx",
+      "prompt": "音效：芭蕉扇第三扇，雨点哗哗落下，夹着清脆铃声，约1.2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/firefx.mp3",
+      "kind": "sfx",
+      "prompt": "音效：烈火轰地燃起，余焰噼啪作响，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/waterfx.mp3",
+      "kind": "sfx",
+      "prompt": "音效：浪涛涌起又落下的水声，带一点清音，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/levelup.mp3",
+      "kind": "sfx",
+      "prompt": "音效：升级，竹笛快速上行一串音加一声铃，喜庆，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/victory.mp3",
+      "kind": "sfx",
+      "prompt": "音效：战斗胜利，锣鼓一小段欢快收尾，约2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/defeat.mp3",
+      "kind": "sfx",
+      "prompt": "音效：战斗失败，二胡低沉下行一句，约2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/step.mp3",
+      "kind": "sfx",
+      "prompt": "音效：草鞋踩在沙土路上的一步脚步声，很轻，约0.2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/coin.mp3",
+      "kind": "sfx",
+      "prompt": "音效：几枚铜钱落在一起的叮当声，约0.5秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/quest.mp3",
+      "kind": "sfx",
+      "prompt": "音效：接到或完成任务，一声清亮的小铃，约0.6秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/portal.mp3",
+      "kind": "sfx",
+      "prompt": "音效：腾云驾雾传送，气流上扬的呼声加风铃，约1秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    },
+    {
+      "file": "app/assets/audio/sfx/encounter.mp3",
+      "kind": "sfx",
+      "prompt": "音效：遭遇妖怪入战，铜锣重重敲一声，余音震荡，约1.2秒。",
+      "post": "去首尾静音；按提示词时长截断并留尾音；峰值归一到 -3 dB；64 kbps 单声道 mp3。"
+    }
+  ]
+}

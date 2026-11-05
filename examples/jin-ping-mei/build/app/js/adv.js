@@ -9,7 +9,12 @@
 //   @show id 左|中|右 [表情]     立绘      @hide id|all    @fx shake|flash
 //   @chapter 标题|副题           章节标题卡（「标题 · 副题」也写入存档名）
 //   @cg id | @cg off            CG        @scene id 题名 / @endscene   回想区段
-//   @choice + 若干「- 文本 -> label {yue+1 f:flag} ?yue>=2」
+//   @cut id | @cut off          剧情过场：一段演出选择后果的短片，其后的台词按 CUT[id].cues 的时间点做它的字幕；
+//                               播完停在末帧，直到 @cut off（@bg、@cg 也会收起它）
+//   @choice + 若干「- 文本 -> label {yue+1 f:flag r:yue} ?yue>=2」；r:人物 = 「她记下了」的印
+//   @choice 10 -> label {效果}  限时抉择：10 秒内不选即「不作声」，走该 label
+//   @look 提示 + 若干「- x,y,w,h 名称：看见什么 {f:flag}」  察言观色：在当前画面上最多看三处（坐标为图像百分比）
+//   @hold 毫秒 提示 -> 成功label | 失败label   按住动作
 //   @jump label | @if 条件 -> label | @do 效果
 //   @branch                     共通线终点：按好感开放各院门
 //   @ending id                  记录并展示结局      @fate 人物   原著命数页      @end 回标题
@@ -24,6 +29,7 @@ const SAY = /^([^\s：:@#\-][^：]{0,5}?)(?:[(（]([平笑怒哀羞惊])[)）])?
 function parseEffects(text = '') {
   return text.trim().split(/\s+/).filter(Boolean).map((token) => {
     if (token.startsWith('f:')) return { flag: token.slice(2) };
+    if (token.startsWith('r:')) return { remember: token.slice(2) };
     const m = token.match(/^(\w+)([+-]\d+)$/);
     if (!m) throw new Error(`效果写法不对：${token}`);
     return { aff: m[1], delta: Number(m[2]) };
@@ -56,6 +62,7 @@ export function parseScript(sources, cast, speakers = []) {
   const labels = {};
   let current = null;
   let pendingChoice = null;
+  let pendingLook = null;
   for (const source of sources) {
     for (const raw of source.split('\n')) {
       const line = raw.trim();
@@ -65,6 +72,7 @@ export function parseScript(sources, cast, speakers = []) {
         if (labels[current]) throw new Error(`重复标签：${current}`);
         labels[current] = [];
         pendingChoice = null;
+        pendingLook = null;
         continue;
       }
       if (!current) throw new Error(`标签之外的行：${line}`);
@@ -75,7 +83,16 @@ export function parseScript(sources, cast, speakers = []) {
         pendingChoice.options.push({ text: m[1].trim(), target: m[2], effects: parseEffects(m[3]), cond: parseCond(m[4]) });
         continue;
       }
+      if (line.startsWith('- ') && pendingLook) {
+        const m = line.slice(2).match(/^([\d.]+),([\d.]+),([\d.]+),([\d.]+)\s+([^：]+)：(.+?)\s*\{([^}]*)\}$/);
+        if (!m) throw new Error(`细节写法不对：${line}`);
+        const effects = parseEffects(m[7]);
+        if (!effects.some((e) => e.flag)) throw new Error(`细节要记一个 f:标记：${line}`);
+        pendingLook.spots.push({ rect: m.slice(1, 5).map(Number), name: m[5].trim(), text: m[6].trim(), effects });
+        continue;
+      }
       pendingChoice = null;
+      pendingLook = null;
       if (line.startsWith('@')) {
         const [op, ...rest] = line.slice(1).split(/\s+/);
         const arg = line.slice(op.length + 2).trim();
@@ -89,9 +106,24 @@ export function parseScript(sources, cast, speakers = []) {
         else if (op === 'weather') cmd = { t: 'weather', id: rest[0] === 'none' ? null : rest[0] };
         else if (op === 'chapter') { const [title, sub = ''] = arg.split('|'); cmd = { t: 'chapter', title: title.trim(), sub: sub.trim() }; }
         else if (op === 'cg') cmd = { t: 'cg', id: rest[0] === 'off' ? null : rest[0] };
+        else if (op === 'cut') cmd = { t: 'cut', id: rest[0] === 'off' ? null : rest[0] };
         else if (op === 'scene') cmd = { t: 'scene', id: rest[0], title: rest.slice(1).join(' ') };
         else if (op === 'endscene') cmd = { t: 'endscene' };
-        else if (op === 'choice') { cmd = { t: 'choice', options: [] }; pendingChoice = cmd; }
+        else if (op === 'choice') {
+          cmd = { t: 'choice', options: [] };
+          if (arg) {
+            const m = arg.match(/^(\d+)\s*->\s*(\w+)\s*(?:\{([^}]*)\})?$/);
+            if (!m) throw new Error(`限时选项写法不对：${line}`);
+            cmd.timed = Number(m[1]);
+            cmd.silent = { text: '（不作声）', target: m[2], effects: parseEffects(m[3]), cond: null, silent: true };
+          }
+          pendingChoice = cmd;
+        } else if (op === 'look') { cmd = { t: 'look', prompt: arg, max: 3, spots: [] }; pendingLook = cmd; }
+        else if (op === 'hold') {
+          const m = arg.match(/^(\d+)\s+(.+?)\s*->\s*(\w+)\s*\|\s*(\w+)$/);
+          if (!m) throw new Error(`按住动作写法不对：${line}`);
+          cmd = { t: 'hold', ms: Number(m[1]), prompt: m[2], target: m[3], miss: m[4] };
+        }
         else if (op === 'jump') cmd = { t: 'jump', target: rest[0] };
         else if (op === 'if') { const m = arg.match(/^(\S+)\s*->\s*(\w+)$/); cmd = { t: 'if', cond: parseCond(m[1]), target: m[2] }; }
         else if (op === 'do') cmd = { t: 'do', effects: parseEffects(arg) };
@@ -111,11 +143,17 @@ export function parseScript(sources, cast, speakers = []) {
       }
     }
   }
-  for (const [label, list] of Object.entries(labels)) list.forEach((cmd, ip) => { if (cmd.t === 'say') cmd.id = `${label}:${ip}`; });
+  for (const [label, list] of Object.entries(labels)) {
+    list.forEach((cmd, ip) => {
+      if (cmd.t === 'say') cmd.id = `${label}:${ip}`;
+      if (cmd.t === 'choice' && cmd.silent) cmd.options.push(cmd.silent);
+      if (cmd.t === 'look' && !cmd.spots.length) throw new Error(`@look 下面没有细节：${label}`);
+    });
+  }
   return labels;
 }
 
-const blankStage = () => ({ bg: null, bgFx: 'fade', sprites: {}, cg: null, bgm: null, weather: null, chapter: '' });
+const blankStage = () => ({ bg: null, bgFx: 'fade', sprites: {}, cg: null, cut: null, cutSay: -1, bgm: null, weather: null, chapter: '' });
 
 export class Story {
   constructor(labels, hooks = {}) {
@@ -131,6 +169,8 @@ export class Story {
     this.stage = blankStage();
     this.replay = false;
     this.pending = null;
+    this.pendingLook = null;
+    this.pendingHold = null;
   }
 
   start(label = 'start', { replay = false, ip = 0 } = {}) {
@@ -149,11 +189,17 @@ export class Story {
   apply(effects) {
     for (const e of effects) {
       if (e.flag) this.vars.flags[e.flag] = true;
-      else this.vars.aff[e.aff] = (this.vars.aff[e.aff] ?? 0) + e.delta;
+      else if (e.aff) this.vars.aff[e.aff] = (this.vars.aff[e.aff] ?? 0) + e.delta;
+    }
+    // 「她记下了」：同一组效果里她的心意升降决定印上写什么
+    for (const e of effects) {
+      if (!e.remember) continue;
+      const delta = effects.filter((x) => x.aff === e.remember).reduce((n, x) => n + x.delta, 0);
+      this.hooks.onRemember?.(e.remember, delta);
     }
   }
 
-  // 执行到下一个阻塞点并返回它：say / choice / chapter / ending / fate / end
+  // 执行到下一个阻塞点并返回它：say / choice / look / hold / chapter / ending / fate / end
   next() {
     for (let guard = 0; guard < 10000; guard += 1) {
       const list = this.labels[this.label];
@@ -163,14 +209,16 @@ export class Story {
       this.ip += 1;
       const s = this.stage;
       switch (cmd.t) {
-        case 'bg': s.bg = cmd.id; s.bgFx = cmd.fx; s.cg = null; break;
+        case 'bg': s.bg = cmd.id; s.bgFx = cmd.fx; s.cg = null; s.cut = null; break;
         case 'bgm': s.bgm = cmd.id; if (cmd.id) this.hooks.onUnlock?.('music', cmd.id); break;
         case 'se': this.hooks.onSe?.(cmd.id); break;
         case 'fx': this.hooks.onFx?.(cmd.id); break;
         case 'weather': s.weather = cmd.id; break;
         case 'show': s.sprites[cmd.who] = { pos: cmd.pos, expr: cmd.expr }; break;
         case 'hide': if (cmd.who === 'all') s.sprites = {}; else delete s.sprites[cmd.who]; break;
-        case 'cg': s.cg = cmd.id; if (cmd.id) this.hooks.onUnlock?.('cg', cmd.id); break;
+        case 'cg': s.cg = cmd.id; if (cmd.id) { s.cut = null; this.hooks.onUnlock?.('cg', cmd.id); } break;
+        // 剧情过场：之后的台词就是这段影像的字幕，直到 @cut off；cutSay 记到第几句，主循环据此对齐字幕时间
+        case 'cut': s.cut = cmd.id; s.cutSay = -1; if (cmd.id) this.hooks.onUnlock?.('cut', cmd.id); break;
         case 'scene': if (!this.replay) this.hooks.onUnlock?.('scene', cmd.id); break;
         case 'endscene': if (this.replay) return { type: 'end', replay: true }; break;
         case 'jump': this.jump(cmd.target); break;
@@ -178,12 +226,22 @@ export class Story {
         case 'do': this.apply(cmd.effects); break;
         case 'say':
           if (cmd.who && cmd.expr && s.sprites[cmd.who]) s.sprites[cmd.who].expr = cmd.expr;
+          if (s.cut) { s.cutSay += 1; return { type: 'say', ...cmd, cut: { id: s.cut, index: s.cutSay } }; }
           return { type: 'say', ...cmd };
         case 'chapter': s.chapter = cmd.sub ? `${cmd.title} · ${cmd.sub}` : cmd.title; return { type: 'chapter', title: cmd.title, sub: cmd.sub };
         case 'choice': {
-          const options = cmd.options.map((o, i) => ({ i, text: o.text, enabled: testCond(o.cond, this.vars) }));
+          const options = cmd.options.map((o, i) => ({ i, text: o.text, enabled: testCond(o.cond, this.vars), silent: Boolean(o.silent) }));
           this.pending = cmd.options;
-          return { type: 'choice', options };
+          return { type: 'choice', options, timed: cmd.timed ?? 0 };
+        }
+        case 'look': {
+          this.pendingLook = cmd;
+          const spots = cmd.spots.map((sp, i) => ({ i, rect: sp.rect, name: sp.name, text: sp.text, seen: sp.effects.some((e) => e.flag && this.vars.flags[e.flag]) }));
+          return { type: 'look', prompt: cmd.prompt, max: cmd.max, spots, left: cmd.max - spots.filter((sp) => sp.seen).length };
+        }
+        case 'hold': {
+          this.pendingHold = cmd;
+          return { type: 'hold', ms: cmd.ms, prompt: cmd.prompt };
         }
         case 'branch': {
           const open = HEROINES.filter((h) => this.vars.aff[h] >= ROUTE_MIN);
@@ -198,6 +256,23 @@ export class Story {
       }
     }
     throw new Error('剧本陷入死循环');
+  }
+
+  // 察言观色：看一处细节，记下它的标记，返回看见的那句话
+  inspect(index) {
+    const spot = this.pendingLook?.spots[index];
+    if (!spot) throw new Error(`没有这处细节：${index}`);
+    this.apply(spot.effects);
+    return spot.text;
+  }
+
+  endLook() { this.pendingLook = null; }
+
+  resolveHold(ok) {
+    const cmd = this.pendingHold;
+    if (!cmd) throw new Error('当前没有按住动作');
+    this.pendingHold = null;
+    this.jump(ok ? cmd.target : cmd.miss);
   }
 
   choose(index) {

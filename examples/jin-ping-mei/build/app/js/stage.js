@@ -1,6 +1,7 @@
-// 舞台：背景交叉淡入、立绘进出场与差分、说话人高亮、CG 与成人画面门控、存档缩略图合成。
-import { BG, CG, CAST, EXPRESSIONS } from './story/index.js';
+// 舞台：背景交叉淡入、立绘进出场与差分、说话人高亮、CG 与成人画面门控、剧情过场、待机影像与回落推镜、存档缩略图合成。
+import { BG, CG, CAST, EXPRESSIONS, FILM, CUT } from './story/index.js';
 import { config, ageConfirmed } from './store.js';
+import { audio } from './audio.js';
 
 const $ = (sel) => document.querySelector(sel);
 const POS_X = { left: 0.24, center: 0.5, right: 0.76 };
@@ -10,6 +11,26 @@ export const spriteSrc = (who, expr) => `assets/sprite/${who}/${EXPRESSIONS.incl
 // 构图偏右、左侧留白的 CG：按 focus 裁到人物那一侧（舞台、鉴赏大图、缩略图共用）
 export const cgClass = (id) => (CG[id]?.focus ? `focus-${CG[id].focus}` : '');
 export const cgVisible = (id) => Boolean(id && CG[id] && (!CG[id].adult || (config.adult && ageConfirmed())));
+
+// ---------- 动态影像 ----------
+// 影像以那张 CG／背景为首尾帧循环；不能播（关闭、减弱动态、加载失败）时，原图做慢推镜
+const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+export const filmEnabled = () => config.film && !reducedMotion?.matches;
+
+export function attachFilm(box, id) {
+  box.querySelector('video.film')?.remove();
+  box.classList.remove('live', 'kb');
+  const film = id && FILM[id];
+  if (!film || !filmEnabled()) { if (id && (film || box.id === 'cg') && !reducedMotion?.matches) box.classList.add('kb'); return; }
+  const v = document.createElement('video');
+  v.className = `film ${box.querySelector('img')?.className ?? ''}`.trim(); // 跟 CG 一样按 focus 裁切
+  Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', src: film.src });
+  v.setAttribute('aria-hidden', 'true');
+  v.addEventListener('playing', () => box.classList.add('live'), { once: true });
+  v.addEventListener('error', () => { v.remove(); box.classList.remove('live'); box.classList.add('kb'); }, { once: true });
+  box.append(v);
+  v.play?.().catch(() => {}); // 自动播放被拦时停在首帧，与原图一致
+}
 
 let shownBg = null;
 let activeBgLayer = 'a';
@@ -29,6 +50,8 @@ export function syncStage(stage, { instant = false, speaker = null } = {}) {
     nextEl.style.transitionDuration = prevEl.style.transitionDuration = fast ? '0ms' : '';
     nextEl.classList.add('on');
     prevEl.classList.remove('on');
+    attachFilm(nextEl, stage.bg);
+    setTimeout(() => { if (!prevEl.classList.contains('on')) attachFilm(prevEl, null); }, fast ? 0 : 1000);
     activeBgLayer = next;
     if (stage.bgFx === 'flash' && !instant) flash();
   }
@@ -78,6 +101,48 @@ export function syncStage(stage, { instant = false, speaker = null } = {}) {
   $('#weather').className = stage.weather ?? '';
 
   syncCg(stage);
+  syncCut(stage, instant);
+}
+
+// ---------- 剧情过场 ----------
+// 选择之后演出后果的短片：有声、只播一次，播完停在末帧，后面的台词接着在这一帧上读。
+// 读档、回退、快进、关闭动态影像或文件缺失时，直接显示末帧定格（poster），字幕与选择一样不缺。
+let shownCut = null;
+export const cutVideo = () => document.querySelector('#cut video');
+const posterOf = (id) => `assets/cut/${id}.jpg`;
+
+function syncCut(stage, instant) {
+  if (stage.cut === shownCut) return;
+  shownCut = stage.cut;
+  const box = $('#cut');
+  box.querySelector('video')?.remove();
+  audio.duck(false);
+  $('#game').classList.toggle('cut-on', Boolean(stage.cut));
+  if (!stage.cut || !CUT[stage.cut]) { box.classList.remove('on', 'kb', 'ended'); return; }
+  const img = box.querySelector('img');
+  img.src = posterOf(stage.cut);
+  box.classList.remove('ended', 'kb');
+  box.classList.add('on');
+  if (instant || !filmEnabled()) { box.classList.add('ended'); if (!reducedMotion?.matches) box.classList.add('kb'); return; }
+  const v = document.createElement('video');
+  Object.assign(v, { playsInline: true, preload: 'auto', src: CUT[stage.cut].src, volume: Math.min(1, config.se / 100) });
+  v.addEventListener('playing', () => audio.duck(true));
+  v.addEventListener('ended', () => { box.classList.add('ended'); audio.duck(false); });
+  v.addEventListener('error', () => { v.remove(); box.classList.add('ended', 'kb'); audio.duck(false); }, { once: true });
+  box.append(v);
+  // 有声自动播放被拦时改成静音播，画面照常演完
+  v.play?.().catch(() => { v.muted = true; v.play?.().catch(() => { box.classList.add('ended'); }); });
+}
+
+// 鉴赏里重看一段过场：独立的播放器，不动舞台状态
+export function playCutInto(box, id) {
+  box.innerHTML = '';
+  const v = document.createElement('video');
+  Object.assign(v, { controls: true, playsInline: true, autoplay: true, src: CUT[id].src, poster: posterOf(id), volume: Math.min(1, config.se / 100) });
+  v.addEventListener('playing', () => audio.duck(true));
+  for (const e of ['pause', 'ended', 'emptied']) v.addEventListener(e, () => audio.duck(false));
+  box.append(v);
+  return v;
 }
 
 // CG：成人 CG 仅在年龄确认且设置开启时加载；否则以帘幕代替
@@ -85,13 +150,15 @@ function syncCg(stage) {
   if (stage.cg === shownCg) return;
   shownCg = stage.cg;
   const box = $('#cg');
-  if (!stage.cg) { box.classList.remove('on'); return; }
+  $('#game').classList.toggle('cg-on', Boolean(stage.cg));
+  if (!stage.cg) { box.classList.remove('on'); setTimeout(() => { if (!box.classList.contains('on')) attachFilm(box, null); }, 800); return; }
   const visible = cgVisible(stage.cg);
   const img = box.querySelector('img');
   img.src = visible ? CG[stage.cg].src : '';
   img.className = visible ? cgClass(stage.cg) : '';
   box.classList.toggle('veiled', !visible);
   box.classList.add('on');
+  attachFilm(box, visible && !CG[stage.cg].adult ? stage.cg : null);
   if (!visible) onVeil?.();
 }
 
@@ -101,12 +168,31 @@ export const setVeilHook = (fn) => { onVeil = fn; };
 export function refreshCg(stage) {
   shownCg = undefined;
   syncCg(stage);
+  const bgEl = document.querySelector('.bg.on');
+  if (bgEl) attachFilm(bgEl, stage.bg);
+}
+
+// 当前 CG 在屏幕上实际铺开的矩形（object-fit: cover 裁切后），察言观色的细节框按它换算
+export function cgRect() {
+  const box = $('#cg').getBoundingClientRect();
+  const img = $('#cg img');
+  const iw = img.naturalWidth || 16;
+  const ih = img.naturalHeight || 9;
+  const scale = Math.max(box.width / iw, box.height / ih);
+  const w = iw * scale;
+  const h = ih * scale;
+  return { left: box.left + (box.width - w) / 2, top: box.top + (box.height - h) / 2, width: w, height: h };
 }
 
 export function resetStage() {
   shownBg = undefined;
   shownCg = undefined;
+  shownCut = undefined;
   $('#sprites').innerHTML = '';
+  $('#cut video')?.remove();
+  $('#cut').classList.remove('on', 'ended', 'kb');
+  $('#game').classList.remove('cut-on');
+  audio.duck(false);
 }
 
 export function jolt(el) {
@@ -161,12 +247,14 @@ export async function thumbnail(stage) {
     const s = Math.max(W / sw, H / sh);
     ctx.drawImage(img, sx, sy, sw, sh, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s);
   };
-  const cg = stage.cg && CG[stage.cg] && !CG[stage.cg].adult ? await loadImage(CG[stage.cg].src) : null;
-  if (cg) cover(cg, CG[stage.cg].focus ? FOCUS_ZOOM : 0);
+  const cut = stage.cut && CUT[stage.cut] ? await loadImage(posterOf(stage.cut)) : null;
+  const cg = !cut && stage.cg && CG[stage.cg] && !CG[stage.cg].adult ? await loadImage(CG[stage.cg].src) : null;
+  if (cut) cover(cut);
+  else if (cg) cover(cg, CG[stage.cg].focus ? FOCUS_ZOOM : 0);
   else {
     const bg = stage.bg && BG[stage.bg] ? await loadImage(BG[stage.bg]) : null;
     if (bg) cover(bg);
-    if (!stage.cg) {
+    if (!stage.cg && !cut) {
       for (const [who, { pos, expr }] of Object.entries(stage.sprites)) {
         const img = await loadImage(spriteSrc(who, expr));
         if (!img) continue;
