@@ -24,7 +24,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
   - the playback behaviour players rely on;
   - keeping file size within hosting limits.
 
-  Cutscenes are generated through a ledger that names no provider, and only after the rest of the game is finished. The README now introduces interactive film and explains how to ask for one.
+  Cutscenes are generated through a ledger that names no provider, and only after the rest of the game is finished. The README, the plugin listings and the `novel-to-game` entry skill now name interactive film, so a request such as "make this novel an interactive film" reaches the workflow.
 - The Jin Ping Mei example is now an interactive film ([decision note](.agents/notes/implemented/feature/2026-11-04-jin-ping-mei-interactive-film.md)):
   - 58 voiced cutscenes cover every option at the choices that matter later, the turning point of each route, and all 16 endings. A gallery tab lets players rewatch them.
   - Four public quarrels are timed, and staying silent leads to its own written branch.
@@ -50,7 +50,7 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - The Journey to the West example has larger painted maps, shared map navigation, unified panels, and clearer battle feedback and dialogue.
 - A new guide explains how to choose a gameplay type for a novel and is linked from the README. The README logo now loads from GitHub.
 - Both example games play generated folk-instrument scores and recorded-style sound effects instead of synthesized tones, and fall back to the old synthesis when a file cannot play. Each example lists its audio in `build/art/audio-assets.json`.
-- ClawHub packages in this release: `game-art-direction` 1.2.7, `game-build` 1.3.0, `game-concept` 1.2.2, `game-qa` 1.0.7, `game-world-design` 1.2.1, `novel-game-analyze` 1.0.2, `novel-to-game` 1.1.3.
+- ClawHub packages in this release: `game-art-direction` 1.2.7, `game-build` 1.3.0, `game-concept` 1.2.2, `game-qa` 1.0.7, `game-world-design` 1.2.1, `novel-game-analyze` 1.0.2, `novel-to-game` 1.1.4.
 
 ### Removed
 
