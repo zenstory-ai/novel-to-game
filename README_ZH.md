@@ -347,7 +347,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 会话中途断了，能接着做吗？
 
-能。用 `novel-to-game resume` 开始，它是 `quick`、`director` 之外的第三种模式。它读取 `_progress.md` 和实际存在的文档，找出最后一个真正完成的阶段，从那里继续；测试结果只从 `qa/verification.json` 读取。见[流程契约](skills/novel-to-game/references/pipeline-contract.md)。
+能。用 `novel-to-game resume` 开始，它是 `quick`、`director` 之外的第三种模式。它读取 `_progress.md` 和实际存在的文档，找出最后一个真正完成的阶段，从那里继续；测试结果只从 `qa/verification.json` 读取。见[流程规范](skills/novel-to-game/references/pipeline-contract.md)。
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
@@ -355,11 +355,11 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
-拆解、设计和代码都由你已在用的编码 Agent 的模型完成。使用托管模型时，这些步骤不需要额外的本地模型或 GPU；运行生成的游戏仍需满足目标运行环境的硬件要求。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例的图由 Codex 内置的图像工具生成，大部分在 `build/art/generated-art.json` 里按批次记录）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。见[语音资产生产合同](skills/game-build/references/tts-production-contract.md)。
+拆解、设计和代码都由你已在用的编码 Agent 的模型完成。使用托管模型时，这些步骤不需要额外的本地模型或 GPU；运行生成的游戏仍需满足目标运行环境的硬件要求。外部服务是可选项。生成图片只在美术方向选择它时使用，工具在你的环境里按能力、许可与费用核实后选择（金瓶梅示例的图由 Codex 内置的图像工具生成，大部分在 `build/art/generated-art.json` 里按批次记录）。语音默认关闭，除非美术方向选用；默认在构建期生成为本地资产，只发送逐句台词与必要读音，从不上传小说和设计文档。见[语音资产生产规范](skills/game-build/references/tts-production-contract.md)。
 
 ### 怎么知道它做出来的游戏真的能跑？QA 里的 PASS 是什么意思？
 
-它证明一条权威命令在测试运行时里的一次完整运行展示了六件事：构建启动了、画面非空且会变化、真实输入改变了状态、核心循环完整执行、至少到达一个设计结果、重开回到初态。状态只有 `NOT_RUN`、`FAIL`、`PASS` 三种；未验证不是通过，每次复跑都会覆盖旧的 PASS。每个缺口都写成带范围（scope）和原因（reason）的限制项。它不证明趣味、平衡、沉浸、其他浏览器或设备、权利与发布质量，也不要求真人试玩。见 [QA 契约](skills/game-qa/references/qa-contract.md)。
+它证明一条权威命令在测试运行时里的一次完整运行展示了六件事：构建启动了、画面非空且会变化、真实输入改变了状态、核心循环完整执行、至少到达一个设计结果、重开回到初态。状态只有 `NOT_RUN`、`FAIL`、`PASS` 三种；未验证不是通过，每次复跑都会覆盖旧的 PASS。每个缺口都写成带范围（scope）和原因（reason）的限制项。它不证明趣味、平衡、沉浸、其他浏览器或设备、权利与发布质量，也不要求真人试玩。见 [实机验收规范](skills/game-qa/references/qa-contract.md)。
 
 ### 我的小说是一种语言，游戏能用另一种语言吗？
 
@@ -403,7 +403,7 @@ NovelToGame 使用 [MIT License](LICENSE)。
 | --- | --- |
 | [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | 网文写作 skill 包：扫榜、拆文、写作、去AI味、封面图 |
 | [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI 短剧 / 漫剧创作 skill 合集：剧本、资产、分镜、图片/视频提示词、独立审查 |
-| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 忠于原著的小说改游戏 agent skills，涵盖改编策划、目标运行环境构建与实机运行验收（本仓库） |
+| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 小说改编游戏 skill 合集：原著拆解、目标运行环境构建与实机运行验收（本仓库） |
 | [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | 从支持的视频文件生成中文解说成片，并可选导出可编辑的剪映/CapCut 草稿 |
 | [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | DeepSeek Harness 社区插件，提供小说、短剧、游戏和视频解说工作台 |
 | [zenstory](https://github.com/zenstory-ai/zenstory) | 对话即创作的 AI 小说写作工作台（[app.zenstory.ai](https://app.zenstory.ai)） |
