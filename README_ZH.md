@@ -7,7 +7,7 @@
 <h1 align="center">NovelToGame</h1>
 
 <p align="center">
-  <b>有原著依据的小说改编游戏工作流：改编设计、面向指定运行环境的游戏构建，以及基于运行证据的 QA。</b>
+  <b>忠于原著的小说改游戏工作流：涵盖改编策划、按目标运行环境构建游戏与实机运行验收。</b>
 </p>
 
 <p align="center">
@@ -33,11 +33,11 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Code）的七个开源 skills。把一本小说交给它——如果已有想法，再加上目标平台或引擎。它会读完整本书，选一个依据充分的游戏方向，设计世界和画面，在简报锁定的运行环境里构建，并用一次有记录的运行证明这个版本能玩。你拿到的是一款达到你所要求成色的可玩构建，加上它背后的设计文档。下面两个示例都是浏览器游戏，并提供可玩版本的链接。
+NovelToGame 是一套开源的 7-skill 工作流，可直接装进你常用的编码 Agent（Claude Code、Codex、Kimi Code）。把一本小说交给它——如果已有心仪的目标平台或引擎，也可以一并指定。它会通读全书，选定一个站得住脚的玩法方向，完成世界与美术设计，按需求简报锁定的运行环境构建游戏，并用一次完整的实机运行验证游戏可玩。最终你会拿到符合目标完成度的可玩版本，以及全套策划与美术文档。下方两个示例均为浏览器游戏，点击即可在线试玩。
 
 ## 在线试玩
 
-每款游戏都链接到它背后的改编工作区：原文来源、概念与被否决的方向、游戏与美术方向、可运行源码，以及来自可玩路径的 QA 记录。
+每款游戏都可以查看完整的改编工作区：原著版本说明、概念选型与淘汰理由、玩法与美术设计、可运行源码，以及实机通关的验收记录。
 
 ### 西游记 · 三借芭蕉扇
 
@@ -67,18 +67,18 @@ NovelToGame 是装进你已在用的编码 Agent（Claude Code、Codex、Kimi Co
 
 ## 这是什么
 
-这套 skills 由你已在用的编码 Agent 的模型执行，按阶段组织改编工作。每个阶段负责一份文档，明确区分原著证据与设计选择：
+这套 skills 直接调用你当前编码 Agent 的模型，分阶段推进改编。每个阶段各司其职、产出一份独立文档，严格区分原著依据与原创设计：
 
-- **关键原作事实都有引证。** 拆解阶段读完全书，写出 `SOURCE_BIBLE`：硬规则、关键角色目标、转折结局和标志性锚点都标注章回或文件位置，改编边界表每行带证据位置。原作事实分为 `immutable`、`adaptable`、`open`、`conflicted` 四种边界；原著没有定义的部分标为设计发明，不会被悄悄写成事实。
-- **游戏形态是一个有记录的决定，不是默认值。** 概念阶段比较真实的替代方向，用具名的硬否决淘汰不合格方向（核心循环与原作中心张力无关；删掉专有名词后只剩通用模板；玩家只是花资源放行既定剧情）。概念、世界设计与美术方向分别由不同阶段写进各自的文档，构建阶段不得静默重做。
-- **借成熟品类，就连同它的外壳一起借。** 玩家认出一类游戏，靠的不只是核心玩法；系统玩法项目要用一张短表写清该品类的外壳（进入世界、目标指引、成长与回访理由）哪些实现、哪些降级、哪些不做以及为什么，并写清第一分钟玩家看到什么。《梦幻西游》式的 RPG 不会只交出一串战斗关卡。
-- **面向简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单）锁定平台、引擎、目标运行时和实际可用的测试运行时。工具链缺失时不得悄悄改做网页。设计文档是不绑定引擎的 Markdown，归你所有。
-- **QA 是一次真实运行、六项检查和写明的限制。** 构建在测试运行时里真正启动，一次完整运行证明 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项。未测试的环境写入限制项（limitation）。
-- **语音默认关闭，默认在构建期生成。** 除非美术方向选用语音，没有任何台词会发给语音合成服务；运行时合成须经产品简报明确批准；小说和设计文档从不上传。
+- **关键原著事实均附原文出处。** 拆书阶段通读全书并产出 `SOURCE_BIBLE`：世界硬规则、关键角色目标、转折结局与标志性画面锚点均注明章回或文件位置，改编边界表逐行附上原文依据。原著事实分为 `immutable`（不可改）、`adaptable`（可调适）、`open`（原著留白）、`conflicted`（前后矛盾）四类；原著未交代的内容一律标明为“设计发明”，绝不冒充原著设定。
+- **玩法形态经过方案比选与论证。** 概念阶段横向对比多个可行方向，用明确的硬性淘汰标准筛掉不合格方案（例如：核心循环脱离原著核心冲突、遮去专有名词后只剩通用换皮模板、玩家只是花资源解锁既定剧情）。概念选型、世界设计与美术方向各自落入独立文档，构建阶段不得擅自推翻重来。
+- **借鉴成熟品类时，同步保留该品类的基础体验外壳。** 玩家辨认一类游戏，既看核心机制，也看熟悉的外围体验。系统玩法项目需用简表列明该品类的基础外壳（进入世界与移动、目标指引、成长反馈与重返动力）哪些完整实现、哪些简化降级、哪些明确不做及原因，并写清玩家进入游戏第一分钟看到的画面。《梦幻西游》式的回合制 RPG 绝不会只交出一串光秃秃的战斗关卡。
+- **严格按产品简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单）会锁定目标平台、生产引擎、目标运行环境与实际可用的测试环境；缺少目标工具链时，绝不擅自降级成网页游戏交差。全套设计文档均为不绑定特定引擎的 Markdown 文件，完全归你掌控。
+- **实机运行验收涵盖一次完整通关、六项检查与明确的限制说明。** 游戏会在测试环境中真实启动，通过同一次完整运行验证 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项指标；未测试到的环境与特性则如实记入限制项（`limitations`）。
+- **配音默认关闭，启用时默认在构建期预生成。** 除非美术方向明确选用角色配音，否则不会向语音合成服务发送任何台词；运行期实时合成须经产品简报明确批准，且原著全文与设计文档绝不外传。
 
-这套 skills 完整支持互动叙事：连续场景、对白、证词与关键选择可以承载整个游戏，但要满足与系统玩法同样的能动性和证据要求。人物路线的关键选择针对该人物自己的心结或议程，关系进展由人物反应、称呼、可进入的场所与可托付的事呈现，而不是屏幕上的数值。
+互动叙事同样是一等公民：连续场景、人物对白、证词交锋与关键抉择可以独立撑起整部作品，并遵循与系统玩法同等的玩家能动性与原著考据标准。人物个人线的关键抉择直指该角色自身的心结与盘算，关系远近通过神态反应、称呼变化、向你敞开的场所与托付的私事来体现，无需挂一个生硬的好感度数字。
 
-互动影游建立在这条路线上，是文游与短剧的结合：每个会被后文读取的选择做完，播一段演出后果的剧情过场，演完在末帧上接着读。这样的选择点，每个选项都有自己的过场；让静帧动起来不算过场。skills 按选择点与选项估算过场预算，先写分镜，等游戏打磨好之后再通过与供应商无关的台账生成；影像关闭或缺失时，用定格画面照样能完整游玩（见[互动影游方法](skills/game-world-design/references/interactive-film-method.md)与[剧情过场生产](skills/game-build/references/cutscene-production.md)）。上面的金瓶梅示例就是这样做的。
+互动影游在此基础上将文字冒险与短剧结合：玩家每做出一个影响后续走向的关键选择，就会播放一段演绎当场后果的剧情短片，播完定格在末帧画面上继续阅读后续台词。凡是配有过场的选择点，每个选项都有专属短片，绝不拿花瓣飘落、立绘眨眼之类的动态静帧充数。工作流会按选择点与选项数量核算影像预算、先行编写分镜，待全流程打磨定稿后再依据通用资产台账批量生成；即使关闭动态影像或视频未加载，玩家依然能靠定格画面完整通关（详见[互动影游交互设计](skills/game-world-design/references/interactive-film-method.md)与[剧情过场的生产与接入](skills/game-build/references/cutscene-production.md)）。上方的《金瓶梅》示例便采用了这套做法。
 
 ## 安装
 
@@ -274,23 +274,23 @@ codex plugin add novel-to-game@novel-to-game-skills
 让玩家以原创角色的身份进入世界，走一条穿过原作冲突的新路线。
 ```
 
-**做互动小说 / 互动叙事**（这会锁定 `narrative-led` 体验档案，让概念、设计与 QA 都按连续场景、人物对白、证词和关键选择来判，而不是套用回合、卡牌和资源条）：
+**做互动小说 / 互动叙事**（这会锁定 `narrative-led` 体验重心，让概念、设计与实机验收都围绕连续场景、人物对白、证词交锋与关键选择展开，不硬套回合、卡牌和资源条）：
 
 ```text
 用 novel-to-game quick 把这本小说改编成一款互动叙事游戏。
 体验以连续场景、人物对白、证词与关键选择承载；数值只作为隐藏的剧情因果标签，不做常驻数值面板。
-关键选择要改变后续场景、人物态度和结局，并在后文被点名回读。
+关键选择要改变后续场景、人物态度和结局，并在后文得到明确呼应。
 ```
 
 **只要设计说明，先不构建：**
 
 ```text
-使用我获准改编的原文，为目标引擎规划一个小范围的玩法设计切片。
-控制选择与结果的数量；写清每项的证据、代价、可见变化，以及后续场景如何使用其状态。
-标明允许新增的设定与待决问题。只交付设计说明，不构建、不运行 QA，也不声称运行成品已经完成。
+使用我有改编权的原著文本，为目标引擎规划一小段完整可玩的玩法设计方案。
+控制选择与结局分支的规模；写清每个选项的依据、代价、看得见的局面变化，以及后续哪场戏会呼应这一结果。
+标明允许新增的原创设定与待决问题。只交付设计方案，不构建代码、不跑实机验收，也不要声称已完成可运行版本。
 ```
 
-`quick` 是默认模式：Agent 先用合理默认值起草产品简报，只在平台、核心玩法或核心幻想、成人内容、真实人物、版权或资产授权、付费服务、不可逆制作投入出现会改变方向的实质分支时停下等你裁决；其余未定项写进简报的未确认假设，比较有效替代后继续设计、构建和 QA。想自己做关键决定时用 `director`：Agent 会在概念方向、白盒试玩后的内容取舍（可以在这里请目标玩家试玩）和视觉目标图（仅在制作视觉目标包时）停下，给出候选和推荐；你已经做出决定的地方不再停靠。
+`quick` 是默认模式：Agent 先按合理默认值起草产品简报，只在目标平台、核心玩法与代入感、成人内容、真实人物、版权或素材授权、付费服务及高成本制作投入出现会影响全局走向的分歧时停下请你拍板；其余未定事项记入简报的「未确认假设」，对比可行方案后自动推进设计、构建与实机验收。如果你想亲自把关关键节点，可改用 `director` 模式：Agent 会在概念选型、白盒试玩后的内容取舍（可在此邀请目标玩家试玩）以及挑选视觉目标样张（仅在制作视觉目标包时）三个节点停下，给出候选方案与推荐意见；你已经明确指定过的内容则不再重复询问。
 
 ## 工作流
 
@@ -298,19 +298,19 @@ codex plugin add novel-to-game@novel-to-game-skills
 小说 → 游戏化拆解 → 游戏概念 → 世界设计 → 风险白盒 ↺ → 美术方向 → 正式构建 → QA → 可玩游戏
 ```
 
-世界设计完成后，先用白盒（不要求最终美术的粗略构建）只验证最大的一个设计风险，再进入完整美术生产：叙事因果可以用文本验证，实时操作、空间、物理或镜头不能；观察结果交回设计阶段。白盒试玩还要看出玩家反复回来做的是哪一部分，剧情、对白和关卡的内容预算据此修订；简报里的制作预算也在这一步、以及正式生产进行到一半时，与剩余范围各对照一次。正式构建面向批准的运行环境，并准备一条权威验证命令。QA 可以诊断、修复和复跑，但最终记录把六项检查绑定到同一次完整运行；发现的问题按产品、设计、美术、构建各自的文档归属回流。
+世界设计完成后，会先搭建一个不带最终美术的白盒原型，集中验证头号设计风险，通过后再投入批量美术制作：叙事分支因果可以用文字推演验证，而实时操作手感、空间走位、物理碰撞或镜头调度必须靠实机操作检验，试玩暴露出的问题直接反馈给设计阶段修正。白盒试玩还能检验玩家真正乐意反复体验的核心乐趣点，据此调整剧情、对白和关卡体量；同时在白盒结束与正式生产过半时，分两次对照产品简报核算剩余制作预算与待做范围。正式构建按批准的运行环境实现游戏，并配好一条一键验证命令。实机验收阶段可排查、修复并重跑测试，但最终验收记录要求六项检查全部出自同一次完整通关；发现的问题按产品、设计、美术、构建的职责归属退回对应环节处理。
 
 ## Skills
 
 | Skill | 职责 |
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | 确认需求、选择模式、编排阶段并恢复中断进度 |
-| [`novel-game-analyze`](skills/novel-game-analyze/) | 提取有引证的规则、动作、空间、角色、系统和名场面 |
-| [`game-concept`](skills/game-concept/) | 比较有效替代，排除不合格方案，选择或验证方向 |
-| [`game-world-design`](skills/game-world-design/) | 定义玩家承诺、核心循环、世界响应、系统、关卡、失败与结果 |
-| [`game-art-direction`](skills/game-art-direction/) | 定义镜头、构图、视觉语法、色光材质、HUD、动效与声音 |
-| [`game-build`](skills/game-build/) | 先做与风险匹配的白盒，再在不重做策划的前提下实现正式候选 |
-| [`game-qa`](skills/game-qa/) | 用命令、状态、截图和实际游玩路径验证构建，并写明哪些没测 |
+| [`novel-game-analyze`](skills/novel-game-analyze/) | 提取附带原文出处的世界规则、动作、空间、角色、系统和名场面 |
+| [`game-concept`](skills/game-concept/) | 横向对比可行方案，筛除不合格方向，选定或验证游戏概念 |
+| [`game-world-design`](skills/game-world-design/) | 定义核心体验承诺、玩法循环、世界反馈、系统、关卡、失败与结局 |
+| [`game-art-direction`](skills/game-art-direction/) | 定义镜头、构图、视觉语言、色光材质、HUD、动效与声音 |
+| [`game-build`](skills/game-build/) | 先搭建针对核心风险的白盒原型，再严格按已批准的策划与美术方案实现正式版本 |
+| [`game-qa`](skills/game-qa/) | 通过实机命令、状态快照、画面截图和完整通关路径验收游戏，并如实注明未覆盖范围 |
 
 ## 产物
 
@@ -335,7 +335,7 @@ game-adaptations/<project>/
 
 ### 我要的是互动叙事，结果拿到卡牌、回合和数值面板。怎样才能得到场景、对白和关键选择？
 
-在请求里说出来，就像上面第二条示例那样。这会在产品简报里锁定 `experienceProfile: narrative-led`，并贯穿概念、设计、美术、构建和 QA。设计方法把每个关键选择记成实际言行、即时反应和一条持久事实及其后文读取点，而不是隐藏总分。这条赛道是在一位读者于 [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17) 里给我们看到正是这种失败之后补上的；见 [`game-concept`](skills/game-concept/SKILL.md) 与[叙事设计方法](skills/game-world-design/references/narrative-design-method.md)。
+在请求里直接写明即可，写法可参考上方第二条请求示例。这会在产品简报里锁定 `experienceProfile: narrative-led`，并一路贯穿概念、设计、美术、构建和实机验收。叙事设计方法要求把每个关键选择落实为具体言行、当场人物反应，以及一条会被后续场次呼应的持久状态，不拿笼统的隐藏总分敷衍。这条专门赛道源于一位读者在 [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17) 中反馈的真实踩坑案例；详见 [`game-concept`](skills/game-concept/SKILL.md) 与[互动叙事的改编边界](skills/game-world-design/references/narrative-design-method.md)。
 
 ### 我想做互动影游，怎样得到选择之后的剧情过场，而不是会动的立绘？
 
@@ -375,15 +375,15 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ## 延伸阅读
 
-- [小说改游戏入门](https://zenstory.ai/zh/novel-to-game/quick-start)——限定首次改编：分开记录获准使用的原文事实、作者批准的新增设定与待决问题，缩小第一版范围。
-- [有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)——写清每个玩家选项的证据、代价与可见结果，并指出后续哪个场景读取这项状态。
+- [小说改游戏入门](https://zenstory.ai/zh/novel-to-game/quick-start)——规划首个改编版本：分别整理有改编权的原著事实、作者批准的新增设定与待决问题，把第一版控制在可完成的小范围内。
+- [有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)——写清每个玩家选项的判断依据、代价与看得见的局面变化，并指明后续哪场戏会呼应这一结果。
 - [小说改游戏选什么类型](docs/novel-to-game-choose-gameplay.md)——先找玩家能反复做决定的事，再用同一个情境比较几种玩法。
 - [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
 - [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项。
 
 ## 参与贡献
 
-欢迎提交可复现的 Bug、有证据支持的 Skill 能力缺口，以及能展示独特改编方法的示例提案。请使用 [Issues](https://github.com/zenstory-ai/novel-to-game/issues/new/choose) 里的结构化表单，并阅读[贡献指南](CONTRIBUTING.md)了解必跑的检查与权利规则；问题与早期想法请到 [Discussions](https://github.com/zenstory-ai/novel-to-game/discussions)。
+欢迎提交可复现的 Bug、有据可查的 Skill 能力缺口，以及能展示独特改编方法的示例提案。请使用 [Issues](https://github.com/zenstory-ai/novel-to-game/issues/new/choose) 里的结构化表单，并阅读[贡献指南](CONTRIBUTING.md)了解必跑的检查与版权规则；疑问与初步想法请发到 [Discussions](https://github.com/zenstory-ai/novel-to-game/discussions)。
 
 <a href="https://github.com/zenstory-ai/novel-to-game/graphs/contributors"><img alt="Contributors" src="https://contrib.rocks/image?repo=zenstory-ai/novel-to-game"></a>
 
@@ -397,13 +397,13 @@ NovelToGame 使用 [MIT License](LICENSE)。
 
 ## ZenStory AI 项目
 
-本项目由 [ZenStory AI](https://zenstory.ai/zh) 维护——一组开源、面向 agent 的故事创作、改编与生产工具（GitHub 组织：[zenstory-ai](https://github.com/zenstory-ai)）。同组织项目：
+本项目由 [ZenStory AI](https://zenstory.ai/zh) 维护——一组开源、原生支持编码 Agent 的故事创作、改编与制作工具（GitHub 组织：[zenstory-ai](https://github.com/zenstory-ai)）。同组织项目：
 
 | 项目 | 用途 |
 | --- | --- |
 | [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | 网文写作 skill 包：扫榜、拆文、写作、去AI味、封面图 |
 | [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI 短剧 / 漫剧创作 skill 合集：剧本、资产、分镜、图片/视频提示词、独立审查 |
-| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 面向原著改编、指定运行环境构建与运行证据 QA 的 agent skills（本仓库） |
+| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 忠于原著的小说改游戏 agent skills，涵盖改编策划、目标运行环境构建与实机运行验收（本仓库） |
 | [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | 从支持的视频文件生成中文解说成片，并可选导出可编辑的剪映/CapCut 草稿 |
 | [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | DeepSeek Harness 社区插件，提供小说、短剧、游戏和视频解说工作台 |
 | [zenstory](https://github.com/zenstory-ai/zenstory) | 对话即创作的 AI 小说写作工作台（[app.zenstory.ai](https://app.zenstory.ai)） |

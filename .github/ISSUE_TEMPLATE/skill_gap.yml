@@ -1,5 +1,5 @@
 name: Skill gap / Skill 能力缺口
-description: Propose reusable adaptation guidance for a specific, evidenced failure. / 提交有证据的可复用改编能力缺口。
+description: Propose reusable adaptation guidance for a specific, evidenced failure. / 针对有据可查的改编败笔，提议可复用的改进规则。
 title: "[Skill gap]: "
 labels:
   - enhancement
@@ -35,7 +35,7 @@ body:
   - type: textarea
     id: current_failure
     attributes:
-      label: Current failure / 当前失败
+      label: Current failure / 当前问题表现
       description: Describe the predictable bad decision or artifact, not only the desired feature.
     validations:
       required: true
@@ -43,7 +43,7 @@ body:
   - type: textarea
     id: reusable_judgment
     attributes:
-      label: Reusable adaptation judgment / 可复用的改编判断
+      label: Reusable adaptation judgment / 可复用的改编规则
       description: What decision rule, handoff contract, or evidence requirement should the skill encode?
     validations:
       required: true

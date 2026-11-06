@@ -1,16 +1,15 @@
-# QA 证据说明
+# 实机验收说明
 
-唯一权威命令（真实 Chromium + Playwright，自启临时本地服务）：
+唯一权威验证命令（使用真实 Chromium + Playwright，自动拉起临时本地服务）：
 
 ```bash
 cd examples/jin-ping-mei/build/app
 python3 test/verify_visual.py --write-evidence
 ```
 
-一条完整路径：年龄门（确认前零成人资源请求）→ 动画标题 → 设置里把文字速度调到瞬间 → 开始游戏 →
-鼠标点击与回车推进 → 共通线六章（途中快存、快读回到同一句、滚轮打开回看）→ 分岔夜选月娘 →
-月娘线 → 良缘结局卡 → 原著命数页 → 回标题 → 重新开始回到序章第一句。成功后写 `verification.json`、
-`evidence/run.json`、`evidence/ending.jpg` 与 `../screenshots/title.jpg`、`../screenshots/adv.jpg`。
+单次完整通关路径：年龄确认界面（确认前不加载任何成人资源）→ 动态标题页 → 在设置中将文字显示速度调为瞬间 → 开始游戏 →
+通过鼠标点击与回车键推进剧情 → 走完共通线六章（途中验证快速存档、快速读档回到同一句台词、鼠标滚轮呼出历史回看）→ 分岔夜选择吴月娘 →
+走完月娘个人线 → 达成「良缘」结局画面 → 翻看原著命数页 → 返回标题页 → 点击重新开始并回到序章首句。验证通过后自动生成 `verification.json`、
+`evidence/run.json`、`evidence/ending.jpg` 以及 `../screenshots/title.jpg`、`../screenshots/adv.jpg`。
 
-CI 另跑 `npm run verify:model`（`test/lint_script.mjs`，无浏览器）：剧本跳转与资源登记完整，穷举全部选择后十六个结局都可达，
-防止剧本改动造成死路。
+CI 还会运行 `npm run verify:model`（即 `test/lint_script.mjs`，无需启动浏览器）：静态检查全部剧本跳转与媒体资源登记是否完整，并穷举所有选项组合，确认十六个结局全部可达、不存在死胡同。

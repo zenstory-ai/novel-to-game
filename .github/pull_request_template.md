@@ -1,12 +1,12 @@
-## Why / 为什么
+## Why / 改动原因
 
 <!-- State the user-visible failure, adaptation decision, or evidence gap. -->
 
-## Scope / 范围
+## Scope / 改动范围
 
 <!-- List the skills, manifests, examples, docs, or tooling changed. Note what intentionally remains unchanged. -->
 
-## Evidence / 证据
+## Evidence / 验证结果
 
 ```text
 python3 scripts/validate_repo.py
@@ -15,7 +15,7 @@ python3 -m unittest discover -s tests -v
 
 <!-- Add exact command results and paths to runtime/state/browser/visual evidence. Use NOT_RUN: <reason> for every required check that could not run. -->
 
-## Source and asset provenance / 来源与素材出处
+## Source and asset provenance / 原著与素材版权来源
 
 <!-- For new example material, link the authoritative source and state the licence/public-domain basis for text, images, audio, fonts, and models. Otherwise write Not applicable. -->
 

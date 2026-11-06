@@ -1,10 +1,10 @@
 {
   "name": "novel-to-game",
   "version": "0.7.0",
-  "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. It supports systems games, interactive fiction and interactive film. 有原著依据的 7-skill 小说改编游戏工作流，覆盖可游戏化拆解、概念选择、世界与美术设计、面向指定运行环境的候选版本构建，以及基于运行证据的 QA；支持系统玩法、互动叙事与互动影游。",
+  "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 7-skill 小说改游戏工作流，涵盖游戏化拆书、概念选型、世界与美术设计、按目标运行环境构建游戏及实机运行验收，支持系统玩法、互动叙事与互动影游。",
   "skills": "./skills/",
   "interface": {
     "displayName": "NovelToGame",
-    "shortDescription": "Turn novels into playable game prototypes · 把小说转成可玩的游戏"
+    "shortDescription": "Turn novels into playable game prototypes · 把小说改编成可玩的游戏"
   }
 }

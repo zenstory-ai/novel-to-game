@@ -1,4 +1,4 @@
-# 流程契约
+# 流程规范
 
 ## 最小工作区
 
@@ -15,7 +15,7 @@ game-adaptations/{project}/
 └── _progress.md
 ```
 
-按需增补 `_coverage.md`、视觉目标图、资产台账和运行证据目录。所有自动化状态只取 `NOT_RUN`、`FAIL` 或 `PASS`；`NOT_RUN` 代表尚无运行证据，不能算作验收通过。
+按需增补 `_coverage.md`、视觉目标图、资产台账和实机运行记录目录。所有自动化状态只取 `NOT_RUN`、`FAIL` 或 `PASS`；`NOT_RUN` 代表尚未完成实机验证，不能算作验收通过。
 
 ## 阶段职责与完成检查
 
@@ -24,7 +24,7 @@ game-adaptations/{project}/
 | 检查 | 成立条件 |
 |---|---|
 | `scope` | `PRODUCT_BRIEF.md`、`SOURCE_BIBLE.md` 与三份设计文档齐全，且项目范围、原著事实、目标运行形态、`targetFinish` 与 `experienceProfile` 前后一致 |
-| `playable` | `qa/verification.json` 的 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项均有真实运行证据且全部为 `PASS` |
+| `playable` | `qa/verification.json` 的 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项均有实机运行记录且全部为 `PASS` |
 
 `_progress.md` 只记录原著来源、运行模式、当前阶段、未确认假设、返工记录、预算复盘结论和这两项核对结果；详细测试状态统一留在 `qa/verification.json`，不复制多份状态表。
 
@@ -42,7 +42,7 @@ game-adaptations/{project}/
 
 预算或工具耗尽只会留下 `NOT_RUN` / `FAIL`、缩小范围或延期，绝不能直接标为 `PASS`。
 
-## 断点续做与问题回流
+## 断点续做与问题退回修复
 
 QA 发现的问题按职责归属退回修复：
 

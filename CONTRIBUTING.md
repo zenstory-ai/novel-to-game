@@ -5,9 +5,9 @@ and reusable agent workflows rather than a bundled game engine. The most useful
 contributions make a decision clearer, make a failure reproducible, or add
 evidence that a generated game actually works.
 
-感谢你帮助改进 NovelToGame。这个仓库的核心产品是改编判断与可复用 Agent
-工作流，而不是内置游戏引擎。优先提交能让决策更清楚、失败可复现或运行
-结果有证据的改进。
+感谢你参与改进 NovelToGame。本仓库提供的是小说改游戏的策划经验与可复用的 Agent
+工作流，不捆绑特定游戏引擎。我们最欢迎能理清改编决策、复现具体故障，或用实机运行
+结果验证游戏的贡献。
 
 ## Choose the right contribution / 选择贡献类型
 
@@ -22,7 +22,7 @@ evidence that a generated game actually works.
 Use the structured issue forms instead of a blank issue. Questions and early
 ideas belong in [GitHub Discussions](https://github.com/zenstory-ai/novel-to-game/discussions).
 
-请优先使用 Bug、Skill Gap 或 Example Proposal 表单；尚未成形的问题与想法放到
+提交问题请优先使用 Bug、Skill Gap 或 Example Proposal 表单；尚在构思阶段的疑问与想法请发到
 [Discussions](https://github.com/zenstory-ai/novel-to-game/discussions)。
 
 ## Before changing files / 修改前
@@ -37,17 +37,17 @@ ideas belong in [GitHub Discussions](https://github.com/zenstory-ai/novel-to-gam
 5. Do not add a dependency unless the contribution has an explicit product
    need that existing tools cannot meet.
 
-开始前请先搜索重复问题，说清用户可见的失败或改编决策，并确认文本、图像、
-音频与模型的权利。不要提交密钥、私有提示词、未公开稿件或未授权素材。
+动手修改前请先搜索是否已有同类问题，写清用户可见的故障表现或待解决的改编取舍，并核实文本、图像、
+音频与模型的版权与许可状态。切勿提交密钥、私有提示词、未公开书稿或未获授权的素材。
 
-## Repository contracts / 仓库契约
+## Repository contracts / 仓库规范
 
 The rules a change must respect (self-contained skills, language scope per
 surface, evidence for QA claims, no dependency without a product need, decision
 notes) live in [`AGENTS.md`](AGENTS.md). Read it once before editing; this file
 does not restate it.
 
-修改前请读一遍 [`AGENTS.md`](AGENTS.md)，仓库契约只在那里维护一份。
+修改前请先通读 [`AGENTS.md`](AGENTS.md)，仓库各项规范统一在该文档维护。
 
 ## Verification / 验证
 
@@ -72,8 +72,8 @@ If a check cannot run, write `NOT_RUN: <reason>` in the pull request. A missing
 check is not a pass. Do not replace runtime evidence with prose or a mock when
 the claim concerns real rendering, input, state change, result, or restart.
 
-每个 PR 都必须运行上述两条仓库命令，并为改动的行为补充最小、直接的证据。
-无法运行的检查必须写明 `NOT_RUN: <reason>`，不能当作通过。
+每个 PR 都必须运行上述两条校验命令，并针对改动内容补充最直接的验证结果。
+无法运行的检查项必须注明 `NOT_RUN: <reason>`，未运行的检查不能算作通过。
 
 ## Pull requests / 拉取请求
 
@@ -86,5 +86,5 @@ the claim concerns real rendering, input, state change, result, or restart.
 - Respond to review by updating the same evidence rather than opening a second,
   overlapping pull request.
 
-请保持 diff 小而可审查，解释“为什么”，附上命令输出、证据路径、来源权利和
-已知未验证范围。
+请保持改动精简易读，说明改动原因，并附上命令输出、验证文件路径、素材版权来源以及
+尚未验证的范围。
