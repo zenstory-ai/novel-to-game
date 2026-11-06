@@ -60,6 +60,8 @@ class BrowserPath:
         self.screenshot_count = 0
 
     def shot(self, name: str) -> Path:
+        # 入战时指令台会先于墨色旋屏退场；遮罩仍在时截图只会得到纯色背景。
+        self.page.wait_for_selector(".ink-swirl", state="detached", timeout=12000)
         self.page.wait_for_function(
             "() => document.querySelectorAll('.float-text, .float-stamp').length === 0",
             timeout=12000,

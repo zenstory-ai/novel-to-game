@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "runId": "journey-to-the-west-main-path",
   "environment": {
-    "browser": "148.0.7778.96",
+    "browser": "145.0.7632.6",
     "viewport": [
       1440,
       900
     ],
-    "url": "http://127.0.0.1:5173/?seed=42&fast=1",
-    "buildBytes": 30498515
+    "url": "http://127.0.0.1:5197/?seed=42&fast=1",
+    "buildBytes": 30500317
   },
   "inputTrace": [
     "start a new campaign and land in the walkable Flaming Mountain village",
