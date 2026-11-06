@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: Questions and early ideas / 问题与早期想法
     url: https://github.com/zenstory-ai/novel-to-game/discussions
-    about: Ask for help or discuss an idea before it becomes a bounded issue. / 在问题成形前先求助或讨论。
+    about: Ask for help or discuss an idea before it becomes a bounded issue. / 遇到疑问或有初步想法时，可先在此求助或讨论。

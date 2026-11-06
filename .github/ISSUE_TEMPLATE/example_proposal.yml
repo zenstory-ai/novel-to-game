@@ -1,5 +1,5 @@
 name: Example proposal / 示例提案
-description: Propose a source-grounded playable example with a distinct product-learning purpose. / 提案有明确学习价值的可玩示例。
+description: Propose a source-grounded playable example with a distinct product-learning purpose. / 提议一个忠于原著、有独特参考价值的可玩示例。
 title: "[Example]: "
 labels:
   - enhancement
@@ -28,7 +28,7 @@ body:
   - type: input
     id: artifact_language
     attributes:
-      label: Artifact language / 工件语言
+      label: Artifact language / 产物语言
       description: The language that example.json, planning artifacts, provenance, and in-game UI will declare.
       placeholder: "en, zh-CN, ..."
     validations:
@@ -37,7 +37,7 @@ body:
   - type: textarea
     id: playable_promise
     attributes:
-      label: Playable promise / 可玩承诺
+      label: Playable promise / 核心可玩体验
       description: What will the player repeatedly do, decide, risk, and complete?
     validations:
       required: true
@@ -45,7 +45,7 @@ body:
   - type: textarea
     id: learning_value
     attributes:
-      label: Distinct learning value / 独特学习价值
+      label: Distinct learning value / 独特参考价值
       description: Which new genre, interaction model, language, source structure, or evidence pattern does this add beyond existing examples?
     validations:
       required: true
@@ -53,7 +53,7 @@ body:
   - type: textarea
     id: vertical_slice
     attributes:
-      label: Complete vertical slice / 完整垂直切片
+      label: Complete vertical slice / 完整可玩片段
       description: Bound the spaces, systems, outcomes, restart, target viewport, and expected run length.
     validations:
       required: true
@@ -61,7 +61,7 @@ body:
   - type: textarea
     id: evidence_plan
     attributes:
-      label: Evidence plan / 证据计划
+      label: Evidence plan / 验收方案
       description: List source citations, one verification command, one complete-run evidence path, and known limitations. Do not add a separate subjective or human-approval gate.
     validations:
       required: true

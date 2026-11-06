@@ -1,5 +1,5 @@
 name: Bug report / Bug 报告
-description: Report a reproducible failure in a skill, plugin, validator, example, or documented command. / 报告可复现故障。
+description: Report a reproducible failure in a skill, plugin, validator, example, or documented command. / 报告可复现的故障。
 title: "[Bug]: "
 labels:
   - bug
