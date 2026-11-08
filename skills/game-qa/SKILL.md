@@ -10,22 +10,10 @@ description: "Verify a game with evidence on its selected target runtime. Launch
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
-## 必测六项指标
+## 执行与输出
 
-任何构建版本都必须通过实机运行跑通以下六项检查：`launch`、`render`、`input`、`coreLoop`、`outcome`、`restart`。`targetFinish` 只代表视觉与制作完成度，不增减这六项基础门禁。
+任何构建版本都必须通过实机运行跑通 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项检查（`targetFinish` 只代表视觉与制作完成度，不增减这六项基础门禁）：
 
-## 执行
-
-1. 读取 `BUILD_BRIEF.md` 中的 `targetRuntime`、`testedRuntime` 和权威 `verify` 命令；若与 `PRODUCT_BRIEF.md` 或 `BUILD_BRIEF.md` 前后矛盾，立即报错退回，不由 QA 自行猜测填补。
-2. 在 `testedRuntime` 中运行权威 `verify` 命令：从纯净初始状态（`clean start`）出发，依次走完「核心动作 → 达成设计结局 → 重开回到初始状态」整条路径，如实记录执行的命令、退出码、运行环境、六项检查结果、实机观察记录和暴露的实际故障。
-3. 对照 `GAME_DESIGN.md` 中会改变结局走向的硬规则和通关标记，只验证已批准的设计承诺，不追求走遍每一行底层代码分支。
-4. 若项目包含可执行改编模型、事件日志、热修补丁或 `signature_command`，按 [test-design-method.md](references/test-design-method.md) 的对应要求把回归用例并入权威 `verify` 命令；排查期间允许做单点诊断、修复和重跑，但最终写入 `qa/verification.json` 的六项结果必须来自同一次完整运行。任何专项回归失败均需映射到上述六项检查或记入 `limitations`。
-5. 如实记录未覆盖的限制项（`limitations`），并将发现的问题按 product / design / art / build 职责归属指派回对应环节。
-
-验证时优先读取游戏已有的可见状态与 DOM/画面输出；只有在外部完全无法观测关键结果时，才添加最小化的测试钩子。
-
-## 输出
-
-- `qa/verification.json`：唯一的实机验收记录文件（字段要求与记录格式见 [qa-contract.md](references/qa-contract.md)）。
-
-尚未覆盖的测试盲区统一写入结构化的 `limitations` 数组，绝不生造 `PASS_WITH_GAPS` 之类的折中状态；只要有任一必测项未运行（`NOT_RUN`）或失败（`FAIL`），顶层状态就不得标为 `PASS`。
+1. 读取 `BUILD_BRIEF.md` 中的 `targetRuntime`、`testedRuntime` 和权威 `verify` 命令；若与 `PRODUCT_BRIEF.md` 前后矛盾，立即报错退回。
+2. 在 `testedRuntime` 中运行权威 `verify` 命令（含项目专项回归），从纯净初始状态（`clean start`）连续走完「核心动作 → 达成设计结局 → 重开回到初始状态」；排查期间允许做单点诊断、修复和重跑，但最终写入 `qa/verification.json` 的六项结果必须来自同一次完整运行（`completeRun`）。优先读取游戏已有的可见状态与 DOM/画面输出，仅在外部完全无法观测关键结果时才添加最小测试钩子。
+3. 产出 `qa/verification.json` 作为唯一的实机验收记录文件（字段要求与记录格式见 [qa-contract.md](references/qa-contract.md)）：未覆盖的测试盲区写入结构化 `limitations` 数组（不生造 `PASS_WITH_GAPS` 等折中状态），任一必测项为 `NOT_RUN` 或 `FAIL` 时顶层状态不得标为 `PASS`；暴露的问题按 product / design / art / build 职责归属指派回对应环节。

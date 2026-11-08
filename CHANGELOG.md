@@ -11,6 +11,16 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-07
+
+### Changed
+
+- Consolidated the seven runtime skills and their seventeen reference documents from 994 lines to 585 lines while keeping every artifact schema, handoff rule, QA gate, and adaptation boundary intact ([decision note](.agents/notes/implemented/simplification/2026-11-07-skill-instruction-review-cleanup.md)):
+  - Removed repeated cross-skill handoff boilerplate, introductory essays, and duplicate audio, UI, spatial-navigation, and interactive-film checks so each rule lives with a single owner.
+  - Replaced rigid checklists and fixed numeric quotas with concise rules focused on adaptation fidelity, build execution, and runtime verification.
+  - Polished the Chinese phrasing across the skills, plugin manifests, and Chinese documentation so adaptation and QA rules read in natural Chinese without awkward calques or invented jargon.
+- ClawHub packages in this release: `game-art-direction` 1.2.9, `game-build` 1.3.3, `game-concept` 1.2.5, `game-qa` 1.0.10, `game-world-design` 1.2.4, `novel-game-analyze` 1.0.5, `novel-to-game` 1.1.7.
+
 ### Fixed
 
 - Both example games were played end to end by an agent acting as a new player, and the issues it found are fixed ([decision note](.agents/notes/implemented/bug-fix/2026-11-05-example-new-player-audit-fixes.md)).
@@ -234,7 +244,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.5.0...v0.6.0
