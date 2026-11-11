@@ -378,6 +378,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 - [小说改游戏入门](https://zenstory.ai/zh/novel-to-game/quick-start)——规划首个改编版本：分别整理有改编权的原著事实、作者批准的新增设定与待决问题，把第一版控制在可完成的小范围内。
 - [有后果的选择指南](https://zenstory.ai/zh/novel-to-game/meaningful-choices)——写清每个玩家选项的判断依据、代价与看得见的局面变化，并指明后续哪场戏会呼应这一结果。
 - [小说改游戏选什么类型](docs/novel-to-game-choose-gameplay.md)——先找玩家能反复做决定的事，再用同一个情境比较几种玩法。
+- [AI 文字冒险游戏怎么设计](docs/ai-text-adventure-game-design.md)——先按当前事实确认结果，再让 AI 写叙述，自由输入不乱改结果。
 - [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
 - [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项。
 

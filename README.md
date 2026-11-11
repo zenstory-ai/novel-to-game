@@ -377,6 +377,7 @@ Yes. Use the third request above. Each planning skill stops at its document: the
 - [Quick-start guide](https://zenstory.ai/novel-to-game/quick-start) — scope a first adaptation: separate authorized source facts, author-approved additions, and open questions, and keep the first slice small.
 - [Meaningful-choice guide](https://zenstory.ai/novel-to-game/meaningful-choices) — give each player option evidence, cost, and a visible outcome, and name the later scene that reads its state.
 - [Choosing a gameplay type for a novel](docs/novel-to-game-choose-gameplay.md) (Chinese) — find the decision a player can repeat, then compare several gameplay shapes on one scene.
+- [Designing an AI text adventure](docs/ai-text-adventure-game-design.md) (Chinese) — settle each turn against the current game facts before the AI narrates, so free-form input cannot rewrite results.
 - [NovelToGame compared with story-to-game builders](docs/novel-to-game-vs-story-to-game-tools.md) — the three shapes of tool and where the design documents live.
 - [Blender asset feedback](docs/research/blender-asset-feedback.md) (Chinese) — why Blender is a conditional entry in `game-build`, not a default.
 
