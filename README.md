@@ -67,7 +67,7 @@ An interactive-film romance set in the Ximen household the spring after Li Ping'
 
 The skills run on your coding agent's model and organize adaptation into stages. Each stage owns a document, with source evidence separated from design choices:
 
-- **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` where every hard rule, key character goal, turning point and ending, and signature anchor carries its chapter or file location, and every adaptation-boundary row cites its evidence. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
+- **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` covering main story arcs, standout conflict scenes, character relationships and agendas, secrets and information gaps, world rules, signature spaces and props, and adaptation boundaries — each citing its chapter or file location. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
 - **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
 - **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
 - **Built for the approved platform, adapted to your environment.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. Within that platform, `game-build` probes what your machine and session actually offer (such as Three.js, image/text-to-3D models like Hunyuan3D, Blender CLI/Python/MCP, 2D Canvas/WebGL, or native Godot/Unity toolchains) and chooses a fitting build route; a missing native toolchain may not silently become a web page. The design documents are engine-independent Markdown you own.
@@ -304,9 +304,9 @@ After world design, a whitebox (a rough build without final art) tests only the 
 | Skill | Responsibility |
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
-| [`novel-game-analyze`](skills/novel-game-analyze/) | Extract cited rules, verbs, spaces, agents, systems, and signature moments |
+| [`novel-game-analyze`](skills/novel-game-analyze/) | Deconstruct full-book story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations |
 | [`game-design`](skills/game-design/) | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game with rule self-checks |
+| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game, polish player-facing copy, and wire rule self-checks |
 | [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run verification receipt |
 
 ## Artifacts

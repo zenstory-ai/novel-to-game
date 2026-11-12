@@ -18,9 +18,9 @@ description: "Turn a novel into a fully playable game on the selected target pla
 
 1. 按 [pipeline-contract.md](references/pipeline-contract.md) 建立工作区与 `_progress.md`。
 2. 速读原著并按 [intake-method.md](references/intake-method.md) 生成 `PRODUCT_BRIEF.md`（只向用户确认会改变改编方向或涉及版权、内容尺度、平台与成本边界的重大分岔，其余未定项记入「未确认假设」）。
-3. 调用 `novel-game-analyze` 生成带原文出处的 `SOURCE_BIBLE.md`。
+3. 调用 `novel-game-analyze` 拆清全书主线脉络、高光桥段、人物关系、世界规矩与改编红线，生成带原文出处的 `SOURCE_BIBLE.md`。
 4. 调用 `game-design`（阶段一）比较尚未锁定的方向并选定 `concepts/CONCEPT.md`。
-5. 若选定方向依赖的原著事实缺少出处或前后矛盾，先调用 `novel-game-analyze` 回查补证；再调用 `game-design`（阶段二）生成 `design/GAME_DESIGN.md`，锁定最核心的设计风险与最小可玩范围。
+5. 若选定方向依赖的局部细节缺少出处或前后出入，先调用 `novel-game-analyze` 定点回查补证；再调用 `game-design`（阶段二）生成 `design/GAME_DESIGN.md`，锁定最核心的设计风险与最小可玩范围。
 6. 在批量制作美术资产前，调用 `game-build`（`whitebox`）针对头号设计风险搭建白盒原型；由未读过设计文档与源码的独立会话试玩后，把暴露的偏差交回 `game-design` 局部修订 `GAME_DESIGN.md` 并重跑受影响路径，随后按流程规范做首轮预算与范围复盘，据此调整剧情与关卡内容量。
 7. 调用 `game-design`（阶段三）生成 `design/ART_DIRECTION.md`；仅在视觉方向存在高风险分歧或目标完成度需要时制作视觉目标包，选定目标图后再进入批量资产生产。
 8. 调用 `game-build`（`production`）结合本机可用渲染栈与建模/生成工具实现完整可玩版本并配齐自检；再启用隔离构建上下文的 `game-qa` 执行新玩家首轮实机盲玩与单次完整通关验收，将暴露的问题按职责归属退回修复。
@@ -29,4 +29,4 @@ description: "Turn a novel into a fully playable game on the selected target pla
 
 支持任意语言的小说。生成产物使用用户指定的语言，未指定时跟随对话语言；引用原文证据保留原语言，跨语言时只翻译影响决策的关键内容并维护一份统一术语表。原著文化语境、目标发行市场和界面语言分开记录，不拿逐字直译代替本地化判断。
 
-把原著剧情转化为玩家动词、抉择与世界反馈，不要按章节顺序把小说照搬成看戏流程。玩家的选择必须真正改变事件原因或走向（因果权），并由世界具体兑现后果（结算权），不能只靠卡牌、回合或资源条伪装互动感；若接入生成模型，模型只负责解析输入与润色台词表现，状态变更、信息揭露、资源结算与不可逆承诺必须由可复现的规则裁决。
+把原著冲突转化为玩家可亲手介入的行动、抉择与世界反馈，不要按章节顺序把小说照搬成只能点下一句的看戏流程。玩家的选择必须真正改变事件起因或走向，并由世界把后果落到实处，不能只靠卡牌、回合或资源条伪装互动感；若接入生成模型，模型只负责解析输入与润色台词表现，状态变更、信息揭露、资源结算与不可逆承诺必须由可复现的规则裁决。

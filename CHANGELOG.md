@@ -11,12 +11,21 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-12
+
+### Added
+
+- Added player-facing in-game copy polishing and AI-slop removal (`skills/game-build/references/player-copy-polish.md`) as a mandatory `game-build` production pass (with matching blind-playtest checks in `game-qa`), stripping fourth-wall meta-commentary, leaked designer shorthand and hidden state names, telegraphic fragments, and stock AI phrasing while preserving approved rules and pre-rendered cutscene timing ([decision note](.agents/notes/implemented/feature/2026-11-11-story-grounded-novel-game-analyze.md)).
+
 ### Changed
 
+- Rewrote `novel-game-analyze` in plain story-first language so `SOURCE_BIBLE.md` extracts full-book causal story arcs, standout conflict scenes (distinguishing playable slice/level candidates from one-off dramatic set-pieces), one-entity-per-character profiles with alias unification and directed relationship shifts, dual-timeline secrets and disclosure paths, world rules with counterexamples, and cited adaptation boundaries — with single-pass chapter-block extraction and cross-batch state continuity ([decision note](.agents/notes/implemented/feature/2026-11-11-story-grounded-novel-game-analyze.md)).
 - Consolidated the three planning skills (`game-concept`, `game-world-design`, `game-art-direction`) into a unified `game-design` skill (reducing the bundle from 7 skills to 5) while keeping `concepts/CONCEPT.md`, `design/GAME_DESIGN.md`, and `design/ART_DIRECTION.md` as separate stage-owned specifications with `director` checkpoints and self-contained references ([decision note](.agents/notes/implemented/architecture/2026-11-11-game-design-consolidation-blind-qa-and-host-build.md)).
 - Reworked `game-qa` around two-round first-time-player blind playtesting: Round 1 runs an isolated cold-start playthrough without reading source code or design specs (recording the 5-second title test, first-minute onboarding, think-aloud friction scores, real-coordinate route walking, reload/restart checks, and mobile viewport checks in `qa/playtest-report.md`); Round 2 reconciles findings against `GAME_DESIGN.md` and `ART_DIRECTION.md` and runs the authoritative `verify` command to write `qa/verification.json`, while rule assertions move to `game-build`.
 - Updated `game-build` to probe host-available rendering stacks (such as Three.js, 2D Canvas/WebGL, or installed native Godot/Unity toolchains), 3D generation models/services (such as Hunyuan3D), Blender CLI/Python/MCP workflows, and 2D/audio/video tools before choosing a build route within the approved platform, with procedural or 2.5D spatial fallbacks when external 3D tools are unavailable.
+- Swept all Chinese skill prose and documentation to replace remaining academic coinages and awkward translation calques with direct, natural phrasing.
 - Reject YAML block-scalar `description` indicators in `scripts/validate_repo.py` so every skill description stays a single-line English-first string.
+- ClawHub packages in this release: `game-build` 1.5.0, `game-design` 1.0.1, `game-qa` 1.1.1, `novel-game-analyze` 1.1.0, `novel-to-game` 1.2.1.
 
 ### Removed
 
@@ -255,7 +264,8 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 - Shipped the first playable Journey to the West and Jin Ping Mei examples.
 - Added native plugin manifests and Agent Skills installation for the supported coding-agent surfaces.
 
-[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/zenstory-ai/novel-to-game/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/zenstory-ai/novel-to-game/compare/v0.6.0...v0.6.1
