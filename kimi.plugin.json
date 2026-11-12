@@ -1,6 +1,6 @@
 {
   "name": "novel-to-game",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "A source-grounded 5-skill novel-to-game workflow covering gameable deconstruction, unified concept/world/art design, environment-adapted runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖游戏化拆书、概念/世界/美术一体化策划、结合宿主环境构建游戏及新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。",
   "skills": "./skills/",
   "interface": {
