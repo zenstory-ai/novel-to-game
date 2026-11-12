@@ -7,7 +7,8 @@ and reusable workflow knowledge, not a bundled game engine.
 
 - Assume frontier models already know mainstream game and frontend frameworks.
 - Treat game concept, experience/level design, and art direction as separate
-  planning owners; do not let implementation silently redesign them.
+  stage-owned specifications (`CONCEPT.md`, `GAME_DESIGN.md`, `ART_DIRECTION.md`)
+  under `game-design`; do not let implementation silently redesign them.
 - Add instructions only when they encode adaptation know-how, a necessary
   handoff contract, or evidence-based QA.
 - Keep `SKILL.md` procedural and concise. Put optional depth in one-level
@@ -15,7 +16,10 @@ and reusable workflow knowledge, not a bundled game engine.
 - Keep every skill self-contained. Do not create runtime cross-skill file
   dependencies; invoke another skill by name instead.
 - Do not bind the core design artifacts to Kimi, Claude, or one framework.
-- Keep provider comparisons out of runtime skills; model capabilities change.
+- Probe the host environment's available rendering stacks, 3D/2D generators, and
+  modeling tools in `game-build` to give creative latitude within the approved
+  platform; keep provider rankings out of runtime skills as model capabilities
+  change.
 - Language scope is bounded per surface, not global:
   - **Skill bodies and `references/`**: Simplified Chinese, always. This is prose the
     agent reads at runtime; keeping it in one language avoids a bilingual layer that
@@ -37,8 +41,9 @@ and reusable workflow knowledge, not a bundled game engine.
 - Preserve source-language quotations and culturally specific concepts. When
   source and output languages differ, translate only what decisions require and
   keep one terminology table instead of flattening concepts into foreign tropes.
-- Require evidence for QA claims: command output, state snapshots, screenshots,
-  or recorded play paths.
+- Run first-time-player blind playtesting from a cold start before reading
+  internal source or design specs, and require evidence for QA claims: recorded
+  play paths, screenshots, state snapshots, and command output.
 - Do not describe subjective fun or balance as deterministically verified.
 - Do not add dependencies without an explicit product need.
 

@@ -11,6 +11,17 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Changed
+
+- Consolidated the three planning skills (`game-concept`, `game-world-design`, `game-art-direction`) into a unified `game-design` skill (reducing the bundle from 7 skills to 5) while keeping `concepts/CONCEPT.md`, `design/GAME_DESIGN.md`, and `design/ART_DIRECTION.md` as separate stage-owned specifications with `director` checkpoints and self-contained references ([decision note](.agents/notes/implemented/architecture/2026-11-11-game-design-consolidation-blind-qa-and-host-build.md)).
+- Reworked `game-qa` around two-round first-time-player blind playtesting: Round 1 runs an isolated cold-start playthrough without reading source code or design specs (recording the 5-second title test, first-minute onboarding, think-aloud friction scores, real-coordinate route walking, reload/restart checks, and mobile viewport checks in `qa/playtest-report.md`); Round 2 reconciles findings against `GAME_DESIGN.md` and `ART_DIRECTION.md` and runs the authoritative `verify` command to write `qa/verification.json`, while rule assertions move to `game-build`.
+- Updated `game-build` to probe host-available rendering stacks (such as Three.js, 2D Canvas/WebGL, or installed native Godot/Unity toolchains), 3D generation models/services (such as Hunyuan3D), Blender CLI/Python/MCP workflows, and 2D/audio/video tools before choosing a build route within the approved platform, with procedural or 2.5D spatial fallbacks when external 3D tools are unavailable.
+- Reject YAML block-scalar `description` indicators in `scripts/validate_repo.py` so every skill description stays a single-line English-first string.
+
+### Removed
+
+- Standalone `skills/game-concept`, `skills/game-world-design`, and `skills/game-art-direction` skill directories and `skills/game-qa/references/test-design-method.md` (superseded by `skills/game-design` and `skills/game-qa/references/blind-playtest-method.md`).
+
 ## [0.7.1] - 2026-11-07
 
 ### Changed

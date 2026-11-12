@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game Design"
+  short_description: "Select the concept and design gameplay, story, and art direction · 完成游戏概念选型、世界玩法设计及美术方向"
+  default_prompt: "Use $game-design to choose a playable concept and produce CONCEPT, GAME_DESIGN, and ART_DIRECTION for this novel adaptation."

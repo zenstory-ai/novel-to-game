@@ -105,7 +105,7 @@
 
 ## 用本仓库的 skill 怎么做
 
-这张回合卡用在 [game-world-design](../skills/game-world-design/SKILL.md) 阶段。它需要三份上游文件：`novel-game-analyze` 产出的 `SOURCE_BIBLE.md`（带原文出处的原著设定）、`game-concept` 产出并已选定的 `CONCEPT.md`，以及总入口 `novel-to-game` 整理的 `PRODUCT_BRIEF.md`。三份齐了以后，Claude Code 里运行 `/game-world-design`，Codex 里运行 `$game-world-design`，生成 `design/GAME_DESIGN.md`。
+这张回合卡用在 [game-design](../skills/game-design/SKILL.md) 的阶段二（体验、系统与叙事设计）。它需要三份上游文件：`novel-game-analyze` 产出的 `SOURCE_BIBLE.md`（带原文出处的原著设定）、`game-design` 阶段一产出并已选定的 `CONCEPT.md`，以及总入口 `novel-to-game` 整理的 `PRODUCT_BRIEF.md`。三份齐了以后，Claude Code 里运行 `/game-design`，Codex 里运行 `$game-design`，生成 `design/GAME_DESIGN.md`。
 
 这份设计文档写清核心循环、世界规则、关键决策、反馈和失败重开，以及第一个可玩版本的范围和通关路径。做自由输入的文字冒险时，可以让它在世界规则和反馈两部分里，按本文的回合卡写出一个自由输入场景，再用一条代表路径核对相邻几轮是否一致。
 
@@ -126,6 +126,6 @@
 ## 相关
 
 - 站点原文（含更多示例与相关指南）：https://zenstory.ai/zh/novel-to-game/llm-text-games
-- [本文方法来源](../skills/game-world-design/references/narrative-design-method.md)
+- [本文方法来源](../skills/game-design/references/narrative-design-method.md)
 - [小说改游戏选什么类型](novel-to-game-choose-gameplay.md)
 - 仓库地址：https://github.com/zenstory-ai/novel-to-game

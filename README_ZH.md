@@ -1,4 +1,4 @@
-<!-- Last synced with README.md: 2026-10-20 -->
+<!-- Last synced with README.md: 2026-11-11 -->
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/zenstory-ai/zenstory/main/apps/web/public/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
@@ -7,7 +7,7 @@
 <h1 align="center">NovelToGame</h1>
 
 <p align="center">
-  <b>忠于原著的小说改游戏工作流：涵盖改编策划、按目标运行环境构建游戏与实机运行验收。</b>
+  <b>忠于原著的小说改游戏工作流：涵盖改编策划、结合宿主环境构建游戏与新玩家实机盲玩验收。</b>
 </p>
 
 <p align="center">
@@ -23,7 +23,7 @@
 <p align="center">
   <a href="https://github.com/zenstory-ai/novel-to-game/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/zenstory-ai/novel-to-game?style=flat-square&color=22D3EE&logo=github&logoColor=white&label=Stars"></a>
   <a href="https://github.com/zenstory-ai/novel-to-game/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zenstory-ai/novel-to-game?style=flat-square&color=081431&label=Release"></a>
-  <img alt="Skills 7" src="https://img.shields.io/badge/Skills-7-081431?style=flat-square">
+  <img alt="Skills 5" src="https://img.shields.io/badge/Skills-5-081431?style=flat-square">
   <a href="https://github.com/zenstory-ai/novel-to-game/actions/workflows/validate.yml"><img alt="Validate" src="https://img.shields.io/github/actions/workflow/status/zenstory-ai/novel-to-game/validate.yml?style=flat-square&label=Validate"></a>
   <a href="./LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/License-MIT-1F6FEB?style=flat-square"></a>
 </p>
@@ -33,7 +33,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame 是一套开源的 7-skill 工作流，可直接装进你常用的编码 Agent（Claude Code、Codex、Kimi Code）。把一本小说交给它——如果已有心仪的目标平台或引擎，也可以一并指定。它会通读全书，选定一个站得住脚的玩法方向，完成世界与美术设计，按需求简报锁定的运行环境构建游戏，并用一次完整的实机运行验证游戏可玩。最终你会拿到符合目标完成度的可玩版本，以及全套策划与美术文档。下方两个示例均为浏览器游戏，点击即可在线试玩。
+NovelToGame 是一套开源的 5-skill 工作流，可直接装进你常用的编码 Agent（Claude Code、Codex、Kimi Code）。把一本小说交给它——如果已有心仪的目标平台或引擎，也可以一并指定。它会通读全书，选定一个站得住脚的玩法方向，分步完成世界与美术设计，结合当前环境可用的渲染栈与建模/生成工具构建游戏，再以未读源码与策划案的新玩家视角从头实机盲玩，并用一次完整通关记录完成验收。最终你会拿到符合目标完成度的可玩版本，以及全套策划与美术文档。下方两个示例均为浏览器游戏，点击即可在线试玩。
 
 ## 在线试玩
 
@@ -72,13 +72,13 @@ NovelToGame 是一套开源的 7-skill 工作流，可直接装进你常用的�
 - **关键原著事实均附原文出处。** 拆书阶段通读全书并产出 `SOURCE_BIBLE`：世界硬规则、关键角色目标、转折结局与标志性画面锚点均注明章回或文件位置，改编边界表逐行附上原文依据。原著事实分为 `immutable`（不可改）、`adaptable`（可调适）、`open`（原著留白）、`conflicted`（前后矛盾）四类；原著未交代的内容一律标明为“设计发明”，绝不冒充原著设定。
 - **玩法形态经过方案比选与论证。** 概念阶段横向对比多个可行方向，用明确的硬性淘汰标准筛掉不合格方案（例如：核心循环脱离原著核心冲突、遮去专有名词后只剩通用换皮模板、玩家只是花资源解锁既定剧情）。概念选型、世界设计与美术方向各自落入独立文档，构建阶段不得擅自推翻重来。
 - **借鉴成熟品类时，同步保留该品类的基础体验外壳。** 玩家辨认一类游戏，既看核心机制，也看熟悉的外围体验。系统玩法项目需用简表列明该品类的基础外壳（进入世界与移动、目标指引、成长反馈与重返动力）哪些完整实现、哪些简化降级、哪些明确不做及原因，并写清玩家进入游戏第一分钟看到的画面。《梦幻西游》式的回合制 RPG 绝不会只交出一串光秃秃的战斗关卡。
-- **严格按产品简报锁定的运行环境构建。** 产品简报（Agent 最先起草的一页需求单）会锁定目标平台、生产引擎、目标运行环境与实际可用的测试环境；缺少目标工具链时，绝不擅自降级成网页游戏交差。全套设计文档均为不绑定特定引擎的 Markdown 文件，完全归你掌控。
-- **实机运行验收涵盖一次完整通关、六项检查与明确的限制说明。** 游戏会在测试环境中真实启动，通过同一次完整运行验证 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项指标；未测试到的环境与特性则如实记入限制项（`limitations`）。
+- **守住批准的目标平台，因地制宜发挥宿主环境能力。** 产品简报（Agent 最先起草的一页需求单）会锁定目标平台、生产引擎、目标运行环境与实际可用的测试环境；在批准平台内，`game-build` 会先探测本机与当前会话具备的能力（如 Three.js、混元 3D 等图/文生 3D 模型、Blender CLI/Python/MCP、2D Canvas/WebGL，或已安装的 Godot/Unity 原生工具链），选定最出效果的实现路线；缺少目标原生工具链时，绝不擅自降级成网页游戏交差。全套设计文档均为不绑定特定引擎的 Markdown 文件，完全归你掌控。
+- **实机验收结合新玩家盲玩与单次完整通关凭证。** 在读取源码或设计规范之前，独立的验收会话先以初次上手的新玩家身份从标题页冷启动盲玩，排查上手引导、操作动线、视听节奏与手机视口摩擦（`qa/playtest-report.md`），随后对照策划与美术文档核实定性，并通过同一次完整运行验证 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项指标（`qa/verification.json`）；未测试到的环境与特性则如实记入限制项（`limitations`）。
 - **配音默认关闭，启用时默认在构建期预生成。** 除非美术方向明确选用角色配音，否则不会向语音合成服务发送任何台词；运行期实时合成须经产品简报明确批准，且原著全文与设计文档绝不外传。
 
 互动叙事同样是一等公民：连续场景、人物对白、证词交锋与关键抉择可以独立撑起整部作品，并遵循与系统玩法同等的玩家能动性与原著考据标准。人物个人线的关键抉择直指该角色自身的心结与盘算，关系远近通过神态反应、称呼变化、向你敞开的场所与托付的私事来体现，无需挂一个生硬的好感度数字。
 
-互动影游在此基础上将文字冒险与短剧结合：玩家每做出一个影响后续走向的关键选择，就会播放一段演绎当场后果的剧情短片，播完定格在末帧画面上继续阅读后续台词。凡是配有过场的选择点，每个选项都有专属短片，绝不拿花瓣飘落、立绘眨眼之类的动态静帧充数。工作流会按选择点与选项数量核算影像预算、先行编写分镜，待全流程打磨定稿后再依据通用资产台账批量生成；即使关闭动态影像或视频未加载，玩家依然能靠定格画面完整通关（详见[互动影游交互设计](skills/game-world-design/references/interactive-film-method.md)与[剧情过场的生产与接入](skills/game-build/references/cutscene-production.md)）。上方的《金瓶梅》示例便采用了这套做法。
+互动影游在此基础上将文字冒险与短剧结合：玩家每做出一个影响后续走向的关键选择，就会播放一段演绎当场后果的剧情短片，播完定格在末帧画面上继续阅读后续台词。凡是配有过场的选择点，每个选项都有专属短片，绝不拿花瓣飘落、立绘眨眼之类的动态静帧充数。工作流会按选择点与选项数量核算影像预算、先行编写分镜，待全流程打磨定稿后再依据通用资产台账批量生成；即使关闭动态影像或视频未加载，玩家依然能靠定格画面完整通关（详见[互动影游交互设计](skills/game-design/references/interactive-film-method.md)与[剧情过场的生产与接入](skills/game-build/references/cutscene-production.md)）。上方的《金瓶梅》示例便采用了这套做法。
 
 ## 安装
 
@@ -298,7 +298,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 小说 → 游戏化拆解 → 游戏概念 → 世界设计 → 风险白盒 ↺ → 美术方向 → 正式构建 → QA → 可玩游戏
 ```
 
-世界设计完成后，会先搭建一个不带最终美术的白盒原型，集中验证头号设计风险，通过后再投入批量美术制作：叙事分支因果可以用文字推演验证，而实时操作手感、空间走位、物理碰撞或镜头调度必须靠实机操作检验，试玩暴露出的问题直接反馈给设计阶段修正。白盒试玩还能检验玩家真正乐意反复体验的核心乐趣点，据此调整剧情、对白和关卡体量；同时在白盒结束与正式生产过半时，分两次对照产品简报核算剩余制作预算与待做范围。正式构建按批准的运行环境实现游戏，并配好一条一键验证命令。实机验收阶段可排查、修复并重跑测试，但最终验收记录要求六项检查全部出自同一次完整通关；发现的问题按产品、设计、美术、构建的职责归属退回对应环节处理。
+世界设计完成后，会先搭建一个不带最终美术的白盒原型，集中验证头号设计风险，通过后再投入批量美术制作：叙事分支因果可以用文字推演验证，而实时操作手感、空间走位、物理碰撞或镜头调度必须靠实机操作检验，试玩暴露出的问题直接反馈给设计阶段修正。白盒试玩还能检验玩家真正乐意反复体验的核心乐趣点，据此调整剧情、对白和关卡体量；同时在白盒结束与正式生产过半时，分两次对照产品简报核算剩余制作预算与待做范围。正式构建先探测宿主可用的渲染库与建模/生成工具，按批准方案实现游戏并配齐规则自测与一键验证命令。随后 `game-qa` 先以未读源码与策划案的新玩家身份从头实机盲玩，再核对设计规范并跑通单次完整通关验收；暴露的问题按产品、设计、美术、构建的职责归属退回对应环节处理。
 
 ## Skills
 
@@ -306,11 +306,9 @@ codex plugin add novel-to-game@novel-to-game-skills
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | 确认需求、选择模式、编排阶段并恢复中断进度 |
 | [`novel-game-analyze`](skills/novel-game-analyze/) | 提取附带原文出处的世界规则、动作、空间、角色、系统和名场面 |
-| [`game-concept`](skills/game-concept/) | 横向对比可行方案，筛除不合格方向，选定或验证游戏概念 |
-| [`game-world-design`](skills/game-world-design/) | 定义核心体验承诺、玩法循环、世界反馈、系统、关卡、失败与结局 |
-| [`game-art-direction`](skills/game-art-direction/) | 定义镜头、构图、视觉语言、色光材质、HUD、动效与声音 |
-| [`game-build`](skills/game-build/) | 先搭建针对核心风险的白盒原型，再严格按已批准的策划与美术方案实现正式版本 |
-| [`game-qa`](skills/game-qa/) | 通过实机命令、状态快照、画面截图和完整通关路径验收游戏，并如实注明未覆盖范围 |
+| [`game-design`](skills/game-design/) | 分阶段独立掌管概念选型（`CONCEPT.md`）、世界与系统/叙事设计（`GAME_DESIGN.md`）及美术与视听方向（`ART_DIRECTION.md`） |
+| [`game-build`](skills/game-build/) | 探测宿主可用的渲染栈与 3D/2D/音视频工具，搭建风险白盒或按批准方案实现正式版本并配齐规则自测 |
+| [`game-qa`](skills/game-qa/) | 以未读源码与策划案的新玩家身份从头实机盲玩，核对设计规范并生成单次完整通关验收凭证 |
 
 ## 产物
 
@@ -335,7 +333,7 @@ game-adaptations/<project>/
 
 ### 我要的是互动叙事，结果拿到卡牌、回合和数值面板。怎样才能得到场景、对白和关键选择？
 
-在请求里直接写明即可，写法可参考上方第二条请求示例。这会在产品简报里锁定 `experienceProfile: narrative-led`，并一路贯穿概念、设计、美术、构建和实机验收。叙事设计方法要求把每个关键选择落实为具体言行、当场人物反应，以及一条会被后续场次呼应的持久状态，不拿笼统的隐藏总分敷衍。这条专门赛道源于一位读者在 [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17) 中反馈的真实踩坑案例；详见 [`game-concept`](skills/game-concept/SKILL.md) 与[互动叙事的改编边界](skills/game-world-design/references/narrative-design-method.md)。
+在请求里直接写明即可，写法可参考上方第二条请求示例。这会在产品简报里锁定 `experienceProfile: narrative-led`，并一路贯穿概念、设计、美术、构建和实机验收。叙事设计方法要求把每个关键选择落实为具体言行、当场人物反应，以及一条会被后续场次呼应的持久状态，不拿笼统的隐藏总分敷衍。这条专门赛道源于一位读者在 [Discussion #17](https://github.com/zenstory-ai/novel-to-game/discussions/17) 中反馈的真实踩坑案例；详见 [`game-design`](skills/game-design/SKILL.md) 与[互动叙事的改编边界](skills/game-design/references/narrative-design-method.md)。
 
 ### 我想做互动影游，怎样得到选择之后的剧情过场，而不是会动的立绘？
 
@@ -351,7 +349,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
-由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。替代运行的 QA 结果只覆盖实际测试环境。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与 [QA 契约](skills/game-qa/references/qa-contract.md)。
+由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。替代运行的 QA 结果只覆盖实际测试环境。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与[实机验收规范](skills/game-qa/references/qa-contract.md)。
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
@@ -359,7 +357,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 怎么知道它做出来的游戏真的能跑？QA 里的 PASS 是什么意思？
 
-它证明一条权威命令在测试运行时里的一次完整运行展示了六件事：构建启动了、画面非空且会变化、真实输入改变了状态、核心循环完整执行、至少到达一个设计结果、重开回到初态。状态只有 `NOT_RUN`、`FAIL`、`PASS` 三种；未验证不是通过，每次复跑都会覆盖旧的 PASS。每个缺口都写成带范围（scope）和原因（reason）的限制项。它不证明趣味、平衡、沉浸、其他浏览器或设备、权利与发布质量，也不要求真人试玩。见 [实机验收规范](skills/game-qa/references/qa-contract.md)。
+`game-qa` 分两轮执行：第一轮先在未读源码与设计文档的隔离状态下，以新玩家身份从标题页冷启动实机盲玩（将上手引导、交互动线、视听节奏与手机视口问题记入 `qa/playtest-report.md`）；第二轮对照设计规范核实定性，并通过测试环境中的一次权威完整运行在 `qa/verification.json` 证明六件事：构建启动了、画面非空且会变化、真实输入改变了状态、核心循环完整执行、至少到达一个设计结局、重开回到初态（首轮盲玩一旦证实存在 `P0` 阻断，对应检查即判 `FAIL`）。状态只有 `NOT_RUN`、`FAIL`、`PASS` 三种；未验证不是通过，每次复跑都会整份覆盖旧的 PASS。每个缺口都写成带范围（scope）和原因（reason）的限制项。它不证明主观趣味、数值平衡、其他浏览器或设备、版权合规与商业发布质量。见[新玩家实机盲玩方法](skills/game-qa/references/blind-playtest-method.md)与[实机验收规范](skills/game-qa/references/qa-contract.md)。
 
 ### 我的小说是一种语言，游戏能用另一种语言吗？
 
@@ -371,7 +369,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 能只要设计文档、不构建吗？
 
-能。用上面第三条请求。每个策划 skill 都停在自己的文档：概念不写代码和数值表，世界设计不写文件名和测试，美术方向把资产生产留给构建阶段。即使进入构建，白盒也只证明选中的最大风险，不产生 QA 结论；六项检查只来自正式构建。
+能。用上面第三条请求。`game-design` 的每个阶段都停在各自的文档边界：概念阶段不写代码和数值表，世界设计不写文件名和测试，美术方向把资产生产留给构建阶段。即使进入构建，白盒也只证明选中的最大风险，不产生 QA 结论；六项检查只来自正式构建。
 
 ## 延伸阅读
 

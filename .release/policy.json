@@ -36,11 +36,9 @@
   "requiredPaths": [
     "README.md",
     "README_ZH.md",
-    "skills/game-art-direction/SKILL.md",
     "skills/game-build/SKILL.md",
-    "skills/game-concept/SKILL.md",
+    "skills/game-design/SKILL.md",
     "skills/game-qa/SKILL.md",
-    "skills/game-world-design/SKILL.md",
     "skills/novel-game-analyze/SKILL.md",
     "skills/novel-to-game/SKILL.md",
     "VERSION",

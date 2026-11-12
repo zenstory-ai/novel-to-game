@@ -1,6 +1,6 @@
 # 实机验收规范
 
-本规范只规定验收结论所需的实机运行记录；测试框架、调试接口与代码组织由项目自行决定。`targetFinish` 只代表视觉与制作完成度，不增减六项基础门禁。
+本规范规定机器可读验收凭证 `qa/verification.json` 的记录格式；新玩家视角的体验诊断见 [blind-playtest-method.md](blind-playtest-method.md)。测试框架与内部自测组织由构建阶段自行决定，`targetFinish` 只代表视觉与制作完成度，不增减六项基础检查。
 
 ## 状态与记录文件
 
@@ -32,7 +32,7 @@
 
 `completeRun.evidence` 必须指向工作区内非空的 JSON 观察记录文件（只存同次完整运行采集到的客观事实，不重复抄写 `command`、`exitCode` 或 `PASS`/`FAIL`）：顶层固定包含 `schemaVersion: 1`、与 `completeRun.id` 一致的 `runId`、非空 `environment`、非空 `inputTrace` 步骤数组，以及恰好包含六个同名键的 `observations` 对象。每条观察记录含非空 `id`、实际执行的 `inputs` 数组和非空 `state` 快照；其中 `render.visual` 必须指向工作区内非空的真实画面截图，`outcome.state` 与 `restart.state` 必须分别包含 `completeRun.terminal` 和 `completeRun.restart` 声明的终态与初态值（光有静态截图不能证明底层状态正确，光导出状态 JSON 也不能证明屏幕真实绘出画面）。
 
-权威验证命令无论成败都必须整份重写覆盖 `qa/verification.json`，严禁复跑失败后残留旧 `PASS`。专项回归套件记在 `verify.suites` 或证据文件中；若专项回归失败破坏了六项基础能力之一，同步将对应 `checks` 键标为 `FAIL`。
+权威验证命令无论成败都必须整份重写覆盖 `qa/verification.json`，严禁复跑失败后残留旧 `PASS`。专项回归套件记在 `verify.suites` 或证据文件中；若专项回归失败破坏了六项基础能力之一，或首轮新玩家实机盲玩证实存在 `P0` 阻断（如脚本绕过被遮挡按钮或死胡同而假绿），必须同步将对应 `checks` 键与顶层 `status` 标为 `FAIL`。
 
 ## 六项闭环与边界
 
