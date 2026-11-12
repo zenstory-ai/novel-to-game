@@ -4,7 +4,7 @@
     "name": "zenstory-ai"
   },
   "metadata": {
-    "description": "A source-grounded 7-skill novel-to-game workflow for adaptation planning, building a candidate for the target runtime, and evidence-based QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 7-skill 小说改游戏工作流，涵盖改编策划、按目标运行环境构建游戏与实机运行验收，支持系统玩法、互动叙事与互动影游。",
+    "description": "A source-grounded 5-skill novel-to-game workflow for adaptation design, environment-adapted runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖改编策划、结合宿主环境构建游戏与新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。",
     "version": "0.7.1"
   },
   "plugins": [
@@ -12,7 +12,7 @@
       "name": "novel-to-game",
       "source": "./",
       "version": "0.7.1",
-      "description": "A source-grounded 7-skill novel-to-game workflow covering gameable deconstruction, concept selection, world and art design, building a candidate for the target runtime, and evidence-based QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 7-skill 小说改游戏工作流，涵盖游戏化拆书、概念选型、世界与美术设计、按目标运行环境构建游戏及实机运行验收，支持系统玩法、互动叙事与互动影游。"
+      "description": "A source-grounded 5-skill novel-to-game workflow covering gameable deconstruction, unified concept/world/art design, environment-adapted runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖游戏化拆书、概念/世界/美术一体化策划、结合宿主环境构建游戏及新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。"
     }
   ]
 }

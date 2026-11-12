@@ -1,6 +1,6 @@
 # Turning a novel into a playable game: NovelToGame compared with story-to-game builders
 
-NovelToGame (`zenstory-ai/novel-to-game`, MIT, 7 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds for the runtime you choose, and ends with evidence-based QA that launches the actual build. Two public adaptations are playable in a browser today: a turn-based RPG and a romance ADV.
+NovelToGame (`zenstory-ai/novel-to-game`, MIT, 5 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds by adapting to the rendering stacks and asset tools available in your environment, and ends with first-player blind playtesting plus one complete-run QA receipt on the actual build. Two public adaptations are playable in a browser today: a turn-based RPG and a romance ADV.
 
 ## Three shapes of tool
 
@@ -22,11 +22,9 @@ Novel → Source analysis → Concept → World design → Risk-matched whitebox
 |---|---|
 | `novel-to-game` | Confirm requirements, lock `PRODUCT_BRIEF.md`, orchestrate handoffs, recover progress |
 | `novel-game-analyze` | Extract rules, player verbs, spaces, character will, systems and visual anchors with citations into `SOURCE_BIBLE.md` |
-| `game-concept` | Compare meaningful alternatives, apply hard vetoes, select a playable direction |
-| `game-world-design` | Player promise, core loop, world response, systems, level pacing, failure and outcomes |
-| `game-art-direction` | Camera, composition, visual grammar, colour, light, HUD, motion, sound |
-| `game-build` | A risk-matched whitebox first, then the approved production candidate, without redesigning it |
-| `game-qa` | Launch the real build and prove rendering, input, core loop, one designed outcome, restart and explicit limitations |
+| `game-design` | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
+| `game-build` | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game with rule self-checks |
+| `game-qa` | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run receipt |
 
 Each run creates one workspace:
 
@@ -49,7 +47,7 @@ A one-line "turn this book into a game" prompt usually produces a reskin or a cl
 
 ## What "evidence-based QA" means
 
-QA does not ask whether the game is fun. It launches the build on the selected runtime and records, in one complete execution, that it starts, renders, accepts input, runs the core loop, reaches at least one designed outcome, restarts, and states its limitations. The record is `qa/verification.json`, which points to the run's evidence, such as screenshots and the input trace. Subjective quality is reported as observation, not verdict.
+QA does not claim whether the game is subjectively fun. It first runs an isolated blind playtest from the title screen as a first-time player without reading source code or design specs (`qa/playtest-report.md`), then reconciles findings against the design documents and records, in one complete execution on the tested runtime, that the build starts, renders, accepts input, runs the core loop, reaches at least one designed outcome, restarts, and states its limitations in `qa/verification.json`. Subjective impressions are separated from reproducible facts.
 
 ## Public examples
 

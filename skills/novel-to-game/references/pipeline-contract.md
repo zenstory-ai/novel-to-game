@@ -15,11 +15,11 @@ game-adaptations/{project}/
 └── _progress.md
 ```
 
-按需增补 `_coverage.md`、视觉目标图、资产台账和实机运行记录目录。所有自动化状态只取 `NOT_RUN`、`FAIL` 或 `PASS`；`NOT_RUN` 代表尚未完成实机验证，不能算作验收通过。
+按需增补 `_coverage.md`、视觉目标图、资产台账、`qa/playtest-report.md` 和实机运行记录目录。所有自动化状态只取 `NOT_RUN`、`FAIL` 或 `PASS`；`NOT_RUN` 代表尚未完成实机验证，不能算作验收通过。
 
 ## 阶段职责与完成检查
 
-`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实依据；概念选型、体验与关卡设计、美术方向分别由 `CONCEPT.md`、`GAME_DESIGN.md`、`ART_DIRECTION.md` 的负责人掌管，构建阶段不得私自改写。总入口只核对以下两项：
+`PRODUCT_BRIEF.md` 与 `SOURCE_BIBLE.md` 是上游事实依据；概念选型、体验与关卡设计、美术方向分别落入 `CONCEPT.md`、`GAME_DESIGN.md`、`ART_DIRECTION.md` 三份独立文档（统一由 `game-design` 分阶段维护），构建阶段不得私自改写。总入口只核对以下两项：
 
 | 检查 | 成立条件 |
 |---|---|

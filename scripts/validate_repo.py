@@ -10,11 +10,9 @@ from pathlib import Path
 
 
 EXPECTED_SKILLS = {
-    "game-art-direction",
     "novel-to-game",
     "novel-game-analyze",
-    "game-concept",
-    "game-world-design",
+    "game-design",
     "game-build",
     "game-qa",
 }
@@ -95,6 +93,8 @@ TARGET_FINISH_SOURCES = (
 )
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 FIELD_RE = re.compile(r"^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$")
+BLOCK_SCALAR_RE = re.compile(r"^[|>][+-]?\d*(?:\s+#.*)?$")
+OPENAI_INTERFACE_FIELD_RE = re.compile(r"^\s+([a-z_]+):\s*(.+?)\s*$", re.MULTILINE)
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 LEVEL_TWO_HEADING_RE = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
 TARGET_FINISH_RE = re.compile(r"^\s*`?targetFinish:\s*([a-z-]+)`?\s*$", re.MULTILINE)
@@ -264,6 +264,8 @@ def validate_skill(skill_dir: Path) -> list[str]:
     description = frontmatter.get("description")
     if not description:
         issues.append(f"{skill_dir.name}: missing description")
+    elif BLOCK_SCALAR_RE.match(description):
+        issues.append(f"{skill_dir.name}: description must be a single-line string")
     elif not leads_with_english(description):
         issues.append(f"{skill_dir.name}: description must lead with English")
     if skill_dir.name != ORCHESTRATOR_SKILL and OUTPUT_LANGUAGE_RULE not in text:
@@ -272,8 +274,20 @@ def validate_skill(skill_dir: Path) -> list[str]:
     metadata = skill_dir / "agents/openai.yaml"
     if not metadata.is_file():
         issues.append(f"{skill_dir.name}: missing agents/openai.yaml")
-    elif f"${skill_dir.name}" not in metadata.read_text(encoding="utf-8"):
-        issues.append(f"{skill_dir.name}: default prompt must name ${skill_dir.name}")
+    else:
+        metadata_text = metadata.read_text(encoding="utf-8")
+        if f"${skill_dir.name}" not in metadata_text:
+            issues.append(f"{skill_dir.name}: default prompt must name ${skill_dir.name}")
+        interface_fields = {
+            key: value.strip().strip('"').strip("'")
+            for key, value in OPENAI_INTERFACE_FIELD_RE.findall(metadata_text)
+        }
+        for field_name in ("display_name", "short_description", "default_prompt"):
+            field_value = interface_fields.get(field_name)
+            if field_value is not None and not leads_with_english(field_value):
+                issues.append(
+                    f"{skill_dir.name}: agents/openai.yaml {field_name} must lead with English"
+                )
 
     for markdown in skill_dir.rglob("*.md"):
         body = markdown.read_text(encoding="utf-8")

@@ -19,6 +19,8 @@ Status: implemented
 
 2026-10-15 补漏复核使 `game-world-design` 的描述和 Codex 默认请求与同一 owner 合同一致：交付 `GAME_DESIGN` 及可供构建的切片设计，原型实现仍由 `game-build` 负责。正文流程、产物和分工不变。
 
+2026-11-11 演进：三份策划文档（`CONCEPT.md`、`GAME_DESIGN.md`、`ART_DIRECTION.md`）的独立阶段边界与上游事实保护不变，运行时入口由三个独立 skill 收敛至统一的 `game-design` 分阶段维护，详见 [2026-11-11-game-design-consolidation-blind-qa-and-host-build](2026-11-11-game-design-consolidation-blind-qa-and-host-build.md)。
+
 来源：958056a、15c6663、70ee654 (#2)、1f9ba53、45d2c3c、6c450da (#20)、e737787 (#38)
 
 ## Alternatives considered

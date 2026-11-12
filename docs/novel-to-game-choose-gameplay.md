@@ -16,7 +16,7 @@
 
 ## 先写循环，再贴类型标签
 
-每个候选方案都按下面六项写一遍。这是一张编辑用的工作表，把 game-concept skill 对循环、玩家能动性和范围的判断整理成了问题，不对应仓库里的某个文件格式：
+每个候选方案都按下面六项写一遍。这是一张编辑用的工作表，把 `game-design` 概念选型阶段对循环、玩家能动性和范围的判断整理成了问题，不对应仓库里的某个文件格式：
 
 > **玩家身份**：他能接触什么，不能替谁作决定？
 >
@@ -73,7 +73,7 @@
 
 ## 用本仓库的 skill 怎么做
 
-对应的 skill 是 [game-concept](../skills/game-concept/SKILL.md)。它要求项目里已有 `SOURCE_BIBLE.md`（小说拆解，由 novel-game-analyze 产出）和 `PRODUCT_BRIEF.md`（产品简报，由 novel-to-game 起草），缺一个就会停下来说明缺口。两份文件齐了之后，在 Claude Code 里输入 `/game-concept`，在 Codex 里输入 `$game-concept`，再说明要求，例如：
+对应的 skill 是 [game-design](../skills/game-design/SKILL.md)（阶段一：概念选型）。它要求项目里已有 `SOURCE_BIBLE.md`（小说拆解，由 `novel-game-analyze` 产出）和 `PRODUCT_BRIEF.md`（产品简报，由 `novel-to-game` 起草），缺一个就会停下来说明缺口。两份文件齐了之后，在 Claude Code 里输入 `/game-design`，在 Codex 里输入 `$game-design`，再说明要求，例如：
 
 > 基于已经分析的小说范围提出几种不同的玩法概念，比较玩家反复做的行动、原作规则怎样影响操作、世界的具体回应和最小可验证情境，新增设计与原作事实分开写。
 
@@ -90,6 +90,6 @@
 ## 相关
 
 - 站点原文（含更多示例与相关指南）：https://zenstory.ai/zh/novel-to-game/choose-gameplay
-- [本文方法来源](../skills/game-concept/references/concept-method.md)
+- [本文方法来源](../skills/game-design/references/concept-method.md)
 - [NovelToGame 与 story-to-game 类工具的区别](novel-to-game-vs-story-to-game-tools.md)（英文）
 - 仓库地址：https://github.com/zenstory-ai/novel-to-game

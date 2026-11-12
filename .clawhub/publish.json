@@ -13,38 +13,6 @@
         "development",
         "knowledge"
       ],
-      "displayName": "游戏美术与创意方向",
-      "disposition": "publish",
-      "excludeReason": "",
-      "include": [
-        "**/*"
-      ],
-      "maintainer": "worldwonderer",
-      "packageDigest": "5e061d369609c7e00c64f81f27643fbc488edf830c8edf20a621f7ee0ec2be57",
-      "path": "skills/game-art-direction",
-      "publisher": "worldwonderer",
-      "rebuildOn": [],
-      "rights": {
-        "evidence": ".clawhub/README.md#rights",
-        "status": "permission-recorded"
-      },
-      "runtimeDependsOn": [],
-      "slug": "game-art-direction",
-      "supportedRuntimes": [],
-      "topics": [
-        "game-development",
-        "novel-adaptation",
-        "game-design"
-      ],
-      "version": "1.2.9"
-    },
-    {
-      "catalogMigration": true,
-      "categories": [
-        "creative",
-        "development",
-        "knowledge"
-      ],
       "displayName": "游戏构建执行",
       "disposition": "publish",
       "excludeReason": "",
@@ -52,7 +20,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "3032e8eff51228168b77b77b34628cb63c186b1131a61e42c1378891a2c69d1a",
+      "packageDigest": "d87ba685b5551d6a9312e33ecfe7d223a820942b3a4f40ed227121aeff7ff1dc",
       "path": "skills/game-build",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -68,7 +36,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.3.3"
+      "version": "1.4.0"
     },
     {
       "catalogMigration": true,
@@ -77,15 +45,15 @@
         "development",
         "knowledge"
       ],
-      "displayName": "游戏概念设计",
+      "displayName": "游戏策划与美术方向",
       "disposition": "publish",
       "excludeReason": "",
       "include": [
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "40f2bd15401436b5c1b3beb0c4f53fa0d8e1fcc4f51260578e133edc98be9bf3",
-      "path": "skills/game-concept",
+      "packageDigest": "2a831dc306b0dd848eab03c87046af3bb1d17421d724f40ac0968c03cce9789f",
+      "path": "skills/game-design",
       "publisher": "worldwonderer",
       "rebuildOn": [],
       "rights": {
@@ -93,14 +61,14 @@
         "status": "permission-recorded"
       },
       "runtimeDependsOn": [],
-      "slug": "game-concept",
+      "slug": "game-design",
       "supportedRuntimes": [],
       "topics": [
         "game-development",
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.2.5"
+      "version": "1.0.0"
     },
     {
       "catalogMigration": true,
@@ -109,14 +77,14 @@
         "development",
         "knowledge"
       ],
-      "displayName": "游戏质量验证",
+      "displayName": "游戏实机盲玩与运行验收",
       "disposition": "publish",
       "excludeReason": "",
       "include": [
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "edabe8763afba0ca05e6bf308c1e5edafb5e54ba48ab513c28efd1eb31f9ce5e",
+      "packageDigest": "1a063886d244c016f4279e929309588e02b8ece08d61b516a8df4a8a7ffdd9d2",
       "path": "skills/game-qa",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -132,39 +100,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.0.10"
-    },
-    {
-      "catalogMigration": true,
-      "categories": [
-        "creative",
-        "development",
-        "knowledge"
-      ],
-      "displayName": "游戏体验与世界设计",
-      "disposition": "publish",
-      "excludeReason": "",
-      "include": [
-        "**/*"
-      ],
-      "maintainer": "worldwonderer",
-      "packageDigest": "3873831930c249e62f73436bb01208d2f260babd1602c5b9d785202e16a6e2a3",
-      "path": "skills/game-world-design",
-      "publisher": "worldwonderer",
-      "rebuildOn": [],
-      "rights": {
-        "evidence": ".clawhub/README.md#rights",
-        "status": "permission-recorded"
-      },
-      "runtimeDependsOn": [],
-      "slug": "game-world-design",
-      "supportedRuntimes": [],
-      "topics": [
-        "game-development",
-        "novel-adaptation",
-        "game-design"
-      ],
-      "version": "1.2.4"
+      "version": "1.1.0"
     },
     {
       "catalogMigration": true,
@@ -212,7 +148,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "23e9be779d518a92751ec646f8676a34f86952bd4e5cf34c9ba048db58688af4",
+      "packageDigest": "04bbd9b7069aea926e7e98b0a8543efa43592d4e77e94200d7e9a66bba1cf2aa",
       "path": "skills/novel-to-game",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -221,11 +157,9 @@
         "status": "permission-recorded"
       },
       "runtimeDependsOn": [
-        "skill:worldwonderer/game-art-direction@1.2.9",
-        "skill:worldwonderer/game-build@1.3.3",
-        "skill:worldwonderer/game-concept@1.2.5",
-        "skill:worldwonderer/game-qa@1.0.10",
-        "skill:worldwonderer/game-world-design@1.2.4",
+        "skill:worldwonderer/game-build@1.4.0",
+        "skill:worldwonderer/game-design@1.0.0",
+        "skill:worldwonderer/game-qa@1.1.0",
         "skill:worldwonderer/novel-game-analyze@1.0.5"
       ],
       "slug": "novel-to-game",
@@ -235,7 +169,7 @@
         "novel-adaptation",
         "game-design"
       ],
-      "version": "1.1.7"
+      "version": "1.2.0"
     }
   ]
 }

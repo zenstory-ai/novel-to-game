@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept selection, world and visual design, target-runtime build, and evidence-based QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或 oh-story 写作工程转成忠于原著、可在目标平台完整游玩的游戏，编排游戏化拆书、概念选型、世界与美术设计、按目标运行环境构建游戏与实机运行验收。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, gameable deconstruction, concept, world and visual design, environment-adapted build, and blind-playtest QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或写作工程转成忠于原著、可在目标平台完整游玩的游戏，编排游戏化拆书、概念与世界及美术设计、结合宿主环境构建游戏与新玩家实机盲玩验收。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
 ---
 # NovelToGame 总入口
 
@@ -19,11 +19,11 @@ description: "Turn a novel into a fully playable game on the selected target pla
 1. 按 [pipeline-contract.md](references/pipeline-contract.md) 建立工作区与 `_progress.md`。
 2. 速读原著并按 [intake-method.md](references/intake-method.md) 生成 `PRODUCT_BRIEF.md`（只向用户确认会改变改编方向或涉及版权、内容尺度、平台与成本边界的重大分岔，其余未定项记入「未确认假设」）。
 3. 调用 `novel-game-analyze` 生成带原文出处的 `SOURCE_BIBLE.md`。
-4. 调用 `game-concept` 比较尚未锁定的方向并选定 `CONCEPT.md`。
-5. 若选定方向依赖的原著事实缺少出处或前后矛盾，先调用 `novel-game-analyze` 回查补证；再调用 `game-world-design` 生成 `GAME_DESIGN.md`，锁定最核心的设计风险与最小可玩范围。
-6. 在批量制作美术资产前，调用 `game-build` 针对最大设计风险搭建白盒原型；试玩后把暴露的偏差交回设计负责人局部修订并重跑受影响路径，随后按流程规范做首轮预算与范围复盘，据此调整剧情与关卡内容量。
-7. 调用 `game-art-direction` 生成 `ART_DIRECTION.md`；仅在视觉方向存在高风险分歧或目标完成度需要时制作视觉目标包，选定目标图后再进入批量资产生产。
-8. 调用 `game-build` 实现完整可玩版本，再由 `game-qa` 验证最小可玩闭环并按职责归属退回修复。
+4. 调用 `game-design`（阶段一）比较尚未锁定的方向并选定 `concepts/CONCEPT.md`。
+5. 若选定方向依赖的原著事实缺少出处或前后矛盾，先调用 `novel-game-analyze` 回查补证；再调用 `game-design`（阶段二）生成 `design/GAME_DESIGN.md`，锁定最核心的设计风险与最小可玩范围。
+6. 在批量制作美术资产前，调用 `game-build`（`whitebox`）针对头号设计风险搭建白盒原型；由未读过设计文档与源码的独立会话试玩后，把暴露的偏差交回 `game-design` 局部修订 `GAME_DESIGN.md` 并重跑受影响路径，随后按流程规范做首轮预算与范围复盘，据此调整剧情与关卡内容量。
+7. 调用 `game-design`（阶段三）生成 `design/ART_DIRECTION.md`；仅在视觉方向存在高风险分歧或目标完成度需要时制作视觉目标包，选定目标图后再进入批量资产生产。
+8. 调用 `game-build`（`production`）结合本机可用渲染栈与建模/生成工具实现完整可玩版本并配齐自检；再启用隔离构建上下文的 `game-qa` 执行新玩家首轮实机盲玩与单次完整通关验收，将暴露的问题按职责归属退回修复。
 
 ## 语言、文化与改编判断
 

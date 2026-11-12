@@ -1,4 +1,0 @@
-interface:
-  display_name: "Game Art Direction"
-  short_description: "Define visual style and on-screen readability · 定义游戏的视觉风格与画面可读性"
-  default_prompt: "Use $game-art-direction to define this game's visual style, art direction, and signature frames."

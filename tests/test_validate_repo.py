@@ -119,6 +119,7 @@ class RepositoryValidationTests(unittest.TestCase):
             ("unresolved TODO", "demo", "TODO"),
             ("broken link", "demo", "[missing](references/missing.md)"),
             ("link leaves skill", "demo", "[other](../other.md)"),
+            ("description must be a single-line string", ">-2 # folded\n  An English block scalar.", OUTPUT_LANGUAGE_RULE),
             ("description must lead with English", "中文开头的描述", OUTPUT_LANGUAGE_RULE),
             ("missing the output-language rule", "An English-first description.", "没有语言规则。"),
         )
@@ -128,6 +129,18 @@ class RepositoryValidationTests(unittest.TestCase):
                 (root / "other.md").write_text("# Other\n", encoding="utf-8")
                 issues = validate_skill(make_skill(root, description, body))
                 self.assertTrue(any(expected in issue for issue in issues), issues)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            skill = make_skill(Path(temporary), "An English-first description.", OUTPUT_LANGUAGE_RULE)
+            (skill / "agents/openai.yaml").write_text(
+                'interface:\n  display_name: "中文名"\n  default_prompt: "Use $demo."\n',
+                encoding="utf-8",
+            )
+            issues = validate_skill(skill)
+            self.assertTrue(
+                any("agents/openai.yaml display_name must lead with English" in issue for issue in issues),
+                issues,
+            )
 
     def test_numeral_parsing_covers_every_declared_kind(self) -> None:
         self.assertEqual(parse_numeral("一百", "chinese"), 100)

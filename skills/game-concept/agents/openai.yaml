@@ -1,4 +1,0 @@
-interface:
-  display_name: "Game Concept"
-  short_description: "Choose the adaptation worth building · 选择最值得做的可玩改编方向"
-  default_prompt: "Use $game-concept to propose, compare, and choose playable game directions for this novel."
