@@ -6,16 +6,17 @@ import { icon } from './icons.js';
 const $ = (sel) => document.querySelector(sel);
 const PICK_MS = 460;
 const EXPIRE_MS = 1200; // 灯芯烧尽后先把「你没开口」摆出来这么久，再走沉默的后果
-let live = null; // { beat, pick, buttons, stop }
+let live = null; // 当前打开的选项实例
 
-function finish(index, onPick) {
-  if (!live || live.picked) return;
-  live.picked = true;
-  live.stop();
+function finish(index, onPick, target = live) {
+  if (!target || live !== target || target.picked) return;
+  target.picked = true;
+  target.stop();
   const root = $('#choices');
-  for (const btn of live.buttons) btn.classList.add(Number(btn.dataset.i) === index ? 'taken' : 'gone');
+  for (const btn of target.buttons) btn.classList.add(Number(btn.dataset.i) === index ? 'taken' : 'gone');
   root.classList.add('leaving');
-  setTimeout(() => {
+  target.pickTimer = setTimeout(() => {
+    if (live !== target) return;
     root.hidden = true;
     root.innerHTML = '';
     root.className = '';
@@ -26,6 +27,7 @@ function finish(index, onPick) {
 
 // timer：{ seconds, paused() }；有它就是限时抉择。onPick(index) 在选项收起之后调用。
 export function showChoices(beat, { onPick, timer = null }) {
+  closeChoices();
   const root = $('#choices');
   const chosen = (i) => record.chosen.has(`${beat.at}:${i}`);
   let html;
@@ -52,12 +54,37 @@ export function showChoices(beat, { onPick, timer = null }) {
   root.className = beat.branch ? 'branch' : timer ? 'timed' : '';
   root.innerHTML = html;
   root.hidden = false;
-  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('on')));
   const buttons = [...root.querySelectorAll('button[data-i]')];
-  let raf = 0;
-  live = { beat, buttons, onPick, picked: false, stop: () => cancelAnimationFrame(raf) };
+  const session = {
+    beat,
+    buttons,
+    onPick,
+    picked: false,
+    expired: false,
+    raf1: 0,
+    raf2: 0,
+    wickRaf: 0,
+    pickTimer: 0,
+    expireTimer: 0,
+    stop() {
+      cancelAnimationFrame(this.raf1);
+      cancelAnimationFrame(this.raf2);
+      cancelAnimationFrame(this.wickRaf);
+      clearTimeout(this.pickTimer);
+      clearTimeout(this.expireTimer);
+    },
+  };
+  live = session;
+  session.raf1 = requestAnimationFrame(() => {
+    session.raf2 = requestAnimationFrame(() => {
+      if (live === session) root.classList.add('on');
+    });
+  });
   for (const btn of buttons) {
-    btn.addEventListener('click', (e) => { e.stopPropagation(); if (!btn.disabled) finish(Number(btn.dataset.i), onPick); });
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!btn.disabled && live === session) finish(Number(btn.dataset.i), onPick, session);
+    });
   }
   if (timer) {
     const silent = beat.options.find((o) => o.silent);
@@ -66,6 +93,7 @@ export function showChoices(beat, { onPick, timer = null }) {
     let left = total;
     let last = performance.now();
     const frame = (now) => {
+      if (live !== session) return;
       const dt = Math.min(100, now - last);
       last = now;
       const paused = timer.paused();
@@ -75,16 +103,16 @@ export function showChoices(beat, { onPick, timer = null }) {
       wick.classList.toggle('urgent', left < 3000);
       if (left <= 0) {
         // 灯芯烧尽：先让玩家看清楚是时间到了、自己没开口，再演沉默的后果；这期间再按数字键也不算数
-        live.expired = true;
+        session.expired = true;
         root.classList.add('expired');
         for (const btn of buttons) btn.disabled = true;
         wick.querySelector('.wick-note').textContent = '灯芯烧尽了——你没有开口';
-        setTimeout(() => { if (live?.beat === beat) finish(silent.i, onPick); }, EXPIRE_MS);
+        session.expireTimer = setTimeout(() => { if (live === session) finish(silent.i, onPick, session); }, EXPIRE_MS);
         return;
       }
-      raf = requestAnimationFrame(frame);
+      session.wickRaf = requestAnimationFrame(frame);
     };
-    raf = requestAnimationFrame(frame);
+    session.wickRaf = requestAnimationFrame(frame);
   }
 }
 
@@ -98,23 +126,25 @@ export function pickByNumber(n) {
   const btn = live.buttons[n - 1];
   if (!btn) return null;
   if (btn.disabled) return 'dark';
-  finish(Number(btn.dataset.i), live.onPick);
+  finish(Number(btn.dataset.i), live.onPick, live);
   return 'picked';
 }
 
 // ↑↓ 在选项间移动焦点；回车由按钮自己的点击处理，所以不会误选第一项
 export function moveFocus(dir) {
-  if (!live) return;
+  if (!live || live.picked || live.expired) return;
   const list = live.buttons.filter((b) => !b.disabled);
   const at = list.indexOf(document.activeElement);
   list[(at + dir + list.length) % list.length]?.focus();
 }
 
 export function closeChoices() {
-  if (!live) return;
-  live.stop();
-  live = null;
+  if (live) {
+    live.stop();
+    live = null;
+  }
   const root = $('#choices');
+  if (!root) return;
   root.hidden = true;
   root.innerHTML = '';
   root.className = '';

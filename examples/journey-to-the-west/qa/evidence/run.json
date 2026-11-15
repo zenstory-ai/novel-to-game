@@ -7,7 +7,7 @@
     "url": "http://127.0.0.1:<port>/index.html?seed=42&fast=1",
     "os": "darwin",
     "browserVersion": "145.0.7632.6",
-    "seconds": 262,
+    "seconds": 264,
     "consoleErrors": []
   },
   "inputTrace": [
@@ -94,6 +94,7 @@
     "火脉残图：finish",
     "火脉残图：leave",
     "打开【角色】分配成长",
+    "点【主线】任务（moyun）：自动寻路",
     "点【主线】任务（moyun）：自动寻路",
     "进入战斗：yumian",
     "孙悟空：法术 qitian → 妖将·甲",
@@ -221,7 +222,7 @@
           649
         ],
         "afterKey": [
-          826,
+          825,
           649
         ]
       }
@@ -243,11 +244,11 @@
       "state": {
         "demonClick": {
           "clickedAt": [
-            1182,
-            498
+            1178,
+            497
           ],
           "battle": "bounty_a",
-          "seconds": 1.0
+          "seconds": 0.9
         },
         "cmdGuard": {
           "queuedAfterInstantClick": []
@@ -780,7 +781,7 @@
         "relief": [
           {
             "art": "url(\"assets/units/tudi.webp\")",
-            "at": 1794698598380
+            "at": 1794710243619
           },
           {
             "banner": "土地接力山神地气护阵——在场伙伴各回 30% 气血"

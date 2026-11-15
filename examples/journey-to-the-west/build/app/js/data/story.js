@@ -298,7 +298,7 @@ export const fanHandover = (intoBelly) => [...(intoBelly ? STORY.intoBelly : STO
 export const CHAPTERS = {
   c1: { bg: 'cuiyun', title: '第一借 · 洞前起风', sub: '第五十九回　唐三藏路阻火焰山　孙行者一调芭蕉扇' },
   c2: { bg: 'cuiyun', title: '第二借 · 化虫取扇', sub: '硬借不成，便钻进她肚里去借' },
-  c3: { bg: 'huoyan', title: '第三借 · 各显变化', sub: '第六十回　牛魔王罢战赴华筵　孙行者二调芭蕉扇（原著把前两借合称一调，这一借即书里的二调）' },
+  c3: { bg: 'huoyan', title: '第三借 · 各显变化', sub: '第六十回　牛魔王罢战赴华筵　孙行者二调芭蕉扇' },
   c4: { bg: 'leiji', title: '积雷山 · 决战', sub: '第六十一回　猪八戒助力败魔王　孙行者三调芭蕉扇' },
 };
 

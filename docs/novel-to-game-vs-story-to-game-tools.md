@@ -1,6 +1,6 @@
 # Turning a novel into a playable game: NovelToGame compared with story-to-game builders
 
-NovelToGame (`zenstory-ai/novel-to-game`, MIT, 5 agent skills for Claude Code, Codex and Kimi Code) is not a game engine and not a hosted generator. It is a design-and-build pipeline that runs inside your coding agent: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds by adapting to the rendering stacks and asset tools available in your environment, and ends with first-player blind playtesting plus one complete-run QA receipt on the actual build. Two public adaptations are playable in a browser today: a turn-based RPG and a romance ADV.
+NovelToGame (`zenstory-ai/novel-to-game`, MIT, 5 agent skills for Claude Code, Codex and Kimi Code) is a design-and-build workflow that runs inside your coding agent rather than shipping a standalone engine or hosted generator: it extracts cited evidence from the novel into a `SOURCE_BIBLE`, compares concepts, writes `GAME_DESIGN` and `ART_DIRECTION`, builds using the rendering stacks and asset tools available in your environment, and ends with first-player blind playtesting plus one end-to-end verification run on the actual build. Two public adaptations are playable in a browser today: a turn-based RPG and a romance ADV.
 
 ## Three shapes of tool
 
@@ -22,9 +22,9 @@ Novel → Source analysis → Concept → World design → Graybox playtest ↺ 
 |---|---|
 | `novel-to-game` | Confirm requirements, lock `PRODUCT_BRIEF.md`, orchestrate handoffs, recover progress |
 | `novel-game-analyze` | Deconstruct story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations into `SOURCE_BIBLE.md` |
-| `game-design` | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| `game-build` | Probe host rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one verify command |
-| `game-qa` | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run receipt |
+| `game-design` | Guide concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) in separate stages |
+| `game-build` | Probe local rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one end-to-end verify command |
+| `game-qa` | Blind-playtest as a first-time player from the title screen, reconcile against design specs, and write one complete-run verification record |
 
 Each run creates one workspace:
 
@@ -43,7 +43,7 @@ game-adaptations/<project>/
 
 ## What "source-grounded" means
 
-A one-line "turn this book into a game" prompt usually produces a reskin or a clickable plot summary. The analysis skill cites the text for hard rules, key character goals, turning points, endings and signature anchors, so later design decisions can be traced back to their source evidence. Additions the author approves are labelled as additions; open questions stay open rather than being filled in silently.
+A one-line "turn this book into a game" prompt usually produces a reskin or a clickable plot summary. The analysis skill cites the text for hard rules, key character goals, turning points, endings and signature scenes and props, so later design decisions can be traced back to their source evidence. Additions the author approves are labelled as additions; open questions stay open rather than being filled in silently.
 
 ## What "evidence-based QA" means
 

@@ -7,41 +7,91 @@ import { audio } from '../audio.js';
 const $ = (sel) => document.querySelector(sel);
 const GUARD_MS = 650; // 显出全文后略停，才响应点击，防止连点把整页带过去
 let dismiss = null;
+let activeCard = null;
 
-function mount(html, cls) {
+function openCard(html, cls, resolve) {
+  closeCard();
   const root = $('#card');
   root.className = cls;
   root.innerHTML = html;
   root.hidden = false;
-  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add('on')));
-  return root;
+  const session = {
+    raf1: 0,
+    raf2: 0,
+    stepTimer: 0,
+    unmountTimer: 0,
+    settled: false,
+    stop() {
+      cancelAnimationFrame(this.raf1);
+      cancelAnimationFrame(this.raf2);
+      clearTimeout(this.stepTimer);
+      clearTimeout(this.unmountTimer);
+    },
+    abort() {
+      if (this.settled) return;
+      this.settled = true;
+      this.stop();
+      dismiss = null;
+      if (activeCard === session) activeCard = null;
+      root.hidden = true;
+      root.innerHTML = '';
+      root.className = '';
+      resolve(false);
+    },
+  };
+  activeCard = session;
+  session.raf1 = requestAnimationFrame(() => {
+    session.raf2 = requestAnimationFrame(() => {
+      if (activeCard === session) root.classList.add('on');
+    });
+  });
+  return { root, session };
 }
 
-function unmount(resolve, value) {
+function unmount(session, resolve) {
+  if (activeCard !== session || session.settled) return;
   const root = $('#card');
   dismiss = null;
+  clearTimeout(session.stepTimer);
   root.classList.remove('on');
   root.classList.add('off');
-  setTimeout(() => { root.hidden = true; root.innerHTML = ''; root.className = ''; resolve(value); }, 520);
+  session.unmountTimer = setTimeout(() => {
+    if (activeCard !== session || session.settled) return;
+    session.settled = true;
+    activeCard = null;
+    root.hidden = true;
+    root.innerHTML = '';
+    root.className = '';
+    resolve(true);
+  }, 520);
 }
 
 export const cardOpen = () => !$('#card').hidden;
 // 点击或按键：交给当前这张卡
 export function cardAdvance() { dismiss?.(); }
+export function closeCard() {
+  activeCard?.abort();
+  dismiss = null;
+  const root = $('#card');
+  if (!root) return;
+  root.hidden = true;
+  root.innerHTML = '';
+  root.className = '';
+}
 
 export function chapterCard({ title, sub }, { fast = false } = {}) {
   return new Promise((resolve) => {
-    mount(`
+    const { session } = openCard(`
       <div class="chapter-art"></div>
       <div class="chapter-body">
         <p class="chapter-no">${title}</p>
         <h2 class="chapter-title">${sub || title}</h2>
         <i class="chapter-rule"></i>
-      </div>`, 'card-chapter');
+      </div>`, 'card-chapter', resolve);
     if (!fast) audio.se('chapter');
     let closed = false;
-    const close = () => { if (closed) return; closed = true; clearTimeout(timer); unmount(resolve); };
-    const timer = setTimeout(close, fast ? 350 : 2600);
+    const close = () => { if (closed) return; closed = true; unmount(session, resolve); };
+    session.stepTimer = setTimeout(close, fast ? 350 : 2600);
     const armed = performance.now() + (fast ? 0 : 500);
     dismiss = () => { if (performance.now() >= armed) close(); };
   });
@@ -52,7 +102,7 @@ export function endingCard(id) {
   const who = ending.who ? CAST[ending.who] : null;
   const total = Object.keys(ENDINGS).length;
   return new Promise((resolve) => {
-    mount(`
+    const { session } = openCard(`
       <div class="ending-body" style="--c:${who?.color ?? '#6b6f8c'};--glow:${who?.glow ?? '#b9bdd8'}">
         ${who ? `<img class="ending-face" src="${faceSrc(ending.who)}" alt="">` : '<div class="ending-face blank"></div>'}
         <p class="ending-who">${who ? `${who.full} · ${who.house}` : '西门宅 · 书房'}</p>
@@ -60,10 +110,10 @@ export function endingCard(id) {
         <div class="ending-seal kind-${ending.kind}"><span>${ENDING_KIND[ending.kind]}</span></div>
         <p class="ending-count">已见结局 ${record.ending.size} / ${total}</p>
         <p class="card-hint">点击继续</p>
-      </div>`, 'card-ending');
+      </div>`, 'card-ending', resolve);
     audio.se('ending');
     const armed = performance.now() + 1500;
-    dismiss = () => { if (performance.now() >= armed) unmount(resolve); };
+    dismiss = () => { if (performance.now() >= armed) unmount(session, resolve); };
   });
 }
 
@@ -71,7 +121,7 @@ export function fatePage(who) {
   const lines = FATES[who] ?? [];
   const name = CAST[who]?.full ?? '西门庆';
   return new Promise((resolve) => {
-    const root = mount(`
+    const { root, session } = openCard(`
       <div class="fate-art" style="background-image:url('${CG.fate.src}')"></div>
       <div class="fate-body">
         <p class="fate-kicker">原著命数</p>
@@ -79,32 +129,32 @@ export function fatePage(who) {
         <div class="fate-lines">${lines.map((line) => `<p>${line}</p>`).join('')}</div>
         <p class="fate-foot">这一春你们说成了什么，由你；她在书里的去处，改不了。</p>
         <p class="card-hint" hidden>点击回到标题</p>
-      </div>`, 'card-fate');
+      </div>`, 'card-fate', resolve);
     const ps = [...root.querySelectorAll('.fate-lines p')];
     const foot = root.querySelector('.fate-foot');
     const hint = root.querySelector('.card-hint');
     let shownCount = 0;
     let armed = Infinity;
-    let timer = null;
     const finish = () => { foot.classList.add('on'); hint.hidden = false; armed = performance.now() + GUARD_MS; };
     const reveal = () => {
+      if (activeCard !== session) return;
       if (shownCount < ps.length) {
         ps[shownCount].classList.add('on');
         shownCount += 1;
-        timer = setTimeout(reveal, 1900);
+        session.stepTimer = setTimeout(reveal, 1900);
       } else finish();
     };
-    timer = setTimeout(reveal, 900);
+    session.stepTimer = setTimeout(reveal, 900);
     dismiss = () => {
       if (shownCount < ps.length || !foot.classList.contains('on')) {
         // 第一下：把还没浮现的行一次显出来
-        clearTimeout(timer);
+        clearTimeout(session.stepTimer);
         ps.forEach((p) => p.classList.add('on'));
         shownCount = ps.length;
         finish();
         return;
       }
-      if (performance.now() >= armed) unmount(resolve);
+      if (performance.now() >= armed) unmount(session, resolve);
     };
   });
 }

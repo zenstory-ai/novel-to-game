@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""权威完整路径验证：真实浏览器、真实点击与按键，从干净初态走到结局再重开。
+"""浏览器端到端完整路径验证：真实浏览器、真实点击与按键，从干净初态走到结局再重开。
 
     python3 test/verify.py            # 在 build/app 下运行；自己起本地服务，结束后关掉
     python3 test/verify.py --slow     # 不带 fast 参数，按常速演出（很慢，排障用）
@@ -566,6 +566,8 @@ def write_result(run: Run | None, status: dict[str, str], exit_code: int, enviro
         {"scope": "视口与浏览器", "reason": "只在 1280×800 的 Chromium（无头）中运行；390 px 窄屏与其他浏览器未纳入这条命令。"},
         {"scope": "声音", "reason": "无头浏览器不出声：只确认音频文件请求没有失败，不判断听感。"},
         {"scope": "体验判断", "reason": "这条命令只证明能启动、渲染、输入、打通主线并重开，不判断是否好玩、数值是否平衡。"},
+        {"scope": "真机与其他浏览器", "reason": "未在任何手机真机、Safari 或 Firefox 上运行；390×844 窄屏只在第 5 轮盲玩中用无头 Chromium 重走标题、主界面、面板与首战，未打通全程。"},
+        {"scope": "第 5 轮盲玩", "reason": "初次盲玩（1280×800，常速）打到结局「火息路开 · 继续西行」，刷新恢复与通关重开均通过；未发现 P0/P1/P2，仅记 P3 措辞与遮挡细节，见 qa/playtest-report.md。盲玩未覆盖：强攻破势后的二借台词呼应、开局即选避火锦、主线火兵战收服后的留用/放归抉择、残图深入、受骗交扇、战败重打。"},
     ]
     if error:
         limitations.insert(0, {"scope": "本次运行失败", "reason": error[:400]})

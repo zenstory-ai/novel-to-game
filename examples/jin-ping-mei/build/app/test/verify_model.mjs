@@ -132,7 +132,7 @@ assert.deepEqual(ledger.shots.map((s) => s.id).sort(), Object.keys(CUT).sort(), 
     if (NIGHT_BG.has(cutBg[shot.id])) assert.equal(shot.period, 'night', `${where} 是夜里的场次，台账没有登记成片已核对为夜色（period: night）`);
     if (DAY_BG_CUT.has(cutBg[shot.id])) assert.notEqual(shot.period, 'night', `${where} 是白天的场次，却配了夜里的过场`);
   }
-  assert.ok(ledger.shots.filter((s) => s.period === 'night').length >= 4, '过场时段检查没有碰到夜里的场次，检查失效了');
+  assert.ok(ledger.shots.filter((s) => s.period === 'night').length >= 4, '过场昼夜检查没有碰到夜里的场次，检查失效了');
 }
 const subStats = { held: 0, longest: 0 };
 for (const shot of ledger.shots) {

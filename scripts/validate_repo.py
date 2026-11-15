@@ -538,11 +538,13 @@ def _validate_target_finish_inheritance(
     example_dir: Path, target_finish: str
 ) -> list[str]:
     issues: list[str] = []
-    optional = "design/VISUAL_TARGETS.md"
-    for relative in (*TARGET_FINISH_SOURCES, optional):
+    optional = {"design/VISUAL_TARGETS.md"}
+    if target_finish == "graybox":
+        optional.add("design/ART_DIRECTION.md")
+    for relative in (*TARGET_FINISH_SOURCES, "design/VISUAL_TARGETS.md"):
         path = example_dir / relative
         if not path.is_file():
-            if relative != optional:
+            if relative not in optional:
                 issues.append(f"{example_dir.name}/{relative}: missing targetFinish source")
             continue
         values = set(TARGET_FINISH_RE.findall(path.read_text(encoding="utf-8")))
@@ -558,8 +560,9 @@ def validate_example(example_dir: Path) -> list[str]:
     manifest, issues = read_manifest(example_dir)
     if manifest is None:
         return issues
+    target_finish = str(manifest["targetFinish"])
     issues.extend(
-        _validate_target_finish_inheritance(example_dir, str(manifest["targetFinish"]))
+        _validate_target_finish_inheritance(example_dir, target_finish)
     )
     issues.extend(validate_qa(example_dir))
     actual_planning_files = {
@@ -569,7 +572,12 @@ def validate_example(example_dir: Path) -> list[str]:
         for path in (example_dir / directory).iterdir()
         if path.is_file()
     }
-    missing_planning_files = EXAMPLE_PLANNING_FILES - actual_planning_files
+    required_planning_files = (
+        EXAMPLE_PLANNING_FILES - {"design/ART_DIRECTION.md"}
+        if target_finish == "graybox"
+        else EXAMPLE_PLANNING_FILES
+    )
+    missing_planning_files = required_planning_files - actual_planning_files
     if missing_planning_files:
         issues.append(
             f"{example_dir.name}: missing planning artifacts "

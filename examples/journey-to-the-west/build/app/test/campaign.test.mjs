@@ -1,4 +1,5 @@
 // 战役与战外规则回归：主线落账、成长、封妖令、探索、寻宝、存档往返。
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -188,14 +189,21 @@ test('战后落账：败北不扣药、换种子；得胜扣掉用过的药并�
   assert.deepEqual(battleSetup(c, 'firemobs'), { fanTrial: 'ember' });
 });
 
-test('火妖留放：放归则离队、装备退回，并换得残图外层的一次避险', () => {
+test('火妖留放：放归则离队、装备退回，并换得残图外层的一次避险；封妖先收过火妖也不跳过留放', () => {
   const c = advance(newCampaign(1), 'tryfan');
   addPet(c, 'huobao');
   addLoot(c, { equips: ['jingtie'] });
   equip(c, 'huobao', 'jingtie');
   story.setFanTrial(c, 'full');
-  story.firemobsWon(c, true);
+  // 队里已有封妖收来的火妖时，主线火兵战再次捕获：joined 为空，但本场 state.caught 仍含 huobao
+  const won = createBattle({ battleId: 'firemobs', party: battleParty(c), items: battleItems(c, 'firemobs'), seed: 2 });
+  won.caught = ['huobao']; won.over = true; won.winner = 'party';
+  const joined = settleBattle(c, won);
+  assert.deepEqual(joined, []);
+  story.firemobsWon(c, won.caught.includes('huobao'));
   assert.equal(c.flags.dealPending, true);
+  const storyJs = readFileSync(new URL('../js/game/story.js', import.meta.url), 'utf8');
+  assert.match(storyJs, /firemobsWon\(c,\s*state\.caught\.includes\('huobao'\)\)/);
   story.setDeal(c, 'release');
   assert.equal(c.pets.length, 0);
   assert.equal(c.equipBag.jingtie, 1);

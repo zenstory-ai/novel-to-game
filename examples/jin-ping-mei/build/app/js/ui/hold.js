@@ -7,9 +7,11 @@ const $ = (sel) => document.querySelector(sel);
 const GRACE_MS = 2600; // 先留出读提示的工夫，火苗才开始矮
 const DRAIN_MS = 7000; // 之后不按的话，火苗这么久烧到底
 const SLIP = 0.22; // 松手一次，火苗矮这么多
+let activeHold = null;
 
-// 返回 Promise<boolean>；paused() 为真时（菜单开着、切到后台）不计时
+// 返回 Promise<boolean | null>；paused() 为真时（菜单开着、切到后台）不计时，中途读档或退出返回 null
 export function holdLamp({ ms, prompt }, { paused }) {
+  closeHold();
   const root = $('#hold');
   root.innerHTML = `
     <div class="hold-scrim"></div>
@@ -29,7 +31,6 @@ export function holdLamp({ ms, prompt }, { paused }) {
       <p class="hold-how"><b>按住</b>画面或空格，直到火苗站稳</p>
     </div>`;
   root.hidden = false;
-  requestAnimationFrame(() => root.classList.add('on'));
   const fill = root.querySelector('.ring-fill');
   const lantern = root.querySelector('.lantern');
   const how = root.querySelector('.hold-how');
@@ -42,23 +43,41 @@ export function holdLamp({ ms, prompt }, { paused }) {
     let held = 0; // 这一次已经按住多久
     let holding = false;
     let last = performance.now();
+    let enterRaf = 0;
     let raf = 0;
+    let fadeTimer = 0;
+    let doneTimer = 0;
     let done = false;
+    let settled = false;
     let waited = 0;
 
-    const finish = (ok) => {
-      if (done) return;
-      done = true;
+    const detach = () => {
+      cancelAnimationFrame(enterRaf);
       cancelAnimationFrame(raf);
+      clearTimeout(fadeTimer);
+      clearTimeout(doneTimer);
       root.removeEventListener('pointerdown', down);
       window.removeEventListener('pointerup', up);
       window.removeEventListener('pointercancel', up);
       document.removeEventListener('keydown', keydown, true);
       document.removeEventListener('keyup', keyup, true);
+    };
+    const finish = (ok) => {
+      if (done) return;
+      done = true;
+      detach();
       root.classList.add(ok ? 'kept' : 'lost');
       audio.se(ok ? 'flare' : 'gust');
-      setTimeout(() => { root.classList.remove('on'); }, 900);
-      setTimeout(() => { root.hidden = true; root.innerHTML = ''; root.className = ''; resolve(ok); }, 1400);
+      fadeTimer = setTimeout(() => { if (activeHold === session) root.classList.remove('on'); }, 900);
+      doneTimer = setTimeout(() => {
+        if (activeHold !== session || settled) return;
+        settled = true;
+        activeHold = null;
+        root.hidden = true;
+        root.innerHTML = '';
+        root.className = '';
+        resolve(ok);
+      }, 1400);
     };
     const down = (e) => { e.preventDefault(); holding = true; root.classList.add('holding'); };
     const up = () => {
@@ -79,6 +98,7 @@ export function holdLamp({ ms, prompt }, { paused }) {
     const keydown = (e) => { if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) down(e); } };
     const keyup = (e) => { if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); e.stopPropagation(); up(); } };
     const frame = (now) => {
+      if (activeHold !== session) return;
       const dt = Math.min(100, now - last);
       last = now;
       if (!paused()) {
@@ -93,6 +113,21 @@ export function holdLamp({ ms, prompt }, { paused }) {
       if (level <= 0) { finish(false); return; }
       raf = requestAnimationFrame(frame);
     };
+    const session = {
+      abort: () => {
+        if (settled) return;
+        settled = true;
+        done = true;
+        detach();
+        if (activeHold === session) activeHold = null;
+        root.hidden = true;
+        root.innerHTML = '';
+        root.className = '';
+        resolve(null);
+      },
+    };
+    activeHold = session;
+    enterRaf = requestAnimationFrame(() => { if (activeHold === session) root.classList.add('on'); });
     root.addEventListener('pointerdown', down);
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
@@ -100,4 +135,15 @@ export function holdLamp({ ms, prompt }, { paused }) {
     document.addEventListener('keyup', keyup, true);
     raf = requestAnimationFrame(frame);
   });
+}
+
+export const holdOpen = () => Boolean(activeHold);
+
+export function closeHold() {
+  activeHold?.abort();
+  const root = $('#hold');
+  if (!root) return;
+  root.hidden = true;
+  root.innerHTML = '';
+  root.className = '';
 }

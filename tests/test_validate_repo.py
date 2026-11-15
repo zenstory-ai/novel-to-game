@@ -21,6 +21,7 @@ from validate_repo import (  # noqa: E402
     SKILL_TOTAL_CHAR_BUDGET,
     parse_numeral,
     read_manifest,
+    validate_example,
     validate_qa,
     validate_skill,
     validate_skill_budget,
@@ -234,6 +235,52 @@ class RepositoryValidationTests(unittest.TestCase):
             if line.startswith("#") and not cjk.search(line)
         ]
         self.assertEqual(violations, [])
+
+    def test_graybox_example_does_not_require_art_direction(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            example = make_verification_fixture(Path(temporary))
+            (example / EXAMPLE_MANIFEST).write_text(
+                json.dumps(
+                    {
+                        "language": "en",
+                        "source": {
+                            "chapters": 1,
+                            "headingPattern": "^Chapter ([0-9]+)$",
+                            "numeral": "arabic",
+                        },
+                        "coverageHeading": "Full-book coverage",
+                        "citationPattern": "Chapter ([0-9]+)(?:-([0-9]+))?",
+                        "targetFinish": "graybox",
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (example / "PRODUCT_BRIEF.md").write_text("# Brief\ntargetFinish: graybox\n", encoding="utf-8")
+            (example / "source").mkdir()
+            (example / "source/SOURCE.md").write_text("# Source\n", encoding="utf-8")
+            (example / "source/book.txt").write_text("Chapter 1\nFire.\n", encoding="utf-8")
+            (example / "analysis").mkdir()
+            (example / "analysis/SOURCE_BIBLE.md").write_text(
+                "# Bible\n\n## Full-book coverage\n\nChapter 1.\n", encoding="utf-8"
+            )
+            (example / "concepts").mkdir()
+            (example / "concepts/CONCEPT.md").write_text("# Concept\n", encoding="utf-8")
+            (example / "design").mkdir()
+            (example / "design/GAME_DESIGN.md").write_text("# Design\n", encoding="utf-8")
+            (example / "build").mkdir()
+            (example / "build/BUILD_BRIEF.md").write_text("# Build\ntargetFinish: graybox\n", encoding="utf-8")
+
+            self.assertEqual(validate_example(example), [])
+
+            rewrite_json(example / EXAMPLE_MANIFEST, lambda m: m.update(targetFinish="playable-prototype"))
+            (example / "PRODUCT_BRIEF.md").write_text(
+                "# Brief\ntargetFinish: playable-prototype\n", encoding="utf-8"
+            )
+            (example / "build/BUILD_BRIEF.md").write_text(
+                "# Build\ntargetFinish: playable-prototype\n", encoding="utf-8"
+            )
+            issues = validate_example(example)
+            self.assertTrue(any("ART_DIRECTION.md" in issue for issue in issues), issues)
 
 
 if __name__ == "__main__":

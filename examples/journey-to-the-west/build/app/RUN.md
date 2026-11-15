@@ -34,7 +34,7 @@ python3 -m http.server 5273
 | `js/world/` · `js/battle/` · `js/ui/` | 场景绘制与 HUD、战场演出与指令台、对话与功能面板 |
 | `js/core/` | DOM 小工具、图片与声音、种子随机、本机存档 |
 | `assets/` | 立绘、行走图集、四张场景的整幅绘景、战斗背景、图标与声音 |
-| `test/` | `*.test.mjs` 规则回归（`npm test`）；`verify.py` 权威完整运行 |
+| `test/` | `*.test.mjs` 规则回归（`npm test`）；`verify.py` 浏览器完整通关验证 |
 
 加角色、敌人、招式、战斗或抉择只改 `js/data/`，不动规则与界面。
 

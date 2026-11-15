@@ -4,10 +4,12 @@ import { stage } from '../stage.js';
 import { audio } from '../audio.js';
 
 const $ = (sel) => document.querySelector(sel);
+let activeLook = null;
 
 // inspect(i) 返回看见的那句话（由运行时记下标记）；say(name, text) 把它交给文本框。
-// 返回 Promise，在玩家点「不看了／看好了」之后完成。
+// 返回 Promise<boolean>，在玩家点「不看了／看好了」时为 true，中途读档或退出时为 false。
 export function lookAround(beat, { inspect, say }) {
+  closeLook();
   const frame = stage.lookFrame();
   const ui = $('#look-ui');
   let left = beat.left;
@@ -29,7 +31,12 @@ export function lookAround(beat, { inspect, say }) {
     </div>
     <div class="look-chips">${beat.spots.map((sp) => `<button type="button" class="chip" data-i="${sp.i}">${sp.name}</button>`).join('')}</div>`;
   ui.hidden = false;
-  requestAnimationFrame(() => { layer.classList.add('on'); ui.classList.add('on'); });
+  let closed = false;
+  const raf = requestAnimationFrame(() => {
+    if (closed) return;
+    layer.classList.add('on');
+    ui.classList.add('on');
+  });
 
   const paint = () => {
     ui.querySelector('.look-left').innerHTML = `还能看 ${Array.from({ length: beat.max }, (_, n) => `<i class="${n < left ? 'lit' : ''}"></i>`).join('')}`;
@@ -44,15 +51,18 @@ export function lookAround(beat, { inspect, say }) {
   paint();
 
   return new Promise((resolve) => {
+    const chips = ui.querySelector('.look-chips');
+    const doneBtn = ui.querySelector('#look-done');
     const look = (i) => {
-      if (seen.has(i) || left <= 0) return;
+      if (closed || seen.has(i) || left <= 0) return;
       const spot = beat.spots[i];
       seen.add(i);
       left -= 1;
       audio.se('page');
       say(spot.name, inspect(i));
+      if (closed) return;
       paint();
-      if (left <= 0) ui.querySelector('#look-done').focus();
+      if (left <= 0) doneBtn.focus();
     };
     const onPick = (e) => {
       const el = e.target.closest('[data-i]');
@@ -64,19 +74,43 @@ export function lookAround(beat, { inspect, say }) {
       const i = e.target.closest?.('[data-i]')?.dataset.i;
       for (const el of layer.querySelectorAll('.spot')) el.classList.toggle('hot', el.dataset.i === i);
     };
-    layer.addEventListener('click', onPick);
-    ui.addEventListener('click', onPick);
-    ui.querySelector('.look-chips').addEventListener('pointerover', hover);
-    ui.querySelector('#look-done').addEventListener('click', (e) => {
-      e.stopPropagation();
+    const cleanup = () => {
+      if (closed) return false;
+      closed = true;
+      cancelAnimationFrame(raf);
+      layer.removeEventListener('click', onPick);
+      ui.removeEventListener('click', onPick);
+      chips.removeEventListener('pointerover', hover);
       layer.remove();
       ui.hidden = true;
       ui.innerHTML = '';
       ui.classList.remove('on');
       stage.steady(false);
-      resolve();
+      if (activeLook === session) activeLook = null;
+      return true;
+    };
+    const session = { abort: () => { if (cleanup()) resolve(false); } };
+    activeLook = session;
+    layer.addEventListener('click', onPick);
+    ui.addEventListener('click', onPick);
+    chips.addEventListener('pointerover', hover);
+    doneBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (cleanup()) resolve(true);
     });
   });
 }
 
-export const lookOpen = () => !$('#look-ui').hidden;
+export const lookOpen = () => Boolean(activeLook);
+
+export function closeLook() {
+  activeLook?.abort();
+  const ui = $('#look-ui');
+  if (ui) {
+    ui.hidden = true;
+    ui.innerHTML = '';
+    ui.classList.remove('on');
+  }
+  document.querySelectorAll('.spots').forEach((el) => el.remove());
+  stage.steady(false);
+}

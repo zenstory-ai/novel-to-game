@@ -2,7 +2,7 @@
 
 `targetFinish: playable-prototype`
 
-对标主流恋爱 ADV 的完整外壳与互动影游「选完就看后果」的画面节奏。细节见 `ART_DIRECTION.md`；下面每一条都要在带真实界面的实机画面里成立。
+对标主流恋爱 ADV 的完整外围配套与互动影游「选完就看后果」的画面节奏。细节见 `ART_DIRECTION.md`；下面每一条都要在带真实界面的实机画面里成立。
 
 | 画面 | 一眼要看到的 | 不该出现的 |
 |---|---|---|
@@ -15,4 +15,4 @@
 
 竖屏（390×844）：上面六成是画，下面是文字与快捷栏；CG 与过场完整显示、四周垫同一张图的模糊底。
 
-验收：权威验证命令实拍的 `screenshots/title.jpg`、`adv.jpg`、`cut.jpg`、`film.jpg` 与 `qa/evidence/` 里的院门、结局、命数、帘幕与窄屏截图；都不含成人画面。
+验收：验证脚本实机截取的 `screenshots/title.jpg`、`adv.jpg`、`cut.jpg`、`film.jpg` 与 `qa/evidence/` 里的院门、结局、命数、帘幕与窄屏截图；都不含成人画面。

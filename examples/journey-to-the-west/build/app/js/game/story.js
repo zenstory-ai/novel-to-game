@@ -144,7 +144,7 @@ export function createStory(game) {
       game.save();
     }
     let ups = {};
-    const r = await fight('firemobs', { onWin: (state, joined) => { ups = S.firemobsWon(c, joined.includes('huobao')); return { lines: [...levelLines(ups), ['银两', `+${ECONOMY.storyMoney}`]], hint: growthHint(ups) }; } });
+    const r = await fight('firemobs', { onWin: (state) => { ups = S.firemobsWon(c, state.caught.includes('huobao')); return { lines: [...levelLines(ups), ['银两', `+${ECONOMY.storyMoney}`]], hint: growthHint(ups) }; } });
     if (r.winner !== 'party') { await back('huokou', null, r); return; }
     await say(STORY.afterFire);
     if (c.flags.fanTrial === 'ember') await say(STORY.afterFireEmber); else if (c.flags.fanTrial === 'full') await say(STORY.afterFireFull);

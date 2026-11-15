@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""权威完整路径（真实 Chromium + Playwright，只用点击与按键，不调用任何游戏内部函数、不注入存档）。
+"""浏览器端到端完整路径验证（真实 Chromium + Playwright，只用点击与按键，不调用任何游戏内部函数、不注入存档）。
 
 一条完整运行：年龄门（确认之前不请求任何图片、影像、声音）→ 标题 → 序章 → 共通线六章 → 分岔夜进正院 →
 吴月娘线 → 良缘结局「月下焚香」→ 原著命数 → 回标题 → 重开回到序章第一句。
@@ -13,7 +13,7 @@
 刷新页面「继续」读档后回看仍带着读档前的句子。
 
 --write-evidence：整份重写 qa/verification.json、qa/evidence/ 与 screenshots/ 四张公开截图（都不含成人画面）。
---out DIR：把同样的凭证与截图写到 DIR 下（目录结构同上），不碰 qa/ 与 screenshots/；修复者自测用这个。
+--out DIR：把同样的验证记录与截图写到 DIR 下（目录结构同上），不碰 qa/ 与 screenshots/；修复者自测用这个。
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ from playwright.sync_api import sync_playwright
 
 APP = Path(__file__).resolve().parents[1]
 EXAMPLE = APP.parents[1]
-OUT = EXAMPLE  # --out 改写；凭证与截图都写在 OUT 下的 qa/ 与 screenshots/
+OUT = EXAMPLE  # --out 改写；验证记录与截图都写在 OUT 下的 qa/ 与 screenshots/
 RUN_ID = "jin-ping-mei-rebuild-2026-11"
 COMMAND = "cd examples/jin-ping-mei/build/app && python3 test/verify.py --write-evidence"
 CHECKS = ("launch", "render", "input", "coreLoop", "outcome", "restart")
@@ -45,7 +45,7 @@ LIMITATIONS = [
     {"scope": "路径覆盖", "reason": "浏览器只走吴月娘良缘一条完整路径；其余 15 个结局由 npm run verify:model 穷举全部选择证明可达，没有逐一在浏览器里走。"},
     {"scope": "剧情过场", "reason": "这条路径经过 9 段过场，只把第一段从头看完并核对字幕换句，其余用两次空格跳过；另外 49 段只核对了登记、文件与字幕句数。演技、口型与人物声音是否前后一致没有自动判断。"},
     {"scope": "影游交互", "reason": "只走了一次限时沉默、两场察言观色（花园看一处，门前看两处、其中一处用鼠标点金框下半）、一次护灯成功；其余沉默分支、细节组合与护灯失败由 verify:model 穷举证明可达。"},
-    {"scope": "成人画面", "reason": "只核对了门控（年龄门前零媒体请求、关掉时挂帘幕、同意之前零请求、同意之后才请求），不判断成人 CG 的画面内容；证据截图一律不含成人画面。"},
+    {"scope": "成人画面", "reason": "只核对了年龄拦截与开关逻辑（年龄门前零媒体请求、关掉时挂帘幕、同意之前零请求、同意之后才请求），不判断成人 CG 的画面内容；证据截图一律不含成人画面。"},
     {"scope": "视口与浏览器", "reason": "完整路径只在 1440×900 的 Chromium 里走；390×844 只走到第一个限时抉择并核对布局，没有窄屏通关，也没有在真机、Safari 或 Firefox 上运行。"},
     {"scope": "声音", "reason": "只确认过场影像不是静音、音量大于零，配乐文件请求成功；听感没有自动判断。"},
     {"scope": "体验判断", "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人、节奏是否合适。"},
@@ -328,7 +328,42 @@ def play(run: Run, base: str, obs: dict) -> dict:
     assert moved != saved_text
     run.key("w", "快读")
     s = run.wait(lambda s: s["text"] == saved_text and s["typed"], "快读回到同一句", 8)
-    save_obs = {"quickSavedAt": saved_text, "movedTo": moved, "quickLoadedAt": s["text"]}
+    # 快进途中打开菜单：背后的对白必须停在原句，关上菜单后再接着快进
+    run.key("Escape", "打开菜单开「快进时也跳过没读过的文字」")
+    page.wait_for_selector("#book.on", timeout=5000)
+    page.click("#book [data-tab='settings']")
+    page.click("#book [data-set='read']")
+    page.locator("#book label.toggle", has_text="跳过没读过的文字").click()
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#book", state="hidden", timeout=5000)
+    run.key("f", "开启快进")
+    page.wait_for_timeout(60)
+    run.key("Escape", "快进途中打开菜单")
+    page.wait_for_selector("#book.on", timeout=5000)
+    paused_at = run.state()
+    page.wait_for_timeout(500)
+    still_at = run.state()
+    assert still_at["book"] and still_at["text"] == paused_at["text"] and still_at["beat"] == paused_at["beat"], (
+        f"菜单开着时快进仍在背后推进：{paused_at['text']!r} → {still_at['text']!r}"
+    )
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#book", state="hidden", timeout=5000)
+    resumed = run.wait(lambda s: s["text"] != paused_at["text"] or s["options"] is not None, "关上菜单后快进恢复", 5)
+    run.key("Escape", "打开菜单关回「快进时也跳过没读过的文字」")
+    page.wait_for_selector("#book.on", timeout=5000)
+    page.click("#book [data-tab='settings']")
+    page.click("#book [data-set='read']")
+    page.locator("#book label.toggle", has_text="跳过没读过的文字").click()
+    page.keyboard.press("Escape")
+    page.wait_for_selector("#book", state="hidden", timeout=5000)
+    run.key("w", "快读回到原句")
+    s = run.wait(lambda s: s["text"] == saved_text and s["typed"], "快读再次回到同一句", 8)
+    save_obs = {
+        "quickSavedAt": saved_text,
+        "movedTo": moved,
+        "quickLoadedAt": s["text"],
+        "skipPausedInMenu": {"heldAt": paused_at["text"], "resumedTo": resumed["text"]},
+    }
 
     s = run.read_on()
     assert s["timed"]
@@ -372,7 +407,21 @@ def play(run: Run, base: str, obs: dict) -> dict:
     # ---------- 第三章：察言观色 ----------
     run.read_on()  # 章节卡
     run.pass_card("card-chapter")
+    ch3_first = run.wait(lambda s: s["beat"] == "line" and s["typed"], "第三章第一句", 15)
+    run.key("q", "察言观色前快存")
+    page.wait_for_timeout(450)
     s = run.wait(lambda s: s["look"], "花园里的察言观色", 60, press="Space")
+    page.wait_for_timeout(200)
+    run.key("w", "察言观色途中快读")
+    s = run.wait(lambda s: s["beat"] == "line" and s["text"] == ch3_first["text"], "从察言观色快读回普通对白", 8)
+    leftover_look = page.evaluate("""() => ({
+      lookUiHidden: document.querySelector('#look-ui').hidden,
+      spots: document.querySelectorAll('.spots').length,
+      chips: document.querySelectorAll('#look-ui .chip, #look-done').length,
+      steady: document.querySelector('#cg-plane .pic').classList.contains('steady'),
+    })""")
+    assert leftover_look == {"lookUiHidden": True, "spots": 0, "chips": 0, "steady": False}, f"察言观色途中快读后旧交互未清干净：{leftover_look}"
+    s = run.wait(lambda s: s["look"], "重新走到花园里的察言观色", 60, press="Space")
     page.wait_for_function("document.querySelector('#cg-plane .pic.live') !== null", timeout=15000)
     page.locator(".spot[aria-label='瓶儿手里的钥匙']").click()
     run.step("察言观色：看「瓶儿手里的钥匙」")
@@ -411,15 +460,33 @@ def play(run: Run, base: str, obs: dict) -> dict:
 
     # ---------- 第五章：护灯 ----------
     run.pass_card("card-chapter")
+    ch5_first = run.wait(lambda s: s["beat"] == "line" and s["typed"], "第五章第一句", 15)
+    run.key("q", "护灯前快存")
+    page.wait_for_timeout(450)
     run.wait(lambda s: s["hold"], "雨夜护灯", 60, press="Space")
+    page.wait_for_timeout(300)
+    run.key("w", "护灯途中快读")
+    run.wait(lambda s: s["beat"] == "line" and s["text"] == ch5_first["text"], "从护灯快读回普通对白", 8)
+    assert not run.state()["hold"] and page.locator("#hold .lantern").count() == 0, "护灯途中快读后护灯层未清理"
+    run.wait(lambda s: s["hold"], "重新走到雨夜护灯", 60, press="Space")
     page.wait_for_timeout(900)
     page.keyboard.down("Space")
     run.step("按住空格护灯")
     page.wait_for_timeout(2700)
     page.keyboard.up("Space")
     s = run.wait(lambda s: not s["hold"] and "又直了起来" in s["text"], "护住了灯", 12)
-    hold_obs = {"heldMs": 2700, "result": s["text"]}
-    run.read_on()
+    hold_obs = {"heldMs": 2700, "result": s["text"], "midHoldQuickLoadCleaned": True}
+    s = run.read_on()
+    assert s["options"] is not None, "护灯后的去向选项"
+    run.key("q", "选项处快存")
+    page.wait_for_timeout(450)
+    run.key("1", "按 1 选第一项（进入 460ms 收起动画）")
+    page.wait_for_timeout(90)
+    run.key("w", "选择收起动画期间立即快读")
+    page.wait_for_timeout(650)
+    after_race = run.state()
+    assert after_race["options"] is not None and len(after_race["options"]) >= 2, f"选择动画期间快读后选项被旧回调清空：{after_race}"
+    save_obs["choiceAnimQuickLoadOptions"] = after_race["options"]
     run.choose("正院 · 月娘")
 
     # ---------- 第六章：清明荷亭 ----------
@@ -567,7 +634,7 @@ def play(run: Run, base: str, obs: dict) -> dict:
     page.locator("#book label.toggle", has_text="成人画面").click()
     page.click("#book [data-set='film']")
     page.locator("#book label.toggle", has_text="动态影像").click()
-    run.step("设置：打开「成人画面」，关掉「动态影像」（过场回落为定格）")
+    run.step("设置：打开「成人画面」，关掉「动态影像」（过场改为定格画面）")
     page.click("#book [data-tab='tree']")
     page.locator("#book .tree-node", has_text="拜月").click()
     page.click("#confirm [data-v='yes']")
@@ -682,7 +749,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write-evidence", action="store_true")
     parser.add_argument("--headed", action="store_true")
-    parser.add_argument("--out", type=Path, help="凭证与截图写到这个目录（默认是示例目录本身，即 qa/ 与 screenshots/）")
+    parser.add_argument("--out", type=Path, help="验证记录与截图写到这个目录（默认是示例目录本身，即 qa/ 与 screenshots/）")
     args = parser.parse_args()
     global OUT
     if args.out:

@@ -107,7 +107,7 @@ export function openMembers(c, { pets = false, onChange }) {
           const cost = studyCost(rank);
           return h('div.skill', {}, h('div.skill-head', {}, h('b', {}, sk.name), h('span.pips', {}, [1, 2, 3].map((i) => h(`i${i <= rank ? '.on' : ''}`))), h('em', {}, sk.mp ? `法力 ${sk.mp}` : '')),
             h('p', {}, SKILLS[id].desc),
-            next && h('p.muted', {}, `再修一重：${sk.mul ? `威力从普攻的 ${sk.mul.toFixed(2)} 倍升到 ${next.mul.toFixed(2)} 倍，` : sk.heal ? `疗效多 ${Math.round((next.heal / sk.heal - 1) * 100)}%，` : ''}法力 ${sk.mp} → ${next.mp}`),
+            next && h('p.muted', {}, `再修一重：${sk.mul ? `威力从普通攻击的 ${sk.mul.toFixed(2)} 倍升到 ${next.mul.toFixed(2)} 倍，` : sk.heal ? `疗效多 ${Math.round((next.heal / sk.heal - 1) * 100)}%，` : ''}法力 ${sk.mp} → ${next.mp}`),
             h('div.skill-acts', {}, rank >= GROWTH.skillRankCap ? h('span.muted', {}, '已修满三重') : [
               h('button.btn.small.qing', { type: 'button', data: { train: id }, disabled: sp <= 0, onclick: () => { if (trainSkill(c, cur, id)) { audio.sfx('levelup', { volume: 0.5 }); changed(); } } }, '修炼一重'),
               cost != null && h('button.btn.small', { type: 'button', data: { study: id }, disabled: c.money < cost, onclick: () => { if (studySkill(c, cur, id)) { audio.sfx('coin'); changed(); } } }, `银两研习 ${cost} 两`),

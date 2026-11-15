@@ -32,7 +32,7 @@
       "audio": false,
       "output": "app/assets/film/dinner.mp4",
       "status": "retired",
-      "retired": "2026-11-14 盲玩修复第 2 轮：晚饭 CG 换成暮色掌灯版（cg/group/dinner_dusk.webp），白天版的待机影像首尾帧对不上，停用并删除 mp4；晚饭 CG 回落为静图加慢推镜。"
+      "retired": "2026-11-14 盲玩修复第 2 轮：晚饭 CG 换成暮色掌灯版（cg/group/dinner_dusk.webp），白天版的待机影像首尾帧对不上，停用并删除 mp4；晚饭 CG 改为静图加慢推镜。"
     },
     {
       "id": "intro_yue",

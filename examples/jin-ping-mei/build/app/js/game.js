@@ -9,10 +9,10 @@ import { bus } from './bus.js';
 import { settings, record, unlock, saveRecord, writeSave, loadSaves, writeNode, loadNodes, onSettings, rememberScene, sceneFlags } from './store.js';
 import { icon } from './ui/icons.js';
 import { toast, hideToast, confirmOpen } from './ui/feedback.js';
-import { chapterCard, endingCard, fatePage, cardOpen, cardAdvance } from './ui/cards.js';
+import { chapterCard, endingCard, fatePage, cardOpen, cardAdvance, closeCard } from './ui/cards.js';
 import { showChoices, choicesOpen, choicesExpired, pickByNumber, moveFocus, closeChoices } from './ui/choices.js';
-import { lookAround, lookOpen } from './ui/look.js';
-import { holdLamp } from './ui/hold.js';
+import { lookAround, lookOpen, closeLook } from './ui/look.js';
+import { holdLamp, holdOpen, closeHold } from './ui/hold.js';
 import { stamps } from './ui/stamps.js';
 import { cutStep } from './engine/subs.js';
 
@@ -169,6 +169,7 @@ function setHidden(on) {
   ui.hidden = on;
   $('#game').classList.toggle('ui-hidden', on);
   stage.pauseCut(paused());
+  if (!on) resumeAuto();
 }
 function stopModes() {
   clearTimeout(ui.timer);
@@ -196,10 +197,19 @@ function next() {
 
 function scheduleAuto(text = '') {
   clearTimeout(ui.timer);
-  if (fast()) { ui.timer = setTimeout(next, SKIP_MS); return; }
+  if (fast()) {
+    ui.timer = setTimeout(() => { if (paused()) scheduleAuto(text); else next(); }, paused() ? 120 : SKIP_MS);
+    return;
+  }
   if (!ui.auto) return;
   const perChar = 130 - settings.autoSpeed * 0.9;
   ui.timer = setTimeout(() => { if (paused()) scheduleAuto(text); else next(); }, 900 + text.length * perChar);
+}
+
+function resumeAuto() {
+  if (!paused() && (ui.auto || fast()) && ui.beat?.type === 'line' && !ui.typing && !ui.awaitCue && !stage.cutLive()) {
+    scheduleAuto(ui.beat.text);
+  }
 }
 
 function speakerMeta(beat) {
@@ -337,14 +347,16 @@ function presentLook(beat) {
   stage.sync(vm.stage, { instant: ui.instant });
   dlg.show('cg', { text: beat.prompt, instant: true });
   dlg.mark(false);
+  const token = ui.token;
   lookAround(beat, {
     inspect: (i) => vm.inspect(i),
     say: (name, text) => {
+      if (ui.token !== token || ui.beat !== beat) return;
       ui.backlog.push({ name: '', who: null, text: `【${name}】${text}` });
       dlg.show('cg', { text: `【${name}】${text}` });
     },
-  }).then(() => {
-    if (ui.beat !== beat) return;
+  }).then((completed) => {
+    if (!completed || ui.token !== token || ui.beat !== beat) return;
     vm.endLook();
     next();
   });
@@ -356,7 +368,7 @@ function presentHold(beat) {
   dlg.hide();
   const token = ui.token;
   holdLamp(beat, { paused }).then((ok) => {
-    if (ui.token !== token || ui.beat !== beat) return;
+    if (ok === null || ui.token !== token || ui.beat !== beat) return;
     // 灯灭了照样往下演；顺带说一句还有别的办法（第 4 轮盲玩：连点推进的人没换成按住）
     if (!ok && !settings.assist) toast('灯灭了。要按住才护得住；嫌手忙，设置里可打开「动作辅助」', 3600);
     vm.resolveHold(ok);
@@ -379,7 +391,7 @@ function present(beat) {
       // 章节卡先盖上来，背后再换场
       setTimeout(() => { if (ui.token === token && ui.beat === beat) { stage.sync(vm.stage, { instant: true }); $('#chapter-tag').textContent = vm.stage.chapter; } }, quick ? 0 : 420);
       if (!ui.replay) { writeNode(beat.label, vm.snapshot()); autosave(); }
-      chapterCard(beat, { fast: quick }).then(() => { if (ui.token === token) next(); });
+      chapterCard(beat, { fast: quick }).then((ok) => { if (ok && ui.token === token && ui.beat === beat) next(); });
       break;
     }
     case 'ending': {
@@ -388,7 +400,7 @@ function present(beat) {
       stage.sync(vm.stage, { instant: true });
       dlg.hide();
       saveRecord(true);
-      endingCard(beat.id).then(() => { if (ui.token === token) next(); });
+      endingCard(beat.id).then((ok) => { if (ok && ui.token === token && ui.beat === beat) next(); });
       break;
     }
     case 'fate': {
@@ -396,7 +408,7 @@ function present(beat) {
       audio.bgm('fate');
       unlock('music', 'fate');
       unlock('cg', 'fate');
-      fatePage(beat.who).then(() => { if (ui.token === token) next(); });
+      fatePage(beat.who).then((ok) => { if (ok && ui.token === token && ui.beat === beat) next(); });
       break;
     }
     case 'end':
@@ -454,9 +466,9 @@ function command(act) {
       ui.skip = !ui.skip;
       ui.auto = false;
       paintModes();
-      if (ui.skip && ui.beat?.type === 'line') { dlg.stop(); ui.awaitCue = false; scheduleAuto(); } else clearTimeout(ui.timer);
+      if (ui.skip && ui.beat?.type === 'line') { dlg.stop(); ui.awaitCue = false; scheduleAuto(ui.beat.text); } else clearTimeout(ui.timer);
       break;
-    case 'hide': if (!choicesOpen() && !lookOpen()) setHidden(!ui.hidden); break;
+    case 'hide': if (!choicesOpen() && !lookOpen() && !holdOpen() && !cardOpen()) setHidden(!ui.hidden); break;
     case 'qsave': if (!ui.replay) game.save('quick').then((ok) => toast(ok ? '已快存' : '存不进去：浏览器不让写入')); break;
     case 'qload': {
       const rec = loadSaves().quick;
@@ -478,7 +490,7 @@ function command(act) {
 function onKey(e) {
   if (!ui.active || ui.bookOpen || confirmOpen() || e.metaKey || e.altKey) return;
   const key = e.key;
-  if (key === 'Control') { if (!ui.ctrl && ui.beat?.type === 'line') { ui.ctrl = true; dlg.stop(); ui.awaitCue = false; paintModes(); scheduleAuto(); } return; }
+  if (key === 'Control') { if (!ui.ctrl && ui.beat?.type === 'line') { ui.ctrl = true; dlg.stop(); ui.awaitCue = false; paintModes(); scheduleAuto(ui.beat.text); } return; }
   if (e.ctrlKey) return;
   if (ui.hidden) { e.preventDefault(); setHidden(false); return; }
   const onButton = e.target.closest?.('button, input, select, a');
@@ -515,7 +527,13 @@ function bindInput() {
   document.addEventListener('keyup', (e) => {
     if (e.key === 'Control' && ui.ctrl) { ui.ctrl = false; clearTimeout(ui.timer); paintModes(); }
   });
-  document.addEventListener('visibilitychange', () => stage.pauseCut(paused()));
+  window.addEventListener('blur', () => {
+    if (ui.ctrl) { ui.ctrl = false; clearTimeout(ui.timer); paintModes(); }
+  });
+  document.addEventListener('visibilitychange', () => {
+    stage.pauseCut(paused());
+    if (!document.hidden) resumeAuto();
+  });
   onSettings((key) => {
     if (key === 'voice') stage.setVoiceVolume();
     if (['film', 'calm', 'adult'].includes(key) && ui.active) stage.refresh(vm.stage);
@@ -550,6 +568,9 @@ function begin() {
   ui.ahead = false;
   clearTimeout(ui.timer);
   closeChoices();
+  closeLook();
+  closeHold();
+  closeCard();
   stamps.clear();
   setHidden(false);
   dlg.hide();
@@ -648,6 +669,9 @@ export const game = {
     ui.beat = null;
     clearTimeout(ui.timer);
     closeChoices();
+    closeLook();
+    closeHold();
+    closeCard();
     stamps.clear();
     dlg.hide();
     stage.reset();
@@ -662,7 +686,7 @@ export const game = {
   setBookOpen(on) {
     ui.bookOpen = on;
     stage.pauseCut(paused());
-    if (!on && ui.auto && ui.beat?.type === 'line' && !ui.typing) scheduleAuto(ui.beat.text);
+    if (!on) resumeAuto();
   },
 
   command,

@@ -1,6 +1,6 @@
 ---
 name: novel-game-analyze
-description: "Deconstruct a novel for game adaptation. Turn a raw novel, chapter-analysis library, or writing project into a cited SOURCE_BIBLE covering main story arcs, standout conflict scenes, character relationships and agendas, dual-timeline secrets, world rules, signature spaces and props, and adaptation boundaries — without locking a game genre prematurely. Use for novel-to-game analysis, deconstruct a book for game adaptation, extract story arcs, key scenes, characters, and world rules from a novel. 小说游戏化拆书。把原始小说、拆文成果或写作工程整理成带原文出处的 SOURCE_BIBLE，拆清全书主线脉络、高光冲突桥段、人物关系与各自盘算、秘密与信息差、世界硬规矩、标志性场景器物与改编红线，不提前敲定游戏品类。用于游戏化拆书、梳理小说剧情脉络与游戏改编基础等需求。"
+description: "Deconstruct a novel for game adaptation. Turn a raw novel, chapter-analysis library, or writing project into a cited SOURCE_BIBLE covering main story arcs, standout conflict scenes, character relationships and agendas, secrets and information gaps, world rules, signature spaces and props, and adaptation boundaries — without locking a game genre prematurely. Use for novel-to-game analysis, deconstruct a book for game adaptation, extract story arcs, key scenes, characters, and world rules from a novel. 小说游戏化拆书。把原始小说、拆文成果或写作工程整理成带原文出处的 SOURCE_BIBLE，拆清全书主线脉络、高光冲突桥段、人物关系与各自盘算、秘密与信息差、世界硬规矩、标志性场景器物与改编红线，不提前敲定游戏品类。用于游戏化拆书、梳理小说剧情脉络与游戏改编基础等需求。"
 ---
 # 小说游戏化拆解
 
@@ -12,8 +12,8 @@ description: "Deconstruct a novel for game adaptation. Turn a raw novel, chapter
 
 ## 输入
 
-- 工作区已有覆盖**全书**的拆文成果或写作工程时，直接复用其事实与出处，只对缺口定点回查原文；只覆盖开头或局部的资料不能当作读完全书（用户明确限定只改编某一卷或某几章时除外）。
-- 从原始文本拆解时，先确认编码可读、剔除与正文重复的目录、核对章回连续无漏。长篇按连续章回分批精读，同一批只读一次，进度记入 `analysis/_coverage.md` 以便续跑与查漏；互不重叠的批次可以小规模并行，每轮收齐后先对齐人物称呼与未完事件再开下一轮；每批除本段事实外，顺手记下跨批才接得上的线索：同人异名、未收尾的目标、待揭晓的伏笔、秘密靠什么载体流转以及谁在场。全书读完再收束成文。
+- 工作区已有覆盖**全书**的拆文成果或写作工程时，直接沿用其中的事实与出处，只对缺口定点回查原文；只覆盖开头或局部的资料不能当作读完全书（用户明确限定只改编某一卷或某几章时除外）。
+- 从原始文本拆解时，先确认编码可读、剔除与正文重复的目录、核对章回连续无漏。长篇按连续章回分批精读，同一批只读一次，进度记入 `analysis/_coverage.md` 以便续跑与查漏；互不重叠的批次可以小规模并行，每轮收齐后先核对统一人物称呼与未完事件再开下一轮；每批除本段事实外，顺手记下跨批才接得上的线索：同人异名、未收尾的目标、待揭晓的伏笔、秘密借什么信物、字据或口信传开以及谁在场。全书读完再收束成文。
 - 已有 `PRODUCT_BRIEF.md` 时，按它的内容尺度与已锁定方向排取证重点；锁定方向需要而原著没有成体系描写的部分，标「原著无现成设定，属下游设计新增」。情爱、暴力、权谋等冲突按文本事实提取因果，并对照分级标出下游需谨慎改编的尺度。
 
 ## 输出：`analysis/SOURCE_BIBLE.md`

@@ -5,7 +5,7 @@
 <h1 align="center">NovelToGame</h1>
 
 <p align="center">
-  <b>A source-grounded novel-to-game workflow: adaptation design, environment-adapted builds, and first-player blind-playtest QA.</b>
+  <b>A text-cited novel-to-game workflow: adaptation planning, builds tailored to your local tools, and first-player blind-playtest QA.</b>
 </p>
 
 <p align="center">
@@ -68,10 +68,10 @@ An interactive-film romance set in the Ximen household the spring after Li Ping'
 The skills run on your coding agent's model and organize adaptation into stages. Each stage owns a document, with source evidence separated from design choices:
 
 - **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` covering main story arcs, standout conflict scenes, character relationships and agendas, secrets and information gaps, world rules, signature spaces and props, and adaptation boundaries — each citing its chapter or file location. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
-- **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
-- **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
-- **Built for the approved platform, adapted to your environment.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. Within that platform, `game-build` probes what your machine and session actually offer (such as Three.js, image/text-to-3D models like Hunyuan3D, Blender CLI/Python/MCP, 2D Canvas/WebGL, or native Godot/Unity toolchains) and chooses a fitting build route; a missing native toolchain may not silently become a web page. The design documents are engine-independent Markdown you own.
-- **QA combines a blind first-player playthrough with one complete verification receipt.** Before reading source code or design specs, an isolated QA pass launches the build from the title screen as a first-time player to uncover onboarding, interaction, pacing, and mobile viewport friction (`qa/playtest-report.md`), then reconciles findings against the design documents and records one complete execution proving `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart` (`qa/verification.json`). Untested environments are listed as limitations.
+- **Choose the game genre deliberately instead of defaulting to one template.** The concept stage compares real alternatives and eliminates directions with named one-strike vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
+- **Keep the outer features players expect from a borrowed genre.** Players recognise a genre by more than its core mechanic, so a systems game lists which outer features of the genre (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
+- **Built for the approved platform, tailored to your local environment.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. Within that platform, `game-build` probes what your machine and session actually offer (such as Three.js, image/text-to-3D models like Hunyuan3D, Blender CLI/Python/MCP, 2D Canvas/WebGL, or native Godot/Unity toolchains) and chooses a fitting build route; a missing native toolchain may not silently become a web page. The design documents are engine-independent Markdown you own.
+- **QA combines a blind first-player playthrough with one end-to-end verification run.** Before reading source code or design specs, an isolated QA pass launches the build from the title screen as a first-time player to uncover onboarding, interaction, pacing, and mobile viewport friction (`qa/playtest-report.md`), then reconciles findings against the design documents and records one complete execution proving `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart` (`qa/verification.json`). Untested environments are listed as limitations.
 - **Voice is opt-in and generated at build time by default.** No line goes to a text-to-speech provider unless art direction chooses voice; runtime synthesis needs the product brief's explicit approval, and the novel and design documents are never uploaded.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
@@ -153,7 +153,7 @@ In [Journey to the West](examples/journey-to-the-west/), the Banana-Leaf Fan (ow
 [`concepts/CONCEPT.md`](examples/journey-to-the-west/concepts/CONCEPT.md) turns the fan into a two-sided rule, the fake fan feeding the fire and the true fan's three waves turning the boss fight, and records which rival directions died, and on which veto (translated):
 
 ```markdown
-Hard-veto results (one line per direction):
+One-strike veto check (one line per direction):
 
 - Direction 1 · Three Borrowings of the Banana Fan: passes (none of the six triggered).
 - Direction 2 · The Westward Post Road: triggers item 2 — within the slice length, relationship building decays into event buttons and stat bars with no repeatable trade-off — eliminated.
@@ -174,10 +174,10 @@ taking down the White Bull's true form with your companion beast and transformat
 and dragging it out means you will be killed in turn, so "when to open the third wave" is the core decision of the finale.
 ```
 
-The same document lists the genre's shell around those battles, and what was implemented, degraded, or dropped (translated; 4 of the table's 8 rows):
+The same document lists the genre's outer features around those battles, and what was implemented, degraded, or dropped (translated; 4 of the table's 8 rows):
 
 ```markdown
-| Genre shell | State | How / why |
+| Genre feature | State | How / why |
 |---|---|---|
 | Entering the world and moving | Implemented | Four walkable 3/4 scenes (Flame Mountain village, Cuiyun Mountain, the fire mouth, Jilei Mountain); click-to-walk, arrow-key walking, teal teleport circles (click the circle or its name) |
 | Objective guidance / tracking | Implemented | "!" above main-quest NPCs; one click on the quest tracker on the right auto-paths, across maps too; minimap at top left |
@@ -297,7 +297,7 @@ Label allowed additions and unresolved questions. Deliver design notes only—do
 Novel → Source analysis → Concept → World design → Graybox playtest ↺ → Art direction → Full build → QA → Playable game
 ```
 
-After world design, the build probes the rendering libraries and modeling/generative tools available in your environment and takes the core loop to a graybox (a rough build without final art, but with the real controls and space) that can be played from start to an ending. A separate session that has read neither the design nor the source plays it cold; if it cannot follow the game, cannot finish it, or the core fun is not there, the problem goes back to the design stage, and the story, dialogue and level volume are revised around the part players actually chase. Only then is art direction set and art produced in bulk. The build implements the approved design in full, polishes player-facing copy, and prepares rule regressions plus one authoritative verification command. When cost keeps climbing, the run cuts scope before the budget is gone and records the cut as a non-goal; it does not lower the bar. `game-qa` then blind-playtests the build from cold start as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
+After world design, the build probes the rendering libraries and modeling/generative tools available in your environment and takes the core loop to a graybox (a rough build without final art, but with the real controls and space) that can be played from start to an ending. A separate session that has read neither the design nor the source plays it from scratch; if it cannot follow the game, cannot finish it, or the core fun is not there, the problem goes back to the design stage, and the story, dialogue and level volume are revised around the part players actually chase. When `targetFinish` is `graybox`, the approved graybox goes straight to QA; otherwise art direction is set and art produced in bulk. The build implements the approved design in full, polishes player-facing copy, and prepares rule regressions plus one end-to-end verify command. When cost keeps climbing, the run cuts scope before the budget is gone and records the cut as a non-goal; it does not lower the bar. `game-qa` then blind-playtests the build from the title screen as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
 
 ## Skills
 
@@ -305,9 +305,9 @@ After world design, the build probes the rendering libraries and modeling/genera
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
 | [`novel-game-analyze`](skills/novel-game-analyze/) | Deconstruct full-book story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations |
-| [`game-design`](skills/game-design/) | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one verify command |
-| [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run verification receipt |
+| [`game-design`](skills/game-design/) | Guide concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) in separate stages |
+| [`game-build`](skills/game-build/) | Probe local rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one end-to-end verify command |
+| [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from the title screen, reconcile against design specs, and write one complete-run verification record |
 
 ## Artifacts
 
@@ -319,7 +319,7 @@ game-adaptations/<project>/
   analysis/SOURCE_BIBLE.md
   concepts/CONCEPT.md
   design/GAME_DESIGN.md
-  design/ART_DIRECTION.md
+  design/ART_DIRECTION.md   # omitted when targetFinish is graybox
   build/BUILD_BRIEF.md
   build/app/
   qa/verification.json
@@ -356,7 +356,7 @@ For analysis, design and coding, the skills use your coding agent's model. If th
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 
-`game-qa` runs in two rounds: first an isolated blind playtest from cold start as a first-time player without reading source code or design documents (recording onboarding, interaction, pacing, and mobile viewport findings in `qa/playtest-report.md`), then spec reconciliation and one authoritative complete run on the tested runtime proving six things in `qa/verification.json`: the build launched, rendered a non-empty frame that changes, changed state on real input, completed the core loop, reached at least one designed outcome, and restarted to the initial state (any `P0` blocker found during blind playtesting fails the corresponding check). Status is only `NOT_RUN`, `FAIL`, or `PASS`; unverified is not a pass, and an old PASS is overwritten by every rerun. Every gap is written as a limitation with a scope and a reason. It does not prove subjective fun, balance, other browsers or devices, rights, or commercial release quality. See the [blind-playtest method](skills/game-qa/references/blind-playtest-method.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
+`game-qa` runs in two rounds: first an isolated blind playtest from the title screen as a first-time player without reading source code or design documents (recording onboarding, interaction, pacing, and mobile viewport findings in `qa/playtest-report.md`), then spec reconciliation and one end-to-end complete run on the tested runtime proving six things in `qa/verification.json`: the build launched, rendered a non-empty frame that changes, changed state on real input, completed the core loop, reached at least one designed outcome, and restarted to the initial state (any `P0` blocker found during blind playtesting fails the corresponding check). Status is only `NOT_RUN`, `FAIL`, or `PASS`; unverified is not a pass, and an old PASS is overwritten by every rerun. Every gap is written as a limitation with a scope and a reason. It does not prove subjective fun, balance, other browsers or devices, rights, or commercial release quality. See the [blind-playtest method](skills/game-qa/references/blind-playtest-method.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
 
 ### My novel is in one language. Can the game be in another?
 
