@@ -37,3 +37,5 @@ Status: implemented
 ## Verification
 
 《西游记》：`npm test` 50 项通过；`python3 test/verify.py` 六项通过。《金瓶梅》：`npm run verify:model` 证明 16 个结局全部可达；`python3 test/verify.py --write-evidence` 六项通过，含年龄门前不请求游戏媒体、成人画面两道开关与年龄拦截。滚动通查：两个示例在 1280×800／1440×900 与 390×844 下，全流程各画面与后期面板均无「内容高度超过可见高度的可滚动元素」。`python3 scripts/validate_repo.py` 与 `python3 -m unittest discover -s tests -v` 通过。
+
+来源：`cc4e76c`。
