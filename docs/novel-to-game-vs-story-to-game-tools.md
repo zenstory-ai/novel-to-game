@@ -15,7 +15,7 @@ Engine-based generators and template scripts have their own production workflows
 ## The pipeline
 
 ```text
-Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
+Novel → Source analysis → Concept → World design → Graybox playtest ↺ → Art direction → Full build → QA → Playable game
 ```
 
 | Skill | Responsibility |
@@ -23,7 +23,7 @@ Novel → Source analysis → Concept → World design → Risk-matched whitebox
 | `novel-to-game` | Confirm requirements, lock `PRODUCT_BRIEF.md`, orchestrate handoffs, recover progress |
 | `novel-game-analyze` | Deconstruct story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations into `SOURCE_BIBLE.md` |
 | `game-design` | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| `game-build` | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game, polish player-facing copy, and wire rule self-checks |
+| `game-build` | Probe host rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one verify command |
 | `game-qa` | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run receipt |
 
 Each run creates one workspace:

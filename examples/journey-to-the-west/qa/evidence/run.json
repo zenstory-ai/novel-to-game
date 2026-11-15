@@ -1,0 +1,811 @@
+{
+  "schemaVersion": 1,
+  "runId": "three-fans-main-path",
+  "environment": {
+    "runtime": "Chromium (Playwright, headless)",
+    "viewport": "1280x800",
+    "url": "http://127.0.0.1:<port>/index.html?seed=42&fast=1",
+    "os": "darwin",
+    "browserVersion": "145.0.7632.6",
+    "seconds": 262,
+    "consoleErrors": []
+  },
+  "inputTrace": [
+    "点「踏上火焰山」",
+    "点地面：向左下走几步",
+    "按住方向键右",
+    "点【主线】任务（ask）：自动寻路",
+    "点【主线】任务（borrow1）：自动寻路",
+    "点【主线】任务（borrow1）：自动寻路",
+    "抉择 choice-approach 弹出后连按空格、空格、回车（不该替玩家选）",
+    "抉择 choice-approach = calm",
+    "进入战斗：luosha1",
+    "首战指令台刚亮起就点「防御」的位置（连点余波）",
+    "孙悟空：攻击，点场上的罗刹女",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：防御",
+    "孙悟空：法术 ruyibang → 罗刹女",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 侍婢·甲",
+    "抉择 choice-treasure = dingfengdan",
+    "打开【角色】",
+    "wukong：推荐加点",
+    "wukong：推荐修炼",
+    "bajie：推荐加点",
+    "bajie：推荐修炼",
+    "sha：推荐加点",
+    "sha：推荐修炼",
+    "关闭面板",
+    "点【日常】任务：自动寻路",
+    "土地：接下封妖令",
+    "停一拍后直接点场上的火妖（点在身子下半与名牌一带）",
+    "进入战斗：bounty_a",
+    "孙悟空：法术 ruyibang → 砖缝火苗·甲",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 砖缝火苗·甲",
+    "孙悟空：法术 ruyibang → 砖缝火苗·乙",
+    "猪八戒：攻击 砖缝火苗·乙",
+    "沙悟净：法术 xiangyaozhang → 砖缝火苗·乙",
+    "结算：ok",
+    "点小地图：走到卖糕少年附近",
+    "点场上的卖糕少年",
+    "卖糕少年：买丹药",
+    "买金疮药一贴",
+    "点【主线】任务（borrow2）：自动寻路",
+    "进入战斗：luosha",
+    "孙悟空：法术 ruyibang → 罗刹女",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 罗刹女",
+    "孙悟空：法术 ruyibang → 罗刹女",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 罗刹女",
+    "孙悟空：七十二变 chongzi",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 罗刹女",
+    "结算：ok",
+    "刷新页面后点「接着西行」",
+    "打开【角色】分配成长",
+    "点【主线】任务（tryfan）：自动寻路",
+    "抉择 choice-fantrial = ember",
+    "进入战斗：firemobs",
+    "孙悟空：七十二变 xuangui",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 火炎校尉",
+    "孙悟空：攻击 火炎校尉",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 火炎校尉",
+    "孙悟空：攻击 火炎校尉",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 xiangyaozhang → 火炎校尉",
+    "孙悟空：七十二变 xuangui",
+    "猪八戒：攻击 火兵·乙",
+    "沙悟净：道具 buyaosheng 捆 火兵·乙",
+    "孙悟空：攻击 火兵·乙",
+    "猪八戒：攻击 火兵·乙",
+    "沙悟净：法术 xiangyaozhang → 火兵·乙",
+    "结算：ok",
+    "火脉残图：悟空探路",
+    "火脉残图：掘第 0 块",
+    "火脉残图：掘第 1 块",
+    "火脉残图：掘第 2 块",
+    "火脉残图：deep",
+    "火脉残图：掘第 0 块",
+    "火脉残图：掘第 1 块",
+    "火脉残图：finish",
+    "火脉残图：leave",
+    "打开【角色】分配成长",
+    "点【主线】任务（moyun）：自动寻路",
+    "进入战斗：yumian",
+    "孙悟空：法术 qitian → 妖将·甲",
+    "猪八戒：法术 hengpa",
+    "沙悟净：法术 liusha → 妖将·甲",
+    "孙悟空：法术 qitian → 妖将·甲",
+    "猪八戒：法术 hengpa",
+    "沙悟净：法术 liusha → 妖将·甲",
+    "孙悟空：法术 qitian → 妖将·甲",
+    "猪八戒：法术 hengpa",
+    "沙悟净：法术 liusha → 妖将·甲",
+    "孙悟空：法术 qitian → 妖将·乙",
+    "猪八戒：法术 jiuchipaba",
+    "沙悟净：法术 liusha → 妖将·乙",
+    "孙悟空：攻击 玉面公主",
+    "猪八戒：攻击 玉面公主",
+    "沙悟净：法术 liusha → 玉面公主",
+    "结算：ok",
+    "抉择 choice-loot = ruyibang_jing",
+    "打开【角色】分配成长",
+    "点【主线】任务（niu）：自动寻路",
+    "进入战斗：niu1",
+    "孙悟空：法术 qitian → 摩云洞妖将",
+    "猪八戒：法术 tunshan → 摩云洞妖将",
+    "沙悟净：法术 liusha → 摩云洞妖将",
+    "孙悟空：道具 jinchuang 给自己",
+    "猪八戒：法术 tunshan → 摩云洞妖将",
+    "沙悟净：法术 liusha → 摩云洞妖将",
+    "抉择 choice-pond1 = crab",
+    "抉择 choice-pond2 = shift",
+    "抉择 choice-pond3 = steal",
+    "打开【角色】分配成长",
+    "打开【召唤兽】分配成长",
+    "点【主线】任务（descend）：自动寻路",
+    "抉择 choice-bajie = check",
+    "进入战斗：niumowang",
+    "决战：换六丁阵",
+    "孙悟空：法术 qitian → 牛魔王",
+    "猪八戒：法术 tunshan → 牛魔王",
+    "沙悟净：法术 liusha → 牛魔王",
+    "辟水金睛兽：法术 bingfeng → 牛魔王",
+    "孙悟空：法术 qitian → 牛魔王",
+    "猪八戒：法术 tunshan → 牛魔王",
+    "沙悟净：道具 truefan 第 1 扇",
+    "辟水金睛兽：法术 bingfeng → 牛魔王",
+    "孙悟空：法术 qitian → 牛魔王",
+    "猪八戒：法术 tunshan → 牛魔王",
+    "沙悟净：法术 liusha → 牛魔王",
+    "辟水金睛兽：法术 bingfeng → 牛魔王",
+    "孙悟空：防御（被蓄力盯上）",
+    "猪八戒：法术 tunshan → 白牛真身",
+    "沙悟净：道具 truefan 第 2 扇",
+    "辟水金睛兽：法术 bingfeng → 白牛真身",
+    "孙悟空：法术 qitian → 白牛真身",
+    "猪八戒：攻击 白牛真身",
+    "沙悟净：道具 truefan 第 3 扇",
+    "辟水金睛兽：攻击 白牛真身",
+    "孙悟空：道具 jinchuang 给自己",
+    "猪八戒：攻击 白牛真身",
+    "沙悟净：法术 liusha → 白牛真身",
+    "辟水金睛兽：攻击 白牛真身",
+    "孙悟空：法术 qitian → 白牛真身",
+    "猪八戒：攻击 白牛真身",
+    "沙悟净：法术 liusha → 白牛真身",
+    "辟水金睛兽：防御（被蓄力盯上）",
+    "结算：ok",
+    "首通：读完结局第 1 句，按空格",
+    "首通：读完结局第 2 句，按空格",
+    "首通：读完结局第 3 句，按空格",
+    "首通：读完结局第 4 句，按空格",
+    "首通：读完结局第 5 句，按空格",
+    "首通：读完结局第 6 句，按空格",
+    "首通：读完结局第 7 句，按空格",
+    "首通：读完结局第 8 句，按空格",
+    "刷新后点「重温结局」",
+    "重温：读完结局第 1 句，按空格",
+    "重温：读完结局第 2 句，按空格",
+    "重温：读完结局第 3 句，按空格",
+    "重温：读完结局第 4 句，按空格",
+    "重温：读完结局第 5 句，按空格",
+    "重温：读完结局第 6 句，按空格",
+    "重温：读完结局第 7 句，按空格",
+    "重温：读完结局第 8 句，按空格",
+    "点「重走这一难」"
+  ],
+  "observations": {
+    "launch": {
+      "id": "title-screen",
+      "inputs": [
+        "打开页面，等待标题画面"
+      ],
+      "state": {
+        "screen": "title",
+        "localStorageKeys": 0,
+        "consoleErrors": 0
+      },
+      "visual": "qa/evidence/01-title.jpg"
+    },
+    "render": {
+      "id": "village-scene",
+      "inputs": [
+        "点「踏上火焰山」",
+        "空格读完序幕"
+      ],
+      "state": {
+        "scene": "village",
+        "mapReady": true,
+        "sampledColors": 64
+      },
+      "visual": "qa/evidence/02-village.jpg"
+    },
+    "input": {
+      "id": "walk-by-click-and-keys",
+      "inputs": [
+        "点地面",
+        "按住方向键右"
+      ],
+      "state": {
+        "before": [
+          790,
+          640
+        ],
+        "afterClick": [
+          760,
+          649
+        ],
+        "afterKey": [
+          826,
+          649
+        ]
+      }
+    },
+    "coreLoop": {
+      "id": "walk-talk-battle-grow",
+      "inputs": [
+        "任务追踪寻路",
+        "首战指令台刚亮起就点一下（不该下令）",
+        "逐个伙伴下令",
+        "「沿用」按钮写明将沿用什么",
+        "二借罗刹女露疲态时「此战」改写",
+        "【角色】推荐加点",
+        "封妖一环（直接点游走的火妖开打）",
+        "买药",
+        "刷新后读档",
+        "火脉残图"
+      ],
+      "state": {
+        "demonClick": {
+          "clickedAt": [
+            1182,
+            498
+          ],
+          "battle": "bounty_a",
+          "seconds": 1.0
+        },
+        "cmdGuard": {
+          "queuedAfterInstantClick": []
+        },
+        "repeatLabels": [
+          "攻击 → 罗刹女",
+          "钉耙乱筑",
+          "防御",
+          "棒打 → 砖缝火苗·乙",
+          "宝杖降妖 → 砖缝火苗·乙",
+          "棒打 → 罗刹女",
+          "宝杖降妖 → 罗刹女",
+          "变 玄甲龟将",
+          "宝杖降妖 → 火炎校尉",
+          "攻击 → 火炎校尉",
+          "攻击 → 火兵·乙",
+          "宝杖降妖 → 火兵·乙"
+        ],
+        "finisherGoal": "罗刹女已气喘：轮到悟空时点【特技】，变蟭蟟虫钻进她腹中（硬打到认输也行）",
+        "stage": "niu",
+        "level": 5,
+        "battles": [
+          {
+            "id": "bounty_a",
+            "winner": "party",
+            "rounds": 2
+          },
+          {
+            "id": "luosha",
+            "winner": "party",
+            "rounds": 3
+          },
+          {
+            "id": "firemobs",
+            "winner": "party",
+            "rounds": 5
+          },
+          {
+            "id": "yumian",
+            "winner": "party",
+            "rounds": 5
+          },
+          {
+            "id": "niumowang",
+            "winner": "party",
+            "rounds": 7
+          }
+        ],
+        "bountyRings": 1,
+        "reloadRestored": true,
+        "hunt": {
+          "guide": "wukong",
+          "deepened": true,
+          "forced": false,
+          "clueUsed": false,
+          "relics": 4
+        },
+        "pets": []
+      },
+      "visual": "qa/evidence/04-jilei.jpg"
+    },
+    "outcome": {
+      "id": "ending-reached",
+      "inputs": [
+        "首个抉择弹出后连按空格、空格、回车，抉择仍在",
+        "灵吉对白底景为小须弥山",
+        "决战中下令处一直点明真扇，三扇依次扇出",
+        "白牛在场时「此战」写明伏地即胜，白牛伏地战斗即结束",
+        "蓄力预警点名的人就是重击锁定的人",
+        "白牛现形时土地立绘上场并写明回血",
+        "结局每句字幕不操作也停住，空格逐句读完，字幕写火退时画面已换地景"
+      ],
+      "state": {
+        "stage": "done",
+        "terminal": "done",
+        "endingTitle": "火息路开 · 继续西行",
+        "finalBattle": {
+          "id": "niumowang",
+          "winner": "party",
+          "rounds": 7
+        },
+        "wins": 4,
+        "flags": {
+          "approach": "calm",
+          "fanTrial": "ember",
+          "fakeFanKnown": true,
+          "loot": "ruyibang_jing",
+          "fooled": "no"
+        },
+        "fanPrompts": [
+          {
+            "round": 1,
+            "turn": "p0",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 1,
+            "turn": "p1",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 1,
+            "turn": "p2",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 1,
+            "turn": "p3",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 2,
+            "turn": "p0",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 2,
+            "turn": "p1",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 2,
+            "turn": "p2",
+            "fanStage": 0,
+            "queuedThisRound": false,
+            "fanCoach": true,
+            "itemGlow": true
+          },
+          {
+            "round": 2,
+            "turn": "p3",
+            "fanStage": 0,
+            "queuedThisRound": true,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 3,
+            "turn": "p0",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 3,
+            "turn": "p1",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 3,
+            "turn": "p2",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 3,
+            "turn": "p3",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 4,
+            "turn": "p0",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 4,
+            "turn": "p1",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 4,
+            "turn": "p2",
+            "fanStage": 1,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 4,
+            "turn": "p3",
+            "fanStage": 1,
+            "queuedThisRound": true,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 5,
+            "turn": "p0",
+            "fanStage": 2,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 5,
+            "turn": "p1",
+            "fanStage": 2,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 5,
+            "turn": "p2",
+            "fanStage": 2,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 5,
+            "turn": "p3",
+            "fanStage": 2,
+            "queuedThisRound": true,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 6,
+            "turn": "p0",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 6,
+            "turn": "p1",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 6,
+            "turn": "p2",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 6,
+            "turn": "p3",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 7,
+            "turn": "p0",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 7,
+            "turn": "p1",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 7,
+            "turn": "p2",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          },
+          {
+            "round": 7,
+            "turn": "p3",
+            "fanStage": 3,
+            "queuedThisRound": false,
+            "fanCoach": false,
+            "itemGlow": false
+          }
+        ],
+        "endingHolds": [
+          {
+            "run": "首通",
+            "step": "1",
+            "chars": 27,
+            "heldSeconds": 5.5,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 1/8",
+            "scene": "battle"
+          },
+          {
+            "run": "首通",
+            "step": "2",
+            "chars": 29,
+            "heldSeconds": 5.8,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 2/8",
+            "scene": "fire"
+          },
+          {
+            "run": "首通",
+            "step": "3",
+            "chars": 34,
+            "heldSeconds": 6.7,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 3/8",
+            "scene": "ash"
+          },
+          {
+            "run": "首通",
+            "step": "4",
+            "chars": 25,
+            "heldSeconds": 5.2,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 4/8",
+            "scene": "wind"
+          },
+          {
+            "run": "首通",
+            "step": "5",
+            "chars": 26,
+            "heldSeconds": 5.3,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 5/8",
+            "scene": "rain"
+          },
+          {
+            "run": "首通",
+            "step": "6",
+            "chars": 26,
+            "heldSeconds": 5.3,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 6/8",
+            "scene": "rain"
+          },
+          {
+            "run": "首通",
+            "step": "7",
+            "chars": 39,
+            "heldSeconds": 7.5,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 7/8",
+            "scene": "farewell"
+          },
+          {
+            "run": "首通",
+            "step": "8",
+            "chars": 37,
+            "heldSeconds": 7.2,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 8/8",
+            "scene": "farewell"
+          },
+          {
+            "run": "重温",
+            "step": "1",
+            "chars": 27,
+            "heldSeconds": 5.5,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 1/8",
+            "scene": "battle"
+          },
+          {
+            "run": "重温",
+            "step": "2",
+            "chars": 29,
+            "heldSeconds": 5.8,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 2/8",
+            "scene": "fire"
+          },
+          {
+            "run": "重温",
+            "step": "3",
+            "chars": 34,
+            "heldSeconds": 6.7,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 3/8",
+            "scene": "ash"
+          },
+          {
+            "run": "重温",
+            "step": "4",
+            "chars": 25,
+            "heldSeconds": 5.2,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 4/8",
+            "scene": "wind"
+          },
+          {
+            "run": "重温",
+            "step": "5",
+            "chars": 26,
+            "heldSeconds": 5.3,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 5/8",
+            "scene": "rain"
+          },
+          {
+            "run": "重温",
+            "step": "6",
+            "chars": 26,
+            "heldSeconds": 5.3,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 6/8",
+            "scene": "rain"
+          },
+          {
+            "run": "重温",
+            "step": "7",
+            "chars": 39,
+            "heldSeconds": 7.5,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 7/8",
+            "scene": "farewell"
+          },
+          {
+            "run": "重温",
+            "step": "8",
+            "chars": 37,
+            "heldSeconds": 7.2,
+            "stillOnStep": true,
+            "hint": "点击或按空格继续 · 8/8",
+            "scene": "farewell"
+          }
+        ],
+        "choiceGuard": {
+          "choice": "choice-approach",
+          "optionFocusedOnOpen": false,
+          "stillOpenAfterSpaceSpaceEnter": true,
+          "flags": {}
+        },
+        "lingjiBackdrop": "url(\"assets/bg/xumi.jpg\")",
+        "bullGoals": [
+          "打到白牛真身伏地即胜，余众自散"
+        ],
+        "chargeChecks": [
+          {
+            "round": 4,
+            "turn": "p0",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "locked": "孙悟空",
+            "namesLocked": true
+          },
+          {
+            "round": 4,
+            "turn": "p1",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "locked": "孙悟空",
+            "namesLocked": true
+          },
+          {
+            "round": 4,
+            "turn": "p2",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "locked": "孙悟空",
+            "namesLocked": true
+          },
+          {
+            "round": 4,
+            "turn": "p3",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "locked": "孙悟空",
+            "namesLocked": true
+          },
+          {
+            "round": 7,
+            "turn": "p0",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "locked": "辟水金睛兽",
+            "namesLocked": true
+          },
+          {
+            "round": 7,
+            "turn": "p1",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "locked": "辟水金睛兽",
+            "namesLocked": true
+          },
+          {
+            "round": 7,
+            "turn": "p2",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "locked": "辟水金睛兽",
+            "namesLocked": true
+          },
+          {
+            "round": 7,
+            "turn": "p3",
+            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "locked": "辟水金睛兽",
+            "namesLocked": true
+          }
+        ],
+        "relief": [
+          {
+            "art": "url(\"assets/units/tudi.webp\")",
+            "at": 1794698598380
+          },
+          {
+            "banner": "土地接力山神地气护阵——在场伙伴各回 30% 气血"
+          }
+        ]
+      },
+      "visual": "qa/evidence/05-ending.jpg"
+    },
+    "restart": {
+      "id": "fresh-campaign",
+      "inputs": [
+        "刷新",
+        "点「重温结局」并读完",
+        "点「重走这一难」"
+      ],
+      "state": {
+        "stage": "ask",
+        "restart": "ask",
+        "level": 1,
+        "money": 100,
+        "items": {},
+        "pets": [],
+        "wins": 0
+      },
+      "visual": "qa/evidence/06-restart.jpg"
+    }
+  }
+}

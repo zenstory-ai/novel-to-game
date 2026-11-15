@@ -16,9 +16,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from validate_repo import (  # noqa: E402
     EXAMPLE_MANIFEST,
     OUTPUT_LANGUAGE_RULE,
-    REFERENCE_LINE_BUDGET,
-    SKILL_MD_LINE_BUDGET,
-    SKILL_TOTAL_LINE_BUDGET,
+    REFERENCE_CHAR_BUDGET,
+    SKILL_MD_CHAR_BUDGET,
+    SKILL_TOTAL_CHAR_BUDGET,
     parse_numeral,
     read_manifest,
     validate_qa,
@@ -194,21 +194,22 @@ class RepositoryValidationTests(unittest.TestCase):
             skills_root = Path(temporary)
             lean = skills_root / "lean"
             lean.mkdir()
-            (lean / "SKILL.md").write_text("x\n" * 10, encoding="utf-8")
+            (lean / "SKILL.md").write_text("x" * 10, encoding="utf-8")
             self.assertEqual(validate_skill_budget(skills_root), [])
 
-            (lean / "SKILL.md").write_text("x\n" * (SKILL_MD_LINE_BUDGET + 1), encoding="utf-8")
+            # 长行不再能躲过预算：一行超长同样报错。
+            (lean / "SKILL.md").write_text("x" * (SKILL_MD_CHAR_BUDGET + 1), encoding="utf-8")
             self.assertTrue(any("SKILL.md budget" in issue for issue in validate_skill_budget(skills_root)))
 
             (lean / "references").mkdir()
-            (lean / "references/deep.md").write_text("x\n" * (REFERENCE_LINE_BUDGET + 1), encoding="utf-8")
+            (lean / "references/deep.md").write_text("x" * (REFERENCE_CHAR_BUDGET + 1), encoding="utf-8")
             self.assertTrue(any("reference budget" in issue for issue in validate_skill_budget(skills_root)))
 
             bulk = skills_root / "bulk"
             (bulk / "references").mkdir(parents=True)
-            for index in range(SKILL_TOTAL_LINE_BUDGET // REFERENCE_LINE_BUDGET + 1):
+            for index in range(SKILL_TOTAL_CHAR_BUDGET // REFERENCE_CHAR_BUDGET + 1):
                 (bulk / f"references/part{index}.md").write_text(
-                    "x\n" * REFERENCE_LINE_BUDGET, encoding="utf-8"
+                    "x" * REFERENCE_CHAR_BUDGET, encoding="utf-8"
                 )
             self.assertTrue(any("total budget" in issue for issue in validate_skill_budget(skills_root)))
 

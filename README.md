@@ -40,7 +40,7 @@ Each game links to the adaptation workspace behind it: source provenance, the co
 ### Journey to the West · Three Borrowings of the Banana Fan
 
 <p>
-  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="Wukong's party in the painted Flame Mountain village, with minimap, quest tracker, chat log and function buttons in the corners" width="49%"></a>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="Wukong's party in the painted Flame Mountain village, with minimap, quest tracker, message line and function buttons in the corners" width="49%"></a>
   <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/battle.jpg" alt="Jilei Mountain battle: the Bull Demon King's side on the left, Wukong's party on the right, action-order bar above and command panel below" width="49%"></a>
 </p>
 
@@ -76,7 +76,7 @@ The skills run on your coding agent's model and organize adaptation into stages.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
 
-Interactive film builds on that track: a text adventure crossed with a short drama. After each choice that matters later, a short cutscene acts out what the choice changed, and the next lines are read over its last frame. Every option at such a choice gets its own cutscene, and moving stills do not count as one. The skills budget cutscenes per choice and option and write them as storyboards. Generation waits until the rest of the game is finished and goes through a ledger that names no provider. With video off or missing, the game is still fully playable on still frames ([interactive film method](skills/game-design/references/interactive-film-method.md), [cutscene production](skills/game-build/references/cutscene-production.md), both in Chinese). The Jin Ping Mei example above is built this way.
+Interactive film builds on that track: a text adventure crossed with a short drama. After each choice that matters later, a short cutscene acts out what the choice changed, and the next lines are read over its last frame. Every option at such a choice gets its own cutscene, and moving stills do not count as one. The skills budget cutscenes per choice and option and write them as storyboards. Generation waits until the rest of the game is finished and goes through a ledger that names no provider. With video off or missing, the game is still fully playable on still frames ([interactive film method](skills/game-design/references/interactive-film-method.md), [generative media production](skills/game-build/references/generative-media.md), both in Chinese). The Jin Ping Mei example above is built this way.
 
 ## Install
 
@@ -202,11 +202,11 @@ And [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) 
 
 ```json
 "completeRun": {
-  "id": "journey-to-the-west-main-path",
+  "id": "three-fans-main-path",
   "cleanContext": true,
-  "terminal": "ending: 三借芭蕉扇 · 完",
-  "restart": "new campaign title",
-  "evidence": "qa/evidence/automated.json"
+  "terminal": "done",
+  "restart": "ask",
+  "evidence": "qa/evidence/run.json"
 },
 "checks": {
   "launch": "PASS",
@@ -254,11 +254,11 @@ In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the com
 ```json
 {
   "scope": "路径覆盖",
-  "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
+  "reason": "浏览器只走吴月娘良缘一条完整路径；其余 15 个结局由 npm run verify:model 穷举全部选择证明可达，没有逐一在浏览器里走。"
 }
 ```
 
-That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one.
+That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `npm run verify:model`, not walked one by one in the browser.
 
 ## Your first request
 
@@ -289,15 +289,15 @@ Keep the choices and outcomes bounded; show each option's evidence, cost, visibl
 Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
 ```
 
-`quick` is the default: the agent drafts a product brief with sensible defaults and stops for your decision only where a real fork in platform, core gameplay or fantasy, adult content, real persons, copyright or asset licences, paid services, or irreversible production spend would change the direction. Everything else is recorded in the brief as an unconfirmed assumption, and the agent compares meaningful alternatives and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the whitebox playtest (where you can bring in a target player), and at the visual target images when a target pack is made, unless you have already decided.
+`quick` is the default: the agent drafts a product brief with sensible defaults and stops for your decision only where a real fork in platform, core gameplay or fantasy, adult content, real persons, copyright or asset licences, paid services, or irreversible production spend would change the direction. Everything else is recorded in the brief as an unconfirmed assumption, and the agent compares meaningful alternatives and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the graybox playtest, and at the visual target images when a target pack is made, unless you have already decided.
 
 ## Workflow
 
 ```text
-Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
+Novel → Source analysis → Concept → World design → Graybox playtest ↺ → Art direction → Full build → QA → Playable game
 ```
 
-After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The whitebox playtest also shows which part players keep coming back to, so the story, dialogue and level budget is revised against it, and the brief's production budget is checked against the remaining scope there and again halfway through production. The production build probes the rendering libraries and modeling/generative tools available in your environment, implements the approved design, and prepares rule self-checks plus one authoritative verification command. `game-qa` then blind-playtests the build from cold start as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
+After world design, the build probes the rendering libraries and modeling/generative tools available in your environment and takes the core loop to a graybox (a rough build without final art, but with the real controls and space) that can be played from start to an ending. A separate session that has read neither the design nor the source plays it cold; if it cannot follow the game, cannot finish it, or the core fun is not there, the problem goes back to the design stage, and the story, dialogue and level volume are revised around the part players actually chase. Only then is art direction set and art produced in bulk. The build implements the approved design in full, polishes player-facing copy, and prepares rule regressions plus one authoritative verification command. When cost keeps climbing, the run cuts scope before the budget is gone and records the cut as a non-goal; it does not lower the bar. `game-qa` then blind-playtests the build from cold start as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
 
 ## Skills
 
@@ -306,7 +306,7 @@ After world design, a whitebox (a rough build without final art) tests only the 
 | [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
 | [`novel-game-analyze`](skills/novel-game-analyze/) | Deconstruct full-book story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations |
 | [`game-design`](skills/game-design/) | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game, polish player-facing copy, and wire rule self-checks |
+| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one verify command |
 | [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run verification receipt |
 
 ## Artifacts
@@ -340,11 +340,11 @@ Ask for an interactive film, and say how many choices should get cutscenes if bu
 
 ### How long does a full run take, and what does it cost?
 
-The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and the run checks the remaining scope against it after the whitebox and halfway through production, cutting content before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and when it runs short the run cuts outer scenes and minor branches first, recording each cut as a non-goal, before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 
-Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `director`. It reads `_progress.md` and the documents that actually exist, works out the last stage that was genuinely finished, and continues from there; test results are only ever read from `qa/verification.json`. See the [pipeline contract](skills/novel-to-game/references/pipeline-contract.md) (Chinese).
+Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `director`. It reads `_progress.md` and the documents that actually exist, works out the last stage that was genuinely finished, and continues from there; test results are only ever read from `qa/verification.json`. See [`novel-to-game`](skills/novel-to-game/SKILL.md) (Chinese).
 
 ### Which engine or platform does it build for? Will it fall back to a web page if my toolchain is missing?
 
@@ -352,7 +352,7 @@ You choose, and the product brief locks it: platform, production engine, target 
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
-For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
+For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. See [generative media production](skills/game-build/references/generative-media.md) (Chinese).
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 
@@ -368,7 +368,7 @@ The skills do not clear rights for you, and QA does not certify them. Copyright,
 
 ### Can I get design documents without a build?
 
-Yes. Use the third request above. Each stage of `game-design` stops at its own document: concept selection writes no code or numeric tables, world design writes no file names or tests, and art direction leaves asset production to the build. Even when you do build, the whitebox proves only the selected top risk and produces no QA verdict; the six checks come only from the production build.
+Yes. Use the third request above. Each stage of `game-design` stops at its own document: concept selection writes no code or numeric tables, world design writes no file names or tests, and art direction leaves asset production to the build. Even when you do build, the graybox playtest only shows whether the core loop is legible and playable and produces no QA verdict; the six checks come only from the finished build.
 
 ## Further reading
 

@@ -1,7 +1,7 @@
 # Blender 按需指导的依据 · 2026-09-07
 
 本记录解释为何只补资产交接与实机反馈，不增加 Blender 教程、独立 skill、默认 MCP 或游戏引擎。
-运行时指导见 [game-build 的短参考](../../skills/game-build/references/blender-asset-workflow.md)；本页不要求每次构建加载。
+运行时指导见 [game-build](../../skills/game-build/SKILL.md)；本页不要求每次构建加载。
 
 ## X 调研：可迁移的经验与证据边界
 

@@ -1,0 +1,86 @@
+/* 色与字：墨蓝的夜、鎏金的线、灯火的暖，人物色只用在她本人的名牌、印与院门上。 */
+:root {
+  --ink: #0d0f18;
+  --ink-2: #151929;
+  --ink-3: #1e2338;
+  --ink-4: #2a3050;
+  --line: rgba(217, 180, 106, 0.3);
+  --line-soft: rgba(255, 255, 255, 0.08);
+  --gold: #d9b46a;
+  --gold-2: #f1dcab;
+  --lamp: #ffc970;
+  --rose: #d86a80;
+  --text: #f4eee2;
+  --muted: #aaa7ba;
+  --faint: #6f6e86;
+  --serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --box-alpha: 0.8;
+  --split: 60dvh; /* 竖屏：画面与文字的分界 */
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--ink); overflow: hidden; overscroll-behavior: none; }
+body { color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; touch-action: manipulation; }
+button:disabled { cursor: default; }
+img { display: block; }
+h1, h2, h3, h4, p, ul, ol { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+[hidden] { display: none !important; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--lamp); outline-offset: 3px; border-radius: 6px; }
+
+#app { position: fixed; inset: 0; overflow: hidden; background: var(--ink); }
+.screen { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
+.screen.on { opacity: 1; }
+.ico { width: 20px; height: 20px; flex: none; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 22px;
+  border: 1px solid var(--line); border-radius: 999px; background: rgba(255, 255, 255, 0.04);
+  color: var(--text); font: 15px var(--sans); letter-spacing: 0.12em; transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--gold); }
+.btn.primary { background: linear-gradient(180deg, #e6c27c, #c79a4b); border-color: transparent; color: #241a08; font-weight: 600; }
+.btn.primary:hover { background: linear-gradient(180deg, #f1d08f, #d3a758); }
+.btn.small { min-height: 36px; padding: 0 16px; font-size: 13px; }
+
+/* 小像：名牌与「她记下了」都用人物的脸，外面一圈她的颜色 */
+.who-face, .stamp-face {
+  flex: none; width: 40px; height: 40px; border-radius: 50%; overflow: hidden; object-fit: cover; background: var(--ink-2);
+  box-shadow: 0 0 0 1.5px var(--glow, #e6cf9a), 0 0 0 4px rgba(13, 15, 24, 0.55), 0 0 20px color-mix(in srgb, var(--glow, #e6cf9a) 50%, transparent);
+}
+.who-face img { width: 100%; height: 100%; object-fit: cover; }
+.who-face[hidden] { display: none; }
+
+#toast {
+  position: absolute; left: 50%; top: 22px; z-index: 200; transform: translate(-50%, -16px); max-width: min(86vw, 520px);
+  padding: 10px 20px; border-radius: 999px; background: rgba(13, 15, 24, 0.92); border: 1px solid var(--line);
+  color: var(--gold-2); font: 14px var(--sans); letter-spacing: 0.1em; text-align: center; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+/* 竖屏时章节签在左上角，提示往下让一行，不压在它上面 */
+.portrait #toast { top: 54px; }
+
+#confirm { position: absolute; inset: 0; z-index: 180; display: grid; place-items: center; padding: 20px; background: rgba(6, 7, 12, 0.66); }
+.confirm-card {
+  width: min(420px, 100%); padding: 28px 26px 22px; border-radius: 16px; background: var(--ink-3); border: 1px solid var(--line);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); text-align: center; animation: pop 0.22s ease-out;
+}
+.confirm-msg { font: 600 20px/1.5 var(--serif); letter-spacing: 0.06em; }
+.confirm-detail { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.confirm-actions { display: flex; justify-content: center; gap: 12px; margin-top: 22px; }
+.confirm-actions .btn { min-width: 112px; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes flick { from { transform: translate(-50%, -85%) scale(1, 1); } to { transform: translate(-50%, -85%) scale(0.9, 1.12); } }
+
+/* 减弱动效：设置里打开，或系统要求。只留最短的淡入淡出。 */
+.calm *, .calm *::before, .calm *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.12s !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.12s !important; }
+}

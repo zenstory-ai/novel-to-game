@@ -1,0 +1,270 @@
+/* 读与选：文本框、过场字幕、快捷栏、选项与灯芯、院门、察言观色的工具条、护灯、「她记下了」。 */
+
+/* ---------- 顶角 ---------- */
+#hud { position: absolute; left: 0; right: 0; top: 0; z-index: 14; display: flex; justify-content: space-between; align-items: flex-start; padding: 16px 22px; pointer-events: none; transition: opacity 0.3s; }
+#chapter-tag { padding: 5px 14px 5px 12px; border-left: 2px solid var(--gold); background: linear-gradient(90deg, rgba(13, 15, 24, 0.86), rgba(13, 15, 24, 0.5) 70%, rgba(13, 15, 24, 0)); color: #f3dfae; font: 15px var(--serif); letter-spacing: 0.24em; text-shadow: 0 1px 3px #000; }
+#chapter-tag:empty { display: none; }
+#mode-tag { padding: 4px 14px; border-radius: 999px; background: rgba(13, 15, 24, 0.8); border: 1px solid rgba(255, 201, 112, 0.5); color: var(--lamp); font: 12px var(--sans); letter-spacing: 0.3em; animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: 0.55; } }
+
+/* ---------- 文本框 ---------- */
+#dialogue { position: absolute; left: 0; right: 0; bottom: 0; z-index: 15; padding-bottom: env(safe-area-inset-bottom); transition: opacity 0.3s; --scrim: var(--box-alpha); }
+#dialogue::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; top: -110px; pointer-events: none; transition: opacity 0.4s;
+  background: linear-gradient(to bottom, rgba(10, 11, 19, 0), rgba(10, 11, 19, calc(var(--scrim) * 0.82)) 38%, rgba(10, 11, 19, var(--scrim)) 100%);
+}
+.dlg-inner { position: relative; max-width: 1060px; min-height: 172px; margin: 0 auto; padding: 14px 48px 6px; cursor: pointer; }
+#who { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; animation: pop 0.25s ease-out; }
+#who.plain::before { content: ""; flex: none; width: 3px; height: 22px; border-radius: 2px; background: linear-gradient(180deg, var(--gold-2), var(--gold)); box-shadow: 0 0 10px rgba(230, 207, 154, 0.5); }
+.who-name { color: var(--glow); font: 600 21px/1 var(--serif); letter-spacing: 0.14em; text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); }
+.who-note { color: var(--muted); font: normal 12px/1 var(--sans); letter-spacing: 0.22em; }
+.who-note:empty { display: none; }
+.read-mark { margin-left: 4px; padding: 2px 8px; border: 1px solid var(--line-soft); border-radius: 999px; color: var(--faint); font: 11px var(--sans); letter-spacing: 0.1em; }
+#text { min-height: 3.5em; color: var(--text); font: 400 23px/1.76 var(--serif); letter-spacing: 0.05em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75); text-wrap: pretty; }
+#text .rest { visibility: hidden; }
+#text.fade-in { animation: subIn 0.32s ease-out; }
+@keyframes subIn { from { opacity: 0; transform: translateY(4px); } }
+#next-mark { position: absolute; right: 50px; bottom: 16px; width: 10px; height: 10px; transform: rotate(45deg); background: var(--lamp); box-shadow: 0 0 12px var(--lamp); opacity: 0; }
+#dialogue.waiting #next-mark { opacity: 1; animation: bob 1.3s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(5px) rotate(45deg); opacity: 0.6; } }
+#first-hint { position: absolute; left: 48px; bottom: 10px; color: var(--gold-2); font: 13px var(--sans); letter-spacing: 0.24em; animation: breathe 2s ease-in-out infinite; }
+
+/* 画面在场（CG）：底色让开，画露得多一些 */
+#dialogue[data-kind="cg"] { --scrim: calc(var(--box-alpha) * 0.86); }
+/* 过场字幕：居中压在画面下沿，名牌缩成一枚小签 */
+#dialogue[data-kind="sub"] { --scrim: calc(var(--box-alpha) * 0.7); }
+#dialogue[data-kind="sub"]::before { top: -70px; }
+#dialogue[data-kind="sub"] .dlg-inner { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-height: 132px; padding-bottom: 14px; text-align: center; }
+#dialogue[data-kind="sub"] #who { margin-bottom: 8px; }
+#dialogue[data-kind="sub"] .who-face { width: 28px; height: 28px; }
+#dialogue[data-kind="sub"] #who.plain::before { height: 16px; }
+#dialogue[data-kind="sub"] .who-name { font-size: 16px; }
+#dialogue[data-kind="sub"] .who-note, #dialogue[data-kind="sub"] .read-mark { display: none; }
+#dialogue[data-kind="sub"] #text { min-height: 0; max-width: 900px; font-size: 24px; line-height: 1.6; text-shadow: 0 0 6px #000, 0 2px 4px #000; text-wrap: balance; }
+#dialogue[data-kind="none"]::before, #dialogue[data-kind="none"] .dlg-inner { opacity: 0; pointer-events: none; }
+
+/* ---------- 快捷栏 ---------- */
+#quick { position: relative; display: flex; justify-content: flex-end; gap: 2px; max-width: 1060px; margin: 0 auto; padding: 0 40px 12px; }
+#quick button { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 11px; border-radius: 8px; color: var(--muted); font: 12px var(--sans); letter-spacing: 0.12em; transition: color 0.2s, background 0.2s; }
+#quick button .ico { width: 17px; height: 17px; }
+/* 悬停底色只给能悬停的指针；触屏点过之后不留一块像「开着」的底（第 4 轮盲玩：快进停了按钮却像还亮着） */
+@media (hover: hover) and (pointer: fine) { #quick button:hover:not(.active) { color: var(--text); background: rgba(255, 255, 255, 0.05); } }
+#quick button.active { color: var(--lamp); background: rgba(255, 201, 112, 0.14); box-shadow: inset 0 -2px 0 var(--lamp); }
+#quick button:disabled { opacity: 0.32; }
+#quick button.leave { color: var(--gold-2); border: 1px solid var(--line); }
+
+.ui-hidden #dialogue, .ui-hidden #hud, .ui-hidden #stamps, .ui-hidden #filmbar { opacity: 0; pointer-events: none; }
+
+/* ---------- 选项 ---------- */
+#choices {
+  position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 14px; padding: 60px 24px 222px;
+  background: linear-gradient(to bottom, rgba(8, 9, 16, 0) 12%, rgba(8, 9, 16, 0.5) 52%, rgba(8, 9, 16, 0.5) 66%, rgba(8, 9, 16, 0) 80%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+}
+#choices.on { opacity: 1; }
+#choices.leaving { transition-duration: 0.42s; }
+.choice-list { display: flex; flex-direction: column; gap: 12px; width: min(740px, 100%); pointer-events: auto; }
+/* 五个选项时排成两列，矮下去，不把人脸盖住 */
+html:not(.portrait) .choice-list:has(> .choice:nth-child(5)) { display: grid; grid-template-columns: 1fr 1fr; width: min(1080px, 100%); }
+.choice {
+  position: relative; display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px 22px 14px 16px; text-align: left;
+  border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(90deg, rgba(21, 25, 41, 0.95), rgba(21, 25, 41, 0.84));
+  color: var(--text); font: 19px/1.55 var(--serif); letter-spacing: 0.05em; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  opacity: 0; transform: translateY(10px); animation: rise 0.4s ease-out forwards; transition: transform 0.18s ease, border-color 0.18s, background 0.18s, box-shadow 0.3s, opacity 0.3s;
+}
+.choice:nth-child(2) { animation-delay: 70ms; }
+.choice:nth-child(3) { animation-delay: 140ms; }
+.choice:nth-child(4) { animation-delay: 210ms; }
+.choice:nth-child(5) { animation-delay: 280ms; }
+.choice:hover, .choice:focus-visible { border-color: var(--gold); background: linear-gradient(90deg, rgba(36, 42, 68, 0.97), rgba(30, 35, 56, 0.9)); outline: none; }
+.choice:hover .num, .choice:focus-visible .num { background: var(--gold); color: #241a08; border-color: var(--gold); }
+.choice .num { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border: 1px solid var(--line); border-radius: 50%; color: var(--gold); font: normal 13px/1 var(--sans); transition: all 0.18s; }
+.choice-text { flex: 1; }
+.choice .was { flex: none; padding: 2px 8px; border: 1px solid var(--line-soft); border-radius: 999px; color: var(--faint); font: normal 11px var(--sans); letter-spacing: 0.1em; }
+.choice.silent { color: var(--muted); font-style: normal; }
+.choice.taken { animation: none; opacity: 1; transform: scale(1.015); border-color: var(--lamp); box-shadow: 0 0 0 1px var(--lamp), 0 0 46px rgba(255, 201, 112, 0.38); }
+.choice.gone { animation: none; opacity: 0; transform: translateY(4px); }
+
+/* 限时：选项下面一条烧短的灯芯，火苗跟着烧到头 */
+.wick { width: min(740px, 100%); padding: 16px 18px 10px; border-radius: 12px; background: rgba(13, 15, 24, 0.78); pointer-events: auto; --left: 1; }
+.wick-line { position: relative; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); }
+.wick-line i { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--left) * 100%); border-radius: 2px; background: linear-gradient(90deg, #6f5226, var(--lamp)); }
+.wick-line b {
+  position: absolute; left: calc(var(--left) * 100%); top: 50%; width: 14px; height: 22px; transform: translate(-50%, -85%);
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(ellipse at 50% 78%, #fff 0 14%, #ffe2a0 32%, #ff9d42 62%, rgba(255, 120, 40, 0) 74%);
+  filter: drop-shadow(0 0 8px #ffb45a); animation: flick 0.16s ease-in-out infinite alternate;
+}
+.wick-note { margin-top: 10px; color: #c9c5d6; font: 12px var(--sans); letter-spacing: 0.22em; text-align: center; text-shadow: 0 1px 3px #000; }
+.wick.urgent .wick-line i { background: linear-gradient(90deg, #7a2f2a, #ff8f5e); }
+.wick.urgent .wick-note { color: #ffb08a; }
+.wick.paused .wick-line b { animation-play-state: paused; opacity: 0.5; }
+.wick.paused .wick-note::after { content: " · 暂停"; }
+/* 灯芯烧尽：选项灰下去、火苗熄掉，下面写明「你没有开口」，停一下再演沉默的后果 */
+#choices.expired .choice { opacity: 0.45; filter: saturate(0.4); cursor: default; }
+#choices.expired .wick-line b { opacity: 0; }
+#choices.expired .wick-note { color: #ffd2b8; font-size: 14px; letter-spacing: 0.16em; }
+/* 察言观色解锁的选项：选项文字下面一行小字，写明是看见了哪一处才说得出口 */
+.choice .clue { display: flex; align-items: center; gap: 6px; margin-top: 4px; color: var(--gold); font: normal 12px/1.4 var(--sans); letter-spacing: 0.08em; opacity: 0.9; }
+.choice .clue .ico { width: 14px; height: 14px; flex: none; }
+.choice.clued { border-color: rgba(217, 180, 106, 0.55); }
+
+/* 分岔夜：五扇院门。亮灯的可进，熄灯的只剩轮廓 */
+#choices.branch { inset: 0; z-index: 30; justify-content: center; gap: 26px; padding: 40px 28px; pointer-events: auto; background: rgba(7, 8, 14, 0.86); backdrop-filter: blur(6px); }
+.doors-title { color: var(--gold-2); font: 600 28px var(--serif); letter-spacing: 0.5em; text-indent: 0.5em; }
+.doors { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; width: min(1340px, 100%); }
+.door {
+  position: relative; aspect-ratio: 2 / 3; max-height: 68dvh; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: #000; text-align: left;
+  opacity: 0; transform: translateY(14px); animation: rise 0.5s ease-out forwards; transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s;
+}
+.door:nth-child(2) { animation-delay: 80ms; }
+.door:nth-child(3) { animation-delay: 160ms; }
+.door:nth-child(4) { animation-delay: 240ms; }
+.door:nth-child(5) { animation-delay: 320ms; }
+.door img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease, filter 0.3s; }
+.door.lit:hover, .door.lit:focus-visible { transform: translateY(-8px); border-color: var(--glow); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 60px color-mix(in srgb, var(--glow) 38%, transparent); outline: none; }
+.door.lit:hover img, .door.lit:focus-visible img { transform: scale(1.05); }
+.door.dark img { filter: brightness(0.24) saturate(0.25); }
+.door-lamp { position: absolute; top: 10px; right: 10px; padding: 3px 10px; border: 1px solid rgba(255, 201, 112, 0.55); border-radius: 999px; background: rgba(13, 15, 24, 0.72); color: var(--lamp); font: 11px var(--sans); letter-spacing: 0.16em; }
+.door.dark .door-lamp { border-color: var(--line-soft); color: var(--faint); }
+.door-info { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 5px; padding: 56px 14px 14px; background: linear-gradient(to bottom, rgba(8, 9, 16, 0), rgba(8, 9, 16, 0.94) 58%); }
+.door-info b { color: #fff; font: 600 21px var(--serif); letter-spacing: 0.2em; }
+.door-info em { color: var(--glow); font: normal 12px var(--sans); letter-spacing: 0.2em; }
+.door-info q { margin-top: 4px; color: #d9d4c7; font: 13px/1.65 var(--serif); quotes: "「" "」"; }
+.door.dark .door-info b, .door.dark .door-info em { color: var(--faint); }
+.door.taken { animation: none; opacity: 1; transform: translateY(-8px) scale(1.03); border-color: var(--lamp); box-shadow: 0 0 0 1px var(--lamp), 0 0 70px rgba(255, 201, 112, 0.45); }
+.door.gone { animation: none; opacity: 0.12; transform: none; }
+
+/* ---------- 察言观色的工具条 ---------- */
+#look-ui { position: absolute; inset: 0 0 auto 0; z-index: 22; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+#look-ui.on { opacity: 1; }
+.look-bar { position: absolute; top: 16px; right: 22px; display: flex; align-items: center; gap: 12px; pointer-events: auto; }
+.look-left { display: flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; background: rgba(13, 15, 24, 0.82); border: 1px solid var(--line); color: var(--gold-2); font: 13px var(--sans); letter-spacing: 0.14em; }
+.look-left i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--gold); }
+.look-left i.lit { background: var(--lamp); box-shadow: 0 0 8px var(--lamp); }
+#look-done { background: var(--text); color: #1b1a22; border-color: transparent; font-weight: 600; }
+#look-done:hover { background: #fff; }
+.look-chips { display: none; }
+#game[data-beat="look"] #hud { opacity: 0; }
+/* 端详时看见的那句话压在画面下沿，整块文本区（不只是文字）都让点击穿过去，细节框被字盖住也点得中；快捷栏照常可点 */
+#game[data-beat="look"] #dialogue, #game[data-beat="look"] .dlg-inner { pointer-events: none; }
+#game[data-beat="look"] #quick button { pointer-events: auto; }
+
+/* ---------- 雨夜护灯 ---------- */
+#hold { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; touch-action: none; cursor: pointer; opacity: 0; transition: opacity 0.5s; }
+#hold.on { opacity: 1; }
+.hold-scrim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, rgba(6, 7, 12, 0.3), rgba(6, 7, 12, 0.9) 70%); transition: background 0.8s; }
+.hold-body { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px; text-align: center; }
+.lantern { position: relative; width: 176px; height: 278px; --level: 1; }
+.lantern::before {
+  content: ""; position: absolute; left: 50%; top: 46%; width: 460px; height: 460px; margin: -230px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 196, 110, 0.5), rgba(255, 170, 80, 0.14) 38%, rgba(255, 170, 80, 0) 66%);
+  opacity: var(--level); transform: scale(calc(0.5 + var(--level) * 0.5)); transition: opacity 0.15s linear, transform 0.15s linear;
+}
+.lantern > svg:first-of-type { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.lantern path { fill: none; stroke: var(--gold); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.lantern .l-frame { fill: rgba(255, 214, 150, calc(0.05 + var(--level) * 0.22)); }
+.lantern .l-rib { stroke-width: 1; opacity: 0.55; }
+.flame {
+  position: absolute; left: 50%; top: 53%; width: 36px; height: 58px; margin-left: -18px; margin-top: -48px; transform-origin: 50% 100%;
+  transform: scale(calc(0.35 + var(--level) * 0.65)); border-radius: 50% 50% 50% 50% / 64% 64% 36% 36%;
+  background: radial-gradient(ellipse at 50% 76%, #fff 0 16%, #ffe6a8 34%, #ffa040 64%, rgba(255, 120, 40, 0) 76%);
+  filter: drop-shadow(0 0 14px #ffb45a); animation: lampFlick 0.14s ease-in-out infinite alternate; transition: transform 0.15s linear;
+}
+@keyframes lampFlick { from { margin-left: -19px; opacity: 0.86; } to { margin-left: -17px; opacity: 1; } }
+#hold.holding .flame { animation-duration: 0.5s; }
+.ring { position: absolute; left: 50%; top: 46%; width: 250px; height: 250px; margin: -125px; transform: rotate(-90deg); pointer-events: none; }
+.ring circle { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 2; }
+.ring .ring-fill { stroke: var(--lamp); stroke-width: 3; stroke-linecap: round; filter: drop-shadow(0 0 6px var(--lamp)); }
+.hold-prompt { max-width: 520px; margin-top: 18px; font: 21px/1.7 var(--serif); letter-spacing: 0.08em; text-shadow: 0 1px 4px #000; }
+.hold-how { padding: 6px 16px; border: 1px solid var(--line-soft); border-radius: 999px; background: rgba(6, 7, 12, 0.55); color: var(--text); font: 16px var(--sans); letter-spacing: 0.16em; }
+.hold-how.nudge { border-color: var(--lamp); animation: nudge 0.5s ease-out; }
+@keyframes nudge { 0%, 100% { transform: none; } 30% { transform: scale(1.08); } }
+.hold-how b { color: var(--lamp); font-weight: 600; }
+#hold.kept .hold-scrim { background: radial-gradient(ellipse at 50% 42%, rgba(255, 190, 100, 0.22), rgba(6, 7, 12, 0.7) 70%); }
+#hold.lost .hold-scrim { background: rgba(4, 5, 9, 0.96); }
+#hold.lost .flame, #hold.lost .lantern::before { opacity: 0; transition: opacity 0.25s; animation: none; }
+#hold.kept .hold-how, #hold.lost .hold-how, #hold.kept .ring, #hold.lost .ring { opacity: 0; }
+
+/* ---------- 「她记下了」 ---------- */
+#stamps { position: absolute; top: 58px; right: 22px; z-index: 35; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; transition: opacity 0.3s; }
+.stamp {
+  display: flex; align-items: center; gap: 10px; padding: 8px 18px 8px 8px; border-radius: 10px; background: rgba(13, 15, 24, 0.88);
+  border: 1px solid color-mix(in srgb, var(--glow) 55%, transparent); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  color: var(--text); font: 15px var(--serif); letter-spacing: 0.1em; opacity: 0; transform: translateX(26px); transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.stamp.on { opacity: 1; transform: none; }
+.stamp.out { opacity: 0; transform: translateY(-8px); }
+.stamp .stamp-face { animation: stampIn 0.5s 0.15s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.stamp.cold { border-color: rgba(160, 170, 200, 0.4); color: #c9cbd9; }
+.stamp.cold .stamp-face { filter: grayscale(0.75) brightness(0.8); box-shadow: 0 0 0 1.5px rgba(160, 170, 200, 0.55), 0 0 0 4px rgba(13, 15, 24, 0.55); }
+@keyframes stampIn { from { opacity: 0; transform: scale(2.1) rotate(-12deg); } }
+
+/* ---------- 竖屏：上面是画，下面是字 ---------- */
+.portrait #dialogue { top: var(--split); display: flex; flex-direction: column; background: linear-gradient(180deg, var(--ink-3), var(--ink-2) 40%); border-top: 1px solid var(--line); }
+.portrait #dialogue::before { display: none; }
+.portrait .dlg-inner { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 18px 8px; max-width: none; margin: 0; width: 100%; }
+.portrait #text { font-size: 18px; line-height: 1.75; min-height: 0; text-shadow: none; }
+.portrait .who-name { font-size: 18px; }
+.portrait .who-face { width: 32px; height: 32px; }
+.portrait #next-mark { right: 20px; bottom: 12px; }
+.portrait #first-hint { position: static; margin-top: 12px; }
+.portrait #dialogue[data-kind="sub"] .dlg-inner { align-items: flex-start; justify-content: flex-start; text-align: left; }
+.portrait #dialogue[data-kind="sub"] #text { font-size: 18px; text-shadow: none; text-wrap: pretty; }
+.portrait #dialogue[data-kind="none"] .dlg-inner { opacity: 0; }
+.portrait #quick { justify-content: space-around; gap: 0; padding: 4px 4px 6px; border-top: 1px solid var(--line-soft); max-width: none; width: 100%; }
+.portrait #quick button { flex: 1; flex-direction: column; gap: 3px; min-height: 48px; padding: 4px 0; font-size: 10px; letter-spacing: 0.06em; }
+.portrait #quick button .ico { width: 20px; height: 20px; }
+.portrait #quick [data-act="qload"], .portrait #quick [data-act="hide"] { display: none; }
+.portrait.ui-hidden #dialogue, .portrait .ui-hidden #dialogue { opacity: 1; pointer-events: auto; }
+.portrait #hud { padding: 10px 12px; }
+.portrait #chapter-tag { font-size: 12px; }
+/* 竖屏的提示条在 54px 处居中，印往下让开，不与提示叠在一起 */
+.portrait #stamps { top: 104px; right: 10px; }
+.portrait .stamp { font-size: 13px; padding: 6px 12px 6px 6px; }
+.portrait #choices { inset: 0 0 calc(100dvh - var(--split)) 0; justify-content: flex-end; padding: 44px 12px 12px; gap: 8px; background: linear-gradient(to bottom, rgba(8, 9, 16, 0.2), rgba(8, 9, 16, 0.78) 60%); overflow-y: auto; pointer-events: auto; }
+.portrait .choice-list { gap: 8px; }
+.portrait .choice { padding: 11px 14px 11px 12px; font-size: 16px; line-height: 1.5; gap: 10px; border-radius: 10px; }
+/* 窄屏四个以上选项（第 5 轮盲玩：五个长选项把画面挤成顶上一条）：收紧行距与字号，画面多露出一截 */
+.portrait .choice-list:has(> .choice:nth-child(4)) { gap: 6px; }
+.portrait .choice-list:has(> .choice:nth-child(4)) .choice { padding: 7px 12px 7px 10px; font-size: 14px; line-height: 1.4; }
+.portrait .wick { padding: 12px 12px 6px; }
+.portrait .wick-note { margin-top: 8px; font-size: 11px; letter-spacing: 0.1em; }
+.portrait #choices.branch { inset: 0; justify-content: center; padding: 20px 14px; gap: 14px; }
+.portrait .doors-title { font-size: 20px; }
+.portrait .doors { grid-template-columns: 1fr; gap: 9px; }
+.portrait .door { aspect-ratio: auto; height: auto; min-height: 96px; max-height: none; border-radius: 12px; }
+.portrait .door img { object-position: 50% 42%; }
+.portrait .door-info { position: relative; inset: auto; min-height: 96px; justify-content: center; gap: 3px; padding: 10px 76px 10px 16px; background: linear-gradient(90deg, rgba(8, 9, 16, 0.94) 58%, rgba(8, 9, 16, 0.5) 84%, rgba(8, 9, 16, 0.15)); }
+.portrait .door-info b { font-size: 18px; }
+/* 门后那句话读全（第 4 轮盲玩：西厢那句被截成「咱们当…」） */
+.portrait .door-info q { margin-top: 0; font-size: 12px; line-height: 1.5; }
+.portrait .door.lit:hover { transform: none; }
+.portrait .look-bar { top: 10px; right: 10px; }
+.portrait .look-chips { position: absolute; left: 0; right: 0; bottom: calc(100% - var(--split) + 10px); display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0 12px; pointer-events: auto; }
+.portrait .chip { flex: none; min-height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(13, 15, 24, 0.86); color: var(--gold-2); font: 13px var(--sans); letter-spacing: 0.08em; }
+.portrait .chip.seen { border-color: var(--rose); color: #fff; }
+.portrait .chip:disabled:not(.seen) { opacity: 0.4; }
+.portrait .lantern { transform: scale(0.82); }
+.portrait .hold-prompt { font-size: 18px; }
+
+/* 横着拿的手机：矮屏下把文本框与选项收紧 */
+@media (max-height: 520px) and (orientation: landscape) {
+  .dlg-inner { min-height: 112px; padding: 8px 28px 2px; }
+  #text { font-size: 18px; line-height: 1.6; min-height: 2.6em; }
+  #who { margin-bottom: 4px; }
+  #quick { padding: 0 20px 6px; }
+  #quick button span { display: none; }
+  #choices { padding: 8px 20px 96px; gap: 6px; }
+  #game[data-beat="choice"] .dlg-inner { min-height: 0; padding-top: 4px; }
+  #game[data-beat="choice"] #who { display: none; }
+  #game[data-beat="choice"] #text { min-height: 0; font-size: 15px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .wick { padding: 10px 14px 6px; }
+  .wick-note { margin-top: 6px; }
+  .choice { padding: 7px 14px 7px 10px; font-size: 15px; }
+  .choice-list { gap: 6px; }
+  .doors-title { font-size: 18px; }
+  #choices.branch { gap: 10px; padding: 12px 20px; }
+  .door { max-height: 70dvh; }
+  .door-info { padding: 40px 10px 10px; gap: 3px; }
+  .door-info b { font-size: 17px; }
+  .door-info q { margin-top: 2px; font-size: 11px; line-height: 1.45; }
+}

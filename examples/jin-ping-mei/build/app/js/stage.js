@@ -1,70 +1,110 @@
-// 舞台：背景交叉淡入、立绘进出场与差分、说话人高亮、CG 与成人画面门控、剧情过场、待机影像与回落推镜、存档缩略图合成。
-import { BG, CG, CAST, EXPRESSIONS, FILM, CUT } from './story/index.js';
-import { config, ageConfirmed } from './store.js';
+// 舞台：把运行时的舞台状态画出来。背景、立绘、天气、CG、剧情过场与待机影像各占一层；
+// 每张画面都是一个 16:9 的「画框」，由这里按视口算好位置（横屏铺满裁切，竖屏时 CG 与过场完整显示、四周垫模糊底），
+// 所以察言观色的细节框只要按百分比放进画框，任何宽高比下都对得上。
+import { BG, CG, CAST, CUT, FILM, CURTAIN, spriteSrc } from './story/registry.js';
+import { settings, ageConfirmed } from './store.js';
 import { audio } from './audio.js';
+import { Particles } from './fx/particles.js';
 
+const FRAME = 16 / 9;
 const $ = (sel) => document.querySelector(sel);
-const POS_X = { left: 0.24, center: 0.5, right: 0.76 };
-const FOCUS_ZOOM = 1.3;
+const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 
-export const spriteSrc = (who, expr) => `assets/sprite/${who}/${EXPRESSIONS.includes(expr) ? expr : 'neutral'}.webp`;
-// 构图偏右、左侧留白的 CG：按 focus 裁到人物那一侧（舞台、鉴赏大图、缩略图共用）
-export const cgClass = (id) => (CG[id]?.focus ? `focus-${CG[id].focus}` : '');
-export const cgVisible = (id) => Boolean(id && CG[id] && (!CG[id].adult || (config.adult && ageConfirmed())));
+export const calm = () => settings.calm || Boolean(reduced?.matches);
+// 动态影像（过场与待机影像）能不能播
+export const filmOk = () => settings.film && !calm();
+export const cgAllowed = (id) => Boolean(id && CG[id] && (!CG[id].adult || (settings.adult && ageConfirmed())));
+export const isPortrait = () => window.innerWidth / window.innerHeight < 0.8;
 
-// ---------- 动态影像 ----------
-// 影像以那张 CG／背景为首尾帧循环；不能播（关闭、减弱动态、加载失败）时，原图做慢推镜
-const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-export const filmEnabled = () => config.film && !reducedMotion?.matches;
+// 自定义属性里的 url() 会按样式表所在目录解析，所以先换成绝对地址
+const cssUrl = (src) => `url("${new URL(src, document.baseURI).href}")`;
 
-export function attachFilm(box, id) {
-  box.querySelector('video.film')?.remove();
-  box.classList.remove('live', 'kb');
-  const film = id && FILM[id];
-  if (!film || !filmEnabled()) { if (id && (film || box.id === 'cg') && !reducedMotion?.matches) box.classList.add('kb'); return; }
-  const v = document.createElement('video');
-  v.className = `film ${box.querySelector('img')?.className ?? ''}`.trim(); // 跟 CG 一样按 focus 裁切
-  Object.assign(v, { muted: true, loop: true, playsInline: true, autoplay: true, preload: 'auto', src: film.src });
-  v.setAttribute('aria-hidden', 'true');
-  v.addEventListener('playing', () => box.classList.add('live'), { once: true });
-  v.addEventListener('error', () => { v.remove(); box.classList.remove('live'); box.classList.add('kb'); }, { once: true });
-  box.append(v);
-  v.play?.().catch(() => {}); // 自动播放被拦时停在首帧，与原图一致
+let els = null;
+let weather = null;
+let shown = { bg: undefined, cg: undefined, cut: undefined };
+let bgFront = 0;
+let cutListeners = {};
+// 过场影像停住的两种原因：菜单开着等（menu），字幕还没读完、停在镜头交界处等（hold）。两样都没有才播
+const cutStop = { menu: false, hold: false };
+const cutShouldPlay = () => !cutStop.menu && !cutStop.hold;
+function applyCutPlay() {
+  const v = els?.cutPic.querySelector('video');
+  if (!v || v.ended) return;
+  if (cutShouldPlay()) v.play().catch(() => {}); else v.pause();
 }
 
-let shownBg = null;
-let activeBgLayer = 'a';
-let shownCg = null;
+function makePic(extra = '') {
+  const pic = document.createElement('div');
+  pic.className = `pic ${extra}`.trim();
+  pic.innerHTML = '<img alt="" draggable="false">';
+  return pic;
+}
 
-export function syncStage(stage, { instant = false, speaker = null } = {}) {
-  // 背景
-  if (stage.bg !== shownBg) {
-    shownBg = stage.bg;
-    const next = activeBgLayer === 'a' ? 'b' : 'a';
-    const nextEl = $(`#bg-${next}`);
-    const prevEl = $(`#bg-${activeBgLayer}`);
-    nextEl.style.backgroundImage = stage.bg && BG[stage.bg] ? `url("${BG[stage.bg]}")` : 'none';
-    nextEl.dataset.bg = stage.bg ?? '';
-    nextEl.classList.toggle('night', /night|chamber|rain/.test(stage.bg ?? ''));
-    const fast = instant || stage.bgFx === 'cut';
-    nextEl.style.transitionDuration = prevEl.style.transitionDuration = fast ? '0ms' : '';
-    nextEl.classList.add('on');
-    prevEl.classList.remove('on');
-    attachFilm(nextEl, stage.bg);
-    setTimeout(() => { if (!prevEl.classList.contains('on')) attachFilm(prevEl, null); }, fast ? 0 : 1000);
-    activeBgLayer = next;
-    if (stage.bgFx === 'flash' && !instant) flash();
-  }
+// 按画框比例把 .pic 放进舞台：cover 铺满裁切，contain 完整显示
+function fit(pic) {
+  if (!pic) return;
+  const box = els.stage.getBoundingClientRect();
+  const contain = pic.dataset.fit === 'contain';
+  const wide = box.width / box.height > FRAME;
+  const w = contain === wide ? box.height * FRAME : box.width;
+  const h = w / FRAME;
+  Object.assign(pic.style, { width: `${w}px`, height: `${h}px`, left: `${(box.width - w) / 2}px`, top: `${(box.height - h) / 2}px` });
+}
 
-  // 立绘：按 id 增量更新，新登场者淡入上滑，离场者淡出
-  const layer = $('#sprites');
+function fitAll() {
+  if (!els) return;
+  const portrait = isPortrait();
+  document.documentElement.classList.toggle('portrait', portrait);
+  for (const pic of els.bgPics) { pic.dataset.fit = 'cover'; fit(pic); }
+  for (const pic of [els.cgPic, els.cutPic]) { pic.dataset.fit = portrait ? 'contain' : 'cover'; fit(pic); }
+  weather?.resize();
+}
+
+// 待机影像：压在那张静帧上循环，开播后淡入；不能播时静帧自己慢慢推近
+function attachFilm(pic, id) {
+  pic.querySelector('video.film')?.remove();
+  pic.classList.remove('live', 'kb');
+  const film = id && FILM[id];
+  if (!id || calm()) return;
+  if (!film || !settings.film) { pic.classList.add('kb'); return; }
+  const v = document.createElement('video');
+  v.className = 'film';
+  Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'auto', src: film.src });
+  v.setAttribute('aria-hidden', 'true');
+  v.addEventListener('playing', () => pic.classList.add('live'), { once: true });
+  v.addEventListener('error', () => { v.remove(); pic.classList.remove('live'); pic.classList.add('kb'); }, { once: true });
+  pic.append(v);
+  v.play().catch(() => {});
+}
+
+function syncBg(stage, instant) {
+  if (stage.bg === shown.bg) return;
+  shown.bg = stage.bg;
+  const next = els.bgPics[1 - bgFront];
+  const prev = els.bgPics[bgFront];
+  bgFront = 1 - bgFront;
+  const src = stage.bg ? BG[stage.bg] : '';
+  const img = next.querySelector('img');
+  img.src = src || '';
+  img.hidden = !src;
+  next.dataset.id = stage.bg ?? '';
+  const quick = instant || stage.bgFx === 'cut';
+  for (const pic of [next, prev]) pic.classList.toggle('no-anim', quick);
+  next.classList.add('on');
+  prev.classList.remove('on');
+  attachFilm(next, src ? stage.bg : null);
+  setTimeout(() => { if (!prev.classList.contains('on')) attachFilm(prev, null); }, quick ? 0 : 1100);
+  els.stage.dataset.night = /night|chamber|rain|dawn/.test(stage.bg ?? '') ? 'yes' : 'no';
+}
+
+function syncSprites(stage, speaker, instant) {
+  const layer = els.sprites;
   const want = stage.sprites;
   layer.dataset.count = Object.keys(want).length;
   for (const el of [...layer.children]) {
-    if (!want[el.dataset.who] && !el.classList.contains('leaving')) {
-      el.classList.add('leaving');
-      setTimeout(() => el.remove(), instant ? 0 : 420);
-    }
+    if (want[el.dataset.who] || el.classList.contains('leaving')) continue;
+    el.classList.add('leaving');
+    setTimeout(() => el.remove(), instant ? 0 : 420);
   }
   for (const [who, { pos, expr }] of Object.entries(want)) {
     let el = layer.querySelector(`.sprite[data-who="${who}"]:not(.leaving)`);
@@ -72,147 +112,100 @@ export function syncStage(stage, { instant = false, speaker = null } = {}) {
       el = document.createElement('div');
       el.className = `sprite entering${instant ? ' no-anim' : ''}`;
       el.dataset.who = who;
-      el.innerHTML = `<img alt="${CAST[who].full}" draggable="false">`;
-      el.querySelector('img').src = spriteSrc(who, expr);
       el.dataset.expr = expr;
+      el.style.setProperty('--glow', CAST[who].glow);
+      el.innerHTML = `<img alt="${CAST[who].full}" draggable="false" src="${spriteSrc(who, expr)}">`;
       layer.append(el);
-      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering')));
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('entering', 'no-anim')));
     }
     el.dataset.pos = pos;
     if (el.dataset.expr !== expr) {
-      // 差分交叉淡入：新图叠在上面淡入后替换
-      const prev = el.querySelector('img:last-child');
+      // 换表情：新差分叠在旧的上面淡入，身体逐像素对齐所以只看见脸在变
+      const old = [...el.querySelectorAll('img')];
       const img = document.createElement('img');
       img.alt = CAST[who].full;
       img.draggable = false;
       img.className = 'swap';
       img.src = spriteSrc(who, expr);
       el.append(img);
-      requestAnimationFrame(() => img.classList.add('in'));
-      setTimeout(() => { prev.remove(); img.className = ''; }, instant ? 0 : 260);
+      requestAnimationFrame(() => requestAnimationFrame(() => img.classList.add('in')));
+      setTimeout(() => { old.forEach((o) => o.remove()); img.className = ''; }, instant ? 0 : 280);
       el.dataset.expr = expr;
-      if (expr === 'surprised' && !instant) jolt(el);
+      if (expr === 'surprised' && !instant && !calm()) replay(el, 'jolt');
     }
-    const speaking = speaker && speaker === who;
-    el.classList.toggle('speaking', Boolean(speaking));
+    const speaking = Boolean(speaker && speaker === who);
+    el.classList.toggle('speaking', speaking);
     el.classList.toggle('dim', Boolean(speaker && CAST[speaker] && !speaking));
   }
-
-  $('#weather').className = stage.weather ?? '';
-
-  syncCg(stage);
-  syncCut(stage, instant);
 }
 
-// ---------- 剧情过场 ----------
-// 选择之后演出后果的短片：有声、只播一次，播完停在末帧，后面的台词接着在这一帧上读。
-// 读档、回退、快进、关闭动态影像或文件缺失时，直接显示末帧定格（poster），字幕与选择一样不缺。
-let shownCut = null;
-export const cutVideo = () => document.querySelector('#cut video');
-const posterOf = (id) => `assets/cut/${id}.jpg`;
-
-function syncCut(stage, instant) {
-  if (stage.cut === shownCut) return;
-  shownCut = stage.cut;
-  const box = $('#cut');
-  box.querySelector('video')?.remove();
-  audio.duck(false);
-  $('#game').classList.toggle('cut-on', Boolean(stage.cut));
-  if (!stage.cut || !CUT[stage.cut]) { box.classList.remove('on', 'kb', 'ended'); return; }
-  const img = box.querySelector('img');
-  img.src = posterOf(stage.cut);
-  box.classList.remove('ended', 'kb');
-  box.classList.add('on');
-  if (instant || !filmEnabled()) { box.classList.add('ended'); if (!reducedMotion?.matches) box.classList.add('kb'); return; }
-  const v = document.createElement('video');
-  Object.assign(v, { playsInline: true, preload: 'auto', src: CUT[stage.cut].src, volume: Math.min(1, config.se / 100) });
-  v.addEventListener('playing', () => audio.duck(true));
-  v.addEventListener('ended', () => { box.classList.add('ended'); audio.duck(false); });
-  v.addEventListener('error', () => { v.remove(); box.classList.add('ended', 'kb'); audio.duck(false); }, { once: true });
-  box.append(v);
-  // 有声自动播放被拦时改成静音播，画面照常演完
-  v.play?.().catch(() => { v.muted = true; v.play?.().catch(() => { box.classList.add('ended'); }); });
-}
-
-// 鉴赏里重看一段过场：独立的播放器，不动舞台状态
-export function playCutInto(box, id) {
-  box.innerHTML = '';
-  const v = document.createElement('video');
-  Object.assign(v, { controls: true, playsInline: true, autoplay: true, src: CUT[id].src, poster: posterOf(id), volume: Math.min(1, config.se / 100) });
-  v.addEventListener('playing', () => audio.duck(true));
-  for (const e of ['pause', 'ended', 'emptied']) v.addEventListener(e, () => audio.duck(false));
-  box.append(v);
-  return v;
-}
-
-// CG：成人 CG 仅在年龄确认且设置开启时加载；否则以帘幕代替
 function syncCg(stage) {
-  if (stage.cg === shownCg) return;
-  shownCg = stage.cg;
-  const box = $('#cg');
-  $('#game').classList.toggle('cg-on', Boolean(stage.cg));
-  if (!stage.cg) { box.classList.remove('on'); setTimeout(() => { if (!box.classList.contains('on')) attachFilm(box, null); }, 800); return; }
-  const visible = cgVisible(stage.cg);
-  const img = box.querySelector('img');
-  img.src = visible ? CG[stage.cg].src : '';
-  img.className = visible ? cgClass(stage.cg) : '';
-  box.classList.toggle('veiled', !visible);
-  box.classList.add('on');
-  attachFilm(box, visible && !CG[stage.cg].adult ? stage.cg : null);
-  if (!visible) onVeil?.();
+  if (stage.cg === shown.cg) return;
+  shown.cg = stage.cg;
+  const pic = els.cgPic;
+  els.stage.classList.toggle('cg-on', Boolean(stage.cg));
+  if (!stage.cg) {
+    els.cgPlane.classList.remove('on');
+    setTimeout(() => { if (!els.cgPlane.classList.contains('on')) attachFilm(pic, null); }, 700);
+    return;
+  }
+  // 成人 CG 只在年龄确认且设置开启时才请求；否则挂帘幕
+  const ok = cgAllowed(stage.cg);
+  const src = ok ? CG[stage.cg].src : CURTAIN;
+  pic.querySelector('img').src = src;
+  pic.classList.toggle('focus-right', ok && CG[stage.cg].focus === 'right');
+  els.cgPlane.classList.toggle('veiled', !ok);
+  els.cgPlane.style.setProperty('--backdrop', cssUrl(src));
+  els.cgPlane.classList.add('on');
+  attachFilm(pic, ok && !CG[stage.cg].adult ? stage.cg : null);
 }
 
-let onVeil = null;
-export const setVeilHook = (fn) => { onVeil = fn; };
-// 设置里改了「成人画面」：正在显示的 CG 立刻按新设置重画
-export function refreshCg(stage) {
-  shownCg = undefined;
-  syncCg(stage);
-  const bgEl = document.querySelector('.bg.on');
-  if (bgEl) attachFilm(bgEl, stage.bg);
-}
-
-// 当前 CG 在屏幕上实际铺开的矩形（object-fit: cover 裁切后），察言观色的细节框按它换算
-export function cgRect() {
-  const box = $('#cg').getBoundingClientRect();
-  const img = $('#cg img');
-  const iw = img.naturalWidth || 16;
-  const ih = img.naturalHeight || 9;
-  const scale = Math.max(box.width / iw, box.height / ih);
-  const w = iw * scale;
-  const h = ih * scale;
-  return { left: box.left + (box.width - w) / 2, top: box.top + (box.height - h) / 2, width: w, height: h };
-}
-
-export function resetStage() {
-  shownBg = undefined;
-  shownCg = undefined;
-  shownCut = undefined;
-  $('#sprites').innerHTML = '';
-  $('#cut video')?.remove();
-  $('#cut').classList.remove('on', 'ended', 'kb');
-  $('#game').classList.remove('cut-on');
+// 剧情过场：有声、只播一次，播完停在末帧。instant（读档、回退、快进）或影像不可用时直接显示末帧定格。
+function syncCut(stage, instant) {
+  if (stage.cut === shown.cut) return;
+  shown.cut = stage.cut;
+  const pic = els.cutPic;
+  const plane = els.cutPlane;
+  const old = pic.querySelector('video');
+  if (old) { old.pause(); old.removeAttribute('src'); old.load(); old.remove(); }
   audio.duck(false);
+  els.stage.classList.toggle('cut-on', Boolean(stage.cut));
+  plane.classList.remove('ended', 'live', 'held');
+  cutStop.hold = false;
+  pic.classList.remove('kb');
+  if (!stage.cut || !CUT[stage.cut]) { plane.classList.remove('on'); cutListeners.gone?.(); return; }
+  const cut = CUT[stage.cut];
+  pic.querySelector('img').src = cut.poster;
+  plane.style.setProperty('--backdrop', cssUrl(cut.poster));
+  plane.classList.toggle('no-anim', Boolean(instant));
+  plane.classList.add('on');
+  const still = () => {
+    plane.classList.add('ended');
+    plane.classList.remove('live');
+    if (!calm()) pic.classList.add('kb');
+    audio.duck(false);
+  };
+  if (instant || !filmOk()) { still(); return; }
+  const v = document.createElement('video');
+  Object.assign(v, { playsInline: true, preload: 'auto', src: cut.src, volume: settings.voice / 100 });
+  v.addEventListener('playing', () => { plane.classList.add('live'); audio.duck(true); });
+  v.addEventListener('ended', () => { still(); cutListeners.ended?.(); }, { once: true });
+  v.addEventListener('error', () => { v.remove(); still(); cutListeners.ended?.(); }, { once: true });
+  pic.append(v);
+  // 有声自动播放被浏览器拦下时改成静音播，画面照常演完。
+  // 只认「不许自动播放」这一种拒绝：菜单恰好在 play() 落定之前打开时，pause() 也会让它以 AbortError 落空，那时不该再播起来
+  if (!cutShouldPlay()) return;
+  v.play().catch((err) => {
+    if (err?.name !== 'NotAllowedError' || !v.isConnected) return;
+    v.muted = true;
+    if (cutShouldPlay()) v.play().catch(() => { v.remove(); still(); cutListeners.ended?.(); });
+  });
 }
 
-export function jolt(el) {
-  el.classList.remove('jolt');
+function replay(el, cls) {
+  el.classList.remove(cls);
   void el.offsetWidth;
-  el.classList.add('jolt');
-}
-
-export function flash() {
-  const f = $('#flash');
-  f.classList.remove('go');
-  void f.offsetWidth;
-  f.classList.add('go');
-}
-
-export function shake() {
-  const s = $('#stage');
-  s.classList.remove('shake');
-  void s.offsetWidth;
-  s.classList.add('shake');
+  el.classList.add(cls);
 }
 
 const imageCache = new Map();
@@ -228,41 +221,125 @@ function loadImage(src) {
   return imageCache.get(src);
 }
 
-// 存档缩略图：用当前背景＋立绘（或非成人 CG）重新合成，绝不截入成人画面
-export async function thumbnail(stage) {
-  const W = 320;
-  const H = 180;
-  const canvas = document.createElement('canvas');
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#1d1a24';
-  ctx.fillRect(0, 0, W, H);
-  const cover = (img, zoom = 0) => {
-    // zoom>0：与舞台 .focus-right 相同，只取右侧 1/zoom 宽、居中 1/zoom 高
-    const sw = zoom ? img.width / zoom : img.width;
-    const sh = zoom ? img.height / zoom : img.height;
-    const sx = img.width - sw;
-    const sy = (img.height - sh) / 2;
-    const s = Math.max(W / sw, H / sh);
-    ctx.drawImage(img, sx, sy, sw, sh, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s);
-  };
-  const cut = stage.cut && CUT[stage.cut] ? await loadImage(posterOf(stage.cut)) : null;
-  const cg = !cut && stage.cg && CG[stage.cg] && !CG[stage.cg].adult ? await loadImage(CG[stage.cg].src) : null;
-  if (cut) cover(cut);
-  else if (cg) cover(cg, CG[stage.cg].focus ? FOCUS_ZOOM : 0);
-  else {
-    const bg = stage.bg && BG[stage.bg] ? await loadImage(BG[stage.bg]) : null;
-    if (bg) cover(bg);
-    if (!stage.cg && !cut) {
-      for (const [who, { pos, expr }] of Object.entries(stage.sprites)) {
+export const stage = {
+  init() {
+    const root = $('#stage');
+    root.innerHTML = `
+      <div id="scene">
+        <div class="plane" id="bg-plane"></div>
+        <canvas id="weather" aria-hidden="true"></canvas>
+        <div id="sprites"></div>
+      </div>
+      <div class="plane" id="cg-plane"></div>
+      <div class="plane" id="cut-plane"></div>
+      <div id="shade"></div>`;
+    els = {
+      stage: root, scene: $('#scene'), sprites: $('#sprites'), cgPlane: $('#cg-plane'), cutPlane: $('#cut-plane'),
+      bgPics: [makePic(), makePic()], cgPic: makePic(), cutPic: makePic(),
+    };
+    $('#bg-plane').append(...els.bgPics);
+    els.cgPlane.append(els.cgPic);
+    els.cutPlane.append(els.cutPic);
+    weather = new Particles($('#weather'));
+    window.addEventListener('resize', fitAll);
+    new ResizeObserver(fitAll).observe(root);
+    // 指针视差：背景与立绘朝反方向挪一点，像隔着一层景深
+    root.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || calm()) return;
+      const box = root.getBoundingClientRect();
+      els.scene.style.setProperty('--px', ((e.clientX - box.left) / box.width - 0.5).toFixed(3));
+      els.scene.style.setProperty('--py', ((e.clientY - box.top) / box.height - 0.5).toFixed(3));
+    });
+    fitAll();
+  },
+
+  // 按运行时的舞台状态重画；speaker 是当前说话的人物 id
+  sync(state, { instant = false, speaker = null } = {}) {
+    syncBg(state, instant);
+    syncSprites(state, speaker, instant);
+    weather.set(calm() ? null : state.weather);
+    syncCg(state);
+    syncCut(state, instant);
+    // 被 CG 或过场盖住的那层影像先停下，省一路解码
+    const covered = Boolean(state.cg || state.cut);
+    for (const pic of els.bgPics) { const v = pic.querySelector('video.film'); if (v) { if (covered) v.pause(); else v.play().catch(() => {}); } }
+  },
+
+  reset() {
+    shown = { bg: undefined, cg: undefined, cut: undefined };
+    els.sprites.innerHTML = '';
+    this.sync({ bg: null, bgFx: 'cut', sprites: {}, cg: null, cut: null, weather: null }, { instant: true });
+    shown = { bg: undefined, cg: undefined, cut: undefined };
+  },
+
+  // 设置改了「成人画面／动态影像／减弱动效」：按新设置把当前画面重画一遍（过场不重播，回落为定格）
+  refresh(state) {
+    shown = { bg: undefined, cg: undefined, cut: undefined };
+    this.sync(state, { instant: true });
+    document.documentElement.classList.toggle('calm', calm());
+  },
+
+  onCut(listeners) { cutListeners = listeners; },
+  cutVideo() { return els.cutPic.querySelector('video'); },
+  // 过场是否正在播（还没到末帧）
+  cutLive() { const v = this.cutVideo(); return Boolean(v && !v.ended && !els.cutPlane.classList.contains('ended')); },
+  setVoiceVolume() { const v = this.cutVideo(); if (v) v.volume = settings.voice / 100; },
+  pauseCut(on) { cutStop.menu = Boolean(on); applyCutPlay(); },
+  // 字幕还没读完：把影像停在镜头交界处（画面慢慢推近一点，不显得死），读完再接着演
+  holdCut(on) {
+    if (cutStop.hold === Boolean(on)) return;
+    cutStop.hold = Boolean(on);
+    els.cutPlane.classList.toggle('held', cutStop.hold && !calm());
+    applyCutPlay();
+  },
+  cutHeld() { return cutStop.hold; },
+
+  // 察言观色用：CG 画框（细节框按百分比放进去），以及观察时让静帧不再推近
+  lookFrame() { return els.cgPic; },
+  steady(on) { els.cgPic.classList.toggle('steady', on); },
+
+  shake() { if (!calm()) replay(els.stage, 'shake'); },
+
+  // 存档缩略图：按舞台状态重新合成，成人 CG 一律画成帘幕，绝不截入成人画面
+  async thumbnail(state) {
+    const W = 320;
+    const H = 180;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const g = canvas.getContext('2d');
+    g.fillStyle = '#14121c';
+    g.fillRect(0, 0, W, H);
+    const cover = (img, zoomRight = false) => {
+      // 取图像中央的 16:9；focus-right 的 CG 与舞台一样放大后靠右
+      let sw = Math.min(img.width, img.height * FRAME);
+      let sh = sw / FRAME;
+      let sx = (img.width - sw) / 2;
+      let sy = (img.height - sh) / 2;
+      if (zoomRight) { sx += sw - sw / 1.3; sy += (sh - sh / 1.3) / 2; sw /= 1.3; sh /= 1.3; }
+      g.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+    };
+    if (state.cut && CUT[state.cut]) {
+      const img = await loadImage(CUT[state.cut].poster);
+      if (img) cover(img);
+    } else if (state.cg && CG[state.cg]) {
+      const adult = CG[state.cg].adult;
+      const img = await loadImage(adult ? CURTAIN : CG[state.cg].src);
+      if (img) cover(img, !adult && CG[state.cg].focus === 'right');
+    } else {
+      const bg = state.bg && BG[state.bg] ? await loadImage(BG[state.bg]) : null;
+      if (bg) cover(bg);
+      const X = { left: 0.26, center: 0.5, right: 0.74 };
+      for (const [who, { pos, expr }] of Object.entries(state.sprites)) {
         const img = await loadImage(spriteSrc(who, expr));
         if (!img) continue;
-        const h = H * 1.15;
+        const h = H * 1.25;
         const w = img.width * (h / img.height);
-        ctx.drawImage(img, W * POS_X[pos] - w / 2, H * 0.06, w, h);
+        g.drawImage(img, W * X[pos] - w / 2, H * 0.08, w, h);
       }
     }
-  }
-  try { return canvas.toDataURL('image/jpeg', 0.72); } catch { return null; }
-}
+    try { return canvas.toDataURL('image/jpeg', 0.7); } catch { return null; }
+  },
+
+  preload(srcs) { for (const src of srcs) if (src) loadImage(src); },
+};
