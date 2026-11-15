@@ -11,6 +11,31 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Changed
+
+- Rebuilt both example games from scratch with their product briefs, source bibles, story content and number tables kept: Journey to the West goes from 27 scripts, 10 stylesheets and a dozen special-purpose QA scripts to one layered codebase (data, rules, orchestration, presentation) with three rule regressions and one end-to-end browser verification script, and gains a painted title screen and six-frame walk cycles for the four pilgrims; Jin Ping Mei gets a new engine, stage and menu book around the unchanged script and its 58 voiced cutscenes ([decision note](.agents/notes/implemented/feature/2026-11-14-examples-rebuilt-from-scratch.md)).
+- Both examples were reworked after the owner played them: no single Chinese character stands in for an icon any more (character portraits on Jin Ping Mei's name plates and memory stamps, painted five-element icons and a scroll marker in Journey to the West); nothing in either game scrolls (battle sub-menus are fixed grids with a detail pane and paging, panels and the menu book paginate by measured height, settings are split into four tabs); Jin Ping Mei's age gate is a painted mansion gate with a door-opening transition and still requests no game media before confirmation; and Journey to the West's four scene maps are stitched offline into single seamless images along minimum-cost seams with multi-band blending (`build/art/compose_maps.py`).
+- `art-direction-method.md` now carries those playtest rules: icons are shapes or portraits with a short label, never a lone character or emoji; interfaces do not scroll, they paginate or use a grid with a detail pane; and gate pages such as the title and age confirmation need real artwork.
+- Slimmed every skill for frontier models: instructions are kept only when they carry a product or adaptation decision, a stage handoff format, or a lesson learned from a real run, and generic craft tutorials (Blender and sprite pipelines, debugging loops, UI detail rules, browser-tool walkthroughs) are gone. The bundle shrinks from 24 Markdown files and about 39.8k characters to 15 files and about 23.8k. `novel-to-game` and `novel-game-analyze` are now a single `SKILL.md` each, `numeric-design-method.md` is folded into `world-design-method.md`, and `game-build`'s media references are merged into `generative-media.md` ([decision note](.agents/notes/implemented/simplification/2026-11-14-frontier-model-skill-slimming.md)).
+- The whitebox stage is now simply the first step of `game-build`: it takes the core loop to a graybox that plays from start to an ending with the real controls and space, an isolated session plays it from scratch, the story and level volume are revised around what players actually chase, and when `targetFinish` is `graybox` the approved graybox goes straight to QA without `ART_DIRECTION.md`; otherwise art direction is set and art produced in bulk. `director` stops after the graybox playtest instead of the whitebox one, and the two fixed budget reviews become a signal-triggered rule: when cost keeps climbing, cut scope before the budget is gone and record the cut as a non-goal, never lower the bar.
+- `BUILD_BRIEF.md` uses a shorter four-section skeleton (goal, core fidelity, run, limits) without `buildStage`, `buildPath`, or `modelCheck`; `game-qa` reads only its `# 运行` section before the blind playtest, and the official `qa/verification.json` is produced only by `game-qa` after that playtest.
+- The skill attention budget in `scripts/validate_repo.py` now counts characters instead of lines (26,000 total, 3,600 per `SKILL.md`, 2,000 per reference), because long lines had made the line budget meaningless.
+- Swept all skills, plugin manifests, guides, and example planning/build/art/QA documents to replace remaining AI buzzwords, corporate jargon, and literal translation calques with direct, natural phrasing while keeping established game and film/TV terms.
+- ClawHub packages in this release: `game-build` 1.6.0, `game-design` 1.1.0, `game-qa` 1.2.0, `novel-game-analyze` 1.2.0, `novel-to-game` 1.3.0.
+
+### Removed
+
+- Jin Ping Mei's idle loop for the compound establishing shot (36 loops remain): the script says dusk with lamps lit and the loop was a daytime frame, so the scene now uses a repainted dusk still.
+- Journey to the West's sixteen overlapping terrain tiles from the deployed app (moved to `build/art/terrain-tiles/` as the source of the stitched maps), its per-topic QA scripts and their evidence folders, and `qa/first-run-audit.md`.
+- `skills/novel-to-game/references/` (`intake-method.md`, `pipeline-contract.md`), `skills/novel-game-analyze/references/gameability-protocol.md`, `skills/game-design/references/numeric-design-method.md`, and `skills/game-build/references/` `baked-sprite-workflow.md`, `blender-asset-workflow.md`, `cutscene-production.md`, `generative-media-pipeline.md`, `playable-model-contract.md` and `tts-production-contract.md`; what still matters from them lives in the files named above.
+
+### Fixed
+
+- Aligned `novel-to-game/SKILL.md` and `scripts/validate_repo.py` with `game-build` for `targetFinish: graybox` projects so approved grayboxes hand off directly to `game-qa` without requiring `design/ART_DIRECTION.md`.
+- Fixed three interaction races in Jin Ping Mei (`choices.js`, `look.js`, `hold.js`, `cards.js`, `game.js`): quick-loading during the 460 ms choice-closing animation no longer wipes the newly rendered choices, loading or restarting mid-interaction tears down active inspection/lamp-hold/card sessions and listeners, and fast-forward pauses while the menu book is open and resumes on close.
+- Fixed Journey to the West's main-story fire-soldier capture check (`game/story.js`) so catching `huobao` again after an earlier bounty capture still triggers the keep-or-release choice and its fire-vein clue reward.
+- Polished player-facing in-game copy in both examples to remove modern workplace phrasing, fourth-wall meta-notes, and mobile-game abbreviations, and verified Jin Ping Mei end to end in a fresh isolated `game-qa` blind playtest (`PASS`).
+
 ## [0.8.0] - 2026-11-12
 
 ### Added

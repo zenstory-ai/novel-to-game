@@ -2,11 +2,36 @@
   "schemaVersion": 3,
   "status": "PASS",
   "verify": {
-    "command": "cd examples/jin-ping-mei/build/app && python3 test/verify_visual.py --write-evidence",
-    "exitCode": 0
+    "command": "cd examples/jin-ping-mei/build/app && python3 test/verify.py --write-evidence",
+    "exitCode": 0,
+    "suites": {
+      "narrow-390x844": {
+        "viewport": "390x844",
+        "reached": "第一章限时抉择与其后的过场",
+        "elementsOutsideViewport": 0,
+        "fastForwardStop": {
+          "buttonIdleAfterStop": true,
+          "toast": "前面是没读过的文字，快进停在这里"
+        },
+        "continueToast": "自动存档停在最近的选择处，从这里接着走",
+        "doorLinesReadable": [
+          "吴月娘",
+          "潘金莲",
+          "李瓶儿",
+          "孟玉楼",
+          "孙雪娥"
+        ],
+        "backlog": {
+          "lines": 37,
+          "pages": "6 / 6",
+          "flippedTo": "5 / 6",
+          "afterReloadContinue": 37
+        }
+      }
+    }
   },
   "completeRun": {
-    "id": "jin-ping-mei-film-2026-11",
+    "id": "jin-ping-mei-rebuild-2026-11",
     "cleanContext": true,
     "terminal": "yue_good",
     "restart": "prologue-first-line",
@@ -23,35 +48,35 @@
   "limitations": [
     {
       "scope": "路径覆盖",
-      "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
-    },
-    {
-      "scope": "成人画面",
-      "reason": "权威路径选择不进入亲密场景，成人 CG 的显示与帘幕替代只做过人工抽查。"
-    },
-    {
-      "scope": "视口与浏览器",
-      "reason": "只在 1440×900 Chromium 运行；窄屏布局与其他浏览器未纳入本次运行。"
-    },
-    {
-      "scope": "影游交互",
-      "reason": "浏览器只走一次限时沉默、两处细节与一次护灯成功；其余沉默分支、细节组合与护灯失败由 test/lint_script.mjs 穷举证明可达。"
-    },
-    {
-      "scope": "声音",
-      "reason": "自动化只确认曲目与音效文件能加载，不判断配乐与音效的听感。"
+      "reason": "浏览器只走吴月娘良缘一条完整路径；其余 15 个结局由 npm run verify:model 穷举全部选择证明可达，没有逐一在浏览器里走。"
     },
     {
       "scope": "剧情过场",
-      "reason": "浏览器沿月娘良缘一条路线经过其上每一段过场，只把第一段完整看完；其余过场在这条路线上被回车提前推过，另外几十段只由 test/lint_script.mjs 核对登记、文件与字幕句数。过场的演技、口型与人物声音是否前后一致靠人工抽看，不写成 PASS。"
+      "reason": "这条路径经过 9 段过场，只把第一段从头看完并核对字幕换句，其余用两次空格跳过；另外 49 段只核对了登记、文件与字幕句数。演技、口型与人物声音是否前后一致没有自动判断。"
     },
     {
-      "scope": "待机影像",
-      "reason": "浏览器只确认两场察言观色的待机影像实际开播；其余段落只离线核对了首尾帧与原图对位。"
+      "scope": "影游交互",
+      "reason": "只走了一次限时沉默、两场察言观色（花园看一处，门前看两处、其中一处用鼠标点金框下半）、一次护灯成功；其余沉默分支、细节组合与护灯失败由 verify:model 穷举证明可达。"
+    },
+    {
+      "scope": "成人画面",
+      "reason": "只核对了年龄拦截与开关逻辑（年龄门前零媒体请求、关掉时挂帘幕、同意之前零请求、同意之后才请求），不判断成人 CG 的画面内容；证据截图一律不含成人画面。"
+    },
+    {
+      "scope": "视口与浏览器",
+      "reason": "完整路径只在 1440×900 的 Chromium 里走；390×844 只走到第一个限时抉择并核对布局，没有窄屏通关，也没有在真机、Safari 或 Firefox 上运行。"
+    },
+    {
+      "scope": "声音",
+      "reason": "只确认过场影像不是静音、音量大于零，配乐文件请求成功；听感没有自动判断。"
     },
     {
       "scope": "体验判断",
-      "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人或节奏是否合适。"
+      "reason": "自动化只证明能启动、渲染、输入、走到结局并重开，不判断剧情是否动人、节奏是否合适。"
+    },
+    {
+      "scope": "盲玩覆盖",
+      "reason": "独立新玩家初次盲玩在 1440×900 桌面 Chromium 完整走通序章、共通线六章至潘金莲良缘结局「琵琶不冷」及重开清零，并在 390×844 竖屏抽检首屏、标题、序章对话与菜单各分页；其余四位女主个人线、另外 15 个结局及真机 Safari/Firefox 未人工逐线手玩。"
     }
   ]
 }

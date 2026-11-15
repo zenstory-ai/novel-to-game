@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "note": "生成式美术资产的来源记录。此文件不是 build/asset-ledger.json（那份有严格 schema，只在 graybox 以上要求）；这里只诚实记录法宝二选一用的两张物件图是怎么来的、由什么条件出来的、以及可否复现。",
+  "note": "生成式美术资产的来源记录。此文件不是 build/asset-ledger.json（那份有严格 schema，只在 graybox 以上要求）；这里只诚实记录法宝二选一用的两张物件图与盲玩返工补做的小须弥山底景是怎么来的、由什么条件出来的、以及可否复现。",
   "generatedAt": "2026-08-11",
   "generator": {
     "tool": "codex-cli built-in imagegen skill",
@@ -30,7 +30,7 @@
     ]
   },
   "pairwiseExclusion": {
-    "why": "两张图是同一个二选一里的兄弟图，必须互相排除身份标记。第一版 dingfengdan 被否决：它把碟子摆在一块蓝金织锦上，而蓝金织锦正是 bihuojin 的本体；同时把「风」画成了水青色的浪卷母题，与五行里的水撞色。逐张看都合格，并排看才发现两张在讲同一样东西。",
+    "why": "两张图是同一个二选一里的兄弟图，两张图的标志元素必须错开、互不撞车。第一版 dingfengdan 被否决：它把碟子摆在一块蓝金织锦上，而蓝金织锦正是 bihuojin 的本体；同时把「风」画成了水青色的浪卷母题，与五行里的水撞色。逐张看都合格，并排看才发现两张在讲同一样东西。",
     "rejectedAttempt": {
       "asset": "dingfengdan（第一版）",
       "defects": [
@@ -43,12 +43,17 @@
       "dingfengdan": {
         "leadColour": "朱 + 墨 + 暗木",
         "motif": "风线撞上无形之壁戛然而止",
-        "excludedInPrompt": ["任何布料 / 织物", "水青色"]
+        "excludedInPrompt": [
+          "任何布料 / 织物",
+          "水青色"
+        ]
       },
       "bihuojin": {
         "leadColour": "水青 + 金线",
         "motif": "火舌自下方逼近后向两侧偏开",
-        "excludedInPrompt": ["丹药 / 碟盏"]
+        "excludedInPrompt": [
+          "丹药 / 碟盏"
+        ]
       }
     },
     "acceptance": "两张并排验收，确认主色不相交、母题不相交、不含对方本体。"
@@ -60,7 +65,10 @@
       "rule": "速度 +6，免疫减速",
       "subject": "青瓷浅碟里一粒朱红丹药，碟子置于暗木座上；风线自左上斜入，在碟前齐齐截断",
       "bytes": 89828,
-      "size": [512, 512]
+      "size": [
+        512,
+        512
+      ]
     },
     {
       "path": "app/assets/treasure/bihuojin.jpg",
@@ -68,7 +76,49 @@
       "rule": "全队火系受伤 −25%",
       "subject": "一方折叠的蓝金织锦，翻起一角露出回纹里子；朱红火舌自下缘逼近后向两侧偏开",
       "bytes": 163882,
-      "size": [512, 512]
+      "size": [
+        512,
+        512
+      ]
+    },
+    {
+      "path": "app/assets/bg/xumi.jpg",
+      "use": "灵吉菩萨授宝对白的底景（小须弥山）",
+      "generatedAt": "2026-11-14",
+      "reason": "盲玩发现灵吉对白借用芭蕉洞外战斗背景 cuiyun.jpg，与「一扇吹出五万里」矛盾",
+      "reference": "app/assets/bg/cuiyun.jpg（只作画风与色系参考）",
+      "subject": "云海之上的禅院云台：右侧朱柱金瓦小殿与格扇门，菩提树、松与铜香炉，左侧云中远峰，前景空阔石台留给立绘",
+      "forbidden": [
+        "洞门、嵌在山崖里的石门与通向山崖的石阶",
+        "芭蕉",
+        "人物",
+        "文字、印章、水印"
+      ],
+      "bytes": 402622,
+      "size": [
+        1536,
+        1024
+      ],
+      "postProcessing": "原图 1536×1024 PNG 用 Pillow 转 JPEG quality 82；原始 PNG 不入库"
+    },
+    {
+      "path": "app/assets/bg/huoyan-ash.jpg",
+      "use": "结局第 3、4 句（一扇息火、二扇生风）的过渡地景：火灭成灰、风卷灰烟、西路露出",
+      "generatedAt": "2026-11-14",
+      "reason": "盲玩第 3 轮发现结局字幕写「火光顷刻退去」「清风卷走灰烬」时背景仍是满山烈火的 huoyan.jpg，到落雨才换图",
+      "reference": "app/assets/bg/huoyan.jpg 与 app/assets/bg/huoyan-rain.jpg（同构图、同画风的前后两态，取中间态）",
+      "subject": "与火焰山同一构图的山谷：无明火，红崖烧出黑痕，灰烟与灰烬被强风吹向右侧，天色灰琥珀向右转晴，石板西路清楚露出并覆着薄灰",
+      "forbidden": [
+        "明火",
+        "人物",
+        "文字、印章、水印"
+      ],
+      "bytes": 537689,
+      "size": [
+        1536,
+        1024
+      ],
+      "postProcessing": "原图 1536×1024 PNG 用 sips 转 JPEG quality 82；原始 PNG 不入库。第 3 句另叠一层灰雾（CSS），第 4 句灰雾散开，表现「风卷走灰烬」"
     }
   ],
   "postProcessing": {

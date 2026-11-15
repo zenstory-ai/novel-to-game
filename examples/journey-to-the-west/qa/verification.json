@@ -2,15 +2,15 @@
   "schemaVersion": 3,
   "status": "PASS",
   "verify": {
-    "command": "python3 test/verify.py",
+    "command": "cd examples/journey-to-the-west/build/app && python3 test/verify.py",
     "exitCode": 0
   },
   "completeRun": {
-    "id": "journey-to-the-west-main-path",
+    "id": "three-fans-main-path",
     "cleanContext": true,
-    "terminal": "ending: 三借芭蕉扇 · 完",
-    "restart": "new campaign title",
-    "evidence": "qa/evidence/automated.json"
+    "terminal": "done",
+    "restart": "ask",
+    "evidence": "qa/evidence/run.json"
   },
   "checks": {
     "launch": "PASS",
@@ -22,28 +22,32 @@
   },
   "limitations": [
     {
-      "scope": "visual coverage",
-      "reason": "The complete campaign uses accelerated presentation on desktop at 1440x900. Normal-speed cinematics, mobile viewports and reduced-motion behaviour were not recorded."
+      "scope": "路径覆盖",
+      "reason": "浏览器只走一条路线：稳阵、定风丹、先试边火、留用火妖、悟空探路并深入、点钢棒箍、识破假八戒；其余抉择分支与寻宝随机局面由 npm test 的规则回归覆盖，未逐一在浏览器渲染。"
     },
     {
-      "scope": "tested runtime",
-      "reason": "The run used local Chromium automation; other browsers and device classes were not exercised."
+      "scope": "演出速度",
+      "reason": "为缩短时长使用公开的 ?fast=1&seed=42 参数：演出与行走被压缩，规则与随机序列不变；常速下的节奏与手感未在本次运行中计时。"
     },
     {
-      "scope": "treasure branches",
-      "reason": "The complete browser run exercised Wukong's successful deep route. Safe settlement, forced retreat, Bajie, and Sha Seng are covered by deterministic rule tests rather than separate browser runs."
+      "scope": "视口与浏览器",
+      "reason": "只在 1280×800 的 Chromium（无头）中运行；390 px 窄屏与其他浏览器未纳入这条命令。"
     },
     {
-      "scope": "input coverage",
-      "reason": "The complete campaign run used mixed mouse and keyboard input; scenes were walked by clicking sprites and the quest tracker's auto-path. Arrow-key walking, minimap clicks and a keyboard-only campaign were not recorded."
+      "scope": "声音",
+      "reason": "无头浏览器不出声：只确认音频文件请求没有失败，不判断听感。"
     },
     {
-      "scope": "scene-layer systems",
-      "reason": "The browser run covers one bounty ring. Shops, gear swaps, money skill study, rage stunts and the level cap are covered by node rule tests and a manual playtest only."
+      "scope": "体验判断",
+      "reason": "这条命令只证明能启动、渲染、输入、打通主线并重开，不判断是否好玩、数值是否平衡。"
     },
     {
-      "scope": "balance",
-      "reason": "Grinding to the +1 level cap makes mob fights noticeably easier; only the final boss staying unwinnable on full auto is asserted."
+      "scope": "真机与其他浏览器",
+      "reason": "未在任何手机真机、Safari 或 Firefox 上运行；390×844 窄屏只在第 5 轮盲玩中用无头 Chromium 重走标题、主界面、面板与首战，未打通全程。"
+    },
+    {
+      "scope": "第 5 轮盲玩",
+      "reason": "初次盲玩（1280×800，常速）打到结局「火息路开 · 继续西行」，刷新恢复与通关重开均通过；未发现 P0/P1/P2，仅记 P3 措辞与遮挡细节，见 qa/playtest-report.md。盲玩未覆盖：强攻破势后的二借台词呼应、开局即选避火锦、主线火兵战收服后的留用/放归抉择、残图深入、受骗交扇、战败重打。"
     }
   ]
 }

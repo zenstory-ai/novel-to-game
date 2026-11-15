@@ -2,91 +2,86 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light" />
-  <meta name="description" content="《金瓶梅·风月总账》：18+ 古风恋爱互动影游。那年春天，五扇门都为你留过灯——一言一动皆有当场回响，五条人物长线通往十六种结局。" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#14121c" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="《金瓶梅·风月总账》：18+ 古风恋爱互动影游。那年春天，五扇门都为你留过灯。每个要紧的选择之后，都有一段剧情过场把后果演给你看；五条人物路线，十六个结局。" />
   <title>金瓶梅·风月总账</title>
-  <link rel="icon" href="data:," />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="preload" as="image" href="assets/cg/group/title_new_guofeng.webp" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314121c'/%3E%3Cpath d='M11 6h10M16 6v3M10 9h12l2 5v8l-2 5H10l-2-5v-8z' fill='none' stroke='%23d9b46a' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M16 14c2.4 2.2 3 4.4 1.7 6.4a2.1 2.1 0 0 1-3.4 0c-1.3-2-.7-4.200 1.700-6.400z' fill='%23f3c66b'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/stage.css" />
+  <link rel="stylesheet" href="css/play.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+  <link rel="stylesheet" href="css/book.css" />
 </head>
 <body>
   <div id="app">
-    <section id="gate" class="screen" hidden>
+    <!-- 年龄门：在游戏的一切画面与声音之前；确认之前只请求门面这一张不含人物的宅门图 -->
+    <section id="gate" class="screen" hidden aria-labelledby="gate-title">
+      <div class="gate-art" aria-hidden="true"><img src="assets/ui/gate.webp" alt="" decoding="async"></div>
+      <canvas id="gate-petals" aria-hidden="true"></canvas>
+      <div class="gate-veil" aria-hidden="true"></div>
       <div class="gate-card">
-        <div class="gate-seal">18+</div>
-        <p class="gate-game">《金瓶梅·风月总账》</p>
-        <h1>本作仅限成年人</h1>
-        <p>本作仅供成年人游玩，内容含成人恋爱关系、轻度裸露、亲密场景与成熟主题。可进入亲密场景的人物，均为虚构的成年角色。</p>
+        <p class="gate-kicker">古风恋爱互动影游</p>
+        <p class="gate-logo"><span>金瓶梅</span><small>风月总账</small></p>
+        <div class="gate-rule" aria-hidden="true"><i></i></div>
+        <h1 id="gate-title"><b class="age-mark">18+</b><span>本作仅限成年人</span></h1>
+        <p class="gate-text"><span>内含成年男女的情感纠葛与亲密情节。</span><span>登场人物均为虚构的成年人。</span></p>
         <div class="gate-actions">
-          <button id="btn-age-yes" class="btn primary">我已成年，进入</button>
-          <button id="btn-age-no" class="btn">离开</button>
+          <button id="age-yes" class="btn primary" type="button">我已成年，推门进去</button>
+          <button id="age-no" class="btn" type="button">离开</button>
         </div>
+        <p class="gate-note" id="gate-note" hidden>已为你停在门外。关闭这个页面即可离开。</p>
       </div>
     </section>
 
     <section id="title" class="screen" hidden>
-      <div class="title-bg"></div>
-      <canvas id="petals"></canvas>
+      <div class="title-art"><div class="pic"><img alt="" draggable="false" /></div></div>
+      <canvas id="title-petals" aria-hidden="true"></canvas>
       <div class="title-veil"></div>
-      <div class="title-logo">
+      <header class="title-logo">
+        <p class="title-kicker">古风恋爱互动影游</p>
         <h1><span>金瓶梅</span><small>风月总账</small></h1>
-        <p>那年春天，五扇门都为你留过灯。</p>
-      </div>
+        <p class="title-line">那年春天，五扇门都为你留过灯。</p>
+      </header>
       <nav class="title-menu" aria-label="标题菜单">
-        <button data-act="new">开始游戏</button>
-        <button data-act="continue">继续</button>
-        <button data-act="load">读取</button>
-        <button data-act="extras">鉴赏</button>
-        <button data-act="config">设置</button>
+        <button type="button" data-act="new"><i></i>开始游戏</button>
+        <button type="button" data-act="continue"><i></i>继续</button>
+        <button type="button" data-act="load"><i></i>读取存档</button>
+        <button type="button" data-act="tree"><i></i>剧情树</button>
+        <button type="button" data-act="gallery"><i></i>鉴赏</button>
+        <button type="button" data-act="settings"><i></i>设置</button>
       </nav>
-      <p class="title-foot">18+ · 古风恋爱互动影游</p>
+      <p class="title-foot"><span class="tag18">18+</span><span id="title-progress"></span></p>
     </section>
 
     <section id="game" class="screen" hidden>
-      <div id="stage">
-        <div class="bg" id="bg-a"></div>
-        <div class="bg" id="bg-b"></div>
-        <div id="sprites"></div>
-        <div id="weather"></div>
-        <div id="cg"><img alt="" /></div>
-        <div id="cut"><img alt="" /></div>
-        <div id="flash"></div>
+      <div id="stage"></div>
+      <div id="filmbar" aria-hidden="true"><i></i></div>
+      <div id="hud">
+        <div id="chapter-tag"></div>
+        <div id="mode-tag" hidden></div>
       </div>
-      <div id="ui">
-        <div id="textbox">
-          <div id="nameplate"></div>
-          <p id="text"></p>
-          <span id="next-ind" aria-hidden="true"></span>
-          <span id="hint" hidden>点击画面或按空格继续 · 右键隐藏文字 · 滚轮上翻回看</span>
-        </div>
-        <nav id="quickmenu" aria-label="快捷菜单">
-          <button data-act="peek">心意</button>
-          <button data-act="tree">剧情树</button>
-          <button data-act="backlog">回看</button>
-          <button data-act="rollback">上一选项</button>
-          <button data-act="qsave">快存</button>
-          <button data-act="qload">快读</button>
-          <button data-act="save">存档</button>
-          <button data-act="load">读档</button>
-          <button data-act="auto">自动</button>
-          <button data-act="skip">快进</button>
-          <button data-act="config">设置</button>
-          <button data-act="hide">隐藏</button>
-          <button data-act="menu">菜单</button>
-        </nav>
-      </div>
-      <div id="choices" tabindex="-1" hidden></div>
-      <div id="look" hidden></div>
+      <div id="choices" hidden></div>
+      <div id="look-ui" hidden></div>
       <div id="hold" hidden></div>
-      <div id="stamp" hidden aria-live="polite"></div>
+      <div id="stamps" aria-live="polite"></div>
+      <div id="dialogue" data-kind="none">
+        <div class="dlg-inner">
+          <div id="who" hidden><span class="who-face"><img alt=""></span><span class="who-name"></span><em class="who-note"></em><span class="read-mark" hidden>已读</span></div>
+          <p id="text" aria-live="polite"></p>
+          <span id="next-mark" aria-hidden="true"></span>
+          <p id="first-hint" hidden>点击画面或按空格继续</p>
+        </div>
+        <nav id="quick" aria-label="快捷操作"></nav>
+      </div>
       <div id="card" hidden></div>
-      <div id="mode-badge" hidden></div>
     </section>
 
-    <section id="overlay" hidden></section>
-    <div id="toast" hidden></div>
+    <section id="book" hidden></section>
+    <div id="confirm" hidden></div>
+    <div id="toast" aria-live="polite"></div>
   </div>
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

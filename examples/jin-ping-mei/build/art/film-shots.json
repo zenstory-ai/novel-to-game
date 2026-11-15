@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "usage": "《金瓶梅·风月总账》影游版动态影像台账：每段以已批准的 CG 或背景为首帧与尾帧，图生视频生成 6 秒无声循环短片；运行时键与 story/index.js 的 FILM 一致。",
+  "usage": "《金瓶梅·风月总账》影游版动态影像台账：每段以已批准的 CG 或背景为首帧与尾帧，图生视频生成 6 秒无声循环短片；运行时键与 story/registry.js 的 FILM 一致。",
   "method": "图生视频，首尾帧同图以保证循环；动作与锁定按 design/ART_DIRECTION.md 第 8 节。生成后转码为 1280×720 H.264、无音轨、faststart。非 16:9 的静帧（背景 3:2、人物初见 1.6:1）先居中裁成 16:9 再当首尾帧，与运行时铺满 16:9 画面时的裁切一致。",
   "adult": "成人 CG 不生成影像。",
   "lookScenes": "garden_chest 与 gate 带察言观色热区，影像里细节物件的位置必须与原图一致，否则热区会对不上。",
@@ -31,7 +31,8 @@
       "resolution": "720p",
       "audio": false,
       "output": "app/assets/film/dinner.mp4",
-      "status": "done"
+      "status": "retired",
+      "retired": "2026-11-14 盲玩修复第 2 轮：晚饭 CG 换成暮色掌灯版（cg/group/dinner_dusk.webp），白天版的待机影像首尾帧对不上，停用并删除 mp4；晚饭 CG 改为静图加慢推镜。"
     },
     {
       "id": "intro_yue",
@@ -507,20 +508,6 @@
       "resolution": "720p",
       "audio": false,
       "output": "app/assets/film/kitchen.mp4",
-      "status": "done"
-    },
-    {
-      "id": "compound",
-      "kind": "bg",
-      "firstFrame": "app/assets/bg/compound_new_guofeng.webp",
-      "lastFrame": "app/assets/bg/compound_new_guofeng.webp",
-      "motion": "西门宅院全景，暮色里树影轻摇，屋檐下灯笼轻晃，花瓣飘落。",
-      "prompt": "西门宅院全景，暮色里树影轻摇，屋檐下灯笼轻晃，花瓣飘落。镜头完全固定，第一人称视角，不推拉、不摇移、不换景。保持原画的二维新国风插画笔触、人物五官、发髻与发簪、服饰纹样、器物位置和色光完全不变；不新增人物，不出现文字、字幕、水印或现代物件。动作幅度小而自然，首尾画面与原图一致，可无缝循环。",
-      "durationSeconds": 6,
-      "aspectRatio": "16:9",
-      "resolution": "720p",
-      "audio": false,
-      "output": "app/assets/film/compound.mp4",
       "status": "done"
     },
     {

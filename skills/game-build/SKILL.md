@@ -1,38 +1,30 @@
 ---
 name: game-build
-description: "Build a risk-matched whitebox or the approved production game by adapting to the host environment's available rendering stacks, 3D/2D generators, and modeling tools. Turn GAME_DESIGN and ART_DIRECTION into a concise BUILD_BRIEF and a runnable game candidate with deterministic self-checks. Use for prototype the riskiest design question, implement the approved game design, or turn this design into a running 2D, 2.5D, or 3D game. 游戏构建执行。结合本机与宿主环境实际可用的渲染栈与生成/建模工具（如 Three.js、混元 3D 等 3D 模型、Blender、2D/音视频工具），先针对头号设计风险搭建白盒原型，或将已批准的 GAME_DESIGN 与 ART_DIRECTION 实现为可运行游戏并配齐自检。用于验证核心设计风险、构建游戏原型或实现正式可玩版本。"
+description: "Build the approved game design into a complete, runnable game using the local environment's available rendering stacks, 3D/2D generators, and modeling tools. Turn GAME_DESIGN and ART_DIRECTION into a playable graybox first, then the finished game with rule regressions, one end-to-end verify command, and a concise BUILD_BRIEF. Use for implement the approved game design, prototype the riskiest design question, or turn this design into a running 2D, 2.5D, or 3D game. 游戏构建执行。结合本机与当前运行环境实际可用的渲染栈与生成/建模工具（如 Three.js、图生 3D 模型、Blender、2D/音视频工具），把已批准的 GAME_DESIGN 与 ART_DIRECTION 先做成可玩通的灰盒，再实现为完整可运行的游戏并配齐规则回归与端到端验证命令。用于验证核心设计风险、构建游戏原型或实现正式可玩版本。"
 ---
 # 游戏构建执行
 
-承接已批准的体验设计与美术方向，结合当前机器与会话的真实能力实现可玩版本（白盒阶段须有 `GAME_DESIGN.md`，正式生产阶段还须有 `ART_DIRECTION.md`；上游决策缺失时退回 `game-design` 补齐，不在 `BUILD_BRIEF.md` 里暗自重做设计）。先读 [build-brief-contract.md](references/build-brief-contract.md)。
+把已批准的 `GAME_DESIGN.md` 与 `ART_DIRECTION.md` 实现为目标平台上可完整游玩的游戏。架构、框架、数据结构、渲染方式与测试组织都由你决定，不设模板。灰盒只需要 `GAME_DESIGN.md`，接入美术之前须有 `ART_DIRECTION.md`；上游决定缺失或与实现冲突时退回 `game-design` 修订，不在代码或 `BUILD_BRIEF.md` 里暗自重做设计。
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
-## 环境探测、技术选型与发挥空间
+## 环境与选型
 
-动手前先盘点本机与宿主环境实际能调动的运行时、渲染库、命令行、MCP 与生成服务，因地制宜选定最出效果的实现路线，给足技术与表现发挥空间，不生硬套用单一模板：
+动手前盘点本机与会话实际能调用的运行时、渲染库、命令行、MCP 与生成服务（生图、图生 3D、Blender、视频、音乐、语音），在 `PRODUCT_BRIEF.md` 批准的平台内选最能兑现作品气质的路线：核心乐趣在空间、手感或镜头上的，就做成真正的 2D、2.5D 或 3D 画面，不压成文字选项。目标工具链缺失时不擅自改做网页版，只走简报已批准的替代环境，并分开记录 `targetRuntime` 与 `testedRuntime`；完全无法构建时说明阻塞原因，只交付 `BUILD_BRIEF.md`。
 
-- **渲染栈与运行环境**：在 `PRODUCT_BRIEF.md` 批准的目标平台内自由选用契合作品气质的技术栈。例如浏览器端做立体箱庭、棋盘沙盘、空间探索或光影演出时，可直接使用 **Three.js** 等主流 3D 渲染库搭建主光、天光、雾效与镜头调度；做俯视彩绘地图、卡牌或横版玩法时可用 2D Canvas / WebGL 渲染；桌面与移动端若本机已备齐 Godot、Unity 等引擎工具链则直接原生构建。目标工具链确实缺失时不得擅自改做网页版顶替，只走 `PRODUCT_BRIEF.md` 已批准的替代环境，并如实分记 `targetRuntime`、`testedRuntime` 与未覆盖特性（当前环境完全无法构建时，如实说明阻塞原因并仅交付 `BUILD_BRIEF.md`）。
-- **三维资产与空间表现组合**：做 3D 或 2.5D 项目时，先探测环境内能否调用 **混元 3D（Hunyuan3D）等图生 3D / 文生 3D 模型或接口**、本机是否装有 **Blender**（CLI、Python 脚本或 MCP）及网格转换工具。能调用 3D 生成模型时，适合以批准的角色或关键器物设定图生成带贴图网格（如 `.glb`），再按需配合 Blender 校准比例、脚底轴心、减面或动作绑定后接入 Three.js / 目标引擎；本机仅有 Blender 时可用脚本生成风格化低多边形或建筑模型；若外部建模与生成服务皆不可用，也可直接用 Three.js 程序化几何体、受光材质或分层景深立绘（2.5D 立体剧场）做出空间层次，不必退回单调的平面表单。
-- **图像、音视频与程序化混搭**：结合宿主可用的生图、视频生成与语音合成工具，把生成预算优先投向主角、核心地标、高潮 CG 与关键剧情过场；成套图标、UI 装饰、粒子动效与环境音效可灵活搭配矢量绘制、着色器及 Web Audio / 引擎合成器共同完成。所有成品资产落盘到项目工作区并接入真实画面（白盒临时占位须标明阶段属性，正式版不留未执行的提示词或坏链充数；调用外部工具只传当前资产所需描述与参考图，不外传原著全文，也不将密钥写入仓库）。
+生成预算优先投向主角、核心地标与关键演出。成品资源保存到工作区并接进真实画面，正式版不留占位图、坏链或没执行的提示词。调用外部工具只传当前资产需要的描述与参考图，不外传原著全文，密钥不进仓库。用到视频过场、生成音乐音效或配音时读 [generative-media.md](references/generative-media.md)。
 
-构建前声明 `buildStage: whitebox|production` 与 `buildPath: template|custom`：成熟模板能完整保留原著独有的动作、代价和世界反馈时可走 `template`；核心乐趣仰仗实时手感、空间走位、立体视角、物理碰撞或独特交互机制时走 `custom`，白盒阶段用最轻的几何体或占位素材把真实交互跑通，不把空间与动作玩法一律压成纯文字选项。
+## 构建顺序
 
-按项目实际用到的能力读取可选参考：
-- 3D 生成模型、Blender 与 Three.js 等空间资产联调：[blender-asset-workflow.md](references/blender-asset-workflow.md)；
-- 2.5D 多朝向/多动作序列帧烘焙：[baked-sprite-workflow.md](references/baked-sprite-workflow.md)；
-- 生成式自由输入、知情权限、事件回放或存档迁移：[playable-model-contract.md](references/playable-model-contract.md)；
-- 角色配音：[tts-production-contract.md](references/tts-production-contract.md)；
-- 动态视频、生成式音乐或音效：[generative-media-pipeline.md](references/generative-media-pipeline.md)；选择后播放剧情过场（互动影游）再读 [cutscene-production.md](references/cutscene-production.md)。
+1. **先灰盒玩通**：用最轻的占位把核心循环做到能从初态玩到结局——灰盒同样用真实的空间与操作，不以文字原型代替——交给未读设计与源码的独立会话从头试玩。看不懂、玩不通或核心乐趣不成立就先修（属于设计的问题退回 `game-design`），不带着这些问题投入美术。`targetFinish: graybox` 时灰盒即交付，跳过第 2 步的美术量产。
+2. **完整实现并打磨**：实现 `GAME_DESIGN.md` 的全部状态、动作、分支与结局，接入美术、演出与声音；在目标视口亲手玩，看实机截图修到位；有批准目标图的界面与目标图并排比对，连续两轮无改善就停手记入限制，不改目标图迁就实现。必需资产加载失败要显式报错；可降级资产切到替代方案后，核心体验仍须成立。
+3. **审校上屏文字**：按 [player-copy-polish.md](references/player-copy-polish.md) 通查所有玩家看得见的文案。
+4. **自测与验证入口**：为会改变结果的规则、数值门槛、分支汇流与结局条件写回归；提供一条端到端 `verify` 命令，从全新初始状态用真实操作连续跑通启动、渲染、输入、核心循环、到达设计结局与重开回初态（即 `game-qa` 的六项检查，记录格式由它规定）。命令支持指定结果输出路径，无论成败都整份重写，不残留旧 `PASS`，也不预填结果；构建自测把自测记录写到 `qa/` 之外，正式的 `qa/verification.json` 只由 `game-qa` 在盲玩之后运行同一条命令写入。
+5. **写 `BUILD_BRIEF.md`**（骨架见 [build-brief-contract.md](references/build-brief-contract.md)），移交 `game-qa` 做独立盲玩验收。
 
-## 构建循环
+## 按需规则
 
-1. **实现状态与交互**：`whitebox` 只实现验证头号设计风险所需的真实输入、状态流转与核心反馈；`production` 完整实现 `GAME_DESIGN.md` 的状态、动作、分支与结局闭环。
-2. **固定复现与排障**：保留能稳定复现问题的初态与输入序列（涉及随机时固定 `seed`），修改后重跑原失败路径及相邻分支反例；同一手感或表现问题连续两次修改未果时，先检索成熟开源做法理清机制再改。
-3. **回写工具链与对齐设计**：在 `BUILD_BRIEF.md` 如实回写实际选用的渲染栈、工具链、版本号与运行命令（无法获取的版本填 `NOT_AVAILABLE: 原因`）；实现与设计/美术文档存在偏差时，退回 `game-design` 修订或在 `BUILD_BRIEF.md` 记明冲突。
-
-`whitebox` 执行完第 3 步后运行最窄风险检查并交回总入口组织试玩校准；`production` 继续执行：
-
-4. **精修面向玩家的游戏内文案**：按 [player-copy-polish.md](references/player-copy-polish.md) 通盘审校代码与数据文件中的所有上屏文字，清零工程话术与套式 AI 腔。
-5. **配齐规则自测与权威 `verify` 入口**：针对核心规则、数值门槛与分支汇流编写正反向自测断言并接入权威 `verify` 命令，运行冒烟自检清零启动报错、控制台阻断异常、资源加载失败与崩溃。
-6. **实机视口校准后移交盲玩**：对配有批准目标图的界面与核心资产，在目标视口下截实机图与目标图并排比对布局、比例、色光与层级并修正（连续两轮无改善则停手记入 `limitations`，不篡改目标图迁就缺陷），最后移交 `game-qa` 做独立新玩家盲玩验收。
+- **接入玩家自由打字输入**：模型只把玩家的表述解析成预设的几种标准动作，或把已结算的事实润色成台词；时间、资源、位置、物品、知情、承诺与胜负一律由固定规则判定。解析结果先过前置条件、在场与知情范围、原著硬边界的校验，不通过就追问或拒绝，不因关键词命中把否定句判成相反的行动；模型生成的摘要或好感估值不写入正式状态。回放与校验从标准动作跑起，不重新调用模型；为否定句、缺失对象、篡改原著事实、向不在场角色泄密各写一条回归。
+- **存档**：节点、状态含义或结算规则变更后，迁移旧档或明确拦截并提示不兼容，不静默读取。
+- **连续行走的场景**：底图、可走区域、角色脚底锚点、交互热区与小地图共用一套坐标，画面上的道路、桥面、水岸与建筑边界和通行判定逐处对齐，重绘地图后同步校准阻挡、触发点与旧档坐标；寻路从角色当前位置沿合法道路走完，寻路失败时不得直接穿墙或瞬移敷衍过去。
+- **Blender MCP**：配置了不代表连得上，修改前先读一次场景确认；它有本机执行权限，本地端口不暴露公网，不运行来源不明资产包里的脚本。

@@ -5,7 +5,7 @@
 <h1 align="center">NovelToGame</h1>
 
 <p align="center">
-  <b>A source-grounded novel-to-game workflow: adaptation design, environment-adapted builds, and first-player blind-playtest QA.</b>
+  <b>A text-cited novel-to-game workflow: adaptation planning, builds tailored to your local tools, and first-player blind-playtest QA.</b>
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@ Each game links to the adaptation workspace behind it: source provenance, the co
 ### Journey to the West · Three Borrowings of the Banana Fan
 
 <p>
-  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="Wukong's party in the painted Flame Mountain village, with minimap, quest tracker, chat log and function buttons in the corners" width="49%"></a>
+  <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/hero.jpg" alt="Wukong's party in the painted Flame Mountain village, with minimap, quest tracker, message line and function buttons in the corners" width="49%"></a>
   <a href="https://xiyouji.vibecoco.ai"><img src="examples/journey-to-the-west/screenshots/battle.jpg" alt="Jilei Mountain battle: the Bull Demon King's side on the left, Wukong's party on the right, action-order bar above and command panel below" width="49%"></a>
 </p>
 
@@ -68,15 +68,15 @@ An interactive-film romance set in the Ximen household the spring after Li Ping'
 The skills run on your coding agent's model and organize adaptation into stages. Each stage owns a document, with source evidence separated from design choices:
 
 - **Key source facts carry citations.** Analysis reads the whole book and writes a `SOURCE_BIBLE` covering main story arcs, standout conflict scenes, character relationships and agendas, secrets and information gaps, world rules, signature spaces and props, and adaptation boundaries — each citing its chapter or file location. Source facts are labelled `immutable`, `adaptable`, `open`, or `conflicted`; anything the novel does not define is marked a design invention, never smuggled in as fact.
-- **The game shape is a documented decision, not a default.** The concept stage compares real alternatives and kills directions with named hard vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
-- **A borrowed genre comes with its shell.** Players recognise a genre by more than its core mechanic, so a systems game lists which parts of the genre's shell (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
-- **Built for the approved platform, adapted to your environment.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. Within that platform, `game-build` probes what your machine and session actually offer (such as Three.js, image/text-to-3D models like Hunyuan3D, Blender CLI/Python/MCP, 2D Canvas/WebGL, or native Godot/Unity toolchains) and chooses a fitting build route; a missing native toolchain may not silently become a web page. The design documents are engine-independent Markdown you own.
-- **QA combines a blind first-player playthrough with one complete verification receipt.** Before reading source code or design specs, an isolated QA pass launches the build from the title screen as a first-time player to uncover onboarding, interaction, pacing, and mobile viewport friction (`qa/playtest-report.md`), then reconciles findings against the design documents and records one complete execution proving `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart` (`qa/verification.json`). Untested environments are listed as limitations.
+- **Choose the game genre deliberately instead of defaulting to one template.** The concept stage compares real alternatives and eliminates directions with named one-strike vetoes (the core loop ignores the novel's central tension; strip the proper nouns and a generic template remains; the player only spends resources to release a fixed plot). Concept, world design, and art direction are written by different stages into different documents, and the build may not quietly redesign them.
+- **Keep the outer features players expect from a borrowed genre.** Players recognise a genre by more than its core mechanic, so a systems game lists which outer features of the genre (entering the world, objective guidance, progression and reasons to return) it implements, degrades, or drops and why, and what the first minute shows. A Fantasy Westward Journey-style RPG is not shipped as a bare chain of fights.
+- **Built for the approved platform, tailored to your local environment.** The product brief, the one-page requirements sheet the agent drafts first, locks platform, engine, target runtime, and the runtime actually available for testing. Within that platform, `game-build` probes what your machine and session actually offer (such as Three.js, image/text-to-3D models like Hunyuan3D, Blender CLI/Python/MCP, 2D Canvas/WebGL, or native Godot/Unity toolchains) and chooses a fitting build route; a missing native toolchain may not silently become a web page. The design documents are engine-independent Markdown you own.
+- **QA combines a blind first-player playthrough with one end-to-end verification run.** Before reading source code or design specs, an isolated QA pass launches the build from the title screen as a first-time player to uncover onboarding, interaction, pacing, and mobile viewport friction (`qa/playtest-report.md`), then reconciles findings against the design documents and records one complete execution proving `launch`, `render`, `input`, `coreLoop`, `outcome`, and `restart` (`qa/verification.json`). Untested environments are listed as limitations.
 - **Voice is opt-in and generated at build time by default.** No line goes to a text-to-speech provider unless art direction chooses voice; runtime synthesis needs the product brief's explicit approval, and the novel and design documents are never uploaded.
 
 Interactive fiction is a first-class track: continuous scenes, dialogue, testimony, and key choices can carry the whole game, held to the same agency and evidence requirements as a systems game. On a character route, a key choice targets that character's own wound or agenda, and the relationship shows in reactions, forms of address, the places that open to you and what you are trusted with, not in an on-screen number.
 
-Interactive film builds on that track: a text adventure crossed with a short drama. After each choice that matters later, a short cutscene acts out what the choice changed, and the next lines are read over its last frame. Every option at such a choice gets its own cutscene, and moving stills do not count as one. The skills budget cutscenes per choice and option and write them as storyboards. Generation waits until the rest of the game is finished and goes through a ledger that names no provider. With video off or missing, the game is still fully playable on still frames ([interactive film method](skills/game-design/references/interactive-film-method.md), [cutscene production](skills/game-build/references/cutscene-production.md), both in Chinese). The Jin Ping Mei example above is built this way.
+Interactive film builds on that track: a text adventure crossed with a short drama. After each choice that matters later, a short cutscene acts out what the choice changed, and the next lines are read over its last frame. Every option at such a choice gets its own cutscene, and moving stills do not count as one. The skills budget cutscenes per choice and option and write them as storyboards. Generation waits until the rest of the game is finished and goes through a ledger that names no provider. With video off or missing, the game is still fully playable on still frames ([interactive film method](skills/game-design/references/interactive-film-method.md), [generative media production](skills/game-build/references/generative-media.md), both in Chinese). The Jin Ping Mei example above is built this way.
 
 ## Install
 
@@ -153,7 +153,7 @@ In [Journey to the West](examples/journey-to-the-west/), the Banana-Leaf Fan (ow
 [`concepts/CONCEPT.md`](examples/journey-to-the-west/concepts/CONCEPT.md) turns the fan into a two-sided rule, the fake fan feeding the fire and the true fan's three waves turning the boss fight, and records which rival directions died, and on which veto (translated):
 
 ```markdown
-Hard-veto results (one line per direction):
+One-strike veto check (one line per direction):
 
 - Direction 1 · Three Borrowings of the Banana Fan: passes (none of the six triggered).
 - Direction 2 · The Westward Post Road: triggers item 2 — within the slice length, relationship building decays into event buttons and stat bars with no repeatable trade-off — eliminated.
@@ -174,10 +174,10 @@ taking down the White Bull's true form with your companion beast and transformat
 and dragging it out means you will be killed in turn, so "when to open the third wave" is the core decision of the finale.
 ```
 
-The same document lists the genre's shell around those battles, and what was implemented, degraded, or dropped (translated; 4 of the table's 8 rows):
+The same document lists the genre's outer features around those battles, and what was implemented, degraded, or dropped (translated; 4 of the table's 8 rows):
 
 ```markdown
-| Genre shell | State | How / why |
+| Genre feature | State | How / why |
 |---|---|---|
 | Entering the world and moving | Implemented | Four walkable 3/4 scenes (Flame Mountain village, Cuiyun Mountain, the fire mouth, Jilei Mountain); click-to-walk, arrow-key walking, teal teleport circles (click the circle or its name) |
 | Objective guidance / tracking | Implemented | "!" above main-quest NPCs; one click on the quest tracker on the right auto-paths, across maps too; minimap at top left |
@@ -202,11 +202,11 @@ And [`qa/verification.json`](examples/journey-to-the-west/qa/verification.json) 
 
 ```json
 "completeRun": {
-  "id": "journey-to-the-west-main-path",
+  "id": "three-fans-main-path",
   "cleanContext": true,
-  "terminal": "ending: 三借芭蕉扇 · 完",
-  "restart": "new campaign title",
-  "evidence": "qa/evidence/automated.json"
+  "terminal": "done",
+  "restart": "ask",
+  "evidence": "qa/evidence/run.json"
 },
 "checks": {
   "launch": "PASS",
@@ -254,11 +254,11 @@ In [`qa/verification.json`](examples/jin-ping-mei/qa/verification.json), the com
 ```json
 {
   "scope": "路径覆盖",
-  "reason": "浏览器只走月娘良缘一条完整路径；其余 15 个结局由 test/lint_script.mjs 穷举选择证明可达，未逐一在浏览器渲染。"
+  "reason": "浏览器只走吴月娘良缘一条完整路径；其余 15 个结局由 npm run verify:model 穷举全部选择证明可达，没有逐一在浏览器里走。"
 }
 ```
 
-That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `test/lint_script.mjs`, not rendered one by one.
+That is: the browser walked only Wu Yueniang's good-ending route, and the other 15 endings were shown reachable by exhausting the choices in `npm run verify:model`, not walked one by one in the browser.
 
 ## Your first request
 
@@ -289,15 +289,15 @@ Keep the choices and outcomes bounded; show each option's evidence, cost, visibl
 Label allowed additions and unresolved questions. Deliver design notes only—do not build, run QA, or claim a finished runtime.
 ```
 
-`quick` is the default: the agent drafts a product brief with sensible defaults and stops for your decision only where a real fork in platform, core gameplay or fantasy, adult content, real persons, copyright or asset licences, paid services, or irreversible production spend would change the direction. Everything else is recorded in the brief as an unconfirmed assumption, and the agent compares meaningful alternatives and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the whitebox playtest (where you can bring in a target player), and at the visual target images when a target pack is made, unless you have already decided.
+`quick` is the default: the agent drafts a product brief with sensible defaults and stops for your decision only where a real fork in platform, core gameplay or fantasy, adult content, real persons, copyright or asset licences, paid services, or irreversible production spend would change the direction. Everything else is recorded in the brief as an unconfirmed assumption, and the agent compares meaningful alternatives and continues through design, build, and QA. Choose `director` when you want to make the key calls yourself: the agent stops with candidates and a recommendation at the concept, at what to cut after the graybox playtest, and at the visual target images when a target pack is made, unless you have already decided.
 
 ## Workflow
 
 ```text
-Novel → Source analysis → Concept → World design → Risk-matched whitebox ↺ → Art direction → Production build → QA → Playable game
+Novel → Source analysis → Concept → World design → Graybox playtest ↺ → Art direction → Full build → QA → Playable game
 ```
 
-After world design, a whitebox (a rough build without final art) tests only the single largest design risk before full art production: narrative causality can be checked in text, but real-time control, space, physics, or camera cannot, and what it shows goes back to the design stage. The whitebox playtest also shows which part players keep coming back to, so the story, dialogue and level budget is revised against it, and the brief's production budget is checked against the remaining scope there and again halfway through production. The production build probes the rendering libraries and modeling/generative tools available in your environment, implements the approved design, and prepares rule self-checks plus one authoritative verification command. `game-qa` then blind-playtests the build from cold start as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
+After world design, the build probes the rendering libraries and modeling/generative tools available in your environment and takes the core loop to a graybox (a rough build without final art, but with the real controls and space) that can be played from start to an ending. A separate session that has read neither the design nor the source plays it from scratch; if it cannot follow the game, cannot finish it, or the core fun is not there, the problem goes back to the design stage, and the story, dialogue and level volume are revised around the part players actually chase. When `targetFinish` is `graybox`, the approved graybox goes straight to QA; otherwise art direction is set and art produced in bulk. The build implements the approved design in full, polishes player-facing copy, and prepares rule regressions plus one end-to-end verify command. When cost keeps climbing, the run cuts scope before the budget is gone and records the cut as a non-goal; it does not lower the bar. `game-qa` then blind-playtests the build from the title screen as a first-time player before reading specs or running the complete-run check that binds all six checks to one execution; findings flow back to the product, design, art, or build document that owns them.
 
 ## Skills
 
@@ -305,9 +305,9 @@ After world design, a whitebox (a rough build without final art) tests only the 
 |---|---|
 | [`novel-to-game`](skills/novel-to-game/) | Confirm requirements, choose a mode, orchestrate stage handoffs, and recover progress |
 | [`novel-game-analyze`](skills/novel-game-analyze/) | Deconstruct full-book story arcs, standout conflict scenes, character relationships, secrets, world rules, and adaptation boundaries with citations |
-| [`game-design`](skills/game-design/) | Stage-own concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) |
-| [`game-build`](skills/game-build/) | Probe host rendering stacks and 3D/2D/audio tools to build a risk-matched whitebox or the approved production game, polish player-facing copy, and wire rule self-checks |
-| [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from cold start, reconcile against design specs, and record one complete-run verification receipt |
+| [`game-design`](skills/game-design/) | Guide concept selection (`CONCEPT.md`), world/system/narrative design (`GAME_DESIGN.md`), and visual/audio direction (`ART_DIRECTION.md`) in separate stages |
+| [`game-build`](skills/game-build/) | Probe local rendering stacks and 3D/2D/audio tools, take the approved design to a playable graybox and then the finished game, polish player-facing copy, and wire rule regressions and one end-to-end verify command |
+| [`game-qa`](skills/game-qa/) | Blind-playtest as a first-time player from the title screen, reconcile against design specs, and write one complete-run verification record |
 
 ## Artifacts
 
@@ -319,7 +319,7 @@ game-adaptations/<project>/
   analysis/SOURCE_BIBLE.md
   concepts/CONCEPT.md
   design/GAME_DESIGN.md
-  design/ART_DIRECTION.md
+  design/ART_DIRECTION.md   # omitted when targetFinish is graybox
   build/BUILD_BRIEF.md
   build/app/
   qa/verification.json
@@ -340,11 +340,11 @@ Ask for an interactive film, and say how many choices should get cutscenes if bu
 
 ### How long does a full run take, and what does it cost?
 
-The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and the run checks the remaining scope against it after the whitebox and halfway through production, cutting content before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
+The agent reads the whole novel, writes the adaptation documents, builds, and runs QA through separate skill calls. A full run may span more than one session. Token usage is billed by your coding agent. The product brief records the budget you give it (model quota, time or money), and when it runs short the run cuts outer scenes and minor branches first, recording each cut as a non-goal, before the budget runs out. Generation services, engine licences or hosting may have separate costs; the requirements stage identifies paid services before use. The public examples' progress files do not record wall-clock time or token counts, so this README does not quote a number.
 
 ### The session ended halfway. Can it continue?
 
-Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `director`. It reads `_progress.md` and the documents that actually exist, works out the last stage that was genuinely finished, and continues from there; test results are only ever read from `qa/verification.json`. See the [pipeline contract](skills/novel-to-game/references/pipeline-contract.md) (Chinese).
+Yes. Start with `novel-to-game resume`, the third mode beside `quick` and `director`. It reads `_progress.md` and the documents that actually exist, works out the last stage that was genuinely finished, and continues from there; test results are only ever read from `qa/verification.json`. See [`novel-to-game`](skills/novel-to-game/SKILL.md) (Chinese).
 
 ### Which engine or platform does it build for? Will it fall back to a web page if my toolchain is missing?
 
@@ -352,11 +352,11 @@ You choose, and the product brief locks it: platform, production engine, target 
 
 ### Do I need a GPU or my own model? Who pays for images and voice?
 
-For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. See the [TTS production contract](skills/game-build/references/tts-production-contract.md) (Chinese).
+For analysis, design and coding, the skills use your coding agent's model. If that model is hosted, these steps require no extra local model or GPU. Running the resulting game follows its target runtime's hardware requirements. External services are opt-in. Generated images are used only when art direction selects them, with the tool chosen in your environment after checking capability, licence, and cost (the Jin Ping Mei example records most of its images, generated with Codex's built-in image tool, batch by batch in `build/art/generated-art.json`). Voice is off unless art direction chooses it; the default is build-time generation into local assets, only the per-line dialogue and any pronunciation notes are sent, and the novel and design documents are never uploaded. See [generative media production](skills/game-build/references/generative-media.md) (Chinese).
 
 ### How do I know the game it built actually runs? What does the QA PASS mean?
 
-`game-qa` runs in two rounds: first an isolated blind playtest from cold start as a first-time player without reading source code or design documents (recording onboarding, interaction, pacing, and mobile viewport findings in `qa/playtest-report.md`), then spec reconciliation and one authoritative complete run on the tested runtime proving six things in `qa/verification.json`: the build launched, rendered a non-empty frame that changes, changed state on real input, completed the core loop, reached at least one designed outcome, and restarted to the initial state (any `P0` blocker found during blind playtesting fails the corresponding check). Status is only `NOT_RUN`, `FAIL`, or `PASS`; unverified is not a pass, and an old PASS is overwritten by every rerun. Every gap is written as a limitation with a scope and a reason. It does not prove subjective fun, balance, other browsers or devices, rights, or commercial release quality. See the [blind-playtest method](skills/game-qa/references/blind-playtest-method.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
+`game-qa` runs in two rounds: first an isolated blind playtest from the title screen as a first-time player without reading source code or design documents (recording onboarding, interaction, pacing, and mobile viewport findings in `qa/playtest-report.md`), then spec reconciliation and one end-to-end complete run on the tested runtime proving six things in `qa/verification.json`: the build launched, rendered a non-empty frame that changes, changed state on real input, completed the core loop, reached at least one designed outcome, and restarted to the initial state (any `P0` blocker found during blind playtesting fails the corresponding check). Status is only `NOT_RUN`, `FAIL`, or `PASS`; unverified is not a pass, and an old PASS is overwritten by every rerun. Every gap is written as a limitation with a scope and a reason. It does not prove subjective fun, balance, other browsers or devices, rights, or commercial release quality. See the [blind-playtest method](skills/game-qa/references/blind-playtest-method.md) and the [QA contract](skills/game-qa/references/qa-contract.md) (both in Chinese).
 
 ### My novel is in one language. Can the game be in another?
 
@@ -368,7 +368,7 @@ The skills do not clear rights for you, and QA does not certify them. Copyright,
 
 ### Can I get design documents without a build?
 
-Yes. Use the third request above. Each stage of `game-design` stops at its own document: concept selection writes no code or numeric tables, world design writes no file names or tests, and art direction leaves asset production to the build. Even when you do build, the whitebox proves only the selected top risk and produces no QA verdict; the six checks come only from the production build.
+Yes. Use the third request above. Each stage of `game-design` stops at its own document: concept selection writes no code or numeric tables, world design writes no file names or tests, and art direction leaves asset production to the build. Even when you do build, the graybox playtest only shows whether the core loop is legible and playable and produces no QA verdict; the six checks come only from the finished build.
 
 ## Further reading
 

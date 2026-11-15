@@ -1,0 +1,150 @@
+/* 年龄门、标题，以及三种整屏卡：章节、结局、原著命数。 */
+
+/* ---------- 年龄门：夜里的宅门，灯亮着，门还关着。门面图不含人物 ---------- */
+#gate { overflow: hidden; background: var(--ink); }
+.gate-art { position: absolute; inset: -5% -24% -5% 16%; transform-origin: 48% 58%; animation: gateBreath 16s ease-in-out infinite alternate; }
+.gate-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; }
+.gate-art::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 34% 40% at 50% 52%, rgba(255, 196, 120, 0.2), rgba(255, 196, 120, 0) 70%); mix-blend-mode: screen; animation: gateGlow 3.6s ease-in-out infinite alternate; }
+#gate-petals { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.gate-veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 15%, rgba(11, 13, 22, 0.9) 30%, rgba(11, 13, 22, 0.45) 48%, rgba(11, 13, 22, 0) 64%), linear-gradient(to top, rgba(11, 13, 22, 0.78), rgba(11, 13, 22, 0) 32%), linear-gradient(to bottom, rgba(11, 13, 22, 0.5), rgba(11, 13, 22, 0) 22%); }
+.gate-card { position: absolute; left: 8.5%; top: 50%; width: min(470px, 38vw); transform: translateY(-50%); animation: gateRise 0.9s 0.15s ease-out both; }
+.gate-kicker { color: var(--gold); font: 14px var(--serif); letter-spacing: 0.6em; }
+.gate-logo { display: flex; align-items: flex-end; gap: 14px; margin-top: 16px; }
+.gate-logo span { font: 700 clamp(52px, 6.2vw, 88px)/1.05 var(--serif); letter-spacing: 0.12em; background: linear-gradient(180deg, #fffaf0 30%, #e9c98a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.7)); }
+.gate-logo small { writing-mode: vertical-rl; margin-bottom: 10px; padding: 10px 6px; border-radius: 6px; background: #b8364a; color: #fff5ea; font: 600 clamp(14px, 1.3vw, 18px)/1 var(--serif); letter-spacing: 0.3em; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), 0 6px 20px rgba(0, 0, 0, 0.5); }
+.gate-rule { display: flex; align-items: center; gap: 12px; margin: 30px 0 24px; color: var(--gold); }
+.gate-rule::before, .gate-rule::after { content: ""; height: 1px; background: linear-gradient(90deg, rgba(217, 180, 106, 0.75), rgba(217, 180, 106, 0)); }
+.gate-rule::before { width: 46px; transform: scaleX(-1); }
+.gate-rule::after { flex: 1; }
+.gate-rule i { width: 8px; height: 8px; border: 1px solid currentColor; transform: rotate(45deg); }
+.gate-card h1 { display: flex; align-items: center; gap: 14px; font: 600 26px var(--serif); letter-spacing: 0.2em; color: #fbf3e2; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8); }
+.age-mark { flex: none; padding: 5px 9px 4px; border: 1.5px solid #e2687c; border-radius: 6px; color: #f3a3b0; font: 700 15px/1 var(--sans); letter-spacing: 0.04em; }
+.gate-text { margin-top: 16px; color: #cfc9bb; font-size: 15px; line-height: 1.95; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9); }
+.gate-text span { display: inline-block; }
+.gate-actions { display: flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+.gate-actions .btn { min-height: 50px; padding: 0 26px; font-size: 16px; letter-spacing: 0.16em; }
+.gate-actions .btn:not(.primary) { background: rgba(13, 15, 24, 0.55); backdrop-filter: blur(6px); }
+.gate-note { margin-top: 30px; color: var(--gold-2); font: 16px/1.8 var(--serif); letter-spacing: 0.12em; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9); }
+/* 推门：镜头朝门里推进，暖光漫上来，随后换到标题 */
+#gate.opening .gate-art { animation: gateOpen 0.85s cubic-bezier(0.5, 0, 0.8, 0.4) forwards; }
+#gate.opening .gate-card, #gate.opening .gate-veil, #gate.opening #gate-petals { opacity: 0; transition: opacity 0.4s ease; }
+#gate.opening::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 58% 56%, #ffe9c4, #f6c98a 40%, rgba(11, 13, 22, 0) 78%); opacity: 0; animation: gateBloom 0.85s ease-in forwards; }
+@keyframes gateBreath { from { transform: scale(1); } to { transform: scale(1.045); } }
+@keyframes gateGlow { from { opacity: 0.55; } to { opacity: 1; } }
+@keyframes gateRise { from { opacity: 0; transform: translateY(calc(-50% + 14px)); } }
+@keyframes gateOpen { to { transform: scale(2.3); filter: brightness(1.5); } }
+@keyframes gateBloom { 0%, 35% { opacity: 0; } 100% { opacity: 1; } }
+/* 竖屏与窄屏：门在上，字在下 */
+@media (max-aspect-ratio: 1/1) {
+  .gate-art { inset: 0 -30% 34% -30%; transform-origin: 50% 60%; }
+  .gate-veil { background: linear-gradient(to top, var(--ink) 0%, var(--ink) 36%, rgba(11, 13, 22, 0.82) 48%, rgba(11, 13, 22, 0) 68%), linear-gradient(to bottom, rgba(11, 13, 22, 0.45), rgba(11, 13, 22, 0) 18%); }
+  .gate-card { left: 0; right: 0; top: auto; bottom: max(26px, env(safe-area-inset-bottom)); width: auto; padding: 0 26px; transform: none; text-align: center; animation-name: gateRiseFlat; }
+  .gate-kicker { font-size: 12px; }
+  .gate-logo { justify-content: center; margin-top: 10px; }
+  .gate-logo span { font-size: clamp(44px, 13vw, 60px); }
+  .gate-rule { margin: 18px auto 16px; width: 200px; }
+  .gate-rule::before { flex: 1; width: auto; }
+  .gate-card h1 { justify-content: center; font-size: 21px; }
+  .gate-text { margin-top: 12px; font-size: 14px; line-height: 1.8; }
+  .gate-actions { justify-content: center; margin-top: 22px; }
+  .gate-actions .btn { flex: 1 1 100%; }
+  .gate-note { margin-top: 20px; }
+}
+@keyframes gateRiseFlat { from { opacity: 0; transform: translateY(14px); } }
+@media (max-height: 520px) and (min-aspect-ratio: 1/1) {
+  .gate-logo span { font-size: 44px; }
+  .gate-rule { margin: 14px 0 12px; }
+  .gate-card h1 { font-size: 20px; }
+  .gate-text { margin-top: 8px; font-size: 13px; line-height: 1.7; }
+  .gate-actions { margin-top: 16px; }
+  .gate-actions { flex-wrap: nowrap; }
+  .gate-actions .btn { min-height: 42px; padding: 0 18px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gate-art, .gate-art::after, .gate-card { animation: none; }
+}
+
+/* ---------- 标题 ---------- */
+#title { overflow: hidden; background: var(--ink); }
+.title-art { position: absolute; inset: 0; }
+.title-art .pic { inset: 0; }
+.title-art .pic img, .title-art .pic video { object-position: 62% 30%; }
+#title-petals { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.title-veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(11, 13, 22, 0.94) 0%, rgba(11, 13, 22, 0.78) 24%, rgba(11, 13, 22, 0.25) 46%, rgba(11, 13, 22, 0) 62%), linear-gradient(to top, rgba(11, 13, 22, 0.7), rgba(11, 13, 22, 0) 30%); }
+.title-logo { position: absolute; left: 8.5%; top: 14%; }
+.title-kicker { color: var(--gold); font: 14px var(--serif); letter-spacing: 0.6em; }
+.title-logo h1 { display: flex; align-items: flex-end; gap: 18px; margin-top: 18px; }
+.title-logo h1 span { font: 700 clamp(64px, 8.6vw, 124px)/1.05 var(--serif); letter-spacing: 0.12em; background: linear-gradient(180deg, #fffaf0 30%, #e9c98a 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.6)); }
+.title-logo h1 small { writing-mode: vertical-rl; margin-bottom: 14px; padding: 12px 7px; border-radius: 6px; background: #b8364a; color: #fff5ea; font: 600 clamp(15px, 1.5vw, 20px)/1 var(--serif); letter-spacing: 0.3em; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 6px 20px rgba(0, 0, 0, 0.4); }
+.title-line { margin-top: 26px; color: #e6e0d2; font: 19px var(--serif); letter-spacing: 0.24em; text-shadow: 0 2px 8px #000; }
+.title-menu { position: absolute; left: 8.5%; bottom: 13%; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.title-menu button { position: relative; display: flex; align-items: center; gap: 16px; min-height: 46px; padding: 0 22px 0 0; color: #ece6da; font: 21px var(--serif); letter-spacing: 0.34em; text-shadow: 0 2px 8px #000; transition: color 0.2s, transform 0.25s; }
+.title-menu button i { width: 9px; height: 9px; transform: rotate(45deg); border: 1px solid var(--gold); transition: all 0.25s; }
+.title-menu button:hover:not(:disabled), .title-menu button:focus-visible { color: #fff; transform: translateX(10px); outline: none; }
+.title-menu button:hover:not(:disabled) i, .title-menu button:focus-visible i { background: var(--lamp); border-color: var(--lamp); box-shadow: 0 0 14px var(--lamp); }
+.title-menu button:disabled { color: var(--faint); text-shadow: none; }
+.title-menu button:disabled i { border-color: var(--faint); }
+.title-foot { position: absolute; left: 8.5%; bottom: 5%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; letter-spacing: 0.2em; }
+.tag18 { padding: 2px 8px; border: 1px solid var(--rose); border-radius: 4px; color: var(--rose); font-weight: 600; letter-spacing: 0.05em; }
+.portrait .title-art .pic img, .portrait .title-art .pic video { object-position: 50% 30%; }
+.portrait .title-veil { background: linear-gradient(to bottom, rgba(11, 13, 22, 0.88) 0%, rgba(11, 13, 22, 0.3) 30%, rgba(11, 13, 22, 0.1) 46%, rgba(11, 13, 22, 0.86) 70%, rgba(11, 13, 22, 0.97) 100%); }
+.portrait .title-logo { left: 7%; right: 7%; top: 6%; }
+.portrait .title-logo h1 span { font-size: 68px; }
+.portrait .title-line { font-size: 15px; margin-top: 16px; letter-spacing: 0.14em; }
+.portrait .title-menu { left: 7%; right: 7%; bottom: 9%; gap: 0; }
+.portrait .title-menu button { min-height: 48px; font-size: 19px; }
+.portrait .title-foot { left: 7%; bottom: 3%; font-size: 12px; letter-spacing: 0.1em; }
+@media (max-height: 520px) and (orientation: landscape) {
+  .title-logo { top: 8%; }
+  .title-logo h1 span { font-size: 56px; }
+  .title-line { margin-top: 10px; font-size: 14px; }
+  .title-menu { bottom: 12%; flex-direction: row; flex-wrap: wrap; gap: 0 10px; max-width: 60%; }
+  .title-menu button { min-height: 40px; font-size: 16px; }
+}
+
+/* ---------- 卡 ---------- */
+#card { position: absolute; inset: 0; z-index: 50; opacity: 0; transition: opacity 0.42s ease; cursor: pointer; }
+#card.on { opacity: 1; }
+#card.off { opacity: 0; transition-duration: 0.5s; }
+.card-hint { margin-top: 26px; color: var(--muted); font: 12px var(--sans); letter-spacing: 0.4em; animation: breathe 2s ease-in-out infinite; }
+
+/* 章节卡：墨底、折枝桃花、一条慢慢拉开的金线 */
+.card-chapter { background: #161a2b; }
+.chapter-art { position: absolute; inset: 0; background: url("../assets/ui/chapter.webp") right bottom / cover; }
+.chapter-body { position: absolute; left: 12%; top: 50%; transform: translateY(-58%); }
+.chapter-no { color: var(--gold); font: 17px var(--serif); letter-spacing: 0.6em; opacity: 0; animation: rise 0.7s 0.25s ease-out forwards; transform: translateY(8px); }
+.chapter-title { margin-top: 18px; font: 600 clamp(40px, 5.4vw, 68px)/1.3 var(--serif); letter-spacing: 0.22em; opacity: 0; animation: rise 0.8s 0.45s ease-out forwards; transform: translateY(10px); }
+.chapter-rule { display: block; width: 240px; height: 1px; margin-top: 26px; background: linear-gradient(90deg, var(--gold), rgba(217, 180, 106, 0)); transform-origin: left; transform: scaleX(0); animation: draw 1.1s 0.6s ease-out forwards; }
+@keyframes draw { to { transform: scaleX(1); } }
+.portrait .chapter-body { left: 9%; right: 9%; top: 40%; }
+.portrait .chapter-title { font-size: 38px; }
+
+/* 结局卡：她的小像、结局名，和盖下去的一枚印 */
+.card-ending { display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 46%, rgba(13, 15, 24, 0.82), rgba(7, 8, 13, 0.96) 72%); }
+.ending-body { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ending-face { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; background: color-mix(in srgb, var(--c) 55%, #151929); box-shadow: 0 0 0 2px var(--glow), 0 0 60px color-mix(in srgb, var(--glow) 45%, transparent); opacity: 0; animation: rise 0.7s 0.2s ease-out forwards; transform: translateY(10px); }
+.ending-face.blank { background: #20253d; box-shadow: 0 0 0 2px #4a4f6e; }
+.ending-who { margin-top: 20px; color: var(--glow); font: 14px var(--sans); letter-spacing: 0.4em; opacity: 0; animation: rise 0.7s 0.4s ease-out forwards; }
+.ending-title { margin-top: 14px; font: 600 clamp(38px, 5vw, 60px)/1.3 var(--serif); letter-spacing: 0.24em; text-indent: 0.24em; opacity: 0; animation: rise 0.8s 0.55s ease-out forwards; transform: translateY(10px); }
+.ending-seal { margin-top: 26px; padding: 10px 9px; border: 2px solid currentColor; border-radius: 8px; font: 700 24px/1.15 var(--serif); writing-mode: vertical-rl; letter-spacing: 0.2em; opacity: 0; animation: sealDown 0.55s 1.15s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; }
+@keyframes sealDown { from { opacity: 0; transform: scale(2.1) rotate(-12deg); } to { opacity: 1; transform: rotate(-4deg); } }
+.kind-good { color: #e8566a; }
+.kind-normal { color: #c9b27c; }
+.kind-bad { color: #8b93b8; }
+.ending-count { margin-top: 26px; color: var(--muted); font-size: 13px; letter-spacing: 0.24em; opacity: 0; animation: rise 0.6s 1.5s forwards; }
+.card-ending .card-hint { opacity: 0; animation: rise 0.6s 1.9s forwards, breathe 2s 2.5s ease-in-out infinite; }
+
+/* 原著命数：暗底残照，一行一行浮出来 */
+.card-fate { display: grid; place-items: center; padding: 24px; background: #07080d; }
+.fate-art { position: absolute; inset: 0; background: center / cover; opacity: 0.34; filter: saturate(0.6); }
+.fate-art::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(7, 8, 13, 0.35), rgba(7, 8, 13, 0.94) 78%); }
+.fate-body { position: relative; width: min(680px, 100%); text-align: center; }
+.fate-kicker { color: var(--gold); font: 14px var(--serif); letter-spacing: 0.8em; text-indent: 0.8em; }
+.fate-name { margin-top: 12px; font: 600 34px var(--serif); letter-spacing: 0.4em; text-indent: 0.4em; }
+.fate-lines { margin-top: 34px; display: flex; flex-direction: column; gap: 18px; }
+.fate-lines p { font: 20px/1.8 var(--serif); letter-spacing: 0.1em; opacity: 0; transform: translateY(8px); transition: opacity 1.1s ease, transform 1.1s ease; }
+.fate-lines p.on { opacity: 1; transform: none; }
+.fate-foot { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--gold-2); font: 15px/1.8 var(--serif); letter-spacing: 0.14em; opacity: 0; transition: opacity 1s ease; }
+.fate-foot.on { opacity: 1; }
+.portrait .fate-lines p { font-size: 17px; }
+.portrait .fate-name { font-size: 28px; }

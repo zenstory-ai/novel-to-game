@@ -218,35 +218,37 @@ def chapter_citation_coverage(text: str, pattern: re.Pattern[str]) -> set[int]:
     return coverage
 
 
-# Attention budgets keep new runtime guidance from silently accumulating.
-SKILL_TOTAL_LINE_BUDGET = 1300
-SKILL_MD_LINE_BUDGET = 100
-REFERENCE_LINE_BUDGET = 150
+# Attention budgets keep new runtime guidance from silently accumulating. They count
+# characters, not lines: a line budget is met by writing longer lines, and by 2026-11
+# 585 lines were holding 39.8k characters.
+SKILL_TOTAL_CHAR_BUDGET = 26000
+SKILL_MD_CHAR_BUDGET = 3600
+REFERENCE_CHAR_BUDGET = 2000
 
 
 def validate_skill_budget(skills_root: Path) -> list[str]:
     issues: list[str] = []
     total = 0
     for markdown in sorted(skills_root.rglob("*.md")):
-        lines = len(markdown.read_text(encoding="utf-8").splitlines())
-        total += lines
+        size = len(markdown.read_text(encoding="utf-8"))
+        total += size
         relative = markdown.relative_to(skills_root)
         if markdown.name == "SKILL.md":
-            if lines > SKILL_MD_LINE_BUDGET:
+            if size > SKILL_MD_CHAR_BUDGET:
                 issues.append(
-                    f"skills/{relative}: {lines} lines exceeds the {SKILL_MD_LINE_BUDGET}-line "
+                    f"skills/{relative}: {size} characters exceeds the {SKILL_MD_CHAR_BUDGET}-character "
                     "SKILL.md budget; move depth into references/ or cut a rule"
                 )
-        elif lines > REFERENCE_LINE_BUDGET:
+        elif size > REFERENCE_CHAR_BUDGET:
             issues.append(
-                f"skills/{relative}: {lines} lines exceeds the {REFERENCE_LINE_BUDGET}-line "
+                f"skills/{relative}: {size} characters exceeds the {REFERENCE_CHAR_BUDGET}-character "
                 "reference budget; split the file or cut a rule"
             )
-    if total > SKILL_TOTAL_LINE_BUDGET:
+    if total > SKILL_TOTAL_CHAR_BUDGET:
         issues.append(
-            f"skills: {total} lines exceeds the {SKILL_TOTAL_LINE_BUDGET}-line total budget "
-            f"by {total - SKILL_TOTAL_LINE_BUDGET}; cut an equivalent amount, or raise "
-            "SKILL_TOTAL_LINE_BUDGET in scripts/validate_repo.py and say why in the commit"
+            f"skills: {total} characters exceeds the {SKILL_TOTAL_CHAR_BUDGET}-character total budget "
+            f"by {total - SKILL_TOTAL_CHAR_BUDGET}; cut an equivalent amount, or raise "
+            "SKILL_TOTAL_CHAR_BUDGET in scripts/validate_repo.py and say why in the commit"
         )
     return issues
 
@@ -536,11 +538,13 @@ def _validate_target_finish_inheritance(
     example_dir: Path, target_finish: str
 ) -> list[str]:
     issues: list[str] = []
-    optional = "design/VISUAL_TARGETS.md"
-    for relative in (*TARGET_FINISH_SOURCES, optional):
+    optional = {"design/VISUAL_TARGETS.md"}
+    if target_finish == "graybox":
+        optional.add("design/ART_DIRECTION.md")
+    for relative in (*TARGET_FINISH_SOURCES, "design/VISUAL_TARGETS.md"):
         path = example_dir / relative
         if not path.is_file():
-            if relative != optional:
+            if relative not in optional:
                 issues.append(f"{example_dir.name}/{relative}: missing targetFinish source")
             continue
         values = set(TARGET_FINISH_RE.findall(path.read_text(encoding="utf-8")))
@@ -556,8 +560,9 @@ def validate_example(example_dir: Path) -> list[str]:
     manifest, issues = read_manifest(example_dir)
     if manifest is None:
         return issues
+    target_finish = str(manifest["targetFinish"])
     issues.extend(
-        _validate_target_finish_inheritance(example_dir, str(manifest["targetFinish"]))
+        _validate_target_finish_inheritance(example_dir, target_finish)
     )
     issues.extend(validate_qa(example_dir))
     actual_planning_files = {
@@ -567,7 +572,12 @@ def validate_example(example_dir: Path) -> list[str]:
         for path in (example_dir / directory).iterdir()
         if path.is_file()
     }
-    missing_planning_files = EXAMPLE_PLANNING_FILES - actual_planning_files
+    required_planning_files = (
+        EXAMPLE_PLANNING_FILES - {"design/ART_DIRECTION.md"}
+        if target_finish == "graybox"
+        else EXAMPLE_PLANNING_FILES
+    )
+    missing_planning_files = required_planning_files - actual_planning_files
     if missing_planning_files:
         issues.append(
             f"{example_dir.name}: missing planning artifacts "
