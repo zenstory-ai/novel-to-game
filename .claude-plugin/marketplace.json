@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "A text-cited 5-skill novel-to-game workflow for adaptation design, environment-aware runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖改编策划、结合当前运行环境构建游戏与新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "plugins": [
     {
       "name": "novel-to-game",
       "source": "./",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "description": "A text-cited 5-skill novel-to-game workflow covering adaptation-focused novel analysis, staged concept/world/art design, environment-aware runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖游戏化拆书、概念/世界/美术分阶段策划、结合当前运行环境构建游戏及新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。"
     }
   ]
