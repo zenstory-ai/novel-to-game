@@ -5,7 +5,7 @@
 ```text
 # 目标
 targetFinish: [继承 PRODUCT_BRIEF]
-[平台、交付物、包体实测与上限、范围、视口与输入、分级、商业化形态、是否联网]
+[平台、交付物、包体实测与上限、范围、视口与输入、分级、变现方式、是否联网]
 
 # 核心还原要求
 experienceProfile: [继承 GAME_DESIGN]
