@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on the selected target platform. Orchestrates the whole adaptation pipeline — requirements intake, adaptation-focused novel analysis, concept, world and visual design, environment-aware build, and blind-playtest QA — for a novel in any language. Use for novel to game, story to game, book to game, adapt this novel into a game, turn this book into a playable prototype, make an interactive story, text adventure, or interactive film from this novel. NovelToGame 总入口。把任意语言的原始小说、拆文库或写作工程转成忠于原著、可在目标平台完整游玩的游戏，编排游戏化拆书、概念与世界及美术设计、结合当前运行环境与工具构建游戏及新玩家实机盲玩验收。用于小说转游戏、把这本书做成游戏、把小说改成互动小说 / 互动叙事 / 文字冒险游戏 / 互动影游等需求。"
+description: "Turn a novel into a fully playable game on the selected target platform (web, desktop, mobile, WeChat/Douyin mini-games, or TapTap). Orchestrates requirements intake, adaptation-focused novel analysis, concept, world and visual design, environment-aware build, and blind-playtest QA for a novel in any language. Use for novel to game, story to game, book to game, WeChat mini-game, Douyin mini-game, TapTap game, interactive story, text adventure, or interactive film. NovelToGame 总入口。把任意语言的小说、拆文库或写作工程转成忠于原著、可在目标平台（网页、桌面/移动端、微信小游戏、抖音小游戏、TapTap 等）完整游玩的游戏，编排游戏化拆书、概念与世界及美术设计、环境适配构建与新玩家实机盲玩验收。"
 ---
 # NovelToGame 总入口
 
@@ -33,7 +33,7 @@ game-adaptations/{project}/
 
 ## 流程
 
-1. **需求确认**：速读原著，直接给出完整推荐方案并写成 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、当前可测环境、视口与输入）、市场与界面语言、受众、玩法方向与对标先例（或待比较的方向）、`experienceProfile`、画风与 `targetFinish`、内容分级（成人内容只涉及成年角色，原著人物未成年时不作性化处理）、核心代入感（玩家扮演谁、追求什么）、时长与预算、明确不做的事项。只在平台、核心玩法、成人内容、真实人物、版权与资产授权、付费服务或高成本投入存在重大分岔时停下请用户拍板；其余写入「未确认假设」。不适用的维度写 `N/A`，后续阶段不得擅自填回默认值。
+1. **需求确认**：速读原著，直接给出完整推荐方案并写成 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、交付包形态、当前可测环境、视口与输入、包体上限）、商业化与必接入口（免费、IAA 激励广告或买断/内购解锁；国内无版号个人主体只排纯 IAA 或免费试玩）、市场与界面语言、受众、玩法方向与对标先例（或待比较的方向）、`experienceProfile`、画风与 `targetFinish`、内容分级（成人内容只涉及成年角色，原著人物未成年时不作性化处理）、核心代入感（玩家扮演谁、追求什么）、时长与预算、明确不做的事项。目标为微信/抖音无 DOM 小游戏包或 TapTap 包而本机缺少对应官方工具时，一并在简报明确是否允许用共用画布入口与模拟接口的浏览器调试页作可测环境。只在平台、核心玩法、商业化与版号主体、成人内容、真实人物、版权与资产授权、付费服务或高成本投入存在重大分岔时停下请用户拍板；其余写入「未确认假设」。不适用的维度写 `N/A`，后续阶段不得擅自填回默认值。
 2. **拆书**：调用 `novel-game-analyze`，生成带原文出处的 `SOURCE_BIBLE.md`。
 3. **概念**：调用 `game-design` 阶段一，选定 `concepts/CONCEPT.md`。
 4. **设计**：选定方向依赖的细节缺出处时，先让 `novel-game-analyze` 定点补证；再调用 `game-design` 阶段二，生成 `GAME_DESIGN.md`。

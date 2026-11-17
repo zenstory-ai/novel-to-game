@@ -11,6 +11,14 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Added
+
+- Added conditional WeChat Mini Game, Douyin Mini Game, and TapTap (H5 `.zip` and Android/PC client) adaptation support plus visual, choice, and copy AI-deslop checks ([`skills/game-build/references/minigame-and-taptap.md`](skills/game-build/references/minigame-and-taptap.md), [`docs/research/minigame-and-taptap-cases.md`](docs/research/minigame-and-taptap-cases.md), [decision note](.agents/notes/implemented/feature/2026-11-17-minigame-and-taptap-platform-adaptation.md)): `novel-to-game` locks package form, size ceiling, IAA/IAP boundaries, and optional shared-canvas browser test pages when official DevTools are absent; `game-design` covers sub-30-second cold-start hooks, non-predatory IAA/trial boundaries, top-right capsule exclusion zones, Douyin sidebar revisit rewards, main-vs-subpackage asset splits, and period-grounded UI materials without neon glassmorphism or fake choices; `game-build` enforces DOM-free single-canvas mini-game structure (`game.js` + `game.json`), on-disk package size checks (`≤ 4 MB` main package), pre-integration sprite/3D checks (rejecting baked checkerboard alpha, white halos, deformed hands/faces, and anachronisms), single-module platform wrappers, and expanded copy deslop across summary/share cards and hint prompts; and `game-qa` verifies capsule clearance, dual viewports, ad-cancel recovery, visual/choice slop, and explicit store/SDK `limitations`.
+
+### Changed
+
+- Raised `SKILL_TOTAL_CHAR_BUDGET` in `scripts/validate_repo.py` from `26,000` to `28,000` characters to accommodate the conditional mini-game/TapTap build reference and visual/copy deslop rules while keeping per-`SKILL.md` (`3,600`) and per-reference (`2,000`) ceilings unchanged.
+
 ## [0.9.0] - 2026-11-14
 
 ### Changed
