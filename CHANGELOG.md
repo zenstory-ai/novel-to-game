@@ -11,6 +11,18 @@ input which previously passed belongs under `Changed`, not `Fixed`.
 
 ## [Unreleased]
 
+### Added
+
+- Support for WeChat Mini Games, Douyin Mini Games, and **TapTap Maker (TapTap 制造)**, along with checks against machine-made visual, choice, and copy defects ([`skills/game-build/references/wechat-and-douyin-minigame.md`](skills/game-build/references/wechat-and-douyin-minigame.md), [`skills/game-build/references/taptap-maker.md`](skills/game-build/references/taptap-maker.md), [`docs/research/minigame-and-taptap-cases.md`](docs/research/minigame-and-taptap-cases.md), [decision note](.agents/notes/implemented/feature/2026-11-17-minigame-and-taptap-platform-adaptation.md)):
+  - `novel-to-game` locks the target platform, package format, size limit, developer account type (solo developers on WeChat's 30 RMB/year personal verification, Douyin personal accounts, or TapTap Maker ship ISBN-free single-player builds that are free or ad-supported, with no IAP), approval for paid services such as Maker credit-based media generation, and whether a local substitute runtime is allowed when live platform tools are absent.
+  - `game-design` steers solo-developer builds toward single-player genres open to personal accounts, shapes 1–3 minute runs with an opening conflict in the first 30 seconds and a shareable end card, keeps rewarded ads on retries, hints, stamina, or bonus chapters with a working path before ad-unit activation, clears the top-right capsule button (`getMenuButtonBoundingClientRect()`), covers Douyin's sidebar revisit reward, splits the `≤ 4 MB` main package from subpackages, and bans out-of-period neon glass cards, mismatched store-vs-gameplay art, and fake choices that lead to the same reply.
+  - `game-build` adds two conditional references: `wechat-and-douyin-minigame.md` (DOM-free single-canvas `game.js` and per-platform `game.json`, local `Storage` and subpackages with no backend server required, hiding unactivated ad buttons before WeChat's 500-UV threshold so initial review does not fail, `wx.getWindowInfo()`, cold and warm Douyin sidebar revisit checks, on-disk size checks, macOS WeChat DevTools CLI detection, and a shared-canvas browser test page) and `taptap-maker.md` (UrhoX + Lua 5.4 `main.lua`, `.ui.json`, and 24-character UUID `.meta` files, `taptap-maker` CLI and Maker MCP, reading in-project `CLAUDE.md`, `urhox-libs/`, and `engine-docs/` instead of web-searching H5 JS APIs, keeping local UrhoX Runtime preview separate from `main`-branch `maker_build_current_directory` cloud builds, requiring user approval before spending credits, and wiring 0%-commission rewarded ads through `get_ad_config` and `sdk:ShowRewardVideoAd`). It also checks generated sprites and 3D assets before integration (rejecting checkerboard backgrounds, white halos, deformed hands and faces, garbled sign text, and modern dress in period pieces) and extends `player-copy-polish.md` to end cards, share lines, and hint prompts.
+  - `game-qa` checks fake branches, sprite and UI defects, aspect-ratio stretching, capsule clearance, unconfigured or cancelled ads, and sidebar revisit rewards during the blind playtest, and lists unrun DevTools preview, UrhoX Runtime or cloud builds, live ad units, and personal publishing credentials in `limitations`.
+
+### Changed
+
+- Raised `SKILL_TOTAL_CHAR_BUDGET` in `scripts/validate_repo.py` from `26,000` to `30,000` characters to fit the two conditional platform references (at most one loaded per build, neither loaded on ordinary browser or desktop projects) and the visual and choice checks, while keeping per-`SKILL.md` (`3,600`) and per-reference (`2,000`) caps unchanged.
+
 ## [0.9.0] - 2026-11-14
 
 ### Changed

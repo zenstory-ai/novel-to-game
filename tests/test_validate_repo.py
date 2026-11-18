@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from validate_repo import (  # noqa: E402
     EXAMPLE_MANIFEST,
+    LINK_RE,
     OUTPUT_LANGUAGE_RULE,
     REFERENCE_CHAR_BUDGET,
     SKILL_MD_CHAR_BUDGET,
@@ -23,6 +24,7 @@ from validate_repo import (  # noqa: E402
     read_manifest,
     validate_example,
     validate_qa,
+    validate_repository,
     validate_skill,
     validate_skill_budget,
     visible_directories,
@@ -281,6 +283,24 @@ class RepositoryValidationTests(unittest.TestCase):
             )
             issues = validate_example(example)
             self.assertTrue(any("ART_DIRECTION.md" in issue for issue in issues), issues)
+
+    def test_repository_passes_full_validation_and_doc_links_resolve(self) -> None:
+        self.assertEqual(validate_repository(ROOT), [])
+        markdown_files = [
+            ROOT / "README.md",
+            ROOT / "README_ZH.md",
+            *sorted((ROOT / "docs").rglob("*.md")),
+        ]
+        broken = []
+        for markdown in markdown_files:
+            for raw_target in LINK_RE.findall(markdown.read_text(encoding="utf-8")):
+                target = raw_target.split("#", 1)[0].strip()
+                if not target or "://" in target or target.startswith(("#", "mailto:")):
+                    continue
+                resolved = (markdown.parent / target).resolve()
+                if not resolved.exists():
+                    broken.append(f"{markdown.relative_to(ROOT)} -> {target}")
+        self.assertEqual(broken, [])
 
 
 if __name__ == "__main__":
