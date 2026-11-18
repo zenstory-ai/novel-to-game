@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel into a fully playable game on web, desktop, mobile, WeChat/Douyin mini-games, TapTap Maker, or TapTap. Orchestrates requirements intake, novel analysis, concept/world/visual design, environment-aware build, and blind-playtest QA in any language. Use for novel to game, story to game, book to game, WeChat mini-game, Douyin mini-game, TapTap Maker, TapTap game, interactive story, text adventure, or interactive film. NovelToGame 总入口。把任意语言的小说、拆文库或写作工程转成忠于原著、可在网页、桌面/移动端、微信/抖音小游戏、TapTap 制造及 TapTap 完整游玩的游戏，编排拆书、策划美术、环境适配构建与新玩家盲玩验收。"
+description: "Turn a novel into a fully playable game on web, desktop, mobile, WeChat/Douyin mini-games, or TapTap Maker. Orchestrates requirements intake, novel analysis, concept/world/visual design, environment-aware build, and blind-playtest QA in any language. Use for novel to game, story to game, book to game, WeChat mini-game, Douyin mini-game, TapTap Maker, interactive story, text adventure, or interactive film. NovelToGame 总入口。把任意语言的小说、拆文库或写作工程转成忠于原著、可在网页、桌面/移动端、微信/抖音小游戏或 TapTap 制造完整游玩的游戏，编排拆书、策划美术、环境适配构建与新玩家盲玩验收。"
 ---
 # NovelToGame 总入口
 
@@ -33,7 +33,7 @@ game-adaptations/{project}/
 
 ## 流程
 
-1. **需求确认**：速读原著，直接给出完整推荐方案并写成 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、包形式与体积上限、当前可测环境、视口与输入；目标为 TapTap 时必须区分 **TapTap 制造** UrhoX+Lua 工程、TapTap H5 `.zip` 小游戏与客户端包）、变现方式（免费、激励广告或试玩买断/内购；国内无版号主体只走纯广告或免费，不开内购）、市场与界面语言、受众、玩法方向与对标先例、`experienceProfile`、画风与 `targetFinish`、内容分级（成人内容只涉及成年角色，原著未成年角色不作性化处理）、核心代入感（扮演谁、追求什么）、时长与预算、不做事项。本机缺少真机预览或 TapTap 制造本地 Runtime 时，一并写明是否允许批准的本地替代环境作可测环境。只在平台与子通道、核心玩法、变现与版号资质、成人内容、真实人物、版权授权、付费服务（含 Maker 积分生成）或高成本投入存在重大分岔时停下请用户拍板；其余写入「未确认假设」。不适用的维度写 `N/A`，后续阶段不得擅自填回默认值。
+1. **需求确认**：速读原著，直接给出完整推荐方案并写成 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、包形式与体积上限、当前可测环境、视口与输入，如微信/抖音无 DOM 小游戏包或 **TapTap 制造** UrhoX+Lua 工程）、变现方式（免费、激励广告或买断/内购；国内无版号主体只走纯广告或免费，不开内购）、市场与界面语言、受众、玩法方向与对标先例、`experienceProfile`、画风与 `targetFinish`、内容分级（成人内容只涉及成年角色，原著未成年角色不作性化处理）、核心代入感（扮演谁、追求什么）、时长与预算、不做事项。本机缺少微信/抖音真机预览或 TapTap 制造本地 UrhoX Runtime 时，一并写明是否允许批准的本地替代环境作可测环境。只在平台、核心玩法、变现与版号资质、成人内容、真实人物、版权授权、付费服务（含 Maker 积分生成）或高成本投入存在重大分岔时停下请用户拍板；其余写入「未确认假设」。不适用的维度写 `N/A`，后续阶段不得擅自填回默认值。
 2. **拆书**：调用 `novel-game-analyze`，生成带原文出处的 `SOURCE_BIBLE.md`。
 3. **概念**：调用 `game-design` 阶段一，选定 `concepts/CONCEPT.md`。
 4. **设计**：选定方向依赖的细节缺出处时，先让 `novel-game-analyze` 定点补证；再调用 `game-design` 阶段二，生成 `GAME_DESIGN.md`。

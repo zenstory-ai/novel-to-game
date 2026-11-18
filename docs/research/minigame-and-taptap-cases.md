@@ -1,25 +1,25 @@
-# 微信小游戏、抖音小游戏与 TapTap 制造 / TapTap 案例及去 AI 味依据 · 2026-11-18
+# 微信小游戏、抖音小游戏与 TapTap 制造案例及去 AI 味依据 · 2026-11-18
 
-本页整理网页社区、官方文档与 GitHub 开源仓库中关于微信小游戏、抖音小游戏、**TapTap 制造（TapTap Maker）**及 TapTap 商店独立游戏的代表作品、变现方式、工程硬坑与去「AI 味（AI slop）」经验，说明哪些规则写进运行时技能、哪些留给开发者在仓库外处理。运行时构建规范分别见 [wechat-and-douyin-minigame.md](../../skills/game-build/references/wechat-and-douyin-minigame.md) 与 [taptap-maker-and-store.md](../../skills/game-build/references/taptap-maker-and-store.md)；常规构建不加载本页。
+本页整理网页社区、官方文档与 GitHub 开源仓库中关于微信小游戏、抖音小游戏与 **TapTap 制造（TapTap Maker）**的代表作品、变现方式、工程硬坑与去「AI 味（AI slop）」经验，说明哪些规则写进运行时技能、哪些留给开发者在仓库外处理。运行时构建规范分别见 [wechat-and-douyin-minigame.md](../../skills/game-build/references/wechat-and-douyin-minigame.md) 与 [taptap-maker.md](../../skills/game-build/references/taptap-maker.md)；常规构建不加载本页。
 
 ## 一、跑通市场的小说与叙事改编形态
 
 ### 1. TapTap 制造（TapTap Maker）短局模拟器与网文爽点抉择 + 0 分成激励广告
 
-- **平台背景**：[**TapTap 制造**](https://maker.taptap.cn)（TapTap Maker）是心动 / TapTap 推出的 AI 原生游戏创作与即时游玩平台，底层采用自研 **UrhoX 引擎 + Lua 5.4** 纯代码架构，把云存档、排行榜、联机、实名防沉迷等 TDS 开发者服务一次性打包，并打通了小游戏 **IAA 激励广告变现（平台实行 0 分成政策，广告收益 100% 归创作者所有）**。相比仅发曝光或奖金的同类创作平台，它是目前少数跑通「无版号个人创作者直接上架并拿全额广告分成」闭环的渠道。
-- **热门题材与案例**：在 TapTap 制造与 TapTap 即玩榜单中，最契合小说改编的爆款集中在「强设定开局 + 随机事件/肉鸽抉择 + 轻度数值养成」的模拟器形态，如历史官场题材《崇祯直聘：明末官场沉浮模拟器》、《古玩人生》，以及结合重生、末世、开店、修仙等网文题材的生存经营模拟器。
-- **变现与品类边界**：0 分成激励广告在节奏快、单局短、重玩性高的轻度策略与事件模拟器上转化顺畅；若是节奏慢、强沉浸的长篇纯文字跑团或严肃长叙事，生硬插入广告会严重破坏阅读情绪，更适合走下文的序章免费试玩加买断路线。
+- **平台背景**：[**TapTap 制造**](https://maker.taptap.cn)（TapTap Maker）是心动 / TapTap 推出的 AI 原生游戏创作与即时游玩平台，底层采用自研 **UrhoX 引擎 + Lua 5.4** 纯代码架构，把云存档、排行榜、联机、实名防沉迷等 TDS 开发者服务一次性打包，并打通了小游戏 **IAA 激励广告变现（平台实行 0 分成政策，广告收益 100% 归创作者所有）**。它是目前少数跑通「无版号个人创作者直接上架并拿全额广告分成」闭环的渠道。
+- **热门题材与案例**：在 TapTap 制造与即玩榜单中，最契合小说改编的爆款集中在「强设定开局 + 随机事件/肉鸽抉择 + 轻度数值养成」的模拟器形态，如历史官场题材《崇祯直聘：明末官场沉浮模拟器》、《古玩人生》，以及结合重生、末世、开店、修仙等网文题材的生存经营模拟器。
+- **变现与品类边界**：0 分成激励广告在节奏快、单局短、重玩性高的轻度策略与事件模拟器上转化顺畅；若是节奏慢、强沉浸的长篇纯文字跑团或慢热长叙事，在剧情高潮生硬插入广告会严重破坏阅读体验，应把广告激励点严格限定在失手重来、线索提示或番外解锁。
 
 ### 2. 天赋词条抽选 + 一屏命数判词卡
 
 - **代表案例**：[`VickScarlet/lifeRestart`](https://github.com/VickScarlet/lifeRestart)（《人生重开模拟器》，及结合生成模型的社区衍生版 [`chnjames/life-restart-ai`](https://github.com/chnjames/life-restart-ai)）。
 - **借鉴要点**：开局抽选互斥或联动词条 → 按岁数/回合推进条件事件 → 结尾把整局关键因果浓缩成一张反差鲜明的命数判词卡。极轻包体即可跑通，结算卡适合直接转发到微信群、TapTap 社区或抖音评论区晒图。
 
-### 3. 中式民俗/历史推理解谜 + 分档提示或试玩买断
+### 3. 中式民俗/历史推理解谜 + 分档激励提示
 
 - **代表案例**：《纸嫁衣》系列、《山河旅探》（奥秘之家）。
 - **改编与设计要点**：谜题直接长在原作礼俗、时代技艺与证词逻辑里——如《纸嫁衣》靠烧纸互通阴阳、八字风水推进机关，《山河旅探》靠清末民初现场勘验与证词指谬破案，不硬塞脱离背景的密码锁或滑块拼图。
-- **多端发行与教训**：《山河旅探》在 TapTap 商店走「前章免费试玩 + 一次性买断完整版」；《纸嫁衣》小游戏版右上角设两档提示接激励视频，既救卡关流失又带来广告收入，但后期续作因广告过密、商店立绘与实机画面落差过大导致评分明显下滑。
+- **小游戏变现与反面教训**：《纸嫁衣》小游戏版即点即玩，右上角设两档提示（「方向线索 → 完整解法或跳过繁琐小机关」）接激励视频，既救卡关流失又带来广告收入；但后期续作因广告过密被嘲为「广告模拟器」，宣传立绘与实机画面落差过大导致口碑下滑。
 
 ### 4. 桌面卡牌调度 + 倒计时生死局
 
@@ -34,25 +34,24 @@
 ### 6. 高频寻宝/开箱短循环 + 境界成长
 
 - **代表案例**：《寻道大千》《道友来挖宝》，以及开源修仙项目 [`ChurchTao/Daoyou`](https://github.com/ChurchTao/Daoyou)（《万界道友》，TypeScript 水墨风，含境界、灵根、功法、命格、炼丹炼器与时间轴回合战斗，兼容微信小游戏与网页）、[`setube/vue-xiuxiangame`](https://github.com/setube/vue-xiuxiangame)（《我的文字修仙全靠刷》）。
-- **借鉴与工程边界**：单机或轻量改编可借「一铲一揭示、见好就收或深入涉险」的 2–4 分钟短循环（如本仓《西游记》示例的火脉残图），舍弃跨服充值排行榜。工程上需注意：`setube/vue-xiuxiangame` 依赖 Vue 与 Element Plus DOM 组件，适合网页、TapTap H5 WebView 或封装安装包，不能直接跑在无 DOM 的微信/抖音小游戏或 UrhoX+Lua 的 TapTap 制造环境里。
+- **借鉴与工程边界**：单机或轻量改编可借「一铲一揭示、见好就收或深入涉险」的 2–4 分钟短循环（如本仓《西游记》示例的火脉残图），舍弃跨服充值排行榜。工程上需注意：`setube/vue-xiuxiangame` 依赖 Vue 与 Element Plus DOM 组件，不能直接跑在无 DOM 的微信/抖音小游戏沙盒或 UrhoX+Lua 的 TapTap 制造环境里。
 
-### 7. 前 15 秒反常悬念 + 短视频挂载与本土买断叙事
+### 7. 前 15 秒反常悬念 + 短视频挂载与分包影游
 
-- **代表案例**：短视频挂载类的《隐秘的档案》《沙威玛传奇》；买断叙事与影游类的《饿殍：明末千里行》《烟火》《飞越13号房》《盛世天下》，以及开源文游工具 [`Shanyin-ai/Story-to-game`](https://github.com/Shanyin-ai/Story-to-game)、[`meathill/mui-gamebook`](https://github.com/meathill/mui-gamebook)。
-- **借鉴要点**：抖音短视频左下角挂载靠前 10–15 秒摆出违和场景与生死规矩，并在通关或翻车时刻接 `tt.getGameRecorderManager()` 一键分享录屏；纯叙事长篇在 TapTap 商店走「试玩序章 + 买断完整篇」，移入小游戏时则须把视频与配音拆入分包或远程按需加载并保留末帧定格降级。
+- **代表案例**：《隐秘的档案》《文字来找茬》《沙威玛传奇》《盛世天下》（小程序与多端版），以及开源文游工具 [`Shanyin-ai/Story-to-game`](https://github.com/Shanyin-ai/Story-to-game)、[`meathill/mui-gamebook`](https://github.com/meathill/mui-gamebook)。
+- **借鉴要点**：抖音「游戏发行人计划」与短视频左下角挂载靠开局 10–15 秒直接摆出违和场景与生死规矩（《隐秘的档案》）或高节奏翻车现场（《沙威玛传奇》），并在通关或翻车时刻接 `tt.getGameRecorderManager()` 方便玩家一键发出录屏；叙事或影游移入小游戏时，视频与配音须拆入分包或远程按需加载并保留末帧定格降级。
 
-> **关于社区收入案例的事实边界**：国内无版号主体在微信、抖音、TapTap 制造与 TapTap 小游戏只能走纯激励广告或免费试玩，不得接入任何内购充值。社区里「单款 AI 小游戏日入过万 / 月入数万」属于头部或个别创作者案例，真实收益受开局留存、完播率与重玩率影响极大；技能不得把跑通广告接口写成稳赚或可直接提审上线。
+> **关于社区收入案例的事实边界**：国内无版号主体在微信小游戏、抖音小游戏与 TapTap 制造只能走纯激励广告或免费游玩，不得接入任何内购充值。社区里「单款 AI 小游戏日入过万 / 月入数万」属于头部或个别创作者案例，真实收益受开局留存、完播率与重玩率影响极大；技能不得把跑通广告接口写成稳赚或可直接提审上线。
 
 ---
 
 ## 二、GitHub 开源工具链与六项平台实机/审核硬坑
 
-对照[微信小游戏开发指南](https://developers.weixin.qq.com/minigame/dev/guide/)、[抖音小游戏开发文档](https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/guide/minigame/introduction)、[TapTap 制造官网](https://maker.taptap.cn)、官方开源仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp)、[`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games) 与 [TapTap 开发者文档](https://developer.taptap.cn/docs/sdk/)，编码 Agent 生成上述平台游戏时最常栽在六处：
+对照[微信小游戏开发指南](https://developers.weixin.qq.com/minigame/dev/guide/)、[抖音小游戏开发文档](https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/guide/minigame/introduction)、[TapTap 制造官网](https://maker.taptap.cn)及官方开源仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp)、[`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)，编码 Agent 生成上述三端游戏时最常栽在六处：
 
-1. **把「TapTap 制造」误当成普通 H5 网页，或混用 TapTap 三套通道**：
-   - **TapTap 制造（TapTap Maker，`@taptap/maker`）**：底层是 **UrhoX 引擎 + Lua 5.4**（默认入口 `scripts/main.lua`，界面 `.ui.json`，资源旁配 24 位 URL-safe Base64 UUID 的 `.meta` 文件，本地绑定标志 `.maker-mcp/config.json`），**不是 HTML/JS 网页**。官方仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp) 采用「`taptap-maker` CLI（一次性初始化/鉴权/克隆/本地 Runtime 预览）+ Maker MCP（状态、付费生图音视频 3D 代理、`maker_build_current_directory` 提交云构建）+ 本地 AI dev-kit（`CLAUDE.md`、`examples/`、`templates/`、`urhox-libs/`）」架构，社区另有 [`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)、[`AndroidSix/TapMakerWork`](https://github.com/AndroidSix/TapMakerWork) 与 [`2624111503-bot/tap-maker-ui-generator`](https://github.com/2624111503-bot/tap-maker-ui-generator)。动代码前必须先读工程内的 `CLAUDE.md` 与 `urhox-libs/`，严禁凭空编造引擎 API 或手写 `.meta` UUID；调用生成工具扣积分须经用户明确授权（CLI 传 `--allow-paid`），本地预览（`taptap-maker preview`）绝不自动触发 `push` 或云构建；接 0 分成激励广告须先读 `maker://ads-integration-guide` 并调 `get_ad_config`，严禁与 H5 Open API MCP 混用。
-   - **TapTap H5 小游戏（`@taptap/instant-games-open-mcp`）**：跑在客户端 WebView 容器里的 Web / Canvas / WebGL 单体 `.zip`（`≤ 20 MB`，根含 `index.html`，包名与内部路径只用 `[A-Za-z0-9_.-]`，含中文或空格会导致线上解压失败），走 OAuth 扫码认证管理上传、排行榜、云存档与 H5 广告位。
-   - **TapTap 商店客户端包（Android / PC）**：原生引擎导出或 [`ionic-team/capacitor`](https://github.com/ionic-team/capacitor) 封装，须先走 [`taptap/TapSDK-Unity`](https://github.com/taptap/TapSDK-Unity) / TapSDK 登录取 `userIdentifier`，再初始化实名防沉迷与未成年人时段/时长拦截。
+1. **把「TapTap 制造」误做成网页 H5，或靠网页搜索瞎写接口**：
+   - **真实架构**：TapTap 制造（`@taptap/maker`）底层是 **UrhoX 引擎 + Lua 5.4**（入口为 `scripts/` 下的 `main.lua`，界面 `.ui.json`，资源旁配官方生成的 24 位 URL-safe Base64 UUID `.meta` 文件，本地绑定标记为 `.maker-mcp/config.json`），**不是 HTML/JS 网页**。官方仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp) 采用「`taptap-maker` CLI（一次性初始化/鉴权/克隆/本地 UrhoX Runtime 预览）+ Maker MCP（状态查询、付费生图音视频 3D 代理、`maker_build_current_directory` 提交云构建）+ 工程内开发包（`CLAUDE.md`、`urhox-libs/`、`engine-docs/`）」三层分工，社区另有 [`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)、[`AndroidSix/TapMakerWork`](https://github.com/AndroidSix/TapMakerWork) 与 [`2624111503-bot/tap-maker-ui-generator`](https://github.com/2624111503-bot/tap-maker-ui-generator)。
+   - **硬性防错边界**：Maker 引擎与 SDK 无公网官方文档，**工程内的 `CLAUDE.md`、`urhox-libs/` 与 `engine-docs/recipes/sdk.md` 是唯一真相源**——用网页搜索只会搜到微信小游戏或 TapTap H5 的 JavaScript `tap.*` 代码，塞进 Lua 直接报错；调用生成工具扣积分须经用户明确授权（CLI 传 `--allow-paid`，配音试听与 3D 多视图须经用户挑定确认）；Maker 远端仅接受 `main` 分支，本地 `taptap-maker preview` 绝不自动触发 `push` 或云构建；接 0 分成激励广告须先调 `get_ad_config` 同步 `.project/settings.json` 的 `@runtime.ad`，再调 `sdk:ShowRewardVideoAd` 并仅在 `result.success == true` 时发奖。
 2. **拿 DOM 网页冒充微信/抖音小游戏**：微信（`wx`）与抖音（`tt`）运行在无 DOM、无 BOM 的 JavaScript 沙盒里，没有 `index.html`、`document` 与 CSS；微信目录含 `game.js` + `game.json` + `project.config.json`（`"compileType": "game"`），抖音配 `project.tt.json`，首次 `createCanvas()` 生成唯一上屏主画布，视口在微信端优先读 `wx.getWindowInfo()`。开源适配常用原生 Canvas 2D、[`wechat-miniprogram/minigame-canvas-engine`](https://github.com/wechat-miniprogram/minigame-canvas-engine)、[`theajack/wx-minigame-ts`](https://github.com/theajack/wx-minigame-ts)、[`finscn/weapp-adapter`](https://github.com/finscn/weapp-adapter)、[`wechat-miniprogram/minigame-demo`](https://github.com/wechat-miniprogram/minigame-demo)、[`wechat-miniprogram/minigame-lockstep-demo`](https://github.com/wechat-miniprogram/minigame-lockstep-demo)、[`deepkolos/three-platformize`](https://github.com/deepkolos/three-platformize) / [`deepkolos/platformize`](https://github.com/deepkolos/platformize)、[`godothub/godot-minigame`](https://github.com/godothub/godot-minigame)、[`wechat-miniprogram/minigame-unity-webgl-transform`](https://github.com/wechat-miniprogram/minigame-unity-webgl-transform) 及监控 [`lizhiyao/sentry-miniapp`](https://github.com/lizhiyao/sentry-miniapp)。
 3. **首包超 4 MB 或双端分包字段混写**：微信小游戏主包 `≤ 4 MB`、独立分包单个 `≤ 4 MB`、`game.json` 的 `subpackages` 整包合计 `≤ 30 MB`（`openDataContext` 禁入分包）；抖音小游戏主包 `≤ 4 MB`、`game.json` 配 `subPackages` 时整包 `≤ 20 MB`（不分包 `≤ 16 MB`）。两端分包键名大小写不同，须按目标平台生成各自的 `game.json` 并在自测脚本里实测磁盘字节数。
 4. **右上角系统胶囊压住核心按钮**：微信与抖音右上角常驻原生胶囊按钮（菜单与关闭），坐标由 `getMenuButtonBoundingClientRect()` 返回。把暂停、跳过、返回、任务或资源栏画在右上角，真机点不到且审核直接打回。
@@ -63,9 +62,9 @@
 
 ## 三、四类常见「AI 味（AI Slop）」问题与对应约束
 
-在 TapTap 评价区、TapTap 制造社区、X 独立开发复盘与 indienova 讨论中，玩家一眼看出廉价生成痕迹并直接划走，主要集中在四类问题：
+在 TapTap 制造社区、微信/抖音评论区、X 独立开发复盘与 indienova 讨论中，玩家一眼看出廉价生成痕迹并直接划走，主要集中在四类问题：
 
-1. **脱离时代背景的霓虹毛玻璃界面与画风拼贴**：不管古风、民俗还是历史题材，一律套深蓝黑底配紫青霓虹渐变、毛玻璃圆角悬浮卡、系统默认无衬线黑体，拿 Emoji 或单个汉字/字母充当图标；同屏角色线稿粗细、上色手法和色温各异；商店图精修华丽，进游戏却是粗糙色块。
+1. **脱离时代背景的霓虹毛玻璃界面与画风拼贴**：不管古风、民俗还是历史题材，一律套深蓝黑底配紫青霓虹渐变、毛玻璃圆角悬浮卡、系统默认无衬线黑体，拿 Emoji 或单个汉字/字母充当图标；同屏角色线稿粗细、上色手法和色温各异；封面精修华丽，进游戏却是粗糙色块。
    - **写入技能的约束**：`art-direction-method.md` 规定界面材质、边框与字形须取材自作品时代的器物（宣纸账册、木牌漆器、旧报刊档案），古风、民俗与写实题材禁用深蓝紫青霓虹渐变、毛玻璃悬浮卡与整屏泛黄滤镜；同屏资产统一画风，门面页与商店图须和实机画面保持同一水准。
 2. **生图穿帮、牌匾乱码字与假透明棋盘格底**：立绘带未抠净的灰白棋盘格假透明底或白边锯齿、六指多关节、左右眼错位、牌匾书卷上印着无法辨认的伪汉字乱码、古装混入现代拉链口袋，或直接把平视半身立绘缩小贴在俯视地面上当跑图小人。
    - **写入技能的约束**：`game-build/SKILL.md` 要求生图与三维资产入包前逐件核验透明通道、手部五官、牌匾字迹与服饰年代，不合格直接重出或裁切，不带病上屏；`blind-playtest-method.md` 在首轮盲玩中逐项排查此类穿帮。
@@ -78,5 +77,5 @@
 
 ## 四、写入运行时技能与留在仓库外的分工
 
-- **写入运行时技能**：`novel-to-game`（锁定目标平台与 TapTap 子通道、包形式与体积上限、变现方式、Maker 积分付费门禁与本地替代环境许可）、`game-design`（短局高重玩快入戏、0 分成激励广告与买断边界、右上角胶囊避让区、首包/分包拆分与禁用脱离时代的霓虹毛玻璃界面）、`game-build`（按需加载 `wechat-and-douyin-minigame.md` 或 `taptap-maker-and-store.md`、生图透明底与乱码穿帮核验、上屏文字审校）、`game-qa`（胶囊遮挡、双视口、广告中断、侧边栏冷/热进入、假选项与画面穿帮盲测，以及未绑定 Runtime / 云构建的 `limitations` 记录）。
+- **写入运行时技能**：`novel-to-game`（锁定目标平台、包形式与体积上限、变现方式、Maker 积分付费门禁与本地替代环境许可）、`game-design`（短局高重玩快入戏、激励广告不改写原著因果、右上角胶囊避让区、首包/分包拆分与禁用脱离时代的霓虹毛玻璃界面）、`game-build`（按需加载 `wechat-and-douyin-minigame.md` 或 `taptap-maker.md`、生图透明底与乱码穿帮核验、上屏文字审校）、`game-qa`（胶囊遮挡、双视口、广告中断、侧边栏冷/热进入、假选项与画面穿帮盲测，以及未绑定 UrhoX Runtime / 云构建的 `limitations` 记录）。
 - **不写入运行时技能**：平台账号注册、软著与 ICP 备案办证步骤、买量投流与达人分佣后台操作、特定商业引擎的基础安装教程。
