@@ -1,6 +1,6 @@
 ---
 name: game-build
-description: "Build the approved game design into a complete, runnable game using the local environment's available rendering stacks, mini-game/platform toolchains, 3D/2D generators, and modeling tools. Turn GAME_DESIGN and ART_DIRECTION into a playable graybox first, then the finished game with rule regressions, one end-to-end verify command, and a concise BUILD_BRIEF. Use for implement the approved game design, prototype the riskiest design question, or turn this design into a running 2D, 2.5D, 3D, WeChat/Douyin mini-game, or TapTap game. 游戏构建执行。结合本机与当前运行环境实际可用的渲染栈、小游戏/多端工具链与生成/建模工具（如 Three.js、图生 3D 模型、Blender、2D/音视频工具），把已批准的 GAME_DESIGN 与 ART_DIRECTION 先做成可玩通的灰盒，再实现为目标平台（含微信小游戏、抖音小游戏、TapTap 等）可完整运行的游戏并配齐规则回归与端到端验证命令。"
+description: "Build the approved game design into a complete, runnable game using the local environment's available rendering stacks, mini-game/TapTap Maker toolchains, 3D/2D generators, and modeling tools. Turn GAME_DESIGN and ART_DIRECTION into a playable graybox first, then the finished game with rule regressions, one end-to-end verify command, and a concise BUILD_BRIEF. Use for implement the approved game design, prototype the riskiest design question, or turn this design into a running 2D, 2.5D, 3D, WeChat/Douyin mini-game, TapTap Maker, or TapTap game. 游戏构建执行。结合本机与当前运行环境实际可用的渲染栈、小游戏/TapTap 制造工具链与生成/建模工具（如 Three.js、UrhoX+Lua、图生 3D 模型、Blender、2D/音视频工具），把已批准的 GAME_DESIGN 与 ART_DIRECTION 先做成可玩通的灰盒，再实现为目标平台（含微信小游戏、抖音小游戏、TapTap 制造、TapTap 等）可完整运行的游戏并配齐规则回归与端到端验证命令。"
 ---
 # 游戏构建执行
 
@@ -12,7 +12,7 @@ description: "Build the approved game design into a complete, runnable game usin
 
 动手前盘点本机与会话实际能调用的运行时、渲染库、命令行、MCP 与生成服务（生图、图生 3D、Blender、视频、音乐、语音），在 `PRODUCT_BRIEF.md` 批准的平台内选最能兑现作品气质的路线：核心乐趣在空间、手感或镜头上的，就做成真正的 2D、2.5D 或 3D 画面，不压成文字选项。目标工具链缺失时不擅自改做网页版，只走简报已批准的替代环境，并分开记录 `targetRuntime` 与 `testedRuntime`；完全无法构建时说明阻塞原因，只交付 `BUILD_BRIEF.md`。
 
-生成预算优先投向主角、核心地标与关键演出。成品资源保存到工作区并接进真实画面，正式版不留占位图、坏链或没执行的提示词。调用外部工具只传当前资产需要的描述与参考图，不外传原著全文，密钥不进仓库。用到视频过场、生成音乐音效或配音时读 [generative-media.md](references/generative-media.md)；面向微信小游戏、抖音小游戏或 TapTap 构建时读 [minigame-and-taptap.md](references/minigame-and-taptap.md)。
+生成预算优先投向主角、核心地标与关键演出。成品资源保存到工作区并接进真实画面，正式版不留占位图、坏链或没执行的提示词。调用外部工具只传当前资产需要的描述与参考图，不外传原著全文，密钥不进仓库。用到视频过场、生成音乐音效或配音时读 [generative-media.md](references/generative-media.md)；面向微信或抖音小游戏构建时读 [wechat-and-douyin-minigame.md](references/wechat-and-douyin-minigame.md)；面向 TapTap 制造（TapTap Maker）或 TapTap 小游戏/客户端构建时读 [taptap-maker-and-store.md](references/taptap-maker-and-store.md)。
 
 ## 构建顺序
 

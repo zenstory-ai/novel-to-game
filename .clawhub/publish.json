@@ -20,7 +20,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "6945cf3ae169e18930bdd8ab340d5180dfed99c20734e52b379473b4f68454ac",
+      "packageDigest": "abcd8abd0a310b12b40273e0a3f5d7f54b762314c43a331105f54eabfacddb49",
       "path": "skills/game-build",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -52,7 +52,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "a49baf1e4757ee9ec565fd58ec9941ec2d54646e40ad32e4d5a1a8a836c353e2",
+      "packageDigest": "a4dca83f116d8d5e96be148809caded627c1601d5f8581196d4c84687c93fb4b",
       "path": "skills/game-design",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -84,7 +84,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "bb9e5dd3a8f62d6685bd3f1888cd0c4628c4cd5ed28f5d7a909aa016888353ca",
+      "packageDigest": "76556fdcde5df5fe28ed8379739ac4580ce01a00faaacf5c9ec61b2f2e1b0a17",
       "path": "skills/game-qa",
       "publisher": "worldwonderer",
       "rebuildOn": [],
@@ -148,7 +148,7 @@
         "**/*"
       ],
       "maintainer": "worldwonderer",
-      "packageDigest": "76b2099fe6fe61e637ed49e410fd5a268579b06788ecc4f031b8c4261755a855",
+      "packageDigest": "24a369e1f685850b31fcf29b992c0afafa366c0e4ced570c39718504a2616244",
       "path": "skills/novel-to-game",
       "publisher": "worldwonderer",
       "rebuildOn": [],

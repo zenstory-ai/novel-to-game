@@ -1,4 +1,4 @@
-<!-- Last synced with README.md: 2026-11-17 -->
+<!-- Last synced with README.md: 2026-11-18 -->
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/zenstory-ai/zenstory/main/apps/web/public/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
@@ -72,7 +72,7 @@ NovelToGame 是一套开源的 5-skill 工作流，可直接装进你常用的�
 - **关键原著事实均附原文出处。** 拆书阶段通读全书并产出 `SOURCE_BIBLE`：拆清全书主线脉络、高光冲突桥段、人物关系与各自盘算、秘密与信息差、世界硬规矩及标志性场景器物，逐项注明章回或文件位置，改编红线表逐行附上原文依据。原著事实分为 `immutable`（不可改）、`adaptable`（可调适）、`open`（原著留白）、`conflicted`（前后矛盾）四类；原著未交代的内容一律标明为“设计新增”，绝不冒充原著设定。
 - **玩法形态经过方案比选与论证。** 概念阶段横向对比多个可行方向，用明确的硬性淘汰标准筛掉不合格方案（例如：核心循环脱离原著核心冲突、遮去专有名词后只剩通用换皮模板、玩家只是花资源解锁既定剧情）。概念选型、世界设计与美术方向各自落入独立文档，构建阶段不得擅自推翻重来。
 - **借鉴成熟品类时，同步保留该品类的外围标配体验。** 玩家辨认一类游戏，既看核心机制，也看熟悉的外围体验。系统玩法项目需用简表列明该品类的外围配套（进入世界与移动、目标指引、成长反馈与重返动力）哪些完整实现、哪些简化降级、哪些明确不做及原因，并写清玩家进入游戏第一分钟看到的画面。《梦幻西游》式的回合制 RPG 绝不会只交出一串光秃秃的战斗关卡。
-- **守住批准的目标平台，因地制宜善用当前环境工具。** 产品简报（Agent 最先起草的一页需求单）会锁定目标平台、包形式、生产引擎、目标运行环境、体积上限与实际可用的测试环境；在批准平台内，`game-build` 会先盘点本机与当前会话具备的能力（如 Three.js、混元 3D 等图/文生 3D 模型、Blender CLI/Python/MCP、2D Canvas/WebGL、微信/抖音无 DOM 单画布小游戏包、TapTap H5 压缩包或客户端封装，以及已安装的 Godot/Unity 原生工具链），选定最出效果的实现路线；缺少目标原生工具链时，绝不擅自降级成网页游戏交差。全套设计文档均为不绑定特定引擎的 Markdown 文件，完全归你掌控。
+- **守住批准的目标平台，因地制宜善用当前环境工具。** 产品简报（Agent 最先起草的一页需求单）会锁定目标平台、包形式、生产引擎、目标运行环境、体积上限与实际可用的测试环境；在批准平台内，`game-build` 会先盘点本机与当前会话具备的能力（如 Three.js、混元 3D 等图/文生 3D 模型、Blender CLI/Python/MCP、2D Canvas/WebGL、微信/抖音无 DOM 单画布小游戏包、TapTap 制造 UrhoX+Lua CLI/MCP、TapTap H5 压缩包或客户端封装，以及已安装的 Godot/Unity 原生工具链），选定最出效果的实现路线；缺少目标原生工具链时，绝不擅自降级成网页游戏交差。全套设计文档均为不绑定特定引擎的 Markdown 文件，完全归你掌控。
 - **实机验收结合新玩家盲玩与完整通关验证记录。** 在读取源码或设计规范之前，独立的验收会话先以初次上手的新玩家身份从标题页从头盲玩，排查上手引导、操作流程、视听节奏与手机视口卡顿（`qa/playtest-report.md`），随后对照策划与美术文档核实定性，并通过同一次完整运行验证 `launch`、`render`、`input`、`coreLoop`、`outcome`、`restart` 六项指标（`qa/verification.json`）；未测试到的环境与特性则如实记入限制项（`limitations`）。
 - **配音默认关闭，启用时默认在构建期预生成。** 除非美术方向明确选用角色配音，否则不会向语音合成服务发送任何台词；运行期实时合成须经产品简报明确批准，且原著全文与设计文档绝不外传。
 
@@ -290,12 +290,12 @@ codex plugin add novel-to-game@novel-to-game-skills
 标明允许新增的原创设定与待决问题。只交付设计方案，不构建代码、不跑实机验收，也不要声称已完成可运行版本。
 ```
 
-**做微信小游戏、抖音小游戏或 TapTap 游戏：**
+**做微信/抖音小游戏或 TapTap 制造游戏：**
 
 ```text
-用 novel-to-game quick 把这本小说改编成一款竖屏微信/抖音小游戏（或 TapTap H5 小游戏）。
+用 novel-to-game quick 把这本小说改编成一款竖屏微信/抖音小游戏（或 TapTap 制造 UrhoX+Lua 小游戏）。
 单局控制在 2–3 分钟，开局 30 秒内直入冲突，结算生成一屏可分享的命数判词卡；用激励广告提供线索提示与失手重来，不拿付费或广告锁死原著主线真相。
-交付符合 4 MB 主包上限的无 DOM 小游戏包，避让右上角胶囊区域（抖音一并接好侧边栏复访领奖）；若本机缺少可用的实机预览环境，请配一个共用画布入口的本地浏览器调试页完成盲玩与验收。
+按目标平台交付真实工程（微信/抖音交付符合 4 MB 主包上限的无 DOM 小游戏包并避让右上角胶囊、接好抖音侧边栏复访；TapTap 制造按工程内 CLAUDE.md 与 urhox-libs 规范实现）；仅在本机缺少目标实机环境时使用批准的本地替代测试页验收。
 ```
 
 `quick` 是默认模式：Agent 先按合理默认值起草产品简报，只在目标平台、核心玩法与代入感、变现与版号资质、成人内容、真实人物、版权或素材授权、付费服务及高成本制作投入出现会影响全局走向的分歧时停下请你拍板；其余未定事项记入简报的「未确认假设」，对比可行方案后自动推进设计、构建与实机验收。如果你想亲自把关关键节点，可改用 `director` 模式：Agent 会在概念选型、灰盒试玩后的内容取舍以及挑选视觉目标样张（仅在制作视觉目标包时）三个节点停下，给出候选方案与推荐意见；你已经明确指定过的内容则不再重复询问。
@@ -357,7 +357,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
-由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。面向微信/抖音小游戏与 TapTap H5 构建时，若本机缺少可用的实机预览环境且简报批准本地替代环境，`game-build` 会在交付真实平台包（受 4 MB 主包约束的 `game.js` + 分平台 `game.json`，或路径仅限英文数字的 `≤ 20 MB` TapTap H5 `.zip`）的同时，提供一个共用同一套无 DOM 画布入口的浏览器调试页，绘出右上角胶囊遮挡框并实测激励视频完成/中途关闭与抖音侧边栏冷/热进入领奖（详见[微信小游戏、抖音小游戏与 TapTap 构建规范](skills/game-build/references/minigame-and-taptap.md)）。替代运行的 QA 结果只覆盖实际测试环境，开发者工具真机预览、真实 SDK（广告、TapSDK 登录与防沉迷）及上线资质（软著、ICP 备案、版号）如实记入 `limitations`。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与[实机验收规范](skills/game-qa/references/qa-contract.md)。
+由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。面向微信/抖音小游戏、TapTap 制造（基于 UrhoX + Lua 的 `@taptap/maker`）与 TapTap 商店构建时，`game-build` 会严格区分各自的真实运行环境，不拿通用网页冒充：微信/抖音交付受 4 MB 主包约束的无 DOM 单画布包，并在缺少真机预览且经简报批准时配共用画布入口的浏览器调试页（见[微信小游戏与抖音小游戏构建规范](skills/game-build/references/wechat-and-douyin-minigame.md)）；TapTap 则明确区分 TapTap 制造的 UrhoX + Lua CLI/MCP 工程、路径仅限英文数字的 `≤ 20 MB` H5 `.zip` 小游戏与客户端包（见[TapTap 制造与 TapTap 商店构建规范](skills/game-build/references/taptap-maker-and-store.md)）。替代运行的 QA 结果只覆盖实际测试环境，开发者工具真机预览、UrhoX Runtime / 云端构建、真实 SDK 及上线资质（软著、ICP 备案、版号）如实记入 `limitations`。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与[实机验收规范](skills/game-qa/references/qa-contract.md)。
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
@@ -387,7 +387,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 - [AI 文字冒险游戏怎么设计](docs/ai-text-adventure-game-design.md)——先按当前事实确认结果，再让 AI 写叙述，自由输入不乱改结果。
 - [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
 - [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项。
-- [微信/抖音小游戏与 TapTap 案例及去 AI 味依据](docs/research/minigame-and-taptap-cases.md)——七类跑通市场的改编形态、开源适配栈、五项平台审核硬坑与去 AI 味约束。
+- [微信/抖音小游戏与 TapTap 制造案例及去 AI 味依据](docs/research/minigame-and-taptap-cases.md)——改编形态案例（含 TapTap 制造 0 分成激励广告闭环）、开源工具链、六项平台实机硬坑与去 AI 味约束。
 
 ## 参与贡献
 
