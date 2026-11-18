@@ -4,11 +4,11 @@
 
 ## 一、跑通市场的小说与叙事改编形态
 
-### 1. TapTap 制造（TapTap Maker）短局模拟器与网文爽点抉择 + 0 分成激励广告
+### 1. TapTap 制造（TapTap Maker）短局事件模拟器与 0 分成激励广告
 
-- **平台背景**：[**TapTap 制造**](https://maker.taptap.cn)（TapTap Maker）是心动 / TapTap 推出的 AI 原生游戏创作与即时游玩平台，底层采用自研 **UrhoX 引擎 + Lua 5.4** 纯代码架构，把云存档、排行榜、联机、实名防沉迷等 TDS 开发者服务一次性打包，并打通了小游戏 **IAA 激励广告变现（平台实行 0 分成政策，广告收益 100% 归创作者所有）**。它是目前少数跑通「无版号个人创作者直接上架并拿全额广告分成」闭环的渠道。
-- **热门题材与案例**：在 TapTap 制造与即玩榜单中，最契合小说改编的爆款集中在「强设定开局 + 随机事件/肉鸽抉择 + 轻度数值养成」的模拟器形态，如历史官场题材《崇祯直聘：明末官场沉浮模拟器》、《古玩人生》，以及结合重生、末世、开店、修仙等网文题材的生存经营模拟器。
-- **变现与品类边界**：0 分成激励广告在节奏快、单局短、重玩性高的轻度策略与事件模拟器上转化顺畅；若是节奏慢、强沉浸的长篇纯文字跑团或慢热长叙事，在剧情高潮生硬插入广告会严重破坏阅读体验，应把广告激励点严格限定在失手重来、线索提示或番外解锁。
+- **平台特点**：[**TapTap 制造**](https://maker.taptap.cn)（TapTap Maker）是心动 / TapTap 推出的对话与代码驱动游戏创作及即玩平台，底层采用自研 **UrhoX 引擎 + Lua 5.4** 纯代码架构，由平台统一提供云存档、排行榜、联机与实名防沉迷服务，并打通小游戏 **激励视频广告变现（平台实行 0 分成，广告收益 100% 归创作者）**，无版号个人创作者即可直接上架获取收益。
+- **热门题材与案例**：在 TapTap 制造与即玩榜单中，最契合小说改编的作品集中在「强冲突开局 + 随机事件或肉鸽抉择 + 轻度数值养成」的模拟器形态，如历史官场题材《崇祯直聘：明末官场沉浮模拟器》、《古玩人生》，以及结合重生、末世、开店、修仙等网文题材的生存经营模拟器。
+- **变现与品类边界**：0 分成激励广告在节奏快、单局短、重玩性高的轻度策略与事件模拟器上转化顺畅；若是节奏慢、强沉浸的长篇纯文字跑团或慢热长叙事，在剧情高潮硬插广告会破坏阅读体验，应把广告入口严格限定在失手重来、线索提示或番外解锁。
 
 ### 2. 天赋词条抽选 + 一屏命数判词卡
 
@@ -44,18 +44,18 @@
 > **个人开发者三端低成本发布与资质底账**：
 > - **微信小游戏（个人主体）**：个人身份证注册，**微信认证费 30 元/年**（企业主体为 300 元/年），免游戏版号；需提交同名《计算机软件著作权登记证书》（或电子版权）、手写签名《游戏自审自查报告》并完成小程序 ICP 备案；**严禁任何内购充值（仅限纯免费或流量主 IAA 广告）**，类目仅开放休闲益智、推理解谜、策略卡牌等轻量类目（禁重度联网角色扮演、棋牌捕鱼与玩家自由聊天）；流量主广告需**累计满 `500 UV`（或开通内置游戏圈活跃互动）**后才能申请 `adUnitId`——因此首版提审时代码中 `adUnitId` 为空，必须自动隐藏「看视频」字样或切为局内限次免费，否则审核员点击未开通的废广告按钮会直接以「功能异常」驳回。
 > - **抖音小游戏（个人主体）**：抖音开放平台个人身份证与个人银行卡实名入驻（**免 300 元企业认证费**），免版号（休闲类纯广告），同样需同名软著、手写签名自审报告与平台协助备案；严禁任何内购代码，新游及更新版本**强制必审「侧边栏复访」领奖流程**。
-> - **TapTap 制造（个人创作者）**：免费入驻与发布，无需版号与公司主体，云存档、排行榜、联机与实名防沉迷由平台底座托管，**IAA 激励广告平台 0 分成（收益 100% 归创作者）**。
-> - **社区收入自述的边界**：社区里「单款 AI 小游戏日入过万 / 月入数万」属于头部或个别创作者案例，真实收益受开局留存、完播率与重玩率影响极大；技能不得把跑通广告接口写成稳赚或可直接提审上线。
+> - **TapTap 制造（个人创作者）**：免费入驻与发布，无需版号与公司主体，云存档、排行榜、联机与实名防沉迷由平台统一提供，**激励视频广告平台 0 分成（收益 100% 归创作者）**。
+> - **社区收入案例的事实边界**：社区里「单款小游戏日入过万 / 月入数万」属于头部或个别创作者案例，真实收益受开局留存、完播率与重玩率影响很大；技能不得把跑通广告接口写成稳赚或可直接提审上线。
 
 ---
 
 ## 二、GitHub 开源工具链与六项平台实机/审核硬坑
 
-对照[微信小游戏开发指南](https://developers.weixin.qq.com/minigame/dev/guide/)、[抖音小游戏开发文档](https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/guide/minigame/introduction)、[TapTap 制造官网](https://maker.taptap.cn)及官方开源仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp)、[`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)，编码 Agent 生成上述三端游戏时最常栽在六处：
+对照[微信小游戏开发指南](https://developers.weixin.qq.com/minigame/dev/guide/)、[抖音小游戏开发文档](https://developer.open-douyin.com/docs/resource/zh-CN/mini-game/guide/minigame/introduction)、[TapTap 制造官网](https://maker.taptap.cn)及官方开源仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp)、[`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)，生成上述三端游戏时最常栽在六处：
 
 1. **把「TapTap 制造」误做成网页 H5，或靠网页搜索瞎写接口**：
-   - **真实架构**：TapTap 制造（`@taptap/maker`）底层是 **UrhoX 引擎 + Lua 5.4**（入口为 `scripts/` 下的 `main.lua`，界面 `.ui.json`，资源旁配官方生成的 24 位 URL-safe Base64 UUID `.meta` 文件，本地绑定标记为 `.maker-mcp/config.json`），**不是 HTML/JS 网页**。官方仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp) 采用「`taptap-maker` CLI（一次性初始化/鉴权/克隆/本地 UrhoX Runtime 预览）+ Maker MCP（状态查询、付费生图音视频 3D 代理、`maker_build_current_directory` 提交云构建）+ 工程内开发包（`CLAUDE.md`、`urhox-libs/`、`engine-docs/`）」三层分工，社区另有 [`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)、[`AndroidSix/TapMakerWork`](https://github.com/AndroidSix/TapMakerWork) 与 [`2624111503-bot/tap-maker-ui-generator`](https://github.com/2624111503-bot/tap-maker-ui-generator)。
-   - **硬性防错边界**：Maker 引擎与 SDK 无公网官方文档，**工程内的 `CLAUDE.md`、`urhox-libs/` 与 `engine-docs/recipes/sdk.md` 是唯一真相源**——用网页搜索只会搜到微信小游戏或 TapTap H5 的 JavaScript `tap.*` 代码，塞进 Lua 直接报错；调用生成工具扣积分须经用户明确授权（CLI 传 `--allow-paid`，配音试听与 3D 多视图须经用户挑定确认）；Maker 远端仅接受 `main` 分支，本地 `taptap-maker preview` 绝不自动触发 `push` 或云构建；接 0 分成激励广告须先调 `get_ad_config` 同步 `.project/settings.json` 的 `@runtime.ad`，再调 `sdk:ShowRewardVideoAd` 并仅在 `result.success == true` 时发奖。
+   - **真实架构**：TapTap 制造（`@taptap/maker`）底层是 **UrhoX 引擎 + Lua 5.4**（入口为 `scripts/` 下的 `main.lua`，界面 `.ui.json`，资源旁配官方生成的 24 位 URL-safe Base64 UUID `.meta` 文件，本地绑定标记为 `.maker-mcp/config.json`），**不是 HTML/JS 网页**。官方仓库 [`taptap/instant-games-open-mcp`](https://github.com/taptap/instant-games-open-mcp) 由 `taptap-maker` CLI（初始化、鉴权、克隆、本地 UrhoX Runtime 预览）、Maker MCP（状态查询、生图音视频 3D 代理、`maker_build_current_directory` 提交云端构建）与工程内开发包（`CLAUDE.md`、`urhox-libs/`、`engine-docs/`）配合工作，社区另有 [`taptap/awesome-urhox-games`](https://github.com/taptap/awesome-urhox-games)、[`AndroidSix/TapMakerWork`](https://github.com/AndroidSix/TapMakerWork) 与 [`2624111503-bot/tap-maker-ui-generator`](https://github.com/2624111503-bot/tap-maker-ui-generator)。
+   - **防错规则**：Maker 引擎与 SDK 无公网官方文档，**接口写法只以工程内的 `CLAUDE.md`、`urhox-libs/` 与 `engine-docs/recipes/sdk.md` 为准**——网页搜索只会搜到微信小游戏或 TapTap H5 的 JavaScript `tap.*` 代码，写进 Lua 直接报错；调用生成工具会扣平台积分，须先取得用户明确同意（CLI 传 `--allow-paid`，配音试听与 3D 多视图须由用户挑定确认）；远端只收 `main` 分支，本地 `taptap-maker preview` 绝不自动触发推送或云端构建；接 0 分成激励广告须先调 `get_ad_config` 同步 `.project/settings.json` 的 `@runtime.ad`，再调 `sdk:ShowRewardVideoAd` 并仅在 `result.success == true` 时发奖。
 2. **拿 DOM 网页冒充微信/抖音小游戏**：微信（`wx`）与抖音（`tt`）运行在无 DOM、无 BOM 的 JavaScript 沙盒里，没有 `index.html`、`document` 与 CSS；微信目录含 `game.js` + `game.json` + `project.config.json`（`"compileType": "game"`），抖音配 `project.tt.json`，首次 `createCanvas()` 生成唯一上屏主画布，视口在微信端优先读 `wx.getWindowInfo()`。开源适配常用原生 Canvas 2D、[`wechat-miniprogram/minigame-canvas-engine`](https://github.com/wechat-miniprogram/minigame-canvas-engine)、[`theajack/wx-minigame-ts`](https://github.com/theajack/wx-minigame-ts)、[`finscn/weapp-adapter`](https://github.com/finscn/weapp-adapter)、[`wechat-miniprogram/minigame-demo`](https://github.com/wechat-miniprogram/minigame-demo)、[`wechat-miniprogram/minigame-lockstep-demo`](https://github.com/wechat-miniprogram/minigame-lockstep-demo)、[`deepkolos/three-platformize`](https://github.com/deepkolos/three-platformize) / [`deepkolos/platformize`](https://github.com/deepkolos/platformize)、[`godothub/godot-minigame`](https://github.com/godothub/godot-minigame)、[`wechat-miniprogram/minigame-unity-webgl-transform`](https://github.com/wechat-miniprogram/minigame-unity-webgl-transform) 及监控 [`lizhiyao/sentry-miniapp`](https://github.com/lizhiyao/sentry-miniapp)。
 3. **首包超 4 MB 或双端分包字段混写**：微信小游戏主包 `≤ 4 MB`、独立分包单个 `≤ 4 MB`、`game.json` 的 `subpackages` 整包合计 `≤ 30 MB`（`openDataContext` 禁入分包）；抖音小游戏主包 `≤ 4 MB`、`game.json` 配 `subPackages` 时整包 `≤ 20 MB`（不分包 `≤ 16 MB`）。两端分包键名大小写不同，须按目标平台生成各自的 `game.json` 并在自测脚本里实测磁盘字节数。
 4. **右上角系统胶囊压住核心按钮**：微信与抖音右上角常驻原生胶囊按钮（菜单与关闭），坐标由 `getMenuButtonBoundingClientRect()` 返回。把暂停、跳过、返回、任务或资源栏画在右上角，真机点不到且审核直接打回。
@@ -81,5 +81,5 @@
 
 ## 四、写入运行时技能与留在仓库外的分工
 
-- **写入运行时技能**：`novel-to-game`（锁定目标平台、包形式与体积上限、变现方式、Maker 积分付费门禁与本地替代环境许可）、`game-design`（短局高重玩快入戏、激励广告不改写原著因果、右上角胶囊避让区、首包/分包拆分与禁用脱离时代的霓虹毛玻璃界面）、`game-build`（按需加载 `wechat-and-douyin-minigame.md` 或 `taptap-maker.md`、生图透明底与乱码穿帮核验、上屏文字审校）、`game-qa`（胶囊遮挡、双视口、广告中断、侧边栏冷/热进入、假选项与画面穿帮盲测，以及未绑定 UrhoX Runtime / 云构建的 `limitations` 记录）。
+- **写入运行时技能**：`novel-to-game`（锁定目标平台、开发者主体、包形式与体积上限、变现方式、Maker 积分扣费确认与本地替代环境许可）、`game-design`（短局高重玩快入戏、激励广告不改写原著因果、无广告位时的替代路径、右上角胶囊避让区、首包/分包拆分与禁用脱离时代的霓虹毛玻璃界面）、`game-build`（按需加载 `wechat-and-douyin-minigame.md` 或 `taptap-maker.md`、生图透明底与乱码穿帮核验、上屏文字审校）、`game-qa`（胶囊遮挡、双视口、无广告位与广告中断、侧边栏冷/热进入、假选项与画面穿帮盲测，以及未绑定 UrhoX Runtime / 云端构建的 `limitations` 记录）。
 - **不写入运行时技能**：平台账号注册、软著与 ICP 备案办证步骤、买量投流与达人分佣后台操作、特定商业引擎的基础安装教程。

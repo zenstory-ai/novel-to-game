@@ -357,7 +357,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 
 ### 它面向哪个引擎或平台构建？我的工具链缺失时会不会退回网页？
 
-由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。面向微信/抖音小游戏与 TapTap 制造（基于 UrhoX + Lua 的 `@taptap/maker`）构建时，`game-build` 会严格面向各自的真实运行环境，不拿通用网页冒充：微信/抖音交付受 4 MB 主包约束的无 DOM 单画布包，并在缺少真机预览且经简报批准时配共用画布入口的浏览器调试页（见[微信小游戏与抖音小游戏构建规范](skills/game-build/references/wechat-and-douyin-minigame.md)）；TapTap 制造则走 UrhoX + Lua CLI/MCP 工作流并严格依据工程内 `engine-docs/` 实现（见[TapTap 制造构建规范](skills/game-build/references/taptap-maker.md)）。替代运行的 QA 结果只覆盖实际测试环境，开发者工具真机预览、UrhoX Runtime / 云端构建、真实广告 SDK 及上线资质（软著、ICP 备案、版号）如实记入 `limitations`。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与[实机验收规范](skills/game-qa/references/qa-contract.md)。
+由你决定，并由产品简报锁定：平台、生产引擎、目标运行时，以及实际可用的测试运行时。目标工具链不可用时，构建不得自动改做网页；只能使用简报里已批准的替代运行时，并分开记录 `targetRuntime`、`testedRuntime` 和未覆盖项。面向微信/抖音小游戏与 TapTap 制造（基于 UrhoX + Lua 的 `@taptap/maker`）构建时，`game-build` 会严格面向各自的真实运行环境，不拿通用网页冒充：微信/抖音交付受 4 MB 主包约束的无 DOM 单画布包，并在缺少真机预览且经简报批准时配共用画布入口的浏览器调试页（见[微信小游戏与抖音小游戏构建规范](skills/game-build/references/wechat-and-douyin-minigame.md)）；TapTap 制造则走 UrhoX + Lua CLI/MCP 工作流并依据工程内 `engine-docs/` 实现（见[TapTap 制造构建规范](skills/game-build/references/taptap-maker.md)）。替代运行的 QA 结果只覆盖实际测试环境，开发者工具真机预览、UrhoX Runtime 与云端构建、真实广告位开通及个人主体发布资质（如微信 30 元/年个人认证、同名软著、自审报告与 ICP 备案）如实记入 `limitations`。两个公开示例都是零依赖静态浏览器游戏，因为它们的简报选择了浏览器作为目标运行环境。目前没有任何公开示例面向原生引擎或主机；Godot、Unity 或移动端构建取决于你环境里的工具链，并按同样方式记录，未测到的部分写成限制项。见 [`game-build`](skills/game-build/SKILL.md) 与[实机验收规范](skills/game-qa/references/qa-contract.md)。
 
 ### 需要 GPU 或自己的模型吗？图片和语音的钱谁出？
 
@@ -387,7 +387,7 @@ Agent 要通过不同的 skill 调用读完整本小说、写改编文档、构�
 - [AI 文字冒险游戏怎么设计](docs/ai-text-adventure-game-design.md)——先按当前事实确认结果，再让 AI 写叙述，自由输入不乱改结果。
 - [NovelToGame 与 story-to-game 类工具的区别](docs/novel-to-game-vs-story-to-game-tools.md)（英文）——三种工具形态和设计文档归谁所有。
 - [Blender 资产反馈记录](docs/research/blender-asset-feedback.md)——为什么 Blender 只是 `game-build` 里的条件入口而不是默认项。
-- [微信/抖音小游戏与 TapTap 制造案例及去 AI 味依据](docs/research/minigame-and-taptap-cases.md)——改编形态案例（含 TapTap 制造 0 分成激励广告闭环）、开源工具链、六项平台实机硬坑与去 AI 味约束。
+- [微信/抖音小游戏与 TapTap 制造案例及去 AI 味依据](docs/research/minigame-and-taptap-cases.md)——改编形态案例（含 TapTap 制造 0 分成激励广告）、开源工具链、六项平台实机硬坑与去 AI 味约束。
 
 ## 参与贡献
 
