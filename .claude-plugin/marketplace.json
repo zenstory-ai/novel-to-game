@@ -4,7 +4,7 @@
     "name": "zenstory-ai"
   },
   "metadata": {
-    "description": "A text-cited 5-skill novel-to-game workflow for adaptation design, environment-aware runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖改编策划、结合当前运行环境构建游戏与新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。",
+    "description": "Agent skills that turn novels into playable games—from full-book analysis and staged design specs to local-tool builds and blind-playtest QA. 把小说做成可玩游戏的 Agent 技能包：通读拆书、玩法与美术策划、按本机工具构建与新玩家盲玩验收。",
     "version": "0.9.0"
   },
   "plugins": [
@@ -12,7 +12,7 @@
       "name": "novel-to-game",
       "source": "./",
       "version": "0.9.0",
-      "description": "A text-cited 5-skill novel-to-game workflow covering adaptation-focused novel analysis, staged concept/world/art design, environment-aware runtime builds, and first-player blind-playtest QA. It supports systems games, interactive fiction and interactive film. 忠于原著的 5-skill 小说改游戏工作流，涵盖游戏化拆书、概念/世界/美术分阶段策划、结合当前运行环境构建游戏及新玩家实机盲玩验收，支持系统玩法、互动叙事与互动影游。"
+      "description": "Five agent skills that turn a novel into a playable game: full-book analysis, gameplay and art specs, local-tool builds, and new-player blind-playtest QA—supporting RPGs, interactive fiction, interactive films, and WeChat/Douyin/TapTap mini-games. 把小说做成可玩游戏的 5 个 Agent 技能：通读拆书、玩法与美术策划、按本机工具构建与新玩家盲玩验收，支持系统玩法、互动叙事、互动影游及微信/抖音/TapTap 小游戏。"
     }
   ]
 }
