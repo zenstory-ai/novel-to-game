@@ -35,7 +35,7 @@
   "changelog": "CHANGELOG.md",
   "requiredPaths": [
     "README.md",
-    "README_ZH.md",
+    "README_EN.md",
     "skills/game-build/SKILL.md",
     "skills/game-design/SKILL.md",
     "skills/game-qa/SKILL.md",

@@ -288,9 +288,12 @@ class RepositoryValidationTests(unittest.TestCase):
         self.assertEqual(validate_repository(ROOT), [])
         markdown_files = [
             ROOT / "README.md",
-            ROOT / "README_ZH.md",
+            ROOT / "README_EN.md",
             *sorted((ROOT / "docs").rglob("*.md")),
         ]
+        self.assertFalse((ROOT / "README_ZH.md").exists())
+        self.assertIn('<a href="README_EN.md">', (ROOT / "README.md").read_text(encoding="utf-8"))
+        self.assertIn('<a href="README.md">', (ROOT / "README_EN.md").read_text(encoding="utf-8"))
         broken = []
         for markdown in markdown_files:
             for raw_target in LINK_RE.findall(markdown.read_text(encoding="utf-8")):
