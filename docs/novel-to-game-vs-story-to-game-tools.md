@@ -81,5 +81,5 @@ Mark new additions and open questions clearly. Deliver design specs only—do no
 ## Related
 
 - Repository: https://github.com/zenstory-ai/novel-to-game (formerly `worldwonderer/novel-to-game`; old links redirect)
-- Site guides: https://zenstory.ai/novel-to-game/quick-start , https://zenstory.ai/novel-to-game/meaningful-choices
-- Sibling packs: web-fiction writing (`oh-story-claudecode`), short drama (`drama-skills`), video recap (`video-recap-skills`)
+- Site guides: [Quick start](https://zenstory.ai/novel-to-game/quick-start), [Meaningful choices](https://zenstory.ai/novel-to-game/meaningful-choices)
+- Sibling projects: [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) (web-fiction writing), [drama-skills](https://github.com/zenstory-ai/drama-skills) (short drama & motion-comic), [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) (video recap), [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) (DeepSeek Harness plugin), and [zenstory](https://github.com/zenstory-ai/zenstory) (AI novel & short-drama workbench)

@@ -5,8 +5,8 @@ guidance and reusable agent workflows—not a bundled game engine. The most
 helpful contributions clarify an adaptation trade-off, make a failure
 reproducible, or prove with runtime evidence that a generated game works.
 
-感谢参与改进 NovelToGame。本仓库沉淀的是小说改游戏的策划判断与可复用 Agent 工作流，
-不包含游戏引擎。我们最欢迎能把改编取舍讲透、稳定复现问题，或补齐实机通关证据的贡献。
+感谢参与改进 NovelToGame。本仓库提供的是小说改游戏的策划判断与可复用 Agent 工作流，
+不包含游戏引擎。我们最欢迎能把改编取舍讲透、稳定复现问题，或补齐通关实测证据的贡献。
 
 ## Choose the right contribution / 选择贡献类型
 

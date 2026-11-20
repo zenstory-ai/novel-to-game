@@ -1,6 +1,6 @@
 ---
 name: game-build
-description: "Build an approved game spec into a complete, runnable game using the rendering libraries, mini-game or TapTap Maker toolchains, modeling tools, and media generators available on the host machine. Turns GAME_DESIGN and ART_DIRECTION into a playable graybox first, then the finished build with rule regressions, an end-to-end verify command, and BUILD_BRIEF. Use to implement an approved game spec, graybox core gameplay, or build a 2D, 2.5D, 3D, WeChat/Douyin mini-game, or TapTap Maker game. 游戏构建执行：调用本机可用的渲染库、微信/抖音小游戏或 TapTap 制造工具链及建模/生成工具（Three.js、UrhoX+Lua、Blender、图生 3D、2D 画布与音视频工具等），把已定稿的 GAME_DESIGN 与 ART_DIRECTION 先做成可玩灰盒，再完成目标平台正式构建、游戏内文案审校、规则回归与端到端验证脚本。"
+description: "Build an approved game spec into a complete, runnable game using the rendering libraries, mini-game or TapTap Maker toolchains, modeling tools, and media generators available locally. Turns GAME_DESIGN and ART_DIRECTION into a playable graybox first, then the finished build with rule regressions, an end-to-end verify command, and BUILD_BRIEF. Use to implement an approved game spec, graybox core gameplay, or build a 2D, 2.5D, 3D, WeChat/Douyin mini-game, or TapTap Maker game. 游戏构建执行：调用本机可用的渲染库、微信/抖音小游戏或 TapTap 制造工具链及建模/生成工具（Three.js、UrhoX+Lua、Blender、图生 3D、2D 画布与音视频工具等），把已定稿的 GAME_DESIGN 与 ART_DIRECTION 先做成可玩灰盒，再完成目标平台正式构建、游戏内文案审校、规则回归与端到端验证脚本。"
 ---
 # 游戏构建执行
 
@@ -25,6 +25,6 @@ description: "Build an approved game spec into a complete, runnable game using t
 ## 按需规则
 
 - **接入玩家自由打字输入**：模型只负责把玩家原话解析成预设的几种标准动作，或把已结算的结果润色成台词；时间、资源、位置、物品、知情、承诺与胜负一律由固定规则判定。解析结果先过前置条件、在场人物、知情范围与原著硬边界校验，不过关就反问或驳回，不因命中关键词把否定句判成相反动作；模型生成的摘要或好感估值一律不写入正式状态。回放与自动验证直接从标准动作跑起，不重调模型；为否定句、缺失对象、篡改原著事实、向不在场角色泄密各写一条回归测试。
-- **存档兼容**：节点、状态字段或结算规则改动后，要么自动迁移旧档，要么明确拦截并提示存档不兼容，不静默读取错位数据。
+- **存档兼容**：节点、状态字段或结算规则改动后，要么自动迁移旧档，要么明确拦截并提示存档不兼容，不作提示直接读取错位数据一律禁止。
 - **连续行走场景**：底图、可行走区域、角色脚底锚点、交互热区与小地图共用同一套坐标，画面上的道路、桥面、水岸与建筑边缘同通行判定逐处对齐，重绘地图后同步校准阻挡、触发点与旧档坐标；寻路从当前位置沿合法道路走完，寻路失败时严禁穿墙或瞬移糊弄过去。
 - **Blender MCP**：有配置不等于连得上，改场景前先读一次当前场景确认连通；它具备本机代码执行权限，严禁把本地端口暴露到公网，也不运行来源不明资产包里的脚本。

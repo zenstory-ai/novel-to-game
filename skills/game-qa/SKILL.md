@@ -1,10 +1,10 @@
 ---
 name: game-qa
-description: "Blind-playtest and verify a game on its target runtime as a first-time player without reading source code. Runs an isolated cold-start playthrough to catch onboarding, interaction, pacing, and mobile viewport issues, checks findings against the design specs, and writes a complete-run verification record. Use to blind-playtest a game build as a new player, audit first-run playability, or run end-to-end game QA. 游戏实机盲玩与运行验收：先以未读源码和策划案的新玩家身份冷启动盲玩，排查上手引导、交互卡点、视听穿帮与手机视口问题，再对照策划案区分缺陷与设计边界，并实跑生成单次完整通关的验收记录。"
+description: "Blind-playtest and verify a game on its target runtime as a first-time player without reading source code. Runs an isolated cold-start playthrough to catch onboarding, interaction, pacing, and mobile viewport issues, checks findings against the design specs, and writes a complete-run verification record. Use to blind-playtest a game build as a new player, audit first-run playability, or run end-to-end game QA. 游戏盲玩与通关验收：先以未读源码和策划案的新玩家身份从头盲玩，排查上手引导、交互卡点、视听穿帮与手机视口问题，再对照策划案区分缺陷与设计边界，并实跑生成单次完整通关的验收记录。"
 ---
-# 游戏实机盲玩与运行验收
+# 游戏盲玩与通关验收
 
-以第一次点开游戏的新玩家视角完成实机盲玩与通关验收。不读源码，不替构建阶段补写测试，也不把跑通流程说成好玩、数值平衡、版权合规或已达上线水准。先读 [blind-playtest-method.md](references/blind-playtest-method.md) 与 [qa-contract.md](references/qa-contract.md)。
+以第一次点开游戏的新玩家视角完成盲玩与通关验收。不读源码，不替构建阶段补写测试，也不把跑通流程说成好玩、数值平衡、版权合规或已达上线水准。先读 [blind-playtest-method.md](references/blind-playtest-method.md) 与 [qa-contract.md](references/qa-contract.md)。
 
 产物语言由 `PRODUCT_BRIEF.md` 锁定；未锁定时跟随对话语言，不默认产出中文。
 
