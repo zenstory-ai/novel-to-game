@@ -1,4 +1,4 @@
-<!-- Last synced with README.md: 2026-11-19 -->
+<!-- Last synced with README.md: 2026-11-20 -->
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/zenstory-ai/zenstory/main/apps/web/public/brand/zenstory-ai-mark.svg" alt="" width="76" height="76">
@@ -72,10 +72,10 @@ The five skills run on your coding agent's model and write one Markdown document
 - **Source facts come with citations** — Reading the full book produces `SOURCE_BIBLE`, mapping main arcs, key conflicts, character relationships, hidden agendas, world rules, and adaptation boundaries with chapter or file citations; anything not in the book is clearly marked as a new addition.
 - **Compare gameplay directions first, then stick to the spec** — Viable directions are compared upfront to rule out generic reskins or loops disconnected from the book's conflict. Concept, world/level design, and art direction live in separate docs so coding follows the settled plan instead of improvising mid-build.
 - **Include the surrounding experience of a borrowed genre** — When building on an established genre, the design lists how movement, quest guidance, and progression are handled—what is built in full, simplified, or skipped—and what the player sees in minute one.
-- **Lock the target platform and build with local tools** — A short product brief locks the target platform, package cap, and runtime upfront; `game-build` checks the tools available on your machine (Three.js, Blender, image/3D generators, 2D Canvas, WeChat/Douyin mini-games, TapTap Maker UrhoX+Lua, Godot/Unity, etc.) and never quietly swaps a missing native toolchain for a plain web page.
-- **New-player blind playtest + full-run check** — An isolated session blind-playtests from the title screen without reading code or specs (`qa/playtest-report.md`) to catch progression blockers, unclear onboarding, and mobile viewport issues, then checks the build against the specs and records one complete run covering launch, render, input, core loop, outcome, and restart (`qa/verification.json`).
+- **Lock the target platform and build with local tools** — A short product brief locks the target platform, package cap, and runtime upfront; `game-build` checks the tools available on your machine (Three.js, Blender, image/3D generators, 2D Canvas, WeChat/Douyin mini-game toolchains, TapTap Maker UrhoX+Lua, Godot/Unity, etc.) and never quietly swaps a missing native toolchain for a plain web page.
+- **New-player blind playtest + full-run check** — An isolated session blind-playtests from the title screen without reading code or specs to catch progression blockers, unclear onboarding, and mobile viewport issues, writing `qa/playtest-report.md`; it then checks the build against the specs and records one complete run covering launch, render, input, core loop, outcome, and restart in `qa/verification.json`.
 
-Alongside systems-driven genres, it supports **interactive fiction** built around scenes, dialogue, testimony, and choices (showing relationship shifts through reactions, forms of address, and later callbacks rather than an affection meter) and **interactive film** with voiced post-choice cutscenes that hold on their last frame as dialogue resumes—still fully playable on static frames with video off ([interactive film method](skills/game-design/references/interactive-film-method.md), [generative media production](skills/game-build/references/generative-media.md), both in Chinese).
+Alongside systems-driven genres, it supports **interactive fiction** and **interactive film**: interactive fiction drives the story through scenes, dialogue, testimony, and choices—showing relationship shifts through reactions, forms of address, and later callbacks rather than an affection meter—while interactive film plays a voiced cutscene after each key choice and holds on its final frame as dialogue resumes, staying playable on static frames with video off ([interactive film method](skills/game-design/references/interactive-film-method.md), [generative media production](skills/game-build/references/generative-media.md), both in Chinese).
 
 ## Install
 
@@ -255,7 +255,7 @@ The default `quick` mode proposes sensible defaults, stops to ask only on major 
 ## Workflow
 
 ```text
-Novel → Book analysis → Gameplay pick → World design → Graybox playtest ↺ → Art direction → Full build → Live QA
+Novel → Book analysis → Gameplay pick → World design → Graybox playtest ↺ → Art direction → Full build → Blind-playtest QA
 ```
 
 Once world design is settled, the core loop is built as a playable graybox (controls and space in place, final art held back) and played from scratch by an isolated session to make sure it is clear and fun before bulk art, full implementation, in-game copy polish, and QA. All specs and code live in `game-adaptations/<project>/`, with engine-independent Markdown design docs:
@@ -266,7 +266,7 @@ Once world design is settled, the core loop is built as a playable graybox (cont
 | [`novel-game-analyze`](skills/novel-game-analyze/) | Read the full book and organize arcs, key scenes, relationships, secrets, world rules, and red lines | `analysis/SOURCE_BIBLE.md` |
 | [`game-design`](skills/game-design/) | Step through gameplay selection, world/level/narrative design, and visual/audio style | `concepts/CONCEPT.md`, `design/GAME_DESIGN.md`, `design/ART_DIRECTION.md` |
 | [`game-build`](skills/game-build/) | Check local tools, build a playable graybox then the full game, polish in-game text, and wire tests | `build/BUILD_BRIEF.md`, `build/app/` |
-| [`game-qa`](skills/game-qa/) | Cold-start blind playtest as a new player, check against specs, and write the verification record | `qa/playtest-report.md`, `qa/verification.json` |
+| [`game-qa`](skills/game-qa/) | Blind-playtest from scratch as a new player, check against specs, and write the verification record | `qa/playtest-report.md`, `qa/verification.json` |
 
 ## FAQ
 
@@ -280,7 +280,7 @@ Yes. Run `novel-to-game resume`—it checks `_progress.md`, existing docs, and `
 
 ### Which engines or platforms are supported? Will it fall back to a web page if tools are missing?
 
-Platform and engine are locked in the initial brief; if the target toolchain is not installed on your machine, it will never quietly switch to a web game—it only uses an alternate test setup if you approve, logging untested parts under `limitations`. WeChat/Douyin mini-games and TapTap Maker (UrhoX + Lua) are packaged to each platform's real spec ([WeChat and Douyin mini-game spec](skills/game-build/references/wechat-and-douyin-minigame.md), [TapTap Maker spec](skills/game-build/references/taptap-maker.md), both in Chinese).
+Platform and engine are locked in the initial brief; if the target toolchain is not installed on your machine, it will never quietly switch to a web game—it only uses an alternate test setup if you approve, recording untested parts as known limitations (`limitations`). WeChat/Douyin mini-games and TapTap Maker UrhoX + Lua projects are packaged to each platform's real spec—see the [WeChat and Douyin mini-game spec](skills/game-build/references/wechat-and-douyin-minigame.md) and [TapTap Maker spec](skills/game-build/references/taptap-maker.md) (both in Chinese).
 
 ### Can the novel and the game be in different languages?
 
@@ -296,9 +296,9 @@ This project is maintained by [ZenStory AI](https://zenstory.ai) — a suite of 
 
 | Project | What it does |
 | --- | --- |
-| [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | Web-fiction writing skill pack: chart scanning, deconstruction, drafting, de-AI-flavor, covers |
-| [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI short-drama / motion-comic suite: scripts, assets, storyboards, image & video prompts, review |
-| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | Agent skills for source-grounded novel adaptation, target-runtime builds, and evidence-based QA (this repo) |
-| [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | Create Chinese-narration recaps from supported video files, with optional editable JianYing/CapCut draft export |
-| [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | Community DeepSeek Harness plugin with novel, short-drama, game and video-recap workbenches |
-| [zenstory](https://github.com/zenstory-ai/zenstory) | Chat-to-create AI novel-writing workbench ([app.zenstory.ai](https://app.zenstory.ai)) |
+| [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | Web-fiction skill pack: chart scanning, deconstruction, outlining, long/short drafting, continuity tracking, de-AI-flavor polish, and covers |
+| [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI short-drama & motion-comic skill suite: source/benchmark breakdown, scripts, visual settings, storyboards, image/video prompts, confirmed production, and final cuts |
+| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | Novel-to-game skill pack: source analysis, gameplay & art design, builds, and blind-playtest QA for web games, interactive films, and WeChat/Douyin/TapTap mini-games (this repo) |
+| [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | AI video-recap skill pack: auto shot-cutting, visual narration scripting, voiceover/mix with burned-in subtitles, and editable JianYing / CapCut draft export |
+| [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | Community DeepSeek Harness plugin bundling visual workbenches for novels, short dramas, games, and video recaps |
+| [zenstory](https://github.com/zenstory-ai/zenstory) | Chat-to-create AI web workbench for novels and short dramas ([app.zenstory.ai](https://app.zenstory.ai)) |

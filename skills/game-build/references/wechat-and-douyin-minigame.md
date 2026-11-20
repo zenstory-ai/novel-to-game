@@ -18,8 +18,8 @@
 - 视口（微信优先 `wx.getWindowInfo()`，回退 `getSystemInfoSync()`）、安全区与胶囊 `getMenuButtonBoundingClientRect()`、存储、切后台静音、分享 `shareAppMessage`、抖音录屏 `tt.getGameRecorderManager()` 与激励视频 `createRewardedVideoAd` 统一封装进单层适配模块，业务代码不直接散调 `wx.*` / `tt.*`。
 - **右上角胶囊与安全区**：按 `safeArea` 与胶囊矩形内缩顶栏 HUD，暂停、返回、跳过、任务与资源栏一律避开右上角胶囊区。
 - **抖音侧边栏复访**：启动调 `tt.checkScene({ scene: "sidebar" })`，不支持时隐藏入口；支持时在主界面设常驻入口与弹窗，进入前按钮显示「去侧边栏」（`tt.navigateToScene({ scene: "sidebar" })`），在 `tt.getLaunchOptionsSync()` 与 `tt.onShow` 两处检测 `launch_from === "homepage" && location === "sidebar_card"`，命中后改为「领取奖励」并写档防重领。
-- **激励广告与空广告位**：微信流量主满 `500 UV`（或游戏圈互动）才下发 `adUnitId`。`adUnitId` 为空时自动隐藏「看视频」字样，改为局内限次免费提示或直接重来，**严禁留着点不开的废广告按钮提审（首审会按功能异常打回）**；已配置时仅在 `isEnded === true` 发奖，中途关闭或拉起失败退回原选择点。
+- **激励广告与空广告位**：微信流量主满 `500 UV` 或游戏圈互动达标才下发 `adUnitId`。为空时自动隐藏「看视频」字样，改为局内限次免费提示或直接重来，**严禁留着点不开的废广告按钮提审**，否则首审按功能异常打回；已配置时仅在 `isEnded === true` 发奖，中途关闭或拉起失败退回原选择点。
 
 ## 本地工具与调试页
 
-除 `$PATH` 外一并检查应用目录（如 `/Applications/wechatwebdevtools.app/Contents/MacOS/cli`；未登录或 `touristappid` 仅可本地 `open`，真机 `preview` 与 `upload` 需登录正式 AppID）。无真机预览且简报批准替代环境时，另配共用画布入口的浏览器调试页（禁另写 DOM；`createImage` 返回原生 `Image` 且不包 `Proxy`，防 `drawImage` 报错），画出右上角胶囊框，提供空广告位、激励视频看完与中途关闭、抖音侧边栏冷启动与热切回开关，将 `targetRuntime`、`testedRuntime` 与实测体积分开记入 `BUILD_BRIEF.md`。
+除 `$PATH` 外一并检查应用目录（如 `/Applications/wechatwebdevtools.app/Contents/MacOS/cli`）；未登录或 `touristappid` 仅可本地 `open`，真机 `preview` 与 `upload` 需正式 AppID。无真机预览且简报批准替代环境时，配共用画布入口的浏览器调试页，不另写 DOM，`createImage` 返回原生 `Image` 且不包 `Proxy` 以免 `drawImage` 报错；页内画出右上角胶囊框，提供空广告位、激励视频看完与中途关闭、抖音侧边栏冷启动与热切回开关，将 `targetRuntime`、`testedRuntime` 与实测体积分开记入 `BUILD_BRIEF.md`。

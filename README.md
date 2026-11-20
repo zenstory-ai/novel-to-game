@@ -5,7 +5,7 @@
 <h1 align="center">NovelToGame</h1>
 
 <p align="center">
-  <b>把小说做成可玩游戏的 5 个 Agent 技能：通读拆书、玩法与美术策划、按本机工具构建、新玩家盲玩验收。</b>
+  <b>把小说做成可玩游戏的 5 个 Agent 技能：通读拆书、玩法与美术策划、用本机工具构建、新玩家盲玩验收。</b>
 </p>
 
 <p align="center">
@@ -31,7 +31,7 @@
   <a href="https://github.com/zenstory-ai/novel-to-game/issues"><img alt="GitHub Issues" src="https://img.shields.io/badge/GitHub%20Issues-181717?style=for-the-badge&logo=github&logoColor=white"></a>
 </p>
 
-NovelToGame 包含 5 个开源技能，装进 Claude Code、Codex 或 Kimi Code 就能用。给它一本小说（也可以一并指定想做的平台或引擎），它会先通读全书整理设定，选出合适的玩法方向，写好世界与美术方案，再调用你机器上现有的渲染库、建模或生成工具把游戏做出来，最后以没看过源码的新玩家视角从头试玩、跑通验收，交付可玩的游戏和全套策划文档。下面两款示例都是浏览器游戏，点开就能玩。
+NovelToGame 包含 5 个开源技能，装进 Claude Code、Codex 或 Kimi Code 就能用。给它一本小说（也可以一并指定想做的平台或引擎），它会先通读全书整理设定，选出合适的玩法方向，写好策划与美术文档，再调用你机器上现有的渲染库、建模或生成工具把游戏做出来，最后以没看过源码的新玩家视角从头试玩、跑通验收，交付可玩的游戏和全套策划文档。下面两款示例都是浏览器游戏，点开就能玩。
 
 ## 在线试玩
 
@@ -70,10 +70,10 @@ NovelToGame 包含 5 个开源技能，装进 Claude Code、Codex 或 Kimi Code 
 - **原著设定带出处** — 先通读全书整理出 `SOURCE_BIBLE`，理清主线脉络、关键冲突、人物关系、隐情、世界规则与改编红线，逐条标明章回或文件位置；书里没写的内容明确标为新增设定，不混充原著。
 - **先比选玩法，定稿后不乱改** — 动工前先对比几个玩法方案，筛掉脱离原著冲突或单纯套壳换皮的做法。玩法概念、世界与关卡设计、美术方向分写三份文档，写代码时按定稿实现，不边写边改策划。
 - **配齐同类游戏该有的外围体验** — 参考成熟品类时，会一并列清地图行走、任务指引、成长反馈等配套功能哪些要做、哪些简化、哪些不做，并写明开局第一分钟玩家看到什么。
-- **锁定目标平台，按本机工具施工** — 开工前先在需求单里定好目标平台、包体积与运行环境；构建时自动检查本机可用的工具（Three.js、Blender、生图/生 3D、2D 画布、微信/抖音小游戏、TapTap 制造 UrhoX+Lua、Godot/Unity 等）选择实现方案。本机没装目标引擎工具时，不会偷偷改成普通网页糊弄过关。
-- **新玩家盲玩 + 通关实测** — 验收先在没读过源码和策划案的独立会话里从标题页盲玩一遍（记入 `qa/playtest-report.md`），排查卡关、引导和手机端显示问题；再对照策划案，实机跑完一遍启动、画面、输入、主循环、结局与重开（记入 `qa/verification.json`）。
+- **锁定目标平台，用本机工具构建** — 开工前先在需求单里定好目标平台、包体积与运行环境；构建时自动检查本机可用的工具（Three.js、Blender、生图与生 3D、2D 画布、微信/抖音小游戏工具链、TapTap 制造 UrhoX+Lua、Godot/Unity 等）选择实现方案。本机没装目标引擎工具时，不会偷偷改成普通网页糊弄过关。
+- **新玩家盲玩 + 通关实测** — 验收先在没读过源码和策划案的独立会话里从标题页盲玩一遍，排查卡关、引导和手机端显示问题，结果记入 `qa/playtest-report.md`；再对照策划案从头跑完启动、画面、输入、主循环、结局与重开，结果记入 `qa/verification.json`。
 
-除了数值和回合玩法，也支持纯靠场景、对白、证词与关键选择推进的**互动叙事**（人物态度靠神情、称呼和后续剧情变化体现，不挂好感度面板），以及每次关键选择后播放配音剧情短片的**互动影游**（短片播完停在最后一帧继续对白，关掉视频也能看静帧通关；详见[互动影游交互设计](skills/game-design/references/interactive-film-method.md)与[生成式媒体的生产与接入](skills/game-build/references/generative-media.md)）。
+除了数值和回合玩法，也支持**互动叙事**与**互动影游**：互动叙事纯靠场景、对白、证词与关键选择推进，人物态度靠神情、称呼和后续剧情体现，不挂好感度面板；互动影游在每次关键选择后播放配音短片，播完停在最后一帧继续对白，关掉视频也能看静帧通关（详见[互动影游交互设计](skills/game-design/references/interactive-film-method.md)与[生成式媒体的生产与接入](skills/game-build/references/generative-media.md)）。
 
 ## 安装
 
@@ -237,7 +237,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 **只出策划案，暂不写代码：**
 
 ```text
-基于这本我有改编权的小说，为目标引擎做一份小体量的可玩切片策划案。
+基于这本我有改编权的小说，为目标引擎做一份轻量可玩切片策划案。
 控制分支与结局规模，写清每个选项的依据、代价、场面变化，以及后续哪场戏会呼应。
 标明新增设定与待定问题。只交付设计文档，不写代码、不做运行验收。
 ```
@@ -250,12 +250,12 @@ codex plugin add novel-to-game@novel-to-game-skills
 按目标平台规范交付工程；本机缺少对应开发者工具时，经确认后再用本地测试页验收。
 ```
 
-默认的 `quick` 模式会先给出合理默认方案，只在平台、核心玩法、版权合规或付费生成等关键问题上停下来问你，其余自动跑完设计、构建和验收。想在玩法选型、灰盒取舍和视觉样张上亲自拍板，把 `quick` 换成 `director` 即可。
+默认的 `quick` 模式会自动给出推荐方案，只在平台、核心玩法、版权合规或付费生成等关键问题上停下来问你，其余自动跑完设计、构建和验收。想在玩法选型、灰盒取舍和视觉样张上亲自拍板，把 `quick` 换成 `director` 即可。
 
 ## 工作流
 
 ```text
-小说 → 通读拆书 → 玩法选型 → 世界设计 → 灰盒试玩 ↺ → 美术方向 → 正式构建 → 实机验收
+小说 → 通读拆书 → 玩法选型 → 世界设计 → 灰盒试玩 ↺ → 美术方向 → 正式构建 → 盲玩验收
 ```
 
 世界设计定稿后，会先把核心玩法做成能从头玩到结局的灰盒（暂不铺正式美术，但操作和空间齐全），交给没看过源码的独立会话试玩；确认好懂、好玩，再批量做美术、完成正式构建、润色游戏内文字并跑完验收。所有文档与代码都保存在 `game-adaptations/<project>/` 目录下，设计文档均为普通 Markdown，不绑定特定引擎：
@@ -266,7 +266,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 | [`novel-game-analyze`](skills/novel-game-analyze/) | 通读拆书，整理主线、冲突桥段、人物关系、隐情、世界规则与改编红线 | `analysis/SOURCE_BIBLE.md` |
 | [`game-design`](skills/game-design/) | 分步完成玩法选型、世界与关卡/叙事设计、美术与视听风格 | `concepts/CONCEPT.md`、`design/GAME_DESIGN.md`、`design/ART_DIRECTION.md` |
 | [`game-build`](skills/game-build/) | 检查本机可用工具，先做可玩灰盒，再完成正式构建、文案润色与测试脚本 | `build/BUILD_BRIEF.md`、`build/app/` |
-| [`game-qa`](skills/game-qa/) | 以新玩家身份冷启动盲玩，核对策划案并生成通关验收记录 | `qa/playtest-report.md`、`qa/verification.json` |
+| [`game-qa`](skills/game-qa/) | 以新玩家身份从头盲玩，核对策划案并生成通关验收记录 | `qa/playtest-report.md`、`qa/verification.json` |
 
 ## 常见问题
 
@@ -280,7 +280,7 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 ### 支持哪些引擎或平台？没装对应工具会退回做网页吗？
 
-做哪个平台和引擎在开局的需求单里定好；本机没装目标工具链时，不会偷偷改成网页交差，只会在你同意后改用替代测试环境，并把未实测的部分记入 `limitations`。微信/抖音小游戏和 TapTap 制造（UrhoX + Lua）均按各自平台规范打包交付（详见[微信与抖音小游戏规范](skills/game-build/references/wechat-and-douyin-minigame.md)、[TapTap 制造规范](skills/game-build/references/taptap-maker.md)）。
+做哪个平台和引擎在开局的需求单里定好；本机没装目标工具链时，不会偷偷改成网页交差，只会在你同意后改用替代测试环境，并把未实测的部分记入验收报告的限制项（`limitations`）。微信/抖音小游戏和 TapTap 制造的 UrhoX + Lua 工程均按各自平台规范打包交付，详见[微信与抖音小游戏规范](skills/game-build/references/wechat-and-douyin-minigame.md)和[TapTap 制造规范](skills/game-build/references/taptap-maker.md)。
 
 ### 原著是外文，游戏能做成中文吗（或反过来）？
 
@@ -296,9 +296,9 @@ codex plugin add novel-to-game@novel-to-game-skills
 
 | 项目 | 用途 |
 | --- | --- |
-| [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | 网文写作 skill 包：扫榜、拆文、写作、去AI味、封面图 |
-| [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI 短剧 / 漫剧创作 skill 合集：剧本、资产、分镜、图片/视频提示词、独立审查 |
-| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 小说改编游戏 skill 合集：原著拆解、目标运行环境构建与实机运行验收（本仓库） |
-| [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | 从支持的视频文件生成中文解说成片，并可选导出可编辑的剪映/CapCut 草稿 |
-| [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | DeepSeek Harness 社区插件，提供小说、短剧、游戏和视频解说工作台 |
-| [zenstory](https://github.com/zenstory-ai/zenstory) | 对话即创作的 AI 小说写作工作台（[app.zenstory.ai](https://app.zenstory.ai)） |
+| [oh-story-claudecode](https://github.com/zenstory-ai/oh-story-claudecode) | 网文写作技能包：扫榜、拆文、大纲细纲、长短篇写作、伏笔追踪、去 AI 味与封面生成 |
+| [drama-skills](https://github.com/zenstory-ai/drama-skills) | AI 短剧与漫剧制作技能包：原著与对标拆解、剧本、视觉设定、分镜、生图/生视频提示词、确认后生产与剪辑成片 |
+| [novel-to-game](https://github.com/zenstory-ai/novel-to-game) | 小说改游戏技能包：通读拆书、玩法与美术设计、代码构建与盲玩验收，支持网页、互动影游与微信/抖音/TapTap 小游戏（本仓库） |
+| [video-recap-skills](https://github.com/zenstory-ai/video-recap-skills) | AI 视频解说技能包：自动切镜、看画面写解说词、配音混音合成硬字幕成片，并可导出剪映 / CapCut 草稿 |
+| [oh-story-dsh](https://github.com/zenstory-ai/oh-story-dsh) | DeepSeek Harness 社区插件：集成网文写作、短剧漫剧、小说改游戏与视频解说四个可视化工作台 |
+| [zenstory](https://github.com/zenstory-ai/zenstory) | 对话即创作的 AI 小说与短剧网页工作台（[app.zenstory.ai](https://app.zenstory.ai)） |

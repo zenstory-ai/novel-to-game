@@ -1,6 +1,6 @@
 ---
 name: novel-to-game
-description: "Turn a novel in any language into a playable game for web, desktop, mobile, WeChat/Douyin mini-games, or TapTap Maker. Coordinates scope intake, full-book analysis, gameplay and art specs, local-tool builds, and blind-playtest QA. Use for novel-to-game, story-to-game, book-to-game, RPG, interactive story, text adventure, interactive film, WeChat/Douyin mini-game, or TapTap Maker requests. NovelToGame 总入口：把任意语言的小说、拆文库或写作工程做成忠于原著的可玩游戏，支持网页、桌面与移动端、微信/抖音小游戏及 TapTap 制造，串联需求确认、通读拆书、玩法与美术策划、按本机工具构建与新玩家盲玩验收。"
+description: "Turn a novel in any language into a playable game for web, desktop, mobile, WeChat/Douyin mini-games, or TapTap Maker. Coordinates scope intake, full-book analysis, gameplay and art specs, local-tool builds, and blind-playtest QA. Use for novel-to-game, story-to-game, book-to-game, RPG, interactive story, text adventure, interactive film, WeChat/Douyin mini-game, or TapTap Maker requests. NovelToGame 总入口：把任意语言的小说、拆文库或写作工程做成忠于原著的可玩游戏，支持网页、桌面与移动端、微信/抖音小游戏及 TapTap 制造，串联需求确认、通读拆书、玩法与美术策划、用本机工具构建与新玩家盲玩验收。"
 ---
 # NovelToGame 总入口
 
@@ -10,7 +10,7 @@ description: "Turn a novel in any language into a playable game for web, desktop
 
 - `quick`（默认）：按推荐方案敲定方向并自动跑完全流程。
 - `director`：在选定概念方向、灰盒试玩后裁剪体量、挑选视觉目标图（仅在制作视觉目标包时）三个节点给出候选与推荐，等用户拍板；用户已明说的不再重复追问。
-- `resume`：读取 `_progress.md` 与已落盘的文档，从最早未走完的交接点往下接。
+- `resume`：读取 `_progress.md` 与已生成的文档，从最早未走完的交接点往下接。
 
 `targetFinish`（`graybox` / `playable-prototype` / `polished-vertical-slice` / `showcase`）只区分制作完成度，`experienceProfile`（`system-led` / `narrative-led` / `hybrid`）只决定用哪套标准衡量体验；两者都不增减六项基础 QA 检查。
 
@@ -33,7 +33,7 @@ game-adaptations/{project}/
 
 ## 流程
 
-1. **需求确认**：速览原著，直接给出完整推荐方案并写入 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、包形式与体积上限、当前可测环境、视口与输入，例如微信/抖音无 DOM 小游戏包或 **TapTap 制造** UrhoX+Lua 工程）、主体与变现（个人开发者免版号，只做单机免费或激励广告，严禁内购充值；持版号企业方可设计内购）、目标市场与界面语言、受众、玩法方向与参考先例、`experienceProfile`、画风与 `targetFinish`、内容分级（成人内容只涉及成年角色，原著未成年角色严禁性化处理）、核心代入感（玩家扮演谁、追求什么）、流程时长与预算、明确不做的事项。本机未装微信/抖音真机预览或 TapTap 制造本地 UrhoX Runtime 时，一并写明可否改用指定的本地替代环境测试。只在目标平台、核心玩法、主体与变现、成人内容、真实人物、版权与资产授权、付费服务（含 Maker 积分扣费生成）或大额投入存在关键分歧时停下请用户拍板；其余记入「未确认假设」。不适用的条目填 `N/A`，下游不得擅自改回默认值。
+1. **需求确认**：速览原著，直接给出完整推荐方案并写入 `PRODUCT_BRIEF.md`，锁定平台与运行时（目标环境、包形式与体积上限、当前可测环境、视口与输入，如微信/抖音无 DOM 小游戏包或 **TapTap 制造** UrhoX+Lua 工程）、开发者主体与变现、目标市场与界面语言、受众、玩法方向与参考先例、`experienceProfile`、画风与 `targetFinish`、内容分级、核心代入感（玩家扮演谁、追求什么）、流程时长与预算、明确不做的事项。个人开发者免版号，只做单机免费或激励广告，严禁内购充值，持版号企业方可设计内购；成人内容只涉及成年角色，原著未成年角色严禁性化处理；本机未装微信/抖音真机预览或 TapTap 制造本地 UrhoX Runtime 时，一并写明可否改用指定的本地替代环境测试。只在目标平台、核心玩法、主体与变现、成人内容、真实人物、版权与资产授权、含 Maker 积分扣费在内的付费服务或大额投入存在关键分歧时停下请用户拍板；其余记入「未确认假设」。不适用的条目填 `N/A`，下游不得擅自改回默认值。
 2. **拆书**：调用 `novel-game-analyze`，产出带原文出处的 `SOURCE_BIBLE.md`。
 3. **概念**：调用 `game-design` 阶段一，选定 `concepts/CONCEPT.md`。
 4. **设计**：选定方向所依赖的原著细节缺出处时，先让 `novel-game-analyze` 定点回查补证；再调用 `game-design` 阶段二，产出 `GAME_DESIGN.md`。

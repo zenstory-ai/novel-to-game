@@ -1,4 +1,4 @@
 interface:
   display_name: "Game QA"
-  short_description: "Blind-playtest as a new player and verify completion · 新玩家冷启动盲玩与通关实测验收"
+  short_description: "Blind-playtest as a new player and verify completion · 新玩家盲玩与通关验收"
   default_prompt: "Use $game-qa to blind-playtest this build as a first-time player on its target runtime and produce playtest diagnostics and verification evidence."

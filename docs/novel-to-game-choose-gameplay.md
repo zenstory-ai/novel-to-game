@@ -69,11 +69,11 @@
 
 **经营方案的试玩片段**：至少摆出两份彼此冲突的委托，让玩家在报酬、人情或名声之间做一次取舍并看到客户反应。如果眼下工期只够做一单毫无冲突的买卖，就验证不了经营循环；要么收缩承诺，要么改选更容易在短片段里立住的方向。
 
-跑通一个小片段不代表整本书已经好改。概念选型只负责筛出值得继续投入的方向；完整的世界设计、实机制作与盲玩验收交给 [novel-to-game](../skills/novel-to-game/SKILL.md) 流程。
+跑通一个小片段不代表整本书已经好改。概念选型只负责筛出值得继续投入的方向；完整的世界设计、代码构建与盲玩验收交给 [novel-to-game](../skills/novel-to-game/SKILL.md) 流程。
 
 ## 用本仓库的 skill 怎么做
 
-概念选型由 [game-design](../skills/game-design/SKILL.md) 的阶段一负责。它需要先读 `SOURCE_BIBLE.md`（由 `novel-game-analyze` 通读拆书生成）与 `PRODUCT_BRIEF.md`（由 `novel-to-game` 确认需求生成），缺一不可。两份文件齐备后，在 Claude Code 输入 `/game-design`、在 Codex 输入 `$game-design` 或在 Kimi Code 输入 `/skill:game-design`，附上诉求即可，例如：
+概念选型由 [game-design](../skills/game-design/SKILL.md) 的阶段一负责。它需要先备齐 `novel-game-analyze` 拆出的 `SOURCE_BIBLE.md` 与 `novel-to-game` 锁定的 `PRODUCT_BRIEF.md`，缺一不可。两份文件齐备后，在 Claude Code 输入 `/game-design`、在 Codex 输入 `$game-design` 或在 Kimi Code 输入 `/skill:game-design`，附上诉求即可，例如：
 
 > 基于已拆解的小说内容提出几种不同的玩法方向，对比核心循环、原著规则如何改变操作、局势如何反馈，以及最小可验证片段；原著事实与新增设计分开标注。
 

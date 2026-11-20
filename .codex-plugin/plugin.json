@@ -1,7 +1,7 @@
 {
   "name": "novel-to-game",
   "version": "0.9.0",
-  "description": "Five agent skills that turn a novel into a playable game: full-book analysis, gameplay and art specs, local-tool builds, and new-player blind-playtest QA—supporting RPGs, interactive fiction, interactive films, and WeChat/Douyin/TapTap mini-games. 把小说做成可玩游戏的 5 个 Agent 技能：通读拆书、玩法与美术策划、按本机工具构建与新玩家盲玩验收，支持系统玩法、互动叙事、互动影游及微信/抖音/TapTap 小游戏。",
+  "description": "Five agent skills that turn a novel into a playable game: full-book analysis, gameplay and art specs, local-tool builds, and new-player blind-playtest QA—supporting RPGs, interactive fiction, interactive films, and WeChat/Douyin/TapTap mini-games. 把小说做成可玩游戏的 5 个 Agent 技能：通读拆书、玩法与美术策划、用本机工具构建与新玩家盲玩验收，支持系统玩法、互动叙事、互动影游及微信/抖音/TapTap 小游戏。",
   "author": {
     "name": "worldwonderer",
     "url": "https://github.com/worldwonderer"

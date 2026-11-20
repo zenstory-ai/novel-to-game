@@ -5,7 +5,7 @@
 ## 引擎架构与工程内文档
 
 - **UrhoX + Lua 5.4 纯代码工程**：无网页 DOM，也不是微信 `wx.*` 沙盒，**严禁拿网页或 H5 JavaScript 代码冒充**。入口为 `scripts/` 下的 `main.lua`，界面优先用 `.ui.json`（`UI.Panel`、`UI.Sprite`、LuaTween），项目配置在 `.project/project.json`，本地绑定见 `.maker-mcp/config.json`。
-- **只以工程内文档为准**：先检查本机 `@taptap/maker`（`taptap-maker` CLI 或插件）与会话 Maker MCP（调 `maker_status_lite` 显式传 `target_dir`，或读 `maker://status`）。初始化用 `taptap-maker init`（仅新建项目加 `--create`）。**写代码前必先读工程内的 `CLAUDE.md`、`urhox-libs/` 与 `engine-docs/`（含 `engine-docs/recipes/sdk.md`）**——Maker 无公网引擎文档，**严禁网页搜索把微信或 H5 的 `tap.*` JavaScript 接口写进 Lua**。缺本地开发包时跑 `taptap-maker dev-kit update`；开发包默认不提交进 Maker Git。
+- **只以工程内文档为准**：先检查本机 `@taptap/maker`（`taptap-maker` CLI 或插件）与会话 Maker MCP，可显式传 `target_dir` 调 `maker_status_lite` 或读 `maker://status`；初始化跑 `taptap-maker init`，仅新建项目加 `--create`。**写代码前必先读工程内的 `CLAUDE.md`、`urhox-libs/` 与 `engine-docs/`（含 `engine-docs/recipes/sdk.md`）**——Maker 无公网文档，**严禁搜微信或 H5 的 `tap.*` JavaScript 接口写进 Lua**。缺开发包时跑 `taptap-maker dev-kit update`，默认不提交进 Maker Git。
 
 ## 资源 `.meta` 与图片尺寸
 
