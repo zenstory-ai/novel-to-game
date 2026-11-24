@@ -222,8 +222,10 @@ def chapter_citation_coverage(text: str, pattern: re.Pattern[str]) -> set[int]:
 # characters, not lines: a line budget is met by writing longer lines, and by 2026-11
 # 585 lines were holding 39.8k characters. Raised from 26000 to 30000 when adding the
 # two conditional platform build references (WeChat/Douyin mini-games and TapTap Maker)
-# plus visual/choice/copy deslop checks.
-SKILL_TOTAL_CHAR_BUDGET = 30000
+# plus visual/choice/copy deslop checks, and to 32000 when adding visual-first UI,
+# copy-density, inline-affordance balance, and blind-QA scannability guardrails
+# across the five skills.
+SKILL_TOTAL_CHAR_BUDGET = 32000
 SKILL_MD_CHAR_BUDGET = 3600
 REFERENCE_CHAR_BUDGET = 2000
 

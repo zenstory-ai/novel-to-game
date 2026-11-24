@@ -7,6 +7,9 @@ import { audio } from '../core/audio.js';
 
 const overlay = () => document.getElementById('overlay');
 export const modalOpen = () => !!overlay().querySelector('.mask, .dlg, .chapter');
+const recentLines = [];
+export const getDialogueLog = () => recentLines.slice();
+export function clearToasts() { toastBox?.replaceChildren(); }
 
 // 逐行对话。点击、空格或回车推进；字还在打时先补全。选中文字不算点击。
 export const SAY_ARM_MS = 350;
@@ -16,7 +19,7 @@ export function say(lines) {
     const figure = h('div.dlg-figure');
     const name = h('div.dlg-name');
     const text = h('div.dlg-text');
-    const box = h('div.dlg-box.card', {}, name, text, h('div.dlg-next', {}, '点击或按空格继续', h('i')));
+    const box = h('div.dlg-box.card', {}, name, text, h('div.dlg-next', {}, '点击', h('span.kbd-only', {}, '或按空格'), '继续', h('i')));
     const skip = h('button.btn.small.dlg-skip', { type: 'button', onclick: (e) => { e.stopPropagation(); finish(); } }, '跳过这段');
     box.append(skip);
     const root = h('div.dlg', { data: { ui: 'dialogue' } }, figure, box);
@@ -43,6 +46,8 @@ export function say(lines) {
         if (lastWho !== line.who) { figure.classList.remove('enter'); void figure.offsetWidth; figure.classList.add('enter'); }
       } else figure.style.opacity = 0;
       lastWho = line.who;
+      recentLines.push({ who: sp?.name ?? '', text: line.text });
+      while (recentLines.length > 30) recentLines.shift();
       full = line.text; shown = 0; text.textContent = '';
       clearInterval(timer);
       const step = ms(22);
@@ -66,7 +71,7 @@ export function say(lines) {
     function onKey(e) {
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat && !settling()) advance(); }
     }
-    root.addEventListener('click', () => { if (!settling() && !String(window.getSelection?.() ?? '')) advance(); });
+    root.addEventListener('click', (e) => { e.stopPropagation(); if (!settling() && !String(window.getSelection?.() ?? '')) advance(); });
     window.addEventListener('keydown', onKey, true);
     overlay().append(root);
     advance();
@@ -81,8 +86,7 @@ export const CHOICE_ARM_MS = 450;
 export function choose({ title, sub, options, cols = false, id = 'choice' }) {
   return new Promise((resolve) => {
     const list = h(`div.opts${cols ? '.cols' : ''}`);
-    const card = h('div.modal.card', { class: cols ? 'wide' : '', tabindex: '-1' }, h('h2', {}, title), sub && h('div.sub', {}, sub), list,
-      h('div.opt-hint', {}, '点选一项', h('span.kbd-only', {}, '；用键盘时先按方向键挑中，再按回车确认')));
+    const card = h('div.modal.card', { class: cols ? 'wide' : '', tabindex: '-1' }, h('h2', {}, title), sub && h('div.sub', {}, sub), list);
     const mask = h('div.mask', { data: { ui: id } }, card);
     const shownAt = performance.now();
     const btns = () => [...list.querySelectorAll('.opt')];

@@ -26,15 +26,15 @@ export function newCampaign(seed) {
 
 // ---------- 主线 ----------
 const QUESTS = {
-  ask: { title: '问路土地', text: '火焰山烧断了西去的路。土地庙前那位老者头顶有「!」，去问问他。', scene: 'village', npc: 'tudi' },
-  borrow1: { title: '一借芭蕉扇', text: '芭蕉扇在翠云山芭蕉洞，罗刹女手里。从庄南的山路上山。', here: '罗刹女就在芭蕉洞前。', scene: 'cuiyun', npc: 'luosha' },
-  borrow2: { title: '二借芭蕉扇', text: '带着灵吉菩萨给的法宝，再上芭蕉洞。', here: '芭蕉洞前，再向罗刹女借一回。', scene: 'cuiyun', npc: 'luosha' },
-  tryfan: { title: '火焰山试扇', text: '扇子到手了。土地在东北的火口等着看你扇火。', here: '土地就在火口边上。', scene: 'huokou', npc: 'tudi' },
-  firemap: { title: '火脉残图', text: '火炎校尉掉下一张残图，土地在火口拿着它等你。', here: '土地拿着残图等你。', scene: 'huokou', npc: 'tudi' },
-  moyun: { title: '上积雷山', text: '罗刹女只听牛魔王的。从庄东的山道上积雷山摩云洞。', here: '摩云洞前有人守门，上前通名。', scene: 'jilei', npc: 'yumian' },
-  niu: { title: '会一会老牛', text: '牛魔王出洞了，就站在摩云洞门前。', here: '牛魔王就在洞门前。', scene: 'jilei', npc: 'niumowang' },
-  descend: { title: '携扇下山', text: '真扇到手。下翠云山回火焰山——山道上有人迎面跑来。', here: '山道上，八戒迎面跑来。', scene: 'cuiyun', npc: 'fakeBajie' },
-  done: { title: '火息路开', text: '火焰山已熄，师徒继续西行。', scene: 'village', npc: null },
+  ask: { title: '问路土地', text: '往土地庙寻土地问路', scene: 'village', npc: 'tudi' },
+  borrow1: { title: '一借芭蕉扇', text: '庄南山路上翠云山', here: '芭蕉洞前寻罗刹女', scene: 'cuiyun', npc: 'luosha' },
+  borrow2: { title: '二借芭蕉扇', text: '携宝再上翠云山', here: '洞前再寻罗刹女', scene: 'cuiyun', npc: 'luosha' },
+  tryfan: { title: '火焰山试扇', text: '往东北火口寻土地', here: '火口边寻土地', scene: 'huokou', npc: 'tudi' },
+  firemap: { title: '火脉残图', text: '往火口寻土地启图', here: '火口寻土地启图', scene: 'huokou', npc: 'tudi' },
+  moyun: { title: '上积雷山', text: '庄东山道上摩云洞', here: '摩云洞前通名', scene: 'jilei', npc: 'yumian' },
+  niu: { title: '会一会老牛', text: '往摩云洞会牛魔王', here: '洞门前会牛魔王', scene: 'jilei', npc: 'niumowang' },
+  descend: { title: '携扇下山', text: '下翠云山返火焰山', here: '山道前迎上八戒', scene: 'cuiyun', npc: 'fakeBajie' },
+  done: { title: '火息路开', text: '火灭雨落，继续西行', scene: 'village', npc: null },
 };
 
 export function mainQuest(c, hereScene = null) {
@@ -338,11 +338,10 @@ export function reportBounty(c) {
 export function bountyQuest(c) {
   if (!bountyOpen(c)) return null;
   const b = c.bounty;
-  const count = `第 ${b.ring + (b.state === 'report' ? 0 : 1)} 环 / 共 ${ECONOMY.bountyRing} 环`;
-  const capped = c.levels.wukong >= levelCap(c) ? '（历练已到眼下的上限，照样有银两与掉落）' : '';
-  if (b.state === 'hunt') return { title: `封妖令 · ${count}`, text: `${SCENES[b.demon.scene].name}有${b.demon.name}作乱，过去点它开打。${capped}`, scene: b.demon.scene, npc: b.demon.id };
-  if (b.state === 'report') return { title: '封妖令 · 回报', text: '火妖已收，回报土地，领下一环。', scene: bountyScene(c), npc: 'tudi' };
-  return { title: '封妖令（可选）', text: `土地发封妖令：收服炉砖里钻出的火妖，得历练、银两与兵甲。${capped}`, scene: bountyScene(c), npc: 'tudi' };
+  const count = `${b.ring + (b.state === 'report' ? 0 : 1)}/${ECONOMY.bountyRing}`;
+  if (b.state === 'hunt') return { title: `封妖 ${count}`, text: `${SCENES[b.demon.scene].name}除${b.demon.name}`, scene: b.demon.scene, npc: b.demon.id };
+  if (b.state === 'report') return { title: '封妖 · 复命', text: '回土地庙复命', scene: bountyScene(c), npc: 'tudi' };
+  return { title: '封妖令', text: '寻土地领令除火妖', scene: bountyScene(c), npc: 'tudi' };
 }
 
 // ---------- 支路探索 ----------

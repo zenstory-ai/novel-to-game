@@ -8,7 +8,7 @@ import { createNav, pathLength } from '../js/rules/nav.js';
 import { readMs, holdFor, pace } from '../js/core/dom.js';
 import { haulText } from '../js/rules/treasure.js';
 import { createBattle } from '../js/rules/battle.js';
-import { STORY, SPEAKERS, CHOICES, CHAPTERS, COACH, HELP, endingScene } from '../js/data/story.js';
+import { STORY, SPEAKERS, CHOICES, CHAPTERS, COACH, endingScene } from '../js/data/story.js';
 import { PARTY, ENEMIES, FORMS, ITEMS, EQUIPS, TREASURES, BATTLES, SKILLS, STUNTS, BUFF_INFO } from '../js/data/combat.js';
 import { FACES, unitArt, walkArt, walkSheet, itemArt, bgArt, mapArt, uiArt, ELEMENT_ICON } from '../js/data/art.js';
 
@@ -109,7 +109,7 @@ test('上屏文案不带策划词、内部键名与提前的剧透', () => {
     else if (Array.isArray(node)) node.forEach(collect);
     else if (node && typeof node === 'object') Object.values(node).forEach(collect);
   };
-  collect([STORY, CHOICES, CHAPTERS, COACH, HELP, LANDMARKS, BANTER, BARKS]);
+  collect([STORY, CHOICES, CHAPTERS, COACH, LANDMARKS, BANTER, BARKS]);
   for (const t of Object.values({ ...SKILLS, ...STUNTS })) if (t.desc) texts.push(t.name, t.desc);
   for (const t of [...Object.values(ITEMS), ...Object.values(EQUIPS), ...Object.values(TREASURES), ...Object.values(FORMS)]) texts.push(t.name, t.desc);
   for (const b of Object.values(BATTLES)) { texts.push(b.name, b.goal); if (b.retryHint) texts.push(b.retryHint); if (b.field) texts.push(b.field.name, b.field.short, b.field.desc); }

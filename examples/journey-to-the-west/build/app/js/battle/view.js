@@ -12,12 +12,12 @@ import { unitArt, bgArt, uiArt, itemArt, faceStyle } from '../data/art.js';
 import { createFx } from './fx.js';
 import { audio } from '../core/audio.js';
 import { settings, saveSettings, firstTime } from '../core/store.js';
-import { coach, toast } from '../ui/dialogue.js';
+import { toast } from '../ui/dialogue.js';
 
 const SLOTS = {
   // 两条平行的斜线相向而立：敌方在左上，我方在右下
-  wide: { enemy: [[22, 61], [8, 74], [36, 48], [47, 68], [33, 85]], party: [[78, 71], [92, 58], [64, 84], [51, 80], [72, 52]] },
-  tall: { enemy: [[50, 43], [18, 38], [82, 38], [34, 24], [66, 24]], party: [[36, 68], [80, 66], [17, 87], [62, 89], [90, 88]] },
+  wide: { enemy: [[22, 59], [8, 72], [36, 46], [47, 66], [33, 77]], party: [[78, 67], [92, 55], [64, 77], [51, 74], [72, 49]] },
+  tall: { enemy: [[50, 34], [17, 30], [83, 30], [33, 20], [67, 20]], party: [[18, 63], [62, 62], [38, 84], [84, 83], [50, 84]] },
 };
 const AMBIENT = { huoyan: 'ember', cuiyun: 'leaf', moyundong: 'mist', leiji: 'mist' };
 const YIELDS = new Set(['luosha', 'niumowang', 'whitebull']);
@@ -40,8 +40,10 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
   const top = h('div.battle-top', {}, orderBar, h('div.battle-info', {}, roundChip, formationChip, canAutoAll && autoChip, speedChip));
   const ruleChip = def.field ? h('div.chip.plate.rule', { data: { ui: 'field-rule' } }, h('b', {}, def.field.name), def.field.short) : null;
   const place = h('div.battle-place', {}, h('div.chip.plate.where', {}, def.name), ruleChip);
-  const logLine = h('div.battle-log.plate.hidden', { role: 'log', 'aria-live': 'polite' });
-  const panel = h('div.cmd-panel.card', { data: { ui: 'commands' } });
+  const logLine = h('div.sr-only', { role: 'log', 'aria-live': 'polite' });
+  const cueBar = h('div.cmd-cue.hidden', { data: { ui: 'cue-bar' } });
+  const panelBody = h('div.cmd-inner');
+  const panel = h('div.cmd-panel.card', { data: { ui: 'commands' } }, cueBar, panelBody);
   const brought = new Set(Object.keys(state.items).filter((k) => state.items[k] > 0)); // 开战时带着的道具
   const root = h('div.screen.battle', { data: { ui: 'battle', battle: state.battleId, phase: 'intro', round: 1 } }, shaker, top, place, logLine, panel);
   stage.append(root);
@@ -50,7 +52,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
 
   const els = new Map();
   const last = {}; // 每位伙伴上一回合的指令（给「沿用」用）
-  let autoAll = false, warnEl = null, shownRound = 1, resolveDone, tall = false, commandAbort = null, destroyed = false, commandPhases = 0;
+  let autoAll = false, shownRound = 1, resolveDone, tall = false, commandAbort = null, destroyed = false, commandPhases = 0, curWarn = null, curCoach = null;
   const done = new Promise((r) => { resolveDone = r; });
 
   // ---------- 布局 ----------
@@ -195,12 +197,16 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
     k.push({ transform: 'none' });
     shaker.animate(k, { duration: Math.max(90, ms(260)) });
   }
-  function log(text) { logLine.textContent = text; logLine.classList.toggle('hidden', !text); }
+  function log(text) { logLine.textContent = text ?? ''; }
   const nm = (id) => unitById(state, id)?.name ?? '';
-  function warn(text) {
-    warnEl?.remove(); warnEl = null;
-    if (text) { warnEl = h('div.warn', { data: { ui: 'warn' }, role: 'alert' }, text); root.append(warnEl); }
+  function renderCueBar() {
+    clear(cueBar);
+    if (curWarn) cueBar.append(h('div.cue-pill.warn-pill', { data: { ui: 'warn' }, role: 'alert' }, curWarn));
+    if (curCoach) cueBar.append(h('div.cue-pill.coach-pill', { data: { ui: 'coach' }, role: 'status' }, curCoach));
+    cueBar.classList.toggle('hidden', !curWarn && !curCoach);
   }
+  function warn(text) { curWarn = text || null; renderCueBar(); }
+  function coach(text) { curCoach = text || null; renderCueBar(); }
   function refreshChips() {
     const f = FORMATIONS[state.formation];
     clear(formationChip).append(`阵型 · ${f.name}`);
@@ -283,8 +289,8 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
       if (e.heavy && e.softened) float(e.target, '挡住了！', 'note', -44);
       audio.sfx(e.crit ? 'crit' : e.heavy ? 'heavy' : e.rel === 'ke' ? 'ke' : 'hit', { volume: e.crit || e.heavy ? 1 : 0.8 });
       quake(e.heavy ? 9 : e.crit || e.rel === 'ke' ? 5 : 2.5);
-      log(`${nm(e.actor)}命中${nm(e.target)}，${e.amount} 点伤害${e.rel === 'ke' ? `（${relText('ke', e.attackEl, e.targetEl)}，多打五成）` : e.rel === 'beike' ? '（受克，只剩六成六）' : ''}${e.crit ? '，暴击' : ''}`);
-      if (e.rel === 'ke' && tutorial && target.side === 'enemy' && firstTime('coach-ke')) { coachHold = true; coach(COACH.ke, els.get(e.target).pin); setTimeout(() => { coachHold = false; coach(null); }, ms(3200)); }
+      log(`${nm(e.actor)}命中${e.targetName ?? nm(e.target)}，${e.amount} 点伤害${e.rel === 'ke' ? `（${relText('ke', e.attackEl, e.targetEl)}，多打五成）` : e.rel === 'beike' ? '（受克，只剩六成六）' : ''}${e.crit ? '，暴击' : ''}`);
+      if (e.rel === 'ke' && tutorial && target.side === 'enemy' && firstTime('coach-ke')) { coachHold = true; coach(COACH.ke); setTimeout(() => { coachHold = false; coach(null); }, ms(2600)); }
       if (e.crit) await wait(70);
     } else if (e.t === 'miss') {
       const el = els.get(e.target);
@@ -669,7 +675,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
 
   function collectCommands() {
     return new Promise((resolve) => {
-      root.dataset.phase = 'command';
+      root.dataset.phase = 'command'; place.querySelector('.where')?.classList.add('hidden');
       refreshChips();
       const order = alive(state, 'party');
       const cmds = {};
@@ -721,11 +727,11 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
       window.addEventListener('keydown', onKey);
 
       function who(u) {
-        const wheel = h('div.wheel', { title: '前一个克后一个；火又克金' }, ELEMENTS.flatMap((el, i) => [h(`span.el.named${u.element === el ? '.me' : ''}`, { data: { el } }, el), i < 4 ? h('span', {}, '克') : null]));
+        const wheel = h('div.wheel', { title: '金克木 · 木克土 · 土克水 · 水克火 · 火克金' }, ELEMENTS.flatMap((el, i) => [h(`span.el${u.element === el ? '.me' : ''}`, { data: { el }, title: el }, el), i < 4 ? h('span', {}, '›') : null]));
         return h('div.cmd-who', {},
           h('div.face.square', { style: faceStyle(els.get(u.id).art) }),
           h('h3', {}, u.name, h('span.el', { data: { el: u.element } }, u.element)),
-          h('div.stats', {}, h('div.bar.hp', {}, h('i.fill', { style: { width: `${(u.hp / u.maxHp) * 100}%` } }), h('b', {}, `气血 ${u.hp}/${u.maxHp}`)), h('div.bar.mp', {}, h('i.fill', { style: { width: `${(u.mp / Math.max(1, u.maxMp)) * 100}%` } }), h('b', {}, `法力 ${u.mp}/${u.maxMp}`)), h('div.bar.sp', {}, h('i.fill', { style: { width: `${(u.sp / 150) * 100}%` } }), h('b', {}, `愤怒 ${u.sp}/150`))),
+          h('div.stats', {}, h('div.bar.hp', {}, h('i.fill', { style: { width: `${(u.hp / u.maxHp) * 100}%` } }), h('b', {}, `${u.hp}/${u.maxHp}`)), h('div.bar.mp', {}, h('i.fill', { style: { width: `${(u.mp / Math.max(1, u.maxMp)) * 100}%` } }), h('b', {}, `法 ${u.mp}/${u.maxMp}`)), h('div.bar.sp', {}, h('i.fill', { style: { width: `${(u.sp / 150) * 100}%` } }), h('b', {}, `怒 ${u.sp}`))),
           wheel);
       }
       function side(extra = null) {
@@ -737,7 +743,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
       }
       function frame(u, mode, title, content, extra = null) {
         panel.dataset.mode = mode;
-        clear(panel).append(who(u), h('div.cmd-main', {}, title, content), side(extra));
+        clear(panelBody).append(who(u), h('div.cmd-main', {}, title, content), side(extra));
       }
       const previewSlot = () => h('span.cmd-preview', { data: { ui: 'preview' } });
       // 子菜单：一页排满就翻页，不出滚动条。格子里只有名字与代价，说明放在侧栏（窄屏在标题下一行）
@@ -812,16 +818,15 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
           const tip = { wukong: COACH.wukong1, bajie: COACH.bajie1, sha: COACH.sha1 }[u.key];
           const anchor = { wukong: 'attack', bajie: 'skill', sha: 'defend' }[u.key];
           const at = grid.querySelector(`[data-cmd="${anchor}"]`);
-          at?.classList.add('glow'); // 指点说点哪个，就描金哪个（鼠标停在别处的悬停描红不该抢了它）
-          if (tip) coach(tip, at);
-        } else if (tutorial && state.round === 2 && idx === 0 && firstTime('coach-round2')) coach(COACH.round2, orderBar);
-        // 决战真扇：不靠「只提示一次」，每次下令都点明，直到有人领扇或扇出第一扇（重打也一样）
-        else if (fanDue) coach(COACH.fan, grid.querySelector('[data-cmd="item"]'));
-        else if (weary && firstTime(`coach-weary-${state.seed}`)) coach(COACH.weary, grid.querySelector('[data-cmd="special"]'));
-        else if (def.field?.kind === 'burn' && u.hasTransform && state.round === 1 && firstTime('coach-burn')) coach(COACH.burn, grid.querySelector('[data-cmd="special"]'));
-        else if (boss && idx === 0 && firstTime('coach-heavy')) coach(COACH.heavy, grid.querySelector('[data-cmd="defend"]'));
+          at?.classList.add('glow');
+          if (tip) coach(tip);
+        } else if (tutorial && state.round === 2 && idx === 0 && firstTime('coach-round2')) coach(COACH.round2);
+        // 决战真扇：真扇一扇未出时每次下令在底栏点明，直到有人领扇或扇出第一扇
+        else if (fanDue) coach(COACH.fan);
+        else if (weary && firstTime(`coach-weary-${state.seed}`)) coach(COACH.weary);
+        else if (def.field?.kind === 'burn' && u.hasTransform && state.round === 1 && firstTime('coach-burn')) coach(COACH.burn);
         else if (!coachHold) coach(null);
-        warn(boss ? `${boss.name}蓄力中——「${boss.heavyName}」这回合砸向${heavyTarget(state)?.name ?? ''}（已锁定，补血也不换人）` : null);
+        warn(boss ? `蓄力锁定：${heavyTarget(state)?.name ?? ''}（防御/保护）` : null);
       }
 
       // 「沿用」把要沿用的那条指令写在按钮上；沿用道具会再耗一件，标出余量
@@ -973,7 +978,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
     layout();
     refreshChips();
     buildOrder(actionQueue(state));
-    clear(panel).append(h('div.cmd-wait', {}, def.name));
+    clear(panelBody).append(h('div.cmd-wait', {}, def.name));
     for (const u of state.units) {
       const el = els.get(u.id);
       el.body.animate([{ transform: `translate(${u.side === 'enemy' ? -60 : 60}vw,0)` }, { transform: 'translate(0,0)' }], { duration: ms(520 + u.slot * 90), easing: 'cubic-bezier(.2,.9,.3,1)' });
@@ -986,7 +991,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
       refreshChips();
       const cmds = autoAll ? Object.fromEntries(alive(state, 'party').map((u) => [u.id, { type: 'auto' }])) : await collectCommands();
       if (destroyed) break;
-      clear(panel).append(h('div.cmd-wait', {}, '交 锋'));
+      clear(panelBody).append(h('div.cmd-wait', {}, '交 锋'));
       panel.dataset.mode = 'wait';
       warn(null);
       await play(resolveRound(state, cmds));
@@ -995,7 +1000,7 @@ export function runBattleView(stage, { state, labels, tutorial = false, canAutoA
     root.dataset.phase = 'over';
     root.dataset.winner = state.winner;
     warn(null); coach(null);
-    clear(panel).append(h('div.cmd-wait', {}, state.winner === 'party' ? '得 胜' : state.winner === 'enemy' ? '败 北' : ''));
+    clear(panelBody).append(h('div.cmd-wait', {}, state.winner === 'party' ? '得 胜' : state.winner === 'enemy' ? '败 北' : ''));
     if (state.winner === 'party') {
       audio.sfx('victory');
       for (const u of alive(state, 'party')) els.get(u.id).body.animate([{ transform: 'translate(0,0)' }, { transform: 'translate(0,-22px)' }, { transform: 'translate(0,0)' }], { duration: ms(460), iterations: 2 });

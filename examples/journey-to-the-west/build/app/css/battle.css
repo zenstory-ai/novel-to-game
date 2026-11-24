@@ -1,9 +1,9 @@
 /* 战斗画面：满幅彩绘背景，敌左我右，上缘行动顺序，底部指令台。 */
-.battle { background: #1b130d; --top-h: 62px; --cmd-h: 196px; --uh: 0.43; }
+.battle { background: #1b130d; --top-h: 58px; --cmd-h: 204px; --uh: 0.43; }
 .battle-bg { position: absolute; inset: -3%; background: #2a1d14 center 62% / cover no-repeat; animation: bg-drift 26s ease-in-out infinite alternate; }
 .battle-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 12, 6, 0.45), rgba(20, 12, 6, 0) 22%, rgba(20, 12, 6, 0) 62%, rgba(20, 12, 6, 0.55)); }
-.battle-shake { position: absolute; inset: 0; }
-.battle-field { position: absolute; left: 0; right: 0; top: var(--top-h); bottom: var(--cmd-h); isolation: isolate; }
+.battle-shake { position: absolute; inset: 0; z-index: 1; }
+.battle-field { position: absolute; left: 0; right: 0; top: var(--top-h); bottom: var(--cmd-h); z-index: 1; isolation: isolate; }
 .battle-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }
 
 /* ---------- 单位 ---------- */
@@ -63,7 +63,7 @@
 .stamp { position: absolute; z-index: 9; translate: -50% -50%; pointer-events: none; padding: 3px 12px 4px; font-family: var(--kai); font-size: 24px; font-weight: 800; letter-spacing: 0.14em; color: #fff3d8; background: linear-gradient(135deg, #d24a36, #8f1f17); border: 2px solid #ffe6a8; border-radius: 6px; box-shadow: 0 0 18px rgba(255, 110, 60, 0.85); rotate: -8deg; animation: stamp 1.1s forwards; white-space: nowrap; }
 .stamp.gold { color: #4a2b00; background: linear-gradient(135deg, #fff0a6, #e9b534); border-color: #8a5a07; box-shadow: 0 0 20px rgba(255, 214, 90, 0.95); }
 .stamp.grey { color: #eee; background: #5a5a5a; border-color: #bbb; box-shadow: none; font-size: 17px; }
-.callout { position: absolute; left: 50%; top: calc(var(--top-h) + 46px); translate: -50% 0; z-index: 9; display: flex; align-items: center; gap: 10px; padding: 7px 26px 8px 10px; border-radius: 24px; color: #fff3d8; background: linear-gradient(90deg, rgba(30, 18, 10, 0.94), rgba(60, 30, 16, 0.9)); border: 1px solid #e3b866; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); font-size: 20px; font-weight: 800; letter-spacing: 0.1em; animation: pop-in 0.16s; pointer-events: none; white-space: nowrap; }
+.callout { position: absolute; left: 50%; top: calc(var(--top-h) + 46px); translate: -50% 0; z-index: 600; display: flex; align-items: center; gap: 10px; padding: 7px 26px 8px 10px; border-radius: 24px; color: #fff3d8; background: linear-gradient(90deg, rgba(30, 18, 10, 0.94), rgba(60, 30, 16, 0.9)); border: 1px solid #e3b866; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5); font-size: 20px; font-weight: 800; letter-spacing: 0.1em; animation: pop-in 0.16s; pointer-events: none; white-space: nowrap; }
 .callout.enemy { background: linear-gradient(90deg, rgba(60, 14, 10, 0.94), rgba(100, 30, 18, 0.9)); border-color: #ffb09a; }
 .callout .face { width: 38px; height: 38px; }
 .callout small { font-size: 14px; font-weight: 600; opacity: 0.85; letter-spacing: 0.04em; }
@@ -98,16 +98,21 @@ button.chip:disabled { opacity: 0.5; }
 .battle-log { position: absolute; left: 12px; bottom: calc(var(--cmd-h) + 8px); z-index: 9; max-width: min(520px, 62vw); padding: 5px 14px; font-size: 13.5px; color: #f1e4c8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.92; pointer-events: none; }
 
 /* ---------- 指令台 ---------- */
-.cmd-panel { position: absolute; left: 10px; right: 10px; bottom: calc(8px + var(--safe-b)); height: calc(var(--cmd-h) - 16px); z-index: 12; display: grid; grid-template-columns: 250px 1fr 250px; gap: 14px; padding: 12px 16px; }
+.cmd-panel { position: absolute; left: 10px; right: 10px; bottom: calc(8px + var(--safe-b)); height: calc(var(--cmd-h) - 16px); z-index: 12; display: flex; flex-direction: column; gap: 6px; padding: 10px 14px; }
+.cmd-cue { flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: nowrap; min-height: 24px; }
+.cue-pill { padding: 2px 12px; border-radius: 12px; font-size: 13px; font-weight: 800; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cue-pill.warn-pill { color: #fff; background: linear-gradient(90deg, #a61e16, #d4482a); border: 1px solid #ffd0a8; }
+.cue-pill.coach-pill { color: #3b2500; background: linear-gradient(#fff6cf, #ffe08a); border: 1px solid #c8882a; }
+.cmd-inner { flex: 1; min-height: 0; display: grid; grid-template-columns: 236px 1fr 236px; gap: 12px; }
 .cmd-who { display: grid; grid-template-columns: 76px 1fr; gap: 6px 12px; align-content: start; min-width: 0; }
 .cmd-who .face { width: 76px; height: 76px; grid-row: span 2; border-radius: 12px; }
 .cmd-who h3 { margin: 2px 0 0; display: flex; align-items: center; gap: 8px; font-family: var(--kai); font-size: 23px; letter-spacing: 0.08em; color: var(--zhu-deep); white-space: nowrap; }
 .cmd-who .stats { display: grid; gap: 4px; font-size: 12px; }
-.cmd-who .wheel { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 2px; margin-top: 4px; padding: 5px 10px 4px; border-radius: 8px; background: rgba(255, 255, 255, 0.5); border: 1px dashed rgba(189, 139, 67, 0.6); font-size: 12px; color: var(--ink-2); }
-/* 相克环兼作图例：图标在上、五行名在下，中间一个「克」 */
-.wheel .el.named { width: 30px; height: 40px; padding: 26px 0 0; background-position: center top; background-size: 24px 24px; font-size: 12px; line-height: 14px; text-align: center; border-radius: 6px; }
-.wheel .el.me { background-color: rgba(184, 69, 61, 0.14); box-shadow: 0 0 0 1.5px var(--zhu); }
-.wheel span:not(.el) { opacity: 0.65; font-size: 11.5px; }
+.cmd-who .wheel { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 2px; margin-top: 2px; padding: 3px 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.5); border: 1px dashed rgba(189, 139, 67, 0.55); font-size: 12px; color: var(--ink-2); }
+/* 紧凑五行相克条：纯彩绘图标与箭头，悬停显完整相克链 */
+.wheel .el { width: 22px; height: 22px; border-radius: 6px; }
+.wheel .el.me { background-color: rgba(184, 69, 61, 0.18); box-shadow: 0 0 0 1.5px var(--zhu); }
+.wheel span:not(.el) { opacity: 0.6; font-size: 13px; font-weight: 800; }
 .cmd-main { display: grid; grid-template-rows: auto 1fr; gap: 8px; min-width: 0; min-height: 0; }
 .cmd-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: var(--ink-2); min-height: 26px; }
 .cmd-title b { color: var(--zhu-deep); font-size: 17px; }
@@ -184,7 +189,7 @@ button.chip:disabled { opacity: 0.5; }
 @keyframes stamp { 0% { opacity: 0; scale: 2.4; } 14% { opacity: 1; scale: 0.92; } 22% { scale: 1; } 78% { opacity: 1; } 100% { opacity: 0; translate: -50% -90%; } }
 
 @media (max-width: 1100px) {
-  .cmd-panel { grid-template-columns: 210px 1fr; }
+  .cmd-inner { grid-template-columns: 204px 1fr; }
   .cmd-side { display: none; }
   /* 侧栏收起后，说明改在格子上方排一行 */
   .cmd-body { grid-template-rows: auto 1fr; gap: 6px; }
@@ -196,37 +201,35 @@ button.chip:disabled { opacity: 0.5; }
   .cmd-body:has(.cmd-list[data-kind="target"]) .cmd-detail.inline { display: none; }
 }
 @media (max-width: 700px) {
-  .battle { --top-h: 84px; --cmd-h: 292px; --uh: 0.225; }
-  .unit.big { --uh: 0.3; }
-  .unit.small { --uh: 0.16; }
-  .unit.pet { --uh: 0.19; }
-  .battle-top { padding: 6px 6px; gap: 5px 6px; flex-wrap: wrap; align-content: flex-start; }
-  .battle-info { margin-left: auto; gap: 5px; }
-  .order { flex: 1 1 100%; }
-  .battle-place .where { display: none; }
-  .order { padding: 3px 6px; gap: 4px; }
+  .battle { --top-h: 72px; --cmd-h: 268px; --uh: 0.185; }
+  .unit.big { --uh: 0.24; }
+  .unit.small { --uh: 0.145; }
+  .unit.pet { --uh: 0.165; }
+  .battle-top { padding: 5px 6px; gap: 4px 5px; flex-wrap: wrap; align-content: flex-start; }
+  .battle-info { margin-left: auto; gap: 4px; }
+  .order { flex: 1 1 100%; padding: 2px 6px; gap: 4px; }
   .order > label { display: none; }
-  .order-item .face { width: 28px; height: 28px; }
+  .order-item .face { width: 26px; height: 26px; }
   .order-item .el { display: none; }
-  .chip { min-height: 32px; padding: 3px 9px; font-size: 12.5px; }
+  .chip { min-height: 28px; padding: 2px 8px; font-size: 12px; }
   .battle-place { top: calc(var(--top-h) + 2px); left: 6px; max-width: 72vw; }
-  .battle-place .where { font-size: 14px; padding: 2px 10px; }
-  .battle-place .rule { font-size: 11.5px; padding: 3px 8px; }
-  .cmd-preview { font-size: 12.5px; gap: 6px; }
-  .warn { top: calc(var(--top-h) + 36px); font-size: 12.5px; padding: 5px 12px; }
-  .callout { top: calc(var(--top-h) + 64px); font-size: 16px; padding: 5px 16px 6px 6px; }
-  .callout .face { width: 30px; height: 30px; }
-  .battle-log { display: none; }
-  .unit-plate { width: 94px; padding: 3px 5px 4px; gap: 2px; top: 4px; }
-  .unit-name { font-size: 11.5px; }
-  .unit-plate .bar { height: 9px; }
-  .unit-plate .bar > b { font-size: 8.5px; }
-  .unit-plate .bar.mp, .unit-plate .bar.sp { height: 4px; }
-  .tag { font-size: 9.5px; padding: 0 4px; }
-  .pin { font-size: 11px; padding: 1px 6px; }
+  .battle-place .where { display: none; }
+  .battle-place .rule { font-size: 11px; padding: 2px 8px; }
+  .cmd-preview { font-size: 12px; gap: 6px; }
+  .callout { top: calc(var(--top-h) + 8px); font-size: 15px; padding: 4px 14px 5px 5px; }
+  .callout .face { width: 26px; height: 26px; }
+  .unit-plate { width: 86px; padding: 2px 4px 3px; gap: 2px; top: 3px; }
+  .unit-name { font-size: 11px; }
+  .unit-plate .bar { height: 8px; }
+  .unit-plate .bar > b { font-size: 8px; }
+  .unit-plate .bar.mp, .unit-plate .bar.sp { height: 3.5px; }
+  .tag { font-size: 9px; padding: 0 4px; }
+  .pin { font-size: 10.5px; padding: 1px 6px; }
   .float { font-size: 22px; } .float.ke { font-size: 28px; } .float.crit { font-size: 32px; } .float.note { font-size: 15px; }
   .stamp { font-size: 17px; padding: 2px 8px; }
-  .cmd-panel { left: 4px; right: 4px; bottom: calc(4px + var(--safe-b)); height: calc(var(--cmd-h) - 8px); grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 6px; padding: 8px 10px; }
+  .cmd-panel { left: 4px; right: 4px; bottom: calc(4px + var(--safe-b)); height: calc(var(--cmd-h) - 8px); gap: 4px; padding: 6px 8px; }
+  .cue-pill { font-size: 11.5px; padding: 2px 8px; }
+  .cmd-inner { grid-template-columns: 1fr; grid-template-rows: auto 1fr; gap: 5px; }
   .cmd-who { grid-template-columns: 44px 1fr auto; align-items: center; gap: 4px 8px; }
   .cmd-who .face { width: 44px; height: 44px; grid-row: auto; }
   .cmd-who h3 { font-size: 18px; margin: 0; }

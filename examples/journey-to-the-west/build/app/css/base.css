@@ -41,6 +41,7 @@ img { -webkit-user-drag: none; }
 .screen { position: absolute; inset: 0; overflow: hidden; }
 .icon { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- 按钮 ---------- */
 .btn {
@@ -163,10 +164,11 @@ img { -webkit-user-drag: none; }
 .section-title:first-child { margin-top: 0; }
 
 /* ---------- 提示与横幅 ---------- */
-.toasts { position: absolute; top: 76px; left: 50%; transform: translateX(-50%); display: grid; gap: 8px; justify-items: center; z-index: 70; pointer-events: none; width: min(92vw, 560px); }
+.toasts { position: absolute; top: 72px; left: 50%; transform: translateX(-50%); display: grid; gap: 8px; justify-items: center; z-index: 700; pointer-events: none; width: min(92vw, 560px); }
+#app:has(.screen.battle) .toasts { top: 12px; }
 .toast { padding: 9px 20px; border-radius: 22px; font-size: 15px; font-weight: 600; color: #fff3dc; background: rgba(36, 24, 16, 0.92); border: 1px solid rgba(214, 170, 96, 0.8); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45); animation: toast 2.6s forwards; text-align: center; line-height: 1.5; }
 .toast.good { border-color: #a8e6b8; color: #e6ffec; }
-.banner { position: absolute; left: 0; right: 0; top: 30%; display: grid; justify-items: center; gap: 6px; padding: 18px 12px; z-index: 65; pointer-events: none; animation: banner 2.4s forwards; background: linear-gradient(90deg, transparent, rgba(24, 14, 6, 0.82) 22%, rgba(24, 14, 6, 0.82) 78%, transparent); }
+.banner { position: absolute; left: 0; right: 0; top: 30%; display: grid; justify-items: center; gap: 6px; padding: 18px 12px; z-index: 650; pointer-events: none; animation: banner 2.4s forwards; background: linear-gradient(90deg, transparent, rgba(24, 14, 6, 0.82) 22%, rgba(24, 14, 6, 0.82) 78%, transparent); }
 .banner b { font-family: var(--kai); font-size: clamp(30px, 5vw, 52px); letter-spacing: 0.22em; color: #ffe9a6; text-shadow: 0 2px 0 #7a4a05, 0 0 22px rgba(255, 196, 70, 0.75); }
 .banner span { font-size: clamp(14px, 2vw, 18px); color: #fbeed2; letter-spacing: 0.08em; text-align: center; }
 .chapter { position: absolute; inset: 0; z-index: 80; display: grid; place-items: center; background: #120b06 center / cover no-repeat; animation: fade-in 0.4s; cursor: pointer; }
@@ -214,4 +216,4 @@ img { -webkit-user-drag: none; }
   *, *::before, *::after { animation-duration: 0.01s !important; transition-duration: 0.01s !important; }
 }
 /* 触屏没有键盘：抉择下方只说「点选一项」 */
-@media (hover: none) and (pointer: coarse) { .kbd-only { display: none; } }
+@media (hover: none) and (pointer: coarse), (max-width: 700px) { .kbd-only { display: none; } }

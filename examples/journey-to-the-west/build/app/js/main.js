@@ -11,7 +11,7 @@ import { createHub } from './game/hub.js';
 import { createStory } from './game/story.js';
 import { runEnding } from './game/ending.js';
 import { confirmBox, wipe, toast } from './ui/dialogue.js';
-import { openHelp, openSettings } from './ui/panels.js';
+import { openSettings } from './ui/panels.js';
 
 const params = new URLSearchParams(location.search);
 const FAST = params.get('fast') === '1';
@@ -77,7 +77,7 @@ function showTitle() {
   const root = h('div.screen.title', { data: { ui: 'title' } },
     h('div.title-art', { style: { backgroundImage: `url(${bgArt('title')})` } }), h('div.title-veil'), canvas,
     h('div.title-main', {}, h('div.from', {}, '西游记 · 第五十九至六十一回'), h('h1', {}, '三借', h('br'), h('em', {}, '芭蕉扇')), h('div.title-sub', {}, '回合制 · 五行相克 · 七十二变'), menu),
-    h('div.title-foot', {}, '扮孙悟空带队借扇，亲手扇灭八百里火焰山 · 约一小时 · 进度存在本机浏览器'));
+    h('div.title-foot', {}, '约一小时 · 进度自动存于本机'));
   const fx = createFx(canvas);
   fx.ambient('ember');
   const go = async (fn) => { menu.querySelectorAll('button').forEach((b) => { b.disabled = true; }); audio.sfx('quest'); await fn(); fx.destroy(); };
@@ -88,7 +88,6 @@ function showTitle() {
     clearGame();
     go(startNew);
   });
-  add('行前须知', '.ghost', 'help', () => openHelp());
   add('设置', '.ghost', 'settings', () => openSettings({ inGame: false, onApply: () => game.applySettings() }));
   stage.append(root);
 }

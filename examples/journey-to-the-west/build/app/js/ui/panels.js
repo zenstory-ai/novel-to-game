@@ -4,7 +4,7 @@ import { h, clear, append } from '../core/dom.js';
 import {
   PARTY, SKILLS, EQUIPS, EQUIP_SLOTS, TREASURES, FORMATIONS, ITEMS, GROWTH, STAT_KEYS, STAT_LABEL, STAT_GAIN_TEXT, SHOPS, ECONOMY,
 } from '../data/combat.js';
-import { HELP, SHOP_LINES } from '../data/story.js';
+import { SHOP_LINES } from '../data/story.js';
 import { LANDMARKS } from '../data/maps.js';
 import { statsAt, learnedSkills, skillOf } from '../rules/battle.js';
 import {
@@ -14,7 +14,7 @@ import {
 import { unitArt, itemArt, uiArt, faceStyle } from '../data/art.js';
 import { audio } from '../core/audio.js';
 import { settings, saveSettings } from '../core/store.js';
-import { toast } from './dialogue.js';
+import { toast, clearToasts } from './dialogue.js';
 import { paginate } from './pager.js';
 
 const overlay = () => document.getElementById('overlay');
@@ -22,6 +22,7 @@ const STAT_ICON = { hp: 'vitality', atk: 'attack', def: 'defend', spd: 'speed', 
 
 // 外壳：标题、关闭、正文、底栏。点遮罩、按 Esc、点关闭都走同一个 close。
 function shell({ title, narrow = false, id, money = null, fixed = false }) {
+  clearToasts();
   let resolveClosed;
   const closed = new Promise((r) => { resolveClosed = r; });
   const body = h('div.panel-body');
@@ -60,7 +61,7 @@ export function openMembers(c, { pets = false, onChange }) {
   const keys = pets ? c.pets.map((p) => p.key) : TEAM;
   const sh = shell({ title: pets ? '召唤兽' : '角色', id: pets ? 'pet' : 'hero', money: c.money, fixed: true });
   if (!keys.length) {
-    sh.body.append(h('div.empty', {}, h('img', { src: uiArt('pet'), alt: '' }), h('p', {}, '还没有召唤兽。'), h('p.muted', {}, '火妖气血降到四成以下时，用捕妖绳能收服；取胜后带回来助战。')));
+    sh.body.append(h('div.empty', {}, h('img', { src: uiArt('pet'), alt: '' }), h('p', {}, '暂无召唤兽'), h('p.muted', {}, '火妖残血（≤四成）可用捕妖绳收服。')));
     return sh.closed;
   }
   let cur = keys.find((k) => pendingGrowth(c, k) > 0) ?? keys[0];
@@ -87,48 +88,49 @@ export function openMembers(c, { pets = false, onChange }) {
       pane.append(
         h('div.stat-grid', {}, [['hp', '气血'], ['mp', '法力'], ['atk', '攻击'], ['def', '防御'], ['spd', '速度'], ['mag', '灵力']].map(([k, label]) => h('div.stat', {}, h('img', { src: uiArt(STAT_ICON[k] ?? 'spell'), alt: '' }), h('span', {}, label), h('b', {}, s[k]))), h('div.stat', {}, h('img', { src: uiArt('special'), alt: '' }), h('span', {}, '暴击'), h('b', {}, `${Math.round(s.crit * 100)}%`))),
         h('div.section-title', {}, `潜力 · 可用 ${pts} 点`),
-        h('div.alloc', {}, STAT_KEYS.map((st) => h('div.alloc-row', {}, h('b', {}, STAT_LABEL[st]), h('span.muted', {}, `每点 ${STAT_GAIN_TEXT[st]}`), h('em', {}, c.alloc[cur]?.[st] ?? 0),
+        h('div.alloc', {}, STAT_KEYS.map((st) => h('div.alloc-row', {}, h('b', {}, STAT_LABEL[st]), h('span.muted', {}, STAT_GAIN_TEXT[st]), h('em', {}, c.alloc[cur]?.[st] ?? 0),
           h('button.btn.small', { type: 'button', data: { minus: st }, disabled: !(c.alloc[cur]?.[st] > 0), onclick: () => { addPoint(c, cur, st, -1); changed(); } }, '−'),
           h('button.btn.small.qing', { type: 'button', data: { plus: st }, disabled: pts <= 0, onclick: () => { if (addPoint(c, cur, st, 1)) { audio.sfx('click'); changed(); } } }, '＋')))),
       );
-      sh.setFoot(h('div.note', {}, pts > 0 ? '不想细分就点「推荐加点」，随时可以减回来重分。' : '每升一级得 5 点潜力。'),
+      sh.setFoot(
         pets && h('button.btn', { type: 'button', data: { act: 'field' }, disabled: c.pets.find((p) => p.key === cur)?.active, onclick: () => { setActivePet(c, cur); toast(`${def.name}上阵`); changed(); } }, c.pets.find((p) => p.key === cur)?.active ? '已上阵' : '让它上阵'),
         h('button.btn.primary', { type: 'button', data: { act: 'recommend' }, disabled: pts <= 0, onclick: () => { recommendPoints(c, cur); audio.sfx('levelup', { volume: 0.5 }); changed(); } }, '推荐加点'));
     } else if (tab === 'skills') {
       const sp = c.skillPoints[cur] ?? 0;
       const unit = { skillLevels: c.skillLevels[cur] ?? {} };
       const known = learnedSkills(def, lvl);
-      const upcoming = Object.entries(def.skills).filter(([lv]) => Number(lv) > lvl).map(([lv, ids]) => `Lv.${lv} ${ids.map((i) => SKILLS[i].name).join('、')}`);
       append(pane, [h('div.section-title', {}, `修炼 · 可用 ${sp} 点`),
         h('div.skill-list', {}, known.map((id) => {
           const rank = skillRank(c, cur, id);
           const sk = skillOf(unit, id);
           const next = rank < GROWTH.skillRankCap ? skillOf({ skillLevels: { [id]: rank + 1 } }, id) : null;
           const cost = studyCost(rank);
-          return h('div.skill', {}, h('div.skill-head', {}, h('b', {}, sk.name), h('span.pips', {}, [1, 2, 3].map((i) => h(`i${i <= rank ? '.on' : ''}`))), h('em', {}, sk.mp ? `法力 ${sk.mp}` : '')),
+          const nextTip = next ? `下重：${sk.mul ? `威力 ${sk.mul.toFixed(2)}→${next.mul.toFixed(2)}倍，` : sk.heal ? '疗效+6%，' : ''}法耗 ${sk.mp}→${next.mp}` : '已修满三重';
+          const deltas = next ? [sk.mul ? '威力↑' : sk.heal ? '疗效↑' : null, next.mp < sk.mp ? `法耗-${sk.mp - next.mp}` : null].filter(Boolean) : [];
+          return h('div.skill', { title: nextTip }, h('div.skill-head', {}, h('b', {}, sk.name), h('span.pips', {}, [1, 2, 3].map((i) => h(`i${i <= rank ? '.on' : ''}`))), h('em', {}, sk.mp ? `法力 ${sk.mp}` : '')),
             h('p', {}, SKILLS[id].desc),
-            next && h('p.muted', {}, `再修一重：${sk.mul ? `威力从普通攻击的 ${sk.mul.toFixed(2)} 倍升到 ${next.mul.toFixed(2)} 倍，` : sk.heal ? `疗效多 ${Math.round((next.heal / sk.heal - 1) * 100)}%，` : ''}法力 ${sk.mp} → ${next.mp}`),
-            h('div.skill-acts', {}, rank >= GROWTH.skillRankCap ? h('span.muted', {}, '已修满三重') : [
-              h('button.btn.small.qing', { type: 'button', data: { train: id }, disabled: sp <= 0, onclick: () => { if (trainSkill(c, cur, id)) { audio.sfx('levelup', { volume: 0.5 }); changed(); } } }, '修炼一重'),
-              cost != null && h('button.btn.small', { type: 'button', data: { study: id }, disabled: c.money < cost, onclick: () => { if (studySkill(c, cur, id)) { audio.sfx('coin'); changed(); } } }, `银两研习 ${cost} 两`),
-            ]));
-        })),
-        upcoming.length > 0 && h('p.muted', {}, `往后可习得：${upcoming.join('；')}`)]);
-      sh.setFoot(h('div.note', {}, '每升一级得 1 点修炼。每修一重：威力多 6%，耗法少 2，最多三重。'),
+            h('div.skill-acts', {},
+              deltas.map((d) => h('span.delta-chip', {}, d)),
+              rank >= GROWTH.skillRankCap ? h('span.muted', {}, '已满重') : [
+                h('button.btn.small.qing', { type: 'button', data: { train: id }, disabled: sp <= 0, onclick: () => { if (trainSkill(c, cur, id)) { audio.sfx('levelup', { volume: 0.5 }); changed(); } } }, '修炼'),
+                cost != null && h('button.btn.small', { type: 'button', data: { study: id }, disabled: c.money < cost, onclick: () => { if (studySkill(c, cur, id)) { audio.sfx('coin'); changed(); } } }, `研习 ${cost}两`),
+              ]));
+        }))]);
+      sh.setFoot(
         h('button.btn.primary', { type: 'button', data: { act: 'recommend' }, disabled: sp <= 0, onclick: () => { recommendSkills(c, cur); audio.sfx('levelup', { volume: 0.5 }); changed(); } }, '推荐修炼'));
     } else {
       const slots = ['weapon', 'armor'].map((slot) => {
         const eq = EQUIPS[c.gear[cur]?.[slot]];
         return h('div.slot', {}, h('div.slot-art', {}, eq ? h('img', { src: itemArt(eq.key), alt: '' }) : h('img.ghost', { src: uiArt(slot === 'weapon' ? 'attack' : 'armor'), alt: '' })),
           h('div', {}, h('small.muted', {}, EQUIP_SLOTS[slot]),
-            h('b', {}, eq ? eq.name : slot === 'weapon' && BASE_WEAPON[cur] ? `${BASE_WEAPON[cur]}（本命，随身）` : '空着'),
-            h('span', {}, eq ? (slot === 'weapon' && BASE_WEAPON[cur] ? `${eq.desc}；配在${BASE_WEAPON[cur]}上` : eq.desc) : slot === 'weapon' && BASE_WEAPON[cur] ? '本命兵器不离手；背囊里的兵刃可再配上去加持' : '背囊里有合用的就能换上')),
+            h('b', {}, eq ? eq.name : slot === 'weapon' && BASE_WEAPON[cur] ? `${BASE_WEAPON[cur]}（本命）` : '空槽'),
+            h('span', {}, eq ? eq.desc : slot === 'weapon' && BASE_WEAPON[cur] ? '可配兵刃加持' : '可换护甲')),
           eq && h('button.btn.small', { type: 'button', onclick: () => { unequip(c, cur, slot); changed(); } }, '卸下'));
       });
       const bag = Object.entries(c.equipBag).filter(([k, n]) => n > 0 && (!EQUIPS[k].only || EQUIPS[k].only === cur));
-      pane.append(h('div.slots', {}, slots), h('div.section-title', {}, '背囊里的兵甲'),
+      pane.append(h('div.slots', {}, slots), h('div.section-title', {}, '背囊兵甲'),
         bag.length ? h('div.equip-list', {}, bag.map(([k, n]) => h('div.slot', {}, h('div.slot-art', {}, h('img', { src: itemArt(k), alt: '' })), h('div', {}, h('small.muted', {}, `${EQUIP_SLOTS[EQUIPS[k].slot]} · ${'一二三'[EQUIPS[k].tier - 1]}阶 ×${n}`), h('b', {}, EQUIPS[k].name), h('span', {}, EQUIPS[k].desc)),
-          h('button.btn.small.qing', { type: 'button', data: { equip: k }, onclick: () => { if (equip(c, cur, k)) { audio.sfx('click'); toast(`${def.name}换上${EQUIPS[k].name}`); changed(); } } }, '换上')))) : h('p.muted', {}, '没有可换的兵甲。庄上铁匠铺有卖，封妖也会掉。'));
+          h('button.btn.small.qing', { type: 'button', data: { equip: k }, onclick: () => { if (equip(c, cur, k)) { audio.sfx('click'); toast(`${def.name}换上${EQUIPS[k].name}`); changed(); } } }, '换上')))) : h('p.muted', {}, '暂无可换兵甲'));
       sh.setFoot();
     }
     clear(sh.body).append(h('div.members', {}, roster, portrait, pane));
@@ -188,7 +190,7 @@ export function openFormation(c, { onChange }) {
   function render() {
     clear(sh.body).append(h('div.forms', {}, Object.values(FORMATIONS).map((f) => h(`button.form-card${c.formation === f.key ? '.on' : ''}`, { type: 'button', data: { formation: f.key }, onclick: () => { c.formation = f.key; audio.sfx('quest', { volume: 0.6 }); onChange?.(); render(); } },
       h('b', {}, f.name, c.formation === f.key && h('em', {}, '当前')), h('span.gain', {}, f.gain), h('span.cost', {}, `代价：${f.cost}`)))),
-    h('p.muted', {}, '交战中每回合也能免费换一次阵，不占任何人的行动。'));
+    h('p.muted', {}, '战中每回合可免费换阵'));
   }
   render();
   return sh.closed;
@@ -212,10 +214,21 @@ export function openShop(c, shopId, { onChange }) {
   return sh.closed;
 }
 
-// ---------- 设置与须知 ----------
-export function openHelp() {
-  const sh = shell({ title: '行前须知', narrow: true, id: 'help' });
-  sh.body.append(h('div.help', {}, HELP.map(([k, v]) => h('div', {}, h('b', {}, k), h('p', {}, v)))));
+// ---------- 纪闻（按需回看消息与近期对白） ----------
+export function openJournal(logs = [], dialogues = []) {
+  const sh = shell({ title: '纪闻', narrow: true, id: 'journal', fixed: true });
+  let tab = 'sys';
+  function render() {
+    clear(sh.tabs).append(
+      h(`button.tab${tab === 'sys' ? '.on' : ''}`, { type: 'button', onclick: () => { tab = 'sys'; render(); } }, '行旅记事'),
+      h(`button.tab${tab === 'dlg' ? '.on' : ''}`, { type: 'button', onclick: () => { tab = 'dlg'; render(); } }, '近期对白'),
+    );
+    const items = tab === 'sys' ? logs.slice(-14).reverse() : dialogues.slice(-14).reverse();
+    clear(sh.body).append(items.length
+      ? h('div.journal-list', {}, items.map((x) => h(`div.journal-row${x.sys ? '.sys' : ''}`, {}, x.who ? h('b', {}, `${x.who}：`) : null, x.text)))
+      : h('p.muted', {}, '尚无记录'));
+  }
+  render();
   return sh.closed;
 }
 
@@ -235,9 +248,8 @@ export function openSettings({ inGame, onSave, onTitle, onApply }) {
   append(sh.body, [
     h('div.section-title', {}, '声音'), slider('music', '音乐'), slider('sound', '音效'), toggle('mute', '静音', '已静音', '有声', (v) => !v),
     h('div.section-title', {}, '交战'), toggle('speed', '演出速度', '加速 ×2', '常速 ×1', (v) => (v === 2 ? 1 : 2)), toggle('shake', '震屏', '开', '关', (v) => !v),
-    h('div.section-title', {}, '其他'),
-    h('div.set-row', {}, h('span', {}, '怎么玩'), h('button.btn.small', { type: 'button', data: { act: 'help' }, onclick: () => openHelp() }, '行前须知')),
-    inGame && h('div.set-row', {}, h('span', {}, '存档（每场战斗后也会自动存）'), h('button.btn.small.qing', { type: 'button', data: { act: 'save' }, onclick: () => { onSave(); toast('已存档', 'good'); } }, '现在存档')),
+    inGame && h('div.section-title', {}, '存档'),
+    inGame && h('div.set-row', {}, h('span', {}, '手动存档'), h('button.btn.small.qing', { type: 'button', data: { act: 'save' }, onclick: () => { onSave(); toast('已存档', 'good'); } }, '现在存档')),
     inGame && h('div.set-row', {}, h('span', {}, '回到标题画面'), h('button.btn.small', { type: 'button', data: { act: 'title' }, onclick: () => { sh.close(); onTitle(); } }, '存档并返回')),
   ]);
   return sh.closed;
