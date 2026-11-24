@@ -6,8 +6,8 @@
     "viewport": "1280x800",
     "url": "http://127.0.0.1:<port>/index.html?seed=42&fast=1",
     "os": "darwin",
-    "browserVersion": "145.0.7632.6",
-    "seconds": 264,
+    "browserVersion": "148.0.7778.96",
+    "seconds": 256,
     "consoleErrors": []
   },
   "inputTrace": [
@@ -15,7 +15,6 @@
     "点地面：向左下走几步",
     "按住方向键右",
     "点【主线】任务（ask）：自动寻路",
-    "点【主线】任务（borrow1）：自动寻路",
     "点【主线】任务（borrow1）：自动寻路",
     "抉择 choice-approach 弹出后连按空格、空格、回车（不该替玩家选）",
     "抉择 choice-approach = calm",
@@ -66,6 +65,7 @@
     "刷新页面后点「接着西行」",
     "打开【角色】分配成长",
     "点【主线】任务（tryfan）：自动寻路",
+    "点【主线】任务（tryfan）：自动寻路",
     "抉择 choice-fantrial = ember",
     "进入战斗：firemobs",
     "孙悟空：七十二变 xuangui",
@@ -94,7 +94,6 @@
     "火脉残图：finish",
     "火脉残图：leave",
     "打开【角色】分配成长",
-    "点【主线】任务（moyun）：自动寻路",
     "点【主线】任务（moyun）：自动寻路",
     "进入战斗：yumian",
     "孙悟空：法术 qitian → 妖将·甲",
@@ -125,7 +124,6 @@
     "沙悟净：法术 liusha → 摩云洞妖将",
     "抉择 choice-pond1 = crab",
     "抉择 choice-pond2 = shift",
-    "抉择 choice-pond3 = steal",
     "打开【角色】分配成长",
     "打开【召唤兽】分配成长",
     "点【主线】任务（descend）：自动寻路",
@@ -222,7 +220,7 @@
           649
         ],
         "afterKey": [
-          825,
+          826,
           649
         ]
       }
@@ -248,7 +246,7 @@
             497
           ],
           "battle": "bounty_a",
-          "seconds": 0.9
+          "seconds": 1.0
         },
         "cmdGuard": {
           "queuedAfterInstantClick": []
@@ -718,62 +716,62 @@
         },
         "lingjiBackdrop": "url(\"assets/bg/xumi.jpg\")",
         "bullGoals": [
-          "打到白牛真身伏地即胜，余众自散"
+          "白牛伏地即胜"
         ],
         "chargeChecks": [
           {
             "round": 4,
             "turn": "p0",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：孙悟空（防御/保护）",
             "locked": "孙悟空",
             "namesLocked": true
           },
           {
             "round": 4,
             "turn": "p1",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：孙悟空（防御/保护）",
             "locked": "孙悟空",
             "namesLocked": true
           },
           {
             "round": 4,
             "turn": "p2",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：孙悟空（防御/保护）",
             "locked": "孙悟空",
             "namesLocked": true
           },
           {
             "round": 4,
             "turn": "p3",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向孙悟空（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：孙悟空（防御/保护）",
             "locked": "孙悟空",
             "namesLocked": true
           },
           {
             "round": 7,
             "turn": "p0",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：辟水金睛兽（防御/保护）",
             "locked": "辟水金睛兽",
             "namesLocked": true
           },
           {
             "round": 7,
             "turn": "p1",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：辟水金睛兽（防御/保护）",
             "locked": "辟水金睛兽",
             "namesLocked": true
           },
           {
             "round": 7,
             "turn": "p2",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：辟水金睛兽（防御/保护）",
             "locked": "辟水金睛兽",
             "namesLocked": true
           },
           {
             "round": 7,
             "turn": "p3",
-            "warn": "白牛真身蓄力中——「法天象地」这回合砸向辟水金睛兽（已锁定，补血也不换人）",
+            "warn": "蓄力锁定：辟水金睛兽（防御/保护）",
             "locked": "辟水金睛兽",
             "namesLocked": true
           }
@@ -781,7 +779,7 @@
         "relief": [
           {
             "art": "url(\"assets/units/tudi.webp\")",
-            "at": 1794710243619
+            "at": 1795531414182
           },
           {
             "banner": "土地接力山神地气护阵——在场伙伴各回 30% 气血"

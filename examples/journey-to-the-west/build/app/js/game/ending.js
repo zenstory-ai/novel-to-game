@@ -26,7 +26,7 @@ export function runEnding(stage, campaign) {
     const canvas = h('canvas.ending-fx');
     const text = h('div.ending-text', { role: 'status' });
     const count = h('span.ending-count');
-    const hint = h('div.ending-hint', { data: { ui: 'ending-hint' } }, '点击或按空格继续', count);
+    const hint = h('div.ending-hint', { data: { ui: 'ending-hint' } }, '点击', h('span.kbd-only', {}, '或按空格'), '继续', count);
     const root = h('div.screen.ending', { data: { ui: 'ending', step: 0, scene: 'battle' } }, ...Object.values(layers).slice(0, 3), haze, ...Object.values(layers).slice(3), canvas, h('div.ending-veil'), text, hint);
     stage.append(root);
     const fx = createFx(canvas);

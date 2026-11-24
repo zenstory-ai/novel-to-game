@@ -36,7 +36,12 @@
 .pips i { width: 9px; height: 9px; transform: rotate(45deg); background: rgba(120, 82, 30, 0.2); border: 1px solid rgba(120, 82, 30, 0.5); }
 .pips i.on { background: #e2a019; border-color: #7a4a05; }
 .skill p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink-2); }
-.skill-acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+.skill-acts { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 2px; }
+.delta-chip { padding: 2px 7px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #1d524d; background: rgba(47, 125, 119, 0.14); border: 1px solid rgba(47, 125, 119, 0.35); }
+.journal-list { display: grid; gap: 6px; }
+.journal-row { padding: 7px 10px; border-radius: 8px; background: rgba(255, 255, 255, 0.6); border-left: 3px solid var(--gold); font-size: 14px; line-height: 1.55; color: var(--ink); }
+.journal-row.sys { border-left-color: var(--zhu); }
+.journal-row b { color: var(--zhu-deep); }
 .slots, .equip-list, .goods { display: grid; gap: 8px; }
 .slot { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(189, 139, 67, 0.45); }
 .slot-art { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: #ead9b4; border: 1px solid rgba(189, 139, 67, 0.6); display: grid; place-items: center; }

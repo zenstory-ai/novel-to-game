@@ -10,8 +10,8 @@ import {
   mainQuest, bountyQuest, portalLocked, npcPresent, followers, portalToward, bountyOpen, acceptBounty, reportBounty,
   explore, pendingTeam, pendingPets,
 } from '../rules/campaign.js';
-import { say, choose, toast, wipe, modalOpen } from '../ui/dialogue.js';
-import { openMembers, openBag, openQuests, openFormation, openShop, openSettings, expLine } from '../ui/panels.js';
+import { say, choose, toast, wipe, modalOpen, getDialogueLog } from '../ui/dialogue.js';
+import { openMembers, openBag, openQuests, openFormation, openShop, openSettings, openJournal, expLine } from '../ui/panels.js';
 import { audio } from '../core/audio.js';
 
 export function createHub(game) {
@@ -169,7 +169,7 @@ export function createHub(game) {
     const b = c.bounty;
     if (b.state === 'hunt') { await say([{ who: 'tudi', text: BOUNTY.hunting }]); return; }
     if (b.state === 'report') { reportBounty(c); game.log('封妖回报：土地记下了这一环。', true); }
-    const pick = await npcMenu(a, { text: b.total > 0 ? BOUNTY.report : BOUNTY.offer, list: [{ key: 'take', label: '接下封妖令', note: '明处游走的火妖，过去点它开打；得历练、银两，偶有兵甲。' }] });
+    const pick = await npcMenu(a, { text: b.total > 0 ? BOUNTY.report : BOUNTY.offer, list: [{ key: 'take', label: '接下封妖令', note: '除游走火妖，得历练银两' }] });
     if (pick === 'take') {
       const demon = acceptBounty(c);
       if (demon) { audio.sfx('quest'); toast(`封妖令：${SCENES[demon.scene].name}有${demon.name}作乱`); game.log(`接下封妖令：去${SCENES[demon.scene].name}收服${demon.name}。`, true); }
@@ -198,15 +198,23 @@ export function createHub(game) {
     return run(async () => {
       const c = C();
       const def = LANDMARKS[s.id];
-      if (c.explored[s.id]) { await say([{ who: null, text: def.revisit }]); return; }
-      await say([{ who: null, text: def.intro }]);
-      const pick = await choose({ title: def.title, options: [...def.options.map((o) => ({ key: o.key, label: o.label })), { key: 'later', label: '先不动它' }], id: 'landmark' });
+      if (c.explored[s.id]) { world.say('hero', def.revisit); return; }
+      if (def.options.length === 1) {
+        const done = explore(c, world.sceneId, s.id, def.options[0].key);
+        if (!done) return;
+        audio.sfx('quest');
+        await say([{ who: null, text: `${def.intro} ${done.result}` }]);
+        game.log(`见闻：${def.title}。`, true);
+        game.save();
+        return;
+      }
+      const pick = await choose({ title: def.title, sub: def.intro, options: [...def.options.map((o) => ({ key: o.key, label: o.label })), { key: 'later', label: '先不动' }], id: 'landmark' });
       if (pick === 'later') return;
       const done = explore(c, world.sceneId, s.id, pick);
       if (!done) return;
-      audio.sfx(Object.keys(done.reward).length ? 'coin' : 'quest');
-      await say([{ who: null, text: done.result }]);
-      game.log(`见闻：${def.title}。`, true);
+      audio.sfx('coin');
+      toast(done.result, 'good');
+      game.log(`见闻：${def.title} — ${done.result}`, true);
       game.save();
     });
   }
@@ -243,7 +251,7 @@ export function createHub(game) {
     world.lock(true);
     const p = key === 'hero' ? openMembers(c, { onChange }) : key === 'pet' ? openMembers(c, { pets: true, onChange })
       : key === 'bag' ? openBag(c, { onChange }) : key === 'quest' ? openQuests(c, world.sceneId, { onTrack: (q) => setTimeout(() => track(q), 0) })
-        : key === 'formation' ? openFormation(c, { onChange })
+        : key === 'formation' ? openFormation(c, { onChange }) : key === 'journal' ? openJournal(hud.getLogs(), getDialogueLog())
           : openSettings({ inGame: true, onSave: () => { remember(); game.save(); }, onTitle: () => { remember(); game.save(); game.toTitle(); }, onApply: () => game.applySettings() });
     p.then(() => { if (!busy) world.lock(false); refresh(); });
   }
@@ -254,7 +262,7 @@ export function createHub(game) {
     get busy() { return busy; },
     say: (id, text) => world?.say(id, text),
     log: (text, sys) => hud?.log(text, sys),
-    firstMinute() { hintLive = true; hud.hint('点地面走动。土地头顶有「!」——点他，或点右上的任务，悟空会自己走过去。'); hud.flash(true); },
+    firstMinute() { hud.flash(true); },
     probe: () => ({ ...(world?.probe() ?? {}), busy, hidden: root.classList.contains('hidden') }),
     destroy() { world?.destroy(); hud?.destroy(); root.remove(); },
   };

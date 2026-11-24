@@ -5,9 +5,9 @@ import { createRNG } from '../core/rng.js';
 import { ITEMS } from '../data/combat.js';
 
 export const GUIDES = {
-  wukong: { key: 'wukong', name: '悟空探路', perk: '火眼金睛', desc: '进了深层，能一眼认出哪两处是妖穴。' },
-  bajie: { key: 'bajie', name: '八戒探路', perk: '九齿钉耙', desc: '每层第一耙连带翻开旁边一块，可能连着宝，也可能惊了妖。' },
-  sha: { key: 'sha', name: '沙僧探路', perk: '稳守行囊', desc: '替全队挡下头一回妖气反扑。' },
+  wukong: { key: 'wukong', name: '悟空探路', perk: '火眼金睛', desc: '深层标出两处妖穴' },
+  bajie: { key: 'bajie', name: '八戒探路', perk: '九齿钉耙', desc: '每层首掘连开邻格' },
+  sha: { key: 'sha', name: '沙僧探路', perk: '稳守行囊', desc: '挡下首次妖气反扑' },
 };
 
 export const HUNT = { outerDigs: 3, deepDigs: 2, maxThreat: 4, deepEntryThreat: 1, safeItem: 'bihuofu', deepItem: 'dahuandan' };

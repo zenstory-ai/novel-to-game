@@ -33,7 +33,7 @@ CHECKS = ("launch", "render", "input", "coreLoop", "outcome", "restart")
 # 剧情抉择：一条有代表性的路线
 CHOICES = {
     "choice-approach": "calm", "choice-treasure": "dingfengdan", "choice-fantrial": "ember", "choice-deal": "keep",
-    "choice-loot": "ruyibang_jing", "choice-pond1": "crab", "choice-pond2": "shift", "choice-pond3": "steal", "choice-bajie": "check",
+    "choice-loot": "ruyibang_jing", "choice-pond1": "crab", "choice-pond2": "shift", "choice-bajie": "check",
 }
 BEATS = {"金": "木", "木": "土", "土": "水", "水": "火", "火": "金"}
 SKILLS = {  # 技能键 -> (耗法, 目标)

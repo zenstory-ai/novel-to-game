@@ -31,7 +31,7 @@ export function createStory(game) {
     for (const [key, up] of Object.entries(ups)) if (up.newSkills.length) lines.push(['新法术', `${PARTY[key].name}习得「${up.newSkills.map((s) => SKILLS[s].name).join('」「')}」`]);
     return lines;
   };
-  const growthHint = (ups) => (Object.keys(ups).length ? '升级得了潜力与修炼点：回到场景后点右下的【角色】，「推荐加点」一下就好。' : null);
+  const growthHint = (ups) => (Object.keys(ups).length ? '已得潜力与修炼点，可在【角色】分配。' : null);
 
   // 打一场。败北可再战或回场景整顿；得胜时先落账再出结算卡。返回 { winner, state, close }
   async function fight(battleId, { tutorial = false, enemyLevel = null, salt = 0, onWin = null, onBeat = null } = {}) {
@@ -114,7 +114,7 @@ export function createStory(game) {
     await back('cuiyun', SCENES.cuiyun.arrivals.village);
     game.log(`灵吉菩萨授${TREASURES[pick].name}。升级得了潜力与修炼点，可在【角色】里分配。`, true);
     game.log('土地开始发封妖令了（可选）：收服火妖，得历练与银两。', true);
-    toast('点右下【角色】，「推荐加点」把刚得的点数用上', 'good');
+    toast('已得潜力与修炼点，点【角色】可加点', 'good');
   }
 
   async function borrow2() {
@@ -213,7 +213,7 @@ export function createStory(game) {
     await banner('真扇到手', `全队升到 Lv.${ups.wukong.level} · 辟水金睛兽入队`, 1700);
     await back('cuiyun', SCENES.cuiyun.arrivals.cave);
     game.log('辟水金睛兽入队（已上阵）。真芭蕉扇到手，决战时在【道具】里用。', true);
-    toast('金睛兽与全队都有新的潜力、修炼点可分配', 'good');
+    toast('全队与金睛兽有新点数可分配', 'good');
   }
 
   // 碧波潭：三个短判断，错的那条只演一次，悟空自己改主意
@@ -237,7 +237,6 @@ export function createStory(game) {
     if (b !== 'shift') { audio.sfx('thud'); await say(STORY.pondRush); }
     crab.style.left = '46%';
     await say(STORY.pondShift);
-    await choose({ ...CHOICES.pond3, id: 'choice-pond3' });
     audio.sfx('levelup');
     crab.style.opacity = 0; beast.style.transform = 'translateY(-30%) scale(1.15)';
     monkey.style.left = '50%'; monkey.style.opacity = 1;
@@ -279,7 +278,7 @@ export function createStory(game) {
       enemyLevel: c.levels.wukong, salt: c.bounty.total + 1,
       onWin: () => {
         out = winBounty(c);
-        const lines = [['历练', out.capped ? `已到眼下的上限（Lv.${levelCap(c)}），主线再进一步才会放开` : `+${out.reward.exp}`], ['银两', `+${out.reward.money}`]];
+        const lines = [['历练', out.capped ? `已满上限（Lv.${levelCap(c)}）` : `+${out.reward.exp}`], ['银两', `+${out.reward.money}`]];
         const drops = [...Object.entries(out.reward.items).map(([k, n]) => `${ITEMS[k].name} ×${n}`), ...out.reward.equips.map((k) => EQUIPS[k].name)];
         if (drops.length) lines.push(['掉落', drops.join('、')]);
         lines.push(...levelLines(out.ups));

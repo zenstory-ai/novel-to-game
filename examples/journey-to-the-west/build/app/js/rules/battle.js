@@ -245,7 +245,7 @@ function strike(state, ev, attacker, target, skill) {
     return;
   }
   const { amount: raw, crit, rel } = rollDamage(state, attacker, target, skill);
-  const base = { actor: attacker.id, crit, rel, kind: skill.kind, fx: skill.fx, attackEl: attacker.element, targetEl: target.element };
+  const base = { actor: attacker.id, crit, rel, kind: skill.kind, fx: skill.fx, attackEl: attacker.element, targetEl: target.element, targetName: target.name };
   const guard = skill.target === 'enemy' && skill.kind === 'phy' ? protectorOf(state, target) : null;
   if (guard) {
     const amount = Math.max(1, Math.round(raw * 0.7));
