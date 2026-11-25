@@ -106,6 +106,17 @@
 .set-row.range > span { flex: 0 0 110px; }
 .set-row.range input { flex: 1; min-width: 0; height: 28px; accent-color: var(--gold); cursor: pointer; }
 .set-row output { flex: 0 0 84px; color: var(--gold-2); font-size: 13px; text-align: right; letter-spacing: 0.06em; }
+.set-row.audio-row { cursor: default; gap: 12px; }
+.set-row.audio-row > .audio-label { flex: 0 0 86px; }
+.set-row.audio-row output { flex: 0 0 54px; }
+.set-row.audio-row.is-muted input { opacity: 0.45; }
+.set-row.audio-row.is-muted output { color: var(--muted); }
+.audio-toggle {
+  flex: none; min-width: 44px; height: 32px; padding: 0 10px; border: 1px solid var(--line-soft); border-radius: 999px;
+  background: rgba(53, 58, 85, 0.7); color: var(--muted); font: 13px var(--sans); letter-spacing: 0.12em; transition: all 0.18s;
+}
+.audio-toggle:hover { color: var(--text); border-color: var(--gold); }
+.audio-toggle.on { border-color: var(--gold); background: rgba(184, 143, 67, 0.28); color: var(--gold-2); }
 .set-preview { min-height: 1.8em; margin: 0 0 6px 128px; color: #d9d4c7; font: 17px/1.8 var(--serif); letter-spacing: 0.05em; }
 .set-row.toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
 .switch { position: relative; flex: none; width: 50px; height: 28px; border-radius: 999px; background: #353a55; transition: background 0.2s; }
@@ -199,6 +210,10 @@ button.end-cell:hover, button.end-cell:focus-visible { background: rgba(255, 255
 .portrait .end-cell b { font-size: 13px; }
 .portrait .set-row.range > span { flex-basis: 84px; }
 .portrait .set-row output { flex-basis: 70px; }
+.portrait .set-row.audio-row { gap: 8px; }
+.portrait .set-row.audio-row > .audio-label { flex-basis: 68px; font-size: 14px; }
+.portrait .set-row.audio-row output { flex-basis: 44px; font-size: 12px; }
+.portrait .audio-toggle { min-width: 40px; height: 32px; padding: 0 8px; font-size: 12px; }
 .portrait .set-preview { margin-left: 0; font-size: 15px; }
 .portrait .hearts li { gap: 12px; padding: 10px 12px 10px 10px; }
 .portrait .hearts img { width: 52px; height: 52px; }

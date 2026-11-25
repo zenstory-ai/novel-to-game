@@ -5,6 +5,7 @@
   "description": "《金瓶梅·风月总账》18+ 古风恋爱互动影游：共通线、五位女主路线、五十八段剧情过场、十六个结局与原著命数",
   "scripts": {
     "start": "python3 -m http.server 5173",
+    "test": "node --test test/audio.test.mjs && npm run verify:model",
     "verify:model": "node test/verify_model.mjs",
     "verify": "python3 test/verify.py --write-evidence"
   }

@@ -1,17 +1,21 @@
 // 设置页：阅读、声音、影像与辅助、成人画面。改动即时生效并写入本地。
 import { settings, setSetting, DEFAULT_SETTINGS } from '../store.js';
+import { audio } from '../audio.js';
 import { toast, confirmBox } from './feedback.js';
 
 const RANGES = [
   ['read', '文字速度', 'textSpeed', 10, 100, 5, (v) => (v >= 100 ? '整句显出' : `每秒 ${v} 字`)],
   ['read', '自动翻页', 'autoSpeed', 0, 100, 5, (v) => (v < 34 ? '慢' : v < 67 ? '中' : '快')],
   ['read', '文字框浓淡', 'boxAlpha', 30, 100, 5, (v) => `${v}%`],
-  ['sound', '配乐', 'bgm', 0, 100, 5, (v) => `${v}`],
-  ['sound', '音效', 'se', 0, 100, 5, (v) => `${v}`],
-  ['sound', '过场人声', 'voice', 0, 100, 5, (v) => `${v}`],
+];
+const AUDIO_CHANNELS = [
+  { label: '配乐', key: 'bgm', onKey: 'bgmOn' },
+  { label: '音效', key: 'se', onKey: 'seOn' },
+  { label: '过场人声', key: 'voice', onKey: 'voiceOn' },
 ];
 const TOGGLES = [
   ['read', '快进时也跳过没读过的文字', 'skipUnread', '关着时，快进走到没读过的句子会停下。'],
+  ['sound', '全部静音', 'mute', '立刻停掉配乐、音效与过场人声。'],
   ['film', '动态影像', 'film', '剧情过场与画面的待机微动。关掉后过场换成定格画面，字幕点击推进，内容一句不少。'],
   ['film', '减弱动效', 'calm', '停掉推镜、视差、落花与立绘弹跳；过场同样换成定格。'],
   ['assist', '限时抉择', 'timed', '关掉后不计时，「不作声」列为一个普通选项。'],
@@ -37,16 +41,60 @@ function preview(el) {
   }, 1000 / settings.textSpeed);
 }
 
+const channelActive = (key, onKey) => !settings.mute && settings[onKey] !== false && settings[key] > 0;
+const formatAudio = (key, onKey) => (channelActive(key, onKey) ? `${settings[key]}%` : '静音');
+
+function syncSoundDom(body) {
+  const muteInput = body.querySelector('input[data-key="mute"]');
+  if (muteInput) muteInput.checked = Boolean(settings.mute);
+  for (const { label, key, onKey } of AUDIO_CHANNELS) {
+    const row = body.querySelector(`.audio-row[data-channel="${key}"]`);
+    if (!row) continue;
+    const on = channelActive(key, onKey);
+    row.classList.toggle('is-muted', !on);
+    const btn = row.querySelector(`[data-audio-toggle="${onKey}"]`);
+    if (btn) {
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+      btn.setAttribute('aria-label', `${label}${on ? '已开' : '已关'}`);
+      btn.textContent = on ? '开' : '关';
+    }
+    const range = row.querySelector(`input[data-key="${key}"]`);
+    if (range && Number(range.value) !== settings[key]) range.value = String(settings[key]);
+    const out = row.querySelector('output');
+    if (out) out.textContent = formatAudio(key, onKey);
+  }
+}
+
 export function renderSettings(body, state, ctx) {
   const fullscreenOk = Boolean(document.documentElement.requestFullscreen);
   const [gid, , kinds] = GROUPS.find(([id]) => id === state.setTab) ?? GROUPS[0];
+  const soundRows = gid === 'sound'
+    ? [
+      ...TOGGLES.filter((t) => t[0] === 'sound').map(([, label, key, note]) => `
+        <label class="set-row toggle"><span><b>${label}</b><em>${note}</em></span>
+          <input type="checkbox" data-key="${key}" ${settings[key] ? 'checked' : ''} aria-label="${label}"><i class="switch"></i>
+        </label>`),
+      ...AUDIO_CHANNELS.map(({ label, key, onKey }) => {
+        const on = channelActive(key, onKey);
+        return `
+          <div class="set-row range audio-row${on ? '' : ' is-muted'}" data-channel="${key}">
+            <span class="audio-label">${label}</span>
+            <button type="button" class="audio-toggle${on ? ' on' : ''}" data-audio-toggle="${onKey}" aria-pressed="${on}" aria-label="${label}${on ? '已开' : '已关'}">${on ? '开' : '关'}</button>
+            <input type="range" data-key="${key}" min="0" max="100" step="5" value="${settings[key]}" aria-label="${label}">
+            <output>${formatAudio(key, onKey)}</output>
+          </div>`;
+      }),
+    ]
+    : [];
   const rows = [
     ...RANGES.filter((r) => kinds.includes(r[0])).map(([, label, key, min, max, step, fmt]) => `
       <label class="set-row range"><span>${label}</span>
         <input type="range" data-key="${key}" min="${min}" max="${max}" step="${step}" value="${settings[key]}" aria-label="${label}">
         <output>${fmt(settings[key])}</output>
       </label>${key === 'textSpeed' ? '<p class="set-preview" aria-hidden="true"></p>' : ''}`),
-    ...TOGGLES.filter((t) => kinds.includes(t[0])).map(([, label, key, note]) => `
+    ...soundRows,
+    ...TOGGLES.filter((t) => t[0] !== 'sound' && kinds.includes(t[0])).map(([, label, key, note]) => `
       <label class="set-row toggle"><span><b>${label}</b><em>${note}</em></span>
         <input type="checkbox" data-key="${key}" ${settings[key] ? 'checked' : ''} aria-label="${label}"><i class="switch"></i>
       </label>`),
@@ -59,21 +107,58 @@ export function renderSettings(body, state, ctx) {
     <div class="set-list">${rows.join('')}</div>`;
   ctx.paged(body.querySelector('.set-list'));
   preview(body.querySelector('.set-preview'));
-  body.oninput = (e) => {
+
+  const onControl = (e) => {
     const input = e.target.closest('input[data-key]');
     if (!input) return;
     const key = input.dataset.key;
-    if (input.type === 'checkbox') setSetting(key, input.checked);
-    else {
-      const value = Number(input.value);
-      setSetting(key, value);
-      input.parentElement.querySelector('output').textContent = RANGES.find((r) => r[2] === key)[6](value);
-      if (key === 'textSpeed') preview(body.querySelector('.set-preview'));
+    if (input.type === 'checkbox') {
+      const next = Boolean(input.checked);
+      if (settings[key] !== next) setSetting(key, next);
+      if (key === 'mute') syncSoundDom(body);
+      return;
     }
+    const value = Number(input.value);
+    const audioChannel = AUDIO_CHANNELS.find((c) => c.key === key);
+    if (audioChannel) {
+      const prev = settings[key];
+      const wasMuted = settings.mute;
+      const wasOff = settings[audioChannel.onKey] === false;
+      if (value > 0 && settings.mute) setSetting('mute', false);
+      if (value > 0 && settings[audioChannel.onKey] === false) setSetting(audioChannel.onKey, true);
+      if (prev !== value || e.type === 'change') setSetting(key, value);
+      syncSoundDom(body);
+      if (key === 'se' && value > 0 && (prev !== value || wasMuted || wasOff)) audio.se('click');
+      return;
+    }
+    const changed = settings[key] !== value;
+    if (changed || e.type === 'change') setSetting(key, value);
+    const rangeDef = RANGES.find((r) => r[2] === key);
+    if (rangeDef) input.parentElement.querySelector('output').textContent = rangeDef[6](settings[key]);
+    if (key === 'textSpeed' && changed) preview(body.querySelector('.set-preview'));
   };
+  body.oninput = onControl;
+  body.onchange = onControl;
+
   body.onclick = async (e) => {
     const tab = e.target.closest('[data-set]')?.dataset.set;
     if (tab) { state.setTab = tab; ctx.resetPage(); ctx.rerender(); document.querySelector('#book .subtabs .on')?.focus(); return; }
+    const toggleKey = e.target.closest('[data-audio-toggle]')?.dataset.audioToggle;
+    if (toggleKey) {
+      const ch = AUDIO_CHANNELS.find((c) => c.onKey === toggleKey);
+      if (!ch) return;
+      const nowActive = channelActive(ch.key, ch.onKey);
+      if (nowActive) {
+        setSetting(ch.onKey, false);
+      } else {
+        if (settings.mute) setSetting('mute', false);
+        if (settings[ch.key] <= 0) setSetting(ch.key, DEFAULT_SETTINGS[ch.key]);
+        setSetting(ch.onKey, true);
+        if (ch.key === 'se') audio.se('click');
+      }
+      syncSoundDom(body);
+      return;
+    }
     const act = e.target.closest('[data-act]')?.dataset.act;
     if (act === 'easy') {
       setSetting('timed', false);

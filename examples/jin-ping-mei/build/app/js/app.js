@@ -130,9 +130,6 @@ function boot() {
     bus.on('replay-ended', () => { show('title'); book.open('gallery', { gallery: 'scene' }); });
     bus.on('book-closed', () => { if (current === 'title') enterTitleFocus(); });
     stage.preload([CG.title.src]);
-    // 本次会话里已经过了年龄门（刷新页面）：声音等到第一次点击再开
-    window.addEventListener('pointerdown', () => audio.unlock(), { once: true });
-    window.addEventListener('keydown', () => audio.unlock(), { once: true });
   }
   show('title');
 }

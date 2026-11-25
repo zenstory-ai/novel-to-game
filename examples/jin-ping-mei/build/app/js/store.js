@@ -19,6 +19,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   bgm: 60,
   se: 70,
   voice: 85, // 剧情过场里的人声与环境声
+  bgmOn: true,
+  seOn: true,
+  voiceOn: true,
+  mute: false,
   boxAlpha: 80, // 文字框浓淡 30…100
   skipUnread: false,
   film: true, // 动态影像：剧情过场与待机影像；关闭时过场换成末帧定格，字幕点击推进
@@ -28,14 +32,51 @@ export const DEFAULT_SETTINGS = Object.freeze({
   adult: true, // 成人画面；关闭时以帘幕代替
 });
 
-export const settings = { ...DEFAULT_SETTINGS, ...read(KEYS.settings, {}) };
+const NUMBER_RANGES = Object.freeze({
+  textSpeed: [10, 100],
+  autoSpeed: [0, 100],
+  bgm: [0, 100],
+  se: [0, 100],
+  voice: [0, 100],
+  boxAlpha: [30, 100],
+});
+
+const BOOL_KEYS = ['bgmOn', 'seOn', 'voiceOn', 'mute', 'skipUnread', 'film', 'calm', 'timed', 'assist', 'adult'];
+
+export function clampNumber(value, min, max, fallback) {
+  if (value == null || value === '' || typeof value === 'boolean') return fallback;
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.max(min, Math.min(max, n)) : fallback;
+}
+
+export function normalizeSettings(raw) {
+  const src = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+  const out = { ...DEFAULT_SETTINGS };
+  for (const [key, [min, max]] of Object.entries(NUMBER_RANGES)) {
+    out[key] = clampNumber(src[key], min, max, DEFAULT_SETTINGS[key]);
+  }
+  for (const key of BOOL_KEYS) {
+    out[key] = typeof src[key] === 'boolean' ? src[key] : DEFAULT_SETTINGS[key];
+  }
+  return out;
+}
+
+export const settings = normalizeSettings(read(KEYS.settings, {}));
 export const saveSettings = () => write(KEYS.settings, settings);
 const listeners = new Set();
 export const onSettings = (fn) => listeners.add(fn);
+
+export function reloadSettings() {
+  Object.assign(settings, normalizeSettings(read(KEYS.settings, {})));
+  return settings;
+}
+
 export function setSetting(key, value) {
-  settings[key] = value;
+  if (!(key in DEFAULT_SETTINGS)) return;
+  const next = normalizeSettings({ ...settings, [key]: value })[key];
+  settings[key] = next;
   saveSettings();
-  for (const fn of listeners) fn(key, value);
+  for (const fn of listeners) fn(key, next);
 }
 
 // 跨周目记录
