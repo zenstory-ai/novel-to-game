@@ -15,6 +15,7 @@ export const SETTINGS_DEFAULTS = Object.freeze({
 });
 
 function clamp01(v, fallback) {
+  if (v == null || v === '' || typeof v === 'boolean') return fallback;
   const n = Number(v);
   return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
 }

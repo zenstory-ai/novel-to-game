@@ -21,6 +21,7 @@ const SFX_COOLDOWN_MS = {
 const DEFAULT_SFX_COOLDOWN_MS = 50;
 
 function clamp01(v, fallback = 0) {
+  if (v == null || v === '' || typeof v === 'boolean') return fallback;
   const n = Number(v);
   return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : fallback;
 }
@@ -208,7 +209,7 @@ export function createAudioController({
 
     if (res && typeof res.then === 'function') {
       res.then(onStarted, () => {
-        if (gen === generation && active === name) {
+        if (active === name && (gen === generation || (el.paused && isMusicEnabled() && !isHidden()))) {
           stopTrackEl(el);
           active = null;
           needsGestureRetry = true;
@@ -447,7 +448,12 @@ export function createAudioController({
   }
 
   const onGesture = () => {
-    if (!unlocked || needsGestureRetry || (ctx && ctx.state === 'suspended' && isSfxEnabled())) {
+    if (
+      !unlocked ||
+      needsGestureRetry ||
+      (ctx && ctx.state === 'suspended' && isSfxEnabled()) ||
+      (wanted && isMusicEnabled() && !isHidden() && (!active || tracks.get(active)?.paused))
+    ) {
       unlock();
     }
   };

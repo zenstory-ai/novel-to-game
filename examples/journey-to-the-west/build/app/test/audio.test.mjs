@@ -364,7 +364,7 @@ test('SFX 卫生：AudioContext 处于 suspended 时不积压播放；同音效�
   assert.ok(h.ctrl.inspect().activeSfxCount <= 8, 'active SFX voices capped at 8');
 });
 
-test('设置规范化与跨重载持久化：非法值被夹紧，旧存档兼容，重载后设置不丢失', () => {
+test('设置规范化与跨重载持久化：null/空串/布尔/非法值回退默认值，合法值被夹紧，旧存档兼容，重载后设置不丢失', () => {
   const cleaned = normalizeSettings({ music: 2.5, sound: -1, mute: 1, speed: 99, seen: 'bad' });
   assert.equal(cleaned.music, 1);
   assert.equal(cleaned.sound, 0);
@@ -373,6 +373,14 @@ test('设置规范化与跨重载持久化：非法值被夹紧，旧存档兼�
   assert.equal(cleaned.mute, true);
   assert.equal(cleaned.speed, 1);
   assert.deepEqual(cleaned.seen, {});
+
+  // JSON.stringify(NaN) 会存成 null，不能误当作 0 静音
+  const fromNull = normalizeSettings({ music: null, sound: '', mute: false });
+  assert.equal(fromNull.music, SETTINGS_DEFAULTS.music);
+  assert.equal(fromNull.sound, SETTINGS_DEFAULTS.sound);
+  const fromBool = normalizeSettings({ music: false, sound: true });
+  assert.equal(fromBool.music, SETTINGS_DEFAULTS.music);
+  assert.equal(fromBool.sound, SETTINGS_DEFAULTS.sound);
 
   // 模拟 localStorage 持久化往返
   const mem = new Map();
@@ -396,4 +404,35 @@ test('设置规范化与跨重载持久化：非法值被夹紧，旧存档兼�
   } finally {
     globalThis.localStorage = prevStorage;
   }
+});
+
+test('play() 异步失败或系统外力暂停当前轨后，下一次手势/unlock 能自动恢复播放', async () => {
+  const h = makeHarness({ deferredPlay: true });
+  h.ctrl.music('title');
+  h.ctrl.unlock();
+  const el = h.track('title');
+
+  // play() 挂起期间调音量（gen=2 走快路径），随后旧 play() 异步 reject 且浏览器将 el.paused 置 true
+  h.s.music = 0.5;
+  h.ctrl.refresh();
+  el.paused = true;
+  el.pendingPlays.shift().reject(new Error('NotAllowedError'));
+  await flush();
+  assert.equal(h.ctrl.inspect().active, null, 'rejected track clears active and marks retry');
+
+  // 下一次手势解锁立刻重试并成功播放
+  h.ctrl.unlock();
+  assert.equal(el.pendingPlays.length, 1);
+  el.pendingPlays.shift().resolve();
+  await flush();
+  assert.equal(h.ctrl.inspect().active, 'title');
+  assert.equal(el.paused, false);
+
+  // 模拟移动端系统打断暂停 <audio>：下一次 unlock 也能自动拉起
+  el.paused = true;
+  h.ctrl.unlock();
+  el.pendingPlays.shift().resolve();
+  await flush();
+  assert.equal(el.paused, false);
+  assert.equal(h.ctrl.inspect().unpausedTracks, 1);
 });
