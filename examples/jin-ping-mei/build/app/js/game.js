@@ -423,7 +423,7 @@ function present(beat) {
 
 // ---------- 输入 ----------
 // 点击画面、空格、回车：往下读
-function advance() {
+function advance({ silent = false } = {}) {
   if (!ui.active || ui.bookOpen) return;
   if (ui.hidden) { setHidden(false); return; }
   if (cardOpen()) { cardAdvance(); return; }
@@ -443,7 +443,7 @@ function advance() {
       hideToast();
     } else ui.ahead = true;
   }
-  audio.se('click');
+  if (!silent) audio.se('click');
   next();
 }
 
@@ -507,7 +507,7 @@ function onKey(e) {
   if (key === ' ' || key === 'Enter' || key === 'ArrowDown') {
     if (onButton && key !== 'ArrowDown') return; // 让按钮自己响应
     e.preventDefault();
-    advance();
+    advance({ silent: e.repeat });
     return;
   }
   if (cardOpen()) return;
@@ -535,7 +535,7 @@ function bindInput() {
     if (!document.hidden) resumeAuto();
   });
   onSettings((key) => {
-    if (key === 'voice') stage.setVoiceVolume();
+    if (['voice', 'voiceOn', 'mute'].includes(key)) stage.setVoiceVolume();
     if (['film', 'calm', 'adult'].includes(key) && ui.active) stage.refresh(vm.stage);
     if (key === 'boxAlpha') applyBoxAlpha();
   });

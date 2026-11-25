@@ -3,9 +3,10 @@
 import { CAST, HEROINES, CG, CUT, MUSIC, ENDINGS, ENDING_KIND, FATES, SCENES, CURTAIN, faceSrc } from '../story/registry.js';
 import { game } from '../game.js';
 import { audio } from '../audio.js';
-import { record, settings } from '../store.js';
+import { record } from '../store.js';
 import { cgAllowed } from '../stage.js';
 import { icon } from './icons.js';
+import { toast } from './feedback.js';
 
 const SUBS = [['cg', 'CG'], ['cut', '过场'], ['scene', '回想'], ['music', '音乐'], ['ending', '结局']];
 const groupOf = (id, item) => item.group ?? HEROINES.find((h) => id.startsWith(`${h}_`) || id === `intro_${h}`) ?? 'common';
@@ -24,15 +25,27 @@ function viewer(html, { onClose } = {}) {
   root.hidden = false;
   const back = document.activeElement;
   const close = () => {
+    for (const v of root.querySelectorAll('video')) {
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    }
     root.hidden = true;
     root.innerHTML = '';
     document.removeEventListener('keydown', onKey, true);
+    document.removeEventListener('visibilitychange', onVis);
     onClose?.();
     back?.focus?.();
+  };
+  const onVis = () => {
+    if (document.hidden) {
+      for (const v of root.querySelectorAll('video')) v.pause();
+    }
   };
   const onKey = (e) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); close(); } };
   root.onclick = (e) => { if (!e.target.closest('video')) close(); };
   document.addEventListener('keydown', onKey, true);
+  document.addEventListener('visibilitychange', onVis);
   root.querySelector('.viewer-close').focus();
   return root;
 }
@@ -111,8 +124,11 @@ export function renderGallery(body, state, ctx) {
       const cut = CUT[d.cut];
       const root = viewer(`<video controls playsinline autoplay src="${cut.src}" poster="${cut.poster}"></video><p>${cut.name}</p>`, { onClose: () => audio.duck(false) });
       const v = root.querySelector('video');
-      v.volume = settings.voice / 100;
-      v.addEventListener('playing', () => audio.duck(true));
+      audio.applyVoice(v);
+      v.addEventListener('playing', () => audio.duck(!v.muted && v.volume > 0));
+      v.addEventListener('volumechange', () => {
+        if (!v.paused && !v.ended) audio.duck(!v.muted && v.volume > 0);
+      });
       for (const type of ['pause', 'ended']) v.addEventListener(type, () => audio.duck(false));
       return;
     }
@@ -129,6 +145,14 @@ export function renderGallery(body, state, ctx) {
       return;
     }
     if (d.scene) { ctx.close(); game.replayScene(d.scene); return; }
-    if (d.music) { audio.bgm(audio.playing === d.music ? 'title' : d.music); ctx.rerender(); }
+    if (d.music) {
+      if (audio.playing === d.music) {
+        audio.bgm(null);
+      } else {
+        audio.bgm(d.music);
+        if (!audio.isBgmEnabled()) toast('配乐已静音，可在设置里打开');
+      }
+      ctx.rerender();
+    }
   };
 }

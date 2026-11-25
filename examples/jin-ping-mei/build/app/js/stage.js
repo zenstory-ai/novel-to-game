@@ -187,8 +187,10 @@ function syncCut(stage, instant) {
   };
   if (instant || !filmOk()) { still(); return; }
   const v = document.createElement('video');
-  Object.assign(v, { playsInline: true, preload: 'auto', src: cut.src, volume: settings.voice / 100 });
-  v.addEventListener('playing', () => { plane.classList.add('live'); audio.duck(true); });
+  Object.assign(v, { playsInline: true, preload: 'auto', src: cut.src });
+  audio.applyVoice(v);
+  v.addEventListener('playing', () => { plane.classList.add('live'); audio.duck(!v.muted && audio.isVoiceEnabled()); });
+  v.addEventListener('pause', () => { audio.duck(false); });
   v.addEventListener('ended', () => { still(); cutListeners.ended?.(); }, { once: true });
   v.addEventListener('error', () => { v.remove(); still(); cutListeners.ended?.(); }, { once: true });
   pic.append(v);
@@ -197,7 +199,9 @@ function syncCut(stage, instant) {
   if (!cutShouldPlay()) return;
   v.play().catch((err) => {
     if (err?.name !== 'NotAllowedError' || !v.isConnected) return;
+    v.dataset.autoplayMuted = '1';
     v.muted = true;
+    audio.duck(false);
     if (cutShouldPlay()) v.play().catch(() => { v.remove(); still(); cutListeners.ended?.(); });
   });
 }
@@ -283,7 +287,14 @@ export const stage = {
   cutVideo() { return els.cutPic.querySelector('video'); },
   // 过场是否正在播（还没到末帧）
   cutLive() { const v = this.cutVideo(); return Boolean(v && !v.ended && !els.cutPlane.classList.contains('ended')); },
-  setVoiceVolume() { const v = this.cutVideo(); if (v) v.volume = settings.voice / 100; },
+  setVoiceVolume() {
+    const v = this.cutVideo();
+    if (!v) return;
+    if (audio.isVoiceEnabled()) delete v.dataset.autoplayMuted;
+    audio.applyVoice(v, { forceMuted: v.dataset.autoplayMuted === '1' });
+    const playingNow = !v.paused && !v.ended && !els.cutPlane.classList.contains('ended');
+    audio.duck(playingNow && !v.muted && audio.isVoiceEnabled());
+  },
   pauseCut(on) { cutStop.menu = Boolean(on); applyCutPlay(); },
   // 字幕还没读完：把影像停在镜头交界处（画面慢慢推近一点，不显得死），读完再接着演
   holdCut(on) {
