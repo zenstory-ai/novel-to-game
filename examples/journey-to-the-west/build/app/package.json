@@ -5,7 +5,7 @@
   "description": "《西游记 · 三借芭蕉扇》回合制指令 RPG：五行相克、七十二变、携宠与阵型，种子随机可复现",
   "scripts": {
     "start": "python3 -m http.server 5273",
-    "test": "node --test test/battle.test.mjs test/campaign.test.mjs test/world.test.mjs",
+    "test": "node --test test/battle.test.mjs test/campaign.test.mjs test/world.test.mjs test/audio.test.mjs",
     "verify": "python3 test/verify.py"
   }
 }

@@ -93,8 +93,11 @@
 .help div { padding: 8px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.6); border-left: 4px solid var(--gold); }
 .help b { color: var(--zhu-deep); font-size: 16px; }
 .help p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.7; color: var(--ink-2); }
-.set-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 7px 4px; font-size: 15.5px; border-bottom: 1px dashed rgba(189, 139, 67, 0.3); }
-.set-row input[type="range"] { width: min(240px, 50vw); accent-color: var(--zhu); }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 4px; font-size: 15.5px; border-bottom: 1px dashed rgba(189, 139, 67, 0.3); }
+.set-ctrl { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; min-width: 0; }
+.set-row input[type="range"] { width: min(170px, 34vw); accent-color: var(--zhu); }
+.set-row.muted-row input[type="range"] { opacity: 0.45; }
+.set-val { min-width: 38px; text-align: right; font-size: 13.5px; font-variant-numeric: tabular-nums; color: var(--ink-2); }
 
 @media (max-width: 800px) {
   .members { grid-template-columns: 1fr; gap: 10px; }
