@@ -123,6 +123,7 @@ window.xiyou = {
       campaign: c ? { stage: c.stage, levels: c.levels, storyLevel: c.storyLevel, money: c.money, exp: c.exp, items: c.items, treasure: c.treasure, pets: c.pets, formation: c.formation, flags: c.flags, bounty: c.bounty, explored: c.explored, hunt: c.hunt, wins: c.wins, points: c.points, skillPoints: c.skillPoints, gear: c.gear } : null,
       battle: b ? { id: b.battleId, round: b.round, over: b.over, winner: b.winner, fanStage: b.fanStage, formation: b.formation, items: b.items,
         units: b.units.map((u) => ({ id: u.id, key: u.key, side: u.side, name: u.name, hp: u.hp, maxHp: u.maxHp, mp: u.mp, sp: u.sp, alive: u.alive, element: u.element, form: u.form?.id ?? null, charging: u.charging, chargeTarget: u.chargeTarget ?? null, skills: u.skills, catchKey: u.catchKey })) } : null,
+      audio: audio.inspect(),
     }));
   },
 };

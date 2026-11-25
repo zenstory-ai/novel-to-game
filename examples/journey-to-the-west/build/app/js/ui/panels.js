@@ -13,7 +13,7 @@ import {
 } from '../rules/campaign.js';
 import { unitArt, itemArt, uiArt, faceStyle } from '../data/art.js';
 import { audio } from '../core/audio.js';
-import { settings, saveSettings } from '../core/store.js';
+import { settings, saveSettings, SETTINGS_DEFAULTS } from '../core/store.js';
 import { toast, clearToasts } from './dialogue.js';
 import { paginate } from './pager.js';
 
@@ -237,7 +237,96 @@ const BASE_WEAPON = { wukong: '金箍棒', bajie: '九齿钉耙', sha: '降妖�
 
 export function openSettings({ inGame, onSave, onTitle, onApply }) {
   const sh = shell({ title: '设置', narrow: true, id: 'settings' });
-  const slider = (key, label) => h('label.set-row', {}, h('span', {}, label), h('input', { type: 'range', min: 0, max: 100, value: Math.round(settings[key] * 100), data: { set: key }, oninput: (e) => { settings[key] = Number(e.target.value) / 100; saveSettings(); onApply?.(); } }));
+  const audioSyncs = [];
+  const syncAudio = () => { for (const fn of audioSyncs) fn(); };
+  const commit = () => { saveSettings(); onApply?.(); syncAudio(); };
+
+  const audioChannel = (volKey, onKey, otherOnKey, label, previewSfx = false) => {
+    const valEl = h('span.set-val');
+    const applyVol = (v, preview = false) => {
+      const n = Math.max(0, Math.min(1, Number(v) / 100));
+      settings[volKey] = Number.isFinite(n) ? n : SETTINGS_DEFAULTS[volKey];
+      if (settings[volKey] > 0) {
+        if (settings.mute) {
+          settings.mute = false;
+          settings[otherOnKey] = false;
+        }
+        settings[onKey] = true;
+      }
+      commit();
+      if (preview && previewSfx && settings[volKey] > 0) audio.sfx('click', { volume: 0.7 });
+    };
+    const range = h('input', {
+      type: 'range',
+      min: 0,
+      max: 100,
+      value: Math.round(settings[volKey] * 100),
+      'aria-label': `${label}音量`,
+      data: { set: volKey },
+      oninput: (e) => applyVol(e.target.value, false),
+      onchange: (e) => applyVol(e.target.value, true),
+    });
+    const btn = h('button.btn.small', {
+      type: 'button',
+      data: { set: onKey },
+      onclick: () => {
+        const effOn = !settings.mute && settings[onKey] !== false && settings[volKey] > 0;
+        if (effOn) {
+          settings[onKey] = false;
+        } else {
+          if (settings.mute) {
+            settings.mute = false;
+            settings[otherOnKey] = false;
+          }
+          settings[onKey] = true;
+          if (!(settings[volKey] > 0)) settings[volKey] = SETTINGS_DEFAULTS[volKey];
+        }
+        commit();
+        if (previewSfx && !settings.mute && settings[onKey] && settings[volKey] > 0) {
+          audio.sfx('click', { volume: 0.7 });
+        }
+      },
+    });
+    const row = h('div.set-row', {}, h('span', {}, label), h('div.set-ctrl', {}, range, valEl, btn));
+    const paint = () => {
+      const pct = Math.round(settings[volKey] * 100);
+      const effOn = !settings.mute && settings[onKey] !== false && settings[volKey] > 0;
+      range.value = String(pct);
+      valEl.textContent = `${pct}%`;
+      btn.textContent = effOn ? '开' : '关';
+      btn.classList.toggle('qing', effOn);
+      btn.setAttribute('aria-pressed', String(effOn));
+      row.classList.toggle('muted-row', !effOn);
+    };
+    audioSyncs.push(paint);
+    paint();
+    return row;
+  };
+
+  const muteToggle = () => {
+    const b = h('button.btn.small', {
+      type: 'button',
+      data: { set: 'mute' },
+      onclick: () => {
+        settings.mute = !settings.mute;
+        if (!settings.mute && !settings.musicOn && !settings.soundOn) {
+          settings.musicOn = true;
+          settings.soundOn = true;
+        }
+        commit();
+      },
+    });
+    const paint = () => {
+      const on = !!settings.mute;
+      b.textContent = on ? '已静音' : '有声';
+      b.classList.toggle('qing', on);
+      b.setAttribute('aria-pressed', String(on));
+    };
+    audioSyncs.push(paint);
+    paint();
+    return h('div.set-row', {}, h('span', {}, '静音'), b);
+  };
+
   const toggle = (key, label, onText = '开', offText = '关', map = (v) => v) => {
     const b = h('button.btn.small', { type: 'button', data: { set: key }, onclick: () => { settings[key] = map(settings[key], true); saveSettings(); onApply?.(); paint(); } });
     const paint = () => { const on = key === 'speed' ? settings.speed === 2 : !!settings[key]; b.textContent = on ? onText : offText; b.classList.toggle('qing', on); };
@@ -246,7 +335,10 @@ export function openSettings({ inGame, onSave, onTitle, onApply }) {
   };
   // 用 dom.append 而不是原生 append：游戏外不显示的存档两行是 false，原生 append 会把它印成字
   append(sh.body, [
-    h('div.section-title', {}, '声音'), slider('music', '音乐'), slider('sound', '音效'), toggle('mute', '静音', '已静音', '有声', (v) => !v),
+    h('div.section-title', {}, '声音'),
+    audioChannel('music', 'musicOn', 'soundOn', '音乐', false),
+    audioChannel('sound', 'soundOn', 'musicOn', '音效', true),
+    muteToggle(),
     h('div.section-title', {}, '交战'), toggle('speed', '演出速度', '加速 ×2', '常速 ×1', (v) => (v === 2 ? 1 : 2)), toggle('shake', '震屏', '开', '关', (v) => !v),
     inGame && h('div.section-title', {}, '存档'),
     inGame && h('div.set-row', {}, h('span', {}, '手动存档'), h('button.btn.small.qing', { type: 'button', data: { act: 'save' }, onclick: () => { onSave(); toast('已存档', 'good'); } }, '现在存档')),
