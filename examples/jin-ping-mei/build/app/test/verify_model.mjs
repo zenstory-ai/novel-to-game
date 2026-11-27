@@ -312,20 +312,30 @@ function moves(beat) {
   }
   return [true, false].map((ok) => () => vm.resolveHold(ok));
 }
-// 去重只看之后还会被读到的标记：从某个标签往后能到的所有条件里提到的 flag。
-// 细节标记大多只在下一两场有回声，不这样裁剪，状态数会按细节组合成倍增长。
+// 去重只看之后还会被读到的标记与好感：从某个标签往后能到的所有条件里提到的 flag / aff（@branch 会读全体女主好感）。
+// 细节标记和未走线路的好感不这样裁剪，状态数会按细节组合成倍增长。
 const edges = {};
 const condFlags = {};
+const condAff = {};
 for (const cmd of ops) {
   (edges[cmd.label] ??= new Set());
   (condFlags[cmd.label] ??= new Set());
+  (condAff[cmd.label] ??= new Set());
   for (const t of jumpTargets(cmd)) edges[cmd.label].add(t);
-  if (cmd.t === 'branch') for (const t of [...HEROINES.map((h) => `${h}_route`), 'lonely']) edges[cmd.label].add(t);
-  for (const c of [cmd.cond, ...(cmd.options ?? []).map((o) => o.cond)].filter(Boolean).flat()) if (c.flag) condFlags[cmd.label].add(c.flag);
+  if (cmd.t === 'branch') {
+    for (const t of [...HEROINES.map((h) => `${h}_route`), 'lonely']) edges[cmd.label].add(t);
+    for (const h of HEROINES) condAff[cmd.label].add(h);
+  }
+  for (const c of [cmd.cond, ...(cmd.options ?? []).map((o) => o.cond)].filter(Boolean).flat()) {
+    if (c.flag) condFlags[cmd.label].add(c.flag);
+    if (c.aff) condAff[cmd.label].add(c.aff);
+  }
 }
 const liveFlags = {};
+const liveAff = {};
 for (const label of Object.keys(labels)) {
   const live = new Set();
+  const liveA = new Set();
   const visited = new Set();
   const stack = [label];
   while (stack.length) {
@@ -333,13 +343,16 @@ for (const label of Object.keys(labels)) {
     if (visited.has(l)) continue;
     visited.add(l);
     condFlags[l].forEach((f) => live.add(f));
+    condAff[l].forEach((h) => liveA.add(h));
     stack.push(...edges[l]);
   }
   liveFlags[label] = live;
+  liveAff[label] = [...liveA].sort();
 }
 const stateKey = (snap) => {
   const label = snap.at.split(':')[0];
-  return JSON.stringify([snap.at, snap.vars.aff, Object.keys(snap.vars.flags).filter((f) => liveFlags[label].has(f)).sort()]);
+  const affKey = liveAff[label].map((h) => [h, snap.vars.aff[h] ?? 0]);
+  return JSON.stringify([snap.at, affKey, Object.keys(snap.vars.flags).filter((f) => liveFlags[label].has(f)).sort()]);
 };
 
 vm.start('start');

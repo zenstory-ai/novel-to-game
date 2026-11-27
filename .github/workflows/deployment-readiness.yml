@@ -31,6 +31,7 @@ jobs:
           [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          fetch-depth: 0
           persist-credentials: false
           path: source
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -47,7 +48,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
-          git -C source fetch origin "$SOURCE_SHA"
+          git -C source cat-file -e "$SOURCE_SHA^{commit}" 2>/dev/null || git -C source fetch origin "$SOURCE_SHA"
           python controls/scripts/source_release.py ci-proof --root source \
             --repository "$GITHUB_REPOSITORY" --sha "$SOURCE_SHA" --output artifacts/ci-proof.json
       - name: Observe latest production deployments and public reachability
@@ -60,7 +61,7 @@ jobs:
           cat artifacts/deployment-receipt.json
           echo '### Post-deployment observation; provider gate NOT_VERIFIED' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        if: always()
+        if: ${{ !cancelled() && hashFiles('artifacts/**') != '' }}
         with:
           name: deployment-observation-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifacts

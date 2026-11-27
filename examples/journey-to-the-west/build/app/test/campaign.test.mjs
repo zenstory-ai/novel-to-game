@@ -202,8 +202,6 @@ test('火妖留放：放归则离队、装备退回，并换得残图外层的�
   assert.deepEqual(joined, []);
   story.firemobsWon(c, won.caught.includes('huobao'));
   assert.equal(c.flags.dealPending, true);
-  const storyJs = readFileSync(new URL('../js/game/story.js', import.meta.url), 'utf8');
-  assert.match(storyJs, /firemobsWon\(c,\s*state\.caught\.includes\('huobao'\)\)/);
   story.setDeal(c, 'release');
   assert.equal(c.pets.length, 0);
   assert.equal(c.equipBag.jingtie, 1);

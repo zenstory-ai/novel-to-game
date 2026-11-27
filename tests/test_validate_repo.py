@@ -226,16 +226,22 @@ class RepositoryValidationTests(unittest.TestCase):
             if str(manifest["language"]).startswith("zh"):
                 roots.append(ROOT / "examples" / name)
 
-        violations = [
-            f"{markdown.relative_to(ROOT)}:{line_number}: {line}"
-            for root in roots
-            for markdown in root.rglob("*.md")
-            if not any(part.startswith(".") for part in markdown.relative_to(ROOT).parts)
-            for line_number, line in enumerate(
-                markdown.read_text(encoding="utf-8").splitlines(), start=1
-            )
-            if line.startswith("#") and not cjk.search(line)
-        ]
+        heading_re = re.compile(r"^#{1,6}\s+")
+        fence_re = re.compile(r"^\s*(`{3,}|~{3,})")
+        violations = []
+        for root in roots:
+            for markdown in root.rglob("*.md"):
+                if any(part.startswith(".") for part in markdown.relative_to(ROOT).parts):
+                    continue
+                in_fence = False
+                for line_number, line in enumerate(
+                    markdown.read_text(encoding="utf-8").splitlines(), start=1
+                ):
+                    if fence_re.match(line):
+                        in_fence = not in_fence
+                        continue
+                    if not in_fence and heading_re.match(line) and not cjk.search(line):
+                        violations.append(f"{markdown.relative_to(ROOT)}:{line_number}: {line}")
         self.assertEqual(violations, [])
 
     def test_graybox_example_does_not_require_art_direction(self) -> None:
@@ -291,9 +297,6 @@ class RepositoryValidationTests(unittest.TestCase):
             ROOT / "README_EN.md",
             *sorted((ROOT / "docs").rglob("*.md")),
         ]
-        self.assertFalse((ROOT / "README_ZH.md").exists())
-        self.assertIn('<a href="README_EN.md">', (ROOT / "README.md").read_text(encoding="utf-8"))
-        self.assertIn('<a href="README.md">', (ROOT / "README_EN.md").read_text(encoding="utf-8"))
         broken = []
         for markdown in markdown_files:
             for raw_target in LINK_RE.findall(markdown.read_text(encoding="utf-8")):

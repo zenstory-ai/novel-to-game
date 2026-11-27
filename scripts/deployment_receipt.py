@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import re
+from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 REPOSITORY = "zenstory-ai/novel-to-game"
@@ -62,6 +63,10 @@ def reachable(origin):
         return response.status
 
 
+def deployments_query(project):
+    return "/deployments?" + urlencode({"environment": "Production – " + project, "per_page": 100})
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sha", required=True)
@@ -73,9 +78,9 @@ def main():
     proof = json.loads(args.ci_proof.read_text())
     if proof.get("repository") != REPOSITORY or proof.get("sourceSha") != args.sha or not proof.get("ci"):
         raise ValueError("preceding exact source CI proof disagrees")
-    rows = github("/deployments?per_page=100")
     projects = []
     for project, origin in SITES.items():
+        rows = github(deployments_query(project))
         deployment = select_deployment(rows, project, args.sha)
         status = select_status(github(f"/deployments/{deployment['id']}/statuses?per_page=100"))
         projects.append({"project": project, "githubDeploymentId": deployment["id"],
