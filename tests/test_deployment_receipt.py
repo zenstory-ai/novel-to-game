@@ -42,6 +42,12 @@ class DeploymentReceiptTests(unittest.TestCase):
         self.assertEqual("NOT_VERIFIED", receipt["customDomainSourceBinding"])
         self.assertEqual("POST_DEPLOYMENT_OBSERVATION", receipt["kind"])
 
+    def test_deployments_query_scopes_to_production_environment(self):
+        query = r.deployments_query("jinpingmei")
+        self.assertTrue(query.startswith("/deployments?"))
+        self.assertIn("environment=Production+", query)
+        self.assertIn("jinpingmei", query)
+
 
 if __name__ == "__main__":
     unittest.main()

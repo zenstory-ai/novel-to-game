@@ -122,6 +122,8 @@ def visible_directories(parent: Path) -> set[str]:
     copy, so enumerating raw `iterdir()` made the documented verification command
     fail locally while CI (a clean checkout) stayed green.
     """
+    if not parent.is_dir():
+        return set()
     return {
         path.name
         for path in parent.iterdir()
@@ -137,7 +139,10 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     for line in match.group(1).splitlines():
         field = FIELD_RE.match(line)
         if field:
-            values[field.group(1)] = field.group(2).strip().strip('"')
+            raw = field.group(2).strip()
+            if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in {'"', "'"}:
+                raw = raw[1:-1]
+            values[field.group(1)] = raw
     return values
 
 
@@ -736,8 +741,9 @@ def validate_repository(root: Path) -> list[str]:
     for name in sorted(actual_examples):
         issues.extend(validate_example(examples_root / name))
 
-    version = (root / "VERSION").read_text(encoding="utf-8").strip()
-    issues.extend(validate_agent_adapters(root, version))
+    if (root / "VERSION").is_file():
+        version = (root / "VERSION").read_text(encoding="utf-8").strip()
+        issues.extend(validate_agent_adapters(root, version))
     return issues
 
 
